@@ -1,35 +1,77 @@
 using NeoModLoader.api;
+using NeoModLoader.services;
+using SuperMech.Code;
+using UnityEngine;
+using HarmonyLib;
 
 namespace SuperMech
 {
     /// <summary>
     /// 《超神机械师》WorldBox 模组入口（作者：阿鱼要吃书 · 原著：齐佩甲）
-    /// Phase 0：项目骨架 + 编译链验证
     /// </summary>
     public class Main : BasicMod<Main>
     {
         public new static Main Instance { get; private set; }
+        private float _promoTimer;
+        private float _localeTimer;
+        private bool _localeExported;
 
         protected override void OnModLoad()
         {
             Instance = this;
-            LogInfo("[超神机械师] 模组加载成功（Phase 0 骨架）");
-            SuperMechSystems.Bootstrap();
-            LogInfo("[超神机械师] 系统引导完成，等待 Phase 1 内容接入");
-        }
-    }
+            LogInfo("[超神机械师] 模组加载");
+            SuperMechTraitGroups.Register();  // 必须最先：自定义group_id不注册会导致特质面板KeyNotFound崩溃
+            SuperMechTraits.Register();
+            SuperMechKnowledge.Register();
+            SuperMechQi.Register();
+            SuperMechCorePower.Register();
+            SuperMechPerks.Register();
+            SuperMechSubClass.Register();
+            SuperMechRefinement.Register();
+            SuperMechCultivation.Register();
+            SuperMechRelic.Register();
+            SuperMechSpecialty.Register();
+            SuperMechSanctuary.Register();
+            SuperMechPowers.Register();
+            SuperMechUI.Init();  // 必须在 powers 注册之后（PowerButton.OnEnable 按名字查 powers）
 
-    /// <summary>
-    /// 模组系统引导层：后续各 Phase 的系统（职业/特性/神权/事件/圣所/轮回）在此注册。
-    /// </summary>
-    public static class SuperMechSystems
-    {
-        public static void Bootstrap()
+            // Harmony Patch：单位面板注入阶位/职业/气力/欧纳数据行
+            var harmony = new Harmony("SuperMech");
+            harmony.PatchAll();
+            LogInfo("[超神机械师] Harmony Patch 完成（单位面板注入）");
+
+            LogInfo("[超神机械师] Phase 1 系统注册完成");
+        }
+
+        private void Update()
         {
-            // Phase 1 接入点：力量体系（五系职业 + 阶位特质 + 专长/技能 + 机械工厂）
-            // Phase 2 接入点：降临者（异人单位）+ 版本 1.0-3.0 灾难链 + 势力王国
-            // Phase 3 接入点：4.0-5.5（闪耀世界 / 圣所复苏 / 全境战争 / 超A级协会）
-            // Phase 4 接入点：无尽轮回 + 圣所跨存档持久层
+            // 启动约4秒后，等语言加载与全部中文注册完成，导出一次完整 cz.json
+            if (!_localeExported)
+            {
+                _localeTimer += Time.deltaTime;
+                if (_localeTimer >= 4f)
+                {
+                    _localeExported = true;
+                    try { SuperMechLocaleExport.Export(); }
+                    catch (System.Exception e) { Debug.LogError("[超神机械师] 本地化导出异常: " + e.Message); }
+                }
+            }
+
+            _promoTimer += Time.deltaTime;
+            if (_promoTimer >= 5f)
+            {
+                _promoTimer = 0f;
+                try { SuperMechAdvancement.TickPromotions(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 晋升循环异常: " + e.Message); }
+                try { SuperMechQi.TickQiLevels(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 气力等级异常: " + e.Message); }
+                try { SuperMechCorePower.TickCorePowers(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 核心能量异常: " + e.Message); }
+                try { SuperMechRefinement.TickRefinement(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 提炼法异常: " + e.Message); }
+                try { SuperMechCultivation.TickCultivation(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 修炼功法异常: " + e.Message); }
+            }
         }
     }
 }

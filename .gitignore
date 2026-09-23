@@ -16,3 +16,9 @@ CompiledMods/
 *.suo
 Thumbs.db
 .DS_Store
+
+# 日志
+*.log
+
+# 小说解包（以zip形式提供）
+novel_extract/

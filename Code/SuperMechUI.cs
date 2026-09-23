@@ -1,0 +1,105 @@
+using System.Collections.Generic;
+using NeoModLoader.General;
+using NeoModLoader.General.UI.Tab;
+using SuperMech.Code;
+using UnityEngine;
+
+namespace SuperMech.Code
+{
+    /// <summary>
+    /// 创建「超神机械师」专属神权tab，把所有神权按钮放进去。
+    /// 参考蛊真人 GzPowersTab：TabManager.CreateTab + AddPowerButton + UpdateLayout。
+    /// 必须在所有 powers 注册之后调用（PowerButton.OnEnable 按名字查 powers）。
+    /// </summary>
+    public static class SuperMechUI
+    {
+        private const string Layout = "tools";
+        private static bool _inited;
+        private static PowersTab _tab;
+
+        private static readonly (string id, string icon, string tipTitle, string tipDesc)[] Buttons =
+        {
+            (SuperMechPowers.SummonRanger,   "ui/powers/power_summon_units", "召唤机械游骑兵", "在点击位置生成一个机械游骑兵单位"),
+            (SuperMechPowers.SummonMech,     "ui/powers/power_summon_units", "召唤机甲",       "在点击位置生成一个机甲单位"),
+            (SuperMechPowers.AwakenPsi,      "ui/powers/power_bless",        "赋予异能系觉醒", "点击单位，赋予异能系觉醒特质"),
+            (SuperMechPowers.AwakenMech,     "ui/powers/power_bless",        "赋予机械系觉醒", "点击单位，赋予机械系觉醒特质"),
+            (SuperMechPowers.AwakenMartial,  "ui/powers/power_bless",        "赋予武道系觉醒", "点击单位，赋予武道系觉醒特质"),
+            (SuperMechPowers.DisasterAlien,  "ui/powers/power_meteor",       "异化之灾",       "在点击位置生成异化体（天灾）"),
+            ("sm_enter_sanctuary",           "ui/Icons/actor_traits/iconHardSkin",           "进入圣所",       "消耗3块圣所钥匙碎片进入圣所，获得跨存档buff"),
+            ("sm_give_sm_pcult_resonance",   "ui/powers/power_bless",        "传授：基因共鸣", "点击异能系单位，传授基因共鸣功法"),
+            ("sm_give_sm_pcult_meditation",  "ui/powers/power_bless",        "传授：冥想",     "点击魔法系单位，传授冥想功法"),
+            ("sm_give_sm_pcult_mind_train",  "ui/powers/power_bless",        "传授：心灵锻炼", "点击念力系单位，传授心灵锻炼功法"),
+        };
+
+        public static void Init()
+        {
+            if (_inited) return;
+            try
+            {
+                _inited = true;
+
+                // 注册tab的本地化文本
+                LocalizedTextManager.add("supermech.tab", "超神机械师", pReplace: true);
+                LocalizedTextManager.add("supermech.tab_desc", "超神机械师模组：五系觉醒、机械军团、圣所轮回", pReplace: true);
+
+                Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconHardSkin");
+                _tab = TabManager.CreateTab("supermech_mod_tab", "supermech.tab", "supermech.tab_desc", tabIcon);
+                if (_tab == null)
+                {
+                    Debug.LogError("[超神机械师] TabManager.CreateTab 返回 null，专属tab创建失败");
+                    _inited = false;
+                    return;
+                }
+
+                _tab.SetLayout(new List<string> { Layout });
+
+                foreach (var (id, iconPath, tipTitle, tipDesc) in Buttons)
+                {
+                    try
+                    {
+                        GodPower power = AssetManager.powers.get(id);
+                        if (power == null)
+                        {
+                            Debug.LogWarning("[超神机械师] power未注册，跳过按钮: " + id);
+                            continue;
+                        }
+
+                        Sprite icon = SpriteTextureLoader.getSprite(iconPath);
+                        PowerButton btn = PowerButtonCreator.CreateGodPowerButton(id, icon);
+                        if (btn == null)
+                        {
+                            Debug.LogWarning("[超神机械师] CreateGodPowerButton返回null: " + id);
+                            continue;
+                        }
+
+                        // 防御：显式绑定（PowerButton.OnEnable 可能早于注册）
+                        btn.godPower = power;
+
+                        // tooltip
+                        try
+                        {
+                            TipButton tip = btn.GetComponent<TipButton>();
+                            if (tip == null) tip = btn.gameObject.AddComponent<TipButton>();
+                            tip.textOnClick = tipTitle + "\n" + tipDesc;
+                        }
+                        catch { }
+
+                        _tab.AddPowerButton(Layout, btn);
+                    }
+                    catch (System.Exception e)
+                    {
+                        Debug.LogError("[超神机械师] 创建按钮失败 " + id + ": " + e.Message);
+                    }
+                }
+
+                _tab.UpdateLayout();
+                Debug.Log("[超神机械师] 专属神权tab创建成功，按钮已注入");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 专属tab初始化失败: " + e.Message + "\n" + e.StackTrace);
+                _inited = false;
+            }
+        }
+    }
+}
