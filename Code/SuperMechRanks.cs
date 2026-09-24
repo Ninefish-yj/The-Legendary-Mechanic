@@ -49,13 +49,34 @@ namespace SuperMech.Code
             return null;
         }
 
-        /// <summary>获取单位当前阶位名称。</summary>
+        /// <summary>判断索引是否是+位（D+/C+/B+/A+/S+）。</summary>
+        public static bool IsPlusRank(int index)
+        {
+            if (index < 0 || index >= All.Count) return false;
+            return All[index].id.Contains("_plus");
+        }
+
+        /// <summary>获取+位对应的主阶位索引（D+→D, C+→C, etc.）。</summary>
+        public static int GetMainRankIndex(int index)
+        {
+            if (!IsPlusRank(index)) return index;
+            // +位的前一个就是主阶位
+            return index - 1;
+        }
+
+        /// <summary>获取主阶位特质ID（+位返回对应主阶位的ID）。</summary>
+        public static string GetMainRankTraitId(int index)
+        {
+            int mainIdx = GetMainRankIndex(index);
+            if (mainIdx >= 0 && mainIdx < All.Count) return All[mainIdx].id;
+            return null;
+        }
+
+        /// <summary>获取单位当前阶位名称（含+位，从精确阶位字典读取）。</summary>
         public static string GetRankName(Actor a)
         {
-            for (int i = All.Count - 1; i >= 0; i--)
-            {
-                if (a.hasTrait(All[i].id)) return All[i].name;
-            }
+            int exact = SuperMechAdvancement.GetExactRankIndex(a);
+            if (exact >= 0 && exact < All.Count) return All[exact].name;
             return "凡人";
         }
     }

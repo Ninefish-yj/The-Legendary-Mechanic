@@ -36,9 +36,10 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            // 1. 阶位链（14阶 F→X，真正的特质，影响属性）
+            // 1. 阶位链（只注册主阶位，+位不挂特质只在面板显示；属性加成由SuperMechAdvancement统一反射施加）
             foreach (var r in SuperMechRanks.All)
             {
+                if (SuperMechRanks.IsPlusRank(System.Array.IndexOf(SuperMechRanks.All.ToArray(), r))) continue;
                 var t = new ActorTrait
                 {
                     id = r.id,
@@ -47,8 +48,7 @@ namespace SuperMech.Code
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()
                 };
-                t.base_stats["multiplier_damage"] = r.damageMul;
-                t.base_stats["multiplier_health"] = r.healthMul;
+                // 阶位特质只做标记，属性加成由晋升系统按精确阶位（含+位）反射施加
                 AssetManager.traits.add(t);
             }
 

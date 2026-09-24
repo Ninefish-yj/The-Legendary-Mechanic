@@ -143,13 +143,8 @@ namespace SuperMech.Code
 
         private static string GetRank(Actor a)
         {
-            // 从高到低找已激活的阶位特质
-            for (int i = SuperMechRanks.All.Count - 1; i >= 0; i--)
-            {
-                if (HasTrait(a, SuperMechRanks.All[i].id))
-                    return SuperMechRanks.All[i].name;
-            }
-            return "凡人（F）";
+            // 从精确阶位字典读取（含+位，+位不挂特质只在面板显示）
+            return SuperMechRanks.GetRankName(a);
         }
 
         private static string GetStage(Actor a, string cls)

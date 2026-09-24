@@ -345,7 +345,7 @@ namespace SuperMech.Code
                 if (!string.IsNullOrEmpty(rec.branchTrait)) a.addTrait(rec.branchTrait);
                 if (rec.stage > 0) SuperMechStage.SetStage(a, rec.stage);
                 if (rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count)
-                    a.addTrait(SuperMechRanks.All[rec.rankIndex].id);
+                    SuperMechAdvancement.SetExactRank(a, rec.rankIndex);
                 SuperMechQi.SetQi(a, rec.qi);
                 if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
                     SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
@@ -404,11 +404,8 @@ namespace SuperMech.Code
             if (!string.IsNullOrEmpty(rec.branchTrait)) a.addTrait(rec.branchTrait);
             if (rec.stage > 0) SuperMechStage.SetStage(a, rec.stage);
             if (rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count)
-            {
-                string rankId = SuperMechRanks.All[rec.rankIndex].id;
-                a.addTrait(rankId);
-            }
-            SuperMechQi.SetQi(a, rec.qi * 0.8f);  // 复活后气力削弱为80%
+                SuperMechAdvancement.SetExactRank(a, rec.rankIndex);  // 含+位，自动挂主阶位特质+属性倍率
+            SuperMechQi.SetQi(a, rec.qi * 0.8f);
             if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
                 SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
 
