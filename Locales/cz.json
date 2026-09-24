@@ -863,5 +863,17 @@
   "trait_sm_sub_scout": "侦察兵",
   "trait_sm_sub_scout_info": "侦察与追踪。",
   "trait_sm_sub_scribe": "学者",
-  "trait_sm_sub_scribe_info": "知识研究，智力提升。"
+  "trait_sm_sub_scribe_info": "知识研究，智力提升。",
+  "sm_info_state": "信息态",
+  "sm_info_state_info": "第六圣所解锁的高维信息态技术，可在实体与信息态之间切换。",
+  "sm_info_state_lv1": "信息态Lv1",
+  "sm_info_state_lv1_info": "穿甲5%，护盾10%概率。",
+  "sm_info_state_lv2": "信息态Lv2",
+  "sm_info_state_lv2_info": "穿甲10%，护盾20%，可感知隐藏单位。",
+  "sm_info_state_lv3": "信息态Lv3",
+  "sm_info_state_lv3_info": "穿甲15%，护盾30%，可感知超神遗力。",
+  "sm_info_state_lv4": "信息态Lv4",
+  "sm_info_state_lv4_info": "穿甲20%，护盾40%，可转化击杀目标。",
+  "sm_info_state_lv5": "信息态Lv5",
+  "sm_info_state_lv5_info": "穿甲25%，护盾50%，信息态扰动-15%敌方伤害。"
 }

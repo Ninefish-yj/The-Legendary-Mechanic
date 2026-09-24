@@ -261,6 +261,13 @@ namespace SuperMech.Code
                 s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * buff;
                 s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * buff;
             }
+
+            // 第六圣所（信息态）已解锁时，进入圣所提升信息态等级（ch1309：第六圣所=信息态技术）
+            if ((Data.unlocked_sanctuaries & (1 << 5)) != 0)
+            {
+                SuperMechInfoState.Upgrade(a);
+            }
+
             Save();
 
             string className = GetClassTrait(a) ?? "未知";

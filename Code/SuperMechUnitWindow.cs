@@ -141,6 +141,11 @@ namespace SuperMech.Code
                 if (revCount > 0) sanText += $" | 已复活{revCount}次（信息丢失{Mathf.Clamp(0.1f*revCount,0.1f,0.5f):P0}）";
                 ShowRow(__instance, "圣所", sanText);
 
+                // 行8a：信息态能力（第六圣所解锁后获得，ch1108/ch1141/ch1224）
+                string infoText = SuperMechInfoState.GetStatusText(actor);
+                if (!string.IsNullOrEmpty(infoText))
+                    ShowRow(__instance, "信息态", infoText);
+
                 // 行8b：冥冥感应/使命（原著ch1204：S阶以上感应到蜕变契机）
                 var destiny = SuperMechIntuition.GetDestiny(actor);
                 if (destiny != null)

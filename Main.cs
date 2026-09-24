@@ -114,6 +114,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 超神遗力感知异常: " + e.Message); }
                 try { SuperMechTranscendence.TickAdvancementTask(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 进阶任务异常: " + e.Message); }
+                try { SuperMechInfoState.TickInfoState(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 信息态异常: " + e.Message); }
             }
         }
     }
