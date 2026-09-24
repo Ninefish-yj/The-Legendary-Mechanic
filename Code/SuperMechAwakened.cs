@@ -227,11 +227,11 @@ namespace SuperMech.Code
                         SuperMechDivinity.SpendPoints(a, "profession");
                 }
 
-                // 4. 自动尝试超神突破（条件满足时）
-                if (SuperMechTranscendence.CanAttempt(a))
+                // 4. 自动尝试超神突破（三条件全满足时才尝试，否则不浪费超神遗力）
+                if (SuperMechTranscendence.CanAttempt(a) && SuperMechTranscendence.AllConditionsMet(a))
                 {
-                    // 有50%概率尝试，避免所有单位同时突破
-                    if (Random.value < 0.5f)
+                    // 有30%概率尝试，避免所有单位同时突破
+                    if (Random.value < 0.3f)
                     {
                         SuperMechTranscendence.AttemptTranscend(a);
                     }
