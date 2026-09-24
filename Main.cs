@@ -79,6 +79,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 潜能点异常: " + e.Message); }
                 try { SuperMechCorePower.TickCorePowers(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 核心能量异常: " + e.Message); }
+                try { SuperMechQiAttribute.TickAutoAssign(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 气力属性异常: " + e.Message); }
                 try { SuperMechRefinement.TickRefinement(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 提炼法异常: " + e.Message); }
                 try { SuperMechCultivation.TickCultivation(); }

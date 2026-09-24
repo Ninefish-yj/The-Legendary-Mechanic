@@ -27,9 +27,9 @@ namespace SuperMech.Code
         public const string BranchPsiFunc = "sm_branch_psi_func";
 
         // —— 魔法系三分支（同人二创）——
-        public const string BranchMageElement = "sm_branch_mage_element";
-        public const string BranchMageChange = "sm_branch_mage_change";
-        public const string BranchMageCreate = "sm_branch_mage_create";
+        // —— 魔法系：原著明确两类（专精法师/魔网法师），元素/变化/造物是知识树方向不是职业分支 ——
+        public const string BranchMageSpecialist = "sm_branch_mage_specialist";
+        public const string BranchMageWeave = "sm_branch_mage_weave";
 
         // —— 念力系三分支（同人二创）——
         public const string BranchMindSoul = "sm_branch_mind_soul";
@@ -65,9 +65,9 @@ namespace SuperMech.Code
             AllBranches.Add(new BranchDef { traitId = BranchPsiFunc, name = "功能", classTrait = SuperMechTraits.ClassPsi, desc = "操控强化，智力+15攻速+15%范围+2", applyBonus = s => { s["intelligence"]=(s["intelligence"]??0f)+15f; s["attack_speed"]=(s["attack_speed"]??0f)+0.15f; s["range"]=(s["range"]??0f)+2f; } });
 
             // 魔法系
-            AllBranches.Add(new BranchDef { traitId = BranchMageElement, name = "元素", classTrait = SuperMechTraits.ClassMage, desc = "元素魔法，伤害+45%暴击+8%", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.45f; s["critical_chance"]=(s["critical_chance"]??0f)+0.08f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMageChange, name = "变化", classTrait = SuperMechTraits.ClassMage, desc = "变化/奥术，攻速+30%移速+20%智力+10", applyBonus = s => { s["attack_speed"]=(s["attack_speed"]??0f)+0.3f; s["speed"]=(s["speed"]??0f)+0.5f; s["intelligence"]=(s["intelligence"]??0f)+10f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMageCreate, name = "造物", classTrait = SuperMechTraits.ClassMage, desc = "炼金/造物，生命+35%护甲+5经验+30%", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.35f; s["armor"]=(s["armor"]??0f)+5f; s["experience"]=(s["experience"]??1f)*1.3f; } });
+            // 魔法系：专精法师（专注一种魔法+魔法回路，高威力）/魔网法师（契约借法，无消耗但有次数上限）
+            AllBranches.Add(new BranchDef { traitId = BranchMageSpecialist, name = "专精法师", classTrait = SuperMechTraits.ClassMage, desc = "专注一种类型魔法，可植入魔法回路，伤害+50%智力+15", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.5f; s["intelligence"]=(s["intelligence"]??0f)+15f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMageWeave, name = "魔网法师", classTrait = SuperMechTraits.ClassMage, desc = "与魔法实体契约借法，法力充沛，生命+30%经验+20%", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.3f; s["experience"]=(s["experience"]??1f)*1.2f; s["mana"]=(s["mana"]??0f)+50f; } });
 
             // 念力系
             AllBranches.Add(new BranchDef { traitId = BranchMindSoul, name = "灵魂", classTrait = SuperMechTraits.ClassMind, desc = "心灵/灵魂，智力+20暴击+12%", applyBonus = s => { s["intelligence"]=(s["intelligence"]??0f)+20f; s["critical_chance"]=(s["critical_chance"]??0f)+0.12f; } });

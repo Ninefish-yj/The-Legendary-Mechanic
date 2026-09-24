@@ -69,10 +69,10 @@ namespace SuperMech.Code
                 ShowRow(__instance, "神性蜕变", divText);
 
                 // 行8：圣所解锁进度（跨存档全局数据）
-                int unlocked = 0;
+                int sanUnlocked = 0;
                 for (int i = 0; i < 6; i++)
-                    if ((SuperMechSanctuary.Data.unlocked_sanctuaries & (1 << i)) != 0) unlocked++;
-                string sanText = $"{unlocked}/6 已解锁 | 碎片[";
+                    if ((SuperMechSanctuary.Data.unlocked_sanctuaries & (1 << i)) != 0) sanUnlocked++;
+                string sanText = $"{sanUnlocked}/6 已解锁 | 碎片[";
                 for (int i = 0; i < 6; i++)
                 {
                     sanText += SuperMechSanctuary.Data.sanctuary_fragments[i];
@@ -85,6 +85,15 @@ namespace SuperMech.Code
                 string branch = SuperMechBranch.GetBranchName(actor);
                 if (branch != "未选择")
                     ShowRow(__instance, "分支", branch);
+
+                // 行9b：气力属性（原著ch48/ch49：磁/精神/火/风/铁等）
+                string qiAttr = SuperMechQiAttribute.GetAttribute(actor);
+                if (qiAttr != SuperMechQiAttribute.AttrNone)
+                {
+                    string attrDesc = SuperMechQiAttribute.AttrDesc.ContainsKey(qiAttr) ?
+                        SuperMechQiAttribute.AttrDesc[qiAttr] : "";
+                    ShowRow(__instance, "气力属性", $"{qiAttr} — {attrDesc}");
+                }
 
                 // 行10：副职业等级（原著：特工lv9/黑夜潜行者lv10）
                 string subText = SuperMechSubClass.GetSubLevelText(actor);

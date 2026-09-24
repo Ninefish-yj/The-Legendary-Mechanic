@@ -96,6 +96,10 @@ namespace SuperMech.Code
             string branch = SuperMechBranch.GetBranchName(a);
 
             _frame.AddLabel($"阶位: {rank}    职业阶段: {stage}", leftX, y, colW, 22f, 13);
+            y -= 24f;
+            string qiAttr = SuperMechQiAttribute.GetAttribute(a);
+            if (qiAttr != SuperMechQiAttribute.AttrNone)
+                _frame.AddLabel($"气力属性: {qiAttr}", leftX, y, colW, 22f, 13);
             _frame.AddLabel($"气力: Lv{qiLv} ({qiVal:F0})    欧纳: {onar:F0}", leftX + colW, y, colW, 22f, 13);
             y -= 26f;
 
@@ -127,6 +131,7 @@ namespace SuperMech.Code
                     {
                         a.addTrait(Classes[idx].trait);
                         SuperMechSpecialty.AssignRandomSpecialty(a);
+                        SuperMechQiAttribute.AutoAssign(a);
                         Debug.Log($"[超神机械师] {a.Name} 觉醒 {Classes[idx].name}");
                         Refresh();
                     }, Classes[idx].color);
@@ -154,6 +159,7 @@ namespace SuperMech.Code
                             {
                                 SuperMechStage.SetStage(a, 4);
                             }
+                            SuperMechQiAttribute.AutoAssign(a);
                             Debug.Log($"[超神机械师] {a.Name} 转职 {branches[idx].name}");
                             Refresh();
                         });

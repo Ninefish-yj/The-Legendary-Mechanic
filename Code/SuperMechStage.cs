@@ -78,6 +78,11 @@ namespace SuperMech.Code
             {
                 SuperMechQi.AddQi(a, StageQiBonus[cur]);
             }
+            // 磁环阶段觉醒【磁】气力属性（ch48）
+            if (cur + 1 == 4 && a.hasTrait(SuperMechTraits.ClassMech))
+            {
+                SuperMechQiAttribute.SetAttribute(a, SuperMechQiAttribute.AttrMagnetic);
+            }
             Debug.Log($"[超神机械师] {a.Name} 职业晋升：{StageNames[cur]} → {StageNames[cur + 1]}");
             return true;
         }
