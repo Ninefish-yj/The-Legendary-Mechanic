@@ -43,8 +43,9 @@ namespace SuperMech.Code
                 if (!string.IsNullOrEmpty(title) && actor.hasTrait(SuperMechRace.TraitSuperARace))
                     ShowRow(__instance, "名号", title);
 
-                // 行2：职业系
-                ShowRow(__instance, "职业", cls);
+                // 行2：职业系（原著：五系对应神灵五方面——武道=神体/念力=神魂/魔法=神权/异能=神通/机械=神器）
+                string clsAspect = GetClassAspect(cls);
+                ShowRow(__instance, "职业", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
 
                 // 行3：职业阶段（机械系显示阶段名，其他系显示核心能量等级）
                 string stage = GetStage(actor, cls);
@@ -139,6 +140,20 @@ namespace SuperMech.Code
             }
             catch { }
             return null;
+        }
+
+        /// <summary>原著：五系对应神灵五方面——武道=神体/念力=神魂/魔法=神权/异能=神通/机械=神器。</summary>
+        public static string GetClassAspect(string cls)
+        {
+            switch (cls)
+            {
+                case "武道系": return "神体";
+                case "念力系": return "神魂";
+                case "魔法系": return "神权";
+                case "异能系": return "神通";
+                case "机械系": return "神器";
+                default: return "";
+            }
         }
 
         public static string GetClass(Actor a)
