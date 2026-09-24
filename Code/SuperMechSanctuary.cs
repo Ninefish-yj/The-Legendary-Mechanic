@@ -69,9 +69,15 @@ namespace SuperMech.Code
         // 可复活的死者列表（最近死亡的超能者）
         private static readonly List<DeadUnitRecord> _deadUnits = new List<DeadUnitRecord>();
         private static readonly Dictionary<long, DeadUnitRecord> _aliveSnapshot = new Dictionary<long, DeadUnitRecord>();
+        // X阶（超神级）信息态重生追踪
+        private static readonly Dictionary<long, DeadUnitRecord> _divineSnapshot = new Dictionary<long, DeadUnitRecord>();
+        private static readonly HashSet<long> _divineCooldown = new HashSet<long>();
         public const int MaxDeadRecords = 20;       // 最多保留20个死者
         public const int ResurrectionCost = 5;      // 复活消耗钥匙碎片
+        public const int DivineRankIndex = 13;      // X阶（超神级）索引
         // 每个圣所都有复活权限，只是知识分区不同（原著ch1134：圣所功能之一是复苏死者）
+        // 圣所只复活超A级（S阶），原文ch1214："超A级层次理解为复活许可证"
+        // 超神级（X阶）不靠圣所，靠信息态重生（ch1450：树神的信息态重生机制）
 
         public static void Load()
         {
@@ -248,40 +254,48 @@ namespace SuperMech.Code
 
         // ========== 圣所复活（ch1134：圣所功能之一是复苏死者） ==========
 
-        /// <summary>定期追踪死者：快照存活单位，消失的自动加入可复活列表。</summary>
+        /// <summary>定期追踪死者：S阶进圣所复活列表，X阶触发信息态重生。</summary>
         public static void TickDeadTracking()
         {
             var alive = World.world.units.units_only_alive;
             if (alive == null) return;
             var aliveIds = new HashSet<long>();
 
-            // 快照所有存活超能者
             foreach (Actor a in alive)
             {
                 if (a == null) continue;
                 aliveIds.Add(a.id);
-                if (SuperMechAdvancement.IsSuperMechUnit(a) && SuperMechAdvancement.GetRankIndex(a) >= 10) // S阶（超A）以上才记录可复活
+                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                int rankIdx = SuperMechAdvancement.GetRankIndex(a);
+
+                var rec = new DeadUnitRecord
                 {
-                    _aliveSnapshot[a.id] = new DeadUnitRecord
-                    {
-                        name = a.Name ?? "未知",
-                        classTrait = GetClassTrait(a),
-                        branchTrait = SuperMechBranch.GetBranchTrait(a),
-                        stage = SuperMechStage.GetStage(a),
-                        rankIndex = SuperMechAdvancement.GetRankIndex(a),
-                        qi = SuperMechQi.GetQi(a),
-                        qiAttribute = SuperMechQiAttribute.GetAttribute(a),
-                        diedAt = 0
-                    };
+                    name = a.Name ?? "未知",
+                    classTrait = GetClassTrait(a),
+                    branchTrait = SuperMechBranch.GetBranchTrait(a),
+                    stage = SuperMechStage.GetStage(a),
+                    rankIndex = rankIdx,
+                    qi = SuperMechQi.GetQi(a),
+                    qiAttribute = SuperMechQiAttribute.GetAttribute(a),
+                    diedAt = 0
+                };
+
+                if (rankIdx >= 10 && rankIdx < DivineRankIndex)
+                {
+                    // S/S+/SS阶：圣所可复活
+                    _aliveSnapshot[a.id] = rec;
+                }
+                else if (rankIdx >= DivineRankIndex)
+                {
+                    // X阶（超神级）：信息态重生追踪
+                    _divineSnapshot[a.id] = rec;
                 }
             }
 
-            // 找出刚死亡的单位
+            // S阶死者 → 圣所复活列表
             var deadIds = new List<long>();
             foreach (var kv in _aliveSnapshot)
-            {
                 if (!aliveIds.Contains(kv.Key)) deadIds.Add(kv.Key);
-            }
             foreach (long id in deadIds)
             {
                 var rec = _aliveSnapshot[id];
@@ -289,7 +303,59 @@ namespace SuperMech.Code
                 _deadUnits.Insert(0, rec);
                 _aliveSnapshot.Remove(id);
                 if (_deadUnits.Count > MaxDeadRecords) _deadUnits.RemoveAt(_deadUnits.Count - 1);
-                Debug.Log($"[超神机械师] {rec.name} 已死亡，圣所记录可复活（{_deadUnits.Count}/{MaxDeadRecords}）");
+                Debug.Log($"[超神机械师] {rec.name}（S阶）已死亡，圣所记录可复活");
+            }
+
+            // X阶死者 → 信息态重生
+            var divineDead = new List<long>();
+            foreach (var kv in _divineSnapshot)
+                if (!aliveIds.Contains(kv.Key)) divineDead.Add(kv.Key);
+            foreach (long id in divineDead)
+            {
+                var rec = _divineSnapshot[id];
+                _divineSnapshot.Remove(id);
+                if (_divineCooldown.Contains(id)) continue;
+                // 信息态重生：在随机位置重新生成，保留全部能力
+                DivineRebirth(rec);
+                _divineCooldown.Add(id);
+            }
+        }
+
+        /// <summary>超神级信息态重生（ch1450：在其他地方重新生成）。</summary>
+        private static void DivineRebirth(DeadUnitRecord rec)
+        {
+            try
+            {
+                // 找随机可走地块
+                WorldTile tile = null;
+                for (int attempt = 0; attempt < 50; attempt++)
+                {
+                    int rx = UnityEngine.Random.Range(5, World.world.world.width - 5);
+                    int ry = UnityEngine.Random.Range(5, World.world.world.height - 5);
+                    WorldTile t = World.world.world.GetTile(rx, ry);
+                    if (t != null && t.Type != null && t.Type.ground) { tile = t; break; }
+                }
+                if (tile == null) return;
+
+                Actor a = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
+                if (a == null) return;
+
+                // 恢复全部数据（信息态重生不削弱）
+                if (!string.IsNullOrEmpty(rec.classTrait)) a.addTrait(rec.classTrait);
+                if (!string.IsNullOrEmpty(rec.branchTrait)) a.addTrait(rec.branchTrait);
+                if (rec.stage > 0) SuperMechStage.SetStage(a, rec.stage);
+                if (rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count)
+                    a.addTrait(SuperMechRanks.All[rec.rankIndex].id);
+                SuperMechQi.SetQi(a, rec.qi);
+                if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
+                    SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
+                a.addTrait("sm_divinity_ascended");
+
+                Debug.Log($"[超神机械师] {rec.name}（超神级）信息态重生！在新位置重新生成");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 信息态重生异常: " + e.Message);
             }
         }
 
