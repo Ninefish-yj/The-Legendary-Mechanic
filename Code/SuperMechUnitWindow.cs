@@ -56,9 +56,11 @@ namespace SuperMech.Code
                 }
                 else
                 {
-                    // 其他四系显示知识树名（百度百科：御气技巧树/基因树/魔法知识树/精神修炼树）
+                    // 其他四系显示职业树名+已解锁知识节点数（百度百科：职业树各不相同）
                     string treeName = GetKnowledgeTreeName(cls);
-                    ShowRow(__instance, "知识树", treeName);
+                    string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
+                    int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
+                    ShowRow(__instance, "职业树", $"{treeName}（已解锁{unlocked}节点）");
                 }
 
                 // 行4：气力/械力（原著面板格式：128,452【Lv19】）

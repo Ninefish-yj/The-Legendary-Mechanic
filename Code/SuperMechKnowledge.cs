@@ -203,5 +203,31 @@ namespace SuperMech.Code
             }
             return n;
         }
+
+        /// <summary>统计单位已解锁的知识节点数（按系前缀）。</summary>
+        public static int GetUnlockedCount(Actor a, string prefix)
+        {
+            if (a == null || a.traits == null) return 0;
+            int count = 0;
+            string key = "sm_know_" + prefix + "_";
+            foreach (var t in a.traits)
+            {
+                if (t.id != null && t.id.StartsWith(key)) count++;
+            }
+            return count;
+        }
+
+        /// <summary>获取系对应的知识树前缀。</summary>
+        public static string GetPrefixForClass(string cls)
+        {
+            switch (cls)
+            {
+                case "武道系": return "martial";
+                case "异能系": return "psi";
+                case "魔法系": return "mage";
+                case "念力系": return "mind";
+                default: return "mech";
+            }
+        }
     }
 }
