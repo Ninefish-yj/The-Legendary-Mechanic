@@ -197,23 +197,36 @@ namespace SuperMech.Code
             public string id;
             public string name;
             public string desc;
-            public bool isWonder; // true=宇宙奇观（天然），false=人造宇宙宝物
+            public bool isWonder;   // true=宇宙奇观，false=人造宇宙宝物
+            public string wonderType; // 奇观类型：天然/变异/系统级
             public float dmgMul;
             public float hpMul;
         }
 
-        // 原著出现的宇宙宝物（ch1008列举）
+        // 原著出现的宇宙宝物与宇宙奇观
+        // ch1008：宇宙宝物分人造（秘法之殿等）和天然宇宙奇观（时空琥珀等）
+        // ch1172：宇宙奇观具有"绝对性"，巅峰超A也损伤不了
+        // ch1082/ch1403：制造宇宙宝物有微小几率变异成宇宙奇观
         public static readonly List<CosmicRelicDef> Relics = new List<CosmicRelicDef>
         {
-            // 人造宇宙宝物
-            new CosmicRelicDef { id="sm_cr_secret_hall", name="秘法之殿", desc="ch1008奥斯汀的人造宇宙宝物，法师圣地。", isWonder=false, dmgMul=20f, hpMul=15f },
-            new CosmicRelicDef { id="sm_cr_fire_core", name="火核之地", desc="ch1008贝奥尼的人造宇宙宝物。", isWonder=false, dmgMul=20f, hpMul=15f },
-            new CosmicRelicDef { id="sm_cr_teleporter", name="高维天启传送器", desc="ch1008光辉联邦的战略级人造宇宙宝物。", isWonder=false, dmgMul=15f, hpMul=20f },
-            new CosmicRelicDef { id="sm_cr_wand", name="万神权杖", desc="ch1008虚灵教派的人造宇宙宝物。", isWonder=false, dmgMul=22f, hpMul=12f },
-            new CosmicRelicDef { id="sm_cr_shadow_lamp", name="暗影提灯", desc="ch1008灯芯是暗影维度源能碎片，可打开维度门户。", isWonder=false, dmgMul=18f, hpMul=18f },
-            new CosmicRelicDef { id="sm_cr_evolution_cube", name="进化方块", desc="ch740激发物种潜力，西斯科用它完成超A物种蜕变。", isWonder=false, dmgMul=15f, hpMul=25f },
-            // 天然宇宙奇观（最顶级）
-            new CosmicRelicDef { id="sm_cr_amber", name="时空琥珀", desc="ch1008最顶级的无解宇宙奇观，可封印时空。", isWonder=true, dmgMul=50f, hpMul=50f },
+            // ===== 人造宇宙宝物 =====
+            new CosmicRelicDef { id="sm_cr_secret_hall", name="秘法之殿", desc="ch1008奥斯汀的人造宇宙宝物，法师圣地。", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
+            new CosmicRelicDef { id="sm_cr_fire_core", name="火核之地", desc="ch1008贝奥尼的人造宇宙宝物。", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
+            new CosmicRelicDef { id="sm_cr_teleporter", name="高维天启传送器", desc="ch1008光辉联邦的战略级人造宇宙宝物。", isWonder=false, wonderType="", dmgMul=15f, hpMul=20f },
+            new CosmicRelicDef { id="sm_cr_wand", name="万神权杖", desc="ch1008虚灵教派的人造宇宙宝物。", isWonder=false, wonderType="", dmgMul=22f, hpMul=12f },
+            new CosmicRelicDef { id="sm_cr_shadow_lamp", name="暗影提灯", desc="ch1008灯芯是暗影维度源能碎片，可打开维度门户。", isWonder=false, wonderType="", dmgMul=18f, hpMul=18f },
+            new CosmicRelicDef { id="sm_cr_evolution_cube", name="进化方块", desc="ch740激发物种潜力，西斯科用它完成超A物种蜕变。", isWonder=false, wonderType="", dmgMul=15f, hpMul=25f },
+
+            // ===== 宇宙奇观（具有"绝对性"，ch1172）=====
+            // 天然宇宙奇观
+            new CosmicRelicDef { id="sm_cr_amber", name="时空琥珀", desc="ch1008最经典的无解宇宙奇观，可封印时空。十个巅峰超A合力也损伤不了分毫。", isWonder=true, wonderType="天然", dmgMul=50f, hpMul=50f },
+            new CosmicRelicDef { id="sm_cr_loop_spacetime", name="循环时空", desc="ch1217独一份的次级维度宇宙奇观，源能碎片培育出的循环时空，无法复制。", isWonder=true, wonderType="天然", dmgMul=30f, hpMul=40f },
+            // 变异宇宙奇观（人造物变异而成）
+            new CosmicRelicDef { id="sm_cr_soul_transfer", name="转魂仪", desc="ch1181摩多文明的宇宙奇观，可随意转移灵魂并无视排异。原为人工产物，变异后与次级维度产生联系。只有转魂双子能发挥其能力。", isWonder=true, wonderType="变异", dmgMul=35f, hpMul=35f },
+            // 系统级宇宙奇观（非物品，是维度/系统）
+            new CosmicRelicDef { id="sm_cr_world_tree", name="世界树", desc="ch1333性质独特的宇宙奇观，拥有意志同时具备工具属性，有信息态能力，统计无数物体合成表。被命运之子称为'天敌'。", isWonder=true, wonderType="系统级", dmgMul=60f, hpMul=60f },
+            new CosmicRelicDef { id="sm_cr_sanctuary", name="圣所", desc="ch1225推测为信息态方面的宇宙奇观，具有记录超A级信息的功能，可复活超A级。", isWonder=true, wonderType="系统级", dmgMul=40f, hpMul=45f },
+            new CosmicRelicDef { id="sm_cr_underworld", name="冥土", desc="ch1258经两姐妹完善后近似宇宙奇观级的宝物，灵魂维度，运行机制完善，全盛状态可压制巅峰超A。", isWonder=true, wonderType="系统级", dmgMul=35f, hpMul=45f },
         };
 
         private static readonly Dictionary<long, string> _equipped = new Dictionary<long, string>();
@@ -222,7 +235,7 @@ namespace SuperMech.Code
         {
             foreach (var r in Relics)
             {
-                string typeName = r.isWonder ? "宇宙奇观" : "宇宙宝物";
+                string typeName = r.isWonder ? $"宇宙奇观（{r.wonderType}）" : "宇宙宝物";
                 LocalizedTextManager.add("trait_" + r.id, r.name, pReplace: true);
                 LocalizedTextManager.add("trait_" + r.id + "_info",
                     $"{typeName}（原著）。{r.desc}", pReplace: true);
@@ -264,7 +277,8 @@ namespace SuperMech.Code
             AssetManager.powers.add(givePower);
             LocalizedTextManager.add("power_sm_give_cosmic_relic", "赐予宇宙宝物", pReplace: true);
 
-            Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（含1件宇宙奇观）");
+            int wonderCount = Relics.FindAll(r => r.isWonder).Count;
+            Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（人造宇宙宝物{Relics.Count - wonderCount}件 + 宇宙奇观{wonderCount}件）");
         }
 
         /// <summary>装备宇宙宝物（同时只能有一件，高级替换低级）。</summary>
