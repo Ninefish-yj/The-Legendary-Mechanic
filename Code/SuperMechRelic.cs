@@ -6,29 +6,35 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 宇宙宝物/装备品质系统（原著）：
-    /// 品质从低到高：劣质灰→普通白→良好绿→优质蓝→极佳紫→珍稀粉→传说橙→神器红→金装（宇宙宝物）
-    /// 战斗中概率掉落宝物，品质随击杀者阶位提升。
-    /// 同时只能装备一个品质（高级替换低级）。
+    /// 装备品质系统（原著）：
+    /// 品质从低到高：劣质灰→普通白→良好绿→优质蓝→极佳紫→珍稀粉→传说橙→神器红→金色（宇宙宝物级）→银橙（使徒兵器级）→宇宙奇观级
+    /// 原著ch1040："金色品质，便代表着宇宙宝物级的装备"
+    /// 原著ch1046：银橙色品质=使徒兵器伴生武器（幽祖战矛）
+    /// 原著ch1008："最顶级的是一些无解的宇宙奇观，比如时空琥珀"，宇宙奇观>宇宙宝物
+    /// 宇宙宝物为人造（秘法之殿/火核之地/万神权杖/高维天启传送器等），宇宙奇观为天然无解存在（时空琥珀等）。
+    /// 战斗中概率掉落装备，品质随击杀者阶位提升。同时只能装备一个品质（高级替换低级）。
     /// </summary>
     public static class SuperMechRelic
     {
-        // 品质从低到高
-        public const string QGray   = "sm_relic_gray";    // 劣质灰
-        public const string QWhite   = "sm_relic_white";   // 普通白
-        public const string QGreen   = "sm_relic_green";   // 良好绿
-        public const string QBlue    = "sm_relic_blue";    // 优质蓝
+        // 品质从低到高（原著品质色）
+        public const string QGray    = "sm_relic_gray";     // 劣质灰
+        public const string QWhite   = "sm_relic_white";    // 普通白
+        public const string QGreen   = "sm_relic_green";    // 良好绿
+        public const string QBlue    = "sm_relic_blue";     // 优质蓝
         public const string QPurple  = "sm_relic_purple";   // 极佳紫
-        public const string QPink    = "sm_relic_pink";    // 珍稀粉
-        public const string QOrange  = "sm_relic_orange";  // 传说橙
-        public const string QRed     = "sm_relic_red";     // 神器红
-        public const string QGold    = "sm_relic_gold";    // 金装（宇宙宝物）
+        public const string QPink    = "sm_relic_pink";     // 珍稀粉
+        public const string QOrange  = "sm_relic_orange";   // 传说橙
+        public const string QRed     = "sm_relic_red";      // 神器红
+        public const string QGold    = "sm_relic_gold";     // 金色=宇宙宝物级（ch1040）
+        public const string QSilver  = "sm_relic_silver";   // 银橙=使徒兵器级（ch1046）
+        public const string QWonder  = "sm_relic_wonder";   // 宇宙奇观级（ch1008最顶级）
 
         public static readonly string[] QualityOrder = {
-            QGray, QWhite, QGreen, QBlue, QPurple, QPink, QOrange, QRed, QGold
+            QGray, QWhite, QGreen, QBlue, QPurple, QPink, QOrange, QRed, QGold, QSilver, QWonder
         };
         public static readonly string[] QualityNames = {
-            "劣质灰", "普通白", "良好绿", "优质蓝", "极佳紫", "珍稀粉", "传说橙", "神器红", "金装"
+            "劣质灰", "普通白", "良好绿", "优质蓝", "极佳紫", "珍稀粉", "传说橙", "神器红",
+            "金色·宇宙宝物", "银橙·使徒兵器", "宇宙奇观"
         };
 
         // 上次生命值（检测战斗结束）
@@ -46,9 +52,11 @@ namespace SuperMech.Code
             AddRelic(QPink,   "珍稀粉装", 3.0f, 2.8f);
             AddRelic(QOrange, "传说橙装", 4.5f, 4.0f);
             AddRelic(QRed,    "神器红装", 7.0f, 6.0f);
-            AddRelic(QGold,   "金装（宇宙宝物）", 15.0f, 12.0f);
+            AddRelic(QGold,   "金色·宇宙宝物级", 15.0f, 12.0f);  // ch1040：金色=宇宙宝物级
+            AddRelic(QSilver, "银橙·使徒兵器级", 25.0f, 20.0f);  // ch1046：银橙=使徒兵器伴生武器
+            AddRelic(QWonder, "宇宙奇观级", 50.0f, 40.0f);       // ch1008：最顶级，时空琥珀级
 
-            // 注册"赐予宇宙宝物"神权
+            // 注册"赐予宇宙宝物（金装）"神权
             var givePower = new GodPower
             {
                 id = "sm_give_relic_gold",
@@ -64,13 +72,13 @@ namespace SuperMech.Code
             givePower.click_action += (WorldTile tile, string powerId) =>
             {
                 if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { EquipRelic(a, 8); });
+                tile.doUnits(delegate (Actor a) { EquipRelic(a, 8); }); // index 8 = 金色宇宙宝物级
                 return true;
             };
             AssetManager.powers.add(givePower);
             LocalizedTextManager.add("power_sm_give_relic_gold", "赐予宇宙宝物（金装）", pReplace: true);
 
-            Debug.Log("[超神机械师] 宇宙宝物系统注册完成：9级品质+战斗掉落");
+            Debug.Log("[超神机械师] 装备品质系统注册完成：11级品质（灰→宇宙奇观）");
         }
 
         /// <summary>每tick：战斗中概率掉落宝物。</summary>
@@ -123,8 +131,8 @@ namespace SuperMech.Code
             float dropChance = 0.1f + rank * 0.02f;
             if (Random.value > dropChance) return;
 
-            // 品质roll：基础0-3，阶位越高roll上限越高
-            int maxQuality = Mathf.Min(3 + rank / 2, 8);
+            // 品质roll：基础0-3，阶位越高roll上限越高（最高宇宙奇观级index10）
+            int maxQuality = Mathf.Min(3 + rank / 2, 10);
             int quality = Random.Range(0, maxQuality + 1);
 
             EquipRelic(a, quality);
