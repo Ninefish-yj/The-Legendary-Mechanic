@@ -279,7 +279,9 @@ namespace SuperMech.Code
                 if (Random.value < 0.1f && a.data.health > 1f)
                 {
                     a.data.health = 0f;
-                    Debug.Log($"[超神机械师] {a.Name} 突破失败，恶性变异致死！");
+                    // ch1396/ch1399：突破失败死亡者化身为超神遗力，无法圣所复苏
+                    SuperMechSanctuary.MarkTranscendenceFailed(a);
+                    Debug.Log($"[超神机械师] {a.Name} 突破失败，恶性变异致死！化为超神遗力，无法圣所复苏");
                 }
                 else
                 {

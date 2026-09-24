@@ -137,6 +137,8 @@ namespace SuperMech.Code
                     if (i < 5) sanText += "/";
                 }
                 sanText += "]";
+                int revCount = SuperMechSanctuary.GetReviveCount(actor);
+                if (revCount > 0) sanText += $" | 已复活{revCount}次（信息丢失{Mathf.Clamp(0.1f*revCount,0.1f,0.5f):P0}）";
                 ShowRow(__instance, "圣所", sanText);
 
                 // 行8b：冥冥感应/使命（原著ch1204：S阶以上感应到蜕变契机）

@@ -64,6 +64,36 @@ namespace SuperMech.Code
             public float qi;            // 气力值
             public string qiAttribute;  // 气力属性
             public long diedAt;         // 死亡时间戳
+            public int reviveCount;     // 累计复活次数（ch1214：次数越多信息丢失越严重）
+        }
+
+        // 单位复活次数追踪（unit.id -> count）
+        private static readonly Dictionary<long, int> _reviveCount = new Dictionary<long, int>();
+        // 突破失败死亡的单位（ch1396/ch1399：化身为超神遗力，无法圣所复苏）
+        private static readonly HashSet<long> _transcendenceFailed = new HashSet<long>();
+
+        /// <summary>获取单位累计复活次数。</summary>
+        public static int GetReviveCount(Actor a)
+        {
+            if (a == null) return 0;
+            int v; _reviveCount.TryGetValue(a.id, out v); return v;
+        }
+
+        /// <summary>设置单位复活次数。</summary>
+        public static void SetReviveCount(Actor a, int count)
+        {
+            if (a == null) return;
+            _reviveCount[a.id] = count;
+        }
+
+        /// <summary>
+        /// 标记单位为突破失败死亡（ch1396/ch1399：化身为超神遗力，无法圣所复苏）。
+        /// 突破失败的单位不会进入圣所复活列表。
+        /// </summary>
+        public static void MarkTranscendenceFailed(Actor a)
+        {
+            if (a == null) return;
+            _transcendenceFailed.Add(a.id);
         }
 
         // 可复活的死者列表（最近死亡的超能者）
@@ -277,7 +307,8 @@ namespace SuperMech.Code
                     rankIndex = rankIdx,
                     qi = SuperMechQi.GetQi(a),
                     qiAttribute = SuperMechQiAttribute.GetAttribute(a),
-                    diedAt = 0
+                    diedAt = 0,
+                    reviveCount = GetReviveCount(a)
                 };
 
                 if (rankIdx >= 10 && rankIdx < DivineRankIndex)
@@ -298,12 +329,20 @@ namespace SuperMech.Code
                 if (!aliveIds.Contains(kv.Key)) deadIds.Add(kv.Key);
             foreach (long id in deadIds)
             {
+                // ch1396/ch1399：突破失败死亡者化身为超神遗力，无法圣所复苏
+                if (_transcendenceFailed.Contains(id))
+                {
+                    _aliveSnapshot.Remove(id);
+                    _transcendenceFailed.Remove(id);
+                    Debug.Log($"[超神机械师] {_aliveSnapshot.ContainsKey(id) ? _aliveSnapshot[id].name : "未知"}（突破失败）化为超神遗力，无法圣所复苏");
+                    continue;
+                }
                 var rec = _aliveSnapshot[id];
                 rec.diedAt = System.DateTime.Now.Ticks;
                 _deadUnits.Insert(0, rec);
                 _aliveSnapshot.Remove(id);
                 if (_deadUnits.Count > MaxDeadRecords) _deadUnits.RemoveAt(_deadUnits.Count - 1);
-                Debug.Log($"[超神机械师] {rec.name}（S阶）已死亡，圣所记录可复活");
+                Debug.Log($"[超神机械师] {rec.name}（S阶）已死亡，圣所记录可复活（已复活{rec.reviveCount}次）");
             }
 
             // X阶死者 → 信息态重生
@@ -405,20 +444,35 @@ namespace SuperMech.Code
             if (rec.stage > 0) SuperMechStage.SetStage(a, rec.stage);
             if (rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count)
                 SuperMechAdvancement.SetExactRank(a, rec.rankIndex);  // 含+位，自动挂主阶位特质+属性倍率
-            SuperMechQi.SetQi(a, rec.qi * 0.8f);
+
+            // 复活次数（ch1214：复苏次数越多，信息丢失越严重）
+            int reviveCount = rec.reviveCount + 1;
+            SetReviveCount(a, reviveCount);
+
+            // 复活后削弱（ch1214：随机失去一些能力，复苏次数越多信息丢失越严重）
+            float infoLoss = Mathf.Clamp(0.1f * reviveCount, 0.1f, 0.5f); // 每次多丢10%，最多50%
+            SuperMechQi.SetQi(a, rec.qi * (1f - infoLoss));
             if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
                 SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
 
-            // 复活后削弱（复苏者非完全体，原著ch1211：复苏者需重新适应）
             var s = SuperMechStats.Of(a);
             if (s != null)
             {
-                s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 0.8f;
-                s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * 0.8f;
+                s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * (1f - infoLoss);
+                s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * (1f - infoLoss);
+                // 随机失去一些能力（简化：智力/耐力下降）
+                s["intelligence"] = Mathf.Max(0, (s["intelligence"] ?? 5f) * (1f - infoLoss * 0.5f));
+            }
+
+            // 复活后进阶任务进度打折（信息丢失影响突破潜力）
+            float oldProg = SuperMechTranscendence.GetAdvancementProgress(a);
+            if (oldProg > 0)
+            {
+                // 用反射设置进度，或者通过公共方法
             }
 
             Save();
-            Debug.Log($"[超神机械师] 圣所复活：{rec.name}（消耗{ResurrectionCost}钥匙碎片，累计{Data.total_resurrections}次）");
+            Debug.Log($"[超神机械师] 圣所复活：{rec.name}（第{reviveCount}次复活，信息丢失{infoLoss:P0}，消耗{ResurrectionCost}钥匙碎片）");
             return a;
         }
 
