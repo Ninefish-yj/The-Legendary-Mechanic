@@ -253,7 +253,7 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 aliveIds.Add(a.id);
-                if (SuperMechAdvancement.IsSuperMechUnit(a) && SuperMechAdvancement.GetRankIndex(a) >= 3) // D阶以上才记录
+                if (SuperMechAdvancement.IsSuperMechUnit(a) && SuperMechAdvancement.GetRankIndex(a) >= 10) // S阶（超A）以上才记录可复活
                 {
                     _aliveSnapshot[a.id] = new DeadUnitRecord
                     {
@@ -335,21 +335,16 @@ namespace SuperMech.Code
                 string rankId = SuperMechRanks.All[rec.rankIndex].id;
                 a.addTrait(rankId);
             }
-            SuperMechQi.SetQi(a, rec.qi * 0.8f);
+            SuperMechQi.SetQi(a, rec.qi * 0.8f);  // 复活后气力削弱为80%
             if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
                 SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
 
-            // 对应系圣所已解锁 → 复活后额外加成（知识分区优势）
-            int sancIdx = GetSanctuaryForClass(rec.classTrait);
-            if (sancIdx >= 0 && (Data.unlocked_sanctuaries & (1 << sancIdx)) != 0)
+            // 复活后削弱（复苏者非完全体，原著ch1211：复苏者需重新适应）
+            var s = SuperMechStats.Of(a);
+            if (s != null)
             {
-                var s = SuperMechStats.Of(a);
-                if (s != null)
-                {
-                    s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 1.15f;
-                    s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * 1.15f;
-                }
-                Debug.Log($"[超神机械师] {SanctuaryNames[sancIdx]}知识分区加成：伤害+15%生命+15%");
+                s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 0.8f;
+                s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * 0.8f;
             }
 
             Save();

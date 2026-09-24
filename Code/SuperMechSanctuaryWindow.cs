@@ -74,15 +74,15 @@ namespace SuperMech.Code
             _frame.AddLabel($"碎片:{total}  解锁:{unlockedCount}/6  钥匙:{data.key_fragments}  复活:{data.total_resurrections}次", x, y, 540f, 18f, 12);
             y -= 24f;
 
-            // ===== 圣所复活（ch1134：每个圣所都有复活权限，知识分区不同）=====
-            _frame.AddLabel("◆ 圣所复活（任意圣所解锁+5钥匙，对应系圣所解锁有+15%加成）", x, y, 540f, 20f, 13);
+            // ===== 圣所复活（ch1134：每个圣所都有复活权限，仅S阶以上可复活，复活后有削弱）=====
+            _frame.AddLabel("◆ 圣所复活（任意圣所解锁+5钥匙，仅S阶以上，复活后气力80%/伤害-20%/生命-20%）", x, y, 540f, 20f, 13);
             y -= 26f;
 
             bool canRes = SuperMechSanctuary.CanResurrect();
             var deadList = SuperMechSanctuary.GetDeadList();
             if (deadList.Count == 0)
             {
-                _frame.AddLabel("暂无死者记录（D阶以上超能者死亡后自动记录）", x, y, 540f, 18f, 11);
+                _frame.AddLabel("暂无死者记录（S阶以上超能者死亡后自动记录）", x, y, 540f, 18f, 11);
                 y -= 24f;
             }
             else
