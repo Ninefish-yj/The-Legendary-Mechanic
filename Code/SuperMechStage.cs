@@ -30,13 +30,34 @@ namespace SuperMech.Code
             return 0;
         }
 
-        /// <summary>获取单位职业阶段名称。</summary>
+        /// <summary>获取单位职业阶段名称（对所有五系生效）。</summary>
         public static string GetStageName(Actor a)
         {
-            int s = GetStage(a);
-            if (s <= 0) return "未入门";
-            if (s > StageNames.Length) return StageNames[StageNames.Length - 1];
-            return StageNames[s - 1];
+            if (a == null) return "—";
+            // 机械系：14阶段转职链
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+            {
+                int s = GetStage(a);
+                if (s <= 0) return "未入门";
+                if (s > StageNames.Length) return StageNames[StageNames.Length - 1];
+                return StageNames[s - 1];
+            }
+            // 异能系：基因链5阶
+            if (a.hasTrait(SuperMechTraits.ClassPsi))
+                return SuperMechCorePower.GetGeneStageName(a);
+            // 魔法系：魔力池5层
+            if (a.hasTrait(SuperMechTraits.ClassMage))
+                return SuperMechCorePower.GetManaStageName(a);
+            // 念力系：精神力5阶
+            if (a.hasTrait(SuperMechTraits.ClassMind))
+                return SuperMechCorePower.GetMindStageName(a);
+            // 武道系：气力等级即阶段
+            if (a.hasTrait(SuperMechTraits.ClassMartial))
+            {
+                int lv = SuperMechQi.GetLevel(SuperMechQi.GetQi(a));
+                return lv > 0 ? $"气力Lv{lv}" : "气力未入流";
+            }
+            return "未觉醒";
         }
 
         /// <summary>设置单位职业阶段（转职时调用）。</summary>

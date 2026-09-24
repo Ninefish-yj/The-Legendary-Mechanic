@@ -133,6 +133,36 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>获取异能系当前基因链阶段名。</summary>
+        public static string GetGeneStageName(Actor a)
+        {
+            for (int lv = GeneChainNames.Length; lv >= 1; lv--)
+            {
+                if (a.hasTrait(GeneChainId(lv))) return GeneChainNames[lv - 1];
+            }
+            return "基因未觉醒";
+        }
+
+        /// <summary>获取魔法系当前魔力池阶段名。</summary>
+        public static string GetManaStageName(Actor a)
+        {
+            for (int lv = ManaTierNames.Length; lv >= 1; lv--)
+            {
+                if (a.hasTrait(ManaTierId(lv))) return ManaTierNames[lv - 1];
+            }
+            return "魔力未觉醒";
+        }
+
+        /// <summary>获取念力系当前精神力阶段名。</summary>
+        public static string GetMindStageName(Actor a)
+        {
+            for (int lv = MindTierNames.Length; lv >= 1; lv--)
+            {
+                if (a.hasTrait(MindTierId(lv))) return MindTierNames[lv - 1];
+            }
+            return "精神未觉醒";
+        }
+
         private static int CalcTier(float value, float[] thresholds)
         {
             int lv = 1;

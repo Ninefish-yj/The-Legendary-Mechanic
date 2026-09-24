@@ -140,14 +140,7 @@ namespace SuperMech.Code
 
         private static string GetStage(Actor a, string cls)
         {
-            if (cls == "机械系")
-            {
-                return SuperMechStage.GetStageName(a);
-            }
-            // 其他四系：显示核心能量等级
-            float qi = SuperMechQi.GetQi(a);
-            int lv = SuperMechQi.GetLevel(qi);
-            return lv > 0 ? $"气力Lv{lv}" : "气力未入流";
+            return SuperMechStage.GetStageName(a);
         }
 
         private static bool HasTrait(Actor a, string traitId)
