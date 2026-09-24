@@ -62,6 +62,9 @@ namespace SuperMech
 
             if (!SuperMechConfig.ModEnabled) return;
 
+            // 面板窗口每帧检测单位变化
+            try { SuperMechPanel.Tick(); } catch { }
+
             _promoTimer += Time.deltaTime;
             if (_promoTimer >= SuperMechConfig.TickInterval)
             {

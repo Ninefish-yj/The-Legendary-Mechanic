@@ -1,0 +1,321 @@
+using System;
+using System.Collections.Generic;
+using NeoModLoader.General;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace SuperMech.Code
+{
+    /// <summary>
+    /// 超能者面板窗口：整合所有单位操作（觉醒/分支/制造/知识/修炼/查看）。
+    /// 参考蛊真人模式：不用"点单位神权"，改用窗口管理单位。
+    /// 自动读取 MoveCamera.getFocusUnit() 当前选中单位。
+    /// </summary>
+    public static class SuperMechPanel
+    {
+        private static SMWindowFrame _frame;
+        private static Actor _currentUnit;
+        private static float _refreshTimer;
+
+        // 五系定义
+        private static readonly (string trait, string name, Color color)[] Classes =
+        {
+            (SuperMechTraits.ClassMech, "机械系", new Color(0.3f, 0.5f, 0.9f)),
+            (SuperMechTraits.ClassMartial, "武道系", new Color(0.9f, 0.3f, 0.3f)),
+            (SuperMechTraits.ClassPsi, "异能系", new Color(0.3f, 0.9f, 0.5f)),
+            (SuperMechTraits.ClassMage, "魔法系", new Color(0.7f, 0.3f, 0.9f)),
+            (SuperMechTraits.ClassMind, "念力系", new Color(0.9f, 0.7f, 0.3f)),
+        };
+
+        public static void Show()
+        {
+            if (_frame == null) Init();
+            if (_frame == null) return;
+            _frame.Show();
+            Refresh();
+        }
+
+        private static void Init()
+        {
+            try
+            {
+                _frame = SMWindowFrame.Create("超神机械师·超能者面板", 720f, 640f);
+                if (_frame == null) return;
+                Debug.Log("[超神机械师] 超能者面板窗口创建成功");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[超神机械师] 超能者面板初始化失败: " + e.Message);
+            }
+        }
+
+        /// <summary>每帧检测单位变化，自动刷新。</summary>
+        public static void Tick()
+        {
+            if (_frame == null || !_frame.IsVisible) return;
+            _refreshTimer += Time.deltaTime;
+            if (_refreshTimer < 0.5f) return;
+            _refreshTimer = 0f;
+
+            Actor focus = MoveCamera.getFocusUnit();
+            if (focus != _currentUnit)
+            {
+                _currentUnit = focus;
+                Refresh();
+            }
+        }
+
+        private static void Refresh()
+        {
+            if (_frame == null) return;
+            _frame.ClearContent();
+            Actor a = MoveCamera.getFocusUnit();
+            _currentUnit = a;
+
+            float y = -8f;
+            const float leftX = 12f;
+            const float colW = 340f;
+
+            if (a == null || a.isDead())
+            {
+                _frame.AddLabel("请在地图上点击选中一个单位", leftX, y, 680f, 30f, 16, TextAnchor.MiddleCenter);
+                return;
+            }
+
+            // —— 单位基本信息 ——
+            string className = GetClassName(a);
+            _frame.AddLabel($"【{a.Name}】 {className}", leftX, y, 680f, 28f, 18, TextAnchor.MiddleLeft);
+            y -= 32f;
+
+            // 阶位/职业阶段/气力/欧纳
+            string rank = SuperMechRanks.GetRankName(a);
+            string stage = GetMechStageName(a);
+            int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQi(a));
+            float qiVal = SuperMechQi.GetQi(a);
+            float onar = SuperMechAdvancement.CalcOnar(a);
+            string branch = SuperMechBranch.GetBranchName(a);
+
+            _frame.AddLabel($"阶位: {rank}    职业阶段: {stage}", leftX, y, colW, 22f, 13);
+            _frame.AddLabel($"气力: Lv{qiLv} ({qiVal:F0})    欧纳: {onar:F0}", leftX + colW, y, colW, 22f, 13);
+            y -= 26f;
+
+            _frame.AddLabel($"分支: {branch}    潜能点: {SuperMechPotential.GetPotential(a)}", leftX, y, colW, 22f, 13);
+            string subText = SuperMechSubClass.GetSubLevelText(a);
+            _frame.AddLabel($"副职业: {(string.IsNullOrEmpty(subText)?"无":subText)}", leftX + colW, y, colW, 22f, 13);
+            y -= 26f;
+
+            string relic = SuperMechRelic.GetCurrentRelicName(a);
+            bool divine = SuperMechSanctuary.HasDivineTransformation(a);
+            _frame.AddLabel($"宝物: {relic}    神性蜕变: {(divine?"已蜕变":"未蜕变")}", leftX, y, 680f, 22f, 13);
+            y -= 34f;
+
+            // —— 分割线 ——
+            _frame.AddLabel("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", leftX, y, 680f, 16f, 10);
+            y -= 22f;
+
+            // —— 觉醒区（未觉醒时显示5系按钮）——
+            if (!SuperMechAdvancement.IsSuperMechUnit(a))
+            {
+                _frame.AddLabel("◆ 觉醒（选择一系）", leftX, y, 200f, 22f, 14);
+                y -= 28f;
+                for (int i = 0; i < Classes.Length; i++)
+                {
+                    int idx = i;
+                    float bx = leftX + (i % 3) * 115f;
+                    if (i >= 3) bx = leftX + (i - 3) * 115f;
+                    _frame.AddButton(Classes[idx].name, bx, y, 105f, 30f, () =>
+                    {
+                        a.addTrait(Classes[idx].trait);
+                        Debug.Log($"[超神机械师] {a.Name} 觉醒 {Classes[idx].name}");
+                        Refresh();
+                    }, Classes[idx].color);
+                }
+                y -= 40f;
+            }
+            else
+            {
+                // —— 分支选择（已觉醒未选分支时）——
+                if (branch == "未选择" && CanSelectBranch(a))
+                {
+                    _frame.AddLabel("◆ 转职·选择分支", leftX, y, 200f, 22f, 14);
+                    y -= 28f;
+                    var branches = GetBranchesForClass(a);
+                    for (int i = 0; i < branches.Count; i++)
+                    {
+                        int idx = i;
+                        _frame.AddButton(branches[idx].name, leftX + i * 115f, y, 105f, 30f, () =>
+                        {
+                            a.addTrait(branches[idx].traitId);
+                            var stats = SuperMechStats.Of(a);
+                            if (stats != null) branches[idx].applyBonus(stats);
+                            // 机械系：选完分支自动晋升磁环
+                            if (a.hasTrait(SuperMechTraits.ClassMech) && GetMechStageTier(a) == 3)
+                            {
+                                a.addTrait(SuperMechTraits.MechMagnet);
+                            }
+                            Debug.Log($"[超神机械师] {a.Name} 转职 {branches[idx].name}");
+                            Refresh();
+                        });
+                    }
+                    y -= 40f;
+                }
+
+                // —— 机械系制造 ——
+                if (a.hasTrait(SuperMechTraits.ClassMech))
+                {
+                    _frame.AddLabel("◆ 制造（机械系）", leftX, y, 200f, 22f, 14);
+                    y -= 28f;
+                    string[] crafts = { "游骑兵", "侦察无人机", "战斗机甲", "战争堡垒", "虚拟生命体" };
+                    string[] craftIds = { "sm_craft_ranger", "sm_craft_drone", "sm_craft_mech", "sm_craft_fortress", "sm_craft_virtual" };
+                    for (int i = 0; i < crafts.Length; i++)
+                    {
+                        int idx = i;
+                        _frame.AddButton(crafts[idx], leftX + (idx % 3) * 115f, y - (idx / 3) * 34f, 105f, 28f, () =>
+                        {
+                            var p = AssetManager.powers.get(craftIds[idx]);
+                            if (p != null) p.click_action?.Invoke(a.current_tile, craftIds[idx]);
+                            Refresh();
+                        });
+                    }
+                    y -= (crafts.Length > 3 ? 68f : 34f);
+                    y -= 10f;
+                }
+
+                // —— 知识解锁 ——
+                _frame.AddLabel("◆ 知识树解锁（消耗潜能点）", leftX, y, 280f, 22f, 14);
+                y -= 28f;
+                string[] knowNames = { "武装系", "能量系", "虚拟系" };
+                string[] knowIds = { SuperMechPowers.UnlockArmed, SuperMechPowers.UnlockEnergy, SuperMechPowers.UnlockVirtual };
+                for (int i = 0; i < knowNames.Length; i++)
+                {
+                    int idx = i;
+                    _frame.AddButton(knowNames[idx], leftX + idx * 115f, y, 105f, 28f, () =>
+                    {
+                        var p = AssetManager.powers.get(knowIds[idx]);
+                        if (p != null) p.click_action?.Invoke(a.current_tile, knowIds[idx]);
+                        Refresh();
+                    });
+                }
+                y -= 38f;
+
+                // —— 修炼功法 ——
+                _frame.AddLabel("◆ 传授功法", leftX, y, 200f, 22f, 14);
+                y -= 28f;
+                string[] cultNames = { "基因共鸣(异能)", "冥想(魔法)", "心灵锻炼(念力)" };
+                string[] cultIds = { "sm_give_sm_pcult_resonance", "sm_give_sm_pcult_meditation", "sm_give_sm_pcult_mind_train" };
+                for (int i = 0; i < cultNames.Length; i++)
+                {
+                    int idx = i;
+                    _frame.AddButton(cultNames[idx], leftX + idx * 155f, y, 145f, 28f, () =>
+                    {
+                        var p = AssetManager.powers.get(cultIds[idx]);
+                        if (p != null) p.click_action?.Invoke(a.current_tile, cultIds[idx]);
+                        Refresh();
+                    });
+                }
+                y -= 38f;
+
+                // —— 其他操作 ——
+                _frame.AddLabel("◆ 其他", leftX, y, 200f, 22f, 14);
+                y -= 28f;
+                _frame.AddButton("查看潜能/知识", leftX, y, 145f, 28f, () =>
+                {
+                    var p = AssetManager.powers.get(SuperMechPowers.CheckPotential);
+                    if (p != null) p.click_action?.Invoke(a.current_tile, SuperMechPowers.CheckPotential);
+                });
+                _frame.AddButton("进入圣所", leftX + 155f, y, 105f, 28f, () =>
+                {
+                    var p = AssetManager.powers.get("sm_enter_sanctuary");
+                    if (p != null) p.click_action?.Invoke(a.current_tile, "sm_enter_sanctuary");
+                    Refresh();
+                });
+                _frame.AddButton("传授提炼法", leftX + 270f, y, 105f, 28f, () =>
+                {
+                    a.addTrait(SuperMechRefinement.RefinementTrait);
+                    Refresh();
+                });
+            }
+        }
+
+        private static string GetClassName(Actor a)
+        {
+            foreach (var c in Classes)
+            {
+                if (a.hasTrait(c.trait)) return c.name;
+            }
+            return "未觉醒";
+        }
+
+        private static bool CanSelectBranch(Actor a)
+        {
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+                return GetMechStageTier(a) >= 3;  // 见习机械师
+            return SuperMechAdvancement.GetRankIndex(a) >= 2;  // D阶
+        }
+
+        private static List<BranchInfo> GetBranchesForClass(Actor a)
+        {
+            var list = new List<BranchInfo>();
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+            {
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchGunner, name = "枪炮师", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.3f; s["attack_speed"]=(s["attack_speed"]??0f)+0.2f; s["range"]=(s["range"]??0f)+2f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMech, name = "机械师", applyBonus = s => { s["experience"]=(s["experience"]??1f)*1.5f; s["intelligence"]=(s["intelligence"]??0f)+10f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartial, name = "械武者", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.4f; s["armor"]=(s["armor"]??0f)+5f; s["damage"]=(s["damage"]??0f)+10f; } });
+            }
+            else if (a.hasTrait(SuperMechTraits.ClassMartial))
+            {
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartialBody, name = "体魄", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.5f; s["stamina"]=(s["stamina"]??0f)+20f; s["armor"]=(s["armor"]??0f)+3f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartialTactic, name = "战术", applyBonus = s => { s["attack_speed"]=(s["attack_speed"]??0f)+0.25f; s["critical_chance"]=(s["critical_chance"]??0f)+0.1f; s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.15f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartialPower, name = "超能", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.4f; s["range"]=(s["range"]??0f)+3f; s["damage"]=(s["damage"]??0f)+8f; } });
+            }
+            else if (a.hasTrait(SuperMechTraits.ClassPsi))
+            {
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchPsiAttack, name = "攻效", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.5f; s["critical_chance"]=(s["critical_chance"]??0f)+0.05f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchPsiCycle, name = "循环", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.3f; s["stamina"]=(s["stamina"]??0f)+25f; s["multiplier_stamina"]=(s["multiplier_stamina"]??1f)*1.2f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchPsiFunc, name = "功能", applyBonus = s => { s["intelligence"]=(s["intelligence"]??0f)+15f; s["attack_speed"]=(s["attack_speed"]??0f)+0.15f; s["range"]=(s["range"]??0f)+2f; } });
+            }
+            else if (a.hasTrait(SuperMechTraits.ClassMage))
+            {
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMageElement, name = "元素", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.45f; s["critical_chance"]=(s["critical_chance"]??0f)+0.08f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMageChange, name = "变化", applyBonus = s => { s["attack_speed"]=(s["attack_speed"]??0f)+0.3f; s["speed"]=(s["speed"]??0f)+0.5f; s["intelligence"]=(s["intelligence"]??0f)+10f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMageCreate, name = "造物", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.35f; s["armor"]=(s["armor"]??0f)+5f; s["experience"]=(s["experience"]??1f)*1.3f; } });
+            }
+            else if (a.hasTrait(SuperMechTraits.ClassMind))
+            {
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMindSoul, name = "灵魂", applyBonus = s => { s["intelligence"]=(s["intelligence"]??0f)+20f; s["critical_chance"]=(s["critical_chance"]??0f)+0.12f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMindLaw, name = "法则", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.35f; s["damage"]=(s["damage"]??0f)+5f; s["health"]=(s["health"]??0f)+15f; s["intelligence"]=(s["intelligence"]??0f)+5f; } });
+                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMindReality, name = "现实", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.45f; s["armor"]=(s["armor"]??0f)+8f; s["damage"]=(s["damage"]??0f)+12f; } });
+            }
+            return list;
+        }
+
+        private struct BranchInfo
+        {
+            public string traitId;
+            public string name;
+            public Action<BaseStats> applyBonus;
+        }
+
+        private static string GetMechStageName(Actor a)
+        {
+            if (!a.hasTrait(SuperMechTraits.ClassMech)) return "—";
+            string[] stages = { "机械爱好者", "机械师学徒", "见习机械师", "磁环", "数据", "战争", "虚拟", "星海", "真理", "使徒", "帝皇", "主宰", "神座", "超神机械师" };
+            string[] traitIds = { SuperMechTraits.MechInitiate, SuperMechTraits.MechApprentice, SuperMechTraits.MechTrainee, SuperMechTraits.MechMagnet, SuperMechTraits.MechData, SuperMechTraits.MechWar, SuperMechTraits.MechVirtual, SuperMechTraits.MechStarsea, SuperMechTraits.MechTruth, SuperMechTraits.MechApostle, SuperMechTraits.MechEmperor, SuperMechTraits.MechLord, SuperMechTraits.MechGod, SuperMechTraits.MechSupreme };
+            for (int i = stages.Length - 1; i >= 0; i--)
+            {
+                if (a.hasTrait(traitIds[i])) return stages[i];
+            }
+            return "未入门";
+        }
+
+        private static int GetMechStageTier(Actor a)
+        {
+            string[] stages = { SuperMechTraits.MechInitiate, SuperMechTraits.MechApprentice, SuperMechTraits.MechTrainee, SuperMechTraits.MechMagnet, SuperMechTraits.MechData, SuperMechTraits.MechWar, SuperMechTraits.MechVirtual, SuperMechTraits.MechStarsea, SuperMechTraits.MechTruth, SuperMechTraits.MechApostle, SuperMechTraits.MechEmperor, SuperMechTraits.MechLord, SuperMechTraits.MechGod, SuperMechTraits.MechSupreme };
+            for (int i = stages.Length - 1; i >= 0; i--)
+            {
+                if (a.hasTrait(stages[i])) return i + 1;
+            }
+            return 0;
+        }
+    }
+}

@@ -7,9 +7,9 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 创建「超神机械师」专属神权tab，把所有神权按钮放进去。
-    /// 参考蛊真人 GzPowersTab：TabManager.CreateTab + AddPowerButton + UpdateLayout。
-    /// 必须在所有 powers 注册之后调用（PowerButton.OnEnable 按名字查 powers）。
+    /// 「超神机械师」专属神权Tab（参考蛊真人 GzPowersTab 模式）。
+    /// 只有真正需要地图交互的才做神权（召唤×2、天灾×1）。
+    /// 单位管理/圣所/排行全部走窗口，不用"点单位神权"。
     /// </summary>
     public static class SuperMechUI
     {
@@ -17,44 +17,20 @@ namespace SuperMech.Code
         private static bool _inited;
         private static PowersTab _tab;
 
-        private static readonly (string id, string icon, string tipTitle, string tipDesc)[] Buttons =
+        // 地图交互神权（需要画笔/点地图）
+        private static readonly (string id, string icon, string tipTitle, string tipDesc)[] MapPowers =
         {
-            (SuperMechPowers.SummonRanger,   "ui/powers/power_summon_units", "召唤机械游骑兵", "在点击位置生成一个机械游骑兵单位"),
-            (SuperMechPowers.SummonMech,     "ui/powers/power_summon_units", "召唤机甲",       "在点击位置生成一个机甲单位"),
-            (SuperMechPowers.AwakenPsi,      "ui/powers/power_bless",        "赋予异能系觉醒", "点击单位，赋予异能系觉醒特质"),
-            (SuperMechPowers.AwakenMech,     "ui/powers/power_bless",        "赋予机械系觉醒", "点击单位，赋予机械系觉醒特质"),
-            (SuperMechPowers.AwakenMartial,  "ui/powers/power_bless",        "赋予武道系觉醒", "点击单位，赋予武道系觉醒特质"),
-            (SuperMechPowers.DisasterAlien,  "ui/powers/power_meteor",       "异化之灾",       "在点击位置生成异化体（天灾）"),
-            ("sm_enter_sanctuary",           "ui/Icons/actor_traits/iconHardSkin",           "进入圣所",       "消耗3块圣所钥匙碎片进入圣所，获得跨存档buff"),
-            ("sm_give_sm_pcult_resonance",   "ui/powers/power_bless",        "传授：基因共鸣", "点击异能系单位，传授基因共鸣功法"),
-            ("sm_give_sm_pcult_meditation",  "ui/powers/power_bless",        "传授：冥想",     "点击魔法系单位，传授冥想功法"),
-            ("sm_give_sm_pcult_mind_train",  "ui/powers/power_bless",        "传授：心灵锻炼", "点击念力系单位，传授心灵锻炼功法"),
-            (SuperMechPowers.CheckPotential, "ui/powers/power_bless",        "查看潜能点",     "点击单位，查看气力/潜能点/觉醒点/已解锁知识"),
-            (SuperMechPowers.UnlockArmed,    "ui/powers/power_bless",        "解锁·武装系知识", "点击机械系单位，消耗2潜能点解锁武装系知识节点（转职后其他分支×3）"),
-            (SuperMechPowers.UnlockEnergy,   "ui/powers/power_bless",        "解锁·能量系知识", "点击机械系单位，消耗2潜能点解锁能量系知识节点（转职后其他分支×3）"),
-            (SuperMechPowers.UnlockVirtual,  "ui/powers/power_bless",        "解锁·虚拟系知识", "点击机械系单位，消耗3潜能点解锁虚拟系知识节点（转职后其他分支×3）"),
-            // 造兵闭环（原著 ch3/ch50：制造→经验→升级→解锁）
-            ("sm_craft_ranger",    "ui/powers/power_summon_units", "制造·游骑兵",     "点击机械师单位，制造游骑兵（气力+5，需tier1）"),
-            ("sm_craft_drone",     "ui/powers/power_summon_units", "制造·侦察无人机", "点击机械师单位，制造无人机（气力+8，需tier2）"),
-            ("sm_craft_mech",      "ui/powers/power_summon_units", "制造·战斗机甲",   "点击机械师单位，制造机甲（气力+20，需磁环tier4）"),
-            ("sm_craft_fortress",  "ui/powers/power_summon_units", "制造·战争堡垒",   "点击机械师单位，制造堡垒（气力+50，需战争tier6）"),
-            ("sm_craft_virtual",   "ui/powers/power_summon_units", "制造·虚拟生命体", "点击机械师单位，制造虚拟生命（气力+80，需虚拟tier7）"),
-            // 五系三分支选择（转职=选分支，选完才是那个职业）
-            ("sm_select_gunner",        "ui/powers/power_bless", "机械·枪炮师",   "见习机械师一转：选枪炮师分支，自动晋升磁环（伤害+30%攻速+20%）"),
-            ("sm_select_mech",          "ui/powers/power_bless", "机械·机械师",   "见习机械师一转：选机械师分支，自动晋升磁环（制造+50%智力+10）"),
-            ("sm_select_martial",       "ui/powers/power_bless", "机械·械武者",   "见习机械师一转：选械武者分支，自动晋升磁环（生命+40%护甲+5）"),
-            ("sm_select_martial_body",  "ui/powers/power_bless", "武道·体魄",     "D阶以上武道系转职：体魄分支（生命+50%耐力+10）"),
-            ("sm_select_martial_tactic","ui/powers/power_bless", "武道·战术",     "D阶以上武道系转职：战术分支（攻速+25%暴击+10%）"),
-            ("sm_select_martial_power", "ui/powers/power_bless", "武道·超能",     "D阶以上武道系转职：超能分支（离体波动/闪气/暴气，伤害+40%）"),
-            ("sm_select_psi_attack",    "ui/powers/power_bless", "异能·攻效",     "D阶以上异能系转职：能级强化（伤害+50%暴击+5%）"),
-            ("sm_select_psi_cycle",     "ui/powers/power_bless", "异能·循环",     "D阶以上异能系转职：持久力强化（生命+30%耐力+10）"),
-            ("sm_select_psi_func",      "ui/powers/power_bless", "异能·功能",     "D阶以上异能系转职：操控强化（智力+15攻速+15%）"),
-            ("sm_select_mage_element",  "ui/powers/power_bless", "魔法·元素",     "D阶以上魔法系转职：元素分支（伤害+45%暴击+8%）"),
-            ("sm_select_mage_change",   "ui/powers/power_bless", "魔法·变化",     "D阶以上魔法系转职：变化分支（攻速+30%移速+20%）"),
-            ("sm_select_mage_create",   "ui/powers/power_bless", "魔法·造物",     "D阶以上魔法系转职：造物分支（生命+35%经验+30%）"),
-            ("sm_select_mind_soul",     "ui/powers/power_bless", "念力·灵魂",     "D阶以上念力系转职：灵魂分支（智力+20暴击+12%）"),
-            ("sm_select_mind_law",      "ui/powers/power_bless", "念力·法则",     "D阶以上念力系转职：法则分支（伤害+35%全属性+5）"),
-            ("sm_select_mind_reality",  "ui/powers/power_bless", "念力·现实",     "D阶以上念力系转职：现实分支（生命+45%护甲+8）"),
+            (SuperMechPowers.SummonRanger,  "ui/powers/power_summon_units", "召唤机械游骑兵", "在点击位置生成一个机械游骑兵单位"),
+            (SuperMechPowers.SummonMech,    "ui/powers/power_summon_units", "召唤机甲",       "在点击位置生成一个机甲单位"),
+            (SuperMechPowers.DisasterAlien, "ui/powers/power_meteor",       "异化之灾",       "在点击位置生成异化体（天灾）"),
+        };
+
+        // 开窗按钮（不进入神力模式，直接开窗）
+        private static readonly (string name, string tip, System.Action action)[] WindowButtons =
+        {
+            ("超能者面板", "管理选中单位：觉醒/转职/制造/知识/修炼/查看属性", () => SuperMechPanel.Show()),
+            ("六圣所",     "查看六圣所解锁进度与碎片（跨存档）",             () => SuperMechSanctuaryWindow.Show()),
+            ("排行榜",     "超能者欧纳/气力/阶位排行榜（前20名）",           () => SuperMechRankWindow.Show()),
         };
 
         public static void Init()
@@ -64,68 +40,71 @@ namespace SuperMech.Code
             {
                 _inited = true;
 
-                // 注册tab的本地化文本
                 LocalizedTextManager.add("supermech.tab", "超神机械师", pReplace: true);
-                LocalizedTextManager.add("supermech.tab_desc", "超神机械师模组：五系觉醒、机械军团、圣所轮回", pReplace: true);
+                LocalizedTextManager.add("supermech.tab_desc", "五系觉醒·机械军团·圣所轮回", pReplace: true);
 
                 Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconHardSkin");
                 _tab = TabManager.CreateTab("supermech_mod_tab", "supermech.tab", "supermech.tab_desc", tabIcon);
                 if (_tab == null)
                 {
-                    Debug.LogError("[超神机械师] TabManager.CreateTab 返回 null，专属tab创建失败");
+                    Debug.LogError("[超神机械师] TabManager.CreateTab 返回 null");
                     _inited = false;
                     return;
                 }
 
                 _tab.SetLayout(new List<string> { Layout });
 
-                foreach (var (id, iconPath, tipTitle, tipDesc) in Buttons)
+                // 地图神权按钮
+                foreach (var (id, iconPath, tipTitle, tipDesc) in MapPowers)
                 {
                     try
                     {
                         GodPower power = AssetManager.powers.get(id);
-                        if (power == null)
-                        {
-                            Debug.LogWarning("[超神机械师] power未注册，跳过按钮: " + id);
-                            continue;
-                        }
-
+                        if (power == null) { Debug.LogWarning("[超神机械师] 神权未注册: " + id); continue; }
                         Sprite icon = SpriteTextureLoader.getSprite(iconPath);
                         PowerButton btn = PowerButtonCreator.CreateGodPowerButton(id, icon);
-                        if (btn == null)
-                        {
-                            Debug.LogWarning("[超神机械师] CreateGodPowerButton返回null: " + id);
-                            continue;
-                        }
-
-                        // 防御：显式绑定（PowerButton.OnEnable 可能早于注册）
+                        if (btn == null) continue;
                         btn.godPower = power;
-
-                        // tooltip
-                        try
-                        {
-                            TipButton tip = btn.GetComponent<TipButton>();
-                            if (tip == null) tip = btn.gameObject.AddComponent<TipButton>();
-                            tip.textOnClick = tipTitle + "\n" + tipDesc;
-                        }
-                        catch { }
-
+                        SetupTooltip(btn, tipTitle, tipDesc);
                         _tab.AddPowerButton(Layout, btn);
                     }
-                    catch (System.Exception e)
+                    catch (System.Exception e) { Debug.LogError("[超神机械师] 神权按钮失败 " + id + ": " + e.Message); }
+                }
+
+                // 开窗按钮（SimpleButton不进入神力模式）
+                foreach (var (name, tip, action) in WindowButtons)
+                {
+                    try
                     {
-                        Debug.LogError("[超神机械师] 创建按钮失败 " + id + ": " + e.Message);
+                        Sprite icon = SpriteTextureLoader.getSprite("ui/powers/power_bless");
+                        PowerButton btn = PowerButtonCreator.CreateSimpleButton(name, () => { try { action?.Invoke(); } catch (System.Exception e) { Debug.LogError("[超神机械师] 开窗异常: " + e.Message); } }, icon);
+                        if (btn == null) continue;
+                        SetupTooltip(btn, name, tip);
+                        _tab.AddPowerButton(Layout, btn);
                     }
+                    catch (System.Exception e) { Debug.LogError("[超神机械师] 开窗按钮失败 " + name + ": " + e.Message); }
                 }
 
                 _tab.UpdateLayout();
-                Debug.Log("[超神机械师] 专属神权tab创建成功，按钮已注入");
+                Debug.Log($"[超神机械师] 专属Tab创建成功：{MapPowers.Length}神权+{WindowButtons.Length}窗口");
             }
             catch (System.Exception e)
             {
-                Debug.LogError("[超神机械师] 专属tab初始化失败: " + e.Message + "\n" + e.StackTrace);
+                Debug.LogError("[超神机械师] Tab初始化失败: " + e.Message + "\n" + e.StackTrace);
                 _inited = false;
             }
+        }
+
+        private static void SetupTooltip(PowerButton button, string title, string description)
+        {
+            if (button == null) return;
+            try
+            {
+                TipButton tip = button.GetComponent<TipButton>();
+                if (tip == null) tip = button.gameObject.AddComponent<TipButton>();
+                tip.textOnClick = title + "\n" + description;
+            }
+            catch { }
         }
     }
 }

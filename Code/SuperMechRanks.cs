@@ -48,5 +48,15 @@ namespace SuperMech.Code
             foreach (var r in All) if (r.id == id) return r;
             return null;
         }
+
+        /// <summary>获取单位当前阶位名称。</summary>
+        public static string GetRankName(Actor a)
+        {
+            for (int i = All.Count - 1; i >= 0; i--)
+            {
+                if (a.hasTrait(All[i].id)) return All[i].name;
+            }
+            return "凡人";
+        }
     }
 }
