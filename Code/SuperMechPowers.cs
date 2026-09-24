@@ -12,6 +12,7 @@ namespace SuperMech.Code
     {
         public const string SummonRanger = "sm_summon_ranger";
         public const string SummonMech  = "sm_summon_mech";
+        public const string SummonAwakened = "sm_summon_awakened";
         public const string DisasterAlien = "sm_disaster_alien";
         public const string CheckPotential = "sm_check_potential";
         public const string UnlockArmed = "sm_unlock_armed";
@@ -22,6 +23,7 @@ namespace SuperMech.Code
         {
             AddSpawnPower(SummonRanger, "召唤机械游骑兵", "ui/powers/power_summon_units", "soldier", 1);
             AddSpawnPower(SummonMech, "召唤机甲单位", "ui/powers/power_summon_units", "titan", 3);
+            AddAwakenedPower(SummonAwakened, "召唤降临者", "ui/powers/power_summon_units");
 
             AddDisaster(DisasterAlien, "异化之灾（天灾）");
 
@@ -57,6 +59,33 @@ namespace SuperMech.Code
                     a.addTrait(SuperMechTraits.ClassMech);
                     SuperMechStage.SetStage(a, mechStage);
                     SuperMechSpecialty.AssignRandomSpecialty(a);
+                }
+                return true;
+            };
+            AssetManager.powers.add(p);
+        }
+
+        /// <summary>召唤降临者（有面板的玩家型单位，走等级职业体系）。</summary>
+        private static void AddAwakenedPower(string id, string name, string icon)
+        {
+            var p = new GodPower
+            {
+                id = id, name = name, path_icon = icon,
+                rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
+                ignore_fast_spawn = true, hold_action = false,
+                unselect_when_window = true, requires_premium = false
+            };
+            p.click_action += (tile, powerId) =>
+            {
+                if (tile == null) return false;
+                Actor a = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
+                if (a != null)
+                {
+                    a.addTrait(SuperMechTraits.ClassMech); // 默认机械系
+                    a.addTrait(SuperMechAwakened.AwakenedTrait);
+                    SuperMechStage.SetStage(a, 1); // 入门者
+                    SuperMechSpecialty.AssignRandomSpecialty(a);
+                    Debug.Log($"[超神机械师] 召唤降临者：{a.Name}（机械系Lv1）");
                 }
                 return true;
             };

@@ -36,6 +36,7 @@ namespace SuperMech.Code
             ("sm_relic",        "装备品质",   "#FFD700"),
             ("sm_cosmic_relic", "宇宙宝物",   "#FFA500"),
             ("sm_mage_tower",   "法师塔",     "#4169E1"),
+            ("sm_awakened",     "降临者",     "#FFD700"),
             ("sm_specialty",    "特色专精",   "#FF69B4"),
             ("sm_rank_specialty","阶位专长",   "#FF4500"),
             ("sm_subclass",     "副职业",     "#708090"),

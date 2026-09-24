@@ -34,6 +34,7 @@ namespace SuperMech
             SuperMechRelic.Register();
             SuperMechCosmicRelic.Register();
             SuperMechMageTower.Register();
+            SuperMechAwakened.Register();
             SuperMechSpecialty.Register();
             SuperMechRankSpecialty.Register();
             SuperMechRace.Register();
@@ -99,6 +100,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 宝物掉落异常: " + e.Message); }
                 try { SuperMechMageTower.TickMageTowers(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 法师塔异常: " + e.Message); }
+                try { SuperMechAwakened.TickXp(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 降临者经验异常: " + e.Message); }
             }
         }
     }

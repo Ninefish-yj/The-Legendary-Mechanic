@@ -47,10 +47,24 @@ namespace SuperMech.Code
                 string clsAspect = GetClassAspect(cls);
                 ShowRow(__instance, "职业", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
 
-                // 行3：职业阶段（五系各有14阶段链，机械系原著，其他四系同人补全）
-                string stage = SuperMechStage.GetStageName(actor);
-                if (stage != "—" && stage != "未入门")
-                    ShowRow(__instance, "职业阶段", stage);
+                // 行3：土著/降临者区分（原著双轨制）
+                bool isAwakened = SuperMechAwakened.IsAwakened(actor);
+                if (isAwakened)
+                {
+                    // 降临者：显示职业等级+经验+阶段
+                    string lvText = SuperMechAwakened.GetLevelText(actor);
+                    ShowRow(__instance, "职业等级", lvText);
+                    string stage = SuperMechStage.GetStageName(actor);
+                    if (stage != "—" && stage != "未入门")
+                        ShowRow(__instance, "职业阶段", stage);
+                    if (SuperMechAwakened.CanAdvanceStage(actor))
+                        ShowRow(__instance, "转职", "可转职！（进阶任务）");
+                }
+                else
+                {
+                    // 土著：无职业等级，标注土著修炼体系
+                    ShowRow(__instance, "体系", "土著（阶位修炼）");
+                }
 
                 // 行3b：职业树进度（百度百科：每系职业树名各不相同）
                 string treeName = GetKnowledgeTreeName(cls);

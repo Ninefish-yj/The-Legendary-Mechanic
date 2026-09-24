@@ -97,10 +97,11 @@ namespace SuperMech.Code
             _stage[a.data.id] = Mathf.Clamp(stage, 0, 14);
         }
 
-        /// <summary>晋升到下一阶段，返回是否成功。</summary>
+        /// <summary>晋升到下一阶段，返回是否成功。仅降临者（有面板）可转职。</summary>
         public static bool Advance(Actor a)
         {
             if (a == null) return false;
+            if (!SuperMechAwakened.IsAwakened(a)) return false; // 土著无职业阶段
             int cur = GetStage(a);
             if (cur >= 14) return false;
             SetStage(a, cur + 1);
