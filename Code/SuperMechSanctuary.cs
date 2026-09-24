@@ -196,7 +196,7 @@ namespace SuperMech.Code
             Save();
         }
 
-        /// <summary>进入圣所：消耗通用碎片，获得跨存档buff。</summary>
+        /// <summary>进入圣所：消耗钥匙碎片，获得该圣所的知识（潜能点），数量由权限等级决定。</summary>
         public static void EnterSanctuary(Actor a)
         {
             if (Data.key_fragments < 3)
@@ -213,7 +213,12 @@ namespace SuperMech.Code
                 Debug.Log("[超神机械师] 文明留言板已解锁！");
             }
 
-            float buff = 1f + Data.total_permission * 0.05f;
+            // 获得该圣所对应系的知识（潜能点），数量 = 权限等级
+            int knowledgeGain = Mathf.Max(1, Data.total_permission);
+            SuperMechPotential.AddPotential(a, knowledgeGain);
+
+            // 小幅属性buff（圣所环境加持）
+            float buff = 1f + Data.total_permission * 0.02f;
             var s = SuperMechStats.Of(a);
             if (s != null)
             {
@@ -221,7 +226,9 @@ namespace SuperMech.Code
                 s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * buff;
             }
             Save();
-            Debug.Log($"[超神机械师] 进入圣所！权限Lv{Data.total_permission}，已解锁{CountUnlocked()}/6圣所");
+
+            string className = GetClassTrait(a) ?? "未知";
+            Debug.Log($"[超神机械师] {a.Name} 进入圣所！获得{knowledgeGain}点知识（潜能点），权限Lv{Data.total_permission}，系别={className}");
         }
 
         private static int CountUnlocked()
@@ -401,7 +408,7 @@ namespace SuperMech.Code
 
             LocalizedTextManager.add("power_sm_enter_sanctuary", "进入圣所", pReplace: true);
             LocalizedTextManager.add("power_sm_enter_sanctuary_desc",
-                $"消耗3块圣所钥匙碎片，进入圣所。共{TotalSanctuaries}个圣所，神性蜕变（78000欧纳+Lv21气力）获得圣所碎片。", pReplace: true);
+                $"消耗3块圣所钥匙碎片，进入圣所获得知识（潜能点），数量=权限等级。共{TotalSanctuaries}个圣所，神性蜕变（78000欧纳+Lv21气力）获得圣所碎片。", pReplace: true);
             LocalizedTextManager.add("trait_sm_divinity_ascended", "神性蜕变", pReplace: true);
             LocalizedTextManager.add("trait_sm_divinity_ascended_info", "超越超A级的质变，伤害+20%生命+20%暴击+5%", pReplace: true);
 
