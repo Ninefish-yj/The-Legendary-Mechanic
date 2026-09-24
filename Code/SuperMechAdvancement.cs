@@ -89,6 +89,17 @@ namespace SuperMech.Code
                 // 按精确阶位（含+位）施加属性倍率
                 ApplyRankStats(a, targetIdx);
                 SuperMechRace.AutoEvolve(a, targetIdx);  // 种族进化与阶位挂钩
+
+                // S阶（index>=10）触发神性蜕变，进阶给神性蜕变点数
+                if (targetIdx >= 10 && oldExact < 10)
+                {
+                    SuperMechDivinity.TriggerDivinity(a);
+                }
+                else if (targetIdx >= 10 && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx))
+                {
+                    // 主阶位晋升给神性蜕变点数（ch1043）
+                    SuperMechDivinity.AwardAdvancementPoints(a);
+                }
             }
         }
 

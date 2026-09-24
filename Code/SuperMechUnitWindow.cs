@@ -103,12 +103,26 @@ namespace SuperMech.Code
                 }
 
                 // 行7：圣所/神性蜕变（原著 ch1039/ch1362：六圣所=五系+信息态）
-                bool divinity = actor.hasTrait("sm_divinity_ascended");
-                float onarForDiv = SuperMechAdvancement.CalcOnar(actor);
-                int qiLvForDiv = SuperMechQi.GetLevel(SuperMechQi.GetQi(actor));
-                string divText = divinity ? "已蜕变" :
-                    $"未蜕变（需78000欧纳+Lv21气力，当前{onarForDiv:F0}/Lv{qiLvForDiv}）";
-                ShowRow(__instance, "神性蜕变", divText);
+                bool divinity = SuperMechDivinity.IsDivineAwakened(actor);
+                if (divinity)
+                {
+                    int pts = SuperMechDivinity.GetPoints(actor);
+                    int prof = SuperMechDivinity.GetProfLayers(actor);
+                    int spec = SuperMechDivinity.GetSpeciesLayers(actor);
+                    string divText = $"点数{pts} | 职业{prof}/10 种族{spec}/10";
+                    if (SuperMechAwakened.IsAwakened(actor))
+                        divText += "（可加点）";
+                    else
+                        divText += "（感悟转化中）";
+                    ShowRow(__instance, "神性蜕变", divText);
+                }
+                else
+                {
+                    float onarForDiv = SuperMechAdvancement.CalcOnar(actor);
+                    int qiLvForDiv = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(actor));
+                    string divText = $"未触发（需S阶+78000欧纳，当前{onarForDiv:F0}/Lv{qiLvForDiv}）";
+                    ShowRow(__instance, "神性蜕变", divText);
+                }
 
                 // 行8：圣所解锁进度（跨存档全局数据）
                 int sanUnlocked = 0;

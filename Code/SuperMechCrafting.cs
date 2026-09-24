@@ -124,6 +124,17 @@ namespace SuperMech.Code
                             float expGain = r.expBase * perfection;
                             SuperMechQi.AddQi(u, qiGain);
                             // 经验通过加气力间接转化（气力升级给潜能点）
+
+                            // 【降临者专属】打造高级装备获得神性蜕变点数（ch1052/1053）
+                            // 只有有面板的玩家能通过这个渠道获得点数，土著察觉不到
+                            if (SuperMechAwakened.IsAwakened(u) && stage >= 4 && perfection >= 1.0f)
+                            {
+                                if (SuperMechDivinity.AwardCraftingPoints(u))
+                                {
+                                    Debug.Log($"[超神机械师] {u.Name}（降临者）打造{r.name}获得1神性蜕变点数！");
+                                }
+                            }
+
                             if (SuperMechConfig.LogVerbose)
                                 Debug.Log($"[超神机械师] {u.Name} 制造{r.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
 

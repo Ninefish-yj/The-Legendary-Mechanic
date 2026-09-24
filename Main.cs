@@ -106,6 +106,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 土著传承度异常: " + e.Message); }
                 try { SuperMechIntuition.TickIntuition(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 冥冥感应异常: " + e.Message); }
+                try { SuperMechDivinity.TickNativeInsight(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 神性蜕变异常: " + e.Message); }
             }
         }
     }
