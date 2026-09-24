@@ -71,7 +71,7 @@ namespace SuperMech.Code
             foreach (int f in data.sanctuary_fragments) total += f;
             int unlockedCount = 0;
             for (int i = 0; i < 6; i++) if ((data.unlocked_sanctuaries & (1 << i)) != 0) unlockedCount++;
-            _frame.AddLabel($"碎片:{total}  解锁:{unlockedCount}/6  钥匙:{data.key_fragments}  复活:{data.total_resurrections}次", x, y, 540f, 18f, 12);
+            _frame.AddLabel($"碎片:{total}  解锁:{unlockedCount}/6  钥匙:{data.key_fragments}  进入:{data.total_visits}次(权限)  复活:{data.total_resurrections}次", x, y, 540f, 18f, 12);
             y -= 24f;
 
             // ===== 圣所复活（ch1134/ch1214：仅超A级可复活，超神级靠信息态重生）=====

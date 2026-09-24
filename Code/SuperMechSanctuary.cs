@@ -202,7 +202,7 @@ namespace SuperMech.Code
             Save();
         }
 
-        /// <summary>进入圣所：消耗钥匙碎片，获得该圣所的知识（潜能点），数量由权限等级决定。</summary>
+        /// <summary>进入圣所：消耗钥匙碎片，获得该圣所的知识（潜能点），数量由进入次数（权限等级）决定。</summary>
         public static void EnterSanctuary(Actor a)
         {
             if (Data.key_fragments < 3)
@@ -213,18 +213,18 @@ namespace SuperMech.Code
             Data.key_fragments -= 3;
             Data.total_visits++;
 
-            if (Data.total_permission >= 3 && !Data.message_board_unlocked)
+            if (Data.total_visits >= 3 && !Data.message_board_unlocked)
             {
                 Data.message_board_unlocked = true;
                 Debug.Log("[超神机械师] 文明留言板已解锁！");
             }
 
-            // 获得该圣所对应系的知识（潜能点），数量 = 权限等级
-            int knowledgeGain = Mathf.Max(1, Data.total_permission);
+            // 获得知识（潜能点），数量 = 进入次数（权限等级），进得越多权限越高
+            int knowledgeGain = Mathf.Max(1, Data.total_visits);
             SuperMechPotential.AddPotential(a, knowledgeGain);
 
-            // 小幅属性buff（圣所环境加持）
-            float buff = 1f + Data.total_permission * 0.02f;
+            // 小幅属性buff（圣所环境加持，随进入次数提升）
+            float buff = 1f + Data.total_visits * 0.02f;
             var s = SuperMechStats.Of(a);
             if (s != null)
             {
@@ -234,7 +234,7 @@ namespace SuperMech.Code
             Save();
 
             string className = GetClassTrait(a) ?? "未知";
-            Debug.Log($"[超神机械师] {a.Name} 进入圣所！获得{knowledgeGain}点知识（潜能点），权限Lv{Data.total_permission}，系别={className}");
+            Debug.Log($"[超神机械师] {a.Name} 进入圣所！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
         }
 
         private static int CountUnlocked()
