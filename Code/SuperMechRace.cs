@@ -18,6 +18,10 @@ namespace SuperMech.Code
         public const string TraitBlackStarRace = "sm_race_blackstar";
         public const string TraitRoyalBlood = "sm_race_blackstar_royal";
 
+        // 亚种特质（subspecies trait，挂在亚种上而非单位上）
+        public const string SubspeciesBlackStar = "sm_subspecies_blackstar";
+        public const string SubspeciesRoyal = "sm_subspecies_royal";
+
         private static bool _registered = false;
 
         public static void Register()
@@ -25,14 +29,44 @@ namespace SuperMech.Code
             if (_registered) return;
             _registered = true;
 
-            // S阶标记特质
+            // 单位标记特质
             AddRaceTrait(TraitBlackStarRace, "黑星族", "ch770：超A级物种蜕变，以黑星为名的新种族。全属性+40%。",
                 dmg: 0.40f, hp: 0.40f, intel: 15);
-            // X阶标记特质
             AddRaceTrait(TraitRoyalBlood, "黑星神系·王族血脉", "ch1402：X阶物种神化，神系王族血脉。全属性+100%。",
                 dmg: 1.00f, hp: 1.00f, intel: 30);
 
-            Debug.Log("[超神机械师] 种族系统注册完成：黑星族(S阶) + 王族血脉(X阶)");
+            // 亚种特质（挂在亚种上，该亚种所有成员共享）
+            AddSubspeciesTrait(SubspeciesBlackStar, "黑星族血脉", "黑星族专属亚种特质：物种蜕变后的强大血脉。生命+200，伤害+15，智力+8。");
+            AddSubspeciesTrait(SubspeciesRoyal, "王族血脉", "黑星神系王族专属亚种特质：神化后的至高血脉。生命+500，伤害+30，智力+15。");
+
+            Debug.Log("[超神机械师] 种族系统注册完成：2单位特质 + 2亚种特质");
+        }
+
+        private static void AddSubspeciesTrait(string id, string name, string desc)
+        {
+            LocalizedTextManager.add("subspecies_trait_" + id, name, pReplace: true);
+            LocalizedTextManager.add("subspecies_trait_" + id + "_info", desc, pReplace: true);
+            var st = new SubspeciesTrait
+            {
+                id = id,
+                can_be_given = false,
+                can_be_removed = false,
+                needs_to_be_explored = false,
+                base_stats_meta = new BaseStats()
+            };
+            if (id == SubspeciesBlackStar)
+            {
+                st.base_stats_meta["health"] = 200;
+                st.base_stats_meta["damage"] = 15;
+                st.base_stats_meta["intelligence"] = 8;
+            }
+            else if (id == SubspeciesRoyal)
+            {
+                st.base_stats_meta["health"] = 500;
+                st.base_stats_meta["damage"] = 30;
+                st.base_stats_meta["intelligence"] = 15;
+            }
+            AssetManager.subspecies_traits.add(st);
         }
 
         private static void AddRaceTrait(string id, string name, string desc,
@@ -67,7 +101,7 @@ namespace SuperMech.Code
                 if (!a.hasTrait(TraitRoyalBlood))
                 {
                     a.addTrait(TraitRoyalBlood);
-                    DetachSubspecies(a, "黑星神系·王族血脉");
+                    DetachSubspecies(a, "黑星神系·王族血脉", SubspeciesRoyal);
                     Debug.Log($"[超神机械师] {a.Name} 物种神化 → 黑星神系·王族血脉（独立亚种）");
                 }
                 return;
@@ -79,7 +113,7 @@ namespace SuperMech.Code
                 if (!a.hasTrait(TraitBlackStarRace))
                 {
                     a.addTrait(TraitBlackStarRace);
-                    DetachSubspecies(a, "黑星族");
+                    DetachSubspecies(a, "黑星族", SubspeciesBlackStar);
                     Debug.Log($"[超神机械师] {a.Name} 物种蜕变 → 黑星族（独立亚种）");
                 }
             }
@@ -89,7 +123,7 @@ namespace SuperMech.Code
         /// 脱离原亚种，创建独立亚种并改名。参考 DivineAscension TranscendentSpeciesSystem.DetachSubspecies。
         /// 复制原亚种基因与特质，从原亚种单位列表移除，单位切换到新亚种。
         /// </summary>
-        private static void DetachSubspecies(Actor actor, string subspeciesName)
+        private static void DetachSubspecies(Actor actor, string subspeciesName, string subspeciesTraitId)
         {
             try
             {
@@ -115,6 +149,14 @@ namespace SuperMech.Code
                         newBirth.addTrait(bTrait);
                     // 从原亚种单位列表移除
                     oldSpecies.units.Remove(actor);
+                }
+
+                // 添加新种族专属亚种特质
+                SubspeciesTrait raceTrait = AssetManager.subspecies_traits.get(subspeciesTraitId);
+                if (raceTrait != null)
+                {
+                    newSpecies.addTrait(raceTrait);
+                    Debug.Log($"[超神机械师] 新亚种已添加专属亚种特质：{subspeciesTraitId}");
                 }
 
                 // 设置新亚种名（反射）
