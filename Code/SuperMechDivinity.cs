@@ -77,6 +77,21 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] {a.Name} 获得{amount}神性蜕变点数（共{cur + amount}）");
         }
 
+        /// <summary>直接设置神性蜕变点数（存档恢复用）。</summary>
+        public static void SetPoints(Actor a, int amount)
+        {
+            if (a == null) return;
+            _points[a.id] = Mathf.Max(0, amount);
+        }
+
+        /// <summary>直接设置神性蜕变双路线层数（存档恢复用）。</summary>
+        public static void SetLayers(Actor a, int profLayers, int speciesLayers)
+        {
+            if (a == null) return;
+            _profLayers[a.id] = Mathf.Clamp(profLayers, 0, MaxLayers);
+            _speciesLayers[a.id] = Mathf.Clamp(speciesLayers, 0, MaxLayers);
+        }
+
         /// <summary>
         /// 降临者：消耗点数加点到职业/种族路线（直接生效）。
         /// 土著不能直接加点，只能靠感悟慢慢转化。

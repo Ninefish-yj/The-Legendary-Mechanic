@@ -148,11 +148,39 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] {a.Name} 获得{amount}份超神遗力（共{cur + amount}）");
         }
 
+        /// <summary>直接设置超神遗力（存档恢复用）。</summary>
+        public static void SetLegacyPower(Actor a, int amount)
+        {
+            if (a == null) return;
+            _legacyPower[a.id] = Mathf.Max(0, amount);
+        }
+
         /// <summary>是否已突破超神级。</summary>
         public static bool IsTranscended(Actor a)
         {
             if (a == null) return false;
             bool v; _transcended.TryGetValue(a.id, out v); return v;
+        }
+
+        /// <summary>标记已突破超神级（存档恢复用）。</summary>
+        public static void SetTranscended(Actor a)
+        {
+            if (a == null) return;
+            _transcended[a.id] = true;
+        }
+
+        /// <summary>直接设置进阶任务进度（存档恢复用）。</summary>
+        public static void SetAdvancementProgress(Actor a, float progress)
+        {
+            if (a == null) return;
+            _advancementProgress[a.id] = progress;
+        }
+
+        /// <summary>标记进阶任务完成（存档恢复用）。</summary>
+        public static void SetAdvancementTaskDone(Actor a)
+        {
+            if (a == null) return;
+            _advancementTaskDone[a.id] = true;
         }
 
         /// <summary>

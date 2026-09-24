@@ -42,6 +42,13 @@ namespace SuperMech.Code
             _potentialMap[a.id] = cur + amount;
         }
 
+        /// <summary>直接设置潜能点（存档恢复用）。</summary>
+        public static void SetPotential(Actor a, int amount)
+        {
+            if (a == null) return;
+            _potentialMap[a.id] = Mathf.Max(0, amount);
+        }
+
         /// <summary>消耗潜能点。返回是否成功。</summary>
         public static bool SpendPotential(Actor a, int amount)
         {

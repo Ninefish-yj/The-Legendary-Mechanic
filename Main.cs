@@ -14,6 +14,7 @@ namespace SuperMech
         public new static Main Instance { get; private set; }
         private float _promoTimer;
         private float _localeTimer;
+        private float _saveTimer;
         private bool _localeExported;
 
         protected override void OnModLoad()
@@ -43,10 +44,13 @@ namespace SuperMech
             SuperMechPowers.Register();
             SuperMechUI.Init();  // 必须在 powers 注册之后（PowerButton.OnEnable 按名字查 powers）
 
-            // Harmony Patch：单位面板注入阶位/职业/气力/欧纳数据行
+            // Harmony Patch：单位面板注入阶位/职业/气力/欧纳数据行 + 战斗挂钩
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();
-            LogInfo("[超神机械师] Harmony Patch 完成（单位面板注入）");
+            LogInfo("[超神机械师] Harmony Patch 完成（单位面板注入+战斗挂钩）");
+
+            // 加载存档数据（气力/职业/神性蜕变等）
+            SuperMechSaveData.Load();
 
             LogInfo("[超神机械师] Phase 1 系统注册完成");
         }
@@ -69,6 +73,9 @@ namespace SuperMech
 
             // 面板窗口每帧检测单位变化
             try { SuperMechPanel.Tick(); } catch { }
+
+            // 存档恢复：世界加载后单位逐步生成，每次tick尝试匹配恢复
+            try { SuperMechSaveData.TryRestoreActors(); } catch { }
 
             _promoTimer += Time.deltaTime;
             if (_promoTimer >= SuperMechConfig.TickInterval)
@@ -116,6 +123,15 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 进阶任务异常: " + e.Message); }
                 try { SuperMechInfoState.TickInfoState(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 信息态异常: " + e.Message); }
+
+                // 自动存档：每60秒保存一次
+                _saveTimer += SuperMechConfig.TickInterval;
+                if (_saveTimer >= 60f)
+                {
+                    _saveTimer = 0f;
+                    try { SuperMechSaveData.Save(); }
+                    catch (System.Exception e) { Debug.LogError("[超神机械师] 自动存档异常: " + e.Message); }
+                }
             }
         }
     }

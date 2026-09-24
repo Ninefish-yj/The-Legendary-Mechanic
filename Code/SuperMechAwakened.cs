@@ -98,6 +98,20 @@ namespace SuperMech.Code
             return 0;
         }
 
+        /// <summary>直接设置降临者等级（存档恢复用）。</summary>
+        public static void SetLevel(Actor a, int level)
+        {
+            if (a == null || !IsAwakened(a)) return;
+            _level[a.data.id] = Mathf.Max(1, level);
+        }
+
+        /// <summary>直接设置经验值（存档恢复用）。</summary>
+        public static void SetXp(Actor a, float xp)
+        {
+            if (a == null || !IsAwakened(a)) return;
+            _xp[a.data.id] = Mathf.Max(0, xp);
+        }
+
         /// <summary>添加经验值，自动升级。</summary>
         public static void AddXp(Actor a, float amount)
         {

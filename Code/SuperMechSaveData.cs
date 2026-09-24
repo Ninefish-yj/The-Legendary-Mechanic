@@ -1,0 +1,279 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
+using Newtonsoft.Json;
+using UnityEngine;
+
+namespace SuperMech.Code
+{
+    /// <summary>
+    /// 模组存档系统（参考诸天神座 ModSaveData 模式）。
+    ///
+    /// 之前的问题：所有系统数据存在静态字典里，重启游戏全部丢失。
+    /// 现在：每个世界存档对应一个JSON文件，存mod目录下的Saves/文件夹。
+    ///
+    /// 存储内容：
+    /// - 气力等级/当前值/上限
+    /// - 职业阶段
+    /// - 阶位（精确阶位含+位）
+    /// - 潜能点/觉醒点
+    /// - 神性蜕变（点数/职业层数/种族层数）
+    /// - 超神遗力/突破状态/进阶任务进度
+    /// - 信息态等级
+    /// - 降临者等级/经验
+    /// - 传承度
+    /// - 冥冥感应进度
+    /// - 复活次数
+    /// - 副职业等级
+    /// </summary>
+    public static class SuperMechSaveData
+    {
+        private const string SaveDirName = "Saves";
+        private const string FileExt = ".json";
+
+        /// <summary>存档数据容器。</summary>
+        [Serializable]
+        public class SaveData
+        {
+            public Dictionary<string, ActorSaveData> actors = new Dictionary<string, ActorSaveData>();
+            public SanctuarySaveData sanctuary = new SanctuarySaveData();
+            public string worldSeed = "";
+            public long savedAt = 0;
+        }
+
+        [Serializable]
+        public class ActorSaveData
+        {
+            public string name;
+            public int qiLevel;
+            public float qiCurrent;
+            public float qiMax;
+            public int stage;
+            public int exactRank;
+            public int potential;
+            public int awakeningPoints;
+            public int divinityPoints;
+            public int divinityProfLayers;
+            public int divinitySpeciesLayers;
+            public bool divinityTriggered;
+            public int legacyPower;
+            public bool transcended;
+            public float advancementProgress;
+            public bool advancementTaskDone;
+            public int infoStateLevel;
+            public int awakenedLevel;
+            public float awakenedXp;
+            public float heritage;
+            public int reviveCount;
+            public int subclassLevel;
+            public string subclass;
+            public string qiAttribute;
+            public string destinyName;
+            public float destinyProgress;
+            public bool destinyCompleted;
+        }
+
+        [Serializable]
+        public class SanctuarySaveData
+        {
+            public int unlockedSanctuaries;
+            public int keyFragments;
+            public int[] sanctuaryFragments;
+            public int totalPermission;
+            public int totalVisits;
+            public bool messageBoardUnlocked;
+            public int totalDivinityAscensions;
+            public int totalResurrections;
+        }
+
+        private static string GetSavePath()
+        {
+            string modDir = GetModDirectory();
+            string dir = Path.Combine(modDir, SaveDirName);
+            if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+            // 用世界种子作为文件名，每个世界独立存档
+            string seed = World.world?.seed?.ToString() ?? "default";
+            return Path.Combine(dir, seed + FileExt);
+        }
+
+        private static string GetModDirectory()
+        {
+            // 尝试从mod声明获取目录，失败则用相对路径
+            try
+            {
+                return Main.Instance.GetDeclaration().FolderPath;
+            }
+            catch
+            {
+                return Path.Combine(Application.dataPath, "Mods", "超神机械师");
+            }
+        }
+
+        /// <summary>保存所有模组数据到JSON。</summary>
+        public static void Save()
+        {
+            try
+            {
+                var data = new SaveData
+                {
+                    worldSeed = World.world?.seed?.ToString() ?? "",
+                    savedAt = DateTime.Now.Ticks
+                };
+
+                // 收集所有存活的超能者数据
+                var units = World.world?.units?.units_only_alive;
+                if (units != null)
+                {
+                    foreach (Actor a in units)
+                    {
+                        if (a == null || !SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                        var ad = new ActorSaveData
+                        {
+                            name = a.Name ?? "",
+                            qiLevel = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(a)),
+                            qiCurrent = SuperMechQi.GetQi(a),
+                            qiMax = SuperMechQi.GetQiMax(a),
+                            stage = SuperMechStage.GetStage(a),
+                            exactRank = SuperMechAdvancement.GetExactRankIndex(a),
+                            potential = SuperMechPotential.GetPotential(a),
+                            divinityPoints = SuperMechDivinity.GetPoints(a),
+                            divinityProfLayers = SuperMechDivinity.GetProfLayers(a),
+                            divinitySpeciesLayers = SuperMechDivinity.GetSpeciesLayers(a),
+                            divinityTriggered = SuperMechDivinity.IsDivineAwakened(a),
+                            legacyPower = SuperMechTranscendence.GetLegacyPower(a),
+                            transcended = SuperMechTranscendence.IsTranscended(a),
+                            advancementProgress = SuperMechTranscendence.GetAdvancementProgress(a),
+                            advancementTaskDone = SuperMechTranscendence.IsAdvancementTaskDone(a),
+                            infoStateLevel = SuperMechInfoState.GetLevel(a),
+                            awakenedLevel = SuperMechAwakened.GetLevel(a),
+                            awakenedXp = SuperMechAwakened.GetXp(a),
+                            heritage = SuperMechHeritage.GetHeritage(a),
+                            reviveCount = SuperMechSanctuary.GetReviveCount(a),
+                            qiAttribute = SuperMechQiAttribute.GetAttribute(a)
+                        };
+                        data.actors[a.data.id.ToString()] = ad;
+                    }
+                }
+
+                // 圣所全局数据
+                data.sanctuary = new SanctuarySaveData
+                {
+                    unlockedSanctuaries = SuperMechSanctuary.Data.unlocked_sanctuaries,
+                    keyFragments = SuperMechSanctuary.Data.key_fragments,
+                    sanctuaryFragments = SuperMechSanctuary.Data.sanctuary_fragments,
+                    totalPermission = SuperMechSanctuary.Data.total_permission,
+                    totalVisits = SuperMechSanctuary.Data.total_visits,
+                    messageBoardUnlocked = SuperMechSanctuary.Data.message_board_unlocked,
+                    totalDivinityAscensions = SuperMechSanctuary.Data.total_divinity_ascensions,
+                    totalResurrections = SuperMechSanctuary.Data.total_resurrections
+                };
+
+                string json = JsonConvert.SerializeObject(data, Formatting.Indented);
+                File.WriteAllText(GetSavePath(), json);
+                Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[超神机械师] 存档保存失败：{e.Message}");
+            }
+        }
+
+        /// <summary>从JSON加载所有模组数据。</summary>
+        public static void Load()
+        {
+            try
+            {
+                string path = GetSavePath();
+                if (!File.Exists(path))
+                {
+                    Debug.Log("[超神机械师] 无存档数据，新档开始");
+                    return;
+                }
+
+                string json = File.ReadAllText(path);
+                var data = JsonConvert.DeserializeObject<SaveData>(json);
+                if (data == null) return;
+
+                // 恢复圣所全局数据
+                SuperMechSanctuary.Data.unlocked_sanctuaries = data.sanctuary.unlockedSanctuaries;
+                SuperMechSanctuary.Data.key_fragments = data.sanctuary.keyFragments;
+                SuperMechSanctuary.Data.sanctuary_fragments = data.sanctuary.sanctuaryFragments;
+                SuperMechSanctuary.Data.total_permission = data.sanctuary.totalPermission;
+                SuperMechSanctuary.Data.total_visits = data.sanctuary.totalVisits;
+                SuperMechSanctuary.Data.message_board_unlocked = data.sanctuary.messageBoardUnlocked;
+                SuperMechSanctuary.Data.total_divinity_ascensions = data.sanctuary.totalDivinityAscensions;
+                SuperMechSanctuary.Data.total_resurrections = data.sanctuary.totalResurrections;
+
+                // 单位数据在单位生成后通过id匹配恢复（这里先存起来，等单位加载）
+                _pendingLoad = data;
+                _loadPending = true;
+                Debug.Log($"[超神机械师] 存档加载：{data.actors.Count}个单位数据待恢复");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[超神机械师] 存档加载失败：{e.Message}");
+            }
+        }
+
+        private static SaveData _pendingLoad;
+        private static bool _loadPending = false;
+
+        /// <summary>
+        /// 尝试恢复单位数据（在单位加载后调用，通过id匹配）。
+        /// 世界加载时单位是逐步生成的，所以每次tick检查一次。
+        /// </summary>
+        public static void TryRestoreActors()
+        {
+            if (!_loadPending || _pendingLoad == null) return;
+
+            try
+            {
+                var units = World.world?.units?.units_only_alive;
+                if (units == null) return;
+
+                int restored = 0;
+                foreach (Actor a in units)
+                {
+                    if (a == null) continue;
+                    string id = a.data.id.ToString();
+                    if (!_pendingLoad.actors.TryGetValue(id, out var ad)) continue;
+
+                    // 恢复单位数据
+                    if (ad.qiMax > 0) SuperMechQi.SetQiMax(a, ad.qiMax);
+                    SuperMechQi.SetQi(a, ad.qiCurrent);
+                    if (ad.stage > 0) SuperMechStage.SetStage(a, ad.stage);
+                    if (ad.exactRank >= 0) SuperMechAdvancement.SetExactRank(a, ad.exactRank);
+                    SuperMechPotential.SetPotential(a, ad.potential);
+                    if (ad.divinityTriggered) SuperMechDivinity.TriggerDivinity(a);
+                    SuperMechDivinity.SetPoints(a, ad.divinityPoints);
+                    SuperMechDivinity.SetLayers(a, ad.divinityProfLayers, ad.divinitySpeciesLayers);
+                    SuperMechTranscendence.SetLegacyPower(a, ad.legacyPower);
+                    if (ad.transcended) SuperMechTranscendence.SetTranscended(a);
+                    SuperMechTranscendence.SetAdvancementProgress(a, ad.advancementProgress);
+                    if (ad.advancementTaskDone) SuperMechTranscendence.SetAdvancementTaskDone(a);
+                    SuperMechInfoState.SetLevel(a, ad.infoStateLevel);
+                    if (ad.awakenedLevel > 0) SuperMechAwakened.SetLevel(a, ad.awakenedLevel);
+                    SuperMechAwakened.SetXp(a, ad.awakenedXp);
+                    SuperMechHeritage.SetHeritage(a, ad.heritage);
+                    SuperMechSanctuary.SetReviveCount(a, ad.reviveCount);
+                    if (!string.IsNullOrEmpty(ad.qiAttribute) && ad.qiAttribute != SuperMechQiAttribute.AttrNone)
+                        SuperMechQiAttribute.SetAttribute(a, ad.qiAttribute);
+
+                    _pendingLoad.actors.Remove(id);
+                    restored++;
+                }
+
+                if (_pendingLoad.actors.Count == 0)
+                {
+                    _loadPending = false;
+                    _pendingLoad = null;
+                    Debug.Log($"[超神机械师] 存档恢复完成：共恢复{restored}个单位");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[超神机械师] 存档恢复异常：{e.Message}");
+            }
+        }
+    }
+}

@@ -44,6 +44,13 @@ namespace SuperMech.Code
             _heritage[a.id] = cur + amount;
         }
 
+        /// <summary>直接设置传承度（存档恢复用）。</summary>
+        public static void SetHeritage(Actor a, float value)
+        {
+            if (a == null) return;
+            _heritage[a.id] = Mathf.Max(0, value);
+        }
+
         /// <summary>
         /// Tick：土著传承度增长 + 自动解锁知识。
         /// 降临者不走这个系统（用潜能点）。

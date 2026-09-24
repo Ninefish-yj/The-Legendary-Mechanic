@@ -168,6 +168,13 @@ namespace SuperMech.Code
             if (cur < newMax) _qiMap[a.id] = newMax;
         }
 
+        /// <summary>直接设置气力上限（存档恢复用）。</summary>
+        public static void SetQiMax(Actor a, float value)
+        {
+            if (a == null) return;
+            _qiMaxMap[a.id] = Mathf.Max(0, value);
+        }
+
         /// <summary>直接设置气力当前值（复活/初始化用）。</summary>
         public static void SetQi(Actor a, float value)
         {
