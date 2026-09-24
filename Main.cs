@@ -33,6 +33,7 @@ namespace SuperMech
             SuperMechRelic.Register();
             SuperMechSpecialty.Register();
             SuperMechSanctuary.Register();
+            SuperMechCrafting.Register();
             SuperMechPowers.Register();
             SuperMechUI.Init();  // 必须在 powers 注册之后（PowerButton.OnEnable 按名字查 powers）
 

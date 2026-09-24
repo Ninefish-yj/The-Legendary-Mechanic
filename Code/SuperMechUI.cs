@@ -33,6 +33,12 @@ namespace SuperMech.Code
             (SuperMechPowers.UnlockArmed,    "ui/powers/power_bless",        "解锁·武装系知识", "点击机械系单位，消耗2潜能点解锁武装系知识节点（转职后其他分支×3）"),
             (SuperMechPowers.UnlockEnergy,   "ui/powers/power_bless",        "解锁·能量系知识", "点击机械系单位，消耗2潜能点解锁能量系知识节点（转职后其他分支×3）"),
             (SuperMechPowers.UnlockVirtual,  "ui/powers/power_bless",        "解锁·虚拟系知识", "点击机械系单位，消耗3潜能点解锁虚拟系知识节点（转职后其他分支×3）"),
+            // 造兵闭环（原著 ch3/ch50：制造→经验→升级→解锁）
+            ("sm_craft_ranger",    "ui/powers/power_summon_units", "制造·游骑兵",     "点击机械师单位，制造游骑兵（气力+5，需tier1）"),
+            ("sm_craft_drone",     "ui/powers/power_summon_units", "制造·侦察无人机", "点击机械师单位，制造无人机（气力+8，需tier2）"),
+            ("sm_craft_mech",      "ui/powers/power_summon_units", "制造·战斗机甲",   "点击机械师单位，制造机甲（气力+20，需磁环tier4）"),
+            ("sm_craft_fortress",  "ui/powers/power_summon_units", "制造·战争堡垒",   "点击机械师单位，制造堡垒（气力+50，需战争tier6）"),
+            ("sm_craft_virtual",   "ui/powers/power_summon_units", "制造·虚拟生命体", "点击机械师单位，制造虚拟生命（气力+80，需虚拟tier7）"),
         };
 
         public static void Init()
