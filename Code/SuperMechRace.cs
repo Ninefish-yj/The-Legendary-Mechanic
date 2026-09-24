@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+using System;
+using System.Reflection;
 using NeoModLoader.api;
 using NeoModLoader.services;
 using UnityEngine;
@@ -7,89 +8,161 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// 种族进化系统（原著 ch770/ch1402）。
-    /// 低阶位（C~A+）的虚空潜影者/混沌观察者/虚空扭曲者/虚空逐星者
-    /// 本质是旧种族的天赋变化，用原版虚空特质即可。
-    /// 只有S阶（超A）的黑星族和X阶的黑星神系·王族血脉是真正的新种族。
+    /// 参考 DivineAscension 登神长阶的 TranscendentSpeciesSystem 实现：
+    /// 达到S阶（超A）时脱离原亚种，创建独立亚种"黑星族"；
+    /// 达到X阶（超神级）时升级为"黑星神系·王族血脉"。
+    /// 低阶位不做种族变化。
     /// </summary>
     public static class SuperMechRace
     {
-        public class RaceDef
-        {
-            public string id;
-            public string name;
-            public int minRankIndex;
-            public int intell;
-            public float dmgMul;
-            public float hpMul;
-            public string desc;
-        }
+        public const string TraitBlackStarRace = "sm_race_blackstar";
+        public const string TraitRoyalBlood = "sm_race_blackstar_royal";
 
-        // 只有超A以上是真正的新种族（ch770黑星族/ch1402王族血脉）
-        public static readonly List<RaceDef> EvolutionChain = new List<RaceDef>
-        {
-            new RaceDef { id="sm_race_blackstar",       name="黑星族",               minRankIndex=10, intell=15, dmgMul=1.40f, hpMul=1.40f, desc="ch770：超A级物种蜕变，以黑星为名的新种族。" },
-            new RaceDef { id="sm_race_blackstar_royal", name="黑星神系·王族血脉",   minRankIndex=13, intell=30, dmgMul=2.00f, hpMul=2.00f, desc="ch1402：X阶物种神化，神系王族血脉。" },
-        };
-
-        // 低阶位用原版虚空特质（subspecies_trait_gift_of_void / mutation_skin_void）
-        public const string OriginalVoidGift = "subspecies_trait_gift_of_void";
-        public const string OriginalVoidForm = "subspecies_trait_mutation_skin_void";
+        private static bool _registered = false;
 
         public static void Register()
         {
-            foreach (var r in EvolutionChain)
-            {
-                LocalizedTextManager.add("trait_" + r.id, r.name, pReplace: true);
-                LocalizedTextManager.add("trait_" + r.id + "_info", r.desc, pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = r.id,
-                    path_icon = "ui/Icons/actor_traits/iconHardSkin",
-                    group_id = "sm_race",
-                    needs_to_be_explored = false,
-                    base_stats = new BaseStats()
-                };
-                t.base_stats["intelligence"] = r.intell;
-                if (r.dmgMul > 0) t.base_stats["multiplier_damage"] = r.dmgMul;
-                if (r.hpMul > 0) t.base_stats["multiplier_health"] = r.hpMul;
-                AssetManager.traits.add(t);
-            }
-            Debug.Log("[超神机械师] 种族进化系统注册完成：2个新种族（黑星族/王族血脉）+ 原版虚空特质");
+            if (_registered) return;
+            _registered = true;
+
+            // S阶标记特质
+            AddRaceTrait(TraitBlackStarRace, "黑星族", "ch770：超A级物种蜕变，以黑星为名的新种族。全属性+40%。",
+                dmg: 0.40f, hp: 0.40f, intel: 15);
+            // X阶标记特质
+            AddRaceTrait(TraitRoyalBlood, "黑星神系·王族血脉", "ch1402：X阶物种神化，神系王族血脉。全属性+100%。",
+                dmg: 1.00f, hp: 1.00f, intel: 30);
+
+            Debug.Log("[超神机械师] 种族系统注册完成：黑星族(S阶) + 王族血脉(X阶)");
         }
 
-        /// <summary>根据阶位自动进化：C~A+给原版虚空特质，S阶以上给自定义新种族。</summary>
+        private static void AddRaceTrait(string id, string name, string desc,
+            float dmg = 0f, float hp = 0f, int intel = 0)
+        {
+            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
+            var t = new ActorTrait
+            {
+                id = id,
+                path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                group_id = "sm_race",
+                can_be_removed = false,
+                can_be_given = false,
+                needs_to_be_explored = false,
+                base_stats = new BaseStats()
+            };
+            if (intel > 0) t.base_stats["intelligence"] = intel;
+            if (dmg > 0) t.base_stats["multiplier_damage"] = 1f + dmg;
+            if (hp > 0) t.base_stats["multiplier_health"] = 1f + hp;
+            AssetManager.traits.add(t);
+        }
+
+        /// <summary>根据阶位自动进化种族：S阶→黑星族，X阶→王族血脉。参考登神长阶的独立亚种做法。</summary>
         public static void AutoEvolve(Actor a, int rankIndex)
         {
             if (a == null) return;
 
-            // S阶以上：自定义新种族
-            RaceDef target = null;
-            for (int i = EvolutionChain.Count - 1; i >= 0; i--)
+            // X阶：王族血脉
+            if (rankIndex >= 13)
             {
-                if (rankIndex >= EvolutionChain[i].minRankIndex) { target = EvolutionChain[i]; break; }
-            }
-            if (target != null)
-            {
-                if (!a.hasTrait(target.id))
+                if (!a.hasTrait(TraitRoyalBlood))
                 {
-                    foreach (var r in EvolutionChain)
-                        if (a.hasTrait(r.id) && r.id != target.id) a.removeTrait(r.id);
-                    a.addTrait(target.id);
-                    Debug.Log($"[超神机械师] {a.Name} 种族进化 → {target.name}");
+                    a.addTrait(TraitRoyalBlood);
+                    DetachSubspecies(a, "黑星神系·王族血脉");
+                    Debug.Log($"[超神机械师] {a.Name} 物种神化 → 黑星神系·王族血脉（独立亚种）");
                 }
                 return;
             }
 
-            // C~A+阶：给原版虚空特质（低阶位用旧种族+虚空天赋）
-            if (rankIndex >= 4 && !a.hasTrait(OriginalVoidGift))
+            // S阶：黑星族
+            if (rankIndex >= 10)
             {
-                a.addTrait(OriginalVoidGift);
-                Debug.Log($"[超神机械师] {a.Name} 获得原版虚空天赋（虚无之礼）");
+                if (!a.hasTrait(TraitBlackStarRace))
+                {
+                    a.addTrait(TraitBlackStarRace);
+                    DetachSubspecies(a, "黑星族");
+                    Debug.Log($"[超神机械师] {a.Name} 物种蜕变 → 黑星族（独立亚种）");
+                }
             }
-            if (rankIndex >= 6 && !a.hasTrait(OriginalVoidForm))
+        }
+
+        /// <summary>
+        /// 脱离原亚种，创建独立亚种并改名。参考 DivineAscension TranscendentSpeciesSystem.DetachSubspecies。
+        /// 复制原亚种基因与特质，从原亚种单位列表移除，单位切换到新亚种。
+        /// </summary>
+        private static void DetachSubspecies(Actor actor, string subspeciesName)
+        {
+            try
             {
-                a.addTrait(OriginalVoidForm);
-                Debug.Log($"[超神机械师] {a.Name} 获得原版虚空形态（虚无形态）");
+                Subspecies oldSpecies = actor.subspecies;
+                Subspecies newSpecies = World.world.subspecies.newSpecies(actor.asset, actor.current_tile);
+                if (newSpecies == null)
+                {
+                    Debug.LogWarning($"[超神机械师] {actor.Name} 创建独立亚种失败（newSpecies返回null）");
+                    return;
+                }
+
+                if (oldSpecies != null)
+                {
+                    // 复制原亚种特质
+                    foreach (SubspeciesTrait trait in oldSpecies.getTraits())
+                        newSpecies.addTrait(trait);
+                    newSpecies.nucleus.cloneFrom(oldSpecies.nucleus);
+                    // 复制出生特质
+                    var newBirth = newSpecies.getActorBirthTraits();
+                    var oldBirth = oldSpecies.getActorBirthTraits();
+                    newBirth.reset();
+                    foreach (ActorTrait bTrait in oldBirth.getTraits())
+                        newBirth.addTrait(bTrait);
+                    // 从原亚种单位列表移除
+                    oldSpecies.units.Remove(actor);
+                }
+
+                // 设置新亚种名（反射）
+                SetSubspeciesName(newSpecies, subspeciesName);
+                // 切换单位亚种
+                actor.setSubspecies(newSpecies);
+
+                Debug.Log($"[超神机械师] {actor.Name} 亚种已改为：{subspeciesName}");
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[超神机械师] 创建独立亚种失败: {e.Message}");
+            }
+        }
+
+        private static void SetSubspeciesName(Subspecies species, string name)
+        {
+            try
+            {
+                var nameField = species.GetType().GetField("name",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (nameField != null)
+                {
+                    nameField.SetValue(species, name);
+                }
+                else
+                {
+                    var setName = species.GetType().GetMethod("set_name",
+                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    setName?.Invoke(species, new object[] { name });
+                }
+                // 同步本地化名称
+                var nameLocField = species.GetType().GetField("name_localized",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (nameLocField != null)
+                {
+                    var locText = nameLocField.GetValue(species);
+                    if (locText != null)
+                    {
+                        var textField = locText.GetType().GetField("text",
+                            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                        textField?.SetValue(locText, name);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 设置亚种名失败: {e.Message}");
             }
         }
 
@@ -97,10 +170,8 @@ namespace SuperMech.Code
         public static string GetRaceName(Actor a)
         {
             if (a == null) return "碳基人类（黄）";
-            for (int i = EvolutionChain.Count - 1; i >= 0; i--)
-                if (a.hasTrait(EvolutionChain[i].id)) return EvolutionChain[i].name;
-            if (a.hasTrait(OriginalVoidForm)) return "虚空形态（旧种族）";
-            if (a.hasTrait(OriginalVoidGift)) return "虚空天赋（旧种族）";
+            if (a.hasTrait(TraitRoyalBlood)) return "黑星神系·王族血脉";
+            if (a.hasTrait(TraitBlackStarRace)) return "黑星族";
             return "碳基人类（黄）";
         }
     }
