@@ -4,8 +4,9 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 五系三分支选择系统。
-    /// 机械系分支来自原著ch50（枪炮师/机械师/械武者）。
+    /// 五系三分支转职系统。
+    /// 核心逻辑：选分支=转职，选完才是那个职业（不是先成为那个职业再选分支）。
+    /// 机械系分支来自原著ch50：见习机械师(tier3)20级时选分支，选完自动晋升磁环(tier4)。
     /// 其他四系分支参考B站同人二创《五大职业全套知识二创补全》：
     ///   武道=体魄/战术/超能，异能=攻效/循环/功能，
     ///   魔法=元素/变化/造物，念力=灵魂/法则/现实。
@@ -187,10 +188,12 @@ namespace SuperMech.Code
                     if (u == null || applied) return;
                     if (!u.hasTrait(b.classTrait)) return;
 
-                    // 机械系需磁环tier4，其他系需D阶以上
+                    // 转职逻辑：选分支=转职，选完才是那个职业
+                    // 机械系：需见习机械师(tier3)，选完分支自动晋升磁环(tier4)
+                    // 其他系：需D阶以上，选完分支定义职业方向
                     if (b.classTrait == SuperMechTraits.ClassMech)
                     {
-                        if (GetMechStageTier(u) < 4) return;
+                        if (GetMechStageTier(u) < 3) return;  // 见习机械师tier3
                     }
                     else
                     {
@@ -203,8 +206,18 @@ namespace SuperMech.Code
                     u.addTrait(b.traitId);
                     var stats = SuperMechStats.Of(u);
                     if (stats != null) b.applyBonus(stats);
+
+                    // 机械系：选完分支自动晋升磁环(tier4)——这才是一转
+                    if (b.classTrait == SuperMechTraits.ClassMech && GetMechStageTier(u) == 3)
+                    {
+                        u.addTrait(SuperMechTraits.MechMagnet);
+                        Debug.Log($"[超神机械师] {u.Name} 一转转职：{b.name}，晋升磁环阶段");
+                    }
+                    else
+                    {
+                        Debug.Log($"[超神机械师] {u.Name} 选择分支：{b.name}");
+                    }
                     applied = true;
-                    Debug.Log($"[超神机械师] {u.Name} 选择分支：{b.name}");
                 });
                 return applied;
             };
