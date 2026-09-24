@@ -143,6 +143,13 @@ namespace SuperMech.Code
             _qiMap[a.id] = cur + amount;
         }
 
+        /// <summary>直接设置气力值（复活/初始化用）。</summary>
+        public static void SetQi(Actor a, float value)
+        {
+            if (a == null) return;
+            _qiMap[a.id] = Mathf.Max(0, value);
+        }
+
         /// <summary>消耗气力（战斗/技能）。返回实际消耗量。</summary>
         public static float SpendQi(Actor a, float amount)
         {

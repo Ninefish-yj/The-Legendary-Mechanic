@@ -104,6 +104,11 @@ namespace SuperMech.Code
                 string relic = SuperMechRelic.GetCurrentRelicName(actor);
                 if (relic != "无")
                     ShowRow(__instance, "宝物", relic);
+
+                // 行12：次级维度状态
+                string dim = SuperMechDimension.GetActiveDimension(actor);
+                if (!string.IsNullOrEmpty(dim))
+                    ShowRow(__instance, "次级维度", dim + " 强化中");
             }
             catch (Exception e)
             {

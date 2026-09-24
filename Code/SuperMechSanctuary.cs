@@ -50,7 +50,28 @@ namespace SuperMech.Code
             public int total_visits = 0;                // 累计进入次数
             public bool message_board_unlocked = false; // 文明留言板
             public int total_divinity_ascensions = 0;   // 累计神性蜕变次数
+            public int total_resurrections = 0;         // 累计复活次数
         }
+
+        /// <summary>死者数据备份（用于圣所复活，ch1134：圣所功能之一是复苏死者）。</summary>
+        public class DeadUnitRecord
+        {
+            public string name;
+            public string classTrait;   // 五系觉醒特质id
+            public string branchTrait;  // 分支特质id
+            public int stage;           // 机械系职业阶段
+            public int rankIndex;       // 阶位索引
+            public float qi;            // 气力值
+            public string qiAttribute;  // 气力属性
+            public long diedAt;         // 死亡时间戳
+        }
+
+        // 可复活的死者列表（最近死亡的超能者）
+        private static readonly List<DeadUnitRecord> _deadUnits = new List<DeadUnitRecord>();
+        private static readonly Dictionary<long, DeadUnitRecord> _aliveSnapshot = new Dictionary<long, DeadUnitRecord>();
+        public const int MaxDeadRecords = 20;       // 最多保留20个死者
+        public const int ResurrectionCost = 5;      // 复活消耗钥匙碎片
+        public const int ResurrectionSanctuary = 2; // 需第三圣所（异能系）解锁
 
         public static void Load()
         {
@@ -216,6 +237,111 @@ namespace SuperMech.Code
             Data.key_fragments++;
             Save();
             Debug.Log($"[超神机械师] 获得圣所钥匙碎片（{Data.key_fragments}/3）");
+        }
+
+        // ========== 圣所复活（ch1134：圣所功能之一是复苏死者） ==========
+
+        /// <summary>定期追踪死者：快照存活单位，消失的自动加入可复活列表。</summary>
+        public static void TickDeadTracking()
+        {
+            var alive = World.world.units.units_only_alive;
+            if (alive == null) return;
+            var aliveIds = new HashSet<long>();
+
+            // 快照所有存活超能者
+            foreach (Actor a in alive)
+            {
+                if (a == null) continue;
+                aliveIds.Add(a.id);
+                if (SuperMechAdvancement.IsSuperMechUnit(a) && SuperMechAdvancement.GetRankIndex(a) >= 3) // D阶以上才记录
+                {
+                    _aliveSnapshot[a.id] = new DeadUnitRecord
+                    {
+                        name = a.Name ?? "未知",
+                        classTrait = GetClassTrait(a),
+                        branchTrait = SuperMechBranch.GetBranchTrait(a),
+                        stage = SuperMechStage.GetStage(a),
+                        rankIndex = SuperMechAdvancement.GetRankIndex(a),
+                        qi = SuperMechQi.GetQi(a),
+                        qiAttribute = SuperMechQiAttribute.GetAttribute(a),
+                        diedAt = 0
+                    };
+                }
+            }
+
+            // 找出刚死亡的单位
+            var deadIds = new List<long>();
+            foreach (var kv in _aliveSnapshot)
+            {
+                if (!aliveIds.Contains(kv.Key)) deadIds.Add(kv.Key);
+            }
+            foreach (long id in deadIds)
+            {
+                var rec = _aliveSnapshot[id];
+                rec.diedAt = System.DateTime.Now.Ticks;
+                _deadUnits.Insert(0, rec);
+                _aliveSnapshot.Remove(id);
+                if (_deadUnits.Count > MaxDeadRecords) _deadUnits.RemoveAt(_deadUnits.Count - 1);
+                Debug.Log($"[超神机械师] {rec.name} 已死亡，圣所记录可复活（{_deadUnits.Count}/{MaxDeadRecords}）");
+            }
+        }
+
+        /// <summary>获取可复活列表。</summary>
+        public static List<DeadUnitRecord> GetDeadList() => _deadUnits;
+
+        /// <summary>第三圣所是否已解锁（复活前置条件）。</summary>
+        public static bool CanResurrect()
+        {
+            return (Data.unlocked_sanctuaries & (1 << ResurrectionSanctuary)) != 0
+                   && Data.key_fragments >= ResurrectionCost;
+        }
+
+        /// <summary>复活指定索引的死者，在指定位置生成。</summary>
+        public static Actor Resurrect(int deadIndex, WorldTile tile)
+        {
+            if (!CanResurrect())
+            {
+                Debug.Log("[超神机械师] 无法复活：第三圣所未解锁或钥匙碎片不足");
+                return null;
+            }
+            if (deadIndex < 0 || deadIndex >= _deadUnits.Count) return null;
+            var rec = _deadUnits[deadIndex];
+
+            // 消耗钥匙碎片
+            Data.key_fragments -= ResurrectionCost;
+            Data.total_resurrections++;
+            _deadUnits.RemoveAt(deadIndex);
+
+            // 在指定位置生成新单位（用人类种族）
+            Actor a = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
+            if (a == null) return null;
+
+            // 恢复职业数据
+            if (!string.IsNullOrEmpty(rec.classTrait)) a.addTrait(rec.classTrait);
+            if (!string.IsNullOrEmpty(rec.branchTrait)) a.addTrait(rec.branchTrait);
+            if (rec.stage > 0) SuperMechStage.SetStage(a, rec.stage);
+            if (rec.rankIndex >= 0)
+            {
+                string rankId = SuperMechRanks.All[rec.rankIndex].id;
+                a.addTrait(rankId);
+            }
+            SuperMechQi.SetQi(a, rec.qi * 0.8f);  // 复活后气力为80%
+            if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
+                SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
+
+            Save();
+            Debug.Log($"[超神机械师] 圣所复活：{rec.name}（消耗{ResurrectionCost}钥匙碎片，累计{Data.total_resurrections}次）");
+            return a;
+        }
+
+        private static string GetClassTrait(Actor a)
+        {
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return SuperMechTraits.ClassMech;
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return SuperMechTraits.ClassMartial;
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return SuperMechTraits.ClassPsi;
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return SuperMechTraits.ClassMage;
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return SuperMechTraits.ClassMind;
+            return null;
         }
 
         public static void Register()

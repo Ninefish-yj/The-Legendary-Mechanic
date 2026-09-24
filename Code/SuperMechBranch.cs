@@ -124,5 +124,16 @@ namespace SuperMech.Code
             }
             return "未选择";
         }
+
+        /// <summary>获取单位分支特质id（复活用）。</summary>
+        public static string GetBranchTrait(Actor a)
+        {
+            if (a == null) return null;
+            foreach (var b in AllBranches)
+            {
+                if (a.hasTrait(b.traitId)) return b.traitId;
+            }
+            return null;
+        }
     }
 }

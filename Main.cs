@@ -87,6 +87,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 修炼功法异常: " + e.Message); }
                 try { SuperMechSanctuary.TickDivinity(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 神性蜕变异常: " + e.Message); }
+                try { SuperMechSanctuary.TickDeadTracking(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 死者追踪异常: " + e.Message); }
                 try { SuperMechSubClass.TickSubLevels(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 副职业等级异常: " + e.Message); }
                 try { SuperMechRelic.TickRelicDrops(); }
