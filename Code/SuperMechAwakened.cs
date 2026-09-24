@@ -149,12 +149,11 @@ namespace SuperMech.Code
             // 转职后等级重置为1，经验清零
             _level[a.data.id] = 1;
             _xp[a.data.id] = 0;
-            // 第一次转职（阶段1→2）需要选分支
+            // 第一次转职（阶段1→2）自动选分支（AI按系随机选最优分支）
             int newStage = SuperMechStage.GetStage(a);
-            if (newStage == 2 && !SuperMechBranch.HasAnyBranch(a, SuperMechTraits.ClassMech))
+            if (newStage == 2)
             {
-                // 机械系默认选机械师分支（韩萧路线）
-                // 其他系在面板中选择
+                AutoSelectBranch(a);
             }
             Debug.Log($"[超神机械师] {a.Name} 转职到阶段{newStage}：{SuperMechStage.GetStageName(a)}");
             return true;
@@ -179,6 +178,94 @@ namespace SuperMech.Code
             if (a == null) return;
             _level.Remove(a.data.id);
             _xp.Remove(a.data.id);
+        }
+
+        /// <summary>
+        /// 降临者自动成长AI（WorldBox玩家是神，不需要逐个单位手动操作）。
+        /// 降临者有面板优势，AI自动按最优路线成长：
+        /// 1. 自动转职（达到等级上限）
+        /// 2. 自动分配潜能点（按分支优先解锁知识）
+        /// 3. 自动加神性蜕变点数（优先职业路线）
+        /// 4. 自动尝试超神突破（条件满足时）
+        /// 玩家仍可用神权干预，但不需要微操。
+        /// </summary>
+        public static void TickAutoPlay()
+        {
+            var units = World.world.units.units_only_alive;
+            if (units == null) return;
+
+            foreach (Actor a in units)
+            {
+                if (a == null) continue;
+                if (!IsAwakened(a)) continue;
+
+                // 1. 自动转职（达到等级上限）
+                if (CanAdvanceStage(a))
+                {
+                    TryAdvanceStage(a);
+                }
+
+                // 2. 自动分配潜能点（解锁知识树）
+                int pot = SuperMechPotential.GetPotential(a);
+                if (pot >= 2)
+                {
+                    AutoUnlockKnowledge(a);
+                }
+
+                // 3. 自动加神性蜕变点数（优先职业路线）
+                int divPoints = SuperMechDivinity.GetPoints(a);
+                if (divPoints >= SuperMechDivinity.PointsPerLayer)
+                {
+                    int prof = SuperMechDivinity.GetProfLayers(a);
+                    int spec = SuperMechDivinity.GetSpeciesLayers(a);
+                    // 优先职业路线，平衡发展
+                    if (prof <= spec && prof < SuperMechDivinity.MaxLayers)
+                        SuperMechDivinity.SpendPoints(a, "profession");
+                    else if (spec < SuperMechDivinity.MaxLayers)
+                        SuperMechDivinity.SpendPoints(a, "species");
+                    else if (prof < SuperMechDivinity.MaxLayers)
+                        SuperMechDivinity.SpendPoints(a, "profession");
+                }
+
+                // 4. 自动尝试超神突破（条件满足时）
+                if (SuperMechTranscendence.CanAttempt(a))
+                {
+                    // 有50%概率尝试，避免所有单位同时突破
+                    if (Random.value < 0.5f)
+                    {
+                        SuperMechTranscendence.AttemptTranscend(a);
+                    }
+                }
+            }
+        }
+
+        /// <summary>AI自动解锁知识树节点（按分支优先）。</summary>
+        private static void AutoUnlockKnowledge(Actor a)
+        {
+            string cls = SuperMechBranch.GetClass(a);
+            string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
+            int unlocked = SuperMechPotential.GetUnlockedCount(a);
+            string nodeId = $"{prefix}_{unlocked + 1}";
+            int cost = 2;
+            // 转职后其他分支费用×3（ch611），AI只解锁本系知识
+            SuperMechPotential.UnlockNode(a, nodeId, cost);
+        }
+
+        /// <summary>AI自动选择分支（第一次转职时）。</summary>
+        private static void AutoSelectBranch(Actor a)
+        {
+            string cls = SuperMechBranch.GetClass(a);
+            var branches = SuperMechBranch.GetBranchesForClass(
+                cls == "机械系" ? SuperMechTraits.ClassMech :
+                cls == "武道系" ? SuperMechTraits.ClassMartial :
+                cls == "异能系" ? SuperMechTraits.ClassPsi :
+                cls == "魔法系" ? SuperMechTraits.ClassMage :
+                SuperMechTraits.ClassMind);
+            if (branches == null || branches.Count == 0) return;
+            // 随机选一个分支（AI随机，玩家可用神权覆盖）
+            var b = branches[Random.Range(0, branches.Count)];
+            a.addTrait(b.traitId);
+            Debug.Log($"[超神机械师] {a.Name} 自动选择分支：{b.name}");
         }
 
         /// <summary>Tick：降临者获取经验（战斗中加速，非战斗缓慢获取）。</summary>
