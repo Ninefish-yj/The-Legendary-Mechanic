@@ -39,6 +39,10 @@ namespace SuperMech.Code
             ("sm_craft_mech",      "ui/powers/power_summon_units", "制造·战斗机甲",   "点击机械师单位，制造机甲（气力+20，需磁环tier4）"),
             ("sm_craft_fortress",  "ui/powers/power_summon_units", "制造·战争堡垒",   "点击机械师单位，制造堡垒（气力+50，需战争tier6）"),
             ("sm_craft_virtual",   "ui/powers/power_summon_units", "制造·虚拟生命体", "点击机械师单位，制造虚拟生命（气力+80，需虚拟tier7）"),
+            // 三分支选择（原著 ch50：磁环后选分支，转职后其他分支费用×3）
+            ("sm_select_gunner",   "ui/powers/power_bless", "选择·枪炮师",   "点击磁环以上机械师，选枪炮师分支（伤害+30%攻速+20%）"),
+            ("sm_select_mech",     "ui/powers/power_bless", "选择·机械师",   "点击磁环以上机械师，选机械师分支（制造+50%智力+10）"),
+            ("sm_select_martial",  "ui/powers/power_bless", "选择·械武者",   "点击磁环以上机械师，选械武者分支（生命+40%护甲+30%）"),
         };
 
         public static void Init()

@@ -1,5 +1,6 @@
 using NeoModLoader.api;
 using NeoModLoader.services;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace SuperMech.Code
@@ -7,8 +8,8 @@ namespace SuperMech.Code
     /// <summary>
     /// 宇宙宝物/装备品质系统（原著）：
     /// 品质从低到高：劣质灰→普通白→良好绿→优质蓝→极佳紫→珍稀粉→传说橙→神器红→金装（宇宙宝物）
-    /// 银装带"传承"属性。
-    /// 实现：每个品质一个特质，给不同倍率的 damage/health 加成。
+    /// 战斗中概率掉落宝物，品质随击杀者阶位提升。
+    /// 同时只能装备一个品质（高级替换低级）。
     /// </summary>
     public static class SuperMechRelic
     {
@@ -22,6 +23,18 @@ namespace SuperMech.Code
         public const string QOrange  = "sm_relic_orange";  // 传说橙
         public const string QRed     = "sm_relic_red";     // 神器红
         public const string QGold    = "sm_relic_gold";    // 金装（宇宙宝物）
+
+        public static readonly string[] QualityOrder = {
+            QGray, QWhite, QGreen, QBlue, QPurple, QPink, QOrange, QRed, QGold
+        };
+        public static readonly string[] QualityNames = {
+            "劣质灰", "普通白", "良好绿", "优质蓝", "极佳紫", "珍稀粉", "传说橙", "神器红", "金装"
+        };
+
+        // 上次生命值（检测战斗结束）
+        private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
+        // 战斗中累计时间（用于掉落判定）
+        private static readonly Dictionary<long, float> _combatTime = new Dictionary<long, float>();
 
         public static void Register()
         {
@@ -51,13 +64,108 @@ namespace SuperMech.Code
             givePower.click_action += (WorldTile tile, string powerId) =>
             {
                 if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { a.addTrait(QGold); });
+                tile.doUnits(delegate (Actor a) { EquipRelic(a, 8); });
                 return true;
             };
             AssetManager.powers.add(givePower);
             LocalizedTextManager.add("power_sm_give_relic_gold", "赐予宇宙宝物（金装）", pReplace: true);
 
-            Debug.Log("[超神机械师] 宇宙宝物系统注册完成：9级品质");
+            Debug.Log("[超神机械师] 宇宙宝物系统注册完成：9级品质+战斗掉落");
+        }
+
+        /// <summary>每tick：战斗中概率掉落宝物。</summary>
+        public static void TickRelicDrops()
+        {
+            var units = World.world.units.units_only_alive;
+            if (units == null) return;
+            float tickInterval = SuperMechConfig.TickInterval;
+
+            foreach (Actor a in units)
+            {
+                if (a == null) continue;
+                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+
+                float curHealth = a.data.health;
+                float lastH;
+                _lastHealth.TryGetValue(a.id, out lastH);
+                bool inCombat = curHealth < lastH - 0.5f || SuperMechQi.IsInCombat(a);
+                _lastHealth[a.id] = curHealth;
+
+                if (inCombat)
+                {
+                    // 累计战斗时间
+                    float ct;
+                    _combatTime.TryGetValue(a.id, out ct);
+                    _combatTime[a.id] = ct + tickInterval;
+                }
+                else
+                {
+                    // 脱离战斗：如果战斗时间超过10秒，概率掉落宝物
+                    float ct;
+                    if (_combatTime.TryGetValue(a.id, out ct) && ct >= 10f)
+                    {
+                        _combatTime[a.id] = 0f;
+                        TryDropRelic(a);
+                    }
+                    else if (ct > 0)
+                    {
+                        _combatTime[a.id] = 0f;
+                    }
+                }
+            }
+        }
+
+        /// <summary>尝试掉落宝物。品质随阶位提升。</summary>
+        private static void TryDropRelic(Actor a)
+        {
+            // 基础掉落率10%，每阶位+2%
+            int rank = SuperMechAdvancement.GetRankIndex(a);
+            float dropChance = 0.1f + rank * 0.02f;
+            if (Random.value > dropChance) return;
+
+            // 品质roll：基础0-3，阶位越高roll上限越高
+            int maxQuality = Mathf.Min(3 + rank / 2, 8);
+            int quality = Random.Range(0, maxQuality + 1);
+
+            EquipRelic(a, quality);
+            if (SuperMechConfig.LogVerbose)
+                Debug.Log($"[超神机械师] {a.Name} 战斗掉落宝物：{QualityNames[quality]}（掉落率{dropChance:F0%}）");
+        }
+
+        /// <summary>装备宝物（高级替换低级）。</summary>
+        public static void EquipRelic(Actor a, int qualityIndex)
+        {
+            if (a == null || qualityIndex < 0 || qualityIndex >= QualityOrder.Length) return;
+
+            // 检查是否已有更高级宝物
+            int current = GetCurrentRelicIndex(a);
+            if (current >= qualityIndex) return;
+
+            // 移除低级宝物
+            for (int i = 0; i <= current; i++)
+            {
+                if (a.hasTrait(QualityOrder[i])) a.removeTrait(QualityOrder[i]);
+            }
+
+            // 装备新宝物
+            a.addTrait(QualityOrder[qualityIndex]);
+        }
+
+        /// <summary>获取当前装备宝物等级。</summary>
+        public static int GetCurrentRelicIndex(Actor a)
+        {
+            for (int i = QualityOrder.Length - 1; i >= 0; i--)
+            {
+                if (a.hasTrait(QualityOrder[i])) return i;
+            }
+            return -1;
+        }
+
+        /// <summary>获取当前装备宝物名。</summary>
+        public static string GetCurrentRelicName(Actor a)
+        {
+            int idx = GetCurrentRelicIndex(a);
+            return idx >= 0 ? QualityNames[idx] : "无";
         }
 
         private static void AddRelic(string id, string name, float dmgMul, float hpMul)

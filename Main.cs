@@ -28,6 +28,7 @@ namespace SuperMech
             SuperMechCorePower.Register();
             SuperMechPerks.Register();
             SuperMechSubClass.Register();
+            SuperMechBranch.Register();
             SuperMechRefinement.Register();
             SuperMechCultivation.Register();
             SuperMechRelic.Register();
@@ -81,6 +82,10 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 修炼功法异常: " + e.Message); }
                 try { SuperMechSanctuary.TickDivinity(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 神性蜕变异常: " + e.Message); }
+                try { SuperMechSubClass.TickSubLevels(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 副职业等级异常: " + e.Message); }
+                try { SuperMechRelic.TickRelicDrops(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 宝物掉落异常: " + e.Message); }
             }
         }
     }

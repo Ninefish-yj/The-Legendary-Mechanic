@@ -76,5 +76,15 @@ namespace SuperMech.Code
                 || a.hasTrait(SuperMechTraits.ClassMage)
                 || a.hasTrait(SuperMechTraits.ClassMind);
         }
+
+        /// <summary>获取单位阶位索引（0=F, 13=X）。</summary>
+        public static int GetRankIndex(Actor a)
+        {
+            for (int i = SuperMechRanks.All.Count - 1; i >= 0; i--)
+            {
+                if (a.hasTrait(SuperMechRanks.All[i].id)) return i;
+            }
+            return 0;
+        }
     }
 }

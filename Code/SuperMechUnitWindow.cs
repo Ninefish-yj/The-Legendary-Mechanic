@@ -80,6 +80,23 @@ namespace SuperMech.Code
                 }
                 sanText += "]";
                 ShowRow(__instance, "圣所", sanText);
+
+                // 行9：机械系分支（原著 ch50：枪炮师/机械师/械武者）
+                if (actor.hasTrait(SuperMechTraits.ClassMech))
+                {
+                    string branch = SuperMechBranch.GetBranchName(actor);
+                    ShowRow(__instance, "分支", branch);
+                }
+
+                // 行10：副职业等级（原著：特工lv9/黑夜潜行者lv10）
+                string subText = SuperMechSubClass.GetSubLevelText(actor);
+                if (!string.IsNullOrEmpty(subText))
+                    ShowRow(__instance, "副职业", subText);
+
+                // 行11：装备宝物（9级品质）
+                string relic = SuperMechRelic.GetCurrentRelicName(actor);
+                if (relic != "无")
+                    ShowRow(__instance, "宝物", relic);
             }
             catch (Exception e)
             {
