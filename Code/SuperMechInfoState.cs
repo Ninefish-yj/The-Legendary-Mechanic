@@ -86,6 +86,32 @@ namespace SuperMech.Code
         }
 
         /// <summary>
+        /// 信息态克制世界树（ch1309：第六圣所专门克制世界树）。
+        /// 对植物/树灵类单位额外伤害。
+        /// </summary>
+        public static float GetWorldTreeBonus(Actor a, Actor target)
+        {
+            int lv = GetLevel(a);
+            if (lv <= 0 || target == null) return 1f;
+            // 检测目标是否为植物/树灵类（WorldBox中植物单位）
+            string asset = target.asset?.id ?? "";
+            if (asset.Contains("plant") || asset.Contains("tree") || asset.Contains("ent") ||
+                target.hasTrait("plant") || target.hasTrait("tree_ent"))
+            {
+                return 1f + lv * 0.10f; // 每级+10%对植物伤害
+            }
+            return 1f;
+        }
+
+        /// <summary>
+        /// 高维信息态形态（ch1141：Lv5时可短暂进入高维信息态，免疫物理攻击）。
+        /// </summary>
+        public static bool IsHighDimensional(Actor a)
+        {
+            return GetLevel(a) >= MaxLevel;
+        }
+
+        /// <summary>
         /// 信息态护盾：概率免疫物理攻击（ch1141：实体↔信息态切换）。
         /// 每级10%概率，最高50%，有冷却。
         /// </summary>
@@ -184,9 +210,11 @@ namespace SuperMech.Code
             text += $"穿甲{lv * 5}% ";
             text += $"护盾{lv * 10}% ";
             text += $"扰动-{lv * 3}% ";
+            text += $"克树{lv * 10}% ";
             if (lv >= 2) text += "感知 ";
             if (lv >= 3) text += "遗力感知 ";
             if (lv >= 4) text += "转化 ";
+            if (lv >= 5) text += "高维形态 ";
             return text.Trim();
         }
 

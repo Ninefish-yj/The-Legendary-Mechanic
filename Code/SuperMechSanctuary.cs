@@ -262,6 +262,9 @@ namespace SuperMech.Code
                 s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * buff;
             }
 
+            // 各系圣所特殊加成（按单位系别触发对应圣所的知识传承）
+            ApplySanctuaryClassBonus(a, s);
+
             // 第六圣所（信息态）已解锁时，进入圣所提升信息态等级（ch1309：第六圣所=信息态技术）
             if ((Data.unlocked_sanctuaries & (1 << 5)) != 0)
             {
@@ -272,6 +275,70 @@ namespace SuperMech.Code
 
             string className = GetClassTrait(a) ?? "未知";
             Debug.Log($"[超神机械师] {a.Name} 进入圣所！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
+        }
+
+        /// <summary>
+        /// 各系圣所特殊加成（按单位系别触发对应圣所的知识传承）。
+        /// 第一圣所=机械技术，第二=武道功法，第三=基因技术，第四=魔法知识，第五=灵魂技术。
+        /// </summary>
+        private static void ApplySanctuaryClassBonus(Actor a, Dictionary<string, float> s)
+        {
+            if (a == null) return;
+            string cls = SuperMechBranch.GetClass(a);
+            int visits = Data.total_visits;
+
+            switch (cls)
+            {
+                case "机械系":
+                    // 第一圣所：机械技术传承（ch1039：泰尔克斯机械传承）
+                    if (s != null)
+                    {
+                        s["intelligence"] = (s["intelligence"] ?? 0f) + 5f + visits;
+                        s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 1.03f;
+                        s["crafting_speed"] = (s["crafting_speed"] ?? 1f) * 1.05f;
+                    }
+                    break;
+
+                case "武道系":
+                    // 第二圣所：武道功法传承（气力修炼法）
+                    SuperMechQi.AddQiMax(a, 500f + visits * 50f);
+                    if (s != null)
+                    {
+                        s["strength"] = (s["strength"] ?? 0f) + 3f + visits;
+                        s["endurance"] = (s["endurance"] ?? 0f) + 3f + visits;
+                    }
+                    break;
+
+                case "异能系":
+                    // 第三圣所：基因技术传承（ch1050：原始异能体是钥匙）
+                    if (s != null)
+                    {
+                        s["intelligence"] = (s["intelligence"] ?? 0f) + 4f + visits;
+                        s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 1.02f;
+                        s["gene_strength"] = (s["gene_strength"] ?? 0f) + 10f;
+                    }
+                    break;
+
+                case "魔法系":
+                    // 第四圣所：魔法知识传承
+                    if (s != null)
+                    {
+                        s["intelligence"] = (s["intelligence"] ?? 0f) + 4f + visits;
+                        s["mana"] = (s["mana"] ?? 0f) + 50f + visits * 5f;
+                        s["spell_power"] = (s["spell_power"] ?? 1f) * 1.03f;
+                    }
+                    break;
+
+                case "念力系":
+                    // 第五圣所：灵魂技术传承（精神力修炼）
+                    if (s != null)
+                    {
+                        s["intelligence"] = (s["intelligence"] ?? 0f) + 5f + visits;
+                        s["willpower"] = (s["willpower"] ?? 0f) + 3f + visits;
+                        s["mind_power"] = (s["mind_power"] ?? 0f) + 20f;
+                    }
+                    break;
+            }
         }
 
         private static int CountUnlocked()

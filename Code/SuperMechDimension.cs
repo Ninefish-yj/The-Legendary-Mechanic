@@ -77,6 +77,17 @@ namespace SuperMech.Code
                     s["multiplier_damage"] = (s["multiplier_damage"]??1f) * 1.2f;
                 }
             },
+            new DimensionDef
+            {
+                id = "infostate", name = "信息态维度", desc = "高维信息态空间（ch1211），全属性+10%，穿甲+15%，免疫控制",
+                classTrait = null, // 信息态维度对所有系开放，但需要第六圣所解锁
+                applyBuff = s => {
+                    s["multiplier_damage"] = (s["multiplier_damage"]??1f) * 1.1f;
+                    s["multiplier_health"] = (s["multiplier_health"]??1f) * 1.1f;
+                    s["intelligence"] = (s["intelligence"]??0f) + 15f;
+                    s["armor_penetration"] = (s["armor_penetration"]??0f) + 0.15f;
+                }
+            },
         };
 
         // 单位当前所在维度（null=不在维度中）
