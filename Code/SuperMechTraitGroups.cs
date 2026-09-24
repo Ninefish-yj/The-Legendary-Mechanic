@@ -16,11 +16,6 @@ namespace SuperMech.Code
         {
             ("sm_ranks",        "阶位",       "#FFD700"),
             ("sm_classes",      "五系觉醒",   "#00BFFF"),
-            ("sm_mech_shared",  "机械·共用阶段", "#FF8C00"),
-            ("sm_mech_routes",  "机械·磁环路线", "#FFA500"),
-            ("sm_mech_virtual", "机械·虚拟系", "#9370DB"),
-            ("sm_mech_weapon",  "机械·武装系", "#DC143C"),
-            ("sm_mech_energy",  "机械·能量系", "#00CED1"),
             ("sm_branches",     "职业分支",   "#9370DB"),
             ("sm_perks",        "专长",       "#FFD700"),
             ("sm_gene",         "异能基因链", "#32CD32"),
