@@ -29,6 +29,10 @@ namespace SuperMech.Code
             ("sm_give_sm_pcult_resonance",   "ui/powers/power_bless",        "传授：基因共鸣", "点击异能系单位，传授基因共鸣功法"),
             ("sm_give_sm_pcult_meditation",  "ui/powers/power_bless",        "传授：冥想",     "点击魔法系单位，传授冥想功法"),
             ("sm_give_sm_pcult_mind_train",  "ui/powers/power_bless",        "传授：心灵锻炼", "点击念力系单位，传授心灵锻炼功法"),
+            (SuperMechPowers.CheckPotential, "ui/powers/power_bless",        "查看潜能点",     "点击单位，查看气力/潜能点/觉醒点/已解锁知识"),
+            (SuperMechPowers.UnlockArmed,    "ui/powers/power_bless",        "解锁·武装系知识", "点击机械系单位，消耗2潜能点解锁武装系知识节点（转职后其他分支×3）"),
+            (SuperMechPowers.UnlockEnergy,   "ui/powers/power_bless",        "解锁·能量系知识", "点击机械系单位，消耗2潜能点解锁能量系知识节点（转职后其他分支×3）"),
+            (SuperMechPowers.UnlockVirtual,  "ui/powers/power_bless",        "解锁·虚拟系知识", "点击机械系单位，消耗3潜能点解锁虚拟系知识节点（转职后其他分支×3）"),
         };
 
         public static void Init()

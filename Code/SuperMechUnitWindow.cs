@@ -52,6 +52,13 @@ namespace SuperMech.Code
                 // 行5：欧纳（能级）
                 float onar = SuperMechAdvancement.CalcOnar(actor);
                 ShowRow(__instance, "欧纳", $"{onar:F0}");
+
+                // 行6：潜能点/觉醒点（原著 ch3/ch50/ch1201）
+                int pot = SuperMechPotential.GetPotential(actor);
+                int awk = SuperMechPotential.GetAwakening(actor);
+                int unlocked = SuperMechPotential.GetUnlockedCount(actor);
+                string potText = awk > 0 ? $"{pot}（觉醒点{awk}）" : $"{pot}";
+                ShowRow(__instance, "潜能点", $"{potText} | 知识{unlocked}个");
             }
             catch (Exception e)
             {

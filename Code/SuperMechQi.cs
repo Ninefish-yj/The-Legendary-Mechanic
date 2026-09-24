@@ -93,16 +93,33 @@ namespace SuperMech.Code
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()
                 };
-                // 属性加成：随等级递增，Lv6后解锁伤害加成（分水岭）
-                t.base_stats["warfare"] = lv;
-                t.base_stats["multiplier_health"] = 1f + lv * 0.15f;
-                if (lv >= 6)
+                // 原著气力加成表（ch50机械师学徒基准，外推至40级）：
+                // Lv1(10): 力量+1 敏捷+1 耐力+1 智力+1 体力上限+20 机械威力+1% 制造速度+1%
+                // Lv2(50): 力量+3 敏捷+2 耐力+3 智力+1 体力上限+50 机械威力+2% 制造速度+2%
+                // Lv3(100):力量+3 敏捷+3 耐力+5 智力+2 体力上限+100 机械威力+3% 制造速度+3%
+                // 映射到WorldBox stat key：
+                //   力量→damage/warfare, 敏捷→speed/attack_speed, 耐力→health/stamina/armor,
+                //   智力→intelligence, 体力上限→stamina, 机械威力→multiplier_damage, 制造速度→experience
+                t.base_stats["damage"] = lv * 2f;               // 力量
+                t.base_stats["warfare"] = lv;                   // 战斗技能（力量）
+                t.base_stats["intelligence"] = lv;              // 智力
+                t.base_stats["health"] = lv * 15f;              // 耐力→生命
+                t.base_stats["stamina"] = lv * 12f;             // 耐力/体力上限
+                t.base_stats["armor"] = lv * 0.3f;              // 耐力→护甲
+                t.base_stats["speed"] = lv * 0.04f;             // 敏捷
+                t.base_stats["attack_speed"] = lv * 0.02f;      // 敏捷→攻速
+                t.base_stats["multiplier_damage"] = 1f + lv * 0.02f;   // 机械威力（Lv29=1.58x）
+                t.base_stats["multiplier_health"] = 1f + lv * 0.05f;   // 耐力倍率
+                t.base_stats["multiplier_stamina"] = 1f + lv * 0.03f;  // 体力上限倍率
+                t.base_stats["experience"] = 1f + lv * 0.01f;          // 制造速度→经验获取
+                if (lv >= 6)  // Lv6分水岭（原著ch146），额外暴击
                 {
-                    t.base_stats["multiplier_damage"] = 1f + (lv - 5) * 0.15f;
+                    t.base_stats["critical_chance"] = (lv - 5) * 0.01f;
+                    t.base_stats["multiplier_crit"] = 1f + (lv - 5) * 0.05f;
                 }
                 AssetManager.traits.add(t);
             }
-            Debug.Log($"[超神机械师] 气力等级注册完成：{Thresholds.Length} 级（隐藏特质，单位面板显示）");
+            Debug.Log($"[超神机械师] 气力等级注册完成：{Thresholds.Length} 级（隐藏特质，原著属性加成表）");
         }
 
         /// <summary>获取单位气力值。</summary>

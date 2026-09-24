@@ -70,6 +70,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 自动收藏异常: " + e.Message); }
                 try { SuperMechQi.TickQiLevels(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 气力等级异常: " + e.Message); }
+                try { SuperMechPotential.TickPotential(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 潜能点异常: " + e.Message); }
                 try { SuperMechCorePower.TickCorePowers(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 核心能量异常: " + e.Message); }
                 try { SuperMechRefinement.TickRefinement(); }

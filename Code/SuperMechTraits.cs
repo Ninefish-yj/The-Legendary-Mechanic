@@ -261,8 +261,23 @@ namespace SuperMech.Code
                 id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = groupId,
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
-            t.base_stats["intelligence"] = 2f * tier;
-            t.base_stats["multiplier_damage"] = 1f + tier * 0.05f;
+            // 原著转职奖励（ch3/ch50/ch237/ch362/ch477/ch539/ch684/ch717/ch770/ch890/ch957/ch1039）：
+            // 每次转职给气力+属性点，阶位越高给的越多。tier=1(机械爱好者)→tier=14(超神机械师)。
+            t.base_stats["intelligence"] = 2f * tier;               // 智力（机械系主属性）
+            t.base_stats["damage"] = 3f * tier;                     // 力量→伤害
+            t.base_stats["health"] = 20f * tier;                    // 耐力→生命
+            t.base_stats["stamina"] = 15f * tier;                   // 耐力→体力
+            t.base_stats["speed"] = 0.1f * tier;                    // 敏捷
+            t.base_stats["armor"] = 0.5f * tier;                    // 耐力→护甲
+            t.base_stats["warfare"] = tier;                         // 战斗技能
+            t.base_stats["multiplier_damage"] = 1f + tier * 0.05f;  // 机械威力
+            t.base_stats["multiplier_health"] = 1f + tier * 0.08f;  // 生存能力
+            t.base_stats["experience"] = 1f + tier * 0.02f;         // 制造/经验获取
+            if (tier >= 5)  // 磁环后解锁械力，额外暴击和攻速
+            {
+                t.base_stats["critical_chance"] = (tier - 4) * 0.01f;
+                t.base_stats["attack_speed"] = (tier - 4) * 0.03f;
+            }
             AssetManager.traits.add(t);
         }
 
