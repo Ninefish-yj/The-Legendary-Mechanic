@@ -18,6 +18,17 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechSanctuary
     {
+        // 六圣所名称与对应系（原著 ch1039/ch1050/ch1362）：
+        // 第一圣所=机械系(机械技术) 第二圣所=武道系 第三圣所=异能系(基因技术)
+        // 第四圣所=魔法系 第五圣所=念力系 第六圣所=信息态技术(克制世界树，最难获取)
+        public static readonly string[] SanctuaryNames = {
+            "第一圣所·机械", "第二圣所·武道", "第三圣所·异能",
+            "第四圣所·魔法", "第五圣所·念力", "第六圣所·信息态"
+        };
+        public static readonly string[] SanctuaryClasses = {
+            "机械系", "武道系", "异能系", "魔法系", "念力系", "信息态"
+        };
+
         public const int TotalSanctuaries = 6;
         public const float DivinityOnarThreshold = 78000f;  // 神性蜕变欧纳门槛（ch1039）
         public const int DivinityQiLevel = 21;               // 神性蜕变气力门槛（ch1039）
@@ -107,24 +118,20 @@ namespace SuperMech.Code
             _divinityTriggered.Add(a.id);
             Data.total_divinity_ascensions++;
 
-            // 确定圣所类型：机械系→第一圣所(0)，异能系→第三圣所(2)，其他→通用碎片
+            // 确定圣所类型：五系各对应一个圣所（原著 ch1362）
+            // 第一=机械 第二=武道 第三=异能 第四=魔法 第五=念力
             int sanctuaryIndex = -1;
-            string sanctuaryName = "";
-            if (a.hasTrait(SuperMechTraits.ClassMech))
-            {
-                sanctuaryIndex = 0;  // 第一圣所
-                sanctuaryName = "第一圣所";
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassPsi))
-            {
-                sanctuaryIndex = 2;  // 第三圣所
-                sanctuaryName = "第三圣所";
-            }
+            if (a.hasTrait(SuperMechTraits.ClassMech)) sanctuaryIndex = 0;
+            else if (a.hasTrait(SuperMechTraits.ClassMartial)) sanctuaryIndex = 1;
+            else if (a.hasTrait(SuperMechTraits.ClassPsi)) sanctuaryIndex = 2;
+            else if (a.hasTrait(SuperMechTraits.ClassMage)) sanctuaryIndex = 3;
+            else if (a.hasTrait(SuperMechTraits.ClassMind)) sanctuaryIndex = 4;
 
             if (sanctuaryIndex >= 0)
             {
                 Data.sanctuary_fragments[sanctuaryIndex]++;
-                Debug.Log($"[超神机械师] {a.Name} 神性蜕变！获得{sanctuaryName}技能碎片（{Data.sanctuary_fragments[sanctuaryIndex]}/{FragmentsToUnlock}）");
+                string sname = SanctuaryNames[sanctuaryIndex];
+                Debug.Log($"[超神机械师] {a.Name} 神性蜕变！获得{sname}技能碎片（{Data.sanctuary_fragments[sanctuaryIndex]}/{FragmentsToUnlock}）");
 
                 // 集齐碎片解锁圣所
                 if (Data.sanctuary_fragments[sanctuaryIndex] >= FragmentsToUnlock
@@ -132,7 +139,20 @@ namespace SuperMech.Code
                 {
                     Data.unlocked_sanctuaries |= (1 << sanctuaryIndex);
                     Data.total_permission++;
-                    Debug.Log($"[超神机械师] {sanctuaryName}已解锁！权限Lv{Data.total_permission}");
+                    Debug.Log($"[超神机械师] {sname}已解锁！权限Lv{Data.total_permission}");
+
+                    // 解锁前五圣所后，第六圣所（信息态）钥匙碎片出现（原著ch1362：最难获取）
+                    if (CountUnlocked() >= 5 && (Data.unlocked_sanctuaries & (1 << 5)) == 0)
+                    {
+                        Data.sanctuary_fragments[5]++;
+                        Debug.Log($"[超神机械师] 五圣所齐聚，第六圣所·信息态钥匙碎片出现！（{Data.sanctuary_fragments[5]}/{FragmentsToUnlock}）");
+                        if (Data.sanctuary_fragments[5] >= FragmentsToUnlock)
+                        {
+                            Data.unlocked_sanctuaries |= (1 << 5);
+                            Data.total_permission++;
+                            Debug.Log($"[超神机械师] 第六圣所·信息态已解锁！全圣所齐聚！");
+                        }
+                    }
                 }
             }
             else
