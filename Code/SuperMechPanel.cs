@@ -126,6 +126,7 @@ namespace SuperMech.Code
                     _frame.AddButton(Classes[idx].name, bx, y, 105f, 30f, () =>
                     {
                         a.addTrait(Classes[idx].trait);
+                        SuperMechSpecialty.AssignRandomSpecialty(a);
                         Debug.Log($"[超神机械师] {a.Name} 觉醒 {Classes[idx].name}");
                         Refresh();
                     }, Classes[idx].color);
@@ -139,7 +140,7 @@ namespace SuperMech.Code
                 {
                     _frame.AddLabel("◆ 转职·选择分支", leftX, y, 200f, 22f, 14);
                     y -= 28f;
-                    var branches = GetBranchesForClass(a);
+                    var branches = SuperMechBranch.GetBranchesForClass(GetClassTrait(a));
                     for (int i = 0; i < branches.Count; i++)
                     {
                         int idx = i;
@@ -246,54 +247,20 @@ namespace SuperMech.Code
             return "未觉醒";
         }
 
+        private static string GetClassTrait(Actor a)
+        {
+            foreach (var c in Classes)
+            {
+                if (a.hasTrait(c.trait)) return c.trait;
+            }
+            return null;
+        }
+
         private static bool CanSelectBranch(Actor a)
         {
             if (a.hasTrait(SuperMechTraits.ClassMech))
                 return GetMechStageTier(a) >= 3;  // 见习机械师
             return SuperMechAdvancement.GetRankIndex(a) >= 2;  // D阶
-        }
-
-        private static List<BranchInfo> GetBranchesForClass(Actor a)
-        {
-            var list = new List<BranchInfo>();
-            if (a.hasTrait(SuperMechTraits.ClassMech))
-            {
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchGunner, name = "枪炮师", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.3f; s["attack_speed"]=(s["attack_speed"]??0f)+0.2f; s["range"]=(s["range"]??0f)+2f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMech, name = "机械师", applyBonus = s => { s["experience"]=(s["experience"]??1f)*1.5f; s["intelligence"]=(s["intelligence"]??0f)+10f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartial, name = "械武者", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.4f; s["armor"]=(s["armor"]??0f)+5f; s["damage"]=(s["damage"]??0f)+10f; } });
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassMartial))
-            {
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartialBody, name = "体魄", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.5f; s["stamina"]=(s["stamina"]??0f)+20f; s["armor"]=(s["armor"]??0f)+3f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartialTactic, name = "战术", applyBonus = s => { s["attack_speed"]=(s["attack_speed"]??0f)+0.25f; s["critical_chance"]=(s["critical_chance"]??0f)+0.1f; s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.15f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMartialPower, name = "超能", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.4f; s["range"]=(s["range"]??0f)+3f; s["damage"]=(s["damage"]??0f)+8f; } });
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassPsi))
-            {
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchPsiAttack, name = "攻效", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.5f; s["critical_chance"]=(s["critical_chance"]??0f)+0.05f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchPsiCycle, name = "循环", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.3f; s["stamina"]=(s["stamina"]??0f)+25f; s["multiplier_stamina"]=(s["multiplier_stamina"]??1f)*1.2f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchPsiFunc, name = "功能", applyBonus = s => { s["intelligence"]=(s["intelligence"]??0f)+15f; s["attack_speed"]=(s["attack_speed"]??0f)+0.15f; s["range"]=(s["range"]??0f)+2f; } });
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassMage))
-            {
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMageElement, name = "元素", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.45f; s["critical_chance"]=(s["critical_chance"]??0f)+0.08f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMageChange, name = "变化", applyBonus = s => { s["attack_speed"]=(s["attack_speed"]??0f)+0.3f; s["speed"]=(s["speed"]??0f)+0.5f; s["intelligence"]=(s["intelligence"]??0f)+10f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMageCreate, name = "造物", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.35f; s["armor"]=(s["armor"]??0f)+5f; s["experience"]=(s["experience"]??1f)*1.3f; } });
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassMind))
-            {
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMindSoul, name = "灵魂", applyBonus = s => { s["intelligence"]=(s["intelligence"]??0f)+20f; s["critical_chance"]=(s["critical_chance"]??0f)+0.12f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMindLaw, name = "法则", applyBonus = s => { s["multiplier_damage"]=(s["multiplier_damage"]??1f)*1.35f; s["damage"]=(s["damage"]??0f)+5f; s["health"]=(s["health"]??0f)+15f; s["intelligence"]=(s["intelligence"]??0f)+5f; } });
-                list.Add(new BranchInfo { traitId = SuperMechBranch.BranchMindReality, name = "现实", applyBonus = s => { s["multiplier_health"]=(s["multiplier_health"]??1f)*1.45f; s["armor"]=(s["armor"]??0f)+8f; s["damage"]=(s["damage"]??0f)+12f; } });
-            }
-            return list;
-        }
-
-        private struct BranchInfo
-        {
-            public string traitId;
-            public string name;
-            public Action<BaseStats> applyBonus;
         }
 
         private static string GetMechStageName(Actor a)
