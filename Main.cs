@@ -79,6 +79,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 提炼法异常: " + e.Message); }
                 try { SuperMechCultivation.TickCultivation(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 修炼功法异常: " + e.Message); }
+                try { SuperMechSanctuary.TickDivinity(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 神性蜕变异常: " + e.Message); }
             }
         }
     }

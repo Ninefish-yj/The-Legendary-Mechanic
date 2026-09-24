@@ -72,6 +72,10 @@ namespace SuperMech.Code
 
         // 气力值追踪（unit.id -> qi值）
         private static readonly Dictionary<long, float> _qiMap = new Dictionary<long, float>();
+        // 上次生命值（用于检测战斗：血量下降=受击）
+        private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
+        // 战斗状态计时（unit.id -> 剩余战斗秒数）
+        private static readonly Dictionary<long, float> _combatTimer = new Dictionary<long, float>();
 
         // 隐藏组：不注册到 ActorTraitGroupLibrary，因此不在特质编辑器显示
         private const string HiddenGroup = "sm_qi_hidden";
@@ -139,6 +143,24 @@ namespace SuperMech.Code
             _qiMap[a.id] = cur + amount;
         }
 
+        /// <summary>消耗气力（战斗/技能）。返回实际消耗量。</summary>
+        public static float SpendQi(Actor a, float amount)
+        {
+            if (a == null) return 0;
+            float cur = GetQi(a);
+            float spent = Mathf.Min(cur, amount);
+            _qiMap[a.id] = cur - spent;
+            return spent;
+        }
+
+        /// <summary>单位是否在战斗中（最近5秒内受过伤）。</summary>
+        public static bool IsInCombat(Actor a)
+        {
+            if (a == null) return false;
+            float t;
+            return _combatTimer.TryGetValue(a.id, out t) && t > 0;
+        }
+
         /// <summary>根据气力值计算等级。</summary>
         public static int GetLevel(float qiValue)
         {
@@ -150,23 +172,80 @@ namespace SuperMech.Code
             return lv;
         }
 
-        /// <summary>每5秒tick：自然增长气力 + 同步等级特质。</summary>
+        /// <summary>
+        /// 每tick：战斗消耗气力 + 非战斗恢复气力 + 同步等级特质。
+        /// 原著机制（ch3）：
+        /// - 释放技能消耗气力，低于等级标准丧失该级加成
+        /// - 自行缓慢恢复，气力空→超比例耗体力→体力空→耗生命
+        /// </summary>
         public static void TickQiLevels()
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
+            float tickInterval = SuperMechConfig.TickInterval;
+
             foreach (Actor a in units)
             {
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
 
-                // 自然增长（模拟持续修炼）
-                AddQi(a, 0.5f);
+                // —— 战斗检测：血量下降=受击，进入战斗状态5秒 ——
+                float curHealth = a.data.health;
+                float lastH;
+                _lastHealth.TryGetValue(a.id, out lastH);
+                if (curHealth < lastH - 0.5f)
+                {
+                    _combatTimer[a.id] = 5f;  // 5秒战斗状态
+                }
+                _lastHealth[a.id] = curHealth;
 
+                // 减少战斗计时
+                float ct;
+                if (_combatTimer.TryGetValue(a.id, out ct) && ct > 0)
+                {
+                    _combatTimer[a.id] = ct - tickInterval;
+                }
+
+                bool inCombat = IsInCombat(a);
                 float qi = GetQi(a);
-                int targetLv = GetLevel(qi);
 
-                // 移除旧等级特质，添加当前等级特质
+                if (inCombat)
+                {
+                    // —— 战斗中：消耗气力（原著：释放技能消耗气力）——
+                    // 消耗量基于阶位和气力等级，高阶位消耗更多
+                    int qiLv = GetLevel(qi);
+                    float consume = (1f + qiLv * 0.3f) * tickInterval;  // 每5秒消耗
+                    SpendQi(a, consume);
+                    qi = GetQi(a);
+
+                    // 气力空了：消耗生命（原著：气力空→耗体力→耗生命）
+                    if (qi <= 0f && a.data.health > 1f)
+                    {
+                        a.data.health = Mathf.Max(1f, a.data.health - 2f * tickInterval);
+                        if (SuperMechConfig.LogVerbose)
+                            Debug.Log($"[超神机械师] {a.Name} 气力耗尽，消耗生命！");
+                    }
+                }
+                else
+                {
+                    // —— 非战斗：恢复气力（原著：自行缓慢恢复）——
+                    // 恢复量基于智力和阶位，智力越高恢复越快
+                    float intel = 1f;
+                    var stats = SuperMechStats.Of(a);
+                    if (stats != null)
+                    {
+                        float? iv = stats["intelligence"];
+                        if (iv.HasValue) intel = 1f + iv.Value * 0.02f;
+                    }
+                    float recovery = (0.5f + qi * 0.001f) * intel * tickInterval;
+                    // 提炼法单位恢复更快
+                    if (a.hasTrait("sm_refinement")) recovery *= 2f;
+                    AddQi(a, recovery);
+                    qi = GetQi(a);
+                }
+
+                // —— 同步气力等级特质（低于阈值自动降级，丧失加成）——
+                int targetLv = GetLevel(qi);
                 for (int lv = 1; lv <= Thresholds.Length; lv++)
                 {
                     string id = GetId(lv);

@@ -59,6 +59,14 @@ namespace SuperMech.Code
                 int unlocked = SuperMechPotential.GetUnlockedCount(actor);
                 string potText = awk > 0 ? $"{pot}（觉醒点{awk}）" : $"{pot}";
                 ShowRow(__instance, "潜能点", $"{potText} | 知识{unlocked}个");
+
+                // 行7：圣所/神性蜕变（原著 ch1039：78000欧纳+Lv21气力触发）
+                bool divinity = actor.hasTrait("sm_divinity_ascended");
+                float onarForDiv = SuperMechAdvancement.CalcOnar(actor);
+                int qiLvForDiv = SuperMechQi.GetLevel(SuperMechQi.GetQi(actor));
+                string divText = divinity ? "已蜕变" :
+                    $"未蜕变（需78000欧纳+Lv21气力，当前{onarForDiv:F0}/Lv{qiLvForDiv}）";
+                ShowRow(__instance, "神性蜕变", divText);
             }
             catch (Exception e)
             {
