@@ -58,7 +58,7 @@ namespace SuperMech.Code
             {
                 foreach (Actor a in World.world.units)
                 {
-                    if (a == null || a!isAlive()()) continue;
+                    if (a == null || !a.isAlive()) continue;
                     if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
                     list.Add((a, SuperMechAdvancement.CalcOnar(a), SuperMechQi.GetQi(a), SuperMechAdvancement.GetRankIndex(a)));
                 }

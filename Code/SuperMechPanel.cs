@@ -76,7 +76,7 @@ namespace SuperMech.Code
             const float leftX = 12f;
             const float colW = 340f;
 
-            if (a == null || a!isAlive()())
+            if (a == null || !a.isAlive())
             {
                 _frame.AddLabel("请在地图上点击选中一个单位", leftX, y, 680f, 30f, 16, TextAnchor.MiddleCenter);
                 return;

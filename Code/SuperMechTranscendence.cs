@@ -330,7 +330,7 @@ namespace SuperMech.Code
             {
                 for (int dy = -3; dy <= 3; dy++)
                 {
-                    WorldTile t = MapBox.instance.getTile(a.current_tile.x + dx, a.current_tile.y + dy);
+                    WorldTile t = World.world.GetTile(a.current_tile.x + dx, a.current_tile.y + dy);
                     if (t == null) continue;
                     t.doUnits(u =>
                     {

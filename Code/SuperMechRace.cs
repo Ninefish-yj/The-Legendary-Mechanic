@@ -285,7 +285,7 @@ namespace SuperMech.Code
         public static string GetTitle(Actor a)
         {
             if (a == null) return "";
-            string key = a.data?.id ?? a.data.id;
+            string key = a.data.id.ToString();
             if (!_titles.ContainsKey(key))
             {
                 string cls = SuperMechUnitWindow.GetClass(a);
