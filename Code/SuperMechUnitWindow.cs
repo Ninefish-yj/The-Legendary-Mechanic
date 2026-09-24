@@ -136,7 +136,7 @@ namespace SuperMech.Code
             return null;
         }
 
-        private static string GetClass(Actor a)
+        public static string GetClass(Actor a)
         {
             if (HasTrait(a, SuperMechTraits.ClassMech)) return "机械系";
             if (HasTrait(a, SuperMechTraits.ClassMartial)) return "武道系";
