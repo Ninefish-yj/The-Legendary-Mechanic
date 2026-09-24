@@ -132,6 +132,14 @@ namespace SuperMech.Code
                 if (!string.IsNullOrEmpty(cosmic))
                     ShowRow(__instance, "宇宙宝物", cosmic);
 
+                // 行11c：法师塔（百度百科：超A级法师都有法师塔，塔内=完全状态）
+                if (actor.hasTrait(SuperMechTraits.ClassMage))
+                {
+                    string tower = SuperMechMageTower.GetTowerName(actor);
+                    if (tower != "无")
+                        ShowRow(__instance, "法师塔", tower + "（完全状态）");
+                }
+
                 // 行12：次级维度状态
                 string dim = SuperMechDimension.GetActiveDimension(actor);
                 if (!string.IsNullOrEmpty(dim))

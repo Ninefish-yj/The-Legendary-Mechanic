@@ -24,7 +24,10 @@ namespace SuperMech.Code
         // —— 超神级专属能力（机械系，ch1402）——
         public const string QiFoundation     = "sm_rs_qifoundation";     // 气力之基·万机之神
         public const string ConceptImmortal  = "sm_rs_conceptimmortal";  // 资讯唯一·概念永生
-        public const string MechGod          = "sm_rs_mechgod";          // 机械神灵·至高天尊
+        // 三种超神机械师最终形态（百度百科：按分支不同）
+        public const string MechGodVirtual   = "sm_rs_mechgod_virtual";  // 机械神灵·至高天尊（虚拟分支）
+        public const string MechGodArmed     = "sm_rs_mechgod_armed";    // 机械神灵·宇宙帝皇（武装分支/枪炮师）
+        public const string MechGodEnergy    = "sm_rs_mechgod_energy";   // 机械神灵·起源神君（能量分支/械武者）
         public const string VirtualCreation  = "sm_rs_virtualcreation";  // 虚拟创世（伪）
         public const string LifeVirtual      = "sm_rs_lifevirtual";      // 生命转变·虚拟
         public const string LifeMech         = "sm_rs_lifemech";         // 生命转变·万机
@@ -56,8 +59,13 @@ namespace SuperMech.Code
                 dmg: 0.50f, stamina: 100f, intel: 30);
             AddRankSpec(ConceptImmortal, "资讯唯一·概念永生", "信息态存在形式巨变，拥有自动复生力量（ch1402/ch1403）。",
                 hp: 0.30f, intel: 15);
-            AddRankSpec(MechGod, "机械神灵·至高天尊", "终极机甲形态，机械粒子构成神躯，伤害+80%生命+50%（ch1402/ch1450）。",
-                dmg: 0.80f, hp: 0.50f, armor: 20f);
+            // 三种超神机械师最终形态（百度百科：转职超神机械师后，根据分支不同得到不同最终形态）
+            AddRankSpec(MechGodVirtual, "机械神灵·至高天尊", "虚拟分支最终形态：机械粒子构成神躯，虚拟创世，伤害+80%智力+50（ch1402）。",
+                dmg: 0.80f, hp: 0.50f, intel: 50);
+            AddRankSpec(MechGodArmed, "机械神灵·宇宙帝皇", "武装分支（枪炮师）最终形态：火力全开，万炮齐发，伤害+100%攻速+30%射程+5（百度百科）。",
+                dmg: 1.00f, hp: 0.40f, armor: 15f);
+            AddRankSpec(MechGodEnergy, "机械神灵·起源神君", "能量分支（械武者）最终形态：纳米殖装与能量融合，近战无敌，伤害+70%生命+60%护甲+20（百度百科）。",
+                dmg: 0.70f, hp: 0.60f, armor: 20f);
             AddRankSpec(VirtualCreation, "虚拟创世（伪）", "在虚拟空间中创世，智力+40，经验获取+100%（ch1402/ch1411）。",
                 intel: 40, exp: 2.0f);
             AddRankSpec(LifeVirtual, "生命转变·虚拟", "生命形态虚拟化，可在信息态与物质态间转换（ch1402）。",
@@ -117,19 +125,25 @@ namespace SuperMech.Code
             // S阶给细胞反应炉
             if (newRankIndex >= 10 && !a.hasTrait(CellReactor))
                 a.addTrait(CellReactor);
-            // X阶（超神级）：全部超神专长
+            // X阶（超神级）：全部超神专长 + 按分支赋予最终形态
             if (newRankIndex >= 13)
             {
                 string[] divineSpecs = {
                     DivineMajesty, CosmicBody, QiFoundation, ConceptImmortal,
-                    MechGod, VirtualCreation, LifeVirtual, LifeMech,
+                    VirtualCreation, LifeVirtual, LifeMech,
                     BeyondArtifact, SpeciesDivine, DivineGene, BornElite
                 };
                 foreach (string spec in divineSpecs)
                 {
                     if (!a.hasTrait(spec)) a.addTrait(spec);
                 }
-                Debug.Log($"[超神机械师] {a.Name} 达到X阶（超神级），获得全部超神专长！");
+                // 按分支赋予超神机械师最终形态（百度百科）
+                string branch = SuperMechBranch.GetBranchTrait(a);
+                string finalForm = MechGodVirtual; // 默认虚拟分支=至高天尊
+                if (branch == SuperMechBranch.BranchGunner) finalForm = MechGodArmed;     // 枪炮师=宇宙帝皇
+                else if (branch == SuperMechBranch.BranchMartial) finalForm = MechGodEnergy; // 械武者=起源神君
+                if (!a.hasTrait(finalForm)) a.addTrait(finalForm);
+                Debug.Log($"[超神机械师] {a.Name} 达到X阶（超神级），最终形态：{finalForm}");
             }
         }
     }
