@@ -4,21 +4,31 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 超神级突破系统（原著 ch1396/ch1397/ch1398）。
+    /// 超神级突破系统（原著 ch1396/ch1397/ch1398/ch1039）。
     ///
-    /// 【为什么原著只有韩萧突破X阶】
-    /// 突破超神级需要三个条件，且有恶性变异风险：
-    /// 1. 稳定生命形态：需要特殊物品，否则无限增殖/基因崩溃/细胞独立/宇宙同化
-    /// 2. 四个非同系超能者助手：且都要开启神性蜕变，层次越高辅助越好
-    /// 3. 超神遗力催化剂：来自突破失败身死的巅峰超A级，只有冲击超神的人才能感知
+    /// 【完整突破链条】
+    /// 1. 气力Lv21 + 能级78000欧纳 → 触发神性蜕变（ch1039）
+    /// 2. SS阶（巅峰超A）+ 完成进阶任务 → 进入可进阶状态（临界状态）
+    ///    - 机械系进阶任务：弑神之炼（杀五系各一个神性蜕变超A）+ 神工者（打造100种宇宙宝物）
+    ///    - 其他系有等价的苛刻任务
+    ///    - 韩萧用任务结算卡跳过，土著只能靠水磨工夫完成
+    /// 3. 三条件全满足 → 神化进阶，突破X阶
+    ///    - 稳定生命形态（宇宙宝物）
+    ///    - 四个非同系助手（都开启神性蜕变）
+    ///    - 超神遗力催化剂
     ///
-    /// 土著没有面板，感知不到超神遗力，也就找不到催化剂——这是核心壁垒。
-    /// 而且突破失败会恶性变异身亡，大部分超A不敢尝试。
+    /// 【为什么原著只有韩萧突破】
+    /// - 进阶任务极其苛刻（弑神之炼要杀五系各一个巅峰超A）
+    /// - 三条件极难同时满足（尤其是四个非同系助手和超神遗力）
+    /// - 土著没有面板，看不到精确成功率和条件，只能瞎试
+    /// - 失败会恶性变异身亡，大部分超A不敢尝试
+    /// - 克苏耶条件齐了但没突破，就是因为进阶任务没完成
     ///
     /// 模组实现：
     /// - X阶（index13）不自动晋升，需要手动突破
-    /// - 降临者（有面板）能感知超神遗力，可收集
-    /// - 土著不能感知超神遗力，无法突破X阶（除非有降临者帮助）
+    /// - 进阶任务进度随战斗/制造/修炼缓慢增长
+    /// - 完成进阶任务后才能感知超神遗力
+    /// - 三条件全满足才能真正升阶，否则即使成功也不升阶
     /// - 突破有成功率，失败则恶性变异（扣血/变异/死亡）
     /// </summary>
     public static class SuperMechTranscendence
@@ -29,10 +39,98 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, float> _cooldown = new Dictionary<long, float>();
         // 突破成功记录
         private static readonly Dictionary<long, bool> _transcended = new Dictionary<long, bool>();
+        // 进阶任务完成记录（ch1396：弑神之炼+神工者，完成后才能进入可进阶状态）
+        private static readonly Dictionary<long, bool> _advancementTaskDone = new Dictionary<long, bool>();
+        // 进阶任务进度（unit.id -> progress 0-100）
+        private static readonly Dictionary<long, float> _advancementProgress = new Dictionary<long, float>();
 
         // 超神遗力在地图上的生成点（模拟原著中分布在宇宙各处）
         private static readonly List<WorldTile> _legacySpawns = new List<WorldTile>();
         private static bool _legacyInitialized = false;
+
+        /// <summary>是否已完成进阶任务（ch1396：弑神之炼+神工者）。</summary>
+        public static bool IsAdvancementTaskDone(Actor a)
+        {
+            if (a == null) return false;
+            bool v; _advancementTaskDone.TryGetValue(a.id, out v); return v;
+        }
+
+        /// <summary>获取进阶任务进度（0-100）。</summary>
+        public static float GetAdvancementProgress(Actor a)
+        {
+            if (a == null) return 0;
+            float v; _advancementProgress.TryGetValue(a.id, out v); return v;
+        }
+
+        /// <summary>
+        /// 获取进阶任务描述（按系不同，ch1396机械系=弑神之炼+神工者）。
+        /// 其他系原著未明确列出，按逻辑生成等价的苛刻任务。
+        /// </summary>
+        public static string GetAdvancementTaskName(Actor a)
+        {
+            string cls = SuperMechBranch.GetClass(a);
+            switch (cls)
+            {
+                case "机械系": return "弑神之炼+神工者";
+                case "武道系": return "武道尽头·以武证道";
+                case "异能系": return "基因源始·异能归一";
+                case "魔法系": return "秘法之巅·元素王座";
+                case "念力系": return "灵魂彼岸·念动乾坤";
+                default: return "超神试炼";
+            }
+        }
+
+        /// <summary>
+        /// Tick：进阶任务进度（ch1396：完成进阶任务才能进入可进阶状态）。
+        /// 对降临者是任务，对土著是冥冥中的试炼/使命。
+        /// 进度来源：战斗击杀、制造、修炼、完成冥冥使命。
+        /// </summary>
+        public static void TickAdvancementTask()
+        {
+            var units = World.world.units.units_only_alive;
+            if (units == null) return;
+            float tickInterval = SuperMechConfig.TickInterval;
+
+            foreach (Actor a in units)
+            {
+                if (a == null) continue;
+                if (SuperMechAdvancement.GetExactRankIndex(a) < 12) continue; // SS阶以上才开始
+                if (!SuperMechDivinity.IsDivineAwakened(a)) continue;
+                if (IsAdvancementTaskDone(a)) continue;
+                if (IsTranscended(a)) continue;
+
+                float progress = GetAdvancementProgress(a);
+                // 基础进度（修炼/时间积累，非常缓慢）
+                float gain = 0.1f * tickInterval;
+                // 战斗中加速（弑神之炼：击杀强敌）
+                if (SuperMechQi.IsInCombat(a)) gain += 0.5f * tickInterval;
+                // 机械系制造加速（神工者：打造宇宙宝物）
+                if (a.hasTrait(SuperMechTraits.ClassMech))
+                {
+                    // 简化：智力越高，制造进度越快
+                    var stats = SuperMechStats.Of(a);
+                    if (stats != null)
+                    {
+                        float intel = stats["intelligence"] ?? 5f;
+                        gain += intel * 0.001f * tickInterval;
+                    }
+                }
+                // 完成冥冥使命加速
+                var destiny = SuperMechIntuition.GetDestiny(a);
+                if (destiny != null && destiny.completed) gain += 0.3f * tickInterval;
+                // 降临者有面板，能看到任务要求，进度略快
+                if (SuperMechAwakened.IsAwakened(a)) gain *= 1.2f;
+
+                progress += gain;
+                if (progress >= 100f)
+                {
+                    progress = 100f;
+                    _advancementTaskDone[a.id] = true;
+                    Debug.Log($"[超神机械师] {a.Name} 完成进阶任务【{GetAdvancementTaskName(a)}】！进入可进阶状态，可感知超神遗力");
+                }
+                _advancementProgress[a.id] = progress;
+            }
+        }
 
         /// <summary>获取单位持有的超神遗力数量。</summary>
         public static int GetLegacyPower(Actor a)
@@ -71,6 +169,7 @@ namespace SuperMech.Code
             int rank = SuperMechAdvancement.GetExactRankIndex(a);
             if (rank < 12) return false; // 需要SS阶以上
             if (!SuperMechDivinity.IsDivineAwakened(a)) return false;
+            if (!IsAdvancementTaskDone(a)) return false; // 必须完成进阶任务
             // 突破冷却
             float cd;
             if (_cooldown.TryGetValue(a.id, out cd) && Time.time < cd) return false;
@@ -218,8 +317,8 @@ namespace SuperMech.Code
 
         /// <summary>
         /// Tick：感知超神遗力（ch1396：只有处在可进阶状态的巅峰超A级才能感知）。
-        /// 土著没有面板，但只要达到SS阶+神性蜕变也能感知（原著克苏耶/麦尼逊都是土著）。
-        /// 感知到后自动收集（模拟在宇宙中寻找）。
+        /// 可进阶状态=完成进阶任务+SS阶+神性蜕变。
+        /// 土著和降临者都能感知，和面板无关。
         /// </summary>
         public static void TickLegacySense()
         {
@@ -231,10 +330,11 @@ namespace SuperMech.Code
                 if (a == null) continue;
                 if (SuperMechAdvancement.GetExactRankIndex(a) < 12) continue; // SS阶以上
                 if (!SuperMechDivinity.IsDivineAwakened(a)) continue; // 已触发神性蜕变
+                if (!IsAdvancementTaskDone(a)) continue; // 必须完成进阶任务
                 if (IsTranscended(a)) continue;
                 if (GetLegacyPower(a) >= 3) continue; // 最多存3份
 
-                // 每tick有小概率感知到超神遗力（模拟在宇宙中寻找，ch1396韩萧感知到数十个）
+                // 每tick有小概率感知到超神遗力（ch1396韩萧感知到数十个）
                 if (Random.value < 0.015f) // 1.5%概率
                 {
                     AddLegacyPower(a, 1);
@@ -249,7 +349,14 @@ namespace SuperMech.Code
             if (IsTranscended(a)) return "已突破超神级！";
             int rank = SuperMechAdvancement.GetExactRankIndex(a);
             if (rank < 12) return $"需SS阶（当前{SuperMechRanks.GetRankName(rank)}）";
-            if (!SuperMechDivinity.IsDivineAwakened(a)) return "需触发神性蜕变";
+            if (!SuperMechDivinity.IsDivineAwakened(a)) return "需触发神性蜕变（气力Lv21+78000欧纳）";
+
+            // 进阶任务
+            if (!IsAdvancementTaskDone(a))
+            {
+                float prog = GetAdvancementProgress(a);
+                return $"进阶任务【{GetAdvancementTaskName(a)}】{prog:F0}%（完成后才能感知超神遗力）";
+            }
 
             // 显示三个条件
             bool cond1 = a.hasTrait("sm_cosmic_relic_owner");
