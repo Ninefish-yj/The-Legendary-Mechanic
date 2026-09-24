@@ -151,6 +151,12 @@ namespace SuperMech.Code
                     ShowRow(__instance, "冥冥感应", "正在感应中...");
                 }
 
+                // 行8c：超神级突破（ch1396：X阶需手动突破，土著无法感知超神遗力）
+                if (SuperMechAdvancement.GetExactRankIndex(actor) >= 12 || SuperMechTranscendence.IsTranscended(actor))
+                {
+                    ShowRow(__instance, "超神突破", SuperMechTranscendence.GetStatusText(actor));
+                }
+
                 // 行9：分支（五系各三分支，机械原著ch50，其他参考同人二创）
                 string branch = SuperMechBranch.GetBranchName(actor);
                 if (branch != "未选择")

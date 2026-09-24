@@ -13,6 +13,7 @@ namespace SuperMech.Code
         public const string SummonRanger = "sm_summon_ranger";
         public const string SummonMech  = "sm_summon_mech";
         public const string SummonAwakened = "sm_summon_awakened";
+        public const string AttemptTranscend = "sm_attempt_transcend";
         public const string DisasterAlien = "sm_disaster_alien";
         public const string CheckPotential = "sm_check_potential";
         public const string UnlockArmed = "sm_unlock_armed";
@@ -24,6 +25,7 @@ namespace SuperMech.Code
             AddSpawnPower(SummonRanger, "召唤机械游骑兵", "ui/powers/power_summon_units", "soldier", 1);
             AddSpawnPower(SummonMech, "召唤机甲单位", "ui/powers/power_summon_units", "titan", 3);
             AddAwakenedPower(SummonAwakened, "召唤降临者", "ui/powers/power_summon_units");
+            AddTranscendPower(AttemptTranscend, "冲击超神级", "ui/powers/power_bless");
 
             AddDisaster(DisasterAlien, "异化之灾（天灾）");
 
@@ -88,6 +90,39 @@ namespace SuperMech.Code
                     Debug.Log($"[超神机械师] 召唤降临者：{a.Name}（机械系Lv1）");
                 }
                 return true;
+            };
+            AssetManager.powers.add(p);
+        }
+
+        /// <summary>冲击超神级（ch1396：需要超神遗力+神性蜕变+助手，有恶性变异风险）。</summary>
+        private static void AddTranscendPower(string id, string name, string icon)
+        {
+            var p = new GodPower
+            {
+                id = id, name = name, path_icon = icon,
+                rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
+                ignore_fast_spawn = true, hold_action = false,
+                unselect_when_window = true, requires_premium = false
+            };
+            p.click_action += (tile, powerId) =>
+            {
+                if (tile == null) return false;
+                bool applied = false;
+                tile.doUnits(u =>
+                {
+                    if (u == null || applied) return;
+                    if (SuperMechTranscendence.CanAttempt(u))
+                    {
+                        bool success = SuperMechTranscendence.AttemptTranscend(u);
+                        Debug.Log($"[超神机械师] {u.Name} 冲击超神级{(success ? "成功！" : "失败，恶性变异")}");
+                        applied = true;
+                    }
+                    else
+                    {
+                        Debug.Log($"[超神机械师] {u.Name} 无法突破：{SuperMechTranscendence.GetStatusText(u)}");
+                    }
+                });
+                return applied;
             };
             AssetManager.powers.add(p);
         }

@@ -29,7 +29,7 @@ namespace SuperMech.Code
         public static float PromotionSpeed = 1.0f;        // 晋升速度倍率
         public static float OnaMultiplier = 1.0f;         // 欧纳计算倍率
         public static bool AutoPromotion = true;          // 自动晋升
-        public static int AutoPromotionMaxRank = 13;      // 自动晋升上限阶位索引（0=F~13=X，默认13=无上限）
+        public static int AutoPromotionMaxRank = 12;      // 自动晋升上限阶位索引（0=F~13=X，默认12=SS，X阶需手动突破）
         public static bool ShowRankInPanel = true;        // 单位面板显示阶位
 
         // ========== 自动收藏 ==========

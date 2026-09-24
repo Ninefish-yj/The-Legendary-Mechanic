@@ -108,6 +108,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 冥冥感应异常: " + e.Message); }
                 try { SuperMechDivinity.TickNativeInsight(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 神性蜕变异常: " + e.Message); }
+                try { SuperMechTranscendence.TickLegacySense(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 超神遗力感知异常: " + e.Message); }
             }
         }
     }
