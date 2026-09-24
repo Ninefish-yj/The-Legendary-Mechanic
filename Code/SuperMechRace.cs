@@ -18,9 +18,10 @@ namespace SuperMech.Code
         public const string TraitBlackStarRace = "sm_race_blackstar";
         public const string TraitRoyalBlood = "sm_race_blackstar_royal";
 
-        // 亚种特质（subspecies trait，挂在亚种上而非单位上）
-        public const string SubspeciesBlackStar = "sm_subspecies_blackstar";
-        public const string SubspeciesRoyal = "sm_subspecies_royal";
+        // 亚种特质（subspecies trait，挂在亚种上而非单位上）——原著真实种族天赋
+        public const string SubspeciesMechGenius = "sm_subspecies_mech_genius";   // 【机械天才】黑星族
+        public const string SubspeciesDivineGene = "sm_subspecies_divine_gene";   // 【神力基因】王族血脉
+        public const string SubspeciesBornElite  = "sm_subspecies_born_elite";    // 【天生精英】王族血脉
 
         private static bool _registered = false;
 
@@ -35,14 +36,25 @@ namespace SuperMech.Code
             AddRaceTrait(TraitRoyalBlood, "黑星神系·王族血脉", "ch1402：X阶物种神化，神系王族血脉。全属性+100%。",
                 dmg: 1.00f, hp: 1.00f, intel: 30);
 
-            // 亚种特质（挂在亚种上，该亚种所有成员共享）
-            AddSubspeciesTrait(SubspeciesBlackStar, "黑星族血脉", "黑星族专属亚种特质：物种蜕变后的强大血脉。生命+200，伤害+15，智力+8。");
-            AddSubspeciesTrait(SubspeciesRoyal, "王族血脉", "黑星神系王族专属亚种特质：神化后的至高血脉。生命+500，伤害+30，智力+15。");
+            // 原著种族天赋（亚种特质）
+            // 【机械天才】ch770/ch1039/ch1202/ch1401：机械总亲和+机械造物性能+机械系技能等级
+            AddSubspeciesTrait(SubspeciesMechGenius, "机械天才",
+                "ch770黑星族专属种族天赋：机械总亲和1.25x，机械造物性能+40%，机械系技能等级+1。随阶位成长。",
+                intel: 10, dmg: 0.25f, speed: 0.10f);
+            // 【神力基因】ch1402：能力强度+10%，每次进阶+2%（X阶累计46%）
+            AddSubspeciesTrait(SubspeciesDivineGene, "神力基因",
+                "ch1402王族血脉专属天赋：能力强度+10%，每次进阶+2%。遗传性天赋。",
+                dmg: 0.46f);
+            // 【天生精英】ch1402：全属性+10%，升级额外获得自由属性点（累计3360点）
+            AddSubspeciesTrait(SubspeciesBornElite, "天生精英",
+                "ch1402王族血脉专属天赋：全属性+10%，升级额外获得自由属性点。遗传性天赋。",
+                hp: 0.10f, dmg: 0.10f, intel: 5);
 
-            Debug.Log("[超神机械师] 种族系统注册完成：2单位特质 + 2亚种特质");
+            Debug.Log("[超神机械师] 种族系统注册完成：2单位特质 + 3原著种族天赋（机械天才/神力基因/天生精英）");
         }
 
-        private static void AddSubspeciesTrait(string id, string name, string desc)
+        private static void AddSubspeciesTrait(string id, string name, string desc,
+            int intel = 0, float dmg = 0f, float hp = 0f, float speed = 0f)
         {
             LocalizedTextManager.add("subspecies_trait_" + id, name, pReplace: true);
             LocalizedTextManager.add("subspecies_trait_" + id + "_info", desc, pReplace: true);
@@ -54,18 +66,10 @@ namespace SuperMech.Code
                 needs_to_be_explored = false,
                 base_stats_meta = new BaseStats()
             };
-            if (id == SubspeciesBlackStar)
-            {
-                st.base_stats_meta["health"] = 200;
-                st.base_stats_meta["damage"] = 15;
-                st.base_stats_meta["intelligence"] = 8;
-            }
-            else if (id == SubspeciesRoyal)
-            {
-                st.base_stats_meta["health"] = 500;
-                st.base_stats_meta["damage"] = 30;
-                st.base_stats_meta["intelligence"] = 15;
-            }
+            if (intel > 0) st.base_stats_meta["intelligence"] = intel;
+            if (dmg > 0) st.base_stats_meta["multiplier_damage"] = 1f + dmg;
+            if (hp > 0) st.base_stats_meta["multiplier_health"] = 1f + hp;
+            if (speed > 0) st.base_stats_meta["multiplier_speed"] = 1f + speed;
             AssetManager.subspecies_traits.add(st);
         }
 
@@ -101,7 +105,8 @@ namespace SuperMech.Code
                 if (!a.hasTrait(TraitRoyalBlood))
                 {
                     a.addTrait(TraitRoyalBlood);
-                    DetachSubspecies(a, "黑星神系·王族血脉", SubspeciesRoyal);
+                    DetachSubspecies(a, "黑星神系·王族血脉",
+                        new[] { SubspeciesMechGenius, SubspeciesDivineGene, SubspeciesBornElite });
                     Debug.Log($"[超神机械师] {a.Name} 物种神化 → 黑星神系·王族血脉（独立亚种）");
                 }
                 return;
@@ -113,7 +118,7 @@ namespace SuperMech.Code
                 if (!a.hasTrait(TraitBlackStarRace))
                 {
                     a.addTrait(TraitBlackStarRace);
-                    DetachSubspecies(a, "黑星族", SubspeciesBlackStar);
+                    DetachSubspecies(a, "黑星族", new[] { SubspeciesMechGenius });
                     Debug.Log($"[超神机械师] {a.Name} 物种蜕变 → 黑星族（独立亚种）");
                 }
             }
@@ -123,7 +128,7 @@ namespace SuperMech.Code
         /// 脱离原亚种，创建独立亚种并改名。参考 DivineAscension TranscendentSpeciesSystem.DetachSubspecies。
         /// 复制原亚种基因与特质，从原亚种单位列表移除，单位切换到新亚种。
         /// </summary>
-        private static void DetachSubspecies(Actor actor, string subspeciesName, string subspeciesTraitId)
+        private static void DetachSubspecies(Actor actor, string subspeciesName, string[] subspeciesTraitIds)
         {
             try
             {
@@ -152,11 +157,14 @@ namespace SuperMech.Code
                 }
 
                 // 添加新种族专属亚种特质
-                SubspeciesTrait raceTrait = AssetManager.subspecies_traits.get(subspeciesTraitId);
-                if (raceTrait != null)
+                foreach (var tid in subspeciesTraitIds)
                 {
-                    newSpecies.addTrait(raceTrait);
-                    Debug.Log($"[超神机械师] 新亚种已添加专属亚种特质：{subspeciesTraitId}");
+                    SubspeciesTrait raceTrait = AssetManager.subspecies_traits.get(tid);
+                    if (raceTrait != null)
+                    {
+                        newSpecies.addTrait(raceTrait);
+                        Debug.Log($"[超神机械师] 新亚种已添加种族天赋：{tid}");
+                    }
                 }
 
                 // 设置新亚种名（反射）
