@@ -38,6 +38,11 @@ namespace SuperMech.Code
                 if (race != "碳基人类（黄）")
                     ShowRow(__instance, "种族", race);
 
+                // 行1c：超A名号（原著ch770：种族名用名号命名）
+                string title = SuperMechRace.GetTitle(actor);
+                if (!string.IsNullOrEmpty(title) && actor.hasTrait(SuperMechRace.TraitSuperARace))
+                    ShowRow(__instance, "名号", title);
+
                 // 行2：职业系
                 ShowRow(__instance, "职业", cls);
 

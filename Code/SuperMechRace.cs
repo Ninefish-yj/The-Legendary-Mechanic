@@ -24,39 +24,106 @@ namespace SuperMech.Code
         public const string SubspeciesDivineGene = "sm_subspecies_divine_gene";  // 【神力基因】
         public const string SubspeciesBornElite  = "sm_subspecies_born_elite";   // 【天生精英】
 
-        // S阶专属种族天赋池（按职业系）
+        // S阶专属种族天赋池（按职业系，模拟原著ch770"捏天赋"随机roll）
         public class RaceTalentDef
         {
             public string id;
             public string name;
             public string desc;
-            public string classId;  // 对应职业系
+            public string classId;
             public int intel;
-            public float dmgMul, hpMul, spdMul;
+            public float dmgMul, hpMul, spdMul, armor;
         }
 
         public static readonly List<RaceTalentDef> TalentPool = new List<RaceTalentDef>
         {
-            // 机械系（原著ch770韩萧选的【机械天才】）
+            // ===== 机械系（原著【机械天才】为首，其余为同倾向自创）=====
             new RaceTalentDef { id="sm_rt_mech_genius", name="机械天才", classId=SuperMechTraits.ClassMech,
-                desc="ch770：机械总亲和1.25x，机械造物性能+40%，机械系技能等级+1。",
+                desc="ch770原著：机械总亲和1.25x，机械造物性能+40%，机械系技能等级+1。",
                 intel=10, dmgMul=0.25f, hpMul=0f, spdMul=0.10f },
-            // 武道系
+            new RaceTalentDef { id="sm_rt_mech_sense", name="天生械感", classId=SuperMechTraits.ClassMech,
+                desc="ch770原著roll项：机械亲和+180%，所有机械类技能LV+2。",
+                intel=8, dmgMul=0.20f, hpMul=0f, spdMul=0.05f },
+            new RaceTalentDef { id="sm_rt_mech_source", name="械力之源", classId=SuperMechTraits.ClassMech,
+                desc="ch770原著roll项：气力属性为械力时，每级额外获得50点气力值。",
+                intel=5, dmgMul=0.15f, hpMul=0.10f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_mech_overload", name="过载核心", classId=SuperMechTraits.ClassMech,
+                desc="机械系种族天赋：短时过载输出，伤害+30%，但消耗额外气力。",
+                intel=8, dmgMul=0.30f, hpMul=0f, spdMul=0.15f },
+            new RaceTalentDef { id="sm_rt_mech_swarm", name="机群意志", classId=SuperMechTraits.ClassMech,
+                desc="机械系种族天赋：操控机械军团时，每台机械额外+10%属性。",
+                intel=12, dmgMul=0.20f, hpMul=0.15f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_mech_forge", name="造物者之心", classId=SuperMechTraits.ClassMech,
+                desc="机械系种族天赋：制造完美度+20%，冷却-15%。",
+                intel=15, dmgMul=0.15f, hpMul=0.10f, spdMul=0f },
+
+            // ===== 武道系 =====
             new RaceTalentDef { id="sm_rt_indestructible", name="不灭之躯", classId=SuperMechTraits.ClassMartial,
-                desc="ch927：武道系超A种族天赋，肉身不灭，恢复力极强。生命+30%，护甲+20。",
-                intel=5, dmgMul=0.15f, hpMul=0.30f, spdMul=0f },
-            // 异能系
+                desc="ch675原著韩萧天灾级名号：肉身不灭，恢复力极强。生命+30%，护甲+20。",
+                intel=5, dmgMul=0.15f, hpMul=0.30f, spdMul=0f, armor=20 },
+            new RaceTalentDef { id="sm_rt_battle_body", name="战神之躯", classId=SuperMechTraits.ClassMartial,
+                desc="武道系种族天赋：战斗中全属性随时间递增，最高+25%。",
+                intel=8, dmgMul=0.25f, hpMul=0.20f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_qi_burst", name="气力爆发", classId=SuperMechTraits.ClassMartial,
+                desc="武道系种族天赋：气力消耗技能威力+40%，气力恢复+20%。",
+                intel=5, dmgMul=0.30f, hpMul=0.10f, spdMul=0.15f },
+            new RaceTalentDef { id="sm_rt_iron_body", name="金刚不坏", classId=SuperMechTraits.ClassMartial,
+                desc="武道系种族天赋：护甲+50，受到物理伤害-20%。",
+                intel=3, dmgMul=0.10f, hpMul=0.25f, spdMul=0f, armor=50 },
+            new RaceTalentDef { id="sm_rt_fist_god", name="拳神", classId=SuperMechTraits.ClassMartial,
+                desc="武道系种族天赋：近战伤害+40%，攻击速度+15%。",
+                intel=5, dmgMul=0.40f, hpMul=0f, spdMul=0.15f },
+
+            // ===== 异能系 =====
             new RaceTalentDef { id="sm_rt_pure_blood", name="纯净血脉", classId=SuperMechTraits.ClassPsi,
-                desc="ch919：异能系超A种族天赋，基因链纯净，异能威力+25%。",
+                desc="ch919原著：基因链纯净，异能威力+25%。",
                 intel=12, dmgMul=0.25f, hpMul=0.10f, spdMul=0f },
-            // 魔法系
+            new RaceTalentDef { id="sm_rt_gene_overflow", name="基因溢流", classId=SuperMechTraits.ClassPsi,
+                desc="异能系种族天赋：基因链阶位提升速度+30%，异能冷却-15%。",
+                intel=15, dmgMul=0.20f, hpMul=0.05f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_ability_master", name="异能精通", classId=SuperMechTraits.ClassPsi,
+                desc="异能系种族天赋：所有异能技能等级+2，异能范围+20%。",
+                intel=18, dmgMul=0.25f, hpMul=0f, spdMul=0.05f },
+            new RaceTalentDef { id="sm_rt_element_affinity", name="元素亲和", classId=SuperMechTraits.ClassPsi,
+                desc="异能系种族天赋：元素类异能伤害+35%，元素抗性+20%。",
+                intel=10, dmgMul=0.35f, hpMul=0.10f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_mutation_king", name="突变王者", classId=SuperMechTraits.ClassPsi,
+                desc="异能系种族天赋：基因突变率+50%，突变方向可控。",
+                intel=12, dmgMul=0.20f, hpMul=0.15f, spdMul=0.10f },
+
+            // ===== 魔法系 =====
             new RaceTalentDef { id="sm_rt_mana_source", name="魔力源泉", classId=SuperMechTraits.ClassMage,
-                desc="魔法系超A种族天赋，魔力池浩瀚，魔法威力+25%，魔力+200。",
+                desc="魔法系种族天赋：魔力池浩瀚，魔法威力+25%，魔力+200。",
                 intel=12, dmgMul=0.25f, hpMul=0f, spdMul=0f },
-            // 念力系
+            new RaceTalentDef { id="sm_rt_arcane_master", name="奥术精通", classId=SuperMechTraits.ClassMage,
+                desc="魔法系种族天赋：所有魔法技能等级+2，施法速度+20%。",
+                intel=18, dmgMul=0.20f, hpMul=0f, spdMul=0.15f },
+            new RaceTalentDef { id="sm_rt_element_lord", name="元素领主", classId=SuperMechTraits.ClassMage,
+                desc="魔法系种族天赋：元素魔法伤害+35%，可同时操控两种元素。",
+                intel=15, dmgMul=0.35f, hpMul=0.10f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_mana_regen", name="魔力涌动", classId=SuperMechTraits.ClassMage,
+                desc="魔法系种族天赋：魔力恢复+50%，战斗中持续回蓝。",
+                intel=10, dmgMul=0.15f, hpMul=0.15f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_spell_weave", name="法术编织", classId=SuperMechTraits.ClassMage,
+                desc="魔法系种族天赋：可叠加两个法术，复合法术威力+50%。",
+                intel=20, dmgMul=0.30f, hpMul=0f, spdMul=0.05f },
+
+            // ===== 念力系 =====
             new RaceTalentDef { id="sm_rt_spirit_ocean", name="精神海洋", classId=SuperMechTraits.ClassMind,
-                desc="念力系超A种族天赋，精神力浩瀚，念力威力+25%，智力+15。",
+                desc="念力系种族天赋：精神力浩瀚，念力威力+25%，智力+15。",
                 intel=15, dmgMul=0.25f, hpMul=0.10f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_mind_domination", name="心灵支配", classId=SuperMechTraits.ClassMind,
+                desc="念力系种族天赋：精神控制成功率+30%，控制时长+50%。",
+                intel=20, dmgMul=0.20f, hpMul=0f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_soul_fire", name="灵魂之火", classId=SuperMechTraits.ClassMind,
+                desc="念力系种族天赋：灵魂攻击伤害+40%，可灼烧敌方精神。",
+                intel=18, dmgMul=0.40f, hpMul=0.05f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_reality_warp", name="现实扭曲", classId=SuperMechTraits.ClassMind,
+                desc="念力系种族天赋：念力可短暂扭曲物理法则，全属性+15%。",
+                intel=22, dmgMul=0.15f, hpMul=0.15f, spdMul=0.15f },
+            new RaceTalentDef { id="sm_rt_astral_projection", name="星界投射", classId=SuperMechTraits.ClassMind,
+                desc="念力系种族天赋：精神体可脱离肉身行动，范围+100%。",
+                intel=16, dmgMul=0.20f, hpMul=0.10f, spdMul=0.20f },
         };
 
         private static bool _registered = false;
@@ -73,7 +140,7 @@ namespace SuperMech.Code
 
             // S阶专属种族天赋池
             foreach (var t in TalentPool)
-                AddSubspeciesTrait(t.id, t.name, t.desc, t.intel, t.dmgMul, t.hpMul, t.spdMul);
+                AddSubspeciesTrait(t.id, t.name, t.desc, t.intel, t.dmgMul, t.hpMul, t.spdMul, t.armor);
 
             // X阶两个遗传性天赋
             AddSubspeciesTrait(SubspeciesDivineGene, "神力基因",
@@ -95,12 +162,11 @@ namespace SuperMech.Code
                 if (!a.hasTrait(TraitDivineRace))
                 {
                     a.addTrait(TraitDivineRace);
-                    // 如果已有S阶亚种，改名为神系王族血脉；否则创建
-                    string divineName = $"{a.Name}神系·王族血脉";
+                    string title = GetTitle(a);
+                    string divineName = $"{title}神系·王族血脉";
                     if (a.subspecies != null && a.hasTrait(TraitSuperARace))
                     {
                         SetSubspeciesName(a.subspecies, divineName);
-                        // 添加两个神化遗传天赋
                         AddSubspeciesTraitToSpecies(a.subspecies, SubspeciesDivineGene);
                         AddSubspeciesTraitToSpecies(a.subspecies, SubspeciesBornElite);
                     }
@@ -109,31 +175,55 @@ namespace SuperMech.Code
                         DetachSubspecies(a, divineName,
                             new[] { SubspeciesDivineGene, SubspeciesBornElite });
                     }
-                    Debug.Log($"[超神机械师] {a.Name} 物种神化 → {divineName}");
+                    Debug.Log($"[超神机械师] {a.Name}({title}) 物种神化 → {divineName}");
                 }
                 return;
             }
 
-            // S阶：物种蜕变，创建以自己名字命名的独立亚种
+            // S阶：物种蜕变，创建以名号命名的独立亚种
             if (rankIndex >= 10 && !a.hasTrait(TraitSuperARace))
             {
                 a.addTrait(TraitSuperARace);
-                string raceName = $"{a.Name}族";
-                // 按职业系选专属种族天赋
+                string title = GetTitle(a);
+                string raceName = $"{title}族";
                 string talentId = PickRaceTalent(a);
                 DetachSubspecies(a, raceName, new[] { talentId });
-                Debug.Log($"[超神机械师] {a.Name} 物种蜕变 → {raceName}（专属天赋：{talentId}）");
+                Debug.Log($"[超神机械师] {a.Name} 获得名号【{title}】，物种蜕变 → {raceName}（专属天赋：{talentId}）");
             }
         }
 
-        /// <summary>按职业系从天赋池选专属种族天赋。</summary>
+        /// <summary>按职业系从天赋池随机roll专属种族天赋（模拟原著ch770"3次更换机会选最好"）。</summary>
         private static string PickRaceTalent(Actor a)
         {
             string cls = SuperMechUnitWindow.GetClass(a);
-            foreach (var t in TalentPool)
-                if (t.classId == cls) return t.id;
-            // 无职业系时随机
-            return TalentPool[_rng.Next(TalentPool.Count)].id;
+            var candidates = TalentPool.FindAll(t => t.classId == cls);
+            if (candidates.Count == 0) candidates = TalentPool;
+            // 模拟3次roll取总属性最高的
+            RaceTalentDef best = null;
+            float bestScore = -1;
+            for (int i = 0; i < 3; i++)
+            {
+                var t = candidates[_rng.Next(candidates.Count)];
+                float score = t.intel + t.dmgMul * 100 + t.hpMul * 100 + t.spdMul * 100 + t.armor;
+                if (score > bestScore) { bestScore = score; best = t; }
+            }
+            return best != null ? best.id : candidates[0].id;
+        }
+
+        /// <summary>名号字典：actorID → 名号（S阶物种蜕变时生成）。</summary>
+        private static readonly Dictionary<string, string> _titles = new Dictionary<string, string>();
+
+        /// <summary>获取或生成单位的超A名号。</summary>
+        public static string GetTitle(Actor a)
+        {
+            if (a == null) return "";
+            string key = a.data?.id ?? a.GetInstanceID().ToString();
+            if (!_titles.ContainsKey(key))
+            {
+                string cls = SuperMechUnitWindow.GetClass(a);
+                _titles[key] = SuperMechTitleGenerator.Generate(cls);
+            }
+            return _titles[key];
         }
 
         private static void AddMarkerTrait(string id, string name, string desc,
@@ -154,7 +244,7 @@ namespace SuperMech.Code
         }
 
         private static void AddSubspeciesTrait(string id, string name, string desc,
-            int intel, float dmgMul, float hpMul, float spdMul)
+            int intel, float dmgMul, float hpMul, float spdMul, float armor = 0f)
         {
             LocalizedTextManager.add("subspecies_trait_" + id, name, pReplace: true);
             LocalizedTextManager.add("subspecies_trait_" + id + "_info", desc, pReplace: true);
@@ -167,6 +257,7 @@ namespace SuperMech.Code
             if (dmgMul > 0) st.base_stats_meta["multiplier_damage"] = 1f + dmgMul;
             if (hpMul > 0) st.base_stats_meta["multiplier_health"] = 1f + hpMul;
             if (spdMul > 0) st.base_stats_meta["multiplier_speed"] = 1f + spdMul;
+            if (armor > 0) st.base_stats_meta["armor"] = armor;
             AssetManager.subspecies_traits.add(st);
         }
 
@@ -252,8 +343,9 @@ namespace SuperMech.Code
             if (a == null) return "碳基人类（黄）";
             if (a.subspecies != null && !string.IsNullOrEmpty(a.subspecies.name))
                 return a.subspecies.name;
-            if (a.hasTrait(TraitDivineRace)) return $"{a.Name}神系·王族血脉";
-            if (a.hasTrait(TraitSuperARace)) return $"{a.Name}族";
+            string title = GetTitle(a);
+            if (a.hasTrait(TraitDivineRace)) return $"{title}神系·王族血脉";
+            if (a.hasTrait(TraitSuperARace)) return $"{title}族";
             return "碳基人类（黄）";
         }
     }
