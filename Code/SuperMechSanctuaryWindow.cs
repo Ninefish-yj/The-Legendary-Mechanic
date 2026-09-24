@@ -49,7 +49,7 @@ namespace SuperMech.Code
             string[] descs = {
                 "机械系技能碎片，神性蜕变后解锁",
                 "武道系技能碎片，神性蜕变后解锁",
-                "异能系技能碎片，神性蜕变后解锁（复活功能）",
+                "异能系技能碎片，神性蜕变后解锁",
                 "魔法系技能碎片，神性蜕变后解锁",
                 "念力系技能碎片，神性蜕变后解锁",
                 "信息态技术资料，克制世界树，需前五齐聚"
@@ -74,8 +74,8 @@ namespace SuperMech.Code
             _frame.AddLabel($"碎片:{total}  解锁:{unlockedCount}/6  钥匙:{data.key_fragments}  复活:{data.total_resurrections}次", x, y, 540f, 18f, 12);
             y -= 24f;
 
-            // ===== 圣所复活（ch1134）=====
-            _frame.AddLabel("◆ 圣所复活（需第三圣所解锁+5钥匙碎片）", x, y, 540f, 20f, 13);
+            // ===== 圣所复活（ch1134：每个圣所都有复活权限，知识分区不同）=====
+            _frame.AddLabel("◆ 圣所复活（任意圣所解锁+5钥匙，对应系圣所解锁有+15%加成）", x, y, 540f, 20f, 13);
             y -= 26f;
 
             bool canRes = SuperMechSanctuary.CanResurrect();

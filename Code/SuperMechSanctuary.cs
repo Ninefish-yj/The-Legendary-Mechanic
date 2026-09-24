@@ -71,7 +71,7 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, DeadUnitRecord> _aliveSnapshot = new Dictionary<long, DeadUnitRecord>();
         public const int MaxDeadRecords = 20;       // 最多保留20个死者
         public const int ResurrectionCost = 5;      // 复活消耗钥匙碎片
-        public const int ResurrectionSanctuary = 2; // 需第三圣所（异能系）解锁
+        // 每个圣所都有复活权限，只是知识分区不同（原著ch1134：圣所功能之一是复苏死者）
 
         public static void Load()
         {
@@ -289,19 +289,29 @@ namespace SuperMech.Code
         /// <summary>获取可复活列表。</summary>
         public static List<DeadUnitRecord> GetDeadList() => _deadUnits;
 
-        /// <summary>第三圣所是否已解锁（复活前置条件）。</summary>
+        /// <summary>是否可复活：任意圣所解锁 + 钥匙碎片足够（每个圣所都有复活权限，知识分区不同）。</summary>
         public static bool CanResurrect()
         {
-            return (Data.unlocked_sanctuaries & (1 << ResurrectionSanctuary)) != 0
-                   && Data.key_fragments >= ResurrectionCost;
+            return Data.unlocked_sanctuaries != 0 && Data.key_fragments >= ResurrectionCost;
         }
 
-        /// <summary>复活指定索引的死者，在指定位置生成。</summary>
+        /// <summary>获取死者对应系的圣所索引（-1=无对应）。</summary>
+        public static int GetSanctuaryForClass(string classTrait)
+        {
+            if (classTrait == SuperMechTraits.ClassMech) return 0;
+            if (classTrait == SuperMechTraits.ClassMartial) return 1;
+            if (classTrait == SuperMechTraits.ClassPsi) return 2;
+            if (classTrait == SuperMechTraits.ClassMage) return 3;
+            if (classTrait == SuperMechTraits.ClassMind) return 4;
+            return -1;
+        }
+
+        /// <summary>复活指定索引的死者，在指定位置生成。对应系圣所已解锁则有额外加成。</summary>
         public static Actor Resurrect(int deadIndex, WorldTile tile)
         {
             if (!CanResurrect())
             {
-                Debug.Log("[超神机械师] 无法复活：第三圣所未解锁或钥匙碎片不足");
+                Debug.Log("[超神机械师] 无法复活：无圣所解锁或钥匙碎片不足");
                 return null;
             }
             if (deadIndex < 0 || deadIndex >= _deadUnits.Count) return null;
@@ -312,7 +322,7 @@ namespace SuperMech.Code
             Data.total_resurrections++;
             _deadUnits.RemoveAt(deadIndex);
 
-            // 在指定位置生成新单位（用人类种族）
+            // 在指定位置生成新单位
             Actor a = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
             if (a == null) return null;
 
@@ -320,14 +330,27 @@ namespace SuperMech.Code
             if (!string.IsNullOrEmpty(rec.classTrait)) a.addTrait(rec.classTrait);
             if (!string.IsNullOrEmpty(rec.branchTrait)) a.addTrait(rec.branchTrait);
             if (rec.stage > 0) SuperMechStage.SetStage(a, rec.stage);
-            if (rec.rankIndex >= 0)
+            if (rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count)
             {
                 string rankId = SuperMechRanks.All[rec.rankIndex].id;
                 a.addTrait(rankId);
             }
-            SuperMechQi.SetQi(a, rec.qi * 0.8f);  // 复活后气力为80%
+            SuperMechQi.SetQi(a, rec.qi * 0.8f);
             if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
                 SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
+
+            // 对应系圣所已解锁 → 复活后额外加成（知识分区优势）
+            int sancIdx = GetSanctuaryForClass(rec.classTrait);
+            if (sancIdx >= 0 && (Data.unlocked_sanctuaries & (1 << sancIdx)) != 0)
+            {
+                var s = SuperMechStats.Of(a);
+                if (s != null)
+                {
+                    s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 1.15f;
+                    s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * 1.15f;
+                }
+                Debug.Log($"[超神机械师] {SanctuaryNames[sancIdx]}知识分区加成：伤害+15%生命+15%");
+            }
 
             Save();
             Debug.Log($"[超神机械师] 圣所复活：{rec.name}（消耗{ResurrectionCost}钥匙碎片，累计{Data.total_resurrections}次）");
