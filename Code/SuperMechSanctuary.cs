@@ -605,5 +605,16 @@ namespace SuperMech.Code
 
             Debug.Log("[超神机械师] 圣所系统注册完成（6圣所+神性蜕变检测）");
         }
+
+        /// <summary>清空圣所数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _divinityTriggered.Clear();
+            _reviveCount.Clear();
+            _transcendenceFailed.Clear();
+            _aliveSnapshot.Clear();
+            _divineSnapshot.Clear();
+            Data = new SanctuaryData();
+        }
     }
 }

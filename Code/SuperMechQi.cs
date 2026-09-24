@@ -318,5 +318,14 @@ namespace SuperMech.Code
                 }
             }
         }
+
+        /// <summary>清空所有气力数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _qiMap.Clear();
+            _qiMaxMap.Clear();
+            _lastHealth.Clear();
+            _combatTimer.Clear();
+        }
     }
 }

@@ -15,6 +15,8 @@ namespace SuperMech
         private float _promoTimer;
         private float _localeTimer;
         private bool _localeExported;
+        private MapBox _lastWorld;
+        private bool _worldInitPending;
 
         protected override void OnModLoad()
         {
@@ -70,13 +72,34 @@ namespace SuperMech
 
             if (!SuperMechConfig.ModEnabled) return;
 
+            // 世界切换检测：切换世界时重置所有静态字典数据，加载新世界存档
+            MapBox world = World.world;
+            if (world != _lastWorld)
+            {
+                _lastWorld = world;
+                if (world != null)
+                {
+                    Debug.Log("[超神机械师] 检测到世界切换，重置数据并加载存档");
+                    SuperMechUnifiedTick.ClearAll();
+                    SuperMechSaveData.Load();
+                    _worldInitPending = true;
+                }
+            }
+
+            // 游戏暂停时停止模拟（Time.timeScale <= 0.01）
+            bool paused = Time.timeScale <= 0.01f;
+            if (paused) return;
+
             // 面板窗口每帧检测单位变化
             try { SuperMechPanel.Tick(); } catch { }
 
             // 存档恢复：世界加载后单位逐步生成，每次tick尝试匹配恢复
-            try { SuperMechSaveData.TryRestoreActors(); } catch { }
+            if (_worldInitPending)
+            {
+                try { SuperMechSaveData.TryRestoreActors(); } catch { }
+            }
 
-            _promoTimer += Time.deltaTime;
+            _promoTimer += Time.unscaledDeltaTime;
             if (_promoTimer >= SuperMechConfig.TickInterval)
             {
                 _promoTimer = 0f;

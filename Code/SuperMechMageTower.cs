@@ -124,5 +124,11 @@ namespace SuperMech.Code
             int lv = GetTowerLevel(a);
             return lv > 0 ? TowerNames[lv - 1] : "无";
         }
+
+        /// <summary>清空法师塔数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _towerLevel.Clear();
+        }
     }
 }

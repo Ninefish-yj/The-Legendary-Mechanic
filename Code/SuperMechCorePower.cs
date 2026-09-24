@@ -191,5 +191,8 @@ namespace SuperMech.Code
                 else if (a.hasTrait(id)) a.removeTrait(id);
             }
         }
+
+        /// <summary>清空核心能量数据（世界切换用，核心能量走特质无需清理）。</summary>
+        public static void Clear() { }
     }
 }

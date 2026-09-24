@@ -416,5 +416,11 @@ namespace SuperMech.Code
             if (a.hasTrait(TraitSuperARace)) return $"{title}族";
             return "碳基人类（黄）";
         }
+
+        /// <summary>清空种族数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _titles.Clear();
+        }
     }
 }

@@ -155,5 +155,14 @@ namespace SuperMech.Code
             if (_unlockedNodes.TryGetValue(a.id, out set)) return set.Count;
             return 0;
         }
+
+        /// <summary>清空所有潜能点数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _potentialMap.Clear();
+            _awakeningMap.Clear();
+            _lastQiLevel.Clear();
+            _unlockedNodes.Clear();
+        }
     }
 }

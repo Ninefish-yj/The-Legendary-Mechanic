@@ -196,5 +196,12 @@ namespace SuperMech.Code
             SuperMechRankSpecialty.OnRankUp(a, index);
             SuperMechRace.AutoEvolve(a, index);  // 种族进化与阶位挂钩
         }
+
+        /// <summary>清空阶位数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _exactRank.Clear();
+            _appliedRankIdx.Clear();
+        }
     }
 }

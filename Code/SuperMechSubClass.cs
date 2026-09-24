@@ -224,5 +224,13 @@ namespace SuperMech.Code
             AssetManager.powers.add(p);
             LocalizedTextManager.add("power_sm_give_" + traitId, name, pReplace: true);
         }
+
+        /// <summary>清空所有副职业数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _subXp.Clear();
+            _subLevel.Clear();
+            _lastHealth.Clear();
+        }
     }
 }

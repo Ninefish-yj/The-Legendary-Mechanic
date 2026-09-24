@@ -80,5 +80,31 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogError($"[超神机械师] 自动存档异常: {e.Message}"); }
             }
         }
+
+        /// <summary>
+        /// 世界切换时清空所有系统的静态字典数据。
+        /// 参考凡人修仙传 OnWorldChanged 模式。
+        /// </summary>
+        public static void ClearAll()
+        {
+            try { SuperMechQi.Clear(); } catch { }
+            try { SuperMechStage.Clear(); } catch { }
+            try { SuperMechPotential.Clear(); } catch { }
+            try { SuperMechDivinity.Clear(); } catch { }
+            try { SuperMechTranscendence.Clear(); } catch { }
+            try { SuperMechInfoState.Clear(); } catch { }
+            try { SuperMechAwakened.Clear(); } catch { }
+            try { SuperMechHeritage.Clear(); } catch { }
+            try { SuperMechIntuition.Clear(); } catch { }
+            try { SuperMechQiAttribute.Clear(); } catch { }
+            try { SuperMechCorePower.Clear(); } catch { }
+            try { SuperMechSubClass.Clear(); } catch { }
+            try { SuperMechSanctuary.Clear(); } catch { }
+            try { SuperMechMageTower.Clear(); } catch { }
+            try { SuperMechRelic.Clear(); } catch { }
+            try { SuperMechRace.Clear(); } catch { }
+            try { SuperMechAdvancement.Clear(); } catch { }
+            Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");
+        }
     }
 }

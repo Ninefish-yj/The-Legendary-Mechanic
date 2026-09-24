@@ -305,5 +305,13 @@ namespace SuperMech.Code
             }
             return "";
         }
+
+        /// <summary>清空宝物数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _lastHealth.Clear();
+            _combatTime.Clear();
+            _equipped.Clear();
+        }
     }
 }
