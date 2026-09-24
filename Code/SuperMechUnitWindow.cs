@@ -81,12 +81,10 @@ namespace SuperMech.Code
                 sanText += "]";
                 ShowRow(__instance, "圣所", sanText);
 
-                // 行9：机械系分支（原著 ch50：枪炮师/机械师/械武者）
-                if (actor.hasTrait(SuperMechTraits.ClassMech))
-                {
-                    string branch = SuperMechBranch.GetBranchName(actor);
+                // 行9：分支（五系各三分支，机械原著ch50，其他参考同人二创）
+                string branch = SuperMechBranch.GetBranchName(actor);
+                if (branch != "未选择")
                     ShowRow(__instance, "分支", branch);
-                }
 
                 // 行10：副职业等级（原著：特工lv9/黑夜潜行者lv10）
                 string subText = SuperMechSubClass.GetSubLevelText(actor);
