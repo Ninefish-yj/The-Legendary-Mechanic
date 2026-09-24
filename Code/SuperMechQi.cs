@@ -247,6 +247,9 @@ namespace SuperMech.Code
                     float recovery = (0.5f + qi * 0.001f) * intel * tickInterval;
                     // 提炼法单位恢复更快
                     if (a.hasTrait("sm_refinement")) recovery *= 2f;
+                    // 异能潜力评级影响气力增长（原著ch48：EDCBAS）
+                    if (a.hasTrait(SuperMechTraits.ClassPsi))
+                        recovery *= SuperMechPotentialRating.GetQiGrowthMult(a);
                     AddQi(a, recovery);
                     qi = GetQi(a);
                 }

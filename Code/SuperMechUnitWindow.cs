@@ -97,6 +97,17 @@ namespace SuperMech.Code
                 if (branch != "未选择")
                     ShowRow(__instance, "分支", branch);
 
+                // 行9b：异能潜力评级（原著ch48：EDCBAS，仅异能系）
+                if (actor.hasTrait(SuperMechTraits.ClassPsi))
+                {
+                    string rating = SuperMechPotentialRating.GetRating(actor);
+                    if (!string.IsNullOrEmpty(rating))
+                    {
+                        float growth = SuperMechPotentialRating.GetQiGrowthMult(actor);
+                        ShowRow(__instance, "潜力评级", $"{rating}级（气力增长×{growth:F1}）");
+                    }
+                }
+
                 // 行9b：气力属性（原著ch48/ch49：磁/精神/火/风/铁等）
                 string qiAttr = SuperMechQiAttribute.GetAttribute(actor);
                 if (qiAttr != SuperMechQiAttribute.AttrNone)

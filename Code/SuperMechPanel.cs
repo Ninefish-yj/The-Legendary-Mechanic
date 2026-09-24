@@ -132,6 +132,11 @@ namespace SuperMech.Code
                         a.addTrait(Classes[idx].trait);
                         SuperMechSpecialty.AssignRandomSpecialty(a);
                         SuperMechQiAttribute.AutoAssign(a);
+                        // 异能系觉醒时随机潜力评级（原著ch48：EDCBAS）
+                        if (Classes[idx].trait == SuperMechTraits.ClassPsi)
+                        {
+                            SuperMechPotentialRating.RollRating(a);
+                        }
                         Debug.Log($"[超神机械师] {a.Name} 觉醒 {Classes[idx].name}");
                         Refresh();
                     }, Classes[idx].color);
