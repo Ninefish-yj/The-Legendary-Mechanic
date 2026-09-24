@@ -124,6 +124,52 @@ namespace SuperMech.Code
             new RaceTalentDef { id="sm_rt_astral_projection", name="星界投射", classId=SuperMechTraits.ClassMind,
                 desc="念力系种族天赋：精神体可脱离肉身行动，范围+100%。",
                 intel=16, dmgMul=0.20f, hpMul=0.10f, spdMul=0.20f },
+
+            // ===== 原著虚空进化路线种族天赋（韩萧ch586/ch684/ch770，通用系，任何职业走虚空进化可获得）=====
+            new RaceTalentDef { id="sm_rt_void_echo", name="虚空神灵回响", classId="通用",
+                desc="ch770原著（混沌使徒）：连接虚空神灵获得神力，万用型——负面/禁锢/防御/攻击四选一，冷却5分钟。",
+                intel=15, dmgMul=0.25f, hpMul=0.15f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_supreme_piety", name="至高虔诚", classId="通用",
+                desc="ch770原著（虚空传教士）：心灵抗性+90%，免疫迷惑类精神攻击，承受精神攻击20%几率反弹。",
+                intel=18, dmgMul=0.10f, hpMul=0.20f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_chaos_release", name="混沌体释放", classId="通用",
+                desc="ch586原著（混沌观察者）：化身混沌体，失去实体变灰雾，物理攻击无效，持续消耗气力。",
+                intel=12, dmgMul=0.15f, hpMul=0.25f, spdMul=0.20f },
+            new RaceTalentDef { id="sm_rt_adaptive_swarm", name="适应性群体", classId="通用",
+                desc="ch770原著（宇宙人族）：物理/异常状态/心灵抗性统统+10%，万金油天赋。",
+                intel=8, dmgMul=0.10f, hpMul=0.15f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_void_sight", name="虚空视界·观察者", classId="通用",
+                desc="ch586原著（混沌观察者）：感知范围大幅提升，可看穿虚空伪装。",
+                intel=20, dmgMul=0.10f, hpMul=0f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_mark_observation", name="观察标记", classId="通用",
+                desc="ch586原著（混沌观察者）：标记敌人，被标记目标受到伤害+15%。",
+                intel=10, dmgMul=0.15f, hpMul=0f, spdMul=0.05f },
+            new RaceTalentDef { id="sm_rt_void_metamorphosis", name="虚空蜕化", classId="通用",
+                desc="ch684原著（虚空扭曲者）：半截身体伸进虚空维度，可扭曲空间揉搓敌人。",
+                intel=14, dmgMul=0.30f, hpMul=0.10f, spdMul=0.15f },
+            new RaceTalentDef { id="sm_rt_void_shatter", name="虚空波纹", classId="通用",
+                desc="ch685原著：释放虚空波纹，范围伤害+击退。",
+                intel=10, dmgMul=0.25f, hpMul=0f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_warp_void", name="扭曲虚空", classId="通用",
+                desc="ch685原著：扭曲周围空间，敌人移动速度-30%，攻击有几率落空。",
+                intel=16, dmgMul=0.15f, hpMul=0.20f, spdMul=0f },
+            new RaceTalentDef { id="sm_rt_void_blink", name="高等虚空穿梭", classId="通用",
+                desc="ch586原著：短距空间跳跃，冷却短，可穿越障碍。",
+                intel=12, dmgMul=0.10f, hpMul=0.10f, spdMul=0.30f },
+
+            // ===== 原著其他种族天赋 =====
+            new RaceTalentDef { id="sm_rt_resilient_body", name="刚韧之躯", classId=SuperMechTraits.ClassMartial,
+                desc="ch268原著：肉身刚韧，受到物理伤害-15%，生命+20%。",
+                intel=3, dmgMul=0.10f, hpMul=0.20f, spdMul=0f, armor=30 },
+            new RaceTalentDef { id="sm_rt_mech_god_body", name="机械神体", classId=SuperMechTraits.ClassMech,
+                desc="ch1401原著（神性蜕变·机械）：肉身机械神化，全属性+20%，可与机械合体。",
+                intel=15, dmgMul=0.20f, hpMul=0.20f, spdMul=0.10f },
+            new RaceTalentDef { id="sm_rt_void_god_body", name="虚空神体", classId="通用",
+                desc="ch1401原著（神性蜕变·虚空）：肉身虚空神化，可在虚空维度自由行动，全属性+15%。",
+                intel=18, dmgMul=0.15f, hpMul=0.20f, spdMul=0.20f },
+            new RaceTalentDef { id="sm_rt_primary_mech_sense", name="初级械感", classId=SuperMechTraits.ClassMech,
+                desc="ch478原著：机械亲和+8%，机械制造速度+10%。",
+                intel=5, dmgMul=0.08f, hpMul=0f, spdMul=0.05f },
         };
 
         private static bool _registered = false;
@@ -186,19 +232,35 @@ namespace SuperMech.Code
                 a.addTrait(TraitSuperARace);
                 string title = GetTitle(a);
                 string raceName = $"{title}族";
-                string talentId = PickRaceTalent(a);
-                DetachSubspecies(a, raceName, new[] { talentId });
-                Debug.Log($"[超神机械师] {a.Name} 获得名号【{title}】，物种蜕变 → {raceName}（专属天赋：{talentId}）");
+                // 原著ch770有13个种族天赋（10过去+2下一阶段+1自创），这里简化给3个：1职业系+2通用虚空系
+                var talentIds = new List<string>();
+                talentIds.Add(PickClassTalent(a));       // 职业系专属
+                talentIds.Add(PickUniversalTalent());     // 通用虚空系1
+                talentIds.Add(PickUniversalTalent());     // 通用虚空系2
+                DetachSubspecies(a, raceName, talentIds.ToArray());
+                Debug.Log($"[超神机械师] {a.Name} 获得名号【{title}】，物种蜕变 → {raceName}（种族天赋：{string.Join(",", talentIds)}）");
             }
         }
 
-        /// <summary>按职业系从天赋池随机roll专属种族天赋（模拟原著ch770"3次更换机会选最好"）。</summary>
-        private static string PickRaceTalent(Actor a)
+        /// <summary>从职业系天赋池roll（模拟3次更换选最好）。</summary>
+        private static string PickClassTalent(Actor a)
         {
             string cls = SuperMechUnitWindow.GetClass(a);
             var candidates = TalentPool.FindAll(t => t.classId == cls);
             if (candidates.Count == 0) candidates = TalentPool;
-            // 模拟3次roll取总属性最高的
+            return RollBest(candidates);
+        }
+
+        /// <summary>从通用虚空系天赋池roll（模拟3次更换选最好）。</summary>
+        private static string PickUniversalTalent()
+        {
+            var candidates = TalentPool.FindAll(t => t.classId == "通用");
+            if (candidates.Count == 0) candidates = TalentPool;
+            return RollBest(candidates);
+        }
+
+        private static string RollBest(List<RaceTalentDef> candidates)
+        {
             RaceTalentDef best = null;
             float bestScore = -1;
             for (int i = 0; i < 3; i++)
