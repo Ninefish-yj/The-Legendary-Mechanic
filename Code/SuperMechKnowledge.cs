@@ -152,20 +152,21 @@ namespace SuperMech.Code
         public static void Register()
         {
             int count = 0;
-            count += RegisterTree("mech", "机械系",
-                new[] { "武装", "虚拟", "能量" },
+            // 百度百科：每系职业树名各不相同
+            count += RegisterTree("mech", "机械知识树",
+                new[] { "枪炮师", "机械师", "械武者" },
                 new[] { Mech, MechAdv, MechHigh, MechTop, MechUlt });
-            count += RegisterTree("martial", "武道系",
-                new[] { "体魄", "战术", "超能" },
+            count += RegisterTree("martial", "御气技巧树",
+                new[] { "敏捷", "力量", "防御" },
                 new[] { Martial, MartialAdv, MartialHigh, MartialTop, MartialUlt });
-            count += RegisterTree("mage", "魔法系",
-                new[] { "元素", "变化", "造物" },
+            count += RegisterTree("mage", "魔法知识树",
+                new[] { "专精法师", "魔网法师", "元素" },
                 new[] { Mage, MageAdv, MageHigh, MageTop, MageUlt });
-            count += RegisterTree("mind", "念力系",
+            count += RegisterTree("mind", "精神修炼树",
                 new[] { "灵魂", "法则", "现实" },
                 new[] { Mind, MindAdv, MindHigh, MindTop, MindUlt });
-            count += RegisterTree("psi", "异能系",
-                new[] { "攻效", "循环", "功能" },
+            count += RegisterTree("psi", "基因树",
+                new[] { "能级", "操控", "持久力" },
                 new[] { Psi, PsiAdv, PsiHigh, PsiTop, PsiUlt });
 
             Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识特质");

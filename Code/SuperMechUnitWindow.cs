@@ -47,10 +47,19 @@ namespace SuperMech.Code
                 string clsAspect = GetClassAspect(cls);
                 ShowRow(__instance, "职业", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
 
-                // 行3：职业阶段（机械系显示阶段名，其他系显示核心能量等级）
-                string stage = GetStage(actor, cls);
-                if (!string.IsNullOrEmpty(stage))
-                    ShowRow(__instance, "阶段", stage);
+                // 行3：职业阶段（仅机械系有14阶段转职链，百度百科；其他四系无职业阶段，显示知识树名）
+                if (cls == "机械系")
+                {
+                    string stage = SuperMechStage.GetStageName(actor);
+                    if (stage != "—" && stage != "未入门")
+                        ShowRow(__instance, "职业阶段", stage);
+                }
+                else
+                {
+                    // 其他四系显示知识树名（百度百科：御气技巧树/基因树/魔法知识树/精神修炼树）
+                    string treeName = GetKnowledgeTreeName(cls);
+                    ShowRow(__instance, "知识树", treeName);
+                }
 
                 // 行4：气力/械力（原著面板格式：128,452【Lv19】）
                 float qi = SuperMechQi.GetQi(actor);
@@ -196,9 +205,17 @@ namespace SuperMech.Code
             return SuperMechRanks.GetRankName(a);
         }
 
-        private static string GetStage(Actor a, string cls)
+        /// <summary>获取知识树名（百度百科：每系职业树名各不相同）。</summary>
+        private static string GetKnowledgeTreeName(string cls)
         {
-            return SuperMechStage.GetStageName(a);
+            switch (cls)
+            {
+                case "武道系": return "御气技巧树";
+                case "异能系": return "基因树";
+                case "魔法系": return "魔法知识树";
+                case "念力系": return "精神修炼树";
+                default: return "机械知识树";
+            }
         }
 
         private static bool HasTrait(Actor a, string traitId)
