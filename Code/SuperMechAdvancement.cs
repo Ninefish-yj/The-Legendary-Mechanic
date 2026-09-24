@@ -90,16 +90,35 @@ namespace SuperMech.Code
                 ApplyRankStats(a, targetIdx);
                 SuperMechRace.AutoEvolve(a, targetIdx);  // 种族进化与阶位挂钩
 
-                // S阶（index>=10）触发神性蜕变，进阶给神性蜕变点数
-                if (targetIdx >= 10 && oldExact < 10)
+                // 神性蜕变触发（ch1039：气力Lv21 + 能级78000欧纳）
+                // 不在阶位变更时触发，因为可能在同阶位内达到条件
+                CheckDivinityTrigger(a);
+
+                // S阶以上主阶位晋升给神性蜕变点数（ch1043）
+                if (targetIdx >= 10 && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx))
                 {
-                    SuperMechDivinity.TriggerDivinity(a);
+                    if (SuperMechDivinity.IsDivineAwakened(a))
+                        SuperMechDivinity.AwardAdvancementPoints(a);
                 }
-                else if (targetIdx >= 10 && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx))
-                {
-                    // 主阶位晋升给神性蜕变点数（ch1043）
-                    SuperMechDivinity.AwardAdvancementPoints(a);
-                }
+            }
+        }
+
+        /// <summary>
+        /// 检查神性蜕变触发条件（ch1039原文：气力Lv21 + 能级78000欧纳）。
+        /// 达到条件自动触发神性蜕变，不在阶位变更时触发。
+        /// </summary>
+        private static void CheckDivinityTrigger(Actor a)
+        {
+            if (a == null) return;
+            if (SuperMechDivinity.IsDivineAwakened(a)) return;
+            float qiMax = SuperMechQi.GetQiMax(a);
+            if (qiMax <= 0) qiMax = SuperMechQi.GetQi(a);
+            int qiLv = SuperMechQi.GetLevel(qiMax);
+            float onar = CalcOnar(a);
+            // ch1039：气力等级达到Lv21，能级超过78000
+            if (qiLv >= 21 && onar >= 78000f)
+            {
+                SuperMechDivinity.TriggerDivinity(a);
             }
         }
 
