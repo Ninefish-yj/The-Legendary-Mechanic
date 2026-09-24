@@ -122,10 +122,15 @@ namespace SuperMech.Code
                 if (!string.IsNullOrEmpty(subText))
                     ShowRow(__instance, "副职业", subText);
 
-                // 行11：装备宝物（9级品质）
+                // 行11：装备品质（9级普通装备）
                 string relic = SuperMechRelic.GetCurrentRelicName(actor);
                 if (relic != "无")
-                    ShowRow(__instance, "宝物", relic);
+                    ShowRow(__instance, "装备", relic);
+
+                // 行11b：宇宙宝物（独立特殊物品，ch1008）
+                string cosmic = SuperMechCosmicRelic.GetEquippedName(actor);
+                if (!string.IsNullOrEmpty(cosmic))
+                    ShowRow(__instance, "宇宙宝物", cosmic);
 
                 // 行12：次级维度状态
                 string dim = SuperMechDimension.GetActiveDimension(actor);

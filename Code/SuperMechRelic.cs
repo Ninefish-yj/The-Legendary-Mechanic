@@ -7,16 +7,15 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// 装备品质系统（原著）：
-    /// 品质从低到高：劣质灰→普通白→良好绿→优质蓝→极佳紫→珍稀粉→传说橙→神器红→金色（宇宙宝物级）→宇宙奇观级
-    /// 原著ch1040："金色品质，便代表着宇宙宝物级的装备"
-    /// 原著ch1008："最顶级的是一些无解的宇宙奇观，比如时空琥珀"，宇宙奇观>宇宙宝物
-    /// 宇宙宝物为人造（秘法之殿/火核之地/万神权杖/高维天启传送器等），宇宙奇观为天然无解存在（时空琥珀等）。
-    /// 注意：使徒兵器（银橙色）是机械系高级作战单位系统，不是装备品质——留待造兵系统实现。
+    /// 普通装备品质从低到高：劣质灰→普通白→良好绿→优质蓝→极佳紫→珍稀粉→传说橙→神器红→金色
+    /// 原著ch1040："金色品质，便代表着宇宙宝物级的装备"——金色是普通装备的顶级。
+    /// 宇宙宝物是独立的特殊物品类别（秘法之殿/时空琥珀/万神权杖等），不是普通装备品质链的一级——见 SuperMechCosmicRelic。
+    /// 使徒兵器是机械系高级造兵单位（ch1010），伴生武器约橙~红品质——留待造兵系统实现。
     /// 战斗中概率掉落装备，品质随击杀者阶位提升。同时只能装备一个品质（高级替换低级）。
     /// </summary>
     public static class SuperMechRelic
     {
-        // 品质从低到高（原著品质色）
+        // 普通装备品质从低到高（9级，原著品质色）
         public const string QGray    = "sm_relic_gray";     // 劣质灰
         public const string QWhite   = "sm_relic_white";    // 普通白
         public const string QGreen   = "sm_relic_green";    // 良好绿
@@ -25,15 +24,13 @@ namespace SuperMech.Code
         public const string QPink    = "sm_relic_pink";     // 珍稀粉
         public const string QOrange  = "sm_relic_orange";   // 传说橙
         public const string QRed     = "sm_relic_red";      // 神器红
-        public const string QGold    = "sm_relic_gold";     // 金色=宇宙宝物级（ch1040）
-        public const string QWonder  = "sm_relic_wonder";   // 宇宙奇观级（ch1008最顶级）
+        public const string QGold    = "sm_relic_gold";     // 金色（顶级普通装备=宇宙宝物级门槛）
 
         public static readonly string[] QualityOrder = {
-            QGray, QWhite, QGreen, QBlue, QPurple, QPink, QOrange, QRed, QGold, QWonder
+            QGray, QWhite, QGreen, QBlue, QPurple, QPink, QOrange, QRed, QGold
         };
         public static readonly string[] QualityNames = {
-            "劣质灰", "普通白", "良好绿", "优质蓝", "极佳紫", "珍稀粉", "传说橙", "神器红",
-            "金色·宇宙宝物", "宇宙奇观"
+            "劣质灰", "普通白", "良好绿", "优质蓝", "极佳紫", "珍稀粉", "传说橙", "神器红", "金色"
         };
 
         // 上次生命值（检测战斗结束）
@@ -51,14 +48,13 @@ namespace SuperMech.Code
             AddRelic(QPink,   "珍稀粉装", 3.0f, 2.8f);
             AddRelic(QOrange, "传说橙装", 4.5f, 4.0f);
             AddRelic(QRed,    "神器红装", 7.0f, 6.0f);
-            AddRelic(QGold,   "金色·宇宙宝物级", 15.0f, 12.0f);  // ch1040：金色=宇宙宝物级
-            AddRelic(QWonder, "宇宙奇观级", 50.0f, 40.0f);       // ch1008：最顶级，时空琥珀级
+            AddRelic(QGold,   "金色装备", 12.0f, 10.0f);  // ch1040：金色=宇宙宝物级门槛
 
-            // 注册"赐予宇宙宝物（金装）"神权
+            // 注册"赐予金装"神权
             var givePower = new GodPower
             {
                 id = "sm_give_relic_gold",
-                name = "赐予宇宙宝物（金装）",
+                name = "赐予金色装备",
                 path_icon = "ui/powers/power_bless",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
@@ -70,16 +66,16 @@ namespace SuperMech.Code
             givePower.click_action += (WorldTile tile, string powerId) =>
             {
                 if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { EquipRelic(a, 8); }); // index 8 = 金色宇宙宝物级
+                tile.doUnits(delegate (Actor a) { EquipRelic(a, 8); }); // index 8 = 金色
                 return true;
             };
             AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_relic_gold", "赐予宇宙宝物（金装）", pReplace: true);
+            LocalizedTextManager.add("power_sm_give_relic_gold", "赐予金色装备", pReplace: true);
 
-            Debug.Log("[超神机械师] 装备品质系统注册完成：10级品质（灰→宇宙奇观）");
+            Debug.Log("[超神机械师] 装备品质系统注册完成：9级品质（灰→金）");
         }
 
-        /// <summary>每tick：战斗中概率掉落宝物。</summary>
+        /// <summary>每tick：战斗中概率掉落装备。</summary>
         public static void TickRelicDrops()
         {
             var units = World.world.units.units_only_alive;
@@ -99,14 +95,12 @@ namespace SuperMech.Code
 
                 if (inCombat)
                 {
-                    // 累计战斗时间
                     float ct;
                     _combatTime.TryGetValue(a.id, out ct);
                     _combatTime[a.id] = ct + tickInterval;
                 }
                 else
                 {
-                    // 脱离战斗：如果战斗时间超过10秒，概率掉落宝物
                     float ct;
                     if (_combatTime.TryGetValue(a.id, out ct) && ct >= 10f)
                     {
@@ -121,43 +115,39 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>尝试掉落宝物。品质随阶位提升。</summary>
+        /// <summary>尝试掉落装备。品质随阶位提升。</summary>
         private static void TryDropRelic(Actor a)
         {
-            // 基础掉落率10%，每阶位+2%
             int rank = SuperMechAdvancement.GetRankIndex(a);
             float dropChance = 0.1f + rank * 0.02f;
             if (Random.value > dropChance) return;
 
-            // 品质roll：基础0-3，阶位越高roll上限越高（最高宇宙奇观级index9）
-            int maxQuality = Mathf.Min(3 + rank / 2, 9);
+            // 品质roll：基础0-3，阶位越高roll上限越高（最高金色index8）
+            int maxQuality = Mathf.Min(3 + rank / 2, 8);
             int quality = Random.Range(0, maxQuality + 1);
 
             EquipRelic(a, quality);
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.Name} 战斗掉落宝物：{QualityNames[quality]}（掉落率{dropChance:F0%}）");
+                Debug.Log($"[超神机械师] {a.Name} 战斗掉落装备：{QualityNames[quality]}（掉落率{dropChance:F0%}）");
         }
 
-        /// <summary>装备宝物（高级替换低级）。</summary>
+        /// <summary>装备（高级替换低级）。</summary>
         public static void EquipRelic(Actor a, int qualityIndex)
         {
             if (a == null || qualityIndex < 0 || qualityIndex >= QualityOrder.Length) return;
 
-            // 检查是否已有更高级宝物
             int current = GetCurrentRelicIndex(a);
             if (current >= qualityIndex) return;
 
-            // 移除低级宝物
             for (int i = 0; i <= current; i++)
             {
                 if (a.hasTrait(QualityOrder[i])) a.removeTrait(QualityOrder[i]);
             }
 
-            // 装备新宝物
             a.addTrait(QualityOrder[qualityIndex]);
         }
 
-        /// <summary>获取当前装备宝物等级。</summary>
+        /// <summary>获取当前装备等级。</summary>
         public static int GetCurrentRelicIndex(Actor a)
         {
             for (int i = QualityOrder.Length - 1; i >= 0; i--)
@@ -167,7 +157,7 @@ namespace SuperMech.Code
             return -1;
         }
 
-        /// <summary>获取当前装备宝物名。</summary>
+        /// <summary>获取当前装备名。</summary>
         public static string GetCurrentRelicName(Actor a)
         {
             int idx = GetCurrentRelicIndex(a);
@@ -187,6 +177,119 @@ namespace SuperMech.Code
             t.base_stats["multiplier_damage"] = dmgMul;
             t.base_stats["multiplier_health"] = hpMul;
             AssetManager.traits.add(t);
+        }
+    }
+
+    /// <summary>
+    /// 宇宙宝物系统（原著ch1008/ch1040）：
+    /// 宇宙宝物是独立于普通装备的特殊物品类别，不是装备品质链的一级。
+    /// 分两类：
+    /// 1. 人造宇宙宝物：奥斯汀秘法之殿、贝奥尼火核之地、光辉高维天启传送器、虚灵万神权杖、暗影提灯等
+    /// 2. 天然宇宙奇观：时空琥珀等（最顶级，无解的存在）
+    /// 一般超A手里有一个宇宙宝物就很好了（ch1001）。
+    /// 宇宙级文明具备制造宇宙宝物的技术（ch1008）。
+    /// 使徒兵器（ch1010）是机械系高级造兵单位，有火种能量源，伴生武器约橙~红品质，不属于宇宙宝物。
+    /// </summary>
+    public static class SuperMechCosmicRelic
+    {
+        public class CosmicRelicDef
+        {
+            public string id;
+            public string name;
+            public string desc;
+            public bool isWonder; // true=宇宙奇观（天然），false=人造宇宙宝物
+            public float dmgMul;
+            public float hpMul;
+        }
+
+        // 原著出现的宇宙宝物（ch1008列举）
+        public static readonly List<CosmicRelicDef> Relics = new List<CosmicRelicDef>
+        {
+            // 人造宇宙宝物
+            new CosmicRelicDef { id="sm_cr_secret_hall", name="秘法之殿", desc="ch1008奥斯汀的人造宇宙宝物，法师圣地。", isWonder=false, dmgMul=20f, hpMul=15f },
+            new CosmicRelicDef { id="sm_cr_fire_core", name="火核之地", desc="ch1008贝奥尼的人造宇宙宝物。", isWonder=false, dmgMul=20f, hpMul=15f },
+            new CosmicRelicDef { id="sm_cr_teleporter", name="高维天启传送器", desc="ch1008光辉联邦的战略级人造宇宙宝物。", isWonder=false, dmgMul=15f, hpMul=20f },
+            new CosmicRelicDef { id="sm_cr_wand", name="万神权杖", desc="ch1008虚灵教派的人造宇宙宝物。", isWonder=false, dmgMul=22f, hpMul=12f },
+            new CosmicRelicDef { id="sm_cr_shadow_lamp", name="暗影提灯", desc="ch1008灯芯是暗影维度源能碎片，可打开维度门户。", isWonder=false, dmgMul=18f, hpMul=18f },
+            new CosmicRelicDef { id="sm_cr_evolution_cube", name="进化方块", desc="ch740激发物种潜力，西斯科用它完成超A物种蜕变。", isWonder=false, dmgMul=15f, hpMul=25f },
+            // 天然宇宙奇观（最顶级）
+            new CosmicRelicDef { id="sm_cr_amber", name="时空琥珀", desc="ch1008最顶级的无解宇宙奇观，可封印时空。", isWonder=true, dmgMul=50f, hpMul=50f },
+        };
+
+        private static readonly Dictionary<long, string> _equipped = new Dictionary<long, string>();
+
+        public static void Register()
+        {
+            foreach (var r in Relics)
+            {
+                string typeName = r.isWonder ? "宇宙奇观" : "宇宙宝物";
+                LocalizedTextManager.add("trait_" + r.id, r.name, pReplace: true);
+                LocalizedTextManager.add("trait_" + r.id + "_info",
+                    $"{typeName}（原著）。{r.desc}", pReplace: true);
+                var t = new ActorTrait
+                {
+                    id = r.id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_cosmic_relic",
+                    needs_to_be_explored = false, base_stats = new BaseStats()
+                };
+                t.base_stats["multiplier_damage"] = r.dmgMul;
+                t.base_stats["multiplier_health"] = r.hpMul;
+                AssetManager.traits.add(t);
+            }
+
+            // 注册"赐予随机宇宙宝物"神权
+            var givePower = new GodPower
+            {
+                id = "sm_give_cosmic_relic",
+                name = "赐予宇宙宝物",
+                path_icon = "ui/powers/power_bless",
+                rank = PowerRank.Rank0_free,
+                force_map_mode = MetaType.None,
+                ignore_fast_spawn = true,
+                hold_action = false,
+                unselect_when_window = true,
+                requires_premium = false
+            };
+            givePower.click_action += (WorldTile tile, string powerId) =>
+            {
+                if (tile == null) return true;
+                tile.doUnits(delegate (Actor a)
+                {
+                    // 随机赐予一个人造宇宙宝物（宇宙奇观级太稀有，不随机给）
+                    var manMade = Relics.FindAll(r => !r.isWonder);
+                    var pick = manMade[Random.Range(0, manMade.Count)];
+                    EquipCosmicRelic(a, pick.id);
+                });
+                return true;
+            };
+            AssetManager.powers.add(givePower);
+            LocalizedTextManager.add("power_sm_give_cosmic_relic", "赐予宇宙宝物", pReplace: true);
+
+            Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（含1件宇宙奇观）");
+        }
+
+        /// <summary>装备宇宙宝物（同时只能有一件，高级替换低级）。</summary>
+        public static void EquipCosmicRelic(Actor a, string relicId)
+        {
+            if (a == null) return;
+            // 移除已有宇宙宝物
+            if (_equipped.TryGetValue(a.data.id, out string oldId) && !string.IsNullOrEmpty(oldId))
+            {
+                if (a.hasTrait(oldId)) a.removeTrait(oldId);
+            }
+            a.addTrait(relicId);
+            _equipped[a.data.id] = relicId;
+        }
+
+        /// <summary>获取当前装备的宇宙宝物名。</summary>
+        public static string GetEquippedName(Actor a)
+        {
+            if (a == null) return "";
+            if (_equipped.TryGetValue(a.data.id, out string id) && !string.IsNullOrEmpty(id))
+            {
+                var r = Relics.Find(x => x.id == id);
+                return r != null ? r.name : "";
+            }
+            return "";
         }
     }
 }
