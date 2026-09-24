@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 「超神机械师」专属神权Tab（参考蛊真人 GzPowersTab 模式）。
+    /// 「超神机械师」专属神权Tab。
     /// 只有真正需要地图交互的才做神权（召唤×2、天灾×1）。
     /// 单位管理/圣所/排行全部走窗口，不用"点单位神权"。
     /// </summary>

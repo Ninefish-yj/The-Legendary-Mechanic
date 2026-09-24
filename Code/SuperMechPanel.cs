@@ -8,7 +8,7 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// 超能者面板窗口：整合所有单位操作（觉醒/分支/制造/知识/修炼/查看）。
-    /// 参考蛊真人模式：不用"点单位神权"，改用窗口管理单位。
+    /// 整合所有单位操作的窗口界面。
     /// 自动读取 MoveCamera.getFocusUnit() 当前选中单位。
     /// </summary>
     public static class SuperMechPanel

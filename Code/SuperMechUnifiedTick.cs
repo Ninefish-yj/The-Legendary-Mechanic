@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 统一tick调度器（性能优化，参考主神空间合并钩子思路）。
+    /// 统一tick调度器（性能优化：40系统分4组错峰）。
     ///
     /// 之前的问题：40+个系统每个tick都独立 foreach 遍历所有单位，
     /// 单位多时一帧内40次全量遍历，严重卡顿。
@@ -83,7 +83,7 @@ namespace SuperMech.Code
 
         /// <summary>
         /// 世界切换时清空所有系统的静态字典数据。
-        /// 参考凡人修仙传 OnWorldChanged 模式。
+        /// 世界切换时一次性清空所有静态字典。
         /// </summary>
         public static void ClearAll()
         {

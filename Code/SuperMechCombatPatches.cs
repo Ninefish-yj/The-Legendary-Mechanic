@@ -5,7 +5,7 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 战斗挂钩补丁（参考诸天神座 ActorCombatPatches 模式）。
+    /// 战斗挂钩补丁（Harmony Prefix 拦截伤害）。
     ///
     /// 之前的问题：信息态护盾、系间克制等特殊效果只改了stats，
     /// 但"概率免疫物理攻击"这种效果必须拦截Actor.getHit才能真正生效。

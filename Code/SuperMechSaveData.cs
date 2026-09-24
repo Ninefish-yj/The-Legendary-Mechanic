@@ -7,7 +7,7 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 模组存档系统（参考诸天神座 ModSaveData 模式）。
+    /// 模组存档系统（JSON 持久化）。
     ///
     /// 之前的问题：所有系统数据存在静态字典里，重启游戏全部丢失。
     /// 现在：每个世界存档对应一个JSON文件，存mod目录下的Saves/文件夹。

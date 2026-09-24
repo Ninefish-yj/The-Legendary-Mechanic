@@ -7,7 +7,7 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 简化版自绘窗口框架（参考蛊真人 GzWindowFrame）。
+    /// 简化版自绘窗口框架。
     /// 标题栏 + 关闭按钮 + 内容区，可拖拽。
     /// </summary>
     public class SMWindowFrame
