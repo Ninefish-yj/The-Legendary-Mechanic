@@ -116,7 +116,7 @@ namespace SuperMech.Code
                 lv++;
                 // 升级奖励
                 int idx = Mathf.Clamp(stage - 1, 0, LevelQiReward.Length - 1);
-                SuperMechQi.AddQi(a, LevelQiReward[idx]);
+                SuperMechQi.AddQiMax(a, LevelQiReward[idx]); // 升级提升气力上限
                 SuperMechPotential.AddPotential(a, LevelPotentialPoints[idx]);
                 Debug.Log($"[超神机械师] {a.Name} 升级到Lv{lv}（阶段{stage}）");
             }

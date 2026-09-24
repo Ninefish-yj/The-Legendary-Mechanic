@@ -70,8 +70,10 @@ namespace SuperMech.Code
             "Lv36", "Lv37", "Lv38", "Lv39", "Lv40",
         };
 
-        // 气力值追踪（unit.id -> qi值）
+        // 气力当前值追踪（unit.id -> 当前气力）
         private static readonly Dictionary<long, float> _qiMap = new Dictionary<long, float>();
+        // 气力上限追踪（unit.id -> 气力上限，靠修炼法/实战突破提升）
+        private static readonly Dictionary<long, float> _qiMaxMap = new Dictionary<long, float>();
         // 上次生命值（用于检测战斗：血量下降=受击）
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
         // 战斗状态计时（unit.id -> 剩余战斗秒数）
@@ -126,7 +128,7 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 气力等级注册完成：{Thresholds.Length} 级（隐藏特质，原著属性加成表）");
         }
 
-        /// <summary>获取单位气力值。</summary>
+        /// <summary>获取单位气力当前值。</summary>
         public static float GetQi(Actor a)
         {
             if (a == null) return 0;
@@ -135,19 +137,44 @@ namespace SuperMech.Code
             return v;
         }
 
-        /// <summary>给单位增加气力值（提炼法/升级/战斗等）。</summary>
+        /// <summary>获取单位气力上限（靠修炼法/实战突破提升）。</summary>
+        public static float GetQiMax(Actor a)
+        {
+            if (a == null) return 0;
+            float v;
+            _qiMaxMap.TryGetValue(a.id, out v);
+            return v;
+        }
+
+        /// <summary>给单位增加气力当前值（不超过上限）。</summary>
         public static void AddQi(Actor a, float amount)
         {
             if (a == null) return;
             float cur = GetQi(a);
-            _qiMap[a.id] = cur + amount;
+            float max = GetQiMax(a);
+            if (max <= 0) max = cur + amount; // 首次设置时同步上限
+            _qiMap[a.id] = Mathf.Min(cur + amount, max);
         }
 
-        /// <summary>直接设置气力值（复活/初始化用）。</summary>
+        /// <summary>提升气力上限（修炼法/实战突破用）。</summary>
+        public static void AddQiMax(Actor a, float amount)
+        {
+            if (a == null) return;
+            float curMax = GetQiMax(a);
+            float newMax = curMax + amount;
+            _qiMaxMap[a.id] = newMax;
+            // 上限提升后，当前值也同步提升（突破后气力充盈）
+            float cur = GetQi(a);
+            if (cur < newMax) _qiMap[a.id] = newMax;
+        }
+
+        /// <summary>直接设置气力当前值（复活/初始化用）。</summary>
         public static void SetQi(Actor a, float value)
         {
             if (a == null) return;
             _qiMap[a.id] = Mathf.Max(0, value);
+            // 首次设置时同步上限
+            if (GetQiMax(a) < value) _qiMaxMap[a.id] = value;
         }
 
         /// <summary>消耗气力（战斗/技能）。返回实际消耗量。</summary>
@@ -218,10 +245,9 @@ namespace SuperMech.Code
 
                 if (inCombat)
                 {
-                    // —— 战斗中：消耗气力（原著：释放技能消耗气力）——
-                    // 消耗量基于阶位和气力等级，高阶位消耗更多
+                    // —— 战斗中：消耗气力当前值（原著：释放技能消耗气力）——
                     int qiLv = GetLevel(qi);
-                    float consume = (1f + qiLv * 0.3f) * tickInterval;  // 每5秒消耗
+                    float consume = (1f + qiLv * 0.3f) * tickInterval;
                     SpendQi(a, consume);
                     qi = GetQi(a);
 
@@ -232,11 +258,17 @@ namespace SuperMech.Code
                         if (SuperMechConfig.LogVerbose)
                             Debug.Log($"[超神机械师] {a.Name} 气力耗尽，消耗生命！");
                     }
+
+                    // —— 实战突破：战斗中缓慢提升气力上限（原著：生死间突破）——
+                    float combatGrowth = 0.15f * tickInterval;
+                    if (a.hasTrait("sm_refinement")) combatGrowth *= 1.5f;
+                    AddQiMax(a, combatGrowth);
                 }
                 else
                 {
-                    // —— 非战斗：恢复气力（原著：自行缓慢恢复）——
-                    // 恢复量基于智力和阶位，智力越高恢复越快
+                    // —— 非战斗：恢复气力当前值到上限（原著：自行缓慢恢复）——
+                    float max = GetQiMax(a);
+                    if (max <= 0) max = qi; // 首次初始化
                     float intel = 1f;
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
@@ -244,14 +276,23 @@ namespace SuperMech.Code
                         float? iv = stats["intelligence"];
                         if (iv.HasValue) intel = 1f + iv.Value * 0.02f;
                     }
-                    float recovery = (0.5f + qi * 0.001f) * intel * tickInterval;
-                    // 提炼法单位恢复更快
-                    if (a.hasTrait("sm_refinement")) recovery *= 2f;
-                    // 异能潜力评级影响气力增长（原著ch48：EDCBAS）
+                    // 恢复速度：基于智力，恢复到上限为止
+                    float recovery = (2f + max * 0.005f) * intel * tickInterval;
+                    if (a.hasTrait("sm_refinement")) recovery *= 1.5f;
                     if (a.hasTrait(SuperMechTraits.ClassPsi))
                         recovery *= SuperMechPotentialRating.GetQiGrowthMult(a);
-                    AddQi(a, recovery);
-                    qi = GetQi(a);
+                    // 当前值恢复到上限，不超过上限
+                    float newCur = Mathf.Min(qi + recovery, max);
+                    _qiMap[a.id] = newCur;
+                    qi = newCur;
+
+                    // —— 修炼法：缓慢提升气力上限（原著：修炼法锻炼提升上限）——
+                    // 所有超能者都有基础修炼速度（很慢），有提炼法的加速
+                    float maxGrowth = 0.05f * tickInterval; // 基础修炼速度
+                    if (a.hasTrait("sm_refinement")) maxGrowth *= 3f; // 提炼法×3
+                    if (a.hasTrait("sm_em_refinement") && a.hasTrait(SuperMechTraits.ClassMech))
+                        maxGrowth *= 1.5f; // 电磁因子提炼法再×1.5
+                    AddQiMax(a, maxGrowth);
                 }
 
                 // —— 同步气力等级特质（低于阈值自动降级，丧失加成）——

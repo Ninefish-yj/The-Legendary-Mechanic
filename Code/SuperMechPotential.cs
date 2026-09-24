@@ -93,6 +93,7 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                if (!SuperMechAwakened.IsAwakened(a)) continue; // 土著不走潜能点，走传承度
 
                 float qi = SuperMechQi.GetQi(a);
                 int curLv = SuperMechQi.GetLevel(qi);
@@ -123,6 +124,20 @@ namespace SuperMech.Code
                     _lastQiLevel[a.id] = curLv;
                 }
             }
+        }
+
+        /// <summary>强制解锁知识节点（不消耗潜能点，土著传承度用）。</summary>
+        public static void ForceUnlockNode(Actor a, string nodeId)
+        {
+            if (a == null) return;
+            if (IsNodeUnlocked(a, nodeId)) return;
+            HashSet<string> set;
+            if (!_unlockedNodes.TryGetValue(a.id, out set))
+            {
+                set = new HashSet<string>();
+                _unlockedNodes[a.id] = set;
+            }
+            set.Add(nodeId);
         }
 
         /// <summary>获取单位已解锁节点数量。</summary>

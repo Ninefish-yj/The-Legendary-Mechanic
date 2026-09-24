@@ -93,6 +93,18 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 五系分支特质注册完成：{AllBranches.Count}个");
         }
 
+        /// <summary>获取单位所属系（中文名称）。</summary>
+        public static string GetClass(Actor a)
+        {
+            if (a == null) return null;
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return "机械系";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道系";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "异能系";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "魔法系";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "念力系";
+            return null;
+        }
+
         /// <summary>检查单位是否已有某系的任何分支。</summary>
         public static bool HasAnyBranch(Actor a, string classTrait)
         {

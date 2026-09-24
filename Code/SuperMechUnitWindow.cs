@@ -74,22 +74,33 @@ namespace SuperMech.Code
 
                 // 行4：气力/械力（原著面板格式：128,452【Lv19】）
                 float qi = SuperMechQi.GetQi(actor);
-                int qiLv = SuperMechQi.GetLevel(qi);
+                float qiMax = SuperMechQi.GetQiMax(actor);
+                int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi); // 等级按上限算
                 string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : "未入流";
                 string qiLabel = cls == "机械系" ? "械力" : "气力";
                 string qiValue = qi >= 1000 ? $"{qi:N0}" : $"{qi:F0}";
-                ShowRow(__instance, qiLabel, $"{qiValue}【{qiLvText}】");
+                string qiMaxValue = qiMax > 0 ? (qiMax >= 1000 ? $"{qiMax:N0}" : $"{qiMax:F0}") : qiValue;
+                ShowRow(__instance, qiLabel, $"{qiValue}/{qiMaxValue}【{qiLvText}】");
 
                 // 行5：欧纳（能级）
                 float onar = SuperMechAdvancement.CalcOnar(actor);
                 ShowRow(__instance, "欧纳", $"{onar:F0}");
 
-                // 行6：潜能点/觉醒点（原著 ch3/ch50/ch1201）
-                int pot = SuperMechPotential.GetPotential(actor);
-                int awk = SuperMechPotential.GetAwakening(actor);
-                int unlocked = SuperMechPotential.GetUnlockedCount(actor);
-                string potText = awk > 0 ? $"{pot}（觉醒点{awk}）" : $"{pot}";
-                ShowRow(__instance, "潜能点", $"{potText} | 知识{unlocked}个");
+                // 行6：潜能点/传承度（双轨制：降临者=潜能点，土著=传承度）
+                int unlockedK = SuperMechPotential.GetUnlockedCount(actor);
+                if (isAwakened)
+                {
+                    int pot = SuperMechPotential.GetPotential(actor);
+                    int awk = SuperMechPotential.GetAwakening(actor);
+                    string potText = awk > 0 ? $"{pot}（觉醒点{awk}）" : $"{pot}";
+                    ShowRow(__instance, "潜能点", $"{potText} | 知识{unlockedK}个");
+                }
+                else
+                {
+                    float heritage = SuperMechHeritage.GetHeritage(actor);
+                    int autoUnlocked = SuperMechHeritage.GetAutoUnlockedCount(actor);
+                    ShowRow(__instance, "传承度", $"{heritage:F0} | 已悟{autoUnlocked}项（知识{unlockedK}个）");
+                }
 
                 // 行7：圣所/神性蜕变（原著 ch1039/ch1362：六圣所=五系+信息态）
                 bool divinity = actor.hasTrait("sm_divinity_ascended");
