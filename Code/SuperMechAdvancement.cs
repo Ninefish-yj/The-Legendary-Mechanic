@@ -42,6 +42,7 @@ namespace SuperMech.Code
         /// <summary>遍历全场存活单位，按欧纳门槛晋升阶位。只处理已觉醒五系的单位。</summary>
         public static void TickPromotions()
         {
+            if (!SuperMechConfig.AutoPromotion) return;  // 自动晋升关闭时跳过
             var list = World.world.units.units_only_alive;
             if (list == null) return;
             foreach (Actor a in list)
@@ -50,11 +51,14 @@ namespace SuperMech.Code
                 if (!IsSuperMechUnit(a)) continue;  // 跳过普通村民
                 float onar = CalcOnar(a);
                 SuperMechRanks.RankDef target = null;
+                int targetIdx = -1;
                 for (int i = SuperMechRanks.All.Count - 1; i >= 0; i--)
                 {
-                    if (onar >= SuperMechRanks.All[i].onarFloor) { target = SuperMechRanks.All[i]; break; }
+                    if (onar >= SuperMechRanks.All[i].onarFloor) { target = SuperMechRanks.All[i]; targetIdx = i; break; }
                 }
                 if (target == null) continue;
+                // 自动晋升上限：超过上限的阶位不自动升（需神权手动晋升）
+                if (targetIdx > SuperMechConfig.AutoPromotionMaxRank) continue;
                 if (a.hasTrait(target.id)) continue;
                 foreach (var r in SuperMechRanks.All)
                     if (a.hasTrait(r.id) && r != target) a.removeTrait(r.id);

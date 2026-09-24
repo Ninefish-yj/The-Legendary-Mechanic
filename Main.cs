@@ -20,6 +20,7 @@ namespace SuperMech
         {
             Instance = this;
             LogInfo("[超神机械师] 模组加载");
+            SuperMechConfig.Init();  // 配置系统最先初始化（default_config.json 由 NML 自动加载）
             SuperMechTraitGroups.Register();  // 必须最先：自定义group_id不注册会导致特质面板KeyNotFound崩溃
             SuperMechTraits.Register();
             SuperMechKnowledge.Register();
@@ -57,12 +58,16 @@ namespace SuperMech
                 }
             }
 
+            if (!SuperMechConfig.ModEnabled) return;
+
             _promoTimer += Time.deltaTime;
-            if (_promoTimer >= 5f)
+            if (_promoTimer >= SuperMechConfig.TickInterval)
             {
                 _promoTimer = 0f;
                 try { SuperMechAdvancement.TickPromotions(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 晋升循环异常: " + e.Message); }
+                try { SuperMechFavorite.TickAutoFavorite(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 自动收藏异常: " + e.Message); }
                 try { SuperMechQi.TickQiLevels(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 气力等级异常: " + e.Message); }
                 try { SuperMechCorePower.TickCorePowers(); }
