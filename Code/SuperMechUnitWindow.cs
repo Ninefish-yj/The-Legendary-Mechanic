@@ -47,21 +47,16 @@ namespace SuperMech.Code
                 string clsAspect = GetClassAspect(cls);
                 ShowRow(__instance, "职业", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
 
-                // 行3：职业阶段（仅机械系有14阶段转职链，百度百科；其他四系无职业阶段，显示知识树名）
-                if (cls == "机械系")
-                {
-                    string stage = SuperMechStage.GetStageName(actor);
-                    if (stage != "—" && stage != "未入门")
-                        ShowRow(__instance, "职业阶段", stage);
-                }
-                else
-                {
-                    // 其他四系显示职业树名+已解锁知识节点数（百度百科：职业树各不相同）
-                    string treeName = GetKnowledgeTreeName(cls);
-                    string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
-                    int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
-                    ShowRow(__instance, "职业树", $"{treeName}（已解锁{unlocked}节点）");
-                }
+                // 行3：职业阶段（五系各有14阶段链，机械系原著，其他四系同人补全）
+                string stage = SuperMechStage.GetStageName(actor);
+                if (stage != "—" && stage != "未入门")
+                    ShowRow(__instance, "职业阶段", stage);
+
+                // 行3b：职业树进度（百度百科：每系职业树名各不相同）
+                string treeName = GetKnowledgeTreeName(cls);
+                string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
+                int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
+                ShowRow(__instance, "职业树", $"{treeName}（{unlocked}节点）");
 
                 // 行4：气力/械力（原著面板格式：128,452【Lv19】）
                 float qi = SuperMechQi.GetQi(actor);
