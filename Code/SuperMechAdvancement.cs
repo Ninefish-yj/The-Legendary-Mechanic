@@ -88,6 +88,7 @@ namespace SuperMech.Code
 
                 // 按精确阶位（含+位）施加属性倍率
                 ApplyRankStats(a, targetIdx);
+                SuperMechRace.AutoEvolve(a, targetIdx);  // 种族进化与阶位挂钩
             }
         }
 
@@ -163,6 +164,7 @@ namespace SuperMech.Code
             }
             ApplyRankStats(a, index);
             SuperMechRankSpecialty.OnRankUp(a, index);
+            SuperMechRace.AutoEvolve(a, index);  // 种族进化与阶位挂钩
         }
     }
 }

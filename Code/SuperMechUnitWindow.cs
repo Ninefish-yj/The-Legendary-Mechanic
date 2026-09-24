@@ -33,6 +33,11 @@ namespace SuperMech.Code
                 string rank = GetRank(actor);
                 ShowRow(__instance, "阶位", rank);
 
+                // 行1b：种族（原著：阶位到了自动进化种族）
+                string race = SuperMechRace.GetRaceName(actor);
+                if (race != "碳基人类（黄）")
+                    ShowRow(__instance, "种族", race);
+
                 // 行2：职业系
                 ShowRow(__instance, "职业", cls);
 

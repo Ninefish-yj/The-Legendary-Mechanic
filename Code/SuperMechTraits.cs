@@ -19,15 +19,7 @@ namespace SuperMech.Code
         public const string ClassMage    = "sm_class_mage";     // 魔法系（魔法知识树·神权）
         public const string ClassMind    = "sm_class_mind";     // 念力系（精神修炼树·神魂）
 
-        // —— 种族进化链（原著最终面板：人类→虚空潜影者→...→虚空神系·王族血脉）——
-        public const string RaceVoidShadow    = "sm_race_void_shadow";
-        public const string RaceChaosObserver = "sm_race_chaos_observer";
-        public const string RaceVoidWarp      = "sm_race_void_warp";
-        public const string RaceVoidStar      = "sm_race_void_star";
-        public const string RaceVoidGuide     = "sm_race_void_guide";
-        public const string RaceVoidApostle   = "sm_race_void_apostle";
-        public const string RaceVoidGod       = "sm_race_void_god";
-        public const string RaceVoidRoyal     = "sm_race_void_royal";
+        // —— 种族进化链移至 SuperMechRace.cs（原著6阶段，与阶位挂钩）——
 
         // —— 职业技能（原著最终面板）——
         public const string SkillQiMod          = "sm_skill_qimod";
@@ -59,22 +51,14 @@ namespace SuperMech.Code
             AddClassTrait(ClassMage,   "魔法系觉醒（魔法知识树·神权）", 4, 0, 0);
             AddClassTrait(ClassMind,   "念力系觉醒（精神修炼树·神魂）", 3, 0, 0);
 
-            // 3. 种族进化链（8阶）
-            AddRaceStage(RaceVoidShadow,    "虚空潜影者", 2, 1.1f);
-            AddRaceStage(RaceChaosObserver, "混沌观察者", 3, 1.15f);
-            AddRaceStage(RaceVoidWarp,      "虚空扭曲者", 4, 1.2f);
-            AddRaceStage(RaceVoidStar,      "虚空逐星者", 5, 1.25f);
-            AddRaceStage(RaceVoidGuide,     "虚空引渡者", 6, 1.3f);
-            AddRaceStage(RaceVoidApostle,   "虚空使徒", 8, 1.4f);
-            AddRaceStage(RaceVoidGod,       "虚空神族", 10, 1.5f);
-            AddRaceStage(RaceVoidRoyal,     "虚空神系·王族血脉", 15, 1.8f);
+            // 3. 种族进化移至 SuperMechRace.cs（原著6阶段，与阶位挂钩自动进化）
 
             // 4. 职业技能
             AddSkillTrait(SkillQiMod,        "气力改装·LVMAX", "气力数值按比例增加制造机械的效率与品质", 5, 1.1f);
             AddSkillTrait(SkillVirtualPurify, "虚拟净化复原·LVMAX", "净化病毒感染的智能目标", 3, 1.05f);
             AddSkillTrait(SkillDimensionMarch, "次级维度行军·LVMAX", "打开黑色传送门进行维度行军", 8, 1.2f);
 
-            Debug.Log("[超神机械师] 特质注册完成：阶位14 + 五系觉醒5 + 种族进化8 + 职业技能3");
+            Debug.Log("[超神机械师] 特质注册完成：阶位9(主阶位) + 五系觉醒5 + 职业技能3");
         }
 
         private static void AddClassTrait(string id, string name, int intell, int str, int stam)
@@ -87,19 +71,6 @@ namespace SuperMech.Code
             t.base_stats["intelligence"] = intell;
             t.base_stats["warfare"] = str;
             t.base_stats["stamina"] = stam;
-            AssetManager.traits.add(t);
-        }
-
-        private static void AddRaceStage(string id, string name, int statBonus, float healthMul)
-        {
-            var t = new ActorTrait
-            {
-                id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_race",
-                needs_to_be_explored = false, base_stats = new BaseStats()
-            };
-            t.base_stats["warfare"] = statBonus;
-            t.base_stats["multiplier_health"] = healthMul;
-            t.base_stats["multiplier_damage"] = 1f + statBonus * 0.03f;
             AssetManager.traits.add(t);
         }
 
