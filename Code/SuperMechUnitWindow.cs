@@ -123,6 +123,20 @@ namespace SuperMech.Code
                 sanText += "]";
                 ShowRow(__instance, "圣所", sanText);
 
+                // 行8b：冥冥感应/使命（原著ch1204：S阶以上感应到蜕变契机）
+                var destiny = SuperMechIntuition.GetDestiny(actor);
+                if (destiny != null)
+                {
+                    string destText = destiny.completed ?
+                        $"【{destiny.name}】已证道！" :
+                        $"【{destiny.name}】{destiny.progress:F0}/{destiny.target:F0}";
+                    ShowRow(__instance, "冥冥感应", destText);
+                }
+                else if (SuperMechAdvancement.GetExactRankIndex(actor) >= 10)
+                {
+                    ShowRow(__instance, "冥冥感应", "正在感应中...");
+                }
+
                 // 行9：分支（五系各三分支，机械原著ch50，其他参考同人二创）
                 string branch = SuperMechBranch.GetBranchName(actor);
                 if (branch != "未选择")

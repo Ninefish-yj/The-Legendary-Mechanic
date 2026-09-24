@@ -104,6 +104,8 @@ namespace SuperMech
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 降临者经验异常: " + e.Message); }
                 try { SuperMechHeritage.TickHeritage(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 土著传承度异常: " + e.Message); }
+                try { SuperMechIntuition.TickIntuition(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 冥冥感应异常: " + e.Message); }
             }
         }
     }
