@@ -142,34 +142,7 @@ namespace SuperMech.Code
         {
             if (cls == "机械系")
             {
-                // 按顺序找最高阶段
-                string[] mechStages =
-                {
-                    SuperMechTraits.MechInitiate, SuperMechTraits.MechApprentice,
-                    SuperMechTraits.MechTrainee, SuperMechTraits.MechMagnet,
-                    SuperMechTraits.MechData, SuperMechTraits.MechWar,
-                    SuperMechTraits.MechVirtual, SuperMechTraits.MechStarsea,
-                    SuperMechTraits.MechTruth, SuperMechTraits.MechApostle,
-                    SuperMechTraits.MechEmperor, SuperMechTraits.MechLord,
-                    SuperMechTraits.MechGod, SuperMechTraits.MechSupreme,
-                    SuperMechTraits.FinalSupreme,
-                    SuperMechTraits.MechWeaponHeavy, SuperMechTraits.FinalCosmic,
-                    SuperMechTraits.MechEnergyCore, SuperMechTraits.FinalOrigin,
-                };
-                string[] stageNames =
-                {
-                    "机械爱好者", "机械师学徒", "见习机械师", "磁环机械师",
-                    "数据机械师", "战争机械师", "虚拟机械师", "星海机械师",
-                    "真理机械师", "使徒机械师", "帝皇机械师", "主宰机械师",
-                    "神座机械师", "超神机械师", "至高天尊（虚拟）",
-                    "重装机械师（武装）", "宇宙帝皇（武装）",
-                    "能量核心机械师（能量）", "起源神君（能量）",
-                };
-                for (int i = mechStages.Length - 1; i >= 0; i--)
-                {
-                    if (HasTrait(a, mechStages[i])) return stageNames[i];
-                }
-                return "未转职";
+                return SuperMechStage.GetStageName(a);
             }
             // 其他四系：显示核心能量等级
             float qi = SuperMechQi.GetQi(a);

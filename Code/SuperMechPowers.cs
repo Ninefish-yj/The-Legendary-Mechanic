@@ -20,10 +20,8 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            AddSpawnPower(SummonRanger, "召唤机械游骑兵", "ui/powers/power_summon_units", "soldier",
-                new[] { SuperMechTraits.MechInitiate, SuperMechTraits.RankD });
-            AddSpawnPower(SummonMech, "召唤机甲单位", "ui/powers/power_summon_units", "titan",
-                new[] { SuperMechTraits.MechTrainee, SuperMechTraits.RankC, SuperMechTraits.BranchWeapon });
+            AddSpawnPower(SummonRanger, "召唤机械游骑兵", "ui/powers/power_summon_units", "soldier", 1);
+            AddSpawnPower(SummonMech, "召唤机甲单位", "ui/powers/power_summon_units", "titan", 3);
 
             AddDisaster(DisasterAlien, "异化之灾（天灾）");
 
@@ -36,7 +34,7 @@ namespace SuperMech.Code
             Debug.Log("[超神机械师] 神权注册完成：2召唤 + 1天灾 + 1查看 + 3知识解锁");
         }
 
-        private static void AddSpawnPower(string id, string name, string icon, string creatureId, string[] traitIds)
+        private static void AddSpawnPower(string id, string name, string icon, string creatureId, int mechStage)
         {
             var p = new GodPower
             {
@@ -55,7 +53,11 @@ namespace SuperMech.Code
                 if (tile == null) return false;
                 Actor a = World.world.units.createNewUnit(creatureId, tile, pMiracleSpawn: false, pAdultAge: true);
                 if (a != null)
-                    foreach (var tid in traitIds) a.addTrait(tid);
+                {
+                    a.addTrait(SuperMechTraits.ClassMech);
+                    SuperMechStage.SetStage(a, mechStage);
+                    SuperMechSpecialty.AssignRandomSpecialty(a);
+                }
                 return true;
             };
             AssetManager.powers.add(p);
@@ -140,10 +142,10 @@ namespace SuperMech.Code
                     string nodeId = $"{branch}_{SuperMechPotential.GetUnlockedCount(u) + 1}";
                     // 转职后其他分支费用×3（ch611）
                     int cost = baseCost;
-                    bool isOwnBranch = (branch == "virtual" && u.hasTrait(SuperMechTraits.MechVirtual))
-                                    || (branch == "armed" && u.hasTrait(SuperMechTraits.RouteGunner))
-                                    || (branch == "energy" && u.hasTrait(SuperMechTraits.RouteMech));
-                    if (!isOwnBranch && u.hasTrait(SuperMechTraits.MechMagnet)) cost *= 3;
+                    bool isOwnBranch = (branch == "virtual" && u.hasTrait(SuperMechBranch.BranchMartial))
+                                    || (branch == "armed" && u.hasTrait(SuperMechBranch.BranchGunner))
+                                    || (branch == "energy" && u.hasTrait(SuperMechBranch.BranchMech));
+                    if (!isOwnBranch && SuperMechStage.GetStage(u) >= 4) cost *= 3;
 
                     if (SuperMechPotential.UnlockNode(u, nodeId, cost))
                     {

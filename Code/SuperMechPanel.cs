@@ -89,7 +89,7 @@ namespace SuperMech.Code
 
             // 阶位/职业阶段/气力/欧纳
             string rank = SuperMechRanks.GetRankName(a);
-            string stage = GetMechStageName(a);
+            string stage = SuperMechStage.GetStageName(a);
             int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQi(a));
             float qiVal = SuperMechQi.GetQi(a);
             float onar = SuperMechAdvancement.CalcOnar(a);
@@ -150,9 +150,9 @@ namespace SuperMech.Code
                             var stats = SuperMechStats.Of(a);
                             if (stats != null) branches[idx].applyBonus(stats);
                             // 机械系：选完分支自动晋升磁环
-                            if (a.hasTrait(SuperMechTraits.ClassMech) && GetMechStageTier(a) == 3)
+                            if (a.hasTrait(SuperMechTraits.ClassMech) && SuperMechStage.GetStage(a) == 3)
                             {
-                                a.addTrait(SuperMechTraits.MechMagnet);
+                                SuperMechStage.SetStage(a, 4);
                             }
                             Debug.Log($"[超神机械师] {a.Name} 转职 {branches[idx].name}");
                             Refresh();
@@ -259,30 +259,9 @@ namespace SuperMech.Code
         private static bool CanSelectBranch(Actor a)
         {
             if (a.hasTrait(SuperMechTraits.ClassMech))
-                return GetMechStageTier(a) >= 3;  // 见习机械师
+                return SuperMechStage.GetStage(a) >= 3;  // 见习机械师
             return SuperMechAdvancement.GetRankIndex(a) >= 2;  // D阶
         }
 
-        private static string GetMechStageName(Actor a)
-        {
-            if (!a.hasTrait(SuperMechTraits.ClassMech)) return "—";
-            string[] stages = { "机械爱好者", "机械师学徒", "见习机械师", "磁环", "数据", "战争", "虚拟", "星海", "真理", "使徒", "帝皇", "主宰", "神座", "超神机械师" };
-            string[] traitIds = { SuperMechTraits.MechInitiate, SuperMechTraits.MechApprentice, SuperMechTraits.MechTrainee, SuperMechTraits.MechMagnet, SuperMechTraits.MechData, SuperMechTraits.MechWar, SuperMechTraits.MechVirtual, SuperMechTraits.MechStarsea, SuperMechTraits.MechTruth, SuperMechTraits.MechApostle, SuperMechTraits.MechEmperor, SuperMechTraits.MechLord, SuperMechTraits.MechGod, SuperMechTraits.MechSupreme };
-            for (int i = stages.Length - 1; i >= 0; i--)
-            {
-                if (a.hasTrait(traitIds[i])) return stages[i];
-            }
-            return "未入门";
-        }
-
-        private static int GetMechStageTier(Actor a)
-        {
-            string[] stages = { SuperMechTraits.MechInitiate, SuperMechTraits.MechApprentice, SuperMechTraits.MechTrainee, SuperMechTraits.MechMagnet, SuperMechTraits.MechData, SuperMechTraits.MechWar, SuperMechTraits.MechVirtual, SuperMechTraits.MechStarsea, SuperMechTraits.MechTruth, SuperMechTraits.MechApostle, SuperMechTraits.MechEmperor, SuperMechTraits.MechLord, SuperMechTraits.MechGod, SuperMechTraits.MechSupreme };
-            for (int i = stages.Length - 1; i >= 0; i--)
-            {
-                if (a.hasTrait(stages[i])) return i + 1;
-            }
-            return 0;
-        }
     }
 }

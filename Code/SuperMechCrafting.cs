@@ -143,21 +143,7 @@ namespace SuperMech.Code
         /// <summary>获取机械师阶段tier（1-14）。</summary>
         private static int GetMechStageTier(Actor a)
         {
-            string[] stages =
-            {
-                SuperMechTraits.MechInitiate, SuperMechTraits.MechApprentice,
-                SuperMechTraits.MechTrainee, SuperMechTraits.MechMagnet,
-                SuperMechTraits.MechData, SuperMechTraits.MechWar,
-                SuperMechTraits.MechVirtual, SuperMechTraits.MechStarsea,
-                SuperMechTraits.MechTruth, SuperMechTraits.MechApostle,
-                SuperMechTraits.MechEmperor, SuperMechTraits.MechLord,
-                SuperMechTraits.MechGod, SuperMechTraits.MechSupreme,
-            };
-            for (int i = stages.Length - 1; i >= 0; i--)
-            {
-                if (a.hasTrait(stages[i])) return i + 1;
-            }
-            return 0;
+            return SuperMechStage.GetStage(a);
         }
     }
 }
