@@ -119,9 +119,9 @@ namespace SuperMech.Code
                 else
                 {
                     float onarForDiv = SuperMechAdvancement.CalcOnar(actor);
-                    float qiMax = SuperMechQi.GetQiMax(actor);
-                    if (qiMax <= 0) qiMax = SuperMechQi.GetQi(actor);
-                    int qiLvForDiv = SuperMechQi.GetLevel(qiMax);
+                    float qiMaxForDiv = SuperMechQi.GetQiMax(actor);
+                    if (qiMaxForDiv <= 0) qiMaxForDiv = SuperMechQi.GetQi(actor);
+                    int qiLvForDiv = SuperMechQi.GetLevel(qiMaxForDiv);
                     string divText = $"未触发（需气力Lv21+78000欧纳，当前Lv{qiLvForDiv}/{onarForDiv:F0}）";
                     ShowRow(__instance, "神性蜕变", divText);
                 }

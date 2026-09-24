@@ -150,21 +150,21 @@ namespace SuperMech.Code
                 rewardDivinity = 3 + Random.Range(0, 3) // 奖励3-5神性蜕变点
             };
             _destinies[a.id] = d;
-            Debug.Log($"[超神机械师] {a.Name}（{cls}）感应到冥冥中的使命：{d.name}——{d.description}");
+            Debug.Log($"[超神机械师] {a.name}（{cls}）感应到冥冥中的使命：{d.name}——{d.description}");
         }
 
         /// <summary>使命完成：奖励神性蜕变点，大幅提升突破概率。</summary>
         private static void OnDestinyCompleted(Actor a, Destiny d)
         {
-            Debug.Log($"[超神机械师] {a.Name} 完成使命【{d.name}】！获得{d.rewardDivinity}神性蜕变点");
+            Debug.Log($"[超神机械师] {a.name} 完成使命【{d.name}】！获得{d.rewardDivinity}神性蜕变点");
             // 使命完成后大幅提升气力上限和属性（证道成功）
             SuperMechQi.AddQiMax(a, 50000f);
             var stats = SuperMechStats.Of(a);
             if (stats != null)
             {
-                stats["intelligence"] = (stats["intelligence"] ?? 0f) + 20f;
-                stats["damage"] = (stats["damage"] ?? 0f) + 30f;
-                stats["health"] = (stats["health"] ?? 0f) + 500f;
+                stats["intelligence"] = (stats["intelligence"]) + 20f;
+                stats["damage"] = (stats["damage"]) + 30f;
+                stats["health"] = (stats["health"]) + 500f;
             }
             // 生成新的更高层次使命（证道之后还有更高的道）
             _destinies.Remove(a.id);
@@ -180,6 +180,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>清除数据。</summary>
+        public static void Clear() { _destinies.Clear(); }
         public static void Clear(Actor a)
         {
             if (a == null) return;

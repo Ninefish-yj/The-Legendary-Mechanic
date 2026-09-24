@@ -87,7 +87,7 @@ namespace SuperMech.Code
                     a.addTrait(SuperMechAwakened.AwakenedTrait);
                     SuperMechStage.SetStage(a, 1); // 入门者
                     SuperMechSpecialty.AssignRandomSpecialty(a);
-                    Debug.Log($"[超神机械师] 召唤降临者：{a.Name}（机械系Lv1）");
+                    Debug.Log($"[超神机械师] 召唤降临者：{a.name}（机械系Lv1）");
                 }
                 return true;
             };
@@ -114,12 +114,12 @@ namespace SuperMech.Code
                     if (SuperMechTranscendence.CanAttempt(u))
                     {
                         bool success = SuperMechTranscendence.AttemptTranscend(u);
-                        Debug.Log($"[超神机械师] {u.Name} 冲击超神级{(success ? "成功！" : "失败，恶性变异")}");
+                        Debug.Log($"[超神机械师] {u.name} 冲击超神级{(success ? "成功！" : "失败，恶性变异")}");
                         applied = true;
                     }
                     else
                     {
-                        Debug.Log($"[超神机械师] {u.Name} 无法突破：{SuperMechTranscendence.GetStatusText(u)}");
+                        Debug.Log($"[超神机械师] {u.name} 无法突破：{SuperMechTranscendence.GetStatusText(u)}");
                     }
                 });
                 return applied;
@@ -148,7 +148,7 @@ namespace SuperMech.Code
                 Actor a = World.world.units.createNewUnit("beast", tile, pMiracleSpawn: false, pAdultAge: true);
                 if (a != null)
                 {
-                    a.addTrait(SuperMechTraits.RankB);
+                    a.addTrait("sm_rank_b");
                     a.addTrait("aggressive");
                 }
                 return true;
@@ -178,7 +178,7 @@ namespace SuperMech.Code
                         int unlocked = SuperMechPotential.GetUnlockedCount(u);
                         float qi = SuperMechQi.GetQi(u);
                         int ql = SuperMechQi.GetLevel(qi);
-                        Debug.Log($"[超神机械师] {u.Name}：气力{qi:F0}(Lv{ql}) 潜能点{pot} 觉醒点{awk} 已解锁知识{unlocked}个");
+                        Debug.Log($"[超神机械师] {u.name}：气力{qi:F0}(Lv{ql}) 潜能点{pot} 觉醒点{awk} 已解锁知识{unlocked}个");
                         found = true;
                     }
                 });
@@ -216,14 +216,14 @@ namespace SuperMech.Code
                         var stats = SuperMechStats.Of(u);
                         if (stats != null)
                         {
-                            stats["intelligence"] = (stats["intelligence"] ?? 0f) + 1f;
-                            stats["experience"] = (stats["experience"] ?? 1f) + 0.02f;
+                            stats["intelligence"] = (stats["intelligence"]) + 1f;
+                            stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) + 0.02f;
                         }
                         applied = true;
                     }
                     else
                     {
-                        Debug.Log($"[超神机械师] {u.Name} 潜能点不足（需{cost}，有{SuperMechPotential.GetPotential(u)}）");
+                        Debug.Log($"[超神机械师] {u.name} 潜能点不足（需{cost}，有{SuperMechPotential.GetPotential(u)}）");
                     }
                 });
                 return applied;

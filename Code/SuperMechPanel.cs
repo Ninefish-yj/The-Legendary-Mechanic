@@ -76,7 +76,7 @@ namespace SuperMech.Code
             const float leftX = 12f;
             const float colW = 340f;
 
-            if (a == null || a.isDead())
+            if (a == null || a!isAlive()())
             {
                 _frame.AddLabel("请在地图上点击选中一个单位", leftX, y, 680f, 30f, 16, TextAnchor.MiddleCenter);
                 return;
@@ -84,7 +84,7 @@ namespace SuperMech.Code
 
             // —— 单位基本信息 ——
             string className = GetClassName(a);
-            _frame.AddLabel($"【{a.Name}】 {className}", leftX, y, 680f, 28f, 18, TextAnchor.MiddleLeft);
+            _frame.AddLabel($"【{a.name}】 {className}", leftX, y, 680f, 28f, 18, TextAnchor.MiddleLeft);
             y -= 32f;
 
             // 阶位/职业阶段/气力/欧纳
@@ -109,7 +109,7 @@ namespace SuperMech.Code
             y -= 26f;
 
             string relic = SuperMechRelic.GetCurrentRelicName(a);
-            bool divine = SuperMechSanctuary.HasDivineTransformation(a);
+            bool divine = SuperMechDivinity.IsDivineAwakened(a);
             _frame.AddLabel($"宝物: {relic}    神性蜕变: {(divine?"已蜕变":"未蜕变")}", leftX, y, 680f, 22f, 13);
             y -= 34f;
 
@@ -137,7 +137,7 @@ namespace SuperMech.Code
                         {
                             SuperMechPotentialRating.RollRating(a);
                         }
-                        Debug.Log($"[超神机械师] {a.Name} 觉醒 {Classes[idx].name}");
+                        Debug.Log($"[超神机械师] {a.name} 觉醒 {Classes[idx].name}");
                         Refresh();
                     }, Classes[idx].color);
                 }
@@ -165,7 +165,7 @@ namespace SuperMech.Code
                                 SuperMechStage.SetStage(a, 4);
                             }
                             SuperMechQiAttribute.AutoAssign(a);
-                            Debug.Log($"[超神机械师] {a.Name} 转职 {branches[idx].name}");
+                            Debug.Log($"[超神机械师] {a.name} 转职 {branches[idx].name}");
                             Refresh();
                         });
                     }

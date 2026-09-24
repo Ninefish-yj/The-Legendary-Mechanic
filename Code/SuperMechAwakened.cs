@@ -48,8 +48,8 @@ namespace SuperMech.Code
         public static float GetXpNeeded(int level, int stage)
         {
             // 基础200，每级×1.15，每阶段×2.5
-            float base = 200f * Mathf.Pow(1.15f, level) * Mathf.Pow(2.5f, stage);
-            return Mathf.Round(base);
+            float baseXp = 200f * Mathf.Pow(1.15f, level) * Mathf.Pow(2.5f, stage);
+            return Mathf.Round(baseXp);
         }
 
         // 升级奖励（参考原著）
@@ -132,7 +132,7 @@ namespace SuperMech.Code
                 int idx = Mathf.Clamp(stage - 1, 0, LevelQiReward.Length - 1);
                 SuperMechQi.AddQiMax(a, LevelQiReward[idx]); // 升级提升气力上限
                 SuperMechPotential.AddPotential(a, LevelPotentialPoints[idx]);
-                Debug.Log($"[超神机械师] {a.Name} 升级到Lv{lv}（阶段{stage}）");
+                Debug.Log($"[超神机械师] {a.name} 升级到Lv{lv}（阶段{stage}）");
             }
 
             if (lv >= cap)
@@ -169,7 +169,7 @@ namespace SuperMech.Code
             {
                 AutoSelectBranch(a);
             }
-            Debug.Log($"[超神机械师] {a.Name} 转职到阶段{newStage}：{SuperMechStage.GetStageName(a)}");
+            Debug.Log($"[超神机械师] {a.name} 转职到阶段{newStage}：{SuperMechStage.GetStageName(a)}");
             return true;
         }
 
@@ -187,6 +187,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>清除数据（单位死亡时）。</summary>
+        public static void Clear() { _level.Clear(); _xp.Clear(); }
         public static void Clear(Actor a)
         {
             if (a == null) return;
@@ -279,7 +280,7 @@ namespace SuperMech.Code
             // 随机选一个分支（AI随机，玩家可用神权覆盖）
             var b = branches[Random.Range(0, branches.Count)];
             a.addTrait(b.traitId);
-            Debug.Log($"[超神机械师] {a.Name} 自动选择分支：{b.name}");
+            Debug.Log($"[超神机械师] {a.name} 自动选择分支：{b.name}");
         }
 
         /// <summary>Tick：降临者获取经验（战斗中加速，非战斗缓慢获取）。</summary>
@@ -291,7 +292,7 @@ namespace SuperMech.Code
                 // 基础经验：每tick +5（模拟时间流逝/修炼）
                 float xpGain = 5f;
                 // 受伤状态判定为战斗中，额外+20
-                if (a.data != null && a.data.health < a.data.max_health * 0.95f)
+                if (a.data != null && a.data.health < a.getMaxHealth() * 0.95f)
                     xpGain += 20f;
                 AddXp(a, xpGain);
             }

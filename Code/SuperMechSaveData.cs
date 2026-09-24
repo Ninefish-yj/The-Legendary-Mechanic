@@ -92,7 +92,7 @@ namespace SuperMech.Code
             string dir = Path.Combine(modDir, SaveDirName);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
             // 用世界种子作为文件名，每个世界独立存档
-            string seed = World.world?.seed?.ToString() ?? "default";
+            string seed = MapBox.current_world_seed_id.ToString() ?? "default";
             return Path.Combine(dir, seed + FileExt);
         }
 
@@ -116,7 +116,7 @@ namespace SuperMech.Code
             {
                 var data = new SaveData
                 {
-                    worldSeed = World.world?.seed?.ToString() ?? "",
+                    worldSeed = MapBox.current_world_seed_id.ToString() ?? "",
                     savedAt = DateTime.Now.Ticks
                 };
 
@@ -129,7 +129,7 @@ namespace SuperMech.Code
                         if (a == null || !SuperMechAdvancement.IsSuperMechUnit(a)) continue;
                         var ad = new ActorSaveData
                         {
-                            name = a.Name ?? "",
+                            name = a.name ?? "",
                             qiLevel = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(a)),
                             qiCurrent = SuperMechQi.GetQi(a),
                             qiMax = SuperMechQi.GetQiMax(a),

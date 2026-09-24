@@ -66,10 +66,10 @@ namespace SuperMech.Code
                 var s = SuperMechStats.Of(a);
                 if (s != null)
                 {
-                    s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 1.05f;
-                    s["intelligence"] = (s["intelligence"] ?? 0f) + 10f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.05f;
+                    s["intelligence"] = (s["intelligence"]) + 10f;
                 }
-                Debug.Log($"[超神机械师] {a.Name} 信息态等级提升至Lv{lv + 1}");
+                Debug.Log($"[超神机械师] {a.name} 信息态等级提升至Lv{lv + 1}");
             }
         }
 
@@ -219,6 +219,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>清除数据（单位死亡时）。</summary>
+        public static void Clear() { _infoLevel.Clear(); _shieldCooldown.Clear(); }
         public static void Clear(Actor a)
         {
             if (a == null) return;

@@ -87,7 +87,7 @@ namespace SuperMech.Code
                         int stage = GetMechStageTier(u);
                         if (stage < r.minStage)
                         {
-                            Debug.Log($"[超神机械师] {u.Name} 阶段不足（需要tier{r.minStage}，当前tier{stage}）");
+                            Debug.Log($"[超神机械师] {u.name} 阶段不足（需要tier{r.minStage}，当前tier{stage}）");
                             return;
                         }
 
@@ -96,7 +96,7 @@ namespace SuperMech.Code
                         float cd;
                         if (_cooldown.TryGetValue(u.id, out cd) && now < cd)
                         {
-                            Debug.Log($"[超神机械师] {u.Name} 制造冷却中（剩余{cd - now:F1}秒）");
+                            Debug.Log($"[超神机械师] {u.name} 制造冷却中（剩余{cd - now:F1}秒）");
                             return;
                         }
 
@@ -131,12 +131,12 @@ namespace SuperMech.Code
                             {
                                 if (SuperMechDivinity.AwardCraftingPoints(u))
                                 {
-                                    Debug.Log($"[超神机械师] {u.Name}（降临者）打造{r.name}获得1神性蜕变点数！");
+                                    Debug.Log($"[超神机械师] {u.name}（降临者）打造{r.name}获得1神性蜕变点数！");
                                 }
                             }
 
                             if (SuperMechConfig.LogVerbose)
-                                Debug.Log($"[超神机械师] {u.Name} 制造{r.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
+                                Debug.Log($"[超神机械师] {u.name} 制造{r.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
 
                             // 设置冷却（基础5秒，智力越高冷却越短）
                             float cdTime = Mathf.Max(2f, 5f - intel * 0.2f);

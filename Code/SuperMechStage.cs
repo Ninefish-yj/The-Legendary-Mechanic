@@ -125,7 +125,7 @@ namespace SuperMech.Code
                     SuperMechQiAttribute.SetAttribute(a, SuperMechQiAttribute.AttrDark); // 暗属性
             }
             string[] arr = GetStageArray(a);
-            Debug.Log($"[超神机械师] {a.Name} 职业晋升：{(cur <= 0 ? "未入门" : arr[cur - 1])} → {arr[cur]}");
+            Debug.Log($"[超神机械师] {a.name} 职业晋升：{(cur <= 0 ? "未入门" : arr[cur - 1])} → {arr[cur]}");
             return true;
         }
 
@@ -136,6 +136,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>清除单位阶段数据（单位死亡时调用）。</summary>
+        public static void Clear() { _stage.Clear(); }
         public static void Clear(Actor a)
         {
             if (a != null) _stage.Remove(a.data.id);

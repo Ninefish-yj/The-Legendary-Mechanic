@@ -84,7 +84,7 @@ namespace SuperMech.Code
                 if (current < targetLevel)
                 {
                     SetTowerLevel(a, targetLevel);
-                    Debug.Log($"[超神机械师] {a.Name} 法师塔升级：{TowerNames[current]} → {TowerNames[targetLevel - 1]}");
+                    Debug.Log($"[超神机械师] {a.name} 法师塔升级：{TowerNames[current]} → {TowerNames[targetLevel - 1]}");
                 }
             }
         }

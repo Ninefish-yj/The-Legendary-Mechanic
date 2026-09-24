@@ -188,7 +188,7 @@ namespace SuperMech.Code
             {
                 Data.sanctuary_fragments[sanctuaryIndex]++;
                 string sname = SanctuaryNames[sanctuaryIndex];
-                Debug.Log($"[超神机械师] {a.Name} 神性蜕变！获得{sname}技能碎片（{Data.sanctuary_fragments[sanctuaryIndex]}/{FragmentsToUnlock}）");
+                Debug.Log($"[超神机械师] {a.name} 神性蜕变！获得{sname}技能碎片（{Data.sanctuary_fragments[sanctuaryIndex]}/{FragmentsToUnlock}）");
 
                 // 集齐碎片解锁圣所
                 if (Data.sanctuary_fragments[sanctuaryIndex] >= FragmentsToUnlock
@@ -215,16 +215,16 @@ namespace SuperMech.Code
             else
             {
                 Data.key_fragments++;
-                Debug.Log($"[超神机械师] {a.Name} 神性蜕变！获得圣所钥匙碎片（{Data.key_fragments}）");
+                Debug.Log($"[超神机械师] {a.name} 神性蜕变！获得圣所钥匙碎片（{Data.key_fragments}）");
             }
 
             // 神性蜕变属性大爆发（原著：神性蜕变是质变）
             var stats = SuperMechStats.Of(a);
             if (stats != null)
             {
-                stats["multiplier_damage"] = (stats["multiplier_damage"] ?? 1f) * 1.5f;
-                stats["multiplier_health"] = (stats["multiplier_health"] ?? 1f) * 1.5f;
-                stats["intelligence"] = (stats["intelligence"] ?? 0f) + 20f;
+                stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) * 1.5f;
+                stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) * 1.5f;
+                stats["intelligence"] = (stats["intelligence"]) + 20f;
             }
             // 给神性蜕变特质
             a.addTrait("sm_divinity_ascended");
@@ -258,8 +258,8 @@ namespace SuperMech.Code
             var s = SuperMechStats.Of(a);
             if (s != null)
             {
-                s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * buff;
-                s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * buff;
+                s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * buff;
+                s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * buff;
             }
 
             // 各系圣所特殊加成（按单位系别触发对应圣所的知识传承）
@@ -274,14 +274,14 @@ namespace SuperMech.Code
             Save();
 
             string className = GetClassTrait(a) ?? "未知";
-            Debug.Log($"[超神机械师] {a.Name} 进入圣所！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
+            Debug.Log($"[超神机械师] {a.name} 进入圣所！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
         }
 
         /// <summary>
         /// 各系圣所特殊加成（按单位系别触发对应圣所的知识传承）。
         /// 第一圣所=机械技术，第二=武道功法，第三=基因技术，第四=魔法知识，第五=灵魂技术。
         /// </summary>
-        private static void ApplySanctuaryClassBonus(Actor a, Dictionary<string, float> s)
+        private static void ApplySanctuaryClassBonus(Actor a, BaseStats s)
         {
             if (a == null) return;
             string cls = SuperMechBranch.GetClass(a);
@@ -293,9 +293,9 @@ namespace SuperMech.Code
                     // 第一圣所：机械技术传承（ch1039：泰尔克斯机械传承）
                     if (s != null)
                     {
-                        s["intelligence"] = (s["intelligence"] ?? 0f) + 5f + visits;
-                        s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 1.03f;
-                        s["crafting_speed"] = (s["crafting_speed"] ?? 1f) * 1.05f;
+                        s["intelligence"] = (s["intelligence"]) + 5f + visits;
+                        s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.03f;
+                        s["crafting_speed"] = ((s["crafting_speed"] == 0f ? 1f : s["crafting_speed"])) * 1.05f;
                     }
                     break;
 
@@ -304,8 +304,8 @@ namespace SuperMech.Code
                     SuperMechQi.AddQiMax(a, 500f + visits * 50f);
                     if (s != null)
                     {
-                        s["strength"] = (s["strength"] ?? 0f) + 3f + visits;
-                        s["endurance"] = (s["endurance"] ?? 0f) + 3f + visits;
+                        s["strength"] = (s["strength"]) + 3f + visits;
+                        s["endurance"] = (s["endurance"]) + 3f + visits;
                     }
                     break;
 
@@ -313,9 +313,9 @@ namespace SuperMech.Code
                     // 第三圣所：基因技术传承（ch1050：原始异能体是钥匙）
                     if (s != null)
                     {
-                        s["intelligence"] = (s["intelligence"] ?? 0f) + 4f + visits;
-                        s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * 1.02f;
-                        s["gene_strength"] = (s["gene_strength"] ?? 0f) + 10f;
+                        s["intelligence"] = (s["intelligence"]) + 4f + visits;
+                        s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.02f;
+                        s["gene_strength"] = (s["gene_strength"]) + 10f;
                     }
                     break;
 
@@ -323,9 +323,9 @@ namespace SuperMech.Code
                     // 第四圣所：魔法知识传承
                     if (s != null)
                     {
-                        s["intelligence"] = (s["intelligence"] ?? 0f) + 4f + visits;
-                        s["mana"] = (s["mana"] ?? 0f) + 50f + visits * 5f;
-                        s["spell_power"] = (s["spell_power"] ?? 1f) * 1.03f;
+                        s["intelligence"] = (s["intelligence"]) + 4f + visits;
+                        s["mana"] = (s["mana"]) + 50f + visits * 5f;
+                        s["spell_power"] = ((s["spell_power"] == 0f ? 1f : s["spell_power"])) * 1.03f;
                     }
                     break;
 
@@ -333,9 +333,9 @@ namespace SuperMech.Code
                     // 第五圣所：灵魂技术传承（精神力修炼）
                     if (s != null)
                     {
-                        s["intelligence"] = (s["intelligence"] ?? 0f) + 5f + visits;
-                        s["willpower"] = (s["willpower"] ?? 0f) + 3f + visits;
-                        s["mind_power"] = (s["mind_power"] ?? 0f) + 20f;
+                        s["intelligence"] = (s["intelligence"]) + 5f + visits;
+                        s["willpower"] = (s["willpower"]) + 3f + visits;
+                        s["mind_power"] = (s["mind_power"]) + 20f;
                     }
                     break;
             }
@@ -374,7 +374,7 @@ namespace SuperMech.Code
 
                 var rec = new DeadUnitRecord
                 {
-                    name = a.Name ?? "未知",
+                    name = a.name ?? "未知",
                     classTrait = GetClassTrait(a),
                     branchTrait = SuperMechBranch.GetBranchTrait(a),
                     stage = SuperMechStage.GetStage(a),
@@ -408,7 +408,7 @@ namespace SuperMech.Code
                 {
                     _aliveSnapshot.Remove(id);
                     _transcendenceFailed.Remove(id);
-                    Debug.Log($"[超神机械师] {_aliveSnapshot.ContainsKey(id) ? _aliveSnapshot[id].name : "未知"}（突破失败）化为超神遗力，无法圣所复苏");
+                    Debug.Log($"[超神机械师] {(_aliveSnapshot.ContainsKey(id) ? _aliveSnapshot[id].name : "未知")}（突破失败）化为超神遗力，无法圣所复苏");
                     continue;
                 }
                 var rec = _aliveSnapshot[id];
@@ -532,10 +532,10 @@ namespace SuperMech.Code
             var s = SuperMechStats.Of(a);
             if (s != null)
             {
-                s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * (1f - infoLoss);
-                s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * (1f - infoLoss);
+                s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * (1f - infoLoss);
+                s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * (1f - infoLoss);
                 // 随机失去一些能力（简化：智力/耐力下降）
-                s["intelligence"] = Mathf.Max(0, (s["intelligence"] ?? 5f) * (1f - infoLoss * 0.5f));
+                s["intelligence"] = Mathf.Max(0f, ((s["intelligence"] == 0f ? 5f : s["intelligence"])) * (1f - infoLoss * 0.5f));
             }
 
             // 复活后进阶任务进度打折（信息丢失影响突破潜力）

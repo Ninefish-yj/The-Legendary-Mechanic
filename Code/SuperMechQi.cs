@@ -263,7 +263,7 @@ namespace SuperMech.Code
                     {
                         a.data.health = Mathf.Max(1f, a.data.health - 2f * tickInterval);
                         if (SuperMechConfig.LogVerbose)
-                            Debug.Log($"[超神机械师] {a.Name} 气力耗尽，消耗生命！");
+                            Debug.Log($"[超神机械师] {a.name} 气力耗尽，消耗生命！");
                     }
 
                     // —— 实战突破：战斗中缓慢提升气力上限（原著：生死间突破）——

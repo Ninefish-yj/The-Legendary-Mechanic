@@ -111,46 +111,47 @@ namespace SuperMech.Code
             switch (attr)
             {
                 case AttrMagnetic:
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 5f;
-                    stats["experience"] = (stats["experience"] ?? 1f) * 1.1f;
+                    stats["intelligence"] = (stats["intelligence"]) + 5f;
+                    stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) * 1.1f;
                     break;
                 case AttrSpirit:
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 8f;
-                    stats["multiplier_damage"] = (stats["multiplier_damage"] ?? 1f) * 1.1f;
+                    stats["intelligence"] = (stats["intelligence"]) + 8f;
+                    stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) * 1.1f;
                     break;
                 case AttrFire:
-                    stats["damage"] = (stats["damage"] ?? 0f) + 5f;
-                    stats["attack_speed"] = (stats["attack_speed"] ?? 0f) + 0.1f;
-                    stats["critical_chance"] = (stats["critical_chance"] ?? 0f) + 0.05f;
+                    stats["damage"] = (stats["damage"]) + 5f;
+                    stats["attack_speed"] = (stats["attack_speed"]) + 0.1f;
+                    stats["critical_chance"] = (stats["critical_chance"]) + 0.05f;
                     break;
                 case AttrWind:
-                    stats["speed"] = (stats["speed"] ?? 0f) + 0.5f;
-                    stats["attack_speed"] = (stats["attack_speed"] ?? 0f) + 0.15f;
+                    stats["speed"] = (stats["speed"]) + 0.5f;
+                    stats["attack_speed"] = (stats["attack_speed"]) + 0.15f;
                     break;
                 case AttrIron:
-                    stats["armor"] = (stats["armor"] ?? 0f) + 5f;
-                    stats["multiplier_health"] = (stats["multiplier_health"] ?? 1f) * 1.15f;
+                    stats["armor"] = (stats["armor"]) + 5f;
+                    stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) * 1.15f;
                     break;
                 case AttrWater:
-                    stats["stamina"] = (stats["stamina"] ?? 0f) + 20f;
-                    stats["multiplier_health"] = (stats["multiplier_health"] ?? 1f) * 1.05f;
+                    stats["stamina"] = (stats["stamina"]) + 20f;
+                    stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) * 1.05f;
                     break;
                 case AttrLightning:
-                    stats["critical_chance"] = (stats["critical_chance"] ?? 0f) + 0.1f;
-                    stats["attack_speed"] = (stats["attack_speed"] ?? 0f) + 0.2f;
+                    stats["critical_chance"] = (stats["critical_chance"]) + 0.1f;
+                    stats["attack_speed"] = (stats["attack_speed"]) + 0.2f;
                     break;
                 case AttrDark:
-                    stats["critical_chance"] = (stats["critical_chance"] ?? 0f) + 0.08f;
-                    stats["damage"] = (stats["damage"] ?? 0f) + 3f;
+                    stats["critical_chance"] = (stats["critical_chance"]) + 0.08f;
+                    stats["damage"] = (stats["damage"]) + 3f;
                     break;
                 case AttrLight:
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 3f;
-                    stats["multiplier_health"] = (stats["multiplier_health"] ?? 1f) * 1.08f;
+                    stats["intelligence"] = (stats["intelligence"]) + 3f;
+                    stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) * 1.08f;
                     break;
             }
         }
 
         /// <summary>清除单位属性数据。</summary>
+        public static void Clear() { _attr.Clear(); }
         public static void Clear(Actor a)
         {
             if (a != null) _attr.Remove(a.data.id);

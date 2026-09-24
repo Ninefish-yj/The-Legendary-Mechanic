@@ -83,7 +83,7 @@ namespace SuperMech.Code
             }
             set.Add(nodeId);
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.Name} 解锁知识节点 {nodeId}（消耗{cost}潜能点，剩余{GetPotential(a)}）");
+                Debug.Log($"[超神机械师] {a.name} 解锁知识节点 {nodeId}（消耗{cost}潜能点，剩余{GetPotential(a)}）");
             return true;
         }
 
@@ -111,18 +111,18 @@ namespace SuperMech.Code
                 {
                     int gained = curLv - lastLv;
                     // 高阶位（S级以上）给觉醒点而非潜能点
-                    if (a.hasTrait(SuperMechTraits.RankS) || a.hasTrait("sm_rank_s_plus") || a.hasTrait("sm_rank_ss") || a.hasTrait("sm_rank_x"))
+                    if (a.hasTrait("sm_rank_s") || a.hasTrait("sm_rank_s_plus") || a.hasTrait("sm_rank_ss") || a.hasTrait("sm_rank_x"))
                     {
                         int curAw = GetAwakening(a);
                         _awakeningMap[a.id] = curAw + gained;
                         if (SuperMechConfig.LogVerbose)
-                            Debug.Log($"[超神机械师] {a.Name} 气力Lv{lastLv}→Lv{curLv}，获得{gained}觉醒点");
+                            Debug.Log($"[超神机械师] {a.name} 气力Lv{lastLv}→Lv{curLv}，获得{gained}觉醒点");
                     }
                     else
                     {
                         AddPotential(a, gained);
                         if (SuperMechConfig.LogVerbose)
-                            Debug.Log($"[超神机械师] {a.Name} 气力Lv{lastLv}→Lv{curLv}，获得{gained}潜能点");
+                            Debug.Log($"[超神机械师] {a.name} 气力Lv{lastLv}→Lv{curLv}，获得{gained}潜能点");
                     }
                     _lastQiLevel[a.id] = curLv;
                 }

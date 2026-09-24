@@ -105,14 +105,14 @@ namespace SuperMech.Code
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
                     {
-                        stats["intelligence"] = (stats["intelligence"] ?? 0f) + 0.5f;
-                        stats["experience"] = (stats["experience"] ?? 1f) + 0.01f;
+                        stats["intelligence"] = (stats["intelligence"]) + 0.5f;
+                        stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) + 0.01f;
                     }
                     _heritage[a.id] = h;
                     _autoUnlocked[a.id] = unlocked;
                     cost = GetCost(unlocked);
                     if (SuperMechConfig.LogVerbose)
-                        Debug.Log($"[超神机械师] {a.Name}（土著）传承度突破，自动解锁知识{nodeId}（共{unlocked}个）");
+                        Debug.Log($"[超神机械师] {a.name}（土著）传承度突破，自动解锁知识{nodeId}（共{unlocked}个）");
                 }
             }
         }
@@ -125,6 +125,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>清除数据。</summary>
+        public static void Clear() { _heritage.Clear(); _autoUnlocked.Clear(); }
         public static void Clear(Actor a)
         {
             if (a == null) return;
@@ -153,77 +154,77 @@ namespace SuperMech.Code
             {
                 case "武道系":
                     // 武道：力量+耐力为主，速度为辅
-                    stats["damage"] = (stats["damage"] ?? 0f) + rate * 1.5f;
-                    stats["warfare"] = (stats["warfare"] ?? 0f) + rate * 1.2f;
-                    stats["health"] = (stats["health"] ?? 0f) + rate * 2f;
-                    stats["stamina"] = (stats["stamina"] ?? 0f) + rate * 1.5f;
-                    stats["armor"] = (stats["armor"] ?? 0f) + rate * 0.5f;
-                    stats["speed"] = (stats["speed"] ?? 0f) + rate * 0.3f;
+                    stats["damage"] = (stats["damage"]) + rate * 1.5f;
+                    stats["warfare"] = (stats["warfare"]) + rate * 1.2f;
+                    stats["health"] = (stats["health"]) + rate * 2f;
+                    stats["stamina"] = (stats["stamina"]) + rate * 1.5f;
+                    stats["armor"] = (stats["armor"]) + rate * 0.5f;
+                    stats["speed"] = (stats["speed"]) + rate * 0.3f;
                     // 分支细化（原著：敏捷/力量/防御等路线）
                     if (branch == SuperMechBranch.BranchMartialBody) // 体魄
                     {
-                        stats["damage"] = (stats["damage"] ?? 0f) + rate * 1f;
-                        stats["health"] = (stats["health"] ?? 0f) + rate * 1f;
-                        stats["stamina"] = (stats["stamina"] ?? 0f) + rate * 0.5f;
+                        stats["damage"] = (stats["damage"]) + rate * 1f;
+                        stats["health"] = (stats["health"]) + rate * 1f;
+                        stats["stamina"] = (stats["stamina"]) + rate * 0.5f;
                     }
                     else if (branch == SuperMechBranch.BranchMartialTactic) // 战术
                     {
-                        stats["speed"] = (stats["speed"] ?? 0f) + rate * 1f;
-                        stats["attack_speed"] = (stats["attack_speed"] ?? 0f) + rate * 1f;
-                        stats["warfare"] = (stats["warfare"] ?? 0f) + rate * 0.8f;
+                        stats["speed"] = (stats["speed"]) + rate * 1f;
+                        stats["attack_speed"] = (stats["attack_speed"]) + rate * 1f;
+                        stats["warfare"] = (stats["warfare"]) + rate * 0.8f;
                     }
                     else if (branch == SuperMechBranch.BranchMartialPower) // 超能
                     {
-                        stats["damage"] = (stats["damage"] ?? 0f) + rate * 0.8f;
-                        stats["mana"] = (stats["mana"] ?? 0f) + rate * 1f;
-                        stats["intelligence"] = (stats["intelligence"] ?? 0f) + rate * 0.5f;
+                        stats["damage"] = (stats["damage"]) + rate * 0.8f;
+                        stats["mana"] = (stats["mana"]) + rate * 1f;
+                        stats["intelligence"] = (stats["intelligence"]) + rate * 0.5f;
                     }
                     break;
 
                 case "机械系":
                     // 机械：智力为主，耐力为辅
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + rate * 2f;
-                    stats["health"] = (stats["health"] ?? 0f) + rate * 1f;
-                    stats["stamina"] = (stats["stamina"] ?? 0f) + rate * 0.8f;
-                    stats["damage"] = (stats["damage"] ?? 0f) + rate * 0.5f;
+                    stats["intelligence"] = (stats["intelligence"]) + rate * 2f;
+                    stats["health"] = (stats["health"]) + rate * 1f;
+                    stats["stamina"] = (stats["stamina"]) + rate * 0.8f;
+                    stats["damage"] = (stats["damage"]) + rate * 0.5f;
                     // 分支细化（原著ch50：枪炮师/机械师/械武者）
                     if (branch == SuperMechBranch.BranchGunner) // 枪炮师
                     {
-                        stats["damage"] = (stats["damage"] ?? 0f) + rate * 1.5f;
-                        stats["range"] = (stats["range"] ?? 0f) + rate * 0.5f;
+                        stats["damage"] = (stats["damage"]) + rate * 1.5f;
+                        stats["range"] = (stats["range"]) + rate * 0.5f;
                     }
                     else if (branch == SuperMechBranch.BranchMech) // 机械师
                     {
-                        stats["intelligence"] = (stats["intelligence"] ?? 0f) + rate * 1f;
-                        stats["health"] = (stats["health"] ?? 0f) + rate * 0.5f;
+                        stats["intelligence"] = (stats["intelligence"]) + rate * 1f;
+                        stats["health"] = (stats["health"]) + rate * 0.5f;
                     }
                     else if (branch == SuperMechBranch.BranchMartial) // 械武者
                     {
-                        stats["damage"] = (stats["damage"] ?? 0f) + rate * 1f;
-                        stats["speed"] = (stats["speed"] ?? 0f) + rate * 0.8f;
-                        stats["armor"] = (stats["armor"] ?? 0f) + rate * 0.5f;
+                        stats["damage"] = (stats["damage"]) + rate * 1f;
+                        stats["speed"] = (stats["speed"]) + rate * 0.8f;
+                        stats["armor"] = (stats["armor"]) + rate * 0.5f;
                     }
                     break;
 
                 case "异能系":
                     // 异能：智力+精神为主
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + rate * 1.8f;
-                    stats["mana"] = (stats["mana"] ?? 0f) + rate * 1.5f;
-                    stats["damage"] = (stats["damage"] ?? 0f) + rate * 0.8f;
+                    stats["intelligence"] = (stats["intelligence"]) + rate * 1.8f;
+                    stats["mana"] = (stats["mana"]) + rate * 1.5f;
+                    stats["damage"] = (stats["damage"]) + rate * 0.8f;
                     break;
 
                 case "魔法系":
                     // 魔法：智力+精神+耐力
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + rate * 1.5f;
-                    stats["mana"] = (stats["mana"] ?? 0f) + rate * 2f;
-                    stats["health"] = (stats["health"] ?? 0f) + rate * 0.8f;
+                    stats["intelligence"] = (stats["intelligence"]) + rate * 1.5f;
+                    stats["mana"] = (stats["mana"]) + rate * 2f;
+                    stats["health"] = (stats["health"]) + rate * 0.8f;
                     break;
 
                 case "念力系":
                     // 念力：智力+精神+速度
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + rate * 1.5f;
-                    stats["mana"] = (stats["mana"] ?? 0f) + rate * 1.5f;
-                    stats["speed"] = (stats["speed"] ?? 0f) + rate * 0.8f;
+                    stats["intelligence"] = (stats["intelligence"]) + rate * 1.5f;
+                    stats["mana"] = (stats["mana"]) + rate * 1.5f;
+                    stats["speed"] = (stats["speed"]) + rate * 0.8f;
                     break;
             }
         }

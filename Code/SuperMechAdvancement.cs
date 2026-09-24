@@ -84,7 +84,7 @@ namespace SuperMech.Code
                     }
                 }
 
-                Debug.Log($"[超神机械师] {a.Name} 阶位变更 {SuperMechRanks.All[targetIdx].name}（欧纳≈{onar:F0}）");
+                Debug.Log($"[超神机械师] {a.name} 阶位变更 {SuperMechRanks.All[targetIdx].name}（欧纳≈{onar:F0}）");
 
                 // 按精确阶位（含+位）施加属性倍率
                 ApplyRankStats(a, targetIdx);
@@ -133,14 +133,14 @@ namespace SuperMech.Code
             if (_appliedRankIdx.TryGetValue(a.id, out int oldIdx) && oldIdx != newRankIdx)
             {
                 var oldR = SuperMechRanks.All[oldIdx];
-                if (oldR.damageMul > 0) s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) / oldR.damageMul;
-                if (oldR.healthMul > 0) s["multiplier_health"] = (s["multiplier_health"] ?? 1f) / oldR.healthMul;
+                if (oldR.damageMul > 0) s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / oldR.damageMul;
+                if (oldR.healthMul > 0) s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / oldR.healthMul;
             }
 
             // 施加新阶位倍率
             var newR = SuperMechRanks.All[newRankIdx];
-            s["multiplier_damage"] = (s["multiplier_damage"] ?? 1f) * newR.damageMul;
-            s["multiplier_health"] = (s["multiplier_health"] ?? 1f) * newR.healthMul;
+            s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * newR.damageMul;
+            s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * newR.healthMul;
             _appliedRankIdx[a.id] = newRankIdx;
         }
 

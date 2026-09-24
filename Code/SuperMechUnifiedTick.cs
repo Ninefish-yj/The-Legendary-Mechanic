@@ -102,6 +102,7 @@ namespace SuperMech.Code
             try { SuperMechSanctuary.Clear(); } catch { }
             try { SuperMechMageTower.Clear(); } catch { }
             try { SuperMechRelic.Clear(); } catch { }
+            try { SuperMechCosmicRelic.Clear(); } catch { }
             try { SuperMechRace.Clear(); } catch { }
             try { SuperMechAdvancement.Clear(); } catch { }
             Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");

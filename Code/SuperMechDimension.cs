@@ -20,7 +20,7 @@ namespace SuperMech.Code
             public string name;
             public string desc;
             public string classTrait;  // 对应系
-            public System.Action<Dictionary<string, float>> applyBuff;
+            public System.Action<BaseStats> applyBuff;
             public int minRankIndex = 8;  // A阶（index 8）
         }
 
@@ -31,9 +31,9 @@ namespace SuperMech.Code
                 id = "void", name = "虚空维度", desc = "混沌迷蒙的虚空能量空间，精神攻击+30%，闪避+20%",
                 classTrait = SuperMechTraits.ClassMind,
                 applyBuff = s => {
-                    s["multiplier_damage"] = (s["multiplier_damage"]??1f) * 1.3f;
-                    s["speed"] = (s["speed"]??0f) + 0.5f;
-                    s["intelligence"] = (s["intelligence"]??0f) + 10f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.3f;
+                    s["speed"] = (s["speed"]) + 0.5f;
+                    s["intelligence"] = (s["intelligence"]) + 10f;
                 }
             },
             new DimensionDef
@@ -41,9 +41,9 @@ namespace SuperMech.Code
                 id = "underworld", name = "冥土维度", desc = "生死能量交织的维度，生命+40%，伤害+25%",
                 classTrait = SuperMechTraits.ClassPsi,
                 applyBuff = s => {
-                    s["multiplier_health"] = (s["multiplier_health"]??1f) * 1.4f;
-                    s["multiplier_damage"] = (s["multiplier_damage"]??1f) * 1.25f;
-                    s["stamina"] = (s["stamina"]??0f) + 30f;
+                    s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * 1.4f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.25f;
+                    s["stamina"] = (s["stamina"]) + 30f;
                 }
             },
             new DimensionDef
@@ -51,10 +51,10 @@ namespace SuperMech.Code
                 id = "arcane", name = "秘法维度", desc = "魔力充盈的法师塔维度，智力+20，法力+50，全属性+5",
                 classTrait = SuperMechTraits.ClassMage,
                 applyBuff = s => {
-                    s["intelligence"] = (s["intelligence"]??0f) + 20f;
-                    s["mana"] = (s["mana"]??0f) + 50f;
-                    s["damage"] = (s["damage"]??0f) + 5f;
-                    s["health"] = (s["health"]??0f) + 15f;
+                    s["intelligence"] = (s["intelligence"]) + 20f;
+                    s["mana"] = (s["mana"]) + 50f;
+                    s["damage"] = (s["damage"]) + 5f;
+                    s["health"] = (s["health"]) + 15f;
                 }
             },
             new DimensionDef
@@ -62,9 +62,9 @@ namespace SuperMech.Code
                 id = "hangar", name = "机库维度", desc = "机械师的虚拟机库空间，制造速度+50%，机械威力+30%",
                 classTrait = SuperMechTraits.ClassMech,
                 applyBuff = s => {
-                    s["multiplier_damage"] = (s["multiplier_damage"]??1f) * 1.3f;
-                    s["intelligence"] = (s["intelligence"]??0f) + 15f;
-                    s["experience"] = (s["experience"]??1f) * 1.5f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.3f;
+                    s["intelligence"] = (s["intelligence"]) + 15f;
+                    s["experience"] = ((s["experience"] == 0f ? 1f : s["experience"])) * 1.5f;
                 }
             },
             new DimensionDef
@@ -72,9 +72,9 @@ namespace SuperMech.Code
                 id = "battle", name = "战界维度", desc = "武道系的战斗空间，攻速+30%，暴击+15%，伤害+20%",
                 classTrait = SuperMechTraits.ClassMartial,
                 applyBuff = s => {
-                    s["attack_speed"] = (s["attack_speed"]??0f) + 0.3f;
-                    s["critical_chance"] = (s["critical_chance"]??0f) + 0.15f;
-                    s["multiplier_damage"] = (s["multiplier_damage"]??1f) * 1.2f;
+                    s["attack_speed"] = (s["attack_speed"]) + 0.3f;
+                    s["critical_chance"] = (s["critical_chance"]) + 0.15f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.2f;
                 }
             },
             new DimensionDef
@@ -82,10 +82,10 @@ namespace SuperMech.Code
                 id = "infostate", name = "信息态维度", desc = "高维信息态空间（ch1211），全属性+10%，穿甲+15%，免疫控制",
                 classTrait = null, // 信息态维度对所有系开放，但需要第六圣所解锁
                 applyBuff = s => {
-                    s["multiplier_damage"] = (s["multiplier_damage"]??1f) * 1.1f;
-                    s["multiplier_health"] = (s["multiplier_health"]??1f) * 1.1f;
-                    s["intelligence"] = (s["intelligence"]??0f) + 15f;
-                    s["armor_penetration"] = (s["armor_penetration"]??0f) + 0.15f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.1f;
+                    s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * 1.1f;
+                    s["intelligence"] = (s["intelligence"]) + 15f;
+                    s["armor_penetration"] = (s["armor_penetration"]) + 0.15f;
                 }
             },
         };
@@ -127,7 +127,7 @@ namespace SuperMech.Code
             if (stats != null) dim.applyBuff(stats);
             _activeDimension[a.id] = dim.id;
             _cooldown[a.id] = System.DateTime.Now.Ticks + System.TimeSpan.FromSeconds(300).Ticks;
-            Debug.Log($"[超神机械师] {a.Name} 进入{dim.name}，获得限时强化");
+            Debug.Log($"[超神机械师] {a.name} 进入{dim.name}，获得限时强化");
             return true;
         }
 

@@ -74,7 +74,7 @@ namespace SuperMech.Code
             if (a == null || amount <= 0) return;
             int cur = GetPoints(a);
             _points[a.id] = cur + amount;
-            Debug.Log($"[超神机械师] {a.Name} 获得{amount}神性蜕变点数（共{cur + amount}）");
+            Debug.Log($"[超神机械师] {a.name} 获得{amount}神性蜕变点数（共{cur + amount}）");
         }
 
         /// <summary>直接设置神性蜕变点数（存档恢复用）。</summary>
@@ -135,13 +135,13 @@ namespace SuperMech.Code
             if (stats == null) { AddPoints(a, points); return points; }
 
             // 条件1：最高属性>20000
-            float maxStat = Mathf.Max(stats["damage"] ?? 0, stats["health"] ?? 0,
-                stats["intelligence"] ?? 0, stats["stamina"] ?? 0, stats["armor"] ?? 0);
+            float maxStat = Mathf.Max(stats["damage"], stats["health"],
+                stats["intelligence"], stats["stamina"], stats["armor"]);
             if (maxStat > 20000) points++;
 
             // 条件2：次要属性>15000（简化：第二高属性）
-            float[] allStats = { stats["damage"] ?? 0, stats["health"] ?? 0,
-                stats["intelligence"] ?? 0, stats["stamina"] ?? 0, stats["armor"] ?? 0 };
+            float[] allStats = { stats["damage"], stats["health"],
+                stats["intelligence"], stats["stamina"], stats["armor"] };
             System.Array.Sort(allStats);
             if (allStats.Length >= 2 && allStats[allStats.Length - 2] > 15000) points++;
 
@@ -155,7 +155,7 @@ namespace SuperMech.Code
             if (a.hasTrait("sm_cosmic_relic_owner")) points++;
 
             AddPoints(a, points);
-            Debug.Log($"[超神机械师] {a.Name} 进阶获得{points}神性蜕变点数");
+            Debug.Log($"[超神机械师] {a.name} 进阶获得{points}神性蜕变点数");
             return points;
         }
 
@@ -222,7 +222,7 @@ namespace SuperMech.Code
                             _speciesLayers[a.id] = spec + 1;
                             ApplySpeciesBonus(a, 1);
                         }
-                        Debug.Log($"[超神机械师] {a.Name}（土著）感悟转化为1层神性蜕变");
+                        Debug.Log($"[超神机械师] {a.name}（土著）感悟转化为1层神性蜕变");
                     }
                 }
                 _insightProgress[a.id] = progress;
@@ -238,7 +238,7 @@ namespace SuperMech.Code
             a.addTrait("sm_divinity_ascended");
             // 首次触发给2点（ch1039：韩萧第一次获得2点）
             AddPoints(a, 2);
-            Debug.Log($"[超神机械师] {a.Name} 触发神性蜕变！获得2点初始点数");
+            Debug.Log($"[超神机械师] {a.name} 触发神性蜕变！获得2点初始点数");
         }
 
         /// <summary>职业路线加成（每层）。</summary>
@@ -251,19 +251,19 @@ namespace SuperMech.Code
             switch (cls)
             {
                 case "机械系":
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 50f * layers;
-                    stats["multiplier_damage"] = (stats["multiplier_damage"] ?? 1f) + 0.05f * layers;
-                    stats["experience"] = (stats["experience"] ?? 1f) + 0.1f * layers;
+                    stats["intelligence"] = (stats["intelligence"]) + 50f * layers;
+                    stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) + 0.05f * layers;
+                    stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) + 0.1f * layers;
                     break;
                 case "武道系":
-                    stats["damage"] = (stats["damage"] ?? 0f) + 80f * layers;
-                    stats["warfare"] = (stats["warfare"] ?? 0f) + 30f * layers;
-                    stats["attack_speed"] = (stats["attack_speed"] ?? 0f) + 0.05f * layers;
+                    stats["damage"] = (stats["damage"]) + 80f * layers;
+                    stats["warfare"] = (stats["warfare"]) + 30f * layers;
+                    stats["attack_speed"] = (stats["attack_speed"]) + 0.05f * layers;
                     break;
                 default:
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 40f * layers;
-                    stats["mana"] = (stats["mana"] ?? 0f) + 100f * layers;
-                    stats["multiplier_damage"] = (stats["multiplier_damage"] ?? 1f) + 0.05f * layers;
+                    stats["intelligence"] = (stats["intelligence"]) + 40f * layers;
+                    stats["mana"] = (stats["mana"]) + 100f * layers;
+                    stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) + 0.05f * layers;
                     break;
             }
         }
@@ -274,14 +274,15 @@ namespace SuperMech.Code
             var stats = SuperMechStats.Of(a);
             if (stats == null) return;
             // 种族路线提升种族天赋+属性补完
-            stats["health"] = (stats["health"] ?? 0f) + 200f * layers;
-            stats["stamina"] = (stats["stamina"] ?? 0f) + 100f * layers;
-            stats["armor"] = (stats["armor"] ?? 0f) + 10f * layers;
-            stats["multiplier_health"] = (stats["multiplier_health"] ?? 1f) + 0.05f * layers;
-            stats["lifespan"] = (stats["lifespan"] ?? 0f) + 500f * layers;
+            stats["health"] = (stats["health"]) + 200f * layers;
+            stats["stamina"] = (stats["stamina"]) + 100f * layers;
+            stats["armor"] = (stats["armor"]) + 10f * layers;
+            stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) + 0.05f * layers;
+            stats["lifespan"] = (stats["lifespan"]) + 500f * layers;
         }
 
         /// <summary>清除数据。</summary>
+        public static void Clear() { _points.Clear(); _profLayers.Clear(); _speciesLayers.Clear(); }
         public static void Clear(Actor a)
         {
             if (a == null) return;

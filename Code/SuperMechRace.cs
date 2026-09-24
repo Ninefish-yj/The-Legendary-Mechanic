@@ -227,7 +227,7 @@ namespace SuperMech.Code
                         DetachSubspecies(a, divineName,
                             new[] { SubspeciesDivineGene, SubspeciesBornElite });
                     }
-                    Debug.Log($"[超神机械师] {a.Name}({title}) 物种神化 → {divineName}");
+                    Debug.Log($"[超神机械师] {a.name}({title}) 物种神化 → {divineName}");
                 }
                 return;
             }
@@ -244,7 +244,7 @@ namespace SuperMech.Code
                 talentIds.Add(PickUniversalTalent());     // 通用虚空系1
                 talentIds.Add(PickUniversalTalent());     // 通用虚空系2
                 DetachSubspecies(a, raceName, talentIds.ToArray());
-                Debug.Log($"[超神机械师] {a.Name} 获得名号【{title}】，物种蜕变 → {raceName}（种族天赋：{string.Join(",", talentIds)}）");
+                Debug.Log($"[超神机械师] {a.name} 获得名号【{title}】，物种蜕变 → {raceName}（种族天赋：{string.Join(",", talentIds)}）");
             }
         }
 
@@ -285,7 +285,7 @@ namespace SuperMech.Code
         public static string GetTitle(Actor a)
         {
             if (a == null) return "";
-            string key = a.data?.id ?? a.GetInstanceID().ToString();
+            string key = a.data?.id ?? a.data.id;
             if (!_titles.ContainsKey(key))
             {
                 string cls = SuperMechUnitWindow.GetClass(a);
@@ -344,7 +344,7 @@ namespace SuperMech.Code
                 Subspecies newSpecies = World.world.subspecies.newSpecies(actor.asset, actor.current_tile);
                 if (newSpecies == null)
                 {
-                    Debug.LogWarning($"[超神机械师] {actor.Name} 创建独立亚种失败");
+                    Debug.LogWarning($"[超神机械师] {actor.name} 创建独立亚种失败");
                     return;
                 }
 

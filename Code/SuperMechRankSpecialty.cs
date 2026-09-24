@@ -143,7 +143,7 @@ namespace SuperMech.Code
                 if (branch == SuperMechBranch.BranchGunner) finalForm = MechGodArmed;     // 枪炮师=宇宙帝皇
                 else if (branch == SuperMechBranch.BranchMartial) finalForm = MechGodEnergy; // 械武者=起源神君
                 if (!a.hasTrait(finalForm)) a.addTrait(finalForm);
-                Debug.Log($"[超神机械师] {a.Name} 达到X阶（超神级），最终形态：{finalForm}");
+                Debug.Log($"[超神机械师] {a.name} 达到X阶（超神级），最终形态：{finalForm}");
             }
         }
     }

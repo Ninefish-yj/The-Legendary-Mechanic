@@ -58,7 +58,7 @@ namespace SuperMech.Code
             {
                 foreach (Actor a in World.world.units)
                 {
-                    if (a == null || a.isDead()) continue;
+                    if (a == null || a!isAlive()()) continue;
                     if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
                     list.Add((a, SuperMechAdvancement.CalcOnar(a), SuperMechQi.GetQi(a), SuperMechAdvancement.GetRankIndex(a)));
                 }
@@ -78,10 +78,10 @@ namespace SuperMech.Code
                 var entry = list[i];
                 string cls = GetClassShort(entry.a);
                 string rank = SuperMechRanks.GetRankName(entry.a);
-                int qiLv = SuperMechQi.GetQiLevel(entry.a);
+                int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQi(entry.a));
 
                 Color rowColor = i < 3 ? new Color(0.15f, 0.12f, 0.05f, 0.6f) : new Color(0.08f, 0.08f, 0.12f, 0.5f);
-                _frame.AddButton($"{i + 1,2}. {entry.a.Name,-14} {cls,-4} {rank,-5} Lv{qiLv,-3} {entry.onar,8:F0}",
+                _frame.AddButton($"{i + 1,2}. {entry.a.name,-14} {cls,-4} {rank,-5} Lv{qiLv,-3} {entry.onar,8:F0}",
                     x, y, 600f, 26f, () => { MoveCamera.setFocusUnit(entry.a); }, rowColor);
                 y -= 30f;
             }

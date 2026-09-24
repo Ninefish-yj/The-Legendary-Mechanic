@@ -111,7 +111,7 @@ namespace SuperMech.Code
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
                     {
-                        float intel = stats["intelligence"] ?? 5f;
+                        float intel = (stats["intelligence"] == 0f ? 5f : stats["intelligence"]);
                         gain += intel * 0.001f * tickInterval;
                     }
                 }
@@ -126,7 +126,7 @@ namespace SuperMech.Code
                 {
                     progress = 100f;
                     _advancementTaskDone[a.id] = true;
-                    Debug.Log($"[超神机械师] {a.Name} 完成进阶任务【{GetAdvancementTaskName(a)}】！进入可进阶状态，可感知超神遗力");
+                    Debug.Log($"[超神机械师] {a.name} 完成进阶任务【{GetAdvancementTaskName(a)}】！进入可进阶状态，可感知超神遗力");
                 }
                 _advancementProgress[a.id] = progress;
             }
@@ -145,7 +145,7 @@ namespace SuperMech.Code
             if (a == null || amount <= 0) return;
             int cur = GetLegacyPower(a);
             _legacyPower[a.id] = cur + amount;
-            Debug.Log($"[超神机械师] {a.Name} 获得{amount}份超神遗力（共{cur + amount}）");
+            Debug.Log($"[超神机械师] {a.name} 获得{amount}份超神遗力（共{cur + amount}）");
         }
 
         /// <summary>直接设置超神遗力（存档恢复用）。</summary>
@@ -255,7 +255,7 @@ namespace SuperMech.Code
 
             bool allMet = cond1 && cond2 && cond3;
 
-            Debug.Log($"[超神机械师] {a.Name} 冲击超神级，成功率{successRate:P0}，三条件{(allMet ? "全部满足→神化进阶" : "未全满足→即使成功也不升阶")}");
+            Debug.Log($"[超神机械师] {a.name} 冲击超神级，成功率{successRate:P0}，三条件{(allMet ? "全部满足→神化进阶" : "未全满足→即使成功也不升阶")}");
 
             // 消耗1份超神遗力
             if (cond3) _legacyPower[a.id] = GetLegacyPower(a) - 1;
@@ -275,18 +275,18 @@ namespace SuperMech.Code
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
                     {
-                        stats["intelligence"] = (stats["intelligence"] ?? 0f) + 200f;
-                        stats["damage"] = (stats["damage"] ?? 0f) + 500f;
-                        stats["health"] = (stats["health"] ?? 0f) + 5000f;
-                        stats["multiplier_damage"] = (stats["multiplier_damage"] ?? 1f) + 0.5f;
+                        stats["intelligence"] = (stats["intelligence"]) + 200f;
+                        stats["damage"] = (stats["damage"]) + 500f;
+                        stats["health"] = (stats["health"]) + 5000f;
+                        stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) + 0.5f;
                     }
-                    Debug.Log($"[超神机械师] {a.Name} 神化进阶成功！突破超神级！！！");
+                    Debug.Log($"[超神机械师] {a.name} 神化进阶成功！突破超神级！！！");
                     return true;
                 }
                 else
                 {
                     // 条件未全满足→常规进阶，阶位不变（ch1396原文）
-                    Debug.Log($"[超神机械师] {a.Name} 进阶成功但条件未全满足，阶位不变（需三条件全满足才能神化进阶）");
+                    Debug.Log($"[超神机械师] {a.name} 进阶成功但条件未全满足，阶位不变（需三条件全满足才能神化进阶）");
                     // 给少量奖励
                     SuperMechQi.AddQiMax(a, 20000f);
                     return false; // 不算突破成功
@@ -295,13 +295,13 @@ namespace SuperMech.Code
             else
             {
                 // 突破失败，恶性变异（ch1396：无限增殖/基因崩溃/细胞独立/宇宙同化）
-                float damage = a.data.max_health * 0.5f;
+                float damage = a.getMaxHealth() * 0.5f;
                 a.data.health = Mathf.Max(1f, a.data.health - damage);
                 var stats = SuperMechStats.Of(a);
                 if (stats != null)
                 {
-                    stats["intelligence"] = Mathf.Max(0, (stats["intelligence"] ?? 0f) - 30f);
-                    stats["damage"] = Mathf.Max(0, (stats["damage"] ?? 0f) - 80f);
+                    stats["intelligence"] = Mathf.Max(0f, (stats["intelligence"]) - 30f);
+                    stats["damage"] = Mathf.Max(0f, (stats["damage"]) - 80f);
                 }
                 // 10%概率直接死亡（恶性变异致死）
                 if (Random.value < 0.1f && a.data.health > 1f)
@@ -309,11 +309,11 @@ namespace SuperMech.Code
                     a.data.health = 0f;
                     // ch1396/ch1399：突破失败死亡者化身为超神遗力，无法圣所复苏
                     SuperMechSanctuary.MarkTranscendenceFailed(a);
-                    Debug.Log($"[超神机械师] {a.Name} 突破失败，恶性变异致死！化为超神遗力，无法圣所复苏");
+                    Debug.Log($"[超神机械师] {a.name} 突破失败，恶性变异致死！化为超神遗力，无法圣所复苏");
                 }
                 else
                 {
-                    Debug.Log($"[超神机械师] {a.Name} 突破失败，恶性变异！扣血{damage:F0}，属性下降");
+                    Debug.Log($"[超神机械师] {a.name} 突破失败，恶性变异！扣血{damage:F0}，属性下降");
                 }
                 return false;
             }
@@ -330,7 +330,7 @@ namespace SuperMech.Code
             {
                 for (int dy = -3; dy <= 3; dy++)
                 {
-                    WorldTile t = a.current_tile.getNeighbor(dx, dy);
+                    WorldTile t = MapBox.instance.getTile(a.current_tile.x + dx, a.current_tile.y + dy);
                     if (t == null) continue;
                     t.doUnits(u =>
                     {
@@ -378,7 +378,7 @@ namespace SuperMech.Code
             if (a == null) return "";
             if (IsTranscended(a)) return "已突破超神级！";
             int rank = SuperMechAdvancement.GetExactRankIndex(a);
-            if (rank < 12) return $"需SS阶（当前{SuperMechRanks.GetRankName(rank)}）";
+            if (rank < 12) return $"需SS阶（当前{SuperMechRanks.GetRankName(a)}）";
             if (!SuperMechDivinity.IsDivineAwakened(a)) return "需触发神性蜕变（气力Lv21+78000欧纳）";
 
             // 进阶任务
@@ -408,6 +408,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>清除数据。</summary>
+        public static void Clear() { _legacyPower.Clear(); _cooldown.Clear(); _transcended.Clear(); }
         public static void Clear(Actor a)
         {
             if (a == null) return;

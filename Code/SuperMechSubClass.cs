@@ -111,7 +111,7 @@ namespace SuperMech.Code
             {
                 SetSubLevel(a, subId, curLv + 1);
                 if (SuperMechConfig.LogVerbose)
-                    Debug.Log($"[超神机械师] {a.Name} 副职业{subId}升级到Lv{curLv + 1}");
+                    Debug.Log($"[超神机械师] {a.name} 副职业{subId}升级到Lv{curLv + 1}");
             }
         }
 
@@ -145,26 +145,26 @@ namespace SuperMech.Code
             {
                 if (subId == SubAgent || subId == SubNinja || subId == SubScout)
                 {
-                    stats["damage"] = (stats["damage"] ?? 0f) + 2f;
-                    stats["critical_chance"] = (stats["critical_chance"] ?? 0f) + 0.01f;
+                    stats["damage"] = (stats["damage"]) + 2f;
+                    stats["critical_chance"] = (stats["critical_chance"]) + 0.01f;
                 }
                 else if (subId == SubHacker || subId == SubScribe)
                 {
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 2f;
-                    stats["experience"] = (stats["experience"] ?? 1f) + 0.02f;
+                    stats["intelligence"] = (stats["intelligence"]) + 2f;
+                    stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) + 0.02f;
                 }
                 else if (subId == SubDoctor)
                 {
-                    stats["multiplier_health"] = (stats["multiplier_health"] ?? 1f) + 0.03f;
+                    stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) + 0.03f;
                 }
                 else if (subId == SubEngineer)
                 {
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 1f;
-                    stats["armor"] = (stats["armor"] ?? 0f) + 1f;
+                    stats["intelligence"] = (stats["intelligence"]) + 1f;
+                    stats["armor"] = (stats["armor"]) + 1f;
                 }
                 else
                 {
-                    stats["intelligence"] = (stats["intelligence"] ?? 0f) + 1f;
+                    stats["intelligence"] = (stats["intelligence"]) + 1f;
                 }
             }
         }

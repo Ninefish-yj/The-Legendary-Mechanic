@@ -68,7 +68,7 @@ namespace SuperMech.Code
                 if (roll < acc) { result = r.rating; break; }
             }
             _ratings[a.data.id] = result;
-            Debug.Log($"[超神机械师] {a.Name} 异能潜力评级：{result}");
+            Debug.Log($"[超神机械师] {a.name} 异能潜力评级：{result}");
             return result;
         }
 
@@ -104,6 +104,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>清除单位评级数据。</summary>
+        public static void Clear() { _ratings.Clear(); }
         public static void Clear(Actor a)
         {
             if (a != null) _ratings.Remove(a.data.id);
