@@ -14,7 +14,6 @@ namespace SuperMech
         public new static Main Instance { get; private set; }
         private float _promoTimer;
         private float _localeTimer;
-        private float _saveTimer;
         private bool _localeExported;
 
         protected override void OnModLoad()
@@ -81,57 +80,9 @@ namespace SuperMech
             if (_promoTimer >= SuperMechConfig.TickInterval)
             {
                 _promoTimer = 0f;
-                try { SuperMechAdvancement.TickPromotions(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 晋升循环异常: " + e.Message); }
-                try { SuperMechFavorite.TickAutoFavorite(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 自动收藏异常: " + e.Message); }
-                try { SuperMechQi.TickQiLevels(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 气力等级异常: " + e.Message); }
-                try { SuperMechPotential.TickPotential(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 潜能点异常: " + e.Message); }
-                try { SuperMechCorePower.TickCorePowers(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 核心能量异常: " + e.Message); }
-                try { SuperMechQiAttribute.TickAutoAssign(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 气力属性异常: " + e.Message); }
-                try { SuperMechRefinement.TickRefinement(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 提炼法异常: " + e.Message); }
-                try { SuperMechCultivation.TickCultivation(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 修炼功法异常: " + e.Message); }
-                try { SuperMechSanctuary.TickDivinity(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 神性蜕变异常: " + e.Message); }
-                try { SuperMechSanctuary.TickDeadTracking(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 死者追踪异常: " + e.Message); }
-                try { SuperMechSubClass.TickSubLevels(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 副职业等级异常: " + e.Message); }
-                try { SuperMechRelic.TickRelicDrops(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 宝物掉落异常: " + e.Message); }
-                try { SuperMechMageTower.TickMageTowers(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 法师塔异常: " + e.Message); }
-                try { SuperMechAwakened.TickXp(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 降临者经验异常: " + e.Message); }
-                try { SuperMechAwakened.TickAutoPlay(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 降临者自动成长异常: " + e.Message); }
-                try { SuperMechHeritage.TickHeritage(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 土著传承度异常: " + e.Message); }
-                try { SuperMechIntuition.TickIntuition(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 冥冥感应异常: " + e.Message); }
-                try { SuperMechDivinity.TickNativeInsight(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 神性蜕变异常: " + e.Message); }
-                try { SuperMechTranscendence.TickLegacySense(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 超神遗力感知异常: " + e.Message); }
-                try { SuperMechTranscendence.TickAdvancementTask(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 进阶任务异常: " + e.Message); }
-                try { SuperMechInfoState.TickInfoState(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 信息态异常: " + e.Message); }
-
-                // 自动存档：每60秒保存一次
-                _saveTimer += SuperMechConfig.TickInterval;
-                if (_saveTimer >= 60f)
-                {
-                    _saveTimer = 0f;
-                    try { SuperMechSaveData.Save(); }
-                    catch (System.Exception e) { Debug.LogError("[超神机械师] 自动存档异常: " + e.Message); }
-                }
+                // 统一tick调度：40+系统分4组错峰执行，避免一帧内40次全量遍历
+                try { SuperMechUnifiedTick.Tick(); }
+                catch (System.Exception e) { Debug.LogError("[超神机械师] 统一tick异常: " + e.Message); }
             }
         }
     }
