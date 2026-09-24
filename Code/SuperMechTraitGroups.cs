@@ -35,6 +35,7 @@ namespace SuperMech.Code
             ("sm_refinement",   "提炼法",     "#228B22"),
             ("sm_relic",        "宇宙宝物",   "#FFD700"),
             ("sm_specialty",    "特色专精",   "#FF69B4"),
+            ("sm_rank_specialty","阶位专长",   "#FF4500"),
             ("sm_subclass",     "副职业",     "#708090"),
             ("sm_race",         "种族进化",   "#9932CC"),
             ("sm_skills",       "职业技能",   "#FF4500"),

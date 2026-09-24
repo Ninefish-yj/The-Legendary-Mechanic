@@ -63,6 +63,7 @@ namespace SuperMech.Code
                 foreach (var r in SuperMechRanks.All)
                     if (a.hasTrait(r.id) && r != target) a.removeTrait(r.id);
                 a.addTrait(target.id);
+                SuperMechRankSpecialty.OnRankUp(a, targetIdx);  // 赋予对应阶位专长
                 Debug.Log($"[超神机械师] 单位晋升 {target.name}（欧纳≈{onar:F0}）");
             }
         }

@@ -33,6 +33,7 @@ namespace SuperMech
             SuperMechCultivation.Register();
             SuperMechRelic.Register();
             SuperMechSpecialty.Register();
+            SuperMechRankSpecialty.Register();
             SuperMechSanctuary.Register();
             SuperMechCrafting.Register();
             SuperMechPowers.Register();
