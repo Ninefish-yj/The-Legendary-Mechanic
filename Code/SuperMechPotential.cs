@@ -116,7 +116,7 @@ namespace SuperMech.Code
                 {
                     int gained = curLv - lastLv;
                     // 高阶位（S级以上）给觉醒点而非潜能点
-                    if (a.hasTrait("sm_rank_s") || a.hasTrait("sm_rank_s_plus") || a.hasTrait("sm_rank_ss") || a.hasTrait("sm_rank_x"))
+                    if (a.hasTrait("sm_rank_10_s") || a.hasTrait("sm_rank_11_s_plus") || a.hasTrait("sm_rank_12_ss") || a.hasTrait("sm_rank_13_x"))
                     {
                         int curAw = GetAwakening(a);
                         _awakeningMap[a.id] = curAw + gained;

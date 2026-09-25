@@ -152,7 +152,7 @@ namespace SuperMech.Code
                 Actor a = World.world.units.createNewUnit("beast", tile, pMiracleSpawn: false, pAdultAge: true);
                 if (a != null)
                 {
-                    a.addTrait("sm_rank_b");
+                    a.addTrait("sm_rank_06_b");
                     a.addTrait("aggressive");
                 }
                 return true;

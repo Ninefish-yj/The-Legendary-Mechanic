@@ -86,12 +86,13 @@ namespace SuperMech.Code
                 AssetManager.traits.add(t);
             }
 
-            // 2. 五系觉醒
-            AddClassTrait(ClassPsi,    "异能系觉醒（基因树·神通）", 3, 0, 0);
-            AddClassTrait(ClassMartial, "武道系觉醒（御气技巧树·神体）", 0, 3, 2);
-            AddClassTrait(ClassMech,   "机械系觉醒（机械知识树·神器）", 2, 0, 0);
-            AddClassTrait(ClassMage,   "魔法系觉醒（魔法知识树·神权）", 4, 0, 0);
-            AddClassTrait(ClassMind,   "念力系觉醒（精神修炼树·神魂）", 3, 0, 0);
+            // 2. 五系天赋（原著没有"觉醒"概念，超能者自然觉醒，天赋决定系别）
+            //    机械=械感，武道=体魄，异能=异能潜力，魔法=魔法天赋，念力=精神天赋
+            AddClassTrait(ClassPsi,    "异能潜力（基因树）", 3, 0, 0);
+            AddClassTrait(ClassMartial, "体魄天赋（御气技巧树）", 0, 3, 2);
+            AddClassTrait(ClassMech,   "械感天赋（机械知识树）", 2, 0, 0);
+            AddClassTrait(ClassMage,   "魔法天赋（魔法知识树）", 4, 0, 0);
+            AddClassTrait(ClassMind,   "精神天赋（精神修炼树）", 3, 0, 0);
 
             // 3. 种族进化移至 SuperMechRace.cs（原著6阶段，与阶位挂钩自动进化）
 

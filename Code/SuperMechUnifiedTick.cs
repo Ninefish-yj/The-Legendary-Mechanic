@@ -38,7 +38,7 @@ namespace SuperMech.Code
                     SuperMechCorePower.TickCorePowers();
                     SuperMechQiAttribute.TickAutoAssign();
                     SuperMechRefinement.TickRefinement();
-                    SuperMechCultivation.TickCultivation();
+                    SuperMechRefinement.TickCultivation();
                 }
                 // 第1组：晋升与成长（阶位/潜能/副职业/降临者/土著）
                 else if (group == 1)

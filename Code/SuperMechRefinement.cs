@@ -27,6 +27,10 @@ namespace SuperMech.Code
     {
         public const string RefinementTrait = "sm_refinement";
         public const string EmRefinementTrait = "sm_em_refinement";
+        // 三系提炼法变种（原著：所有修炼气力的方法都叫提炼法）
+        public const string PsiResonance  = "sm_pcult_resonance";   // 基因提炼法（异能）
+        public const string ManaMeditation = "sm_pcult_meditation"; // 魔力提炼法（魔法）
+        public const string MindTrain    = "sm_pcult_mind_train";   // 精神提炼法（念力）
 
         // 锻炼次数追踪
         private static readonly Dictionary<long, int> _refineCount = new Dictionary<long, int>();
@@ -97,7 +101,53 @@ namespace SuperMech.Code
             AssetManager.powers.add(givePower);
             LocalizedTextManager.add("power_sm_give_refinement", "传授提炼法", pReplace: true);
 
-            Debug.Log("[超神机械师] 提炼法系统注册完成（气力提炼法全系通用+电磁因子提炼法机械专属）");
+            // 三系提炼法变种（原著ch172：就连异能系也屁颠颠来学）
+            AddVariantTrait(PsiResonance, "基因提炼法（异能系）", "战斗中基因链共鸣，异能系单位智力额外增长。");
+            AddVariantTrait(ManaMeditation, "魔力提炼法（魔法系）", "持续冥想提炼魔力，魔法系单位智力与魔力池额外增长。");
+            AddVariantTrait(MindTrain, "精神提炼法（念力系）", "精神力日常锻炼提炼，念力系单位智力与精神力额外增长。");
+
+            Debug.Log("[超神机械师] 提炼法系统注册完成（气力提炼法全系通用+电磁因子提炼法机械专属+三系变种）");
+        }
+
+        private static void AddVariantTrait(string id, string name, string desc)
+        {
+            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
+            var t = new ActorTrait
+            {
+                id = id, path_icon = "ui/Icons/actor_traits/iconFireBlood", group_id = "sm_refinement",
+                needs_to_be_explored = false, base_stats = new BaseStats()
+            };
+            AssetManager.traits.add(t);
+        }
+
+        /// <summary>三系提炼法变种tick效果（持续增长属性）。</summary>
+        public static void TickCultivation()
+        {
+            foreach (Actor a in World.world.units.units_only_alive)
+            {
+                if (a == null) continue;
+                var s = SuperMechStats.Of(a);
+                if (s == null) continue;
+
+                if (a.hasTrait(PsiResonance) && a.hasTrait(SuperMechTraits.ClassPsi))
+                {
+                    float cur = s["intelligence"];
+                    if (cur < 200) s["intelligence"] = cur + 0.5f;
+                }
+                if (a.hasTrait(ManaMeditation) && a.hasTrait(SuperMechTraits.ClassMage))
+                {
+                    float cur = s["intelligence"];
+                    if (cur < 200) s["intelligence"] = cur + 0.6f;
+                    float mana = s["mana"];
+                    if (mana < 1000) s["mana"] = mana + 3f;
+                }
+                if (a.hasTrait(MindTrain) && a.hasTrait(SuperMechTraits.ClassMind))
+                {
+                    float cur = s["intelligence"];
+                    if (cur < 200) s["intelligence"] = cur + 0.5f;
+                }
+            }
         }
 
         /// <summary>计算完美度（取决于职业主属性，ch51原文）。</summary>

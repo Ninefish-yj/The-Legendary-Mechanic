@@ -37,18 +37,23 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
         // 战斗中累计时间（用于掉落判定）
         private static readonly Dictionary<long, float> _combatTime = new Dictionary<long, float>();
+        // 当前装备品质（unit.id -> quality index 0-8，-1=无）
+        private static readonly Dictionary<long, int> _equippedQuality = new Dictionary<long, int>();
+        // 已应用到BaseStats的品质（用于换装备时先恢复旧加成）
+        private static readonly Dictionary<long, int> _appliedQuality = new Dictionary<long, int>();
+        // 品质倍率表
+        private static readonly float[] QualityDmgMul = { 0.8f, 1.0f, 1.3f, 1.7f, 2.2f, 3.0f, 4.5f, 7.0f, 12.0f };
+        private static readonly float[] QualityHpMul = { 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 2.8f, 4.0f, 6.0f, 10.0f };
 
         public static void Register()
         {
-            AddRelic(QGray,   "劣质灰装", 0.8f, 0.8f);
-            AddRelic(QWhite,  "普通白装", 1.0f, 1.0f);
-            AddRelic(QGreen,  "良好绿装", 1.3f, 1.2f);
-            AddRelic(QBlue,   "优质蓝装", 1.7f, 1.5f);
-            AddRelic(QPurple, "极佳紫装", 2.2f, 2.0f);
-            AddRelic(QPink,   "珍稀粉装", 3.0f, 2.8f);
-            AddRelic(QOrange, "传说橙装", 4.5f, 4.0f);
-            AddRelic(QRed,    "神器红装", 7.0f, 6.0f);
-            AddRelic(QGold,   "金色装备", 12.0f, 10.0f);  // ch1040：金色=宇宙宝物级门槛
+            // 不注册特质，装备品质是单位的装备状态，不是单位特质
+            // 用内部字典存储，属性加成通过TickRelicBonus外部应用
+            for (int i = 0; i < QualityNames.Length; i++)
+            {
+                LocalizedTextManager.add("relic_" + QualityOrder[i], QualityNames[i] + "装", pReplace: true);
+            }
+            Debug.Log("[超神机械师] 装备品质系统初始化（9级，内部字典存储，不注册特质）");
 
             // 注册"赐予金装"神权
             var givePower = new GodPower
@@ -132,30 +137,41 @@ namespace SuperMech.Code
                 Debug.Log($"[超神机械师] {a.name} 战斗掉落装备：{QualityNames[quality]}（掉落率{dropChance:F0%}）");
         }
 
-        /// <summary>装备（高级替换低级）。</summary>
+        /// <summary>装备（高级替换低级）。内部字典存储，不挂特质，属性直接应用到BaseStats。</summary>
         public static void EquipRelic(Actor a, int qualityIndex)
         {
             if (a == null || qualityIndex < 0 || qualityIndex >= QualityOrder.Length) return;
 
-            int current = GetCurrentRelicIndex(a);
-            if (current >= qualityIndex) return;
+            long id = a.data.id;
+            if (_equippedQuality.TryGetValue(id, out int current) && current >= qualityIndex) return;
 
-            for (int i = 0; i <= current; i++)
+            var s = SuperMechStats.Of(a);
+            if (s == null) return;
+
+            // 先恢复旧装备的加成（除以旧倍率）
+            if (_appliedQuality.TryGetValue(id, out int oldIdx) && oldIdx >= 0)
             {
-                if (a.hasTrait(QualityOrder[i])) a.removeTrait(QualityOrder[i]);
+                float oldDmg = QualityDmgMul[oldIdx];
+                float oldHp = QualityHpMul[oldIdx];
+                if (oldDmg > 0) s["multiplier_damage"] = s["multiplier_damage"] / oldDmg;
+                if (oldHp > 0) s["multiplier_health"] = s["multiplier_health"] / oldHp;
             }
 
-            a.addTrait(QualityOrder[qualityIndex]);
+            // 应用新装备的加成（乘以新倍率）
+            float newDmg = QualityDmgMul[qualityIndex];
+            float newHp = QualityHpMul[qualityIndex];
+            s["multiplier_damage"] = s["multiplier_damage"] * newDmg;
+            s["multiplier_health"] = s["multiplier_health"] * newHp;
+
+            _equippedQuality[id] = qualityIndex;
+            _appliedQuality[id] = qualityIndex;
         }
 
         /// <summary>获取当前装备等级。</summary>
         public static int GetCurrentRelicIndex(Actor a)
         {
-            for (int i = QualityOrder.Length - 1; i >= 0; i--)
-            {
-                if (a.hasTrait(QualityOrder[i])) return i;
-            }
-            return -1;
+            if (a == null) return -1;
+            return _equippedQuality.TryGetValue(a.data.id, out int idx) ? idx : -1;
         }
 
         /// <summary>获取当前装备名。</summary>
@@ -165,26 +181,13 @@ namespace SuperMech.Code
             return idx >= 0 ? QualityNames[idx] : "无";
         }
 
-        private static void AddRelic(string id, string name, float dmgMul, float hpMul)
-        {
-            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info",
-                $"装备品质：{name}。伤害×{dmgMul}，生命×{hpMul}。", pReplace: true);
-            var t = new ActorTrait
-            {
-                id = id, path_icon = "ui/Icons/actor_traits/iconBlessing", group_id = "sm_relic",
-                needs_to_be_explored = false, base_stats = new BaseStats()
-            };
-            t.base_stats["multiplier_damage"] = dmgMul;
-            t.base_stats["multiplier_health"] = hpMul;
-            AssetManager.traits.add(t);
-        }
-
         /// <summary>清空装备数据（世界切换用）。</summary>
         public static void Clear()
         {
             _lastHealth.Clear();
             _combatTime.Clear();
+            _equippedQuality.Clear();
+            _appliedQuality.Clear();
         }
     }
 
