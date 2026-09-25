@@ -157,8 +157,7 @@ namespace SuperMech.Code
                         _frame.AddButton(branches[idx].name, leftX + i * 115f, y, 105f, 30f, () =>
                         {
                             a.addTrait(branches[idx].traitId);
-                            var stats = SuperMechStats.Of(a);
-                            if (stats != null) branches[idx].applyBonus(stats);
+                            // 属性加成已在特质base_stats中，addTrait时自动生效
                             // 机械系：选完分支自动晋升磁环
                             if (a.hasTrait(SuperMechTraits.ClassMech) && SuperMechStage.GetStage(a) == 3)
                             {

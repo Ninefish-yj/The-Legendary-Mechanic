@@ -74,16 +74,18 @@ namespace SuperMech.Code
             AllBranches.Add(new BranchDef { traitId = BranchMindLaw, name = "法则", classTrait = SuperMechTraits.ClassMind, desc = "法则/因果，伤害+35%全属性+5", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.35f; s["damage"]=(s["damage"])+5f; s["health"]=(s["health"])+15f; s["intelligence"]=(s["intelligence"])+5f; } });
             AllBranches.Add(new BranchDef { traitId = BranchMindReality, name = "现实", classTrait = SuperMechTraits.ClassMind, desc = "现实扭曲，生命+45%护甲+8伤害+12", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.45f; s["armor"]=(s["armor"])+8f; s["damage"]=(s["damage"])+12f; } });
 
-            // 只注册特质，不注册神权（分支选择由面板窗口处理）
+            // 注册特质，属性加成直接写进base_stats（原著：转职后获得职业专属加成）
             foreach (var b in AllBranches)
             {
+                var bs = new BaseStats();
+                b.applyBonus(bs);  // 注册时一次性填充base_stats
                 var t = new ActorTrait
                 {
                     id = b.traitId,
                     path_icon = "ui/Icons/actor_traits/iconArcaneReflexes",
                     group_id = "sm_branches",
                     needs_to_be_explored = false,
-                    base_stats = new BaseStats()
+                    base_stats = bs
                 };
                 AssetManager.traits.add(t);
                 LocalizedTextManager.add("trait_" + b.traitId, b.name, pReplace: true);

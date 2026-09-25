@@ -184,25 +184,37 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>按精确阶位施加伤害/生命倍率（+位也有独立倍率）。阶位变更时调用。</summary>
+        /// <summary>按精确阶位施加+位的额外伤害/生命倍率（主阶位倍率已在特质base_stats中）。阶位变更时调用。</summary>
         private static void ApplyRankStats(Actor a, int newRankIdx)
         {
             if (a == null || newRankIdx < 0 || newRankIdx >= SuperMechRanks.All.Count) return;
             var s = SuperMechStats.Of(a);
             if (s == null) return;
 
-            // 移除旧阶位倍率
+            // 移除旧+位的增量倍率
             if (_appliedRankIdx.TryGetValue(a.id, out int oldIdx) && oldIdx != newRankIdx)
             {
-                var oldR = SuperMechRanks.All[oldIdx];
-                if (oldR.damageMul > 0) s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / oldR.damageMul;
-                if (oldR.healthMul > 0) s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / oldR.healthMul;
+                if (SuperMechRanks.IsPlusRank(oldIdx))
+                {
+                    var oldR = SuperMechRanks.All[oldIdx];
+                    var oldMain = SuperMechRanks.All[oldIdx - 1]; // +位的前一个主阶位
+                    float dmgInc = oldR.damageMul / oldMain.damageMul;
+                    float hpInc = oldR.healthMul / oldMain.healthMul;
+                    if (dmgInc > 1f) s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / dmgInc;
+                    if (hpInc > 1f) s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / hpInc;
+                }
             }
 
-            // 施加新阶位倍率
-            var newR = SuperMechRanks.All[newRankIdx];
-            s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * newR.damageMul;
-            s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * newR.healthMul;
+            // 施加新+位的增量倍率（主阶位不处理，由特质提供）
+            if (SuperMechRanks.IsPlusRank(newRankIdx))
+            {
+                var newR = SuperMechRanks.All[newRankIdx];
+                var newMain = SuperMechRanks.All[newRankIdx - 1];
+                float dmgInc = newR.damageMul / newMain.damageMul;
+                float hpInc = newR.healthMul / newMain.healthMul;
+                if (dmgInc > 1f) s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * dmgInc;
+                if (hpInc > 1f) s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * hpInc;
+            }
             _appliedRankIdx[a.id] = newRankIdx;
         }
 

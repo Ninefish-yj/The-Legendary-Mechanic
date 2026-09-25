@@ -60,7 +60,7 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            // 1. 阶位链（只注册主阶位，+位不挂特质只在面板显示；属性加成由SuperMechAdvancement统一反射施加）
+            // 1. 阶位链（只注册主阶位，+位不挂特质只在面板显示；属性加成直接写进base_stats）
             int rankIdx = 0;
             foreach (var r in SuperMechRanks.All)
             {
@@ -73,6 +73,9 @@ namespace SuperMech.Code
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()
                 };
+                // 属性加成直接写进特质base_stats（原著：阶位越高战力越强）
+                if (r.damageMul > 1f) t.base_stats["multiplier_damage"] = r.damageMul;
+                if (r.healthMul > 1f) t.base_stats["multiplier_health"] = r.healthMul;
                 // 阶位越高战斗动作越多（原著：高阶超能者战斗技巧更丰富）
                 if (rankIdx >= 4) t.addCombatAction("combat_dodge");              // C阶+
                 if (rankIdx >= 6) t.addCombatAction("combat_block");              // B阶+
