@@ -369,7 +369,7 @@ namespace SuperMech.Code
                     {
                         s["intelligence"] = (s["intelligence"]) + 5f + visits;
                         s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.03f;
-                        s["crafting_speed"] = ((s["crafting_speed"] == 0f ? 1f : s["crafting_speed"])) * 1.05f;
+                        s["attack_speed"] = ((s["attack_speed"] == 0f ? 1f : s["attack_speed"])) * 1.05f;
                     }
                     // 机械系单位额外加成（同源知识吸收更快）
                     if (SuperMechBranch.GetClass(a) == "机械系")
@@ -411,7 +411,7 @@ namespace SuperMech.Code
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 5f + visits;
-                        s["willpower"] = (s["willpower"]) + 3f + visits;
+                        s["mana"] = (s["mana"]) + 30f + visits * 3f; // 意志力用魔力模拟
                     }
                     // 念力系单位额外提升精神力
                     if (SuperMechBranch.GetClass(a) == "念力系")
@@ -423,7 +423,8 @@ namespace SuperMech.Code
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 10f + visits * 2;
-                        s["multiplier_all"] = ((s["multiplier_all"] == 0f ? 1f : s["multiplier_all"])) * 1.05f;
+                        s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.05f;
+                        s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * 1.05f;
                     }
                     break;
             }
