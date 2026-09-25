@@ -74,6 +74,22 @@ namespace SuperMech.Code
                 foreach (var label in panelLabels)
                     LocalizedTextManager.add(label, label, pReplace: true);
 
+                // 注册神权和Tab的tooltip文本（TipButton会把textOnClickDescription当本地化key查找）
+                string[] tooltipTexts = {
+                    "召唤降临者", "召唤降临者_description", "在点击位置生成一个有面板的降临者单位（走等级职业体系）",
+                    "异化之灾", "异化之灾_天灾_description", "在点击位置生成异化体（天灾）",
+                    "神之催化", "神之催化_description", "点击SS阶以上单位施加催化效果，降低突破门槛、提升成功率（每层+10%，最多5层）",
+                    "冲击超神级", "冲击超神级_description",
+                    "五系觉醒", "五系觉醒_description", "点击单位后选择觉醒系别（机械/武道/异能/魔法/念力）",
+                    "六圣所", "查看六圣所解锁进度与碎片（跨存档）",
+                    "排行榜", "超能者欧纳/气力/阶位排行榜（前20名）",
+                    "装备背包", "查看与管理单位的装备背包",
+                    "知识", "查看已解锁的知识节点与职业树",
+                    "??????"
+                };
+                foreach (var text in tooltipTexts)
+                    LocalizedTextManager.add(text, text, pReplace: true);
+
                 Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconChosenOne");
                 _tab = TabManager.CreateTab("supermech_mod_tab", "supermech.tab", "supermech.tab_desc", tabIcon);
                 if (_tab == null)

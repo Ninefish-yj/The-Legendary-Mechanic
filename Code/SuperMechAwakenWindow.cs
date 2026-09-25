@@ -48,9 +48,6 @@ namespace SuperMech.Code
             {
                 string btnText = $"{name}（{aspect}）";
                 var btn = _window.AddButton(btnText, 20f, y, 240f, 32f, () => Awaken(traitId, name));
-                // tooltip
-                var tip = btn.gameObject.AddComponent<WorldTip>();
-                if (tip.text != null) tip.text.text = $"{name}\n{descText}";
                 y -= 40f;
             }
 
