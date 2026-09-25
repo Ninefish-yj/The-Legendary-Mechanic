@@ -62,9 +62,10 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 1. 阶位链（只注册主阶位，+位不挂特质只在面板显示；属性加成由SuperMechAdvancement统一反射施加）
+            int rankIdx = 0;
             foreach (var r in SuperMechRanks.All)
             {
-                if (SuperMechRanks.IsPlusRank(System.Array.IndexOf(SuperMechRanks.All.ToArray(), r))) continue;
+                if (SuperMechRanks.IsPlusRank(rankIdx)) { rankIdx++; continue; }
                 var t = new ActorTrait
                 {
                     id = r.id,
@@ -73,7 +74,13 @@ namespace SuperMech.Code
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()
                 };
-                // 阶位特质只做标记，属性加成由晋升系统按精确阶位（含+位）反射施加
+                // 阶位越高战斗动作越多（原著：高阶超能者战斗技巧更丰富）
+                if (rankIdx >= 4) t.addCombatAction("combat_dodge");              // C阶+
+                if (rankIdx >= 6) t.addCombatAction("combat_block");              // B阶+
+                if (rankIdx >= 8) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); } // A阶+
+                if (rankIdx >= 10) { t.addCombatAction("combat_instincts"); t.addCombatAction("combat_deflect_projectile"); } // S阶+
+                if (rankIdx >= 12) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); } // SS阶+
+                rankIdx++;
                 AssetManager.traits.add(t);
             }
 
@@ -107,6 +114,36 @@ namespace SuperMech.Code
             t.base_stats["intelligence"] = intell;
             t.base_stats["warfare"] = str;
             t.base_stats["stamina"] = stam;
+            // 五系各有不同战斗风格（绑定原版ActionLibrary战斗动作）
+            switch (id)
+            {
+                case ClassMartial: // 武道系：近战格斗大师
+                    t.addCombatAction("combat_dash");
+                    t.addCombatAction("combat_block");
+                    t.addCombatAction("combat_dodge");
+                    t.addCombatAction("combat_backstep");
+                    break;
+                case ClassMech:    // 机械系：机甲远程+偏转弹道
+                    t.addCombatAction("combat_deflect_projectile");
+                    t.addCombatAction("combat_attack_range");
+                    t.addCombatAction("combat_block");
+                    break;
+                case ClassPsi:     // 异能系：异能远程+施法
+                    t.addCombatAction("combat_attack_range");
+                    t.addCombatAction("combat_cast_spell");
+                    t.addCombatAction("combat_dodge");
+                    break;
+                case ClassMage:    // 魔法系：施法为主
+                    t.addCombatAction("combat_cast_spell");
+                    t.addCombatAction("combat_attack_range");
+                    t.addCombatAction("combat_backstep");
+                    break;
+                case ClassMind:    // 念力系：精神感应+闪避
+                    t.addCombatAction("combat_instincts");
+                    t.addCombatAction("combat_dodge");
+                    t.addCombatAction("combat_random_jump");
+                    break;
+            }
             AssetManager.traits.add(t);
         }
 
@@ -119,6 +156,10 @@ namespace SuperMech.Code
             };
             t.base_stats["intelligence"] = intell;
             t.base_stats["multiplier_damage"] = dmgMul;
+            // 职业技能绑定战斗动作
+            if (id == SkillQiMod) t.addCombatAction("combat_instincts");        // 气力改装→战斗本能
+            if (id == SkillVirtualPurify) t.addCombatAction("combat_cast_spell"); // 虚拟净化→施法
+            if (id == SkillDimensionMarch) t.addCombatAction("combat_dash");     // 维度行军→冲刺
             AssetManager.traits.add(t);
         }
     }

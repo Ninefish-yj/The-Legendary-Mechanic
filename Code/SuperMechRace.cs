@@ -321,6 +321,18 @@ namespace SuperMech.Code
             t.base_stats["intelligence"] = intel;
             t.base_stats["multiplier_damage"] = 1f + dmg;
             t.base_stats["multiplier_health"] = 1f + hp;
+            // 种族进化绑定战斗动作（物种蜕变→基础，物种神化→全部）
+            t.addCombatAction("combat_dash");
+            t.addCombatAction("combat_block");
+            t.addCombatAction("combat_dodge");
+            if (id == TraitDivineRace) // X阶神化：全部战斗动作
+            {
+                t.addCombatAction("combat_backstep");
+                t.addCombatAction("combat_instincts");
+                t.addCombatAction("combat_deflect_projectile");
+                t.addCombatAction("combat_attack_range");
+                t.addCombatAction("combat_cast_spell");
+            }
             AssetManager.traits.add(t);
         }
 
