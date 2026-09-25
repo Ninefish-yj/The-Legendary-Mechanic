@@ -64,7 +64,7 @@ namespace SuperMech.Code
             titleRt.offsetMax = new Vector2(-50f, 0f);
             Text tt = titleGo.GetComponent<Text>();
             frame.TitleText = tt;
-            tt.font = LocalizedTextManager.current_font;
+            tt.font = SafeFont();
             tt.fontSize = 20;
             tt.fontStyle = FontStyle.Bold;
             tt.alignment = TextAnchor.MiddleLeft;
@@ -92,7 +92,7 @@ namespace SuperMech.Code
             clr.offsetMin = Vector2.zero;
             clr.offsetMax = Vector2.zero;
             Text cl = closeLabel.GetComponent<Text>();
-            cl.font = LocalizedTextManager.current_font;
+            cl.font = SafeFont();
             cl.fontSize = 18;
             cl.alignment = TextAnchor.MiddleCenter;
             cl.color = Color.white;
@@ -137,7 +137,7 @@ namespace SuperMech.Code
             rt.anchoredPosition = new Vector2(x, y);
             rt.sizeDelta = new Vector2(w, h);
             Text t = go.GetComponent<Text>();
-            t.font = LocalizedTextManager.current_font;
+            t.font = SafeFont();
             t.fontSize = fontSize;
             t.alignment = align;
             t.color = new Color(0.85f, 0.85f, 0.85f, 1f);
@@ -170,7 +170,7 @@ namespace SuperMech.Code
             lr.offsetMin = Vector2.zero;
             lr.offsetMax = Vector2.zero;
             Text lt = labelGo.GetComponent<Text>();
-            lt.font = LocalizedTextManager.current_font;
+            lt.font = SafeFont();
             lt.fontSize = 13;
             lt.alignment = TextAnchor.MiddleCenter;
             lt.color = Color.white;
@@ -180,13 +180,36 @@ namespace SuperMech.Code
             return btn;
         }
 
-        /// <summary>清空内容区所有子对象。</summary>
+        /// <summary>获取安全字体（current_font可能为null时fallback到内置字体）。</summary>
+        private static Font SafeFont()
+        {
+            Font f = LocalizedTextManager.current_font;
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            return f;
+        }
+
+        /// <summary>清空内容区所有子对象（用DestroyImmediate避免一帧抖动）。</summary>
         public void ClearContent()
         {
             if (ContentParent == null) return;
             for (int i = ContentParent.childCount - 1; i >= 0; i--)
             {
-                UnityEngine.Object.Destroy(ContentParent.GetChild(i).gameObject);
+                UnityEngine.Object.DestroyImmediate(ContentParent.GetChild(i).gameObject);
+            }
+        }
+
+        /// <summary>销毁所有窗口和Canvas（世界切换时调用，避免跨世界残留）。</summary>
+        public static void ClearAll()
+        {
+            foreach (var frame in AllFrames)
+            {
+                if (frame.Root != null) UnityEngine.Object.DestroyImmediate(frame.Root);
+            }
+            AllFrames.Clear();
+            if (_canvas != null)
+            {
+                UnityEngine.Object.DestroyImmediate(_canvas.gameObject);
+                _canvas = null;
             }
         }
 

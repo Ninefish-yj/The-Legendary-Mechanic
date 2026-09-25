@@ -160,6 +160,7 @@ namespace SuperMech.Code
             try { SuperMechAura.Clear(); } catch { }
             try { SuperMechCrafting.Clear(); } catch { }
             try { SuperMechPotentialRating.Clear(); } catch { }
+            try { SMWindowFrame.ClearAll(); } catch { }
             Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");
         }
     }
