@@ -341,7 +341,7 @@ namespace SuperMech.Code
             var st = new SubspeciesTrait
             {
                 id = id, group_id = "sm_race_talents",
-                can_be_given = false, can_be_removed = false,
+                path_icon = "ui/Icons/actor_traits/iconGiant",
                 needs_to_be_explored = false, base_stats_meta = new BaseStats()
             };
             if (intel > 0) st.base_stats_meta["intelligence"] = intel;
