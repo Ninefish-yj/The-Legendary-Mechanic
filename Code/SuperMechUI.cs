@@ -47,6 +47,20 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("supermech.tab", "超神机械师", pReplace: true);
                 LocalizedTextManager.add("supermech.tab_desc", "五系觉醒·机械军团·圣所轮回", pReplace: true);
 
+                // 注册缺失的本地化key（单位面板行标签+五系觉醒描述）
+                LocalizedTextManager.add("体系", "体系", pReplace: true);
+                LocalizedTextManager.add("提示", "提示", pReplace: true);
+                LocalizedTextManager.add("觉醒_机械系", "觉醒·机械系", pReplace: true);
+                LocalizedTextManager.add("觉醒_机械系_description", "点击单位赋予机械系觉醒（械感天赋·机械知识树）", pReplace: true);
+                LocalizedTextManager.add("觉醒_武道系", "觉醒·武道系", pReplace: true);
+                LocalizedTextManager.add("觉醒_武道系_description", "点击单位赋予武道系觉醒（体魄天赋·御气技巧树）", pReplace: true);
+                LocalizedTextManager.add("觉醒_异能系", "觉醒·异能系", pReplace: true);
+                LocalizedTextManager.add("觉醒_异能系_description", "点击单位赋予异能系觉醒（异能潜力·基因树）", pReplace: true);
+                LocalizedTextManager.add("觉醒_魔法系", "觉醒·魔法系", pReplace: true);
+                LocalizedTextManager.add("觉醒_魔法系_description", "点击单位赋予魔法系觉醒（魔法天赋·魔法知识树）", pReplace: true);
+                LocalizedTextManager.add("觉醒_念力系", "觉醒·念力系", pReplace: true);
+                LocalizedTextManager.add("觉醒_念力系_description", "点击单位赋予念力系觉醒（精神天赋·精神修炼树）", pReplace: true);
+
                 Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconChosenOne");
                 _tab = TabManager.CreateTab("supermech_mod_tab", "supermech.tab", "supermech.tab_desc", tabIcon);
                 if (_tab == null)

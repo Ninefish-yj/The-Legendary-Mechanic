@@ -143,7 +143,7 @@ namespace SuperMech.Code
             foreach (var def in AllSkills)
             {
                 if (HasSkill(a, def.id)) continue;
-                if (!string.IsNullOrEmpty(def.requiredClass) && !cls.Contains(def.requiredClass)) continue;
+                if (!string.IsNullOrEmpty(def.requiredClass) && (cls == null || !cls.Contains(def.requiredClass))) continue;
                 if (stage < def.requiredStage) continue;
                 list.Add(def);
             }
