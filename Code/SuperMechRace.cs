@@ -164,9 +164,6 @@ namespace SuperMech.Code
                 intel=12, dmgMul=0.10f, hpMul=0.10f, spdMul=0.30f },
 
             // ===== 原著其他种族天赋 =====
-            new RaceTalentDef { id="sm_rt_resilient_body", name="刚韧之躯", classId=SuperMechTraits.ClassMartial,
-                desc="ch268原著：肉身刚韧，受到物理伤害-15%，生命+20%。",
-                intel=3, dmgMul=0.10f, hpMul=0.20f, spdMul=0f, armor=30 },
             new RaceTalentDef { id="sm_rt_mech_god_body", name="机械神体", classId=SuperMechTraits.ClassMech,
                 desc="ch1401原著（神性蜕变·机械）：肉身机械神化，全属性+20%，可与机械合体。",
                 intel=15, dmgMul=0.20f, hpMul=0.20f, spdMul=0.10f },
