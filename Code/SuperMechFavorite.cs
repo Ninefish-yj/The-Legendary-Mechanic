@@ -1,48 +1,23 @@
-using System.Reflection;
 using UnityEngine;
 
 namespace SuperMech.Code
 {
     /// <summary>
     /// 单位收藏（星标）助手。
-    /// 原版 Actor.favorite 字段可能是 private/internal，用反射安全访问。
-    /// 达到指定阶位的单位自动被游戏收藏，方便玩家追踪强力单位。
+    /// 原版 Actor 实现 IFavoriteable 接口，有公开方法 isFavorite() / switchFavorite()，
+    /// data.favorite 是 BaseSystemData 的公开 bool 属性。
+    /// 达到配置阶位的单位自动被游戏收藏，方便玩家追踪强力单位。
     /// </summary>
     public static class SuperMechFavorite
     {
-        private static FieldInfo _favoriteField;
-        private static bool _fieldResolved;
-
-        /// <summary>通过反射获取 Actor.favorite 字段（尝试多种命名）。</summary>
-        private static FieldInfo GetFavoriteField()
-        {
-            if (_fieldResolved) return _favoriteField;
-            _fieldResolved = true;
-            string[] candidates = { "favorite", "isFavorite", "_favorite", "starred", "isStarred", "_isFavorite" };
-            foreach (var name in candidates)
-            {
-                var f = typeof(Actor).GetField(name,
-                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (f != null && f.FieldType == typeof(bool))
-                {
-                    _favoriteField = f;
-                    Debug.Log($"[超神机械师] 收藏字段解析成功: Actor.{name}");
-                    return _favoriteField;
-                }
-            }
-            Debug.LogWarning("[超神机械师] 未找到 Actor.favorite 字段，自动收藏功能不可用");
-            return null;
-        }
-
         /// <summary>设置单位收藏状态。返回是否成功。</summary>
         public static bool SetFavorite(Actor a, bool favorite)
         {
-            if (a == null) return false;
-            var f = GetFavoriteField();
-            if (f == null) return false;
+            if (a == null || a.data == null) return false;
             try
             {
-                f.SetValue(a, favorite);
+                if (a.isFavorite() != favorite)
+                    a.switchFavorite();
                 return true;
             }
             catch (System.Exception e)
@@ -56,15 +31,13 @@ namespace SuperMech.Code
         public static bool IsFavorite(Actor a)
         {
             if (a == null) return false;
-            var f = GetFavoriteField();
-            if (f == null) return false;
-            try { return (bool)f.GetValue(a); }
+            try { return a.isFavorite(); }
             catch { return false; }
         }
 
         /// <summary>
-        /// 遍历全场单位，达到配置阶位阈值的自动收藏。
-        /// 在 TickPromotions 之后调用，确保阶位已更新。
+        /// 遍历全场单位，达到配置阶位的自动收藏。
+        /// 每个主阶位有独立开关（参考凡人修仙传），+位跟随主阶位。
         /// </summary>
         public static void TickAutoFavorite()
         {
