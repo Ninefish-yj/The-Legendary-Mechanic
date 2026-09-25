@@ -71,7 +71,7 @@ namespace SuperMech.Code
         public static void OnKill(Actor killer, Actor victim)
         {
             if (killer == null || victim == null) return;
-            int victimRank = SuperMechAdvancement.GetExactRank(victim);
+            int victimRank = SuperMechAdvancement.GetExactRankIndex(victim);
             if (victimRank < 6) return; // B阶以下不值得传说度
 
             int baseLegend = victimRank switch

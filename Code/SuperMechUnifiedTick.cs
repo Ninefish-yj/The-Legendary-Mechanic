@@ -24,7 +24,7 @@ namespace SuperMech.Code
         public static void Tick()
         {
             // 全局保护：世界未加载时不执行任何tick
-            if (World.world == null || World.world.map == null) return;
+            if (World.world == null) return;
 
             _tickCounter++;
             int group = _tickCounter % 4;

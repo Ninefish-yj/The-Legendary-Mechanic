@@ -65,8 +65,6 @@ namespace SuperMech.Code
             public float awakenedXp;
             public float heritage;
             public int reviveCount;
-            public int subclassLevel;
-            public string subclass;
             public string qiAttribute;
             public int legend;
             public string lastDeed;

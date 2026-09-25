@@ -210,7 +210,6 @@ namespace SuperMech.Code
                 {
                     string legendTier = SuperMechLegend.GetTierName(actor);
                     string lastDeed = SuperMechLegend.GetLastDeed(actor);
-                    bool isAwakened = SuperMechAwakened.IsAwakened(actor);
                     // 降临者显示精确数值，星海人只显示等级和"隐约感到突破契机"
                     string legendText = isAwakened ?
                         $"{legendTier}（{legend}点，突破+{SuperMechLegend.GetBreakthroughBonus(actor):P0}）" :

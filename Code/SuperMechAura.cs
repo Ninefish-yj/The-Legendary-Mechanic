@@ -26,7 +26,7 @@ namespace SuperMech.Code
         /// <summary>每tick处理气势震慑：A阶以上单位对周围低阶单位施加震慑。</summary>
         public static void TickAura()
         {
-            if (World.world == null || World.world.map == null) return;
+            if (World.world == null) return;
 
             // 收集所有A阶以上的气势源
             var auraSources = new List<Actor>();
@@ -51,14 +51,17 @@ namespace SuperMech.Code
                 int sourceRank = SuperMechAdvancement.GetExactRankIndex(source);
                 if (source.current_tile == null) continue;
 
-                // 获取周围单位
-                var nearby = MapBox.instance.GetActorsNear(source.current_tile, (int)AuraRange);
-                if (nearby == null) continue;
-
-                foreach (var target in nearby)
+                // 获取周围单位（遍历所有单位检查距离）
+                foreach (var target in World.world.units)
                 {
                     if (target == null || !target.isAlive()) continue;
                     if (target.id == source.id) continue;
+                    if (target.current_tile == null) continue;
+
+                    // 距离检查
+                    float dist = Mathf.Abs(target.current_tile.x - source.current_tile.x)
+                               + Mathf.Abs(target.current_tile.y - source.current_tile.y);
+                    if (dist > AuraRange) continue;
 
                     int targetRank = SuperMechAdvancement.GetExactRankIndex(target);
                     int rankDiff = sourceRank - targetRank;
