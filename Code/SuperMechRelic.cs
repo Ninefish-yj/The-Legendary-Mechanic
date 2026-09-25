@@ -255,6 +255,13 @@ namespace SuperMech.Code
             return idx >= 0 ? Equipments[idx].name : "无";
         }
 
+        /// <summary>获取当前装备ID。</summary>
+        public static string GetCurrentEquipId(Actor a)
+        {
+            int idx = GetCurrentEquipIndex(a);
+            return idx >= 0 ? Equipments[idx].id : null;
+        }
+
         /// <summary>清空装备数据（世界切换用）。</summary>
         public static void Clear()
         {

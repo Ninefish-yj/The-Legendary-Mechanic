@@ -361,6 +361,17 @@ namespace SuperMech.Code
                     }
                 });
             }
+
+            // 添加tooltip详情
+            try
+            {
+                WorldTip tip = go.GetComponent<WorldTip>();
+                if (tip == null) tip = go.AddComponent<WorldTip>();
+                string tierName = new[] { "基础", "进阶", "高端", "尖端", "终极" }[def.tier];
+                tip.text = $"{def.name}\n{def.desc}\n阶位：{tierName} | 分支：{branch}\n消耗：{def.cost}潜能点\n状态：{(unlocked ? "已解锁" : (canUnlock ? "可解锁" : "未解锁"))}";
+                tip.offset = new Vector2(0, 30);
+            }
+            catch { }
         }
     }
 }

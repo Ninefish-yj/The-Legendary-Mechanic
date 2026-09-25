@@ -247,8 +247,20 @@ namespace SuperMech.Code
                     var def = SuperMechRelic.Equipments[idx];
                     Color qColor = GetQualityColor(def.qualityLevel);
 
-                    // 装备名（品质颜色）
-                    AddText(_container.transform, def.name, 11, TextAnchor.MiddleLeft, qColor);
+                    // 装备行：图标+名称
+                    var equipRow = new GameObject("EquipRow", typeof(RectTransform));
+                    equipRow.transform.SetParent(_container.transform, false);
+                    var eqLayout = equipRow.AddComponent<HorizontalLayoutGroup>();
+                    eqLayout.spacing = 6;
+                    eqLayout.childForceExpandWidth = true;
+                    RectTransform ert = equipRow.GetComponent<RectTransform>();
+                    ert.sizeDelta = new Vector2(0, 24);
+
+                    // 图标
+                    AddIcon(eqLayout.transform, def.icon, qColor);
+                    // 名称
+                    AddTextTo(eqLayout.transform, def.name, 11, TextAnchor.MiddleLeft, qColor);
+
                     // 详情
                     AddText(_container.transform, $"  伤害×{def.dmgMul}  生命×{def.hpMul}  {GetQualityName(def.qualityLevel)}", 9, TextAnchor.MiddleLeft, new Color(0.6f, 0.6f, 0.6f));
 
@@ -342,6 +354,45 @@ namespace SuperMech.Code
             trt.anchorMax = Vector2.one;
             trt.offsetMin = Vector2.zero;
             trt.offsetMax = Vector2.zero;
+        }
+
+        /// <summary>添加图标（带品质颜色tint）。</summary>
+        private static void AddIcon(Transform parent, string iconPath, Color tint)
+        {
+            GameObject obj = new GameObject("Icon", typeof(RectTransform));
+            obj.transform.SetParent(parent, false);
+            LayoutElement le = obj.AddComponent<LayoutElement>();
+            le.minWidth = 20;
+            le.preferredWidth = 20;
+            le.minHeight = 20;
+            le.preferredHeight = 20;
+
+            Image img = obj.AddComponent<Image>();
+            img.color = tint;
+            try
+            {
+                Sprite sprite = SpriteLoader.get(iconPath);
+                if (sprite != null) img.sprite = sprite;
+            }
+            catch { }
+        }
+
+        /// <summary>添加文字到指定父物体（不强制撑满宽度）。</summary>
+        private static void AddTextTo(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
+        {
+            GameObject obj = new GameObject("Text", typeof(RectTransform));
+            obj.transform.SetParent(parent, false);
+            LayoutElement le = obj.AddComponent<LayoutElement>();
+            le.minHeight = fontSize + 4;
+            le.preferredHeight = fontSize + 4;
+            le.flexibleWidth = 1;
+            Text t = obj.AddComponent<Text>();
+            t.font = LocalizedTextManager.current_font;
+            t.fontSize = fontSize;
+            t.color = color;
+            t.alignment = anchor;
+            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            t.text = text;
         }
     }
 }

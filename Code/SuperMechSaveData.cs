@@ -74,6 +74,9 @@ namespace SuperMech.Code
             public string branch; // 职业分支（枪炮师/机械师/械武者等）
             public string subclass; // 副职业ID
             public int subclassLevel; // 副职业等级
+            public List<string> knowledge; // 已解锁知识节点ID列表
+            public List<string> equipBag; // 装备背包装备ID列表
+            public string currentEquip; // 当前装备ID
         }
 
         [Serializable]
@@ -157,7 +160,10 @@ namespace SuperMech.Code
                             lastDeed = SuperMechLegend.GetLastDeed(a),
                             branch = SuperMechBranch.GetBranchTrait(a),
                             subclass = GetActiveSubClassId(a),
-                            subclassLevel = GetActiveSubLevel(a)
+                            subclassLevel = GetActiveSubLevel(a),
+                            knowledge = GetUnlockedKnowledgeList(a),
+                            equipBag = new List<string>(SuperMechEquipBag.GetBag(a)),
+                            currentEquip = SuperMechRelic.GetCurrentEquipId(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -295,6 +301,27 @@ namespace SuperMech.Code
                         a.addTrait(ad.subclass);
                         SuperMechSubClass.AddSubXp(a, ad.subclass, 0); // 初始化字典
                     }
+                    // 恢复知识解锁
+                    if (ad.knowledge != null)
+                    {
+                        foreach (string kid in ad.knowledge)
+                        {
+                            SuperMechKnowledge.Unlock(a, kid);
+                        }
+                    }
+                    // 恢复装备背包
+                    if (ad.equipBag != null)
+                    {
+                        foreach (string eid in ad.equipBag)
+                        {
+                            SuperMechEquipBag.AddToBag(a, eid);
+                        }
+                    }
+                    // 恢复当前装备
+                    if (!string.IsNullOrEmpty(ad.currentEquip))
+                    {
+                        SuperMechEquipBag.EquipFromBag(a, ad.currentEquip);
+                    }
 
                     _pendingLoad.actors.Remove(id);
                     restored++;
@@ -311,6 +338,19 @@ namespace SuperMech.Code
             {
                 Debug.LogError($"[超神机械师] 存档恢复异常：{e.Message}");
             }
+        }
+
+        /// <summary>获取单位已解锁的所有知识ID列表。</summary>
+        private static List<string> GetUnlockedKnowledgeList(Actor a)
+        {
+            var list = new List<string>();
+            string[] prefixes = { "mech", "martial", "psi", "mage", "mind" };
+            foreach (string prefix in prefixes)
+            {
+                var unlocked = SuperMechKnowledge.GetUnlockedList(a, prefix);
+                foreach (var def in unlocked) list.Add(def.id);
+            }
+            return list;
         }
     }
 }
