@@ -50,7 +50,7 @@ namespace SuperMech.Code
                     $"异能系基因链第{lv}阶（气力用途=异能能量槽）。", pReplace: true);
                 var t = new ActorTrait
                 {
-                    id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_gene",
+                    id = id, path_icon = "ui/Icons/actor_traits/iconAcidBlood", group_id = "sm_gene",
                     needs_to_be_explored = false, base_stats = new BaseStats()
                 };
                 t.base_stats["multiplier_damage"] = 1f + lv * 0.25f;
@@ -68,7 +68,7 @@ namespace SuperMech.Code
                     $"魔法系魔力池第{lv}层（气力用途=魔力源泉）。", pReplace: true);
                 var t = new ActorTrait
                 {
-                    id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_mana",
+                    id = id, path_icon = "ui/Icons/actor_traits/iconArcaneReflexes", group_id = "sm_mana",
                     needs_to_be_explored = false, base_stats = new BaseStats()
                 };
                 t.base_stats["mana"] = lv * 50f;
@@ -86,7 +86,7 @@ namespace SuperMech.Code
                     $"念力系精神力第{lv}阶（气力用途=精神力）。", pReplace: true);
                 var t = new ActorTrait
                 {
-                    id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_mind",
+                    id = id, path_icon = "ui/Icons/actor_traits/iconColdAura", group_id = "sm_mind",
                     needs_to_be_explored = false, base_stats = new BaseStats()
                 };
                 t.base_stats["intelligence"] = lv * 5f;

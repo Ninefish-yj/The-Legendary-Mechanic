@@ -23,7 +23,7 @@ namespace SuperMech.Code
                 "ch50原著。超能者自行领悟的基础气力修行法，全系通用，进阶自动觉醒。气力额外+50%增长。", pReplace: true);
             var t = new ActorTrait
             {
-                id = RefinementTrait, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_refinement",
+                id = RefinementTrait, path_icon = "ui/Icons/actor_traits/iconFireBlood", group_id = "sm_refinement",
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             AssetManager.traits.add(t);
@@ -34,7 +34,7 @@ namespace SuperMech.Code
                 "ch237/ch277原著。机械师专属成长型技能，限制100次提炼，效果取决于智力属性。气力+30%，智力越高效果越强。", pReplace: true);
             var t2 = new ActorTrait
             {
-                id = EmRefinementTrait, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_refinement",
+                id = EmRefinementTrait, path_icon = "ui/Icons/actor_traits/iconFireBlood", group_id = "sm_refinement",
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             AssetManager.traits.add(t2);

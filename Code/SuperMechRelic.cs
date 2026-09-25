@@ -171,7 +171,7 @@ namespace SuperMech.Code
                 $"装备品质：{name}。伤害×{dmgMul}，生命×{hpMul}。", pReplace: true);
             var t = new ActorTrait
             {
-                id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_relic",
+                id = id, path_icon = "ui/Icons/actor_traits/iconBlessing", group_id = "sm_relic",
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             t.base_stats["multiplier_damage"] = dmgMul;
@@ -248,7 +248,7 @@ namespace SuperMech.Code
                     $"{typeName}（原著）。{r.desc}", pReplace: true);
                 var t = new ActorTrait
                 {
-                    id = r.id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_cosmic_relic",
+                    id = r.id, path_icon = "ui/Icons/actor_traits/iconChosenOne", group_id = "sm_cosmic_relic",
                     needs_to_be_explored = false, base_stats = new BaseStats()
                 };
                 t.base_stats["multiplier_damage"] = r.dmgMul;

@@ -12,6 +12,39 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechTraits
     {
+        /// <summary>按特质组返回对应图标（避免全用默认iconHardSkin）。</summary>
+        public static string GroupIcon(string groupId)
+        {
+            switch (groupId)
+            {
+                case "sm_ranks":          return "ui/Icons/actor_traits/iconBlessing";
+                case "sm_classes":        return "ui/Icons/actor_traits/iconGenius";
+                case "sm_branches":       return "ui/Icons/actor_traits/iconArcaneReflexes";
+                case "sm_perks":          return "ui/Icons/actor_traits/iconBattleReflexes";
+                case "sm_gene":           return "ui/Icons/actor_traits/iconAcidBlood";
+                case "sm_mana":           return "ui/Icons/actor_traits/iconArcaneReflexes";
+                case "sm_mind":           return "ui/Icons/actor_traits/iconColdAura";
+                case "sm_cultivation":    return "ui/Icons/actor_traits/iconBoostedVitality";
+                case "sm_know_mech":      return "ui/Icons/actor_traits/iconGenius";
+                case "sm_know_martial":   return "ui/Icons/actor_traits/iconBattleReflexes";
+                case "sm_know_mage":      return "ui/Icons/actor_traits/iconArcaneReflexes";
+                case "sm_know_mind":      return "ui/Icons/actor_traits/iconColdAura";
+                case "sm_know_psi":       return "ui/Icons/actor_traits/iconAcidBlood";
+                case "sm_refinement":     return "ui/Icons/actor_traits/iconFireBlood";
+                case "sm_relic":          return "ui/Icons/actor_traits/iconBlessing";
+                case "sm_cosmic_relic":   return "ui/Icons/actor_traits/iconChosenOne";
+                case "sm_mage_tower":     return "ui/Icons/actor_traits/iconArcaneReflexes";
+                case "sm_awakened":       return "ui/Icons/actor_traits/iconClone";
+                case "sm_specialty":      return "ui/Icons/actor_traits/iconDragonslayer";
+                case "sm_rank_specialty": return "ui/Icons/actor_traits/iconGiant";
+                case "sm_subclass":       return "ui/Icons/actor_traits/iconAmbitious";
+                case "sm_race":           return "ui/Icons/actor_traits/iconGiant";
+                case "sm_skills":         return "ui/Icons/actor_traits/iconBattleReflexes";
+                case "sm_sanctuary":      return "ui/Icons/actor_traits/iconBlessing";
+                default:                  return "ui/Icons/actor_traits/iconHardSkin";
+            }
+        }
+
         // —— 五系觉醒（真正的特质，决定单位属于哪一系）——
         public const string ClassPsi     = "sm_class_psi";      // 异能系（基因树·神通）
         public const string ClassMartial = "sm_class_martial";  // 武道系（御气技巧树·神体）
@@ -35,7 +68,7 @@ namespace SuperMech.Code
                 var t = new ActorTrait
                 {
                     id = r.id,
-                    path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                    path_icon = "ui/Icons/actor_traits/iconBlessing",
                     group_id = "sm_ranks",
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()
@@ -65,7 +98,7 @@ namespace SuperMech.Code
         {
             var t = new ActorTrait
             {
-                id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_classes",
+                id = id, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_classes",
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             t.base_stats["intelligence"] = intell;
@@ -78,7 +111,7 @@ namespace SuperMech.Code
         {
             var t = new ActorTrait
             {
-                id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_skills",
+                id = id, path_icon = "ui/Icons/actor_traits/iconBattleReflexes", group_id = "sm_skills",
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             t.base_stats["intelligence"] = intell;

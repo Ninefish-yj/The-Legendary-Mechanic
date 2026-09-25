@@ -80,7 +80,7 @@ namespace SuperMech.Code
                 var t = new ActorTrait
                 {
                     id = b.traitId,
-                    path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                    path_icon = "ui/Icons/actor_traits/iconArcaneReflexes",
                     group_id = "sm_branches",
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()

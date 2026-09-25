@@ -314,7 +314,7 @@ namespace SuperMech.Code
             LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
             var t = new ActorTrait
             {
-                id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                id = id, path_icon = "ui/Icons/actor_traits/iconGiant",
                 group_id = "sm_race", can_be_removed = false, can_be_given = false,
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };

@@ -43,7 +43,7 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("supermech.tab", "超神机械师", pReplace: true);
                 LocalizedTextManager.add("supermech.tab_desc", "五系觉醒·机械军团·圣所轮回", pReplace: true);
 
-                Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconHardSkin");
+                Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconChosenOne");
                 _tab = TabManager.CreateTab("supermech_mod_tab", "supermech.tab", "supermech.tab_desc", tabIcon);
                 if (_tab == null)
                 {

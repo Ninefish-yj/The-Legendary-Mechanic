@@ -567,7 +567,7 @@ namespace SuperMech.Code
             {
                 id = "sm_enter_sanctuary",
                 name = "进入圣所",
-                path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                path_icon = "ui/Icons/actor_traits/iconBlessing",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
@@ -587,7 +587,7 @@ namespace SuperMech.Code
             var divinityTrait = new ActorTrait
             {
                 id = "sm_divinity_ascended",
-                path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                path_icon = "ui/Icons/actor_traits/iconBlessing",
                 group_id = "sm_sanctuary",
                 needs_to_be_explored = false,
                 base_stats = new BaseStats()

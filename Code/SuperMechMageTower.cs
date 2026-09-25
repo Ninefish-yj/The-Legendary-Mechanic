@@ -47,7 +47,7 @@ namespace SuperMech.Code
                 var t = new ActorTrait
                 {
                     id = TowerIds[i],
-                    path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                    path_icon = "ui/Icons/actor_traits/iconArcaneReflexes",
                     group_id = "sm_mage_tower",
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()

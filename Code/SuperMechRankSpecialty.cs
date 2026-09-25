@@ -94,7 +94,7 @@ namespace SuperMech.Code
             var t = new ActorTrait
             {
                 id = id,
-                path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                path_icon = "ui/Icons/actor_traits/iconGiant",
                 group_id = "sm_rank_specialty",
                 needs_to_be_explored = false,
                 base_stats = new BaseStats()

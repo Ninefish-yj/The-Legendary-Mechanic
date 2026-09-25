@@ -186,11 +186,12 @@ namespace SuperMech.Code
                         string id = $"sm_know_{prefix}_{ti}_{bi}_{ki}";
                         LocalizedTextManager.add("trait_" + id, kn, pReplace: true);
                         LocalizedTextManager.add("trait_" + id + "_info", $"{treeName}·{branchNames[bi]}·{Tiers[ti]}知识", pReplace: true);
+                        string gid = $"sm_know_{prefix}";
                         var t = new ActorTrait
                         {
                             id = id,
-                            path_icon = "ui/Icons/actor_traits/iconHardSkin",
-                            group_id = $"sm_know_{prefix}",
+                            path_icon = SuperMechTraits.GroupIcon(gid),
+                            group_id = gid,
                             needs_to_be_explored = false,
                             base_stats = new BaseStats()
                         };

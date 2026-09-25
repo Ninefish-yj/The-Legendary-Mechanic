@@ -146,7 +146,7 @@ namespace SuperMech.Code
             LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
             var t = new ActorTrait
             {
-                id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_specialty",
+                id = id, path_icon = "ui/Icons/actor_traits/iconDragonslayer", group_id = "sm_specialty",
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             t.base_stats["intelligence"] = intell;

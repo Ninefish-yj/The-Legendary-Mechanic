@@ -39,7 +39,7 @@ namespace SuperMech.Code
             LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
             var t = new ActorTrait
             {
-                id = id, path_icon = "ui/Icons/actor_traits/iconHardSkin", group_id = "sm_cultivation",
+                id = id, path_icon = "ui/Icons/actor_traits/iconBoostedVitality", group_id = "sm_cultivation",
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             AssetManager.traits.add(t);

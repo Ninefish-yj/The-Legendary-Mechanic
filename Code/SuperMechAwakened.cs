@@ -62,7 +62,7 @@ namespace SuperMech.Code
             var t = new ActorTrait
             {
                 id = AwakenedTrait,
-                path_icon = "ui/Icons/actor_traits/iconHardSkin",
+                path_icon = "ui/Icons/actor_traits/iconClone",
                 group_id = "sm_awakened",
                 needs_to_be_explored = false,
                 base_stats = new BaseStats()
