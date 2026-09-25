@@ -39,7 +39,33 @@ namespace SuperMech.Code
             float survival = Mathf.Pow(hpRatio, 0.7f) * Mathf.Pow(1f + armorRatio, 1.2f);
             float skill = 1f + intRatio;
 
-            return offense * survival * skill * mul * 20f;
+            return offense * survival * skill * mul * 20f * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
+        }
+
+        /// <summary>自然觉醒：未觉醒单位达到年龄后有概率随机觉醒为五系之一。</summary>
+        public static void TickAutoAwakening()
+        {
+            if (!SuperMechConfig.AutoAwakening) return;
+            var list = World.world.units.units_only_alive;
+            if (list == null) return;
+            string[] classes = {
+                SuperMechTraits.ClassMech, SuperMechTraits.ClassMartial,
+                SuperMechTraits.ClassPsi, SuperMechTraits.ClassMage, SuperMechTraits.ClassMind
+            };
+            foreach (Actor a in list)
+            {
+                if (a == null) continue;
+                if (IsSuperMechUnit(a)) continue; // 已觉醒
+                if (a.age < SuperMechConfig.AwakeningMinAge) continue;
+                if (Random.value > SuperMechConfig.AwakeningChance) continue;
+                string cls = classes[Random.Range(0, classes.Length)];
+                a.addTrait(cls);
+                // 觉醒时初始化气力
+                SuperMechQi.SetQi(a, 10f);
+                SuperMechQi.SetQiMax(a, 10f);
+                if (SuperMechConfig.LogVerbose)
+                    Debug.Log($"[超神机械师] {a.name}（{a.age}岁）自然觉醒为 {cls}");
+            }
         }
 
         /// <summary>遍历全场存活单位，按欧纳门槛晋升阶位。+位只更新内部字典，主阶位才挂特质。</summary>

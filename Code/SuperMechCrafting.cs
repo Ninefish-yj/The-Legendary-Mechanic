@@ -13,6 +13,8 @@ namespace SuperMech.Code
     {
         // 制造冷却（unit.id -> 下次可制造时间）
         private static readonly Dictionary<long, float> _cooldown = new Dictionary<long, float>();
+        // 召唤物追踪（性能保护：限制全场召唤物数量）
+        private static readonly HashSet<long> _summonedIds = new HashSet<long>();
 
         /// <summary>制造单位模板定义。</summary>
         public struct CraftRecipe
@@ -76,6 +78,7 @@ namespace SuperMech.Code
                 p.click_action += (tile, powerId) =>
                 {
                     if (tile == null) return false;
+                    if (!SuperMechConfig.MechSummonEnabled) return false;
                     bool crafted = false;
                     tile.doUnits(u =>
                     {
@@ -110,11 +113,22 @@ namespace SuperMech.Code
                         }
                         float perfection = Mathf.Clamp(0.5f + intel * 0.1f + stage * 0.03f, 0.5f, 1.5f);
 
+                        // 性能保护：清理已死亡的召唤物ID
+                        _summonedIds.RemoveWhere(id => World.world.units.get(id) == null || !World.world.units.get(id).isAlive());
+                        // 检查召唤物上限
+                        if (_summonedIds.Count >= SuperMechConfig.MaxSummonedUnits)
+                        {
+                            if (SuperMechConfig.LogVerbose)
+                                Debug.Log($"[超神机械师] 召唤物已达上限({SuperMechConfig.MaxSummonedUnits})，无法制造");
+                            return;
+                        }
+
                         // 制造单位（在点击位置，即机械师所在格）
                         Actor spawned = World.world.units.createNewUnit(
                             r.creatureId, tile, pMiracleSpawn: false, pAdultAge: true);
                         if (spawned != null)
                         {
+                            _summonedIds.Add(spawned.id);
                             foreach (var tid in r.traits)
                             {
                                 if (AssetManager.traits.get(tid) != null) spawned.addTrait(tid);

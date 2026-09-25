@@ -235,6 +235,7 @@ namespace SuperMech.Code
         /// <summary>进入圣所：消耗钥匙碎片，获得该圣所的知识（潜能点），数量由进入次数（权限等级）决定。</summary>
         public static void EnterSanctuary(Actor a)
         {
+            if (!SuperMechConfig.SanctuaryEnabled) return;
             if (Data.key_fragments < 3)
             {
                 Debug.Log("[超神机械师] 圣所钥匙碎片不足（需3）");

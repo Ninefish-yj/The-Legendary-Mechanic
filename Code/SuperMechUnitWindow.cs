@@ -22,6 +22,7 @@ namespace SuperMech.Code
         {
             try
             {
+                if (!SuperMechConfig.ShowRankInPanel) return;
                 Actor actor = GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return;
 

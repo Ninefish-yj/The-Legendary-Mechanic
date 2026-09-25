@@ -78,6 +78,7 @@ namespace SuperMech.Code
         /// <summary>每tick：战斗中概率掉落装备。</summary>
         public static void TickRelicDrops()
         {
+            if (!SuperMechConfig.RelicDropEnabled) return;
             var units = World.world.units.units_only_alive;
             if (units == null) return;
             float tickInterval = SuperMechConfig.TickInterval;
@@ -119,7 +120,7 @@ namespace SuperMech.Code
         private static void TryDropRelic(Actor a)
         {
             int rank = SuperMechAdvancement.GetRankIndex(a);
-            float dropChance = 0.1f + rank * 0.02f;
+            float dropChance = SuperMechConfig.RelicDropRate + rank * 0.01f;
             if (Random.value > dropChance) return;
 
             // 品质roll：基础0-3，阶位越高roll上限越高（最高金色index8）

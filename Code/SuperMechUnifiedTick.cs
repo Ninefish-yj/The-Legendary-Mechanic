@@ -40,6 +40,7 @@ namespace SuperMech.Code
                 // 第1组：晋升与成长（阶位/潜能/副职业/降临者/土著）
                 else if (group == 1)
                 {
+                    SuperMechAdvancement.TickAutoAwakening();
                     SuperMechAdvancement.TickPromotions();
                     SuperMechPotential.TickPotential();
                     SuperMechSubClass.TickSubLevels();

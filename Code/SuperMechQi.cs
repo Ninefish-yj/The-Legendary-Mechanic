@@ -163,6 +163,9 @@ namespace SuperMech.Code
             if (a == null) return;
             float curMax = GetQiMax(a);
             float newMax = curMax + amount;
+            // 气力无上限关闭时，锁定40级门槛
+            if (!SuperMechConfig.QiUnlimited && Thresholds.Length > 0)
+                newMax = Mathf.Min(newMax, Thresholds[Thresholds.Length - 1]);
             _qiMaxMap[a.id] = newMax;
             // 上限提升后，当前值也同步提升（突破后气力充盈）
             float cur = GetQi(a);
@@ -285,8 +288,8 @@ namespace SuperMech.Code
                         if (iv.HasValue) intel = 1f + iv.Value * 0.02f;
                     }
                     // 恢复速度：基于智力，恢复到上限为止
-                    float recovery = (2f + max * 0.005f) * intel * tickInterval;
-                    if (a.hasTrait("sm_refinement")) recovery *= 1.5f;
+                    float recovery = (2f + max * 0.005f) * intel * tickInterval * SuperMechConfig.QiGrowthRate;
+                    if (a.hasTrait("sm_refinement")) recovery *= SuperMechConfig.RefinementBonus;
                     if (a.hasTrait(SuperMechTraits.ClassPsi))
                         recovery *= SuperMechPotentialRating.GetQiGrowthMult(a);
                     // 当前值恢复到上限，不超过上限
@@ -296,8 +299,8 @@ namespace SuperMech.Code
 
                     // —— 修炼法：缓慢提升气力上限（原著：修炼法锻炼提升上限）——
                     // 所有超能者都有基础修炼速度（很慢），有提炼法的加速
-                    float maxGrowth = 0.05f * tickInterval; // 基础修炼速度
-                    if (a.hasTrait("sm_refinement")) maxGrowth *= 3f; // 提炼法×3
+                    float maxGrowth = 0.05f * tickInterval * SuperMechConfig.QiGrowthRate; // 基础修炼速度
+                    if (a.hasTrait("sm_refinement")) maxGrowth *= SuperMechConfig.RefinementBonus; // 提炼法加成
                     if (a.hasTrait("sm_em_refinement") && a.hasTrait(SuperMechTraits.ClassMech))
                         maxGrowth *= 1.5f; // 电磁因子提炼法再×1.5
                     AddQiMax(a, maxGrowth);
