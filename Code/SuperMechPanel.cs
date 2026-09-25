@@ -108,7 +108,7 @@ namespace SuperMech.Code
             _frame.AddLabel($"副职业: {(string.IsNullOrEmpty(subText)?"无":subText)}", leftX + colW, y, colW, 22f, 13);
             y -= 26f;
 
-            string relic = SuperMechRelic.GetCurrentRelicName(a);
+            string relic = SuperMechRelic.GetCurrentEquipName(a);
             bool divine = SuperMechDivinity.IsDivineAwakened(a);
             _frame.AddLabel($"宝物: {relic}    神性蜕变: {(divine?"已蜕变":"未蜕变")}", leftX, y, 680f, 22f, 13);
             y -= 34f;

@@ -6,54 +6,82 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 装备品质系统（原著）：
-    /// 普通装备品质从低到高：劣质灰→普通白→良好绿→优质蓝→极佳紫→珍稀粉→传说橙→神器红→金色
-    /// 原著ch1040："金色品质，便代表着宇宙宝物级的装备"——金色是普通装备的顶级。
-    /// 宇宙宝物是独立的特殊物品类别（秘法之殿/时空琥珀/万神权杖等），不是普通装备品质链的一级——见 SuperMechCosmicRelic。
-    /// 使徒兵器是机械系高级造兵单位（ch1010），伴生武器约橙~红品质——留待造兵系统实现。
-    /// 战斗中概率掉落装备，品质随击杀者阶位提升。同时只能装备一个品质（高级替换低级）。
+    /// 装备系统（原著+原版EquipmentAsset）：
+    /// 原著ch1040："金色品质，便代表着宇宙宝物级的装备"。
+    /// 用原版EquipmentAsset注册装备物品，设置Rarity品质和base_stats，
+    /// 单位装备后原版自动merge属性（Actor.cs:1829 stats.mergeStats(equipmentAsset.base_stats)）。
+    /// 不直接加单位身上——单位不是装备。
+    /// 品质对应原版Rarity：普通=R0, 精良=R1, 史诗=R2, 传说=R3, 金色=自定义宇宙宝物级
     /// </summary>
     public static class SuperMechRelic
     {
-        // 普通装备品质从低到高（9级，原著品质色）
-        public const string QGray    = "sm_relic_gray";     // 劣质灰
-        public const string QWhite   = "sm_relic_white";    // 普通白
-        public const string QGreen   = "sm_relic_green";    // 良好绿
-        public const string QBlue    = "sm_relic_blue";     // 优质蓝
-        public const string QPurple  = "sm_relic_purple";   // 极佳紫
-        public const string QPink    = "sm_relic_pink";     // 珍稀粉
-        public const string QOrange  = "sm_relic_orange";   // 传说橙
-        public const string QRed     = "sm_relic_red";      // 神器红
-        public const string QGold    = "sm_relic_gold";     // 金色（顶级普通装备=宇宙宝物级门槛）
+        // 装备品质定义（id, 名称, 原版Rarity, 伤害倍率, 生命倍率）
+        public class EquipDef
+        {
+            public string id;
+            public string name;
+            public Rarity rarity;
+            public float dmgMul;
+            public float hpMul;
+        }
 
-        public static readonly string[] QualityOrder = {
-            QGray, QWhite, QGreen, QBlue, QPurple, QPink, QOrange, QRed, QGold
-        };
-        public static readonly string[] QualityNames = {
-            "劣质灰", "普通白", "良好绿", "优质蓝", "极佳紫", "珍稀粉", "传说橙", "神器红", "金色"
+        public static readonly List<EquipDef> Equipments = new List<EquipDef>
+        {
+            new EquipDef { id="sm_eq_normal",  name="普通装备",   rarity=Rarity.R0_Normal, dmgMul=1.0f, hpMul=1.0f },
+            new EquipDef { id="sm_eq_fine",    name="精良装备",   rarity=Rarity.R1_Rare,   dmgMul=1.3f, hpMul=1.2f },
+            new EquipDef { id="sm_eq_epic",    name="史诗装备",   rarity=Rarity.R2_Epic,   dmgMul=1.8f, hpMul=1.6f },
+            new EquipDef { id="sm_eq_legend",  name="传说装备",   rarity=Rarity.R3_Legendary, dmgMul=2.5f, hpMul=2.2f },
+            new EquipDef { id="sm_eq_gold",    name="金色装备（宇宙宝物级）", rarity=Rarity.R3_Legendary, dmgMul=4.0f, hpMul=3.5f },
         };
 
         // 上次生命值（检测战斗结束）
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
         // 战斗中累计时间（用于掉落判定）
         private static readonly Dictionary<long, float> _combatTime = new Dictionary<long, float>();
-        // 当前装备品质（unit.id -> quality index 0-8，-1=无）
-        private static readonly Dictionary<long, int> _equippedQuality = new Dictionary<long, int>();
-        // 已应用到BaseStats的品质（用于换装备时先恢复旧加成）
-        private static readonly Dictionary<long, int> _appliedQuality = new Dictionary<long, int>();
-        // 品质倍率表
-        private static readonly float[] QualityDmgMul = { 0.8f, 1.0f, 1.3f, 1.7f, 2.2f, 3.0f, 4.5f, 7.0f, 12.0f };
-        private static readonly float[] QualityHpMul = { 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 2.8f, 4.0f, 6.0f, 10.0f };
 
         public static void Register()
         {
-            // 不注册特质，装备品质是单位的装备状态，不是单位特质
-            // 用内部字典存储，属性加成通过TickRelicBonus外部应用
-            for (int i = 0; i < QualityNames.Length; i++)
+            // 注册装备物品到原版物品库（clone自amulet模板）
+            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
+            if (library == null)
             {
-                LocalizedTextManager.add("relic_" + QualityOrder[i], QualityNames[i] + "装", pReplace: true);
+                Debug.LogError("[超神机械师] AssetManager.items 为空，无法注册装备");
+                return;
             }
-            Debug.Log("[超神机械师] 装备品质系统初始化（9级，内部字典存储，不注册特质）");
+
+            EquipmentAsset template = library.get("$amulet");
+            if (template == null) template = library.get("$ring");
+            if (template == null)
+            {
+                Debug.LogError("[超神机械师] 找不到amulet/ring装备模板");
+                return;
+            }
+
+            int registered = 0;
+            foreach (var def in Equipments)
+            {
+                if (library.get(def.id) != null) continue;
+                EquipmentAsset asset = library.clone(def.id, template.id);
+                if (asset == null) continue;
+
+                ((Asset)asset).id = def.id;
+                ((ItemAsset)asset).equipment_type = EquipmentType.Amulet;
+                ((ItemAsset)asset).material = string.Empty;
+                ((ItemAsset)asset).animated = false;
+                ((ItemAsset)asset).is_pool_weapon = false;
+                ((ItemAsset)asset).quality = def.rarity;
+                ((ItemAsset)asset).rarity = (int)def.rarity;
+                ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
+                ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = def.dmgMul;
+                ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = def.hpMul;
+                ((BaseUnlockableAsset)asset).path_icon = "ui/Icons/actor_traits/iconBlessing";
+                ((BaseUnlockableAsset)asset).unlock(true);
+
+                LocalizedTextManager.add("item_" + def.id, def.name, pReplace: true);
+                LocalizedTextManager.add("item_" + def.id + "_desc",
+                    $"{def.name}。伤害×{def.dmgMul}，生命×{def.hpMul}。", pReplace: true);
+                registered++;
+            }
 
             // 注册"赐予金装"神权
             var givePower = new GodPower
@@ -71,13 +99,13 @@ namespace SuperMech.Code
             givePower.click_action += (WorldTile tile, string powerId) =>
             {
                 if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { EquipRelic(a, 8); }); // index 8 = 金色
+                tile.doUnits(delegate (Actor a) { EquipItem(a, 4); }); // index 4 = 金色
                 return true;
             };
             AssetManager.powers.add(givePower);
             LocalizedTextManager.add("power_sm_give_relic_gold", "赐予金色装备", pReplace: true);
 
-            Debug.Log("[超神机械师] 装备品质系统注册完成：9级品质（灰→金）");
+            Debug.Log($"[超神机械师] 装备系统注册完成：{registered}件装备（普通→金色，原版EquipmentAsset）");
         }
 
         /// <summary>每tick：战斗中概率掉落装备。</summary>
@@ -111,7 +139,7 @@ namespace SuperMech.Code
                     if (_combatTime.TryGetValue(a.id, out ct) && ct >= 10f)
                     {
                         _combatTime[a.id] = 0f;
-                        TryDropRelic(a);
+                        TryDropEquip(a);
                     }
                     else if (ct > 0)
                     {
@@ -122,63 +150,88 @@ namespace SuperMech.Code
         }
 
         /// <summary>尝试掉落装备。品质随阶位提升。</summary>
-        private static void TryDropRelic(Actor a)
+        private static void TryDropEquip(Actor a)
         {
             int rank = SuperMechAdvancement.GetRankIndex(a);
             float dropChance = SuperMechConfig.RelicDropRate + rank * 0.01f;
             if (Random.value > dropChance) return;
 
-            // 品质roll：基础0-3，阶位越高roll上限越高（最高金色index8）
-            int maxQuality = Mathf.Min(3 + rank / 2, 8);
+            // 品质roll：基础0-1，阶位越高roll上限越高（最高金色index4）
+            int maxQuality = Mathf.Min(1 + rank / 3, 4);
             int quality = Random.Range(0, maxQuality + 1);
 
-            EquipRelic(a, quality);
+            EquipItem(a, quality);
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 战斗掉落装备：{QualityNames[quality]}（掉落率{dropChance:F0%}）");
+                Debug.Log($"[超神机械师] {a.name} 战斗掉落装备：{Equipments[quality].name}（掉落率{dropChance:F0%}）");
         }
 
-        /// <summary>装备（高级替换低级）。内部字典存储，不挂特质，属性直接应用到BaseStats。</summary>
-        public static void EquipRelic(Actor a, int qualityIndex)
+        /// <summary>装备物品到amulet槽（高级替换低级）。用原版装备系统，不直接加单位属性。</summary>
+        public static void EquipItem(Actor a, int qualityIndex)
         {
-            if (a == null || qualityIndex < 0 || qualityIndex >= QualityOrder.Length) return;
+            if (a == null || qualityIndex < 0 || qualityIndex >= Equipments.Count) return;
+            if (a.equipment == null) return;
 
-            long id = a.data.id;
-            if (_equippedQuality.TryGetValue(id, out int current) && current >= qualityIndex) return;
+            var def = Equipments[qualityIndex];
 
-            var s = SuperMechStats.Of(a);
-            if (s == null) return;
-
-            // 先恢复旧装备的加成（除以旧倍率）
-            if (_appliedQuality.TryGetValue(id, out int oldIdx) && oldIdx >= 0)
+            // 检查当前amulet槽是否已有更高级装备
+            ActorEquipmentSlot slot = a.equipment.getSlot(EquipmentType.Amulet);
+            if (slot != null && !slot.isEmpty())
             {
-                float oldDmg = QualityDmgMul[oldIdx];
-                float oldHp = QualityHpMul[oldIdx];
-                if (oldDmg > 0) s["multiplier_damage"] = s["multiplier_damage"] / oldDmg;
-                if (oldHp > 0) s["multiplier_health"] = s["multiplier_health"] / oldHp;
+                Item current = slot.getItem();
+                if (current != null)
+                {
+                    int currentIdx = GetEquipIndex(current);
+                    if (currentIdx >= qualityIndex) return; // 已有同级或更高级，不替换
+                    slot.takeAwayItem(); // 移除旧装备
+                }
             }
 
-            // 应用新装备的加成（乘以新倍率）
-            float newDmg = QualityDmgMul[qualityIndex];
-            float newHp = QualityHpMul[qualityIndex];
-            s["multiplier_damage"] = s["multiplier_damage"] * newDmg;
-            s["multiplier_health"] = s["multiplier_health"] * newHp;
+            // 创建物品并装备
+            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
+            EquipmentAsset asset = library.get(def.id);
+            if (asset == null) return;
 
-            _equippedQuality[id] = qualityIndex;
-            _appliedQuality[id] = qualityIndex;
+            try
+            {
+                Item item = World.world.items.generateItem(asset, a.kingdom, a.getName(), 0, a, 1, false);
+                if (item == null) return;
+                item.calculateValues();
+                slot.setItem(item, a);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[超神机械师] 装备物品失败: {e.Message}");
+            }
         }
 
-        /// <summary>获取当前装备等级。</summary>
-        public static int GetCurrentRelicIndex(Actor a)
+        /// <summary>获取当前装备的品质索引。</summary>
+        public static int GetCurrentEquipIndex(Actor a)
         {
-            if (a == null) return -1;
-            return _equippedQuality.TryGetValue(a.data.id, out int idx) ? idx : -1;
+            if (a == null || a.equipment == null) return -1;
+            ActorEquipmentSlot slot = a.equipment.getSlot(EquipmentType.Amulet);
+            if (slot == null || slot.isEmpty()) return -1;
+            Item item = slot.getItem();
+            if (item == null) return -1;
+            return GetEquipIndex(item);
+        }
+
+        /// <summary>从物品获取品质索引。</summary>
+        private static int GetEquipIndex(Item item)
+        {
+            if (item == null || item.asset == null) return -1;
+            string id = ((Asset)item.asset).id;
+            for (int i = 0; i < Equipments.Count; i++)
+            {
+                if (Equipments[i].id == id) return i;
+            }
+            return -1;
         }
 
         /// <summary>获取当前装备名。</summary>
-        public static string GetCurrentRelicName(Actor a)
+        public static string GetCurrentEquipName(Actor a)
         {
-            int idx = GetCurrentRelicIndex(a);
-            return idx >= 0 ? QualityNames[idx] : "无";
+            int idx = GetCurrentEquipIndex(a);
+            return idx >= 0 ? Equipments[idx].name : "无";
         }
 
         /// <summary>清空装备数据（世界切换用）。</summary>
@@ -186,20 +239,13 @@ namespace SuperMech.Code
         {
             _lastHealth.Clear();
             _combatTime.Clear();
-            _equippedQuality.Clear();
-            _appliedQuality.Clear();
         }
     }
 
     /// <summary>
     /// 宇宙宝物系统（原著ch1008/ch1040）：
     /// 宇宙宝物是独立于普通装备的特殊物品类别，不是装备品质链的一级。
-    /// 分两类：
-    /// 1. 人造宇宙宝物：奥斯汀秘法之殿、贝奥尼火核之地、光辉高维天启传送器、虚灵万神权杖、暗影提灯等
-    /// 2. 天然宇宙奇观：时空琥珀等（最顶级，无解的存在）
-    /// 一般超A手里有一个宇宙宝物就很好了（ch1001）。
-    /// 宇宙级文明具备制造宇宙宝物的技术（ch1008）。
-    /// 使徒兵器（ch1010）是机械系高级造兵单位，有火种能量源，伴生武器约橙~红品质，不属于宇宙宝物。
+    /// 分两类：人造宇宙宝物、天然宇宙奇观。
     /// </summary>
     public static class SuperMechCosmicRelic
     {
@@ -215,9 +261,6 @@ namespace SuperMech.Code
         }
 
         // 原著出现的宇宙宝物与宇宙奇观
-        // ch1008：宇宙宝物分人造（秘法之殿等）和天然宇宙奇观（时空琥珀等）
-        // ch1172：宇宙奇观具有"绝对性"，巅峰超A也损伤不了
-        // ch1082/ch1403：制造宇宙宝物有微小几率变异成宇宙奇观
         public static readonly List<CosmicRelicDef> Relics = new List<CosmicRelicDef>
         {
             // ===== 人造宇宙宝物 =====
@@ -229,15 +272,12 @@ namespace SuperMech.Code
             new CosmicRelicDef { id="sm_cr_evolution_cube", name="进化方块", desc="ch740激发物种潜力，西斯科用它完成超A物种蜕变。", isWonder=false, wonderType="", dmgMul=15f, hpMul=25f },
 
             // ===== 宇宙奇观（具有"绝对性"，ch1172）=====
-            // 天然宇宙奇观
             new CosmicRelicDef { id="sm_cr_amber", name="时空琥珀", desc="ch1008最经典的无解宇宙奇观，可封印时空。十个巅峰超A合力也损伤不了分毫。", isWonder=true, wonderType="天然", dmgMul=50f, hpMul=50f },
             new CosmicRelicDef { id="sm_cr_loop_spacetime", name="循环时空", desc="ch1217独一份的次级维度宇宙奇观，源能碎片培育出的循环时空，无法复制。", isWonder=true, wonderType="天然", dmgMul=30f, hpMul=40f },
-            // 变异宇宙奇观（人造物变异而成）
-            new CosmicRelicDef { id="sm_cr_soul_transfer", name="转魂仪", desc="ch1181摩多文明的宇宙奇观，可随意转移灵魂并无视排异。原为人工产物，变异后与次级维度产生联系。只有转魂双子能发挥其能力。", isWonder=true, wonderType="变异", dmgMul=35f, hpMul=35f },
-            // 系统级宇宙奇观（非物品，是维度/系统）
-            new CosmicRelicDef { id="sm_cr_world_tree", name="世界树", desc="ch1333性质独特的宇宙奇观，拥有意志同时具备工具属性，有信息态能力，统计无数物体合成表。被命运之子称为'天敌'。", isWonder=true, wonderType="系统级", dmgMul=60f, hpMul=60f },
+            new CosmicRelicDef { id="sm_cr_soul_transfer", name="转魂仪", desc="ch1181摩多文明的宇宙奇观，可随意转移灵魂并无视排异。原为人工产物，变异后与次级维度产生联系。", isWonder=true, wonderType="变异", dmgMul=35f, hpMul=35f },
+            new CosmicRelicDef { id="sm_cr_world_tree", name="世界树", desc="ch1333性质独特的宇宙奇观，拥有意志同时具备工具属性，有信息态能力。", isWonder=true, wonderType="系统级", dmgMul=60f, hpMul=60f },
             new CosmicRelicDef { id="sm_cr_sanctuary", name="圣所", desc="ch1225推测为信息态方面的宇宙奇观，具有记录超A级信息的功能，可复活超A级。", isWonder=true, wonderType="系统级", dmgMul=40f, hpMul=45f },
-            new CosmicRelicDef { id="sm_cr_underworld", name="冥土", desc="ch1258经两姐妹完善后近似宇宙奇观级的宝物，灵魂维度，运行机制完善，全盛状态可压制巅峰超A。", isWonder=true, wonderType="系统级", dmgMul=35f, hpMul=45f },
+            new CosmicRelicDef { id="sm_cr_underworld", name="冥土", desc="ch1258经两姐妹完善后近似宇宙奇观级的宝物，灵魂维度。", isWonder=true, wonderType="系统级", dmgMul=35f, hpMul=45f },
         };
 
         private static readonly Dictionary<long, string> _equipped = new Dictionary<long, string>();
@@ -278,7 +318,6 @@ namespace SuperMech.Code
                 if (tile == null) return true;
                 tile.doUnits(delegate (Actor a)
                 {
-                    // 随机赐予一个人造宇宙宝物（宇宙奇观级太稀有，不随机给）
                     var manMade = Relics.FindAll(r => !r.isWonder);
                     var pick = manMade[Random.Range(0, manMade.Count)];
                     EquipCosmicRelic(a, pick.id);
@@ -289,14 +328,13 @@ namespace SuperMech.Code
             LocalizedTextManager.add("power_sm_give_cosmic_relic", "赐予宇宙宝物", pReplace: true);
 
             int wonderCount = Relics.FindAll(r => r.isWonder).Count;
-            Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（人造宇宙宝物{Relics.Count - wonderCount}件 + 宇宙奇观{wonderCount}件）");
+            Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（人造{Relics.Count - wonderCount}件 + 宇宙奇观{wonderCount}件）");
         }
 
         /// <summary>装备宇宙宝物（同时只能有一件，高级替换低级）。</summary>
         public static void EquipCosmicRelic(Actor a, string relicId)
         {
             if (a == null) return;
-            // 移除已有宇宙宝物
             if (_equipped.TryGetValue(a.data.id, out string oldId) && !string.IsNullOrEmpty(oldId))
             {
                 if (a.hasTrait(oldId)) a.removeTrait(oldId);

@@ -243,7 +243,7 @@ namespace SuperMech.Code
                     ShowRow(__instance, "提炼法", refineText);
 
                 // 行11：装备品质（9级普通装备）
-                string relic = SuperMechRelic.GetCurrentRelicName(actor);
+                string relic = SuperMechRelic.GetCurrentEquipName(actor);
                 if (relic != "无")
                     ShowRow(__instance, "装备", relic);
 
