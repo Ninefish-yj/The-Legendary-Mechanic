@@ -120,11 +120,15 @@ namespace SuperMech.Code
             float fusionMul = SuperMechMechFusion.GetFusionMultiplier(a);
             qiMul *= fusionMul;
 
+            // 知识融合加成（永久知识，学了就存脑子里，不占装备槽）
+            var knowFusion = SuperMechKnowledgeFusion.GetFusionBonus(a);
+            qiMul *= knowFusion.dmgMul;
+
             stats["multiplier_damage"] = qiMul;
-            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul * fusionMul;
+            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul * fusionMul * knowFusion.hpMul;
             stats["multiplier_stamina"] = qiMul * 1.2f;
             stats["multiplier_armor"] = 1f + level * 0.025f * stageMul;
-            stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul;
+            stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul * knowFusion.speedMul;
             stats["multiplier_crit"] = 1f + level * 0.018f * stageMul;
             stats["experience"] = 1f + level * 0.01f;
 

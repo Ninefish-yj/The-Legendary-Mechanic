@@ -234,18 +234,32 @@ namespace SuperMech.Code
                 }
             }
 
-            // 知识融合（原著ch107：消耗经验融合知识创造独特产物）
+            // 知识融合（原著ch107：消耗经验融合知识，学会后永久存脑子里）
             var fusionRecipes = SuperMechKnowledgeFusion.GetAvailableRecipes(actor);
-            if (fusionRecipes.Count > 0 && SuperMechAwakened.IsAwakened(actor))
+            var learnedRecipes = SuperMechKnowledgeFusion.GetLearnedRecipes(actor);
+            if (SuperMechAwakened.IsAwakened(actor))
             {
-                int unlockedFusions = SuperMechKnowledgeFusion.GetUnlockedCount(actor);
-                AddSectionHeader(_container.transform, $"知识融合（已创造{unlockedFusions}个）");
-                foreach (var recipe in fusionRecipes)
+                AddSectionHeader(_container.transform, $"知识融合（已学会{learnedRecipes.Count}个）");
+
+                // 已学会的融合知识（永久属性加成）
+                foreach (var recipe in learnedRecipes)
                 {
-                    string status = $"[{recipe.productType}] 经验{recipe.xpCost} 成功率{(recipe.successRate * 100):0}% 伤害×{recipe.dmgMul} 生命×{recipe.hpMul}";
-                    AddInfoRow(_container.transform, recipe.equipName, status);
+                    string bonusText = $"伤害×{recipe.dmgMul} 生命×{recipe.hpMul} 攻速×{recipe.speedMul}";
+                    AddInfoRow(_container.transform, $"✓ {recipe.equipName}", $"[{recipe.productType}] {bonusText}");
                 }
-                AddInfoRow(_container.transform, "提示", "用神权「知识融合」随机融合一个配方，成功创造独特产物");
+
+                // 可融合的配方
+                if (fusionRecipes.Count > 0)
+                {
+                    AddInfoRow(_container.transform, "—— 可融合 ——", "");
+                    foreach (var recipe in fusionRecipes)
+                    {
+                        if (learnedRecipes.Exists(r => r.id == recipe.id)) continue; // 已学会的不重复显示
+                        string status = $"经验{recipe.xpCost} 成功率{(recipe.successRate * 100):0}%";
+                        AddInfoRow(_container.transform, recipe.equipName, $"[{recipe.productType}] {status}");
+                    }
+                    AddInfoRow(_container.transform, "提示", "用神权「知识融合」随机融合一个配方");
+                }
             }
         }
 

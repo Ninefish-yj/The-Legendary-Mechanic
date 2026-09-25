@@ -34,7 +34,7 @@ namespace SuperMech.Code
         /// <summary>所有融合配方。</summary>
         private static readonly List<FusionRecipe> _recipes = new List<FusionRecipe>();
 
-        /// <summary>已注册的融合装备（equipId → recipe），避免重复注册。</summary>
+        /// <summary>已注册的融合产物（用于名称查找，不注册装备）。</summary>
         private static readonly Dictionary<string, FusionRecipe> _registeredEquips = new Dictionary<string, FusionRecipe>();
 
         /// <summary>单位已融合出的图纸（actorId → HashSet<recipeId>）。</summary>
@@ -122,37 +122,12 @@ namespace SuperMech.Code
             });
         }
 
-        /// <summary>动态注册融合产物装备到物品库（首次融合成功时调用）。</summary>
-        private static void RegisterFusionEquip(FusionRecipe recipe)
+        /// <summary>注册融合产物名称（本地化，不注册装备物品）。</summary>
+        private static void RegisterFusionName(FusionRecipe recipe)
         {
             if (_registeredEquips.ContainsKey(recipe.equipId)) return;
-
-            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
-            if (library == null) return;
-
-            EquipmentAsset template = library.get("$amulet") ?? library.get("$ring");
-            if (template == null) return;
-
-            EquipmentAsset asset = library.clone(recipe.equipId, template.id);
-            if (asset == null) return;
-
-            ((Asset)asset).id = recipe.equipId;
-            ((ItemAsset)asset).equipment_type = EquipmentType.Amulet;
-            ((ItemAsset)asset).material = string.Empty;
-            ((ItemAsset)asset).animated = false;
-            ((ItemAsset)asset).is_pool_weapon = false;
-            ((ItemAsset)asset).quality = Rarity.R3_Legendary;
-            ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
-            ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = recipe.dmgMul;
-            ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = recipe.hpMul;
-            ((BaseUnlockableAsset)asset).base_stats["multiplier_speed"] = recipe.speedMul;
-            ((BaseUnlockableAsset)asset).unlock(true);
-
-            // 本地化名称
             LocalizedTextManager.add(recipe.equipId, recipe.equipName, pReplace: true);
-
             _registeredEquips[recipe.equipId] = recipe;
-            Debug.Log($"[超神机械师] 知识融合创造新装备：{recipe.equipName}（{recipe.equipId}）");
         }
 
         /// <summary>获取单位可融合的配方列表。</summary>
@@ -179,7 +154,7 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>尝试知识融合。成功则创造独特新装备并给单位装备。</summary>
+        /// <summary>尝试知识融合。成功则学会永久知识（存脑子里，不占装备槽）。</summary>
         public static bool TryFuse(Actor a, string recipeId)
         {
             if (a == null) return false;
@@ -207,24 +182,27 @@ namespace SuperMech.Code
 
             if (success)
             {
-                // 记录已融合
+                // 记录已学会（永久知识，存脑子里）
                 if (!_unlockedRecipes.TryGetValue(a.id, out var set))
                 {
                     set = new HashSet<string>();
                     _unlockedRecipes[a.id] = set;
                 }
+
+                // 已经学会过就不重复学（但经验还是扣了，融合失败的一种）
+                if (set.Contains(recipeId))
+                {
+                    Debug.Log($"[超神机械师] {a.name} 已学会{recipe.equipName}，融合无新收获");
+                    return false;
+                }
+
                 set.Add(recipeId);
+                RegisterFusionName(recipe);
 
-                // 动态注册新装备（如果是首次融合出这个图纸）
-                RegisterFusionEquip(recipe);
-
-                // 给单位装备这个新装备
-                EquipFusionItem(a, recipe.equipId);
-
-                // 气力加成
+                // 气力加成（一次性奖励）
                 if (recipe.qiBonus > 0) SuperMechQi.AddQi(a, recipe.qiBonus);
 
-                Debug.Log($"[超神机械师] {a.name} 知识融合成功！创造新装备：{recipe.equipName}");
+                Debug.Log($"[超神机械师] {a.name} 知识融合成功！学会：{recipe.productType}·{recipe.equipName}");
             }
             else
             {
@@ -234,43 +212,45 @@ namespace SuperMech.Code
             return success;
         }
 
-        /// <summary>给单位装备融合产物。</summary>
-        private static void EquipFusionItem(Actor a, string equipId)
+        /// <summary>获取单位所有已学会融合知识的总加成（永久属性，不占装备槽）。</summary>
+        public static FusionBonus GetFusionBonus(Actor a)
         {
-            if (a == null || a.equipment == null) return;
+            var bonus = new FusionBonus();
+            if (a == null || !_unlockedRecipes.TryGetValue(a.id, out var set)) return bonus;
 
-            var slot = a.equipment.getSlot(EquipmentType.Amulet);
-            if (slot == null) return;
-
-            // 旧装备放回背包
-            if (!slot.isEmpty())
+            foreach (string recipeId in set)
             {
-                Item current = slot.getItem();
-                if (current != null)
+                foreach (var recipe in _recipes)
                 {
-                    int currentIdx = SuperMechRelic.GetEquipIndex(current);
-                    if (currentIdx >= 0) SuperMechEquipBag.AddToBag(a, SuperMechRelic.Equipments[currentIdx].id);
+                    if (recipe.id == recipeId)
+                    {
+                        bonus.dmgMul *= recipe.dmgMul;
+                        bonus.hpMul *= recipe.hpMul;
+                        bonus.speedMul *= recipe.speedMul;
+                        break;
+                    }
                 }
-                slot.takeAwayItem();
             }
+            return bonus;
+        }
 
-            // 创建并装备融合产物
-            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
-            EquipmentAsset asset = library.get(equipId);
-            if (asset == null) return;
+        public class FusionBonus
+        {
+            public float dmgMul = 1f;
+            public float hpMul = 1f;
+            public float speedMul = 1f;
+        }
 
-            try
+        /// <summary>获取单位已学会的融合知识列表。</summary>
+        public static List<FusionRecipe> GetLearnedRecipes(Actor a)
+        {
+            var list = new List<FusionRecipe>();
+            if (a == null || !_unlockedRecipes.TryGetValue(a.id, out var set)) return list;
+            foreach (var recipe in _recipes)
             {
-                Item item = World.world.items.generateItem(asset, a.kingdom, a.getName(), 0, a, 1, false);
-                if (item == null) return;
-                item.calculateValues();
-                slot.setItem(item, a);
-                SuperMechEquipAffix.OnEquip(a, 5); // 融合装备按粉色品质roll词条
+                if (set.Contains(recipe.id)) list.Add(recipe);
             }
-            catch (System.Exception e)
-            {
-                Debug.LogError($"[超神机械师] 装备融合产物失败: {e.Message}");
-            }
+            return list;
         }
 
         /// <summary>获取单位已融合的图纸数量。</summary>
