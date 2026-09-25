@@ -221,6 +221,31 @@ namespace SuperMech.Code
             ApplyRankStats(a, index);
             SuperMechRankSpecialty.OnRankUp(a, index);
             SuperMechRace.AutoEvolve(a, index);  // 种族进化与阶位挂钩
+
+            // 土著（非降临者）阶位提升时，自动提升职业阶段
+            // 原著ch267：NPC也有二十级进阶，只是没面板，靠修行和运气突破
+            if (!SuperMechAwakened.IsAwakened(a))
+            {
+                int nativeStage = RankToStage(index);
+                int curStage = SuperMechStage.GetStage(a);
+                if (nativeStage > curStage)
+                    SuperMechStage.SetStage(a, nativeStage);
+            }
+        }
+
+        /// <summary>阶位→土著职业阶段映射（原著NPC靠修行突破，职业阶段与阶位大致对应）。</summary>
+        private static int RankToStage(int rankIdx)
+        {
+            // F→0, E→1, D→2, C→3, B→4, A→6, S→8, SS→11, X→13
+            if (rankIdx <= 0) return 0;   // F
+            if (rankIdx <= 1) return 1;   // E
+            if (rankIdx <= 3) return 2;   // D/D+
+            if (rankIdx <= 5) return 3;   // C/C+
+            if (rankIdx <= 7) return 4;   // B/B+
+            if (rankIdx <= 9) return 6;   // A/A+
+            if (rankIdx <= 11) return 8;  // S/S+
+            if (rankIdx <= 12) return 11; // SS
+            return 13;                    // X
         }
 
         /// <summary>清空阶位数据（世界切换用）。</summary>
