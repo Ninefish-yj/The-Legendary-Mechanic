@@ -102,23 +102,26 @@ namespace SuperMech.Code
             int stage = SuperMechStage.GetStage(a);
             float stageMul = 1f + stage * 0.15f;
 
-            // 气力等级用百分比加成（WorldBox基础属性小，固定值永远达不到原著Lv29力量+12480的成长感）
-            // 原著ch1402：Lv29气力总加成 力量+12480/敏捷+13640/耐力+17200/智力+22845/体力上限+11427000
-            // 指数增长公式：multiplier = 1 + level^1.5 × 0.03 × stageMul
-            float qiMul = 1f + Mathf.Pow(level, 1.5f) * 0.03f * stageMul;
+            // 原著ch626/ch1402：气力等级加成对标原著
+            // Lv21: 力量+3206/敏捷+3928/耐力+4870/智力+6505/体力上限+1381520
+            // Lv25: 力量+6620/敏捷+7745/耐力+10308/智力+14187/体力上限+4382600
+            // 二次方拟合：力量=lv²×7.3, 敏捷=lv²×8.9, 耐力=lv²×11.0, 智力=lv²×14.7
+            // WorldBox原版属性小，用multiplier百分比模拟成长曲线
+            // 高阶位增长更陡峭（Lv21→Lv25力量涨2倍，4级翻倍）
+            float qiMul = 1f + Mathf.Pow(level, 1.8f) * 0.015f * stageMul;
 
             stats["multiplier_damage"] = qiMul;
-            stats["multiplier_health"] = qiMul * 1.2f;
-            stats["multiplier_stamina"] = qiMul * 1.1f;
-            stats["multiplier_armor"] = 1f + level * 0.02f * stageMul;
-            stats["multiplier_speed"] = 1f + level * 0.01f * stageMul;
-            stats["multiplier_crit"] = 1f + level * 0.015f * stageMul;
+            stats["multiplier_health"] = qiMul * 1.3f;
+            stats["multiplier_stamina"] = qiMul * 1.2f;
+            stats["multiplier_armor"] = 1f + level * 0.025f * stageMul;
+            stats["multiplier_speed"] = 1f + level * 0.012f * stageMul;
+            stats["multiplier_crit"] = 1f + level * 0.018f * stageMul;
             stats["experience"] = 1f + level * 0.01f;
 
             // 少量固定值（模拟原著基础属性加成，主要靠百分比）
-            stats["damage"] = level * 0.5f * stageMul;
-            stats["health"] = level * 5f * stageMul;
-            stats["stamina"] = level * 3f * stageMul;
+            stats["damage"] = level * level * 0.05f * stageMul;
+            stats["health"] = level * level * 0.5f * stageMul;
+            stats["stamina"] = level * level * 0.3f * stageMul;
             stats["intelligence"] = level * 0.3f * stageMul;
 
             if (level >= 6)  // Lv6分水岭（原著ch146），额外暴击

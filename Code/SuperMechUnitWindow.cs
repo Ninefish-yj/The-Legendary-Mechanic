@@ -94,11 +94,12 @@ namespace SuperMech.Code
                 string qiMaxValue = qiMax > 0 ? (qiMax >= 1000 && dec == 0 ? $"{qiMax:N0}" : qiMax.ToString(fmt)) : qiValue;
                 ShowRow(__instance, "气力", $"{qiValue}/{qiMaxValue}【{qiLvText}】");
 
-                // 行4b：械感（机械亲和度，机械师核心天赋，原著ch50气力属性【磁】增加机械亲和度）
+                // 行4b：械感（机械亲和度，百分比，原著ch626 Lv21+4282%）
                 if (cls == "机械系")
                 {
-                    float mechAffinity = qiMax * 0.05f + actor.data.stats["intelligence"] * 2f;
-                    ShowRow(__instance, "械感", $"{mechAffinity:F0}（机械亲和度）");
+                    int qiLvForMech = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
+                    float mechAffinity = 100f * Mathf.Pow(1.2f, qiLvForMech);
+                    ShowRow(__instance, "械感", $"+{mechAffinity:F0}%（机械亲和度）");
                 }
 
                 // 行5：欧纳（能级）
