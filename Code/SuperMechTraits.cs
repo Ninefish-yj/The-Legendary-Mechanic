@@ -99,7 +99,10 @@ namespace SuperMech.Code
             var t = new ActorTrait
             {
                 id = id, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_classes",
-                needs_to_be_explored = false, base_stats = new BaseStats()
+                needs_to_be_explored = false,
+                rate_inherit = 20,  // 原著：超能者后代更高概率觉醒
+                rate_birth = 3,     // 3%概率出生自带（自然觉醒）
+                base_stats = new BaseStats()
             };
             t.base_stats["intelligence"] = intell;
             t.base_stats["warfare"] = str;
