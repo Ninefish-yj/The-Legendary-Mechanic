@@ -30,16 +30,27 @@ namespace SuperMech.Code
             float armor = s["armor"];
             float mul = s["multiplier_damage"] > 1f ? s["multiplier_damage"] : 1f;
 
+            // 气力等级直接影响能级（原著ch3：气力是超能者基础，气力等级加属性）
+            int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(a));
+            float qiFactor = 1f + qiLv * 0.15f;  // 每级气力+15%能级
+
+            // 职业阶段影响能级转化率（原著ch3：越高阶职业，气力等级属性加成越多）
+            int stage = SuperMechStage.GetStage(a);
+            float stageFactor = 1f + stage * 0.1f;  // 每阶段+10%能级
+
             float dmgRatio = Mathf.Max(dmg, 1f) / 50f;
             float hpRatio = Mathf.Max(hp, 1f) / 500f;
             float armorRatio = Mathf.Max(armor, 0f) / 10f;
             float intRatio = Mathf.Max(intell, 0f) / 10f;
 
-            float offense = Mathf.Pow(dmgRatio, 1.5f);
-            float survival = Mathf.Pow(hpRatio, 0.7f) * Mathf.Pow(1f + armorRatio, 1.2f);
-            float skill = 1f + intRatio;
+            // 曲线函数（原著ch3：计算方式并非加减，而是复杂的函数模式，总体趋势为曲线上升）
+            // 攻击指数1.8（更陡峭），生存指数0.6，智力影响放大
+            float offense = Mathf.Pow(dmgRatio, 1.8f);
+            float survival = Mathf.Pow(hpRatio, 0.6f) * Mathf.Pow(1f + armorRatio, 1.3f);
+            float skill = 1f + intRatio * 1.5f;
 
-            return offense * survival * skill * mul * 20f * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
+            return offense * survival * skill * mul * qiFactor * stageFactor * 15f
+                * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
         }
 
         /// <summary>自然觉醒：未觉醒单位达到年龄后有概率随机觉醒为五系之一。</summary>
@@ -120,6 +131,19 @@ namespace SuperMech.Code
                 }
 
                 Debug.Log($"[超神机械师] {a.name} 阶位变更 {SuperMechRanks.All[targetIdx].name}（欧纳≈{onar:F0}）");
+
+                // 星海人突破感应（原著：没有面板，靠自身气息变化和他人感应确认突破）
+                // 主阶位提升时，模拟"气息质变"被周围超能者感知
+                if (!SuperMechAwakened.IsAwakened(a) && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx > oldExact)
+                {
+                    string rankName = SuperMechRanks.All[targetIdx].name;
+                    if (targetIdx >= 10) // S阶以上，突破动静大
+                        Debug.Log($"[超神机械师]【气息感应】{a.name} 突破{rankName}！能量波动席卷方圆，附近超能者均感知到这股质变的气息");
+                    else if (targetIdx >= 8) // A阶
+                        Debug.Log($"[超神机械师]【气息感应】{a.name} 迈入{rankName}，气息威压显著增强，同阶者心生感应");
+                    else
+                        Debug.Log($"[超神机械师]【自身感应】{a.name} 突破{rankName}，气力与肉体发生质变，自身清晰感知到层次提升");
+                }
 
                 // 按精确阶位（含+位）施加属性倍率
                 ApplyRankStats(a, targetIdx);
