@@ -101,6 +101,7 @@ namespace SuperMech.Code
             removed += SuperMechQi.CleanupDead(alive);
             removed += SuperMechStage.CleanupDead(alive);
             removed += SuperMechPotential.CleanupDead(alive);
+            removed += SuperMechKnowledge.CleanupDead(alive);
             removed += SuperMechDivinity.CleanupDead(alive);
             removed += SuperMechAdvancement.CleanupDead(alive);
             removed += SuperMechAwakened.CleanupDead(alive);
@@ -135,6 +136,7 @@ namespace SuperMech.Code
             try { SuperMechQi.Clear(); } catch { }
             try { SuperMechStage.Clear(); } catch { }
             try { SuperMechPotential.Clear(); } catch { }
+            try { SuperMechKnowledge.Clear(); } catch { }
             try { SuperMechDivinity.Clear(); } catch { }
             try { SuperMechTranscendence.Clear(); } catch { }
             try { SuperMechInfoState.Clear(); } catch { }

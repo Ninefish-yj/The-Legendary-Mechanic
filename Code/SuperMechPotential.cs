@@ -17,8 +17,6 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _awakeningMap = new Dictionary<long, int>();
         // 上次气力等级（用于检测升级给潜能点）
         private static readonly Dictionary<long, int> _lastQiLevel = new Dictionary<long, int>();
-        // 已解锁的知识节点（unit.id -> HashSet<nodeId>）
-        private static readonly Dictionary<long, HashSet<string>> _unlockedNodes = new Dictionary<long, HashSet<string>>();
 
         /// <summary>获取单位潜能点。</summary>
         public static int GetPotential(Actor a)
@@ -62,11 +60,7 @@ namespace SuperMech.Code
         /// <summary>检查知识节点是否已解锁。</summary>
         public static bool IsNodeUnlocked(Actor a, string nodeId)
         {
-            if (a == null) return false;
-            HashSet<string> set;
-            if (_unlockedNodes.TryGetValue(a.id, out set))
-                return set.Contains(nodeId);
-            return false;
+            return SuperMechKnowledge.IsUnlocked(a, nodeId);
         }
 
         /// <summary>解锁知识节点（消耗潜能点）。返回是否成功。</summary>
@@ -75,13 +69,7 @@ namespace SuperMech.Code
             if (a == null) return false;
             if (IsNodeUnlocked(a, nodeId)) return false;
             if (!SpendPotential(a, cost)) return false;
-            HashSet<string> set;
-            if (!_unlockedNodes.TryGetValue(a.id, out set))
-            {
-                set = new HashSet<string>();
-                _unlockedNodes[a.id] = set;
-            }
-            set.Add(nodeId);
+            SuperMechKnowledge.Unlock(a, nodeId);
             // 降临者学习知识获得经验（ch132：学基础组装得1000经验）
             if (SuperMechAwakened.IsAwakened(a))
             {
@@ -143,22 +131,21 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             if (IsNodeUnlocked(a, nodeId)) return;
-            HashSet<string> set;
-            if (!_unlockedNodes.TryGetValue(a.id, out set))
-            {
-                set = new HashSet<string>();
-                _unlockedNodes[a.id] = set;
-            }
-            set.Add(nodeId);
+            SuperMechKnowledge.Unlock(a, nodeId);
         }
 
         /// <summary>获取单位已解锁节点数量。</summary>
         public static int GetUnlockedCount(Actor a)
         {
             if (a == null) return 0;
-            HashSet<string> set;
-            if (_unlockedNodes.TryGetValue(a.id, out set)) return set.Count;
-            return 0;
+            // 统计五系已解锁知识
+            int total = 0;
+            total += SuperMechKnowledge.GetUnlockedCount(a, "mech");
+            total += SuperMechKnowledge.GetUnlockedCount(a, "martial");
+            total += SuperMechKnowledge.GetUnlockedCount(a, "psi");
+            total += SuperMechKnowledge.GetUnlockedCount(a, "mage");
+            total += SuperMechKnowledge.GetUnlockedCount(a, "mind");
+            return total;
         }
 
         /// <summary>清空所有潜能点数据（世界切换用）。</summary>
@@ -167,17 +154,16 @@ namespace SuperMech.Code
             _potentialMap.Clear();
             _awakeningMap.Clear();
             _lastQiLevel.Clear();
-            _unlockedNodes.Clear();
+            // 知识解锁数据在SuperMechKnowledge中清理
         }
 
         /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
-            removed += SuperMechCleanup.CleanDict(_potential, alive);
-            removed += SuperMechCleanup.CleanDict(_awakeningPoints, alive);
-            removed += SuperMechCleanup.CleanDict(_unlocked, alive);
-            removed += SuperMechCleanup.CleanDict(_unlockedCache, alive);
+            removed += SuperMechCleanup.CleanDict(_potentialMap, alive);
+            removed += SuperMechCleanup.CleanDict(_awakeningMap, alive);
+            removed += SuperMechCleanup.CleanDict(_lastQiLevel, alive);
             return removed;
         }
     }

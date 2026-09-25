@@ -149,10 +149,26 @@ namespace SuperMech.Code
             new[] { "五阶基因链·范围扩展","五阶基因链·新功能分化","五阶基因链·操控强化","","" },
         };
 
+        /// <summary>知识节点定义（不再注册为特质，改用内部字典+独立面板）。</summary>
+        public class KnowledgeDef
+        {
+            public string id;
+            public string name;
+            public string desc;
+            public string prefix;   // mech/martial/mage/mind/psi
+            public int tier;       // 0=基础,1=进阶,2=高端,3=尖端,4=终极
+            public int branch;     // 分支索引
+            public int cost;       // 潜能点消耗
+        }
+
+        /// <summary>所有知识定义（id→def）。</summary>
+        private static readonly Dictionary<string, KnowledgeDef> _allKnowledge = new Dictionary<string, KnowledgeDef>();
+        /// <summary>单位已解锁的知识（actorId→HashSet<knowledgeId>）。</summary>
+        private static readonly Dictionary<long, HashSet<string>> _unlocked = new Dictionary<long, HashSet<string>>();
+
         public static void Register()
         {
             int count = 0;
-            // 百度百科：每系职业树名各不相同
             count += RegisterTree("mech", "机械知识树",
                 new[] { "枪炮师", "机械师", "械武者" },
                 new[] { Mech, MechAdv, MechHigh, MechTop, MechUlt });
@@ -169,7 +185,7 @@ namespace SuperMech.Code
                 new[] { "能级", "操控", "持久力" },
                 new[] { Psi, PsiAdv, PsiHigh, PsiTop, PsiUlt });
 
-            Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识特质");
+            Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识节点（内部字典，不注册为特质）");
         }
 
         private static int RegisterTree(string prefix, string treeName, string[] branchNames, string[][][] tiers)
@@ -184,20 +200,20 @@ namespace SuperMech.Code
                         string kn = tiers[ti][bi][ki];
                         if (string.IsNullOrEmpty(kn)) continue;
                         string id = $"sm_know_{prefix}_{ti}_{bi}_{ki}";
+                        // 只注册本地化（面板显示用），不注册为特质
                         LocalizedTextManager.add("trait_" + id, kn, pReplace: true);
                         LocalizedTextManager.add("trait_" + id + "_info", $"{treeName}·{branchNames[bi]}·{Tiers[ti]}知识", pReplace: true);
-                        string gid = $"sm_know_{prefix}";
-                        var t = new ActorTrait
+                        var def = new KnowledgeDef
                         {
                             id = id,
-                            path_icon = SuperMechTraits.GroupIcon(gid),
-                            group_id = gid,
-                            needs_to_be_explored = false,
-                            base_stats = new BaseStats()
+                            name = kn,
+                            desc = $"{treeName}·{branchNames[bi]}·{Tiers[ti]}知识",
+                            prefix = prefix,
+                            tier = ti,
+                            branch = bi,
+                            cost = (ti + 1) * 2  // 基础2点，进阶4点，高端6点...
                         };
-                        // 知识阶越高，智力加成越大
-                        t.base_stats["intelligence"] = (ti + 1) * 2f;
-                        AssetManager.traits.add(t);
+                        _allKnowledge[id] = def;
                         n++;
                     }
                 }
@@ -205,16 +221,34 @@ namespace SuperMech.Code
             return n;
         }
 
+        /// <summary>单位是否已解锁某知识。</summary>
+        public static bool IsUnlocked(Actor a, string knowledgeId)
+        {
+            if (a == null) return false;
+            if (_unlocked.TryGetValue(a.id, out var set)) return set.Contains(knowledgeId);
+            return false;
+        }
+
+        /// <summary>解锁知识节点（返回是否成功）。</summary>
+        public static bool Unlock(Actor a, string knowledgeId)
+        {
+            if (a == null || !_allKnowledge.ContainsKey(knowledgeId)) return false;
+            if (!_unlocked.TryGetValue(a.id, out var set))
+            {
+                set = new HashSet<string>();
+                _unlocked[a.id] = set;
+            }
+            return set.Add(knowledgeId);
+        }
+
         /// <summary>统计单位已解锁的知识节点数（按系前缀）。</summary>
         public static int GetUnlockedCount(Actor a, string prefix)
         {
-            if (a == null || a.traits == null) return 0;
+            if (a == null) return 0;
+            if (!_unlocked.TryGetValue(a.id, out var set)) return 0;
             int count = 0;
             string key = "sm_know_" + prefix + "_";
-            foreach (var t in a.traits)
-            {
-                if (t.id != null && t.id.StartsWith(key)) count++;
-            }
+            foreach (var id in set) if (id.StartsWith(key)) count++;
             return count;
         }
 
@@ -222,15 +256,47 @@ namespace SuperMech.Code
         /// tier: 0=基础, 1=进阶, 2=高端, 3=尖端, 4=终极</summary>
         public static int GetTierKnowledgeCount(Actor a, string prefix, int tier)
         {
-            if (a == null || a.traits == null) return 0;
+            if (a == null) return 0;
+            if (!_unlocked.TryGetValue(a.id, out var set)) return 0;
             int count = 0;
             string key = $"sm_know_{prefix}_{tier}_";
-            foreach (var t in a.traits)
-            {
-                if (t.id != null && t.id.StartsWith(key)) count++;
-            }
+            foreach (var id in set) if (id.StartsWith(key)) count++;
             return count;
         }
+
+        /// <summary>获取单位某系所有已解锁知识。</summary>
+        public static List<KnowledgeDef> GetUnlockedList(Actor a, string prefix)
+        {
+            var list = new List<KnowledgeDef>();
+            if (a == null || !_unlocked.TryGetValue(a.id, out var set)) return list;
+            string key = "sm_know_" + prefix + "_";
+            foreach (var id in set)
+            {
+                if (id.StartsWith(key) && _allKnowledge.TryGetValue(id, out var def)) list.Add(def);
+            }
+            return list;
+        }
+
+        /// <summary>获取某系某分支某阶的所有知识定义。</summary>
+        public static List<KnowledgeDef> GetTierBranchList(string prefix, int tier, int branch)
+        {
+            var list = new List<KnowledgeDef>();
+            string key = $"sm_know_{prefix}_{tier}_{branch}_";
+            foreach (var kv in _allKnowledge)
+            {
+                if (kv.Key.StartsWith(key)) list.Add(kv.Value);
+            }
+            return list;
+        }
+
+        /// <summary>清理死亡单位数据。</summary>
+        public static int CleanupDead(HashSet<long> alive)
+        {
+            return SuperMechCleanup.CleanDict(_unlocked, alive);
+        }
+
+        /// <summary>清空所有数据。</summary>
+        public static void Clear() { _unlocked.Clear(); }
 
         /// <summary>获取系对应的知识树前缀。</summary>
         public static string GetPrefixForClass(string cls)
