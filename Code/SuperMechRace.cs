@@ -186,6 +186,19 @@ namespace SuperMech.Code
             if (_registered) return;
             _registered = true;
 
+            // 注册亚种特质组（亚种编辑器按组显示所有已注册特质，不设group_id则不显示）
+            if (AssetManager.subspecies_trait_groups.get("sm_race_talents") == null)
+            {
+                var group = new SubspeciesTraitGroupAsset
+                {
+                    id = "sm_race_talents",
+                    name = "trait_group_sm_race_talents",
+                    color = "#9932CC"
+                };
+                AssetManager.subspecies_trait_groups.add(group);
+                LocalizedTextManager.add("trait_group_sm_race_talents", "超神种族天赋", pReplace: true);
+            }
+
             // 单位标记特质
             AddMarkerTrait(TraitSuperARace, "物种蜕变", "ch770：超A级物种蜕变，成为独一无二的新物种。全属性+40%。", 0.40f, 0.40f, 15);
             AddMarkerTrait(TraitDivineRace, "物种神化", "ch1402：X阶物种神化，神系王族血脉。全属性+100%。", 1.00f, 1.00f, 30);
@@ -318,7 +331,8 @@ namespace SuperMech.Code
             LocalizedTextManager.add("subspecies_trait_" + id + "_info", desc, pReplace: true);
             var st = new SubspeciesTrait
             {
-                id = id, can_be_given = false, can_be_removed = false,
+                id = id, group_id = "sm_race_talents",
+                can_be_given = false, can_be_removed = false,
                 needs_to_be_explored = false, base_stats_meta = new BaseStats()
             };
             if (intel > 0) st.base_stats_meta["intelligence"] = intel;
