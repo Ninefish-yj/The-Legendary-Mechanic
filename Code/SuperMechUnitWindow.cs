@@ -212,6 +212,12 @@ namespace SuperMech.Code
                     ShowRow(__instance, "传说度", legendText);
                 }
 
+                // 行9d：气势震慑状态（原著ch378/ch797：生命层次威压）
+                if (SuperMechAura.IsStunned(actor))
+                    ShowRow(__instance, "状态", "【震慑眩晕】被高阶气势压制，无法行动");
+                else if (SuperMechAura.IsSuppressed(actor))
+                    ShowRow(__instance, "状态", "【被气势震慑】速度/攻击降低");
+
                 // 行10：副职业等级（原著：特工lv9/黑夜潜行者lv10）
                 string subText = SuperMechSubClass.GetSubLevelText(actor);
                 if (!string.IsNullOrEmpty(subText))

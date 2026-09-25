@@ -57,7 +57,7 @@ namespace SuperMech.Code
                     SuperMechTranscendence.TickAdvancementTask();
                     SuperMechInfoState.TickInfoState();
                 }
-                // 第3组：辅助系统（圣所/法师塔/宝物/自动收藏）
+                // 第3组：辅助系统（圣所/法师塔/宝物/自动收藏/气势震慑）
                 else // group == 3
                 {
                     SuperMechSanctuary.TickDivinity();
@@ -65,6 +65,7 @@ namespace SuperMech.Code
                     SuperMechMageTower.TickMageTowers();
                     SuperMechRelic.TickRelicDrops();
                     SuperMechFavorite.TickAutoFavorite();
+                    SuperMechAura.TickAura();
                 }
             }
             catch (System.Exception e)
@@ -107,6 +108,7 @@ namespace SuperMech.Code
             try { SuperMechCosmicRelic.Clear(); } catch { }
             try { SuperMechRace.Clear(); } catch { }
             try { SuperMechAdvancement.Clear(); } catch { }
+            try { SuperMechAura.Clear(); } catch { }
             Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");
         }
     }
