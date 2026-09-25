@@ -33,9 +33,8 @@ namespace SuperMech.Code
         // 开窗按钮（不进入神力模式，直接开窗）
         private static readonly (string name, string tip, System.Action action)[] WindowButtons =
         {
-            ("超能者面板", "管理选中单位：觉醒/转职/制造/知识/修炼/融合/查看属性", () => SuperMechPanel.Show()),
-            ("六圣所",     "查看六圣所解锁进度与碎片（跨存档）",                   () => SuperMechSanctuaryWindow.Show()),
-            ("排行榜",     "超能者欧纳/气力/阶位排行榜（前20名）",                 () => SuperMechRankWindow.Show()),
+            ("六圣所",     "查看六圣所解锁进度与碎片（跨存档）", () => SuperMechSanctuaryWindow.Show()),
+            ("排行榜",     "超能者欧纳/气力/阶位排行榜（前20名）", () => SuperMechRankWindow.Show()),
         };
 
         public static void Init()

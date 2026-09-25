@@ -86,34 +86,47 @@ namespace SuperMech.Code
             WindowMetaTab source = FindCloneSource(scroll.tabs);
             if (source == null) return null;
 
-            GameObject tabObj = Object.Instantiate(source.gameObject, scroll.tabs.transform);
+            // 参考天人武道：克隆到source的父对象，设置兄弟索引
+            GameObject tabObj = Object.Instantiate(source.gameObject, source.transform.parent);
             tabObj.name = TabName;
+            tabObj.transform.SetSiblingIndex(source.transform.GetSiblingIndex() + 1);
+
             WindowMetaTab newTab = tabObj.GetComponent<WindowMetaTab>();
             if (newTab == null) return null;
 
-            newTab.tab_elements = new List<Transform>();
-            newTab.tab_action = new WindowMetaTabEvent();
+            // 清空而不是new（参考天人武道）
+            if (newTab.tab_elements != null) newTab.tab_elements.Clear();
+            else newTab.tab_elements = new List<Transform>();
+
+            // 重置tab_action
+            if (newTab.tab_action == null) newTab.tab_action = new WindowMetaTabEvent();
+            else newTab.tab_action.RemoveAllListeners();
             newTab.tab_action.AddListener(_ => scroll.tabs.showTab(newTab));
+
             newTab.gameObject.SetActive(true);
+
+            // 用TipButton设置文本（参考天人武道，不用反射）
+            TipButton tip = newTab.GetComponent<TipButton>();
+            if (tip != null)
+            {
+                tip.textOnClick = "知识";
+                tip.textOnClickDescription = "查看已解锁的知识节点与职业树";
+                tip.text_description_2 = string.Empty;
+            }
 
             // 设置图标
             Image icon = tabObj.GetComponentInChildren<Image>();
             if (icon != null)
             {
-                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconBlessing"); } catch { }
+                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconGenius"); } catch { }
             }
 
-            // 设置提示文本（反射）
-            try
-            {
-                FieldInfo tf = typeof(WindowMetaTab).GetField("_worldtip_text", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (tf != null)
-                {
-                    Text tipText = tf.GetValue(newTab) as Text;
-                    if (tipText != null) tipText.text = "知识";
-                }
-            }
-            catch { }
+            // CanvasGroup控制可见性（参考天人武道）
+            CanvasGroup cg = newTab.GetComponent<CanvasGroup>();
+            if (cg == null) cg = newTab.gameObject.AddComponent<CanvasGroup>();
+            cg.alpha = 1f;
+            cg.interactable = true;
+            cg.blocksRaycasts = true;
 
             _knowTab = newTab;
             _boundWindow = window;
@@ -199,6 +212,17 @@ namespace SuperMech.Code
             int pot = SuperMechPotential.GetPotential(actor);
             int awk = SuperMechPotential.GetAwakening(actor);
             AddInfoRow(_container.transform, $"潜能点: {pot}", $"觉醒点: {awk}");
+
+            // 操作区域（整合原超能者面板功能）
+            AddSectionHeader(_container.transform, "◆ 操作");
+            string stage = SuperMechStage.GetStageName(actor);
+            string branch = SuperMechBranch.GetBranch(actor);
+            AddInfoRow(_container.transform, $"职业阶段: {stage}", $"分支: {(string.IsNullOrEmpty(branch) ? "未选择" : branch)}");
+            if (SuperMechAwakened.CanAdvanceStage(actor))
+                AddInfoRow(_container.transform, "转职", "可转职！用神权或进阶任务完成转职");
+            if (cls == "机械系")
+                AddInfoRow(_container.transform, "制造", "机械系可制造机械单位（需达到对应阶段）");
+            AddInfoRow(_container.transform, "提示", "觉醒/转职/制造用神权操作，知识解锁点击下方节点");
 
             // 按阶位分组显示所有知识（未解锁的灰色可点击）
             string[] tierNames = { "基础", "进阶", "高端", "尖端", "终极" };

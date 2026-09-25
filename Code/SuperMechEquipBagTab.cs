@@ -98,28 +98,47 @@ namespace SuperMech.Code
             if (all == null || all.Length == 0) return null;
             WindowMetaTab source = all[0];
 
-            GameObject tabObj = Object.Instantiate(source.gameObject, scroll.tabs.transform);
+            // 参考天人武道：克隆到source的父对象，设置兄弟索引
+            GameObject tabObj = Object.Instantiate(source.gameObject, source.transform.parent);
             tabObj.name = TabName;
+            tabObj.transform.SetSiblingIndex(source.transform.GetSiblingIndex() + 1);
+
             WindowMetaTab newTab = tabObj.GetComponent<WindowMetaTab>();
             if (newTab == null) return null;
 
-            newTab.tab_elements = new List<Transform>();
-            newTab.tab_action = new WindowMetaTabEvent();
+            // 清空而不是new（参考天人武道）
+            if (newTab.tab_elements != null) newTab.tab_elements.Clear();
+            else newTab.tab_elements = new List<Transform>();
+
+            // 重置tab_action
+            if (newTab.tab_action == null) newTab.tab_action = new WindowMetaTabEvent();
+            else newTab.tab_action.RemoveAllListeners();
             newTab.tab_action.AddListener(_ => scroll.tabs.showTab(newTab));
 
-            // 设置图标和提示
+            newTab.gameObject.SetActive(true);
+
+            // 用TipButton设置文本（参考天人武道，不用反射）
+            TipButton tip = newTab.GetComponent<TipButton>();
+            if (tip != null)
+            {
+                tip.textOnClick = "装备背包";
+                tip.textOnClickDescription = "查看与管理单位的装备背包";
+                tip.text_description_2 = string.Empty;
+            }
+
+            // 设置图标
             Image icon = tabObj.GetComponentInChildren<Image>();
             if (icon != null)
             {
-                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconBlessing"); } catch { }
+                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconArmor"); } catch { }
             }
-            try
-            {
-                var tipField = typeof(WindowMetaTab).GetField("_worldtip_text",
-                    BindingFlags.NonPublic | BindingFlags.Instance);
-                if (tipField != null) tipField.SetValue(newTab, "装备背包");
-            }
-            catch { }
+
+            // CanvasGroup控制可见性
+            CanvasGroup cg = newTab.GetComponent<CanvasGroup>();
+            if (cg == null) cg = newTab.gameObject.AddComponent<CanvasGroup>();
+            cg.alpha = 1f;
+            cg.interactable = true;
+            cg.blocksRaycasts = true;
 
             return newTab;
         }
