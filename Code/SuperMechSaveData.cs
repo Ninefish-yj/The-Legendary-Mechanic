@@ -80,6 +80,7 @@ namespace SuperMech.Code
             public List<string> fusionRecipes; // 已学会的知识融合配方ID列表
             public int mechFusionLevel; // 械力融合等级（0=未融合）
             public string fusedEquip; // 械力融合的装备ID
+            public int[] sanctuaryAuthority; // 圣所权限（6个圣所的碎片数，原著ch1266：碎片=权限）
         }
 
         [Serializable]
@@ -169,7 +170,8 @@ namespace SuperMech.Code
                             currentEquip = SuperMechRelic.GetCurrentEquipId(a),
                             fusionRecipes = GetLearnedFusionRecipes(a),
                             mechFusionLevel = SuperMechMechFusion.GetFusionLevel(a),
-                            fusedEquip = SuperMechMechFusion.GetFusedEquipId(a)
+                            fusedEquip = SuperMechMechFusion.GetFusedEquipId(a),
+                            sanctuaryAuthority = GetSanctuaryAuthority(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -344,6 +346,15 @@ namespace SuperMech.Code
                     {
                         SuperMechMechFusion.RestoreFusion(a, ad.mechFusionLevel, ad.fusedEquip);
                     }
+                    // 恢复圣所权限（原著ch1266：碎片=权限）
+                    if (ad.sanctuaryAuthority != null && ad.sanctuaryAuthority.Length >= 6)
+                    {
+                        for (int i = 0; i < 6; i++)
+                        {
+                            if (ad.sanctuaryAuthority[i] > 0)
+                                SuperMechSanctuary.AddAuthority(a, i, ad.sanctuaryAuthority[i]);
+                        }
+                    }
 
                     _pendingLoad.actors.Remove(id);
                     restored++;
@@ -382,6 +393,15 @@ namespace SuperMech.Code
             var learned = SuperMechKnowledgeFusion.GetLearnedRecipes(a);
             foreach (var recipe in learned) list.Add(recipe.id);
             return list;
+        }
+
+        /// <summary>获取单位圣所权限数组（6个圣所）。</summary>
+        private static int[] GetSanctuaryAuthority(Actor a)
+        {
+            var arr = new int[6];
+            for (int i = 0; i < 6; i++)
+                arr[i] = SuperMechSanctuary.GetAuthority(a, i);
+            return arr;
         }
     }
 }
