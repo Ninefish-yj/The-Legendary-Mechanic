@@ -185,6 +185,20 @@ namespace SuperMech.Code
                 if (revCount > 0) sanText += $" | 已复活{revCount}次（信息丢失{Mathf.Clamp(0.1f*revCount,0.1f,0.5f):P0}）";
                 ShowRow(__instance, "圣所", sanText);
 
+                // 行8b：个人圣所权限（原著ch1266：碎片=权限，影响进入圣所能带走的知识量）
+                int totalAuth = SuperMechSanctuary.GetTotalAuthority(actor);
+                if (totalAuth > 0)
+                {
+                    string authText = $"综合权限{totalAuth} | 各圣所[";
+                    for (int i = 0; i < 6; i++)
+                    {
+                        authText += SuperMechSanctuary.GetAuthority(actor, i);
+                        if (i < 5) authText += "/";
+                    }
+                    authText += "]";
+                    ShowRow(__instance, "圣所权限", authText);
+                }
+
                 // 行8a：信息态能力（第六圣所解锁后获得，ch1108/ch1141/ch1224）
                 string infoText = SuperMechInfoState.GetStatusText(actor);
                 if (!string.IsNullOrEmpty(infoText))

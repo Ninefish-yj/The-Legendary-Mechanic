@@ -31,6 +31,7 @@ namespace SuperMech.Code
         public const string StatCharm = "sm_charm";              // 魅力（原著7项基础属性之一）
         public const string StatLuck = "sm_luck";                // 幸运（原著7项基础属性之一）
         public const string StatProfessionLevel = "sm_profession_level"; // 职业等级（降临者）
+        public const string StatSanctuaryAuthority = "sm_sanctuary_authority"; // 圣所权限（综合等级，原著ch1266：碎片=权限）
 
         private static bool _registered = false;
 
@@ -60,6 +61,8 @@ namespace SuperMech.Code
                 (StatLuck, "幸运", "原著7项基础属性之一，影响暴击/掉落/突破概率（ch3）", true, 0f, 50000f, false),
                 // 职业等级（降临者面板属性）
                 (StatProfessionLevel, "职业等级", "降临者职业总等级（原著ch48，20级进阶转职）", false, 0f, 600f, false),
+                // 圣所权限（原著ch1266：圣所碎片=权限，越多能办的事越多，每次进入带出去的知识由权限决定）
+                (StatSanctuaryAuthority, "圣所权限", "圣所碎片代表的权限等级，影响进入圣所能带走的知识量（原著ch1266）", false, 0f, 100f, false),
             };
 
             int registered = 0;

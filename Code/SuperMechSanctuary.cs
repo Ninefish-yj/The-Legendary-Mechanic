@@ -71,6 +71,8 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _reviveCount = new Dictionary<long, int>();
         // 突破失败死亡的单位（ch1396/ch1399：化身为超神遗力，无法圣所复苏）
         private static readonly HashSet<long> _transcendenceFailed = new HashSet<long>();
+        // 单位圣所权限（unit.id -> int[6]，每个圣所的碎片数=权限等级，原著ch1266：碎片=权限）
+        private static readonly Dictionary<long, int[]> _unitAuthority = new Dictionary<long, int[]>();
 
         /// <summary>获取单位累计复活次数。</summary>
         public static int GetReviveCount(Actor a)
@@ -84,6 +86,42 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             _reviveCount[a.id] = count;
+        }
+
+        /// <summary>获取单位在指定圣所的权限（碎片数，原著ch1266：碎片=权限）。</summary>
+        public static int GetAuthority(Actor a, int sanctuaryIndex)
+        {
+            if (a == null || sanctuaryIndex < 0 || sanctuaryIndex >= 6) return 0;
+            if (!_unitAuthority.TryGetValue(a.id, out var arr)) return 0;
+            return arr[sanctuaryIndex];
+        }
+
+        /// <summary>获取单位综合圣所权限（6个圣所权限之和）。</summary>
+        public static int GetTotalAuthority(Actor a)
+        {
+            if (a == null) return 0;
+            if (!_unitAuthority.TryGetValue(a.id, out var arr)) return 0;
+            int total = 0;
+            foreach (int v in arr) total += v;
+            return total;
+        }
+
+        /// <summary>增加单位在指定圣所的权限（碎片）。</summary>
+        public static void AddAuthority(Actor a, int sanctuaryIndex, int amount)
+        {
+            if (a == null || sanctuaryIndex < 0 || sanctuaryIndex >= 6 || amount <= 0) return;
+            if (!_unitAuthority.TryGetValue(a.id, out var arr))
+            {
+                arr = new int[6];
+                _unitAuthority[a.id] = arr;
+            }
+            arr[sanctuaryIndex] += amount;
+            // 同步到自定义属性
+            var stats = SuperMechStats.Of(a);
+            if (stats != null)
+            {
+                stats[SuperMechCustomStats.StatSanctuaryAuthority] = GetTotalAuthority(a);
+            }
         }
 
         /// <summary>
@@ -189,7 +227,10 @@ namespace SuperMech.Code
             {
                 Data.sanctuary_fragments[sanctuaryIndex]++;
                 string sname = SanctuaryNames[sanctuaryIndex];
-                Debug.Log($"[超神机械师] {a.name} 神性蜕变！获得{sname}技能碎片（{Data.sanctuary_fragments[sanctuaryIndex]}/{FragmentsToUnlock}）");
+                // 同时给单位添加个人权限（碎片，原著ch1266：碎片=权限，韩萧初始6个碎片）
+                int personalFragments = Random.Range(1, 4); // 神性蜕变获得1-3个个人碎片
+                AddAuthority(a, sanctuaryIndex, personalFragments);
+                Debug.Log($"[超神机械师] {a.name} 神性蜕变！获得{sname}技能碎片（全局{Data.sanctuary_fragments[sanctuaryIndex]}/{FragmentsToUnlock}，个人权限+{personalFragments}）");
 
                 // 集齐碎片解锁圣所
                 if (Data.sanctuary_fragments[sanctuaryIndex] >= FragmentsToUnlock
@@ -260,9 +301,17 @@ namespace SuperMech.Code
                 Debug.Log("[超神机械师] 文明留言板已解锁！");
             }
 
-            // 获得知识（潜能点），数量 = 进入次数（权限等级），进得越多权限越高
-            int knowledgeGain = Mathf.Max(1, Data.total_visits);
+            // 获得知识（潜能点），数量由单位在该圣所的个人权限决定（原著ch1266：碎片=权限，权限越高能带走的知识越多）
+            int authority = GetAuthority(a, sanctuaryIndex >= 0 ? sanctuaryIndex : 0);
+            int knowledgeGain = Mathf.Clamp(authority + 1, 1, 20); // 权限+1，最多20点（记忆容量上限）
             SuperMechPotential.AddPotential(a, knowledgeGain);
+
+            // 进入圣所有小概率获得额外碎片（权限提升，原著：每次进入可能发现新的碎片）
+            if (Random.value < 0.3f && sanctuaryIndex >= 0)
+            {
+                AddAuthority(a, sanctuaryIndex, 1);
+                Debug.Log($"[超神机械师] {a.name} 在圣所中发现额外碎片！权限+1");
+            }
 
             // 小幅属性buff（圣所环境加持，随进入次数提升）
             float buff = 1f + Data.total_visits * 0.02f;
