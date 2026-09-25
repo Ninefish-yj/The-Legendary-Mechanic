@@ -61,6 +61,19 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("觉醒_念力系", "觉醒·念力系", pReplace: true);
                 LocalizedTextManager.add("觉醒_念力系_description", "点击单位赋予念力系觉醒（精神天赋·精神修炼树）", pReplace: true);
 
+                // 批量注册单位面板所有行标签（ShowRow的第一个参数会被当作本地化key查找）
+                string[] panelLabels = {
+                    "阶位", "种族", "名号", "职业", "职业等级", "职业阶段", "职业树", "职业技能",
+                    "体系", "转职", "转职条件", "气力", "气力属性", "气力上限", "欧纳",
+                    "械感", "魔感", "神秘", "魅力", "幸运", "精神力", "魔力池", "基因链",
+                    "传承度", "冥冥感应", "神性蜕变", "超神遗力", "信息态", "潜力评级",
+                    "副职业", "专长", "械力融合", "知识融合", "装备", "宇宙宝物", "圣所",
+                    "法师塔", "次级维度", "提炼法", "传说度", "超神突破", "状态", "潜能点",
+                    "分支", "提示", "制造", "操作"
+                };
+                foreach (var label in panelLabels)
+                    LocalizedTextManager.add(label, label, pReplace: true);
+
                 Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconChosenOne");
                 _tab = TabManager.CreateTab("supermech_mod_tab", "supermech.tab", "supermech.tab_desc", tabIcon);
                 if (_tab == null)
