@@ -181,35 +181,41 @@ namespace SuperMech.Code
             int awk = SuperMechPotential.GetAwakening(actor);
             AddInfoRow(_container.transform, $"潜能点: {pot}", $"觉醒点: {awk}");
 
-            // 按阶位分组显示已解锁知识
+            // 按阶位分组显示所有知识（未解锁的灰色可点击）
             string[] tierNames = { "基础", "进阶", "高端", "尖端", "终极" };
             string[] branchNames = GetBranchNames(prefix);
 
             int totalUnlocked = 0;
+            int totalAll = 0;
             for (int tier = 0; tier < 5; tier++)
             {
-                int tierCount = SuperMechKnowledge.GetTierKnowledgeCount(actor, prefix, tier);
-                if (tierCount == 0) continue;
-                totalUnlocked += tierCount;
+                var allDefs = SuperMechKnowledge.GetAllByTier(prefix, tier);
+                if (allDefs.Count == 0) continue;
+                totalAll += allDefs.Count;
 
-                AddSectionHeader(_container.transform, $"{tierNames[tier]}知识（{tierCount}项）");
-
-                var unlocked = SuperMechKnowledge.GetUnlockedList(actor, prefix);
-                foreach (var def in unlocked)
+                int tierUnlocked = 0;
+                foreach (var def in allDefs)
                 {
-                    if (def.tier != tier) continue;
+                    if (SuperMechKnowledge.IsUnlocked(actor, def.id)) tierUnlocked++;
+                }
+                totalUnlocked += tierUnlocked;
+
+                // 前置依赖：上一阶至少学1个才能学下一阶（tier>0时）
+                bool tierUnlocked_flag = (tier == 0) || SuperMechKnowledge.GetTierKnowledgeCount(actor, prefix, tier - 1) > 0;
+
+                AddSectionHeader(_container.transform, $"{tierNames[tier]}知识（{tierUnlocked}/{allDefs.Count}）{(tierUnlocked_flag ? "" : " 🔒需先学上一阶")}");
+
+                foreach (var def in allDefs)
+                {
+                    bool unlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
+                    bool canUnlock = !unlocked && tierUnlocked_flag && pot >= def.cost;
                     string branchName = def.branch < branchNames.Length ? branchNames[def.branch] : "?";
-                    AddKnowledgeRow(_container.transform, def.name, branchName, def.cost);
+                    AddKnowledgeRow(_container.transform, actor, def, branchName, unlocked, canUnlock);
                 }
             }
 
-            if (totalUnlocked == 0)
-            {
-                AddInfoRow(_container.transform, "尚未解锁任何知识", "用神权解锁知识·武装/能量/虚拟系");
-            }
-
             // 总计
-            AddHeader(_container.transform, $"已解锁: {totalUnlocked} / 249");
+            AddHeader(_container.transform, $"已解锁: {totalUnlocked} / {totalAll}");
         }
 
         private static string GetTreeName(string prefix)
@@ -298,7 +304,7 @@ namespace SuperMech.Code
             rt.sizeDelta = new Vector2(0, 20);
         }
 
-        private static void AddKnowledgeRow(Transform parent, string name, string branch, int cost)
+        private static void AddKnowledgeRow(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock)
         {
             GameObject go = new GameObject("Knowledge", typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -307,14 +313,16 @@ namespace SuperMech.Code
             layout.padding = new RectOffset(4, 4, 2, 2);
             layout.childForceExpandWidth = true;
 
+            // 名称
             GameObject nameGo = new GameObject("Name", typeof(RectTransform));
             nameGo.transform.SetParent(go.transform, false);
             Text nt = nameGo.AddComponent<Text>();
-            nt.text = name;
+            nt.text = def.name;
             nt.fontSize = 11;
-            nt.color = new Color(0.9f, 0.9f, 0.9f);
+            nt.color = unlocked ? new Color(0.9f, 0.9f, 0.9f) : (canUnlock ? new Color(0.6f, 0.8f, 1f) : new Color(0.4f, 0.4f, 0.4f));
             if (nt.font == null) nt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
+            // 分支
             GameObject branchGo = new GameObject("Branch", typeof(RectTransform));
             branchGo.transform.SetParent(go.transform, false);
             Text bt = branchGo.AddComponent<Text>();
@@ -324,11 +332,35 @@ namespace SuperMech.Code
             bt.alignment = TextAnchor.MiddleRight;
             if (bt.font == null) bt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
+            // 消耗/状态
+            GameObject costGo = new GameObject("Cost", typeof(RectTransform));
+            costGo.transform.SetParent(go.transform, false);
+            Text ct = costGo.AddComponent<Text>();
+            ct.text = unlocked ? "✓" : $"{def.cost}点";
+            ct.fontSize = 10;
+            ct.color = unlocked ? new Color(0.3f, 1f, 0.3f) : (canUnlock ? new Color(1f, 0.84f, 0f) : new Color(0.5f, 0.5f, 0.5f));
+            ct.alignment = TextAnchor.MiddleRight;
+            if (ct.font == null) ct.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
             RectTransform rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(0, 18);
+            rt.sizeDelta = new Vector2(0, 20);
 
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.15f, 0.15f, 0.2f, 0.6f);
+            img.color = unlocked ? new Color(0.15f, 0.25f, 0.15f, 0.6f) : (canUnlock ? new Color(0.15f, 0.15f, 0.25f, 0.6f) : new Color(0.1f, 0.1f, 0.1f, 0.4f));
+
+            // 可解锁的添加点击事件
+            if (canUnlock)
+            {
+                var btn = go.AddComponent<Button>();
+                btn.targetGraphic = img;
+                btn.onClick.AddListener(() =>
+                {
+                    if (SuperMechPotential.UnlockNode(actor, def.id, def.cost))
+                    {
+                        RenderContent(actor); // 刷新面板
+                    }
+                });
+            }
         }
     }
 }

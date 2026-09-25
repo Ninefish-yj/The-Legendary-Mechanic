@@ -277,6 +277,26 @@ namespace SuperMech.Code
             return list;
         }
 
+        /// <summary>获取某系某阶所有知识定义（不管是否解锁）。</summary>
+        public static List<KnowledgeDef> GetAllByTier(string prefix, int tier)
+        {
+            var list = new List<KnowledgeDef>();
+            string key = $"sm_know_{prefix}_{tier}_";
+            foreach (var kv in _allKnowledge)
+            {
+                if (kv.Key.StartsWith(key)) list.Add(kv.Value);
+            }
+            list.Sort((a, b) => a.branch.CompareTo(b.branch));
+            return list;
+        }
+
+        /// <summary>获取知识定义。</summary>
+        public static KnowledgeDef GetDef(string id)
+        {
+            _allKnowledge.TryGetValue(id, out var def);
+            return def;
+        }
+
         /// <summary>获取某系某分支某阶的所有知识定义。</summary>
         public static List<KnowledgeDef> GetTierBranchList(string prefix, int tier, int branch)
         {

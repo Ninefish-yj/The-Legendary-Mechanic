@@ -210,24 +210,29 @@ namespace SuperMech.Code
             // 标题
             AddText(_container.transform, $"装备背包（{SuperMechEquipBag.GetBag(actor).Count}/{SuperMechEquipBag.MaxBagSize}）", 12, TextAnchor.MiddleCenter, new Color(0.92f, 0.86f, 0.55f));
 
-            // 当前装备
-            string currentEquip = SuperMechRelic.GetCurrentEquipName(actor);
-            AddText(_container.transform, $"当前装备：{currentEquip}", 10, TextAnchor.MiddleLeft, Color.white);
-
-            // 卸下按钮
-            if (SuperMechRelic.GetCurrentEquipIndex(actor) >= 0)
+            // 当前装备（带品质颜色和详情）
+            int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
+            if (currentIdx >= 0)
             {
+                var cur = SuperMechRelic.Equipments[currentIdx];
+                Color qColor = GetQualityColor(cur.qualityLevel);
+                AddText(_container.transform, $"当前装备：{cur.name}", 11, TextAnchor.MiddleLeft, qColor);
+                AddText(_container.transform, $"  伤害×{cur.dmgMul}  生命×{cur.hpMul}  品质：{GetQualityName(cur.qualityLevel)}", 9, TextAnchor.MiddleLeft, new Color(0.7f, 0.7f, 0.7f));
                 AddButton(_container.transform, "卸下当前装备", () =>
                 {
                     SuperMechEquipBag.UnequipToBag(actor);
                     RenderBag(actor);
                 });
             }
+            else
+            {
+                AddText(_container.transform, "当前装备：无", 10, TextAnchor.MiddleLeft, new Color(0.6f, 0.6f, 0.6f));
+            }
 
             // 分隔线
             AddText(_container.transform, "—— 背包 ——", 10, TextAnchor.MiddleCenter, new Color(0.7f, 0.7f, 0.7f));
 
-            // 背包物品列表
+            // 背包物品列表（带品质颜色、详情、丢弃按钮）
             var bag = SuperMechEquipBag.GetBag(actor);
             if (bag.Count == 0)
             {
@@ -240,13 +245,59 @@ namespace SuperMech.Code
                     int idx = SuperMechRelic.GetEquipIndex(equipId);
                     if (idx < 0) continue;
                     var def = SuperMechRelic.Equipments[idx];
-                    AddButton(_container.transform, $"[{def.name}] 伤害×{def.dmgMul} 生命×{def.hpMul}  [点击装备]", () =>
+                    Color qColor = GetQualityColor(def.qualityLevel);
+
+                    // 装备名（品质颜色）
+                    AddText(_container.transform, def.name, 11, TextAnchor.MiddleLeft, qColor);
+                    // 详情
+                    AddText(_container.transform, $"  伤害×{def.dmgMul}  生命×{def.hpMul}  {GetQualityName(def.qualityLevel)}", 9, TextAnchor.MiddleLeft, new Color(0.6f, 0.6f, 0.6f));
+
+                    // 装备/丢弃按钮行
+                    var btnRow = new GameObject("BtnRow", typeof(RectTransform));
+                    btnRow.transform.SetParent(_container.transform, false);
+                    var hLayout = btnRow.AddComponent<HorizontalLayoutGroup>();
+                    hLayout.spacing = 4;
+                    hLayout.childForceExpandWidth = true;
+                    RectTransform brt = btnRow.GetComponent<RectTransform>();
+                    brt.sizeDelta = new Vector2(0, 22);
+
+                    AddButton(btnRow.transform, "装备", () =>
                     {
                         SuperMechEquipBag.EquipFromBag(actor, equipId);
                         RenderBag(actor);
                     });
+                    AddButton(btnRow.transform, "丢弃", () =>
+                    {
+                        SuperMechEquipBag.RemoveFromBag(actor, equipId);
+                        RenderBag(actor);
+                    });
                 }
             }
+        }
+
+        /// <summary>原著9级品质颜色。</summary>
+        private static Color GetQualityColor(int q)
+        {
+            switch (q)
+            {
+                case 0: return new Color(0.6f, 0.6f, 0.6f); // 灰
+                case 1: return new Color(0.3f, 0.8f, 0.3f); // 绿
+                case 2: return new Color(0.3f, 0.5f, 1f);   // 蓝
+                case 3: return new Color(0.7f, 0.5f, 1f);   // 淡紫
+                case 4: return new Color(0.6f, 0.2f, 0.9f); // 紫
+                case 5: return new Color(1f, 0.4f, 0.7f);   // 粉(珍稀)
+                case 6: return new Color(1f, 0.6f, 0f);     // 橙(传说)
+                case 7: return new Color(0.8f, 0.8f, 0.9f); // 银橙(使徒兵器)
+                case 8: return new Color(1f, 0.84f, 0f);    // 金(宇宙宝物级)
+                default: return Color.white;
+            }
+        }
+
+        /// <summary>原著9级品质名。</summary>
+        private static string GetQualityName(int q)
+        {
+            string[] names = { "普通", "精良", "稀有", "史诗", "传说", "珍稀", "神器", "使徒兵器", "宇宙宝物" };
+            return q >= 0 && q < names.Length ? names[q] : "?";
         }
 
         private static void AddText(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
