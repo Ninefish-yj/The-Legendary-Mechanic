@@ -39,11 +39,11 @@ namespace SuperMech.Code
             };
             AssetManager.traits.add(t2);
 
-            // 注册传授气力提炼法神权
+            // 注册传授修炼功法神权（统一入口：按系别自动传授对应功法）
             var givePower = new GodPower
             {
                 id = "sm_give_refinement",
-                name = "传授气力提炼法",
+                name = "传授修炼功法",
                 path_icon = "ui/powers/power_bless",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
@@ -55,40 +55,26 @@ namespace SuperMech.Code
             givePower.click_action += (WorldTile tile, string powerId) =>
             {
                 if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { a.addTrait(RefinementTrait); });
-                return true;
-            };
-            AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_refinement", "传授气力提炼法", pReplace: true);
-
-            // 注册传授电磁因子提炼法神权（机械系专属）
-            var giveEmPower = new GodPower
-            {
-                id = "sm_give_em_refinement",
-                name = "传授电磁因子提炼法",
-                path_icon = "ui/powers/power_bless",
-                rank = PowerRank.Rank0_free,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = false
-            };
-            giveEmPower.click_action += (WorldTile tile, string powerId) =>
-            {
-                if (tile == null) return true;
                 tile.doUnits(delegate (Actor a)
                 {
-                    // ch277：机械师专属
+                    // 全系通用：气力提炼法（ch172：就连异能系也屁颠颠来学）
+                    a.addTrait(RefinementTrait);
+                    // 按系别传授专属修炼功法
                     if (a.hasTrait(SuperMechTraits.ClassMech))
-                        a.addTrait(EmRefinementTrait);
+                        a.addTrait(EmRefinementTrait);                                          // 机械系：电磁因子提炼法
+                    if (a.hasTrait(SuperMechTraits.ClassPsi))
+                        a.addTrait(SuperMechCultivation.PsiResonance);                          // 异能系：基因共鸣
+                    if (a.hasTrait(SuperMechTraits.ClassMage))
+                        a.addTrait(SuperMechCultivation.ManaMeditation);                        // 魔法系：冥想
+                    if (a.hasTrait(SuperMechTraits.ClassMind))
+                        a.addTrait(SuperMechCultivation.MindTrain);                             // 念力系：心灵锻炼
                 });
                 return true;
             };
-            AssetManager.powers.add(giveEmPower);
-            LocalizedTextManager.add("power_sm_give_em_refinement", "传授电磁因子提炼法（机械专属）", pReplace: true);
+            AssetManager.powers.add(givePower);
+            LocalizedTextManager.add("power_sm_give_refinement", "传授修炼功法", pReplace: true);
 
-            Debug.Log("[超神机械师] 提炼法系统注册完成（气力提炼法全系通用+电磁因子提炼法机械专属）");
+            Debug.Log("[超神机械师] 修炼功法系统注册完成（气力提炼法全系通用+四系专属功法）");
         }
 
         /// <summary>Tick：给有提炼法的单位气力额外加成。</summary>

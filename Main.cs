@@ -31,8 +31,8 @@ namespace SuperMech
             SuperMechPerks.Register();
             SuperMechSubClass.Register();
             SuperMechBranch.Register();
-            SuperMechRefinement.Register();
             SuperMechCultivation.Register();
+            SuperMechRefinement.Register();
             SuperMechRelic.Register();
             SuperMechCosmicRelic.Register();
             SuperMechMageTower.Register();

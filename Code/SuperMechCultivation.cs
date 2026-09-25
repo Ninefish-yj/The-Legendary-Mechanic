@@ -43,32 +43,7 @@ namespace SuperMech.Code
                 needs_to_be_explored = false, base_stats = new BaseStats()
             };
             AssetManager.traits.add(t);
-
-            // 注册赋予神权
-            var p = new GodPower
-            {
-                id = "sm_give_" + id,
-                name = "传授：" + name,
-                path_icon = "ui/powers/power_bless",
-                rank = PowerRank.Rank0_free,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = false
-            };
-            p.click_action += (WorldTile tile, string powerId) =>
-            {
-                if (tile == null) return true;
-                tile.doUnits(delegate (Actor a)
-                {
-                    // 只有对应系的单位才能学
-                    if (a.hasTrait(classTraitId)) a.addTrait(id);
-                });
-                return true;
-            };
-            AssetManager.powers.add(p);
-            LocalizedTextManager.add("power_sm_give_" + id, "传授：" + name, pReplace: true);
+            // 神权统一在 SuperMechRefinement 注册（传授修炼功法按系别自动分配）
         }
 
         public static void TickCultivation()

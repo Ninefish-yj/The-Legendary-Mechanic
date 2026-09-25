@@ -210,21 +210,15 @@ namespace SuperMech.Code
                 }
                 y -= 38f;
 
-                // —— 修炼功法 ——
+                // —— 修炼功法（统一入口，按系别自动传授）——
                 _frame.AddLabel("◆ 传授功法", leftX, y, 200f, 22f, 14);
                 y -= 28f;
-                string[] cultNames = { "基因共鸣(异能)", "冥想(魔法)", "心灵锻炼(念力)" };
-                string[] cultIds = { "sm_give_sm_pcult_resonance", "sm_give_sm_pcult_meditation", "sm_give_sm_pcult_mind_train" };
-                for (int i = 0; i < cultNames.Length; i++)
+                _frame.AddButton("传授修炼功法", leftX, y, 200f, 28f, () =>
                 {
-                    int idx = i;
-                    _frame.AddButton(cultNames[idx], leftX + idx * 155f, y, 145f, 28f, () =>
-                    {
-                        var p = AssetManager.powers.get(cultIds[idx]);
-                        if (p != null) p.click_action?.Invoke(a.current_tile, cultIds[idx]);
-                        Refresh();
-                    });
-                }
+                    var p = AssetManager.powers.get("sm_give_refinement");
+                    if (p != null) p.click_action?.Invoke(a.current_tile, "sm_give_refinement");
+                    Refresh();
+                });
                 y -= 38f;
 
                 // —— 其他操作 ——
