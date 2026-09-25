@@ -263,7 +263,18 @@ namespace SuperMech.Code
                 // 行11：装备品质（9级普通装备）
                 string relic = SuperMechRelic.GetCurrentEquipName(actor);
                 if (relic != "无")
-                    ShowRow(__instance, "装备", relic);
+                {
+                    float dur = SuperMechEquipBreak.GetDurability(actor);
+                    ShowRow(__instance, "装备", $"{relic}（耐久{dur:0}%）");
+                }
+
+                // 行11b：械力融合（机械系专属，装备与身体融合）
+                if (SuperMechMechFusion.IsFused(actor))
+                {
+                    int fLevel = SuperMechMechFusion.GetFusionLevel(actor);
+                    float fMul = SuperMechMechFusion.GetFusionMultiplier(actor);
+                    ShowRow(__instance, "械力融合", $"Lv{fLevel}（属性×{fMul:0.0}，消耗气力维持）");
+                }
 
                 // 行11b：宇宙宝物（独立特殊物品，ch1008）
                 string cosmic = SuperMechCosmicRelic.GetEquippedName(actor);

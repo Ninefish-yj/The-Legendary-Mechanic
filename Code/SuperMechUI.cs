@@ -27,6 +27,7 @@ namespace SuperMech.Code
             (SuperMechPowers.DisasterAlien,   "ui/powers/power_meteor",       "异化之灾",       "在点击位置生成异化体（天灾）"),
             // 突破类
             (SuperMechPowers.AttemptTranscend,"ui/powers/power_bless",        "冲击超神级",     "点击单位尝试突破超神级（需满足三条件，有恶性变异风险）"),
+            (SuperMechPowers.MechFusion,     "ui/powers/power_bless",        "械力融合",       "点击机械系单位将装备与身体融合（需磁环阶段+蓝色以上装备）"),
             // 知识类
             (SuperMechPowers.CheckPotential,  "ui/powers/power_bless",        "查看潜能点",     "点击单位查看气力/潜能点/觉醒点/已解锁知识数"),
             (SuperMechPowers.UnlockArmed,     "ui/powers/power_bless",        "解锁知识·武装系", "点击单位消耗潜能点解锁武装系知识节点"),

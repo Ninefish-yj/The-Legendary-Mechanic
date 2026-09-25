@@ -136,6 +136,24 @@ namespace SuperMech.Code
 
                 // ===== 4. 装备掉落：击杀单位概率掉落装备（原著：超能者掉落装备/材料）=====
                 SuperMechEquipDrop.TryDrop(killer, target);
+
+                // ===== 5. 装备损坏：高阶攻击低阶有概率打掉装备（原著ch229装备会损坏）=====
+                int killerRank = SuperMechAdvancement.GetExactRankIndex(killer);
+                int targetRank2 = SuperMechAdvancement.GetExactRankIndex(target);
+                if (killerRank - targetRank2 >= 2 && SuperMechRelic.GetCurrentEquipIndex(target) >= 0)
+                {
+                    // 械力融合的装备不会被打掉
+                    if (!SuperMechMechFusion.IsEquipProtected(target))
+                    {
+                        // 阶位差越大，打掉概率越高
+                        float breakChance = 0.05f * (killerRank - targetRank2);
+                        if (UnityEngine.Random.value < breakChance)
+                        {
+                            int eqIdx = SuperMechRelic.GetCurrentEquipIndex(target);
+                            SuperMechEquipBreak.BreakEquip(target, eqIdx);
+                        }
+                    }
+                }
             }
             catch
             {

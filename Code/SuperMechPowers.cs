@@ -19,6 +19,7 @@ namespace SuperMech.Code
         public const string UnlockArmed = "sm_unlock_armed";
         public const string UnlockEnergy = "sm_unlock_energy";
         public const string UnlockVirtual = "sm_unlock_virtual";
+        public const string MechFusion = "sm_mech_fusion";
 
         public static void Register()
         {
@@ -39,7 +40,10 @@ namespace SuperMech.Code
             AddUnlockKnowledgePower(UnlockEnergy, "解锁知识·能量系", "energy", 2);
             AddUnlockKnowledgePower(UnlockVirtual, "解锁知识·虚拟系", "virtual", 3);
 
-            Debug.Log("[超神机械师] 神权注册完成：2召唤 + 1天灾 + 1查看 + 3知识解锁");
+            // 械力融合（机械系专属，装备与身体融合）
+            AddMechFusionPower(MechFusion, "械力融合");
+
+            Debug.Log("[超神机械师] 神权注册完成：2召唤 + 1天灾 + 1查看 + 3知识解锁 + 1械力融合");
         }
 
         private static void AddSpawnPower(string id, string name, string icon, string creatureId, int mechStage)
@@ -228,6 +232,45 @@ namespace SuperMech.Code
                     else
                     {
                         Debug.Log($"[超神机械师] {u.name} 潜能点不足（需{cost}，有{SuperMechPotential.GetPotential(u)}）");
+                    }
+                });
+                return applied;
+            };
+            AssetManager.powers.add(p);
+        }
+
+        /// <summary>械力融合：机械系专属，将装备与身体融合（原著：械武者分支机械与身体融合）。</summary>
+        private static void AddMechFusionPower(string id, string name)
+        {
+            LocalizedTextManager.add(name, name, pReplace: true);
+            var p = new GodPower
+            {
+                id = id, name = name, path_icon = "ui/powers/power_bless",
+                rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
+                ignore_fast_spawn = true, hold_action = false,
+                unselect_when_window = true, requires_premium = false
+            };
+            p.click_action += (tile, powerId) =>
+            {
+                if (tile == null) return false;
+                bool applied = false;
+                tile.doUnits(u =>
+                {
+                    if (u == null || applied) return;
+                    if (SuperMechMechFusion.IsFused(u))
+                    {
+                        SuperMechMechFusion.Unfuse(u);
+                        Debug.Log($"[超神机械师] {u.name} 解除械力融合");
+                        applied = true;
+                    }
+                    else if (SuperMechMechFusion.TryFuse(u))
+                    {
+                        Debug.Log($"[超神机械师] {u.name} 完成械力融合！");
+                        applied = true;
+                    }
+                    else
+                    {
+                        Debug.Log($"[超神机械师] {u.name} 无法融合：需机械系+磁环阶段+蓝色以上装备");
                     }
                 });
                 return applied;

@@ -116,8 +116,12 @@ namespace SuperMech.Code
             var synBonus = SuperMechKnowledgeSynergy.GetBonus(a);
             qiMul *= synBonus.dmgMul;
 
+            // 械力融合加成（机械系专属，装备与身体融合）
+            float fusionMul = SuperMechMechFusion.GetFusionMultiplier(a);
+            qiMul *= fusionMul;
+
             stats["multiplier_damage"] = qiMul;
-            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul;
+            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul * fusionMul;
             stats["multiplier_stamina"] = qiMul * 1.2f;
             stats["multiplier_armor"] = 1f + level * 0.025f * stageMul;
             stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul;
