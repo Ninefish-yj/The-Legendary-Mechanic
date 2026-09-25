@@ -234,13 +234,22 @@ namespace SuperMech.Code
         }
 
         /// <summary>进入圣所：消耗钥匙碎片，获得该圣所的知识（潜能点），数量由进入次数（权限等级）决定。</summary>
-        public static void EnterSanctuary(Actor a)
+        public static bool EnterSanctuary(Actor a, int sanctuaryIndex = -1)
         {
-            if (!SuperMechConfig.SanctuaryEnabled) return;
+            if (!SuperMechConfig.SanctuaryEnabled) return false;
             if (Data.key_fragments < 3)
             {
                 Debug.Log("[超神机械师] 圣所钥匙碎片不足（需3）");
-                return;
+                return false;
+            }
+            // 如果指定了圣所，检查是否已解锁
+            if (sanctuaryIndex >= 0 && sanctuaryIndex < 6)
+            {
+                if ((Data.unlocked_sanctuaries & (1 << sanctuaryIndex)) == 0)
+                {
+                    Debug.Log($"[超神机械师] 圣所{sanctuaryIndex + 1}未解锁");
+                    return false;
+                }
             }
             Data.key_fragments -= 3;
             Data.total_visits++;
@@ -264,8 +273,8 @@ namespace SuperMech.Code
                 s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * buff;
             }
 
-            // 各系圣所特殊加成（按单位系别触发对应圣所的知识传承）
-            ApplySanctuaryClassBonus(a, s);
+            // 各系圣所特殊加成（按进入的圣所触发对应知识传承）
+            ApplySanctuaryClassBonus(a, s, sanctuaryIndex);
 
             // 第六圣所（信息态）已解锁时，进入圣所提升信息态等级（ch1309：第六圣所=信息态技术）
             if ((Data.unlocked_sanctuaries & (1 << 5)) != 0)
@@ -276,33 +285,49 @@ namespace SuperMech.Code
             Save();
 
             string className = GetClassTrait(a) ?? "未知";
-            Debug.Log($"[超神机械师] {a.name} 进入圣所！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
+            string sanctuaryName = sanctuaryIndex >= 0 ? $"圣所{sanctuaryIndex + 1}" : "随机圣所";
+            Debug.Log($"[超神机械师] {a.name} 进入{sanctuaryName}！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
+            return true;
         }
 
         /// <summary>
-        /// 各系圣所特殊加成（按单位系别触发对应圣所的知识传承）。
-        /// 第一圣所=机械技术，第二=武道功法，第三=基因技术，第四=魔法知识，第五=灵魂技术。
+        /// 各系圣所特殊加成（按进入的圣所触发对应知识传承，原著：每个圣所存不同系知识）。
+        /// 第一圣所=机械技术，第二=武道功法，第三=基因技术，第四=魔法知识，第五=灵魂技术，第六=信息态技术。
         /// </summary>
-        private static void ApplySanctuaryClassBonus(Actor a, BaseStats s)
+        private static void ApplySanctuaryClassBonus(Actor a, BaseStats s, int sanctuaryIndex)
         {
             if (a == null) return;
-            string cls = SuperMechBranch.GetClass(a);
             int visits = Data.total_visits;
 
-            switch (cls)
+            // sanctuaryIndex=-1表示随机进入已解锁圣所，选第一个已解锁的
+            if (sanctuaryIndex < 0 || sanctuaryIndex >= 6)
             {
-                case "机械系":
-                    // 第一圣所：机械技术传承（ch1039：泰尔克斯机械传承）
+                for (int i = 0; i < 6; i++)
+                {
+                    if ((Data.unlocked_sanctuaries & (1 << i)) != 0)
+                    {
+                        sanctuaryIndex = i;
+                        break;
+                    }
+                }
+                if (sanctuaryIndex < 0) return; // 没有已解锁的圣所
+            }
+
+            switch (sanctuaryIndex)
+            {
+                case 0: // 第一圣所：机械技术传承（ch1039：泰尔克斯机械传承）
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 5f + visits;
                         s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.03f;
                         s["crafting_speed"] = ((s["crafting_speed"] == 0f ? 1f : s["crafting_speed"])) * 1.05f;
                     }
+                    // 机械系单位额外加成（同源知识吸收更快）
+                    if (SuperMechBranch.GetClass(a) == "机械系")
+                        SuperMechQi.AddQiMax(a, 200f + visits * 20f);
                     break;
 
-                case "武道系":
-                    // 第二圣所：武道功法传承（气力修炼法）
+                case 1: // 第二圣所：武道功法传承（气力修炼法）
                     SuperMechQi.AddQiMax(a, 500f + visits * 50f);
                     if (s != null)
                     {
@@ -311,35 +336,49 @@ namespace SuperMech.Code
                     }
                     break;
 
-                case "异能系":
-                    // 第三圣所：基因技术传承（ch1050：原始异能体是钥匙）
+                case 2: // 第三圣所：基因技术传承（ch1050：原始异能体是钥匙）
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 4f + visits;
                         s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.02f;
-                        s["gene_strength"] = (s["gene_strength"]) + 10f;
                     }
+                    // 异能系单位额外解锁基因链阶段
+                    if (SuperMechBranch.GetClass(a) == "异能系")
+                        SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
-                case "魔法系":
-                    // 第四圣所：魔法知识传承
+                case 3: // 第四圣所：魔法知识传承
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 4f + visits;
                         s["mana"] = (s["mana"]) + 50f + visits * 5f;
-                        s["spell_power"] = ((s["spell_power"] == 0f ? 1f : s["spell_power"])) * 1.03f;
                     }
+                    // 魔法系单位额外提升魔力池
+                    if (SuperMechBranch.GetClass(a) == "魔法系")
+                        SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
-                case "念力系":
-                    // 第五圣所：灵魂技术传承（精神力修炼）
+                case 4: // 第五圣所：灵魂技术传承（精神力修炼）
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 5f + visits;
                         s["willpower"] = (s["willpower"]) + 3f + visits;
-                        s["mind_power"] = (s["mind_power"]) + 20f;
+                    }
+                    // 念力系单位额外提升精神力
+                    if (SuperMechBranch.GetClass(a) == "念力系")
+                        SuperMechCorePower.AdvanceStage(a, 1);
+                    break;
+
+                case 5: // 第六圣所：信息态技术（ch1309：第六圣所=信息态技术）
+                    SuperMechInfoState.Upgrade(a);
+                    if (s != null)
+                    {
+                        s["intelligence"] = (s["intelligence"]) + 10f + visits * 2;
+                        s["multiplier_all"] = ((s["multiplier_all"] == 0f ? 1f : s["multiplier_all"])) * 1.05f;
                     }
                     break;
+            }
+        }
             }
         }
 

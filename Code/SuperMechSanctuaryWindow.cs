@@ -58,10 +58,33 @@ namespace SuperMech.Code
             var data = SuperMechSanctuary.Data;
             for (int i = 0; i < 6; i++)
             {
+                int sanctuaryIndex = i; // 闭包捕获
                 bool unlocked = (data.unlocked_sanctuaries & (1 << i)) != 0;
                 int fragments = data.sanctuary_fragments[i];
                 Color bg = unlocked ? new Color(0.15f, 0.25f, 0.15f, 0.8f) : new Color(0.12f, 0.12f, 0.15f, 0.8f);
-                _frame.AddButton($"{(unlocked ? "✓" : "✗")} {names[i]}  [碎片:{fragments}]", x, y, 540f, 36f, () => { }, bg);
+                string btnText = unlocked
+                    ? $"✓ {names[i]}  [碎片:{fragments}]  [点击进入]"
+                    : $"✗ {names[i]}  [碎片:{fragments}/3]";
+                _frame.AddButton(btnText, x, y, 540f, 36f, () =>
+                {
+                    if (!unlocked)
+                    {
+                        Debug.Log($"[超神机械师] {names[sanctuaryIndex]}未解锁，需集齐3碎片");
+                        return;
+                    }
+                    // 获取当前选中单位
+                    Actor selected = World.world?.getSelectedActor();
+                    if (selected == null)
+                    {
+                        Debug.Log("[超神机械师] 请先选中一个单位再进入圣所");
+                        return;
+                    }
+                    if (SuperMechSanctuary.EnterSanctuary(selected, sanctuaryIndex))
+                    {
+                        Debug.Log($"[超神机械师] {selected.name} 进入{names[sanctuaryIndex]}");
+                        Refresh();
+                    }
+                }, bg);
                 _frame.AddLabel(descs[i], x + 30f, y - 14f, 500f, 14f, 10);
                 y -= 42f;
             }
