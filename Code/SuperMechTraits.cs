@@ -100,7 +100,7 @@ namespace SuperMech.Code
                     {"mana", 50f}, {"multiplier_damage", 1.05f}, {"intelligence", 1f} });
             AddClassTrait(ClassMind,   "精神天赋（精神修炼树）", 3, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
-                    {"mana", 40f}, {"dodge", 0.05f}, {"attack_speed", 1.03f} });
+                    {"mana", 40f}, {"multiplier_speed", 1.05f}, {"attack_speed", 1.03f} });
 
             // 3. 种族进化移至 SuperMechRace.cs（原著6阶段，与阶位挂钩自动进化）
 
