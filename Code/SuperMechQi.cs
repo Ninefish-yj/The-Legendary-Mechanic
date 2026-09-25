@@ -127,7 +127,7 @@ namespace SuperMech.Code
             stats["multiplier_damage"] = qiMul;
             stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul * fusionMul * knowFusion.hpMul;
             stats["multiplier_stamina"] = qiMul * 1.2f;
-            stats["multiplier_armor"] = 1f + level * 0.025f * stageMul;
+            stats["armor"] = Mathf.Min(80f, level * 0.5f * stageMul);
             stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul * knowFusion.speedMul;
             stats["multiplier_crit"] = 1f + level * 0.018f * stageMul;
             stats["experience"] = 1f + level * 0.01f;

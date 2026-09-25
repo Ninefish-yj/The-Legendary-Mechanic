@@ -102,6 +102,21 @@ namespace SuperMech.Code
             return 0;
         }
 
+        /// <summary>获取融合的装备ID。</summary>
+        public static string GetFusedEquipId(Actor a)
+        {
+            if (a != null && _fusedEquip.TryGetValue(a.id, out string id)) return id;
+            return null;
+        }
+
+        /// <summary>存档恢复：直接设置融合状态（不消耗气力，不触发融合逻辑）。</summary>
+        public static void RestoreFusion(Actor a, int level, string equipId)
+        {
+            if (a == null || level <= 0) return;
+            _fusionLevel[a.id] = level;
+            if (!string.IsNullOrEmpty(equipId)) _fusedEquip[a.id] = equipId;
+        }
+
         /// <summary>融合中的装备不会被打掉。</summary>
         public static bool IsEquipProtected(Actor a)
         {

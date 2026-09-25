@@ -29,7 +29,7 @@ namespace SuperMech.Code
             new AffixDef { id="affix_dmg", name="攻击", statKey="multiplier_damage", minValue=0.05f, maxValue=0.25f, isMultiplier=true, minQuality=0 },
             new AffixDef { id="affix_hp", name="生命", statKey="multiplier_health", minValue=0.05f, maxValue=0.30f, isMultiplier=true, minQuality=0 },
             new AffixDef { id="affix_speed", name="攻速", statKey="multiplier_speed", minValue=0.03f, maxValue=0.15f, isMultiplier=true, minQuality=1 },
-            new AffixDef { id="affix_armor", name="护甲", statKey="multiplier_armor", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=1 },
+            new AffixDef { id="affix_armor", name="护甲", statKey="armor", minValue=5f, maxValue=20f, isMultiplier=false, minQuality=1 },
             new AffixDef { id="affix_crit", name="暴击", statKey="multiplier_crit", minValue=0.03f, maxValue=0.12f, isMultiplier=true, minQuality=2 },
             new AffixDef { id="affix_stamina", name="耐力", statKey="multiplier_stamina", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=2 },
             new AffixDef { id="affix_dmg_fixed", name="攻击强化", statKey="damage", minValue=1f, maxValue=10f, isMultiplier=false, minQuality=0 },

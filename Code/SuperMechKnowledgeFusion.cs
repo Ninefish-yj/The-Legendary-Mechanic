@@ -370,6 +370,27 @@ namespace SuperMech.Code
             return false;
         }
 
+        /// <summary>存档恢复：直接标记配方为已学会（不消耗经验，不触发融合逻辑）。</summary>
+        public static void RestoreLearnedRecipe(Actor a, string recipeId)
+        {
+            if (a == null || string.IsNullOrEmpty(recipeId)) return;
+            if (!_unlockedRecipes.TryGetValue(a.id, out var set))
+            {
+                set = new HashSet<string>();
+                _unlockedRecipes[a.id] = set;
+            }
+            set.Add(recipeId);
+            // 注册名称（如果是首次）
+            foreach (var recipe in _recipes)
+            {
+                if (recipe.id == recipeId)
+                {
+                    RegisterFusionName(recipe);
+                    break;
+                }
+            }
+        }
+
         /// <summary>获取单位已融合的图纸数量。</summary>
         public static int GetUnlockedCount(Actor a)
         {

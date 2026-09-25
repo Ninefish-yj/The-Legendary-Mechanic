@@ -77,6 +77,9 @@ namespace SuperMech.Code
             public List<string> knowledge; // 已解锁知识节点ID列表
             public List<string> equipBag; // 装备背包装备ID列表
             public string currentEquip; // 当前装备ID
+            public List<string> fusionRecipes; // 已学会的知识融合配方ID列表
+            public int mechFusionLevel; // 械力融合等级（0=未融合）
+            public string fusedEquip; // 械力融合的装备ID
         }
 
         [Serializable]
@@ -163,7 +166,10 @@ namespace SuperMech.Code
                             subclassLevel = GetActiveSubLevel(a),
                             knowledge = GetUnlockedKnowledgeList(a),
                             equipBag = new List<string>(SuperMechEquipBag.GetBag(a)),
-                            currentEquip = SuperMechRelic.GetCurrentEquipId(a)
+                            currentEquip = SuperMechRelic.GetCurrentEquipId(a),
+                            fusionRecipes = GetLearnedFusionRecipes(a),
+                            mechFusionLevel = SuperMechMechFusion.GetFusionLevel(a),
+                            fusedEquip = SuperMechMechFusion.GetFusedEquipId(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -325,6 +331,19 @@ namespace SuperMech.Code
                     {
                         SuperMechEquipBag.EquipFromBag(a, ad.currentEquip);
                     }
+                    // 恢复知识融合（已学会的配方）
+                    if (ad.fusionRecipes != null)
+                    {
+                        foreach (string rid in ad.fusionRecipes)
+                        {
+                            SuperMechKnowledgeFusion.RestoreLearnedRecipe(a, rid);
+                        }
+                    }
+                    // 恢复械力融合
+                    if (ad.mechFusionLevel > 0)
+                    {
+                        SuperMechMechFusion.RestoreFusion(a, ad.mechFusionLevel, ad.fusedEquip);
+                    }
 
                     _pendingLoad.actors.Remove(id);
                     restored++;
@@ -353,6 +372,15 @@ namespace SuperMech.Code
                 var unlocked = SuperMechKnowledge.GetUnlockedList(a, prefix);
                 foreach (var def in unlocked) list.Add(def.id);
             }
+            return list;
+        }
+
+        /// <summary>获取单位已学会的知识融合配方ID列表。</summary>
+        private static List<string> GetLearnedFusionRecipes(Actor a)
+        {
+            var list = new List<string>();
+            var learned = SuperMechKnowledgeFusion.GetLearnedRecipes(a);
+            foreach (var recipe in learned) list.Add(recipe.id);
             return list;
         }
     }
