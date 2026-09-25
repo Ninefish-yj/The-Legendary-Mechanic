@@ -16,14 +16,15 @@ namespace SuperMech.Code
         private static PowersTab _tab;
 
         // 核心地图交互神权（精简版，参考蛊真人）
+        // 图标使用原版确认存在的路径，避免sprite为null导致光标图标崩溃
         private static readonly (string id, string icon, string tipTitle, string tipDesc)[] CorePowers =
         {
             // 召唤类
-            (SuperMechPowers.SummonAwakened,  "ui/powers/power_summon_units", "召唤降临者", "在点击位置生成一个有面板的降临者单位（走等级职业体系）"),
+            (SuperMechPowers.SummonAwakened,  "iconSprite",      "召唤降临者", "在点击位置生成一个有面板的降临者单位（走等级职业体系）"),
             // 天灾类
-            (SuperMechPowers.DisasterAlien,   "ui/powers/power_meteor",       "异化之灾",     "在点击位置生成异化体（天灾）"),
+            (SuperMechPowers.DisasterAlien,   "iconDiscord",     "异化之灾",     "在点击位置生成异化体（天灾）"),
             // 突破类
-            (SuperMechPowers.AttemptTranscend,"ui/powers/power_bless",        "神之催化",     "点击SS阶以上单位施加催化效果，降低突破门槛、提升成功率（每层+10%，最多5层）"),
+            (SuperMechPowers.AttemptTranscend,"iconDivineLight", "神之催化",     "点击SS阶以上单位施加催化效果，降低突破门槛、提升成功率（每层+10%，最多5层）"),
         };
 
         // 五系觉醒神权（合并为一个，点击后打开选择系别的窗口）
@@ -127,7 +128,7 @@ namespace SuperMech.Code
                     GodPower power = AssetManager.powers.get(AwakenPowerId);
                     if (power != null)
                     {
-                        Sprite icon = SpriteTextureLoader.getSprite("ui/powers/power_bless");
+                        Sprite icon = SpriteTextureLoader.getSprite("iconInspiration");
                         PowerButton btn = PowerButtonCreator.CreateGodPowerButton(AwakenPowerId, icon);
                         if (btn != null)
                         {
@@ -144,7 +145,7 @@ namespace SuperMech.Code
                 {
                     try
                     {
-                        Sprite icon = SpriteTextureLoader.getSprite("ui/powers/power_bless");
+                        Sprite icon = SpriteTextureLoader.getSprite("iconUnity");
                         PowerButton btn = PowerButtonCreator.CreateSimpleButton(name, () => { try { action?.Invoke(); } catch (System.Exception e) { Debug.LogError("[超神机械师] 开窗异常: " + e.Message); } }, icon);
                         if (btn == null) continue;
                         SetupTooltip(btn, name, tip);

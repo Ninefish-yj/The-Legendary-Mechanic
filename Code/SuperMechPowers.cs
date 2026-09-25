@@ -153,7 +153,7 @@ namespace SuperMech.Code
             {
                 id = id,
                 name = name,
-                path_icon = "ui/powers/power_meteor",
+                path_icon = "iconDiscord",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
@@ -181,7 +181,7 @@ namespace SuperMech.Code
         {
             var p = new GodPower
             {
-                id = id, name = name, path_icon = "ui/powers/power_bless",
+                id = id, name = name, path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
                 ignore_fast_spawn = true, hold_action = false,
                 unselect_when_window = true, requires_premium = false
@@ -212,7 +212,7 @@ namespace SuperMech.Code
         {
             var p = new GodPower
             {
-                id = id, name = name, path_icon = "ui/powers/power_bless",
+                id = id, name = name, path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
                 ignore_fast_spawn = true, hold_action = false,
                 unselect_when_window = true, requires_premium = false
@@ -257,7 +257,7 @@ namespace SuperMech.Code
             LocalizedTextManager.add(name, name, pReplace: true);
             var p = new GodPower
             {
-                id = id, name = name, path_icon = "ui/powers/power_bless",
+                id = id, name = name, path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
                 ignore_fast_spawn = true, hold_action = false,
                 unselect_when_window = true, requires_premium = false
@@ -296,7 +296,7 @@ namespace SuperMech.Code
             LocalizedTextManager.add(name, name, pReplace: true);
             var p = new GodPower
             {
-                id = id, name = name, path_icon = "ui/powers/power_bless",
+                id = id, name = name, path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
                 ignore_fast_spawn = true, hold_action = false,
                 unselect_when_window = true, requires_premium = false
@@ -331,7 +331,7 @@ namespace SuperMech.Code
             LocalizedTextManager.add(name, name, pReplace: true);
             var p = new GodPower
             {
-                id = id, name = name, path_icon = "ui/powers/power_summon_units",
+                id = id, name = name, path_icon = "iconSprite",
                 rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
                 ignore_fast_spawn = true, hold_action = false,
                 unselect_when_window = true, requires_premium = false
