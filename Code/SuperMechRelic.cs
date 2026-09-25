@@ -8,30 +8,40 @@ namespace SuperMech.Code
     /// <summary>
     /// 装备系统（原著+原版EquipmentAsset）：
     /// 原著ch1040："金色品质，便代表着宇宙宝物级的装备"。
-    /// 用原版EquipmentAsset注册装备物品，设置Rarity品质和base_stats，
+    /// 用原版EquipmentAsset注册装备物品，设置品质和base_stats，
     /// 单位装备后原版自动merge属性（Actor.cs:1829 stats.mergeStats(equipmentAsset.base_stats)）。
     /// 不直接加单位身上——单位不是装备。
-    /// 品质对应原版Rarity：普通=R0, 精良=R1, 史诗=R2, 传说=R3, 金色=自定义宇宙宝物级
+    /// 品质7级（在原版4级Rarity基础上扩展）：
+    /// 普通(R0)→精良(R1)→史诗(R2)→传说(R3)→金色·宇宙宝物级→宇宙奇观级→超神级
+    /// 原版Rarity枚举只有4级，金色及以上用int rarity字段扩展，quality取R3_Legendary。
     /// </summary>
     public static class SuperMechRelic
     {
-        // 装备品质定义（id, 名称, 原版Rarity, 伤害倍率, 生命倍率）
+        // 装备品质定义（id, 名称, 品质等级int, 原版Rarity, 图标, 伤害倍率, 生命倍率）
         public class EquipDef
         {
             public string id;
             public string name;
-            public Rarity rarity;
+            public int qualityLevel;  // 扩展品质等级 0-6
+            public Rarity rarity;     // 原版Rarity（超过3都取R3）
+            public string icon;
             public float dmgMul;
             public float hpMul;
         }
 
         public static readonly List<EquipDef> Equipments = new List<EquipDef>
         {
-            new EquipDef { id="sm_eq_normal",  name="普通装备",   rarity=Rarity.R0_Normal, dmgMul=1.0f, hpMul=1.0f },
-            new EquipDef { id="sm_eq_fine",    name="精良装备",   rarity=Rarity.R1_Rare,   dmgMul=1.3f, hpMul=1.2f },
-            new EquipDef { id="sm_eq_epic",    name="史诗装备",   rarity=Rarity.R2_Epic,   dmgMul=1.8f, hpMul=1.6f },
-            new EquipDef { id="sm_eq_legend",  name="传说装备",   rarity=Rarity.R3_Legendary, dmgMul=2.5f, hpMul=2.2f },
-            new EquipDef { id="sm_eq_gold",    name="金色装备（宇宙宝物级）", rarity=Rarity.R3_Legendary, dmgMul=4.0f, hpMul=3.5f },
+            // 原版4级
+            new EquipDef { id="sm_eq_normal",  name="普通装备",       qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f },
+            new EquipDef { id="sm_eq_fine",    name="精良装备",       qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f },
+            new EquipDef { id="sm_eq_epic",    name="史诗装备",       qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.8f, hpMul=1.6f },
+            new EquipDef { id="sm_eq_legend",  name="传说装备",       qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.5f, hpMul=2.2f },
+            // 扩展：原著金色=宇宙宝物级（在传说之上）
+            new EquipDef { id="sm_eq_gold",    name="金色·宇宙宝物级", qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.0f, hpMul=3.5f },
+            // 扩展：宇宙奇观级（时空琥珀级别，具有"绝对性"）
+            new EquipDef { id="sm_eq_wonder",  name="宇宙奇观级",     qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=8.0f, hpMul=7.0f },
+            // 扩展：超神级（仅超神机械师可造，原著最高）
+            new EquipDef { id="sm_eq_super",   name="超神级装备",     qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=15.0f, hpMul=12.0f },
         };
 
         // 上次生命值（检测战斗结束）
@@ -70,11 +80,11 @@ namespace SuperMech.Code
                 ((ItemAsset)asset).animated = false;
                 ((ItemAsset)asset).is_pool_weapon = false;
                 ((ItemAsset)asset).quality = def.rarity;
-                ((ItemAsset)asset).rarity = (int)def.rarity;
+                ((ItemAsset)asset).rarity = def.qualityLevel; // 扩展品质等级（int，可超过原版4级）
                 ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
                 ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = def.dmgMul;
                 ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = def.hpMul;
-                ((BaseUnlockableAsset)asset).path_icon = "ui/Icons/actor_traits/iconBlessing";
+                ((BaseUnlockableAsset)asset).path_icon = def.icon;
                 ((BaseUnlockableAsset)asset).unlock(true);
 
                 LocalizedTextManager.add("item_" + def.id, def.name, pReplace: true);
@@ -156,8 +166,10 @@ namespace SuperMech.Code
             float dropChance = SuperMechConfig.RelicDropRate + rank * 0.01f;
             if (Random.value > dropChance) return;
 
-            // 品质roll：基础0-1，阶位越高roll上限越高（最高金色index4）
-            int maxQuality = Mathf.Min(1 + rank / 3, 4);
+            // 品质roll：阶位越高roll上限越高
+            // F-D(0-3):最高精良(1), C-B(4-7):最高史诗(2), A-S(8-10):最高传说(3)
+            // S+-SS(11-12):最高金色(4), X(13):最高宇宙奇观(5), 超神级(6)不掉落只能造
+            int maxQuality = rank <= 3 ? 1 : rank <= 7 ? 2 : rank <= 10 ? 3 : rank <= 12 ? 4 : 5;
             int quality = Random.Range(0, maxQuality + 1);
 
             EquipItem(a, quality);
