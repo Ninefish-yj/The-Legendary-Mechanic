@@ -6,42 +6,39 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 装备系统（原著+原版EquipmentAsset）：
-    /// 原著ch1040："金色品质，便代表着宇宙宝物级的装备"。
-    /// 用原版EquipmentAsset注册装备物品，设置品质和base_stats，
+    /// 装备系统（原著9级品质 + 原版EquipmentAsset兼容）：
+    /// 原著品质（从原文提取）：灰→绿→蓝→淡紫→紫→粉(珍稀)→橙(传说)→银橙(使徒兵器)→金(宇宙宝物级)
+    /// 用原版EquipmentAsset注册装备物品，走原版装备系统（装备槽/属性merge）。
+    /// 兼容方案：ItemAsset.rarity(int)存9级品质0-8，quality(Rarity枚举)映射到原版4级（0→R0,1→R1,2→R2,3+→R3）。
     /// 单位装备后原版自动merge属性（Actor.cs:1829 stats.mergeStats(equipmentAsset.base_stats)）。
     /// 不直接加单位身上——单位不是装备。
-    /// 品质7级（在原版4级Rarity基础上扩展）：
-    /// 普通(R0)→精良(R1)→史诗(R2)→传说(R3)→金色·宇宙宝物级→宇宙奇观级→超神级
-    /// 原版Rarity枚举只有4级，金色及以上用int rarity字段扩展，quality取R3_Legendary。
     /// </summary>
     public static class SuperMechRelic
     {
-        // 装备品质定义（id, 名称, 品质等级int, 原版Rarity, 图标, 伤害倍率, 生命倍率）
+        // 装备品质定义（原著9级）
         public class EquipDef
         {
             public string id;
-            public string name;
-            public int qualityLevel;  // 扩展品质等级 0-6
-            public Rarity rarity;     // 原版Rarity（超过3都取R3）
+            public string name;        // 原著品质名
+            public int qualityLevel;   // 9级品质 0-8
+            public Rarity rarity;      // 映射到原版Rarity（兼容原版UI）
             public string icon;
             public float dmgMul;
             public float hpMul;
         }
 
+        // 原著9级品质（从原文提取）
         public static readonly List<EquipDef> Equipments = new List<EquipDef>
         {
-            // 原版4级
-            new EquipDef { id="sm_eq_normal",  name="普通装备",       qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f },
-            new EquipDef { id="sm_eq_fine",    name="精良装备",       qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f },
-            new EquipDef { id="sm_eq_epic",    name="史诗装备",       qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.8f, hpMul=1.6f },
-            new EquipDef { id="sm_eq_legend",  name="传说装备",       qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.5f, hpMul=2.2f },
-            // 扩展：原著金色=宇宙宝物级（在传说之上）
-            new EquipDef { id="sm_eq_gold",    name="金色·宇宙宝物级", qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.0f, hpMul=3.5f },
-            // 扩展：宇宙奇观级（时空琥珀级别，具有"绝对性"）
-            new EquipDef { id="sm_eq_wonder",  name="宇宙奇观级",     qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=8.0f, hpMul=7.0f },
-            // 扩展：超神级（仅超神机械师可造，原著最高）
-            new EquipDef { id="sm_eq_super",   name="超神级装备",     qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=15.0f, hpMul=12.0f },
+            new EquipDef { id="sm_eq_gray",    name="灰色",       qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f },
+            new EquipDef { id="sm_eq_green",   name="绿色",       qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f },
+            new EquipDef { id="sm_eq_blue",    name="蓝色",       qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f },
+            new EquipDef { id="sm_eq_lightpurple", name="淡紫色", qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.7f, hpMul=1.5f },
+            new EquipDef { id="sm_eq_purple",  name="紫色",       qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.2f, hpMul=1.8f },
+            new EquipDef { id="sm_eq_pink",    name="粉色·珍稀",  qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=3.0f, hpMul=2.5f },
+            new EquipDef { id="sm_eq_orange",  name="橙色·传说",  qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f },
+            new EquipDef { id="sm_eq_silverorange", name="银橙色·使徒兵器", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f },
+            new EquipDef { id="sm_eq_gold",    name="金色·宇宙宝物级", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f },
         };
 
         // 上次生命值（检测战斗结束）
@@ -109,7 +106,7 @@ namespace SuperMech.Code
             givePower.click_action += (WorldTile tile, string powerId) =>
             {
                 if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { EquipItem(a, 4); }); // index 4 = 金色
+                tile.doUnits(delegate (Actor a) { EquipItem(a, 8); }); // index 8 = 金色·宇宙宝物级
                 return true;
             };
             AssetManager.powers.add(givePower);
@@ -166,10 +163,10 @@ namespace SuperMech.Code
             float dropChance = SuperMechConfig.RelicDropRate + rank * 0.01f;
             if (Random.value > dropChance) return;
 
-            // 品质roll：阶位越高roll上限越高
-            // F-D(0-3):最高精良(1), C-B(4-7):最高史诗(2), A-S(8-10):最高传说(3)
-            // S+-SS(11-12):最高金色(4), X(13):最高宇宙奇观(5), 超神级(6)不掉落只能造
-            int maxQuality = rank <= 3 ? 1 : rank <= 7 ? 2 : rank <= 10 ? 3 : rank <= 12 ? 4 : 5;
+            // 品质roll：阶位越高roll上限越高（原著9级）
+            // F-D(0-3):最高绿色(1), C-B(4-7):最高蓝色(2), A-S(8-10):最高紫色(4)
+            // S+-SS(11-12):最高橙色(6), X(13):最高银橙色(7), 金色(8)不掉落只能造
+            int maxQuality = rank <= 3 ? 1 : rank <= 7 ? 2 : rank <= 10 ? 4 : rank <= 12 ? 6 : 7;
             int quality = Random.Range(0, maxQuality + 1);
 
             EquipItem(a, quality);
