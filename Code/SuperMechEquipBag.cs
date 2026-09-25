@@ -92,6 +92,8 @@ namespace SuperMech.Code
                     slot.takeAwayItem();
                 }
             }
+            // 清除装备词条
+            SuperMechEquipAffix.OnUnequip(a);
             return true;
         }
 

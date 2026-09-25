@@ -211,6 +211,8 @@ namespace SuperMech.Code
                 if (item == null) return;
                 item.calculateValues();
                 slot.setItem(item, a);
+                // 装备词条：根据品质roll随机属性
+                SuperMechEquipAffix.OnEquip(a, qualityIndex);
             }
             catch (System.Exception e)
             {

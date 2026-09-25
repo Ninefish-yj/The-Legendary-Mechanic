@@ -133,6 +133,9 @@ namespace SuperMech.Code
                     float xpGain = 100f * Mathf.Pow(2.5f, targetRankIdx);
                     SuperMechAwakened.AddXp(killer, xpGain);
                 }
+
+                // ===== 4. 装备掉落：击杀单位概率掉落装备（原著：超能者掉落装备/材料）=====
+                SuperMechEquipDrop.TryDrop(killer, target);
             }
             catch
             {

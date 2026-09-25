@@ -27,6 +27,7 @@ namespace SuperMech
             SuperMechCustomStats.Register();  // 自定义属性（气力/能级/械力等），在特质注册前
             SuperMechTraits.Register();
             SuperMechKnowledge.Register();
+            SuperMechKnowledgeSynergy.Register();
             SuperMechQi.Register();
             SuperMechCorePower.Register();
             SuperMechPerks.Register();

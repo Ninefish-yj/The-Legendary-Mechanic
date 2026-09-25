@@ -216,6 +216,23 @@ namespace SuperMech.Code
 
             // 总计
             AddHeader(_container.transform, $"已解锁: {totalUnlocked} / {totalAll}");
+
+            // 知识协同效应（特定知识组合触发额外加成）
+            var synergies = SuperMechKnowledgeSynergy.GetActiveSynergies(actor);
+            if (synergies.Count > 0)
+            {
+                AddSectionHeader(_container.transform, $"知识协同（{synergies.Count}个已激活）");
+                foreach (var syn in synergies)
+                {
+                    string bonusText = "";
+                    if (syn.dmgMul > 1f) bonusText += $"伤害+{((syn.dmgMul - 1f) * 100):0}% ";
+                    if (syn.hpMul > 1f) bonusText += $"生命+{((syn.hpMul - 1f) * 100):0}% ";
+                    if (syn.speedMul > 1f) bonusText += $"攻速+{((syn.speedMul - 1f) * 100):0}% ";
+                    if (syn.qiBonus > 0) bonusText += $"气力+{syn.qiBonus:0} ";
+                    if (syn.potentialBonus > 0) bonusText += $"潜能+{syn.potentialBonus}";
+                    AddInfoRow(_container.transform, syn.name, bonusText.Trim());
+                }
+            }
         }
 
         private static string GetTreeName(string prefix)

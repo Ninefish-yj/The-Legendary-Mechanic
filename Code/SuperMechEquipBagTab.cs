@@ -218,6 +218,19 @@ namespace SuperMech.Code
                 Color qColor = GetQualityColor(cur.qualityLevel);
                 AddText(_container.transform, $"当前装备：{cur.name}", 11, TextAnchor.MiddleLeft, qColor);
                 AddText(_container.transform, $"  伤害×{cur.dmgMul}  生命×{cur.hpMul}  品质：{GetQualityName(cur.qualityLevel)}", 9, TextAnchor.MiddleLeft, new Color(0.7f, 0.7f, 0.7f));
+
+                // 装备词条（随机属性）
+                var affixes = SuperMechEquipAffix.GetAffixes(actor);
+                if (affixes.Count > 0)
+                {
+                    AddText(_container.transform, $"  词条（{affixes.Count}）：", 9, TextAnchor.MiddleLeft, new Color(0.85f, 0.75f, 0.4f));
+                    foreach (var affix in affixes)
+                    {
+                        string valText = affix.isMultiplier ? $"+{(affix.value * 100):0}%" : $"+{affix.value:0.##}";
+                        AddText(_container.transform, $"    · {affix.name} {valText}", 8, TextAnchor.MiddleLeft, new Color(0.75f, 0.7f, 0.55f));
+                    }
+                }
+
                 AddButton(_container.transform, "卸下当前装备", () =>
                 {
                     SuperMechEquipBag.UnequipToBag(actor);

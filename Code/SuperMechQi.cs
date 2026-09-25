@@ -112,11 +112,15 @@ namespace SuperMech.Code
             // Lv21≈16x, Lv25≈23x, Lv29≈30x, Lv40≈57x（高阶位增长感强但不爆炸）
             float qiMul = 1f + level * level * 0.02f * stageMul;
 
+            // 知识协同效应加成（特定知识组合触发额外倍率）
+            var synBonus = SuperMechKnowledgeSynergy.GetBonus(a);
+            qiMul *= synBonus.dmgMul;
+
             stats["multiplier_damage"] = qiMul;
-            stats["multiplier_health"] = qiMul * 1.3f;
+            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul;
             stats["multiplier_stamina"] = qiMul * 1.2f;
             stats["multiplier_armor"] = 1f + level * 0.025f * stageMul;
-            stats["multiplier_speed"] = 1f + level * 0.012f * stageMul;
+            stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul;
             stats["multiplier_crit"] = 1f + level * 0.018f * stageMul;
             stats["experience"] = 1f + level * 0.01f;
 
