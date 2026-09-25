@@ -118,11 +118,11 @@ namespace SuperMech.Code
                     string targetId = SuperMechRanks.All[targetIdx].id;
                     if (!a.hasTrait(targetId))
                     {
-                        // 移除旧的主阶位特质
-                        foreach (var r in SuperMechRanks.All)
+                        // 移除旧的主阶位特质（用索引遍历，避免每次ToArray）
+                        for (int i = 0; i < SuperMechRanks.All.Count; i++)
                         {
-                            if (!SuperMechRanks.IsPlusRank(System.Array.IndexOf(SuperMechRanks.All.ToArray(), r))
-                                && a.hasTrait(r.id) && r.id != targetId)
+                            var r = SuperMechRanks.All[i];
+                            if (!SuperMechRanks.IsPlusRank(i) && a.hasTrait(r.id) && r.id != targetId)
                                 a.removeTrait(r.id);
                         }
                         a.addTrait(targetId);
@@ -132,11 +132,10 @@ namespace SuperMech.Code
 
                 Debug.Log($"[超神机械师] {a.name} 阶位变更 {SuperMechRanks.All[targetIdx].name}（欧纳≈{onar:F0}）");
 
-                // 星海人阶位突破确认（原著ch51/ch383/ch417）
+                // 星海人阶位突破确认（原著ch51/ch383）
                 // ch51：气力很大部分决定能级与位阶，气力等级标准公开（lv1=10,lv2=50...）
                 // ch383：突破阶位后异能产生质变，掌握新用法
-                // ch417：职业等级与阶位有对应关系（六十级=C级垫底）
-                // 星海人没有面板，但能通过气力层次、异能质变、职业等级感知自身阶位
+                // 星海人没有面板，但能通过气力层次、异能质变、战斗力感知自身阶位
                 if (!SuperMechAwakened.IsAwakened(a) && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx > oldExact)
                 {
                     string rankName = SuperMechRanks.All[targetIdx].name;

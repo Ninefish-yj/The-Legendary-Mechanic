@@ -100,8 +100,8 @@ namespace SuperMech.Code
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
                     {
-                        float? iv = stats["intelligence"];
-                        if (iv.HasValue) intel = iv.Value;
+                        float iv = stats["intelligence"];
+                        intel = iv;
                     }
                     float amount = 0.9f * (1f + intel * 0.02f); // 智力越高效果越强
                     SuperMechQi.AddQi(a, amount);

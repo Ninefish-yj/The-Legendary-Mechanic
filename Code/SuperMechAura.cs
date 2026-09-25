@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NeoModLoader.services;
 
-namespace SuperMech
+namespace SuperMech.Code
 {
     /// <summary>
     /// 气势震慑系统（原著ch378/ch562/ch618/ch797/ch1006）
@@ -105,10 +105,20 @@ namespace SuperMech
 
         private static void ApplyEffects()
         {
-            // 应用震慑效果到单位stats
+            // 只遍历被震慑/眩晕的单位（从字典取），不遍历全场
+            if (_suppressed.Count == 0 && _stunned.Count == 0) return;
+
+            // 收集所有受影响的id
+            var affectedIds = new HashSet<long>();
+            foreach (var id in _suppressed.Keys) affectedIds.Add(id);
+            foreach (var id in _stunned.Keys) affectedIds.Add(id);
+
+            // 在全场单位中找到这些id（WorldBox单位数通常<1000，可接受）
             foreach (var actor in World.world.units)
             {
                 if (actor == null || !actor.isAlive()) continue;
+                if (!affectedIds.Contains(actor.id)) continue;
+
                 var stats = SuperMechStats.Of(actor);
                 if (stats == null) continue;
 

@@ -294,8 +294,8 @@ namespace SuperMech.Code
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
                     {
-                        float? iv = stats["intelligence"];
-                        if (iv.HasValue) intel = 1f + iv.Value * 0.02f;
+                        float iv = stats["intelligence"];
+                        intel = 1f + iv * 0.02f;
                     }
                     // 恢复速度：基于智力，恢复到上限为止
                     float recovery = (2f + max * 0.005f) * intel * tickInterval * SuperMechConfig.QiGrowthRate;

@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using NeoModLoader.services;
 
-namespace SuperMech
+namespace SuperMech.Code
 {
     /// <summary>
     /// 传说度系统（原著ch1196/ch1135）

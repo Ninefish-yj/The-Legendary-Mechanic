@@ -23,6 +23,9 @@ namespace SuperMech.Code
         /// </summary>
         public static void Tick()
         {
+            // 全局保护：世界未加载时不执行任何tick
+            if (World.world == null || World.world.map == null) return;
+
             _tickCounter++;
             int group = _tickCounter % 4;
 
@@ -109,6 +112,8 @@ namespace SuperMech.Code
             try { SuperMechRace.Clear(); } catch { }
             try { SuperMechAdvancement.Clear(); } catch { }
             try { SuperMechAura.Clear(); } catch { }
+            try { SuperMechCrafting.Clear(); } catch { }
+            try { SuperMechPotentialRating.Clear(); } catch { }
             Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");
         }
     }

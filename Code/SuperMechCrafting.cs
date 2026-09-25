@@ -108,8 +108,8 @@ namespace SuperMech.Code
                         var stats = SuperMechStats.Of(u);
                         if (stats != null)
                         {
-                            float? iv = stats["intelligence"];
-                            if (iv.HasValue) intel = 1f + iv.Value * 0.05f;
+                            float iv = stats["intelligence"];
+                            intel = 1f + iv * 0.05f;
                         }
                         float perfection = Mathf.Clamp(0.5f + intel * 0.1f + stage * 0.03f, 0.5f, 1.5f);
 
@@ -169,6 +169,13 @@ namespace SuperMech.Code
         private static int GetMechStageTier(Actor a)
         {
             return SuperMechStage.GetStage(a);
+        }
+
+        /// <summary>世界切换时清空冷却和召唤物追踪。</summary>
+        public static void Clear()
+        {
+            _cooldown.Clear();
+            _summonedIds.Clear();
         }
     }
 }
