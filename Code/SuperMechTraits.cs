@@ -87,12 +87,22 @@ namespace SuperMech.Code
             }
 
             // 2. 五系天赋（原著没有"觉醒"概念，超能者自然觉醒，天赋决定系别）
-            //    机械=械感，武道=体魄，异能=异能潜力，魔法=魔法天赋，念力=精神天赋
-            AddClassTrait(ClassPsi,    "异能潜力（基因树）", 3, 0, 0);
-            AddClassTrait(ClassMartial, "体魄天赋（御气技巧树）", 0, 3, 2);
-            AddClassTrait(ClassMech,   "械感天赋（机械知识树）", 2, 0, 0);
-            AddClassTrait(ClassMage,   "魔法天赋（魔法知识树）", 4, 0, 0);
-            AddClassTrait(ClassMind,   "精神天赋（精神修炼树）", 3, 0, 0);
+            //    用原版BaseStats属性模拟原著天赋：械感=智力+经验获取，体魄=战术+耐力+攻速， etc.
+            AddClassTrait(ClassPsi,    "异能潜力（基因树）", 3, 0, 0,
+                new System.Collections.Generic.Dictionary<string, float> {
+                    {"damage", 5f}, {"multiplier_damage", 1.05f}, {"mana", 30f} });
+            AddClassTrait(ClassMartial, "体魄天赋（御气技巧树）", 0, 3, 2,
+                new System.Collections.Generic.Dictionary<string, float> {
+                    {"damage", 10f}, {"attack_speed", 1.10f}, {"armor", 5f} });
+            AddClassTrait(ClassMech,   "械感天赋（机械知识树）", 2, 0, 0,
+                new System.Collections.Generic.Dictionary<string, float> {
+                    {"experience", 1.10f}, {"attack_speed", 1.05f} });
+            AddClassTrait(ClassMage,   "魔法天赋（魔法知识树）", 4, 0, 0,
+                new System.Collections.Generic.Dictionary<string, float> {
+                    {"mana", 50f}, {"multiplier_damage", 1.05f}, {"intelligence", 1f} });
+            AddClassTrait(ClassMind,   "精神天赋（精神修炼树）", 3, 0, 0,
+                new System.Collections.Generic.Dictionary<string, float> {
+                    {"mana", 40f}, {"dodge", 0.05f}, {"attack_speed", 1.03f} });
 
             // 3. 种族进化移至 SuperMechRace.cs（原著6阶段，与阶位挂钩自动进化）
 
@@ -104,7 +114,8 @@ namespace SuperMech.Code
             Debug.Log("[超神机械师] 特质注册完成：阶位9(主阶位) + 五系觉醒5 + 职业技能3");
         }
 
-        private static void AddClassTrait(string id, string name, int intell, int str, int stam)
+        private static void AddClassTrait(string id, string name, int intell, int str, int stam,
+            System.Collections.Generic.Dictionary<string, float> extraStats = null)
         {
             var t = new ActorTrait
             {
@@ -117,6 +128,14 @@ namespace SuperMech.Code
             t.base_stats["intelligence"] = intell;
             t.base_stats["warfare"] = str;
             t.base_stats["stamina"] = stam;
+            // 追加专属属性（原著天赋效果，用原版BaseStats key模拟）
+            if (extraStats != null)
+            {
+                foreach (var kv in extraStats)
+                {
+                    t.base_stats[kv.Key] = kv.Value;
+                }
+            }
             // 五系各有不同战斗风格（绑定原版ActionLibrary战斗动作）
             switch (id)
             {
