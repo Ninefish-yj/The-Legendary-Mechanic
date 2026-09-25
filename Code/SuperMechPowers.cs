@@ -21,6 +21,7 @@ namespace SuperMech.Code
         public const string UnlockVirtual = "sm_unlock_virtual";
         public const string MechFusion = "sm_mech_fusion";
         public const string KnowledgeFusion = "sm_knowledge_fusion";
+        public const string CraftEquip = "sm_craft_equip";
 
         public static void Register()
         {
@@ -47,7 +48,10 @@ namespace SuperMech.Code
             // 知识融合（消耗经验融合知识获得图纸，原著ch107）
             AddKnowledgeFusionPower(KnowledgeFusion, "知识融合");
 
-            Debug.Log("[超神机械师] 神权注册完成：2召唤 + 1天灾 + 1查看 + 3知识解锁 + 1械力融合 + 1知识融合");
+            // 制造装备（机械系专属，用学会的图纸制造装备）
+            AddCraftEquipPower(CraftEquip, "制造装备");
+
+            Debug.Log("[超神机械师] 神权注册完成：2召唤 + 1天灾 + 1查看 + 3知识解锁 + 1械力融合 + 1知识融合 + 1制造装备");
         }
 
         private static void AddSpawnPower(string id, string name, string icon, string creatureId, int mechStage)
@@ -311,6 +315,54 @@ namespace SuperMech.Code
                     bool success = SuperMechKnowledgeFusion.TryFuse(u, recipe.id);
                     Debug.Log($"[超神机械师] {u.name} 知识融合{(success ? "成功：" + recipe.name : "失败")}");
                     applied = true;
+                });
+                return applied;
+            };
+            AssetManager.powers.add(p);
+        }
+
+        /// <summary>制造装备：机械系用学会的图纸制造装备（原著：图纸→制造→装备）。</summary>
+        private static void AddCraftEquipPower(string id, string name)
+        {
+            LocalizedTextManager.add(name, name, pReplace: true);
+            var p = new GodPower
+            {
+                id = id, name = name, path_icon = "ui/powers/power_summon_units",
+                rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
+                ignore_fast_spawn = true, hold_action = false,
+                unselect_when_window = true, requires_premium = false
+            };
+            p.click_action += (tile, powerId) =>
+            {
+                if (tile == null) return false;
+                bool applied = false;
+                tile.doUnits(u =>
+                {
+                    if (u == null || applied) return;
+                    if (!SuperMechBranch.GetClass(u).Contains("机械"))
+                    {
+                        Debug.Log($"[超神机械师] {u.name} 不是机械系，无法制造装备");
+                        return;
+                    }
+                    var learned = SuperMechKnowledgeFusion.GetLearnedRecipes(u);
+                    if (learned.Count == 0)
+                    {
+                        Debug.Log($"[超神机械师] {u.name} 还没学会任何图纸，先知识融合");
+                        return;
+                    }
+                    if (SuperMechKnowledgeFusion.IsCraftOnCooldown(u))
+                    {
+                        Debug.Log($"[超神机械师] {u.name} 制造冷却中");
+                        return;
+                    }
+                    // 随机选择一个学会的图纸制造
+                    var recipe = learned[UnityEngine.Random.Range(0, learned.Count)];
+                    bool success = SuperMechKnowledgeFusion.CraftEquip(u, recipe.id);
+                    if (success)
+                    {
+                        Debug.Log($"[超神机械师] {u.name} 制造出：{recipe.equipName}");
+                        applied = true;
+                    }
                 });
                 return applied;
             };

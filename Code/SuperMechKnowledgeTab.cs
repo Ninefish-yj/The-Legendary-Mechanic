@@ -242,10 +242,12 @@ namespace SuperMech.Code
                 AddSectionHeader(_container.transform, $"知识融合（已学会{learnedRecipes.Count}个）");
 
                 // 已学会的融合知识（永久属性加成）
+                bool isMech = SuperMechBranch.GetClass(actor).Contains("机械");
                 foreach (var recipe in learnedRecipes)
                 {
                     string bonusText = $"伤害×{recipe.dmgMul} 生命×{recipe.hpMul} 攻速×{recipe.speedMul}";
-                    AddInfoRow(_container.transform, $"✓ {recipe.equipName}", $"[{recipe.productType}] {bonusText}");
+                    string craftHint = (isMech && recipe.productType == "图纸") ? " [可制造]" : "";
+                    AddInfoRow(_container.transform, $"✓ {recipe.equipName}{craftHint}", $"[{recipe.productType}] {bonusText}");
                 }
 
                 // 可融合的配方

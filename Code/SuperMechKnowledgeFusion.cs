@@ -253,6 +253,123 @@ namespace SuperMech.Code
             return list;
         }
 
+        /// <summary>制造冷却（actorId → 下次可制造时间）。</summary>
+        private static readonly Dictionary<long, float> _craftCooldown = new Dictionary<long, float>();
+
+        /// <summary>机械系专属：用学会的图纸制造装备（原著：图纸→制造→装备）。</summary>
+        public static bool CraftEquip(Actor a, string recipeId)
+        {
+            if (a == null) return false;
+            // 只有机械系能制造装备
+            if (!SuperMechBranch.GetClass(a).Contains("机械")) return false;
+            // 检查是否学会了图纸
+            if (!_unlockedRecipes.TryGetValue(a.id, out var set) || !set.Contains(recipeId)) return false;
+            // 检查制造冷却
+            if (_craftCooldown.TryGetValue(a.id, out var cd) && Time.time < cd) return false;
+
+            FusionRecipe recipe = null;
+            foreach (var r in _recipes)
+            {
+                if (r.id == recipeId) { recipe = r; break; }
+            }
+            if (recipe == null) return false;
+
+            // 制造消耗：气力（原著：制造消耗精力）
+            float craftCost = recipe.xpCost * 0.1f;
+            if (SuperMechQi.GetQi(a) < craftCost) return false;
+            SuperMechQi.SpendQi(a, craftCost);
+
+            // 设置制造冷却（15秒）
+            _craftCooldown[a.id] = Time.time + 15f;
+
+            // 动态注册装备物品（如果是首次制造这个图纸）
+            RegisterCraftedEquip(recipe);
+
+            // 给单位装备制造出的装备
+            EquipCraftedItem(a, recipe.equipId);
+
+            Debug.Log($"[超神机械师] {a.name} 用图纸制造出：{recipe.equipName}（消耗{craftCost:0}气力）");
+            return true;
+        }
+
+        /// <summary>动态注册制造出的装备到物品库。</summary>
+        private static void RegisterCraftedEquip(FusionRecipe recipe)
+        {
+            string craftedId = recipe.equipId + "_crafted";
+            if (_registeredEquips.ContainsKey(craftedId)) return;
+
+            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
+            if (library == null) return;
+
+            EquipmentAsset template = library.get("$amulet") ?? library.get("$ring");
+            if (template == null) return;
+
+            EquipmentAsset asset = library.clone(craftedId, template.id);
+            if (asset == null) return;
+
+            ((Asset)asset).id = craftedId;
+            ((ItemAsset)asset).equipment_type = EquipmentType.Amulet;
+            ((ItemAsset)asset).material = string.Empty;
+            ((ItemAsset)asset).animated = false;
+            ((ItemAsset)asset).is_pool_weapon = false;
+            ((ItemAsset)asset).quality = Rarity.R3_Legendary;
+            ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = recipe.dmgMul;
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = recipe.hpMul;
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_speed"] = recipe.speedMul;
+            ((BaseUnlockableAsset)asset).unlock(true);
+
+            LocalizedTextManager.add(craftedId, recipe.equipName, pReplace: true);
+            _registeredEquips[craftedId] = recipe;
+        }
+
+        /// <summary>给单位装备制造出的物品。</summary>
+        private static void EquipCraftedItem(Actor a, string equipId)
+        {
+            if (a == null || a.equipment == null) return;
+            string craftedId = equipId + "_crafted";
+
+            var slot = a.equipment.getSlot(EquipmentType.Amulet);
+            if (slot == null) return;
+
+            // 旧装备放回背包
+            if (!slot.isEmpty())
+            {
+                Item current = slot.getItem();
+                if (current != null)
+                {
+                    int currentIdx = SuperMechRelic.GetEquipIndex(current);
+                    if (currentIdx >= 0) SuperMechEquipBag.AddToBag(a, SuperMechRelic.Equipments[currentIdx].id);
+                }
+                slot.takeAwayItem();
+            }
+
+            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
+            EquipmentAsset asset = library.get(craftedId);
+            if (asset == null) return;
+
+            try
+            {
+                Item item = World.world.items.generateItem(asset, a.kingdom, a.getName(), 0, a, 1, false);
+                if (item == null) return;
+                item.calculateValues();
+                slot.setItem(item, a);
+                SuperMechEquipAffix.OnEquip(a, 5); // 制造装备按粉色品质roll词条
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[超神机械师] 装备制造产物失败: {e.Message}");
+            }
+        }
+
+        /// <summary>是否在制造冷却中。</summary>
+        public static bool IsCraftOnCooldown(Actor a)
+        {
+            if (a != null && _craftCooldown.TryGetValue(a.id, out var cd))
+                return Time.time < cd;
+            return false;
+        }
+
         /// <summary>获取单位已融合的图纸数量。</summary>
         public static int GetUnlockedCount(Actor a)
         {
@@ -278,6 +395,6 @@ namespace SuperMech.Code
         }
 
         /// <summary>清空。</summary>
-        public static void Clear() { _unlockedRecipes.Clear(); _cooldown.Clear(); }
+        public static void Clear() { _unlockedRecipes.Clear(); _cooldown.Clear(); _craftCooldown.Clear(); }
     }
 }
