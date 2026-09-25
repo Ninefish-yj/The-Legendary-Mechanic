@@ -379,8 +379,6 @@ namespace SuperMech.Code
                     break;
             }
         }
-            }
-        }
 
         private static int CountUnlocked()
         {
