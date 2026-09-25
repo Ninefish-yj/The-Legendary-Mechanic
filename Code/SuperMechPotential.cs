@@ -82,6 +82,11 @@ namespace SuperMech.Code
                 _unlockedNodes[a.id] = set;
             }
             set.Add(nodeId);
+            // 降临者学习知识获得经验（ch132：学基础组装得1000经验）
+            if (SuperMechAwakened.IsAwakened(a))
+            {
+                SuperMechAwakened.AddXp(a, 1000f);
+            }
             if (SuperMechConfig.LogVerbose)
                 Debug.Log($"[超神机械师] {a.name} 解锁知识节点 {nodeId}（消耗{cost}潜能点，剩余{GetPotential(a)}）");
             return true;

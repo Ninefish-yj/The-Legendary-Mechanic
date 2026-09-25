@@ -133,11 +133,15 @@ namespace SuperMech.Code
                             {
                                 if (AssetManager.traits.get(tid) != null) spawned.addTrait(tid);
                             }
-                            // 给制造者气力和经验（原著：制造获得经验）
+                            // 给制造者气力和经验（原著ch178：造机甲得20万制造经验）
                             float qiGain = r.qiBase * perfection;
-                            float expGain = r.expBase * perfection;
+                            float expGain = r.expBase * perfection * 100f; // expBase是基础值，×100达到原著量级
                             SuperMechQi.AddQi(u, qiGain);
-                            // 经验通过加气力间接转化（气力升级给潜能点）
+                            // 降临者制造获得经验（玩家面板：制造奖励）
+                            if (SuperMechAwakened.IsAwakened(u))
+                            {
+                                SuperMechAwakened.AddXp(u, expGain);
+                            }
 
                             // 【降临者专属】打造高级装备获得神性蜕变点数（ch1052/1053）
                             // 只有有面板的玩家能通过这个渠道获得点数，土著察觉不到
