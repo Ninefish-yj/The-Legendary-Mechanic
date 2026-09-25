@@ -125,16 +125,7 @@ namespace SuperMech.Code
                 // ===== 2. 传说度：击杀高阶单位获得（ch1196传奇事迹影响突破）=====
                 SuperMechLegend.OnKill(killer, target);
 
-                // ===== 3. 击杀获取气力（提炼法：从击杀中提取生物能量，ch172）=====
-                if (killer.hasTrait(SuperMechTraits.RefinementMethod))
-                {
-                    // 击杀获得气力：目标阶位越高，获得越多
-                    int targetRankIdx = SuperMechAdvancement.GetExactRankIndex(target);
-                    float qiGain = 5f + targetRankIdx * 3f; // F阶+5, X阶+44
-                    SuperMechQi.AddQi(killer, qiGain);
-                }
-
-                // ===== 4. 降临者击杀获取经验（玩家面板：刷怪升级）=====
+                // ===== 3. 降临者击杀获取经验（玩家面板：刷怪升级）=====
                 if (SuperMechAwakened.IsAwakened(killer))
                 {
                     int targetRankIdx = SuperMechAdvancement.GetExactRankIndex(target);

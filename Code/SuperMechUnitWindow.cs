@@ -225,6 +225,11 @@ namespace SuperMech.Code
                 if (!string.IsNullOrEmpty(subText))
                     ShowRow(__instance, "副职业", subText);
 
+                // 行10b：提炼法锻炼进度（ch50原著：0/80次，每次消耗800经验500体力）
+                string refineText = SuperMechRefinement.GetStatusText(actor);
+                if (!string.IsNullOrEmpty(refineText))
+                    ShowRow(__instance, "提炼法", refineText);
+
                 // 行11：装备品质（9级普通装备）
                 string relic = SuperMechRelic.GetCurrentRelicName(actor);
                 if (relic != "无")
