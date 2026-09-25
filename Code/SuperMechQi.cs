@@ -157,6 +157,17 @@ namespace SuperMech.Code
             return v;
         }
 
+        /// <summary>气力增长衰减（原著：越往后越难涨）。
+        /// Lv1-5: 100%, Lv6-10: 70%, Lv11-15: 40%, Lv16-20: 20%, Lv21+: 10%（神性蜕变门槛后需特殊方式）</summary>
+        public static float GetGrowthDecay(int level)
+        {
+            if (level <= 5) return 1.0f;
+            if (level <= 10) return 0.7f;    // Lv6分水岭后变慢
+            if (level <= 15) return 0.4f;
+            if (level <= 20) return 0.2f;
+            return 0.1f;                      // Lv21+神性蜕变门槛后极难
+        }
+
         /// <summary>给单位增加气力当前值（不超过上限）。</summary>
         public static void AddQi(Actor a, float amount)
         {
@@ -291,8 +302,10 @@ namespace SuperMech.Code
                     }
 
                     // —— 实战突破：战斗中缓慢提升气力上限（原著：生死间突破）——
-                    float combatGrowth = 0.15f * tickInterval;
+                    int curLv2 = GetLevel(qi);
+                    float combatGrowth = 0.15f * tickInterval * GetGrowthDecay(curLv2);
                     if (a.hasTrait("sm_refinement")) combatGrowth *= 1.5f;
+                    if (a.hasTrait("sm_divinity_ascended")) combatGrowth *= 1.5f;
                     AddQiMax(a, combatGrowth);
                 }
                 else
@@ -319,10 +332,15 @@ namespace SuperMech.Code
 
                     // —— 修炼法：缓慢提升气力上限（原著：修炼法锻炼提升上限）——
                     // 所有超能者都有基础修炼速度（很慢），有提炼法的加速
-                    float maxGrowth = 0.05f * tickInterval * SuperMechConfig.QiGrowthRate; // 基础修炼速度
+                    // 原著：气力越往后越难涨，高阶位增长衰减
+                    int curLv = GetLevel(max);
+                    float growthDecay = GetGrowthDecay(curLv);
+                    float maxGrowth = 0.05f * tickInterval * SuperMechConfig.QiGrowthRate * growthDecay;
                     if (a.hasTrait("sm_refinement")) maxGrowth *= SuperMechConfig.RefinementBonus; // 提炼法加成
                     if (a.hasTrait("sm_em_refinement") && a.hasTrait(SuperMechTraits.ClassMech))
                         maxGrowth *= 1.5f; // 电磁因子提炼法再×1.5
+                    // 神性蜕变开启后增长效率提升（ch1039：神性蜕变是高阶成长核心）
+                    if (a.hasTrait("sm_divinity_ascended")) maxGrowth *= 1.5f;
                     AddQiMax(a, maxGrowth);
                 }
 
