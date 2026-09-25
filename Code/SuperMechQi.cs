@@ -209,13 +209,52 @@ namespace SuperMech.Code
             if (GetQiMax(a) < value) _qiMaxMap[a.id] = value;
         }
 
-        /// <summary>消耗气力（战斗/技能）。返回实际消耗量。</summary>
+        /// <summary>
+        /// 消耗气力（战斗/技能）。原著ch3链式消耗：
+        /// 1. 气力足够→直接耗气力
+        /// 2. 气力不足→耗光气力，剩余超比例耗体力（1:3，"超比例消耗体力值"）
+        /// 3. 体力不足→耗光体力，剩余扣生命（"被自身异能榨干的超能者，都是这么死的"）
+        /// 返回实际消耗的气力当量。
+        /// </summary>
         public static float SpendQi(Actor a, float amount)
         {
-            if (a == null) return 0;
+            if (a == null || amount <= 0) return 0;
             float cur = GetQi(a);
-            float spent = Mathf.Min(cur, amount);
-            _qiMap[a.id] = cur - spent;
+            float spent = 0f;
+
+            if (cur >= amount)
+            {
+                // 气力足够
+                _qiMap[a.id] = cur - amount;
+                spent = amount;
+            }
+            else
+            {
+                // 气力不足，先耗光
+                spent = cur;
+                _qiMap[a.id] = 0f;
+                float remaining = amount - cur;
+
+                // 超比例耗体力（1:3）
+                float stamina = a.getStamina();
+                float staminaCost = remaining * 3f; // 超比例
+                if (stamina >= staminaCost)
+                {
+                    a.data.stamina = Mathf.Max(0, (int)(stamina - staminaCost));
+                    spent += remaining;
+                }
+                else
+                {
+                    // 体力也不够，耗光体力，剩余扣生命
+                    spent += stamina / 3f;
+                    a.data.stamina = 0;
+                    float healthCost = (remaining - stamina / 3f) * 2f; // 体力空后扣生命更狠
+                    a.data.health = Mathf.Max(1f, a.data.health - healthCost);
+                    spent += (stamina / 3f);
+                    if (SuperMechConfig.LogVerbose)
+                        Debug.Log($"[超神机械师] {a.name} 气力体力双空，被异能榨干！扣生命{healthCost:F0}");
+                }
+            }
             return spent;
         }
 
@@ -287,19 +326,11 @@ namespace SuperMech.Code
 
                 if (inCombat)
                 {
-                    // —— 战斗中：消耗气力当前值（原著：释放技能消耗气力）——
+                    // 战斗中消耗气力（SpendQi自动处理气力→体力→生命链式消耗）
                     int qiLv = GetLevel(qi);
                     float consume = (1f + qiLv * 0.3f) * tickInterval;
                     SpendQi(a, consume);
                     qi = GetQi(a);
-
-                    // 气力空了：消耗生命（原著：气力空→耗体力→耗生命）
-                    if (qi <= 0f && a.data.health > 1f)
-                    {
-                        a.data.health = Mathf.Max(1, (int)(a.data.health - 2f * tickInterval));
-                        if (SuperMechConfig.LogVerbose)
-                            Debug.Log($"[超神机械师] {a.name} 气力耗尽，消耗生命！");
-                    }
 
                     // —— 实战突破：战斗中缓慢提升气力上限（原著：生死间突破）——
                     int curLv2 = GetLevel(qi);
@@ -325,6 +356,17 @@ namespace SuperMech.Code
                     if (a.hasTrait("sm_refinement")) recovery *= SuperMechConfig.RefinementBonus;
                     if (a.hasTrait(SuperMechTraits.ClassPsi))
                         recovery *= SuperMechPotentialRating.GetQiGrowthMult(a);
+
+                    // 原著：气力可消耗体力快速恢复（体力>30%时触发，1体力=2气力）
+                    float stam = a.getStamina();
+                    float stamMax = a.getMaxStamina();
+                    if (stamMax > 0 && stam / stamMax > 0.3f && qi < max)
+                    {
+                        float staminaCost = Mathf.Min(stam * 0.1f, (max - qi) / 2f);
+                        a.data.stamina = Mathf.Max(0, (int)(stam - staminaCost));
+                        recovery += staminaCost * 2f; // 1体力=2气力
+                    }
+
                     // 当前值恢复到上限，不超过上限
                     float newCur = Mathf.Min(qi + recovery, max);
                     _qiMap[a.id] = newCur;
