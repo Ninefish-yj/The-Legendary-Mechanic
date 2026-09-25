@@ -167,6 +167,9 @@ namespace SuperMech.Code
 
             // 职业等级（降临者）
             stats[StatProfessionLevel] = SuperMechStage.GetStage(a);
+
+            // 圣所权限（综合等级，原著ch1266：碎片=权限，影响进入圣所能带走的知识量）
+            stats[StatSanctuaryAuthority] = SuperMechSanctuary.GetTotalAuthority(a);
         }
 
         /// <summary>获取单位的自定义属性值。</summary>
