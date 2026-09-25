@@ -129,7 +129,8 @@ namespace SuperMech.Code
                 if (SuperMechAwakened.IsAwakened(killer))
                 {
                     int targetRankIdx = SuperMechAdvancement.GetExactRankIndex(target);
-                    float xpGain = 10f + targetRankIdx * 15f; // F阶+10, X阶+205
+                    // 按目标阶位给经验：F阶100，每阶×2.5，X阶约150万
+                    float xpGain = 100f * Mathf.Pow(2.5f, targetRankIdx);
                     SuperMechAwakened.AddXp(killer, xpGain);
                 }
             }

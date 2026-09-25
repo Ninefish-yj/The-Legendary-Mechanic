@@ -44,12 +44,33 @@ namespace SuperMech.Code
             999   // 14.超神（无上限）
         };
 
-        // 升级经验需求（指数增长，参考原著0/200→0/50000）
+        // 升级经验需求（原著：入门者200/级，学徒50000/级，阶段间约250倍差距）
+        // ch3: 机械入门者Lv1（0/200）
+        // ch50: 机械师学徒lv1（0/50000）
+        // ch6: 特工lv9（0/25000）
+        public static readonly float[] StageBaseXp = {
+            200f,       // 1.入门者（ch3原文）
+            50000f,     // 2.学徒（ch50原文）
+            200000f,    // 3.见习（推测，学徒2.5倍）
+            800000f,    // 4.磁环（推测）
+            2000000f,   // 5.数据（推测）
+            5000000f,   // 6.战争（推测）
+            10000000f,  // 7.虚拟（推测）
+            20000000f,  // 8.星海（推测）
+            40000000f,  // 9.真理（推测）
+            80000000f,  // 10.使徒（推测）
+            150000000f, // 11.帝皇（推测）
+            300000000f, // 12.主宰（推测）
+            500000000f, // 13.神座（推测）
+            1000000000f // 14.超神（推测）
+        };
+
         public static float GetXpNeeded(int level, int stage)
         {
-            // 基础200，每级×1.15，每阶段×2.5
-            float baseXp = 200f * Mathf.Pow(1.15f, level) * Mathf.Pow(2.5f, stage);
-            return Mathf.Round(baseXp);
+            int idx = Mathf.Clamp(stage - 1, 0, StageBaseXp.Length - 1);
+            float baseXp = StageBaseXp[idx];
+            // 每级需求递增10%（原著中高等级需要更多经验）
+            return Mathf.Round(baseXp * Mathf.Pow(1.1f, level - 1));
         }
 
         // 升级奖励（参考原著，气力奖励统一在SuperMechStage.LevelQiBonus）
@@ -289,11 +310,11 @@ namespace SuperMech.Code
             foreach (Actor a in World.world.units.units_only_alive)
             {
                 if (a == null || !IsAwakened(a)) continue;
-                // 基础经验：每tick +5（模拟时间流逝/修炼）
-                float xpGain = 5f;
-                // 受伤状态判定为战斗中，额外+20
+                // 基础经验：每tick +20（模拟时间流逝/修炼，原著玩家靠任务/刷怪）
+                float xpGain = 20f;
+                // 受伤状态判定为战斗中，额外+80（原著：战斗获取经验更快）
                 if (a.data != null && a.data.health < a.getMaxHealth() * 0.95f)
-                    xpGain += 20f;
+                    xpGain += 80f;
                 AddXp(a, xpGain);
             }
         }
