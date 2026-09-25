@@ -29,6 +29,7 @@ namespace SuperMech.Code
             public int intValue;
             public string statKey;
             public float statValue;
+            public int totalLevel;  // 额外总等级要求（0=无）
             public string desc;
         }
 
@@ -37,7 +38,8 @@ namespace SuperMech.Code
         {
             { 1, new AdvanceReq { type = ReqType.Knowledge, intValue = 1, desc = "学会1项进阶知识" } },
             { 2, new AdvanceReq { type = ReqType.Craft, intValue = 5, desc = "制造5个机械单位" } },
-            { 4, new AdvanceReq { type = ReqType.Knowledge, intValue = 5, statKey = "intelligence", statValue = 400f, desc = "智力>400+学会5项进阶知识" } },
+            // ch269：总等级80级+智力超过400点+学会5项机械系进阶知识
+            { 4, new AdvanceReq { type = ReqType.Knowledge, intValue = 5, statKey = "intelligence", statValue = 400f, totalLevel = 80, desc = "总等级80+智力>400+学会5项进阶知识" } },
             { 12, new AdvanceReq { type = ReqType.Divinity, intValue = 10, desc = "神性蜕变达到第10层" } },
         };
 
@@ -107,6 +109,8 @@ namespace SuperMech.Code
                         var stats = SuperMechStats.Of(a);
                         if (stats == null || stats[req.statKey] < req.statValue) return false;
                     }
+                    // 额外总等级要求（ch269：总等级80级）
+                    if (req.totalLevel > 0 && SuperMechAwakened.GetTotalLevel(a) < req.totalLevel) return false;
                     return knowledgeOk;
                 case ReqType.Attribute:
                     var s = SuperMechStats.Of(a);
