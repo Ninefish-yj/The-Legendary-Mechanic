@@ -102,7 +102,7 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                // 所有单位都同步自定义属性（未觉醒的显示0或基础值）
                 if (processed >= maxTracked)
                 {
                     if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue;
