@@ -238,11 +238,21 @@ namespace SuperMech.Code
             var units = World.world.units.units_only_alive;
             if (units == null) return;
             float tickInterval = SuperMechConfig.TickInterval;
+            int maxTracked = SuperMechConfig.MaxTrackedActors;
+            int processed = 0;
 
             foreach (Actor a in units)
             {
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+
+                // 性能保护：超过最大追踪数时，只处理高阶位单位（按阶位排序）
+                if (processed >= maxTracked)
+                {
+                    // 低阶位单位跳过，高阶位单位继续处理
+                    if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue; // B阶以下跳过
+                }
+                processed++;
 
                 // —— 战斗检测：血量下降=受击，进入战斗状态5秒 ——
                 float curHealth = a.data.health;

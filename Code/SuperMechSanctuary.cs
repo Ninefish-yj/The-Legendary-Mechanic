@@ -131,6 +131,7 @@ namespace SuperMech.Code
 
         public static void Save()
         {
+            if (!SuperMechConfig.SanctuaryAutoSave) return; // 关闭自动保存时不写盘
             try
             {
                 string json = JsonConvert.SerializeObject(Data, Formatting.Indented);

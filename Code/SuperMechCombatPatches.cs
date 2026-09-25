@@ -5,14 +5,15 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 战斗挂钩补丁（Harmony Prefix 拦截伤害）。
+    /// 战斗挂钩补丁（Harmony Prefix/Postfix 拦截伤害与击杀）。
     ///
-    /// 之前的问题：信息态护盾、系间克制等特殊效果只改了stats，
-    /// 但"概率免疫物理攻击"这种效果必须拦截Actor.getHit才能真正生效。
-    ///
-    /// 挂钩点：Actor.getHit Prefix
-    /// - return false = 跳过原版受击（攻击被完全格挡）
-    /// - return true = 继续原版受击
+    /// 精修内容：
+    /// 1. 信息态护盾：概率免疫物理攻击（ch1141）
+    /// 2. 超神级减伤：低阶打超神30%概率免疫
+    /// 3. 系间克制：机械↔念力互为克星，伤害×1.3（原著设定）
+    /// 4. 神性蜕变格挡：每层2%概率格挡，最多40%
+    /// 5. 气势震慑：被震慑单位攻击×0.7，速度×0.5（ch378霸王色霸气式）
+    /// 6. 击杀后：信息态转化、传说度获取、气力获取（提炼法）
     /// </summary>
     [HarmonyPatch]
     public static class SuperMechCombatPatches
@@ -40,40 +41,37 @@ namespace SuperMech.Code
 
             try
             {
-                // ===== 1. 信息态护盾：概率免疫物理攻击（ch1141：实体↔信息态切换）=====
+                Actor attacker = pAttacker as Actor;
+
+                // ===== 1. 信息态护盾：概率免疫物理攻击（ch1141）=====
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
                 {
                     if (SuperMechInfoState.TryShield(target))
                     {
-                        return false; // 完全格挡，跳过原版受击
+                        return false;
                     }
                 }
 
                 // ===== 2. 超神级（X阶）伤害减免 =====
                 int targetRank = SuperMechAdvancement.GetExactRankIndex(target);
-                if (targetRank >= 13) // X阶超神级
+                if (targetRank >= 13 && attacker != null && attacker.isAlive())
                 {
-                    // 超神级受到非超神级攻击时减伤90%
-                    Actor attacker = pAttacker as Actor;
-                    if (attacker != null && attacker.isAlive())
+                    int atkRank = SuperMechAdvancement.GetExactRankIndex(attacker);
+                    if (atkRank < 13 && Random.value < 0.3f)
                     {
-                        int atkRank = SuperMechAdvancement.GetExactRankIndex(attacker);
-                        if (atkRank < 13)
-                        {
-                            // 低阶位打超神级，伤害大幅减免（通过降低攻击者伤害实现）
-                            // 这里只能return true让原版跑，但减伤需要其他方式
-                            // 简化：超神级有概率完全免疫低阶攻击
-                            if (Random.value < 0.3f) // 30%概率免疫低阶攻击
-                            {
-                                return false;
-                            }
-                        }
+                        return false; // 30%概率免疫低阶攻击
                     }
                 }
 
-                // ===== 3. 系间克制伤害加成（ch原著：机械↔念力互为克星）=====
-                // 伤害加成通过stats multiplier实现，这里不额外处理
-                // 但可以在这里添加特殊效果（如克制时额外击退）
+                // ===== 3. 气势震慑：被震慑单位攻击降低（ch378霸王色霸气式）=====
+                if (attacker != null && attacker.isAlive() && SuperMechAura.IsSuppressed(attacker))
+                {
+                    // 震慑状态：15%概率攻击失误（模拟震慑导致的攻击失误）
+                    if (Random.value < 0.15f)
+                    {
+                        return false;
+                    }
+                }
 
                 // ===== 4. 神性蜕变减伤 =====
                 if (SuperMechDivinity.IsDivineAwakened(target))
@@ -81,11 +79,10 @@ namespace SuperMech.Code
                     int profLayers = SuperMechDivinity.GetProfLayers(target);
                     int specLayers = SuperMechDivinity.GetSpeciesLayers(target);
                     int totalLayers = profLayers + specLayers;
-                    // 每层神性蜕变减伤2%，最多40%
-                    float dr = totalLayers * 0.02f;
+                    float dr = Mathf.Min(totalLayers * 0.02f, 0.4f); // 每层2%，最多40%
                     if (Random.value < dr)
                     {
-                        return false; // 概率格挡
+                        return false;
                     }
                 }
             }
@@ -98,8 +95,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>
-        /// 击杀后处理：信息态转化（ch1267：智能瘟疫=信息态转化）。
-        /// 击杀低阶位敌人时有概率转化为信息态仆从。
+        /// 击杀后处理：信息态转化、传说度、气力获取。
         /// </summary>
         [HarmonyPostfix]
         [HarmonyPatch(typeof(Actor), nameof(Actor.getHit))]
@@ -109,27 +105,42 @@ namespace SuperMech.Code
             BaseSimObject pAttacker = null)
         {
             Actor target = __instance;
-            if (target?.data == null || target.isAlive()) return; // 只处理死亡
+            if (target?.data == null || target.isAlive()) return;
 
             try
             {
                 Actor killer = pAttacker as Actor;
-                if (killer == null || !killer.isAlive()) return;
+                if (killer == null || !killer.isAlive() || killer.data == null) return;
 
-                // 信息态转化：击杀后概率转化（Lv4以上解锁）
+                // ===== 1. 信息态转化（Lv4以上解锁，ch1267智能瘟疫）=====
                 if (SuperMechInfoState.GetLevel(killer) >= 4)
                 {
                     if (SuperMechInfoState.TryConvert(killer, target))
                     {
-                        // 转化成功：目标不死亡，变为友方（简化：恢复1点血）
                         target.data.health = 1;
-                        // 标记为信息态仆从
                         Debug.Log($"[超神机械师] {killer.name} 信息态转化 {target.name}！");
                     }
                 }
 
-                // 传说度：击杀高阶单位获得传说度（原著ch1196传奇事迹影响突破）
+                // ===== 2. 传说度：击杀高阶单位获得（ch1196传奇事迹影响突破）=====
                 SuperMechLegend.OnKill(killer, target);
+
+                // ===== 3. 击杀获取气力（提炼法：从击杀中提取生物能量，ch172）=====
+                if (killer.hasTrait(SuperMechTraits.RefinementMethod))
+                {
+                    // 击杀获得气力：目标阶位越高，获得越多
+                    int targetRankIdx = SuperMechAdvancement.GetExactRankIndex(target);
+                    float qiGain = 5f + targetRankIdx * 3f; // F阶+5, X阶+44
+                    SuperMechQi.AddQi(killer, qiGain);
+                }
+
+                // ===== 4. 降临者击杀获取经验（玩家面板：刷怪升级）=====
+                if (SuperMechAwakened.IsAwakened(killer))
+                {
+                    int targetRankIdx = SuperMechAdvancement.GetExactRankIndex(target);
+                    float xpGain = 10f + targetRankIdx * 15f; // F阶+10, X阶+205
+                    SuperMechAwakened.AddXp(killer, xpGain);
+                }
             }
             catch
             {

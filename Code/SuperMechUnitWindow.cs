@@ -81,11 +81,13 @@ namespace SuperMech.Code
                 // 行4：气力/械力（原著面板格式：128,452【Lv19】）
                 float qi = SuperMechQi.GetQi(actor);
                 float qiMax = SuperMechQi.GetQiMax(actor);
-                int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi); // 等级按上限算
+                int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
                 string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : "未入流";
                 string qiLabel = cls == "机械系" ? "械力" : "气力";
-                string qiValue = qi >= 1000 ? $"{qi:N0}" : $"{qi:F0}";
-                string qiMaxValue = qiMax > 0 ? (qiMax >= 1000 ? $"{qiMax:N0}" : $"{qiMax:F0}") : qiValue;
+                int dec = SuperMechConfig.QiDisplayDecimals;
+                string fmt = dec > 0 ? $"F{dec}" : "N0";
+                string qiValue = qi >= 1000 && dec == 0 ? $"{qi:N0}" : qi.ToString(fmt);
+                string qiMaxValue = qiMax > 0 ? (qiMax >= 1000 && dec == 0 ? $"{qiMax:N0}" : qiMax.ToString(fmt)) : qiValue;
                 ShowRow(__instance, qiLabel, $"{qiValue}/{qiMaxValue}【{qiLvText}】");
 
                 // 行5：欧纳（能级）
