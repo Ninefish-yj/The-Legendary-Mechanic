@@ -6,78 +6,113 @@ namespace SuperMech.Code
     /// <summary>
     /// 职业阶段追踪系统（内部数据，不做特质，只在单位面板显示）。
     ///
-    /// 【原著设定】百度百科：
-    /// - 机械系有明确的14阶段转职链（机械入门者→...→超神机械师）
-    /// - 其他四系原著未逐一列出阶段名，按"每系同样结构"原则同人补全
-    /// - 五系统一模式：入门者→学徒→见习→系特色阶段×6→使徒→帝皇→主宰→神座→超神
+    /// 【原著设定】
+    /// - 每个分支有独立的职业阶段名（ch175：枪炮师学徒/见习枪炮师，不是通用的"磁环机械师"）
+    /// - 机械系原著完整14阶段（磁环→数据→战争→虚拟→星海→真理→使徒→帝皇→主宰→神座→超神）
+    /// - 枪炮师高级职业叫【战争堡垒】（ch50），械武者可解锁【机甲操控师】（ch50）
+    /// - 其他四系原著未逐一列出，按"每系同样结构"原则同人补全
     /// - 转职=选分支后自动晋升阶段，阶位(F→X)是能级境界，两套独立系统
     /// </summary>
     public static class SuperMechStage
     {
-        // ===== 机械系（神器）—— 原著14阶段（百度百科明确列出）=====
-        public static readonly string[] MechStages =
+        // ===== 阶段前缀（14个，机械系来自原著，其他系同人补全）=====
+        // 索引0-2：入门者/学徒/见习（前3阶段，各分支命名不同）
+        // 索引3-13：高阶阶段前缀
+        private static readonly string[] MechPrefixes =
         {
-            "机械入门者", "机械师学徒", "见习机械师", "磁环机械师", "数据机械师",
-            "战争机械师", "虚拟机械师", "星海机械师", "真理机械师", "使徒机械师",
-            "帝皇机械师", "主宰机械师", "神座机械师", "超神机械师"
+            "入门者", "学徒", "见习", "磁环", "数据", "战争", "虚拟", "星海", "真理", "使徒", "帝皇", "主宰", "神座", "超神"
+        };
+        private static readonly string[] MartialPrefixes =
+        {
+            "入门者", "学徒", "见习", "炼体", "格斗", "战技", "气劲", "宗师", "王者", "使徒", "帝皇", "主宰", "神座", "超神"
+        };
+        private static readonly string[] PsiPrefixes =
+        {
+            "入门者", "学徒", "见习", "基因链", "能力", "神通", "掌控", "宗师", "王者", "使徒", "帝皇", "主宰", "神座", "超神"
+        };
+        private static readonly string[] MagePrefixes =
+        {
+            "入门者", "学徒", "见习", "魔网", "符文", "魔导", "神权", "宗师", "王者", "使徒", "帝皇", "主宰", "神座", "超神"
+        };
+        private static readonly string[] MindPrefixes =
+        {
+            "入门者", "学徒", "见习", "精神", "念动", "神魂", "凝念", "宗师", "王者", "使徒", "帝皇", "主宰", "神座", "超神"
         };
 
-        // ===== 武道系（神体）—— 同人补全14阶段（御气技巧树概念）=====
-        public static readonly string[] MartialStages =
-        {
-            "武道入门者", "武道家学徒", "见习武道家", "炼体武道家", "格斗武道家",
-            "战技武道家", "气劲武道家", "宗师武道家", "王者武道家", "使徒武道家",
-            "帝皇武道家", "主宰武道家", "神座武道家", "超神武道家"
-        };
-
-        // ===== 异能系（神通）—— 同人补全14阶段（基因链概念）=====
-        public static readonly string[] PsiStages =
-        {
-            "异能入门者", "异能者学徒", "见习异能者", "基因链觉醒者", "能力操控者",
-            "能力大师", "神通觉醒者", "宗师异能者", "王者异能者", "使徒异能者",
-            "帝皇异能者", "主宰异能者", "神座异能者", "超神异能者"
-        };
-
-        // ===== 魔法系（神权）—— 同人补全14阶段（魔法知识树概念）=====
-        public static readonly string[] MageStages =
-        {
-            "魔法入门者", "法师学徒", "见习法师", "魔网编织者", "符文法师",
-            "魔法大师", "神权掌握者", "宗师法师", "王者法师", "使徒法师",
-            "帝皇法师", "主宰法师", "神座法师", "超神法师"
-        };
-
-        // ===== 念力系（神魂）—— 同人补全14阶段（精神修炼树概念）=====
-        public static readonly string[] MindStages =
-        {
-            "念力入门者", "念力师学徒", "见习念力师", "精神觉醒者", "念动力者",
-            "念力大师", "神魂凝练者", "宗师念力师", "王者念力师", "使徒念力师",
-            "帝皇念力师", "主宰念力师", "神座念力师", "超神念力师"
-        };
+        // ===== 分支后缀（选分支后，阶段名=前缀+后缀）=====
+        // 机械系（原著ch50三分支）
+        private const string MechSuffix_Gunner = "枪炮师";
+        private const string MechSuffix_Mech = "机械师";
+        private const string MechSuffix_Martial = "械武者";
+        // 武道系（同人三分支）
+        private const string MartialSuffix_Body = "武道家";
+        private const string MartialSuffix_Tactic = "战道家";
+        private const string MartialSuffix_Power = "气劲师";
+        // 异能系（同人三分支）
+        private const string PsiSuffix_Attack = "异能者";
+        private const string PsiSuffix_Cycle = "控能者";
+        private const string PsiSuffix_Func = "超能者";
+        // 魔法系（原著两类：专精法师/魔网法师）
+        private const string MageSuffix_Specialist = "专精法师";
+        private const string MageSuffix_Weave = "魔网法师";
+        // 念力系（同人三分支）
+        private const string MindSuffix_Soul = "念魂师";
+        private const string MindSuffix_Law = "念法师";
+        private const string MindSuffix_Reality = "现实扭曲者";
 
         // 每阶段转职的气力奖励（原著原文确认）
         // ch3入门+10, ch50学徒+30, ch107见习+50, ch237磁环+70, ch362数据+100,
         // ch477战争+120, ch539虚拟+150, ch626星海+180, ch670真理+210, ch716使徒+240,
-        // ch762帝皇+300, 主宰推断+360(同升级奖励), 神座推断+450(同升级奖励), ch1402超神+700
+        // ch762帝皇+300, 主宰推断+360, 神座推断+450, ch1402超神+700
         public static readonly float[] StageQiBonus = { 10, 30, 50, 70, 100, 120, 150, 180, 210, 240, 300, 360, 450, 700 };
 
         // 每阶段每次升级的气力奖励（原著原文确认）
-        // 入门+10(ch3), 见习+50(ch149), 磁环+180(ch266), 数据+240(ch362),
-        // 战争+120(ch477), 神座+450~500(ch1039/ch1201), 超神+700(ch1402)
-        // 未明确列出的阶段按相邻阶段插值
         public static readonly float[] LevelQiBonus = { 10, 20, 50, 80, 120, 120, 150, 180, 200, 220, 300, 360, 450, 700 };
 
         private static readonly Dictionary<long, int> _stage = new Dictionary<long, int>();
 
-        /// <summary>获取单位所属系的阶段名数组。</summary>
-        public static string[] GetStageArray(Actor a)
+        /// <summary>获取单位所属系的阶段前缀数组。</summary>
+        private static string[] GetPrefixArray(Actor a)
         {
-            if (a == null) return MechStages;
-            if (a.hasTrait(SuperMechTraits.ClassMech)) return MechStages;
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return MartialStages;
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return PsiStages;
-            if (a.hasTrait(SuperMechTraits.ClassMage)) return MageStages;
-            if (a.hasTrait(SuperMechTraits.ClassMind)) return MindStages;
-            return MechStages;
+            if (a == null) return MechPrefixes;
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return MechPrefixes;
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return MartialPrefixes;
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return PsiPrefixes;
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return MagePrefixes;
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return MindPrefixes;
+            return MechPrefixes;
+        }
+
+        /// <summary>获取单位的分支后缀（未选分支返回系通用名）。</summary>
+        private static string GetBranchSuffix(Actor a)
+        {
+            if (a == null) return "超能者";
+            // 机械系
+            if (a.hasTrait(SuperMechBranch.BranchGunner)) return MechSuffix_Gunner;
+            if (a.hasTrait(SuperMechBranch.BranchMech)) return MechSuffix_Mech;
+            if (a.hasTrait(SuperMechBranch.BranchMartial)) return MechSuffix_Martial;
+            // 武道系
+            if (a.hasTrait(SuperMechBranch.BranchMartialBody)) return MartialSuffix_Body;
+            if (a.hasTrait(SuperMechBranch.BranchMartialTactic)) return MartialSuffix_Tactic;
+            if (a.hasTrait(SuperMechBranch.BranchMartialPower)) return MartialSuffix_Power;
+            // 异能系
+            if (a.hasTrait(SuperMechBranch.BranchPsiAttack)) return PsiSuffix_Attack;
+            if (a.hasTrait(SuperMechBranch.BranchPsiCycle)) return PsiSuffix_Cycle;
+            if (a.hasTrait(SuperMechBranch.BranchPsiFunc)) return PsiSuffix_Func;
+            // 魔法系
+            if (a.hasTrait(SuperMechBranch.BranchMageSpecialist)) return MageSuffix_Specialist;
+            if (a.hasTrait(SuperMechBranch.BranchMageWeave)) return MageSuffix_Weave;
+            // 念力系
+            if (a.hasTrait(SuperMechBranch.BranchMindSoul)) return MindSuffix_Soul;
+            if (a.hasTrait(SuperMechBranch.BranchMindLaw)) return MindSuffix_Law;
+            if (a.hasTrait(SuperMechBranch.BranchMindReality)) return MindSuffix_Reality;
+            // 未选分支：返回系通用名
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return "机械师";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道家";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "异能者";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "法师";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "念力师";
+            return "超能者";
         }
 
         /// <summary>获取单位职业阶段（0=未入门，1-14）。</summary>
@@ -88,15 +123,37 @@ namespace SuperMech.Code
             return 0;
         }
 
-        /// <summary>获取单位职业阶段名称（五系各有独立链）。</summary>
+        /// <summary>获取单位职业阶段名称（按分支显示，原著ch175：枪炮师学徒/见习枪炮师）。</summary>
         public static string GetStageName(Actor a)
         {
             if (a == null) return "—";
             int s = GetStage(a);
             if (s <= 0) return "未入门";
-            string[] arr = GetStageArray(a);
-            if (s > arr.Length) return arr[arr.Length - 1];
-            return arr[s - 1];
+            string[] prefixes = GetPrefixArray(a);
+            string suffix = GetBranchSuffix(a);
+            int idx = Mathf.Clamp(s - 1, 0, prefixes.Length - 1);
+
+            // 前3阶段（入门者/学徒/见习）
+            if (idx <= 2)
+            {
+                // 入门者：机械系入门者/武道系入门者...
+                if (idx == 0)
+                {
+                    if (a.hasTrait(SuperMechTraits.ClassMech)) return "机械系入门者";
+                    if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道系入门者";
+                    if (a.hasTrait(SuperMechTraits.ClassPsi)) return "异能系入门者";
+                    if (a.hasTrait(SuperMechTraits.ClassMage)) return "魔法系入门者";
+                    if (a.hasTrait(SuperMechTraits.ClassMind)) return "念力系入门者";
+                    return "超能系入门者";
+                }
+                // 学徒：枪炮师学徒/机械师学徒（ch175原著）
+                if (idx == 1) return suffix + "学徒";
+                // 见习：见习枪炮师/见习机械师（ch175原著）
+                if (idx == 2) return "见习" + suffix;
+            }
+
+            // 高阶：前缀+后缀，如"磁环枪炮师""数据机械师"
+            return prefixes[idx] + suffix;
         }
 
         /// <summary>设置单位职业阶段（转职时调用）。</summary>
@@ -113,7 +170,9 @@ namespace SuperMech.Code
             if (!SuperMechAwakened.IsAwakened(a)) return false; // 土著无职业阶段
             int cur = GetStage(a);
             if (cur >= 14) return false;
+            string oldName = cur <= 0 ? "未入门" : GetStageName(a);
             SetStage(a, cur + 1);
+            string newName = GetStageName(a);
             // 转职气力奖励（原著：转职后气力上限提升，当前值补满，ch50显示160/160）
             if (cur + 1 <= StageQiBonus.Length && StageQiBonus[cur] > 0)
             {
@@ -134,12 +193,11 @@ namespace SuperMech.Code
                 else if (a.hasTrait(SuperMechTraits.ClassMind))
                     SuperMechQiAttribute.SetAttribute(a, SuperMechQiAttribute.AttrDark); // 暗属性
             }
-            string[] arr = GetStageArray(a);
-            Debug.Log($"[超神机械师] {a.name} 职业晋升：{(cur <= 0 ? "未入门" : arr[cur - 1])} → {arr[cur]}");
+            Debug.Log($"[超神机械师] {a.name} 职业晋升：{oldName} → {newName}");
             return true;
         }
 
-        /// <summary>是否达到指定阶段。仅机械系有意义。</summary>
+        /// <summary>是否达到指定阶段。</summary>
         public static bool IsAtLeast(Actor a, int stage)
         {
             return GetStage(a) >= stage;
