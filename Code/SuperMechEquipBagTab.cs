@@ -34,7 +34,6 @@ namespace SuperMech.Code
             if (window == null) return;
             Actor actor = GetActor(window);
             if (actor == null || !actor.isAlive()) return;
-            if (!SuperMechAdvancement.IsSuperMechUnit(actor)) return;
 
             ScrollWindow scroll = window.scroll_window;
             if (scroll == null)

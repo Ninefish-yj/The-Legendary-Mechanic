@@ -34,7 +34,6 @@ namespace SuperMech.Code
             if (window == null) return;
             Actor actor = GetActor(window);
             if (actor == null || !actor.isAlive()) return;
-            if (!SuperMechAdvancement.IsSuperMechUnit(actor)) return;
 
             ScrollWindow scroll = window.scroll_window;
             if (scroll == null)
@@ -180,6 +179,14 @@ namespace SuperMech.Code
         {
             if (_container == null) return;
             foreach (Transform child in _container.transform) Object.Destroy(child.gameObject);
+
+            // 未觉醒单位显示提示
+            if (!SuperMechAdvancement.IsSuperMechUnit(actor))
+            {
+                AddHeader(_container.transform, "未觉醒");
+                AddInfoRow(_container.transform, "这个单位还没有觉醒超能系", "用神权「五系觉醒」赋予天赋");
+                return;
+            }
 
             string cls = SuperMechBranch.GetClass(actor);
             string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
