@@ -1,251 +1,229 @@
 {
-  "超神机械师·总控": [
+  "General": [
     {
       "Id": "mod_enabled",
+      "Name": "模组总开关",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetModEnabled",
-      "Name": "模组总开关",
-      "Description": "关闭后所有超神机械师系统停止运行（已赋予的特质保留）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetModEnabled"
     }
   ],
-  "觉醒系统": [
+  "Awakening": [
     {
       "Id": "auto_awakening",
+      "Name": "自然觉醒",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoAwakening",
-      "Name": "自然觉醒",
-      "Description": "单位是否会随时间自然觉醒为超能者（五系随机）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoAwakening"
     },
     {
       "Id": "awakening_chance",
+      "Name": "觉醒概率",
       "Type": "SLIDER",
       "FloatVal": 0.05,
       "MinVal": 0.0,
       "MaxVal": 1.0,
       "Step": 0.01,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningChance",
-      "Name": "觉醒概率",
-      "Description": "每个主循环周期内单位自然觉醒的概率（默认5%）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningChance"
     },
     {
       "Id": "awakening_min_age",
+      "Name": "最小觉醒年龄",
       "Type": "INT_SLIDER",
       "IntVal": 16,
-      "MinVal": 0,
-      "MaxVal": 100,
-      "Step": 1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningMinAge",
-      "Name": "最小觉醒年龄",
-      "Description": "单位达到多少岁后才可能自然觉醒（默认16岁）"
+      "MinIntVal": 0,
+      "MaxIntVal": 100,
+      "StepIntVal": 1,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningMinAge"
     }
   ],
-  "气力系统": [
+  "Qi": [
     {
       "Id": "qi_growth_rate",
+      "Name": "气力增长倍率",
       "Type": "SLIDER",
       "FloatVal": 1.0,
       "MinVal": 0.1,
       "MaxVal": 10.0,
       "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetQiGrowthRate",
-      "Name": "气力增长倍率",
-      "Description": "气力值增长速度倍率，越高升级越快（默认1.0x，原著中气力极难提升）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetQiGrowthRate"
     },
     {
       "Id": "qi_unlimited",
+      "Name": "气力无上限",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetQiUnlimited",
-      "Name": "气力无上限",
-      "Description": "原著设定：气力等级无固定上限，越往后越难提升（关闭则锁定40级上限）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetQiUnlimited"
     }
   ],
-  "晋升系统": [
+  "Promotion": [
     {
       "Id": "auto_promotion",
+      "Name": "自动晋升",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotion",
-      "Name": "自动晋升",
-      "Description": "单位欧纳达到阶位门槛后自动晋升（关闭则需神权手动晋升）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotion"
     },
     {
       "Id": "auto_promotion_max_rank",
+      "Name": "自动晋升上限",
       "Type": "INT_SLIDER",
       "IntVal": 13,
-      "MinVal": 0,
-      "MaxVal": 13,
-      "Step": 1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotionMaxRank",
-      "Name": "自动晋升上限",
-      "Description": "自动晋升最高到哪个阶位（0=F,1=E,2=D,3=D+,4=C,5=C+,6=B,7=B+,8=A,9=A+,10=S,11=S+,12=SS,13=X无上限）。超过此阶位需用神权手动晋升，默认13=不限制"
+      "MinIntVal": 0,
+      "MaxIntVal": 13,
+      "StepIntVal": 1,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotionMaxRank"
     },
     {
       "Id": "promotion_speed",
+      "Name": "晋升速度",
       "Type": "SLIDER",
       "FloatVal": 1.0,
       "MinVal": 0.1,
       "MaxVal": 10.0,
       "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetPromotionSpeed",
-      "Name": "晋升速度",
-      "Description": "欧纳积累速度倍率，影响整体晋升节奏（默认1.0x）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetPromotionSpeed"
     },
     {
       "Id": "ona_multiplier",
+      "Name": "欧纳计算倍率",
       "Type": "SLIDER",
       "FloatVal": 1.0,
       "MinVal": 0.1,
       "MaxVal": 10.0,
       "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetOnaMultiplier",
-      "Name": "欧纳计算倍率",
-      "Description": "欧纳（战斗力函数）最终结果倍率，调高后单位更容易达到高阶位（默认1.0x）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetOnaMultiplier"
     },
     {
       "Id": "show_rank_in_panel",
+      "Name": "面板显示阶位",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetShowRankInPanel",
-      "Name": "面板显示阶位",
-      "Description": "在单位属性面板注入阶位/职业/气力/欧纳数据行（关闭则只靠特质显示）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetShowRankInPanel"
     }
   ],
-  "自动收藏": [
+  "AutoFavorite": [
     {
       "Id": "auto_favorite_enabled",
+      "Name": "自动收藏",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled",
-      "Name": "自动收藏",
-      "Description": "达到指定阶位的单位自动被游戏加星标收藏，方便追踪强力单位（默认开启）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled"
     },
     {
       "Id": "auto_favorite_rank",
+      "Name": "收藏阶位阈值",
       "Type": "INT_SLIDER",
       "IntVal": 8,
-      "MinVal": 0,
-      "MaxVal": 13,
-      "Step": 1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteRank",
-      "Name": "收藏阶位阈值",
-      "Description": "达到哪个阶位及以上自动收藏（0=F,1=E,2=D,3=D+,4=C,5=C+,6=B,7=B+,8=A,9=A+,10=S,11=S+,12=SS,13=X）。默认8=A级及以上自动收藏"
+      "MinIntVal": 0,
+      "MaxIntVal": 13,
+      "StepIntVal": 1,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteRank"
     }
   ],
-  "圣所系统": [
+  "Sanctuary": [
     {
       "Id": "sanctuary_enabled",
+      "Name": "圣所跨存档",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnabled",
-      "Name": "圣所跨存档",
-      "Description": "圣所数据写入模组目录JSON，不随世界存档消失（原著：圣所是跨纯档机制）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnabled"
     },
     {
       "Id": "sanctuary_count",
+      "Name": "圣所数量",
       "Type": "INT_SLIDER",
       "IntVal": 6,
-      "MinVal": 1,
-      "MaxVal": 12,
-      "Step": 1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryCount",
-      "Name": "圣所数量",
-      "Description": "可同时存在的圣所数量（原著共6大圣所，含第六圣所）"
+      "MinIntVal": 1,
+      "MaxIntVal": 12,
+      "StepIntVal": 1,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryCount"
     },
     {
       "Id": "sanctuary_autosave",
+      "Name": "圣所自动保存",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryAutoSave",
-      "Name": "圣所自动保存",
-      "Description": "圣所数据变更时自动写入JSON文件"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryAutoSave"
     }
   ],
-  "机械系": [
+  "Mech": [
     {
       "Id": "mech_summon_enabled",
+      "Name": "机械召唤",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMechSummonEnabled",
-      "Name": "机械召唤",
-      "Description": "机械师召唤无人机/机甲/机器人（爆兵流，性能影响大，默认开启但有数量上限）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetMechSummonEnabled"
     },
     {
       "Id": "max_summoned_units",
+      "Name": "最大召唤单位",
       "Type": "INT_SLIDER",
       "IntVal": 50,
-      "MinVal": 0,
-      "MaxVal": 500,
-      "Step": 10,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxSummonedUnits",
-      "Name": "最大召唤单位",
-      "Description": "全场机械召唤物上限，防止爆兵流拖垮性能（默认50）"
+      "MinIntVal": 0,
+      "MaxIntVal": 500,
+      "StepIntVal": 10,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxSummonedUnits"
     }
   ],
-  "提炼法与宝物": [
+  "Refinement": [
     {
       "Id": "refinement_bonus",
+      "Name": "提炼法气力加成",
       "Type": "SLIDER",
       "FloatVal": 2.0,
       "MinVal": 0.0,
       "MaxVal": 10.0,
       "Step": 0.5,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetRefinementBonus",
-      "Name": "提炼法气力加成",
-      "Description": "修炼提炼法的单位气力增长额外倍率（默认2.0x，原著中韩萧靠提炼法快速提升）"
-    },
+      "Callback": "SuperMech.Code.SuperMechConfig:SetRefinementBonus"
+    }
+  ],
+  "Relic": [
     {
       "Id": "relic_drop_enabled",
+      "Name": "宇宙宝物掉落",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropEnabled",
-      "Name": "宇宙宝物掉落",
-      "Description": "高阶单位死亡时有概率掉落宇宙宝物（9级品质体系）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropEnabled"
     },
     {
       "Id": "relic_drop_rate",
+      "Name": "宝物掉落率",
       "Type": "SLIDER",
       "FloatVal": 0.01,
       "MinVal": 0.0,
       "MaxVal": 0.5,
       "Step": 0.005,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropRate",
-      "Name": "宝物掉落率",
-      "Description": "高阶单位死亡掉落宇宙宝物的概率（默认1%）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropRate"
     }
   ],
-  "性能与调试": [
+  "Performance": [
     {
       "Id": "tick_interval",
+      "Name": "主循环间隔",
       "Type": "SLIDER",
       "FloatVal": 5.0,
       "MinVal": 1.0,
       "MaxVal": 60.0,
       "Step": 1.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetTickInterval",
-      "Name": "主循环间隔",
-      "Description": "晋升/气力/能量计算的执行间隔（秒），调大可降低CPU占用但响应变慢（默认5秒）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetTickInterval"
     },
     {
       "Id": "max_tracked_actors",
+      "Name": "最大追踪单位",
       "Type": "INT_SLIDER",
       "IntVal": 500,
-      "MinVal": 50,
-      "MaxVal": 5000,
-      "Step": 50,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxTrackedActors",
-      "Name": "最大追踪单位",
-      "Description": "同时参与气力/晋升计算的单位数上限，超出只追踪高阶位（默认500）"
+      "MinIntVal": 50,
+      "MaxIntVal": 5000,
+      "StepIntVal": 50,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxTrackedActors"
     },
     {
       "Id": "log_verbose",
+      "Name": "详细日志",
       "Type": "SWITCH",
       "BoolVal": false,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetLogVerbose",
-      "Name": "详细日志",
-      "Description": "在Player.log中输出所有配置变更和系统运行细节（调试用，默认关闭）"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetLogVerbose"
     }
   ]
 }
