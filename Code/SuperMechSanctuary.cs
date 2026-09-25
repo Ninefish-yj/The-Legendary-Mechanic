@@ -443,8 +443,8 @@ namespace SuperMech.Code
                 WorldTile tile = null;
                 for (int attempt = 0; attempt < 50; attempt++)
                 {
-                    int rx = UnityEngine.Random.Range(5, World.world.width - 5);
-                    int ry = UnityEngine.Random.Range(5, World.world.height - 5);
+                    int rx = UnityEngine.Random.Range(5, MapBox.width - 5);
+                    int ry = UnityEngine.Random.Range(5, MapBox.height - 5);
                     WorldTile t = World.world.GetTile(rx, ry);
                     if (t != null && t.Type != null && t.Type.ground) { tile = t; break; }
                 }

@@ -122,7 +122,7 @@ namespace SuperMech.Code
                     if (SuperMechInfoState.TryConvert(killer, target))
                     {
                         // 转化成功：目标不死亡，变为友方（简化：恢复1点血）
-                        target.data.health = 1f;
+                        target.data.health = 1;
                         // 标记为信息态仆从
                         Debug.Log($"[超神机械师] {killer.name} 信息态转化 {target.name}！");
                     }

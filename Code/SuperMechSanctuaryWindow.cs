@@ -154,8 +154,8 @@ namespace SuperMech.Code
             // 回退：地图中心附近找一个可走地块
             try
             {
-                int cx = World.world.width / 2;
-                int cy = World.world.height / 2;
+                int cx = MapBox.width / 2;
+                int cy = MapBox.height / 2;
                 for (int r = 0; r < 10; r++)
                 {
                     for (int dx = -r; dx <= r; dx++)

@@ -296,7 +296,7 @@ namespace SuperMech.Code
             {
                 // 突破失败，恶性变异（ch1396：无限增殖/基因崩溃/细胞独立/宇宙同化）
                 float damage = a.getMaxHealth() * 0.5f;
-                a.data.health = Mathf.Max(1f, a.data.health - damage);
+                a.data.health = Mathf.Max(1, (int)(a.data.health - damage));
                 var stats = SuperMechStats.Of(a);
                 if (stats != null)
                 {
@@ -306,7 +306,7 @@ namespace SuperMech.Code
                 // 10%概率直接死亡（恶性变异致死）
                 if (Random.value < 0.1f && a.data.health > 1f)
                 {
-                    a.data.health = 0f;
+                    a.data.health = 0;
                     // ch1396/ch1399：突破失败死亡者化身为超神遗力，无法圣所复苏
                     SuperMechSanctuary.MarkTranscendenceFailed(a);
                     Debug.Log($"[超神机械师] {a.name} 突破失败，恶性变异致死！化为超神遗力，无法圣所复苏");

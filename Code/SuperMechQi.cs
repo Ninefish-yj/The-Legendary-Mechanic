@@ -261,7 +261,7 @@ namespace SuperMech.Code
                     // 气力空了：消耗生命（原著：气力空→耗体力→耗生命）
                     if (qi <= 0f && a.data.health > 1f)
                     {
-                        a.data.health = Mathf.Max(1f, a.data.health - 2f * tickInterval);
+                        a.data.health = Mathf.Max(1, (int)(a.data.health - 2f * tickInterval));
                         if (SuperMechConfig.LogVerbose)
                             Debug.Log($"[超神机械师] {a.name} 气力耗尽，消耗生命！");
                     }
