@@ -1,103 +1,54 @@
 using NeoModLoader.api;
 using NeoModLoader.services;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 气力分系用途（原文 ch49）：
+    /// 气力分系用途（原著 ch49/ch50/ch269）：
     /// 气力是统一核心属性，不同系用途不同：
     ///   武道系 → 格斗能量（已在 SuperMechQi 里加 warfare/damage）
     ///   机械系 → 制造能量（磁环后叫械力）
-    ///   异能系 → 基因链能级（异能能量槽）
-    ///   魔法系 → 魔力源泉（加 mana）
-    ///   念力系 → 精神力反应炉（加 intelligence）
-    /// 这里按气力值（SuperMechQi.GetQi）自动挂对应用途的阶段特质。
+    ///   异能系 → 基因链（通过基因树知识解锁提升，三维度：能级/操控/持久力）
+    ///   魔法系 → 魔力池（通过魔法知识树解锁提升）
+    ///   念力系 → 精神力（通过精神修炼树解锁提升）
+    /// 阶段由知识树解锁数决定，不是气力阈值（原著：二阶基因链是进阶知识）。
+    /// 不注册特质，用内部字典追踪，单位面板显示。
     /// </summary>
     public static class SuperMechCorePower
     {
-        // 异能系：基因链能级（5阶，按气力值分阶）
+        // 异能系：基因链5阶（原著：一阶→二阶→...，通过基因树知识提升）
         public static readonly string[] GeneChainNames = {
             "一阶基因链", "二阶基因链", "三阶基因链", "四阶基因链", "五阶基因链"
         };
-        public static readonly float[] GeneChainThresholds = { 10f, 50f, 200f, 800f, 3000f };
+        // 每阶需要的知识解锁数（基础+进阶+高端+尖端+终极）
+        public static readonly int[] GeneChainKnowledgeReq = { 0, 3, 8, 15, 25 };
 
-        // 魔法系：魔力池（5层，按气力值分层）
+        // 魔法系：魔力池5层
         public static readonly string[] ManaTierNames = {
             "魔力初涌", "魔力流动", "魔力充盈", "魔力磅礴", "魔力浩瀚"
         };
-        public static readonly float[] ManaTierThresholds = { 10f, 50f, 200f, 800f, 3000f };
+        public static readonly int[] ManaTierKnowledgeReq = { 0, 3, 8, 15, 25 };
 
-        // 念力系：精神力（5阶，按气力值分阶）
+        // 念力系：精神力5阶
         public static readonly string[] MindTierNames = {
             "精神觉醒", "精神外放", "精神干涉", "精神领域", "精神造物"
         };
-        public static readonly float[] MindTierThresholds = { 10f, 50f, 200f, 800f, 3000f };
+        public static readonly int[] MindTierKnowledgeReq = { 0, 3, 8, 15, 25 };
 
-        public static string GeneChainId(int lv) => $"sm_gene_{lv}";
-        public static string ManaTierId(int lv) => $"sm_mana_{lv}";
-        public static string MindTierId(int lv) => $"sm_mind_{lv}";
+        // 内部字典追踪当前阶段（unit.id -> stage 1-5）
+        private static readonly Dictionary<string, int> _geneStage = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> _manaStage = new Dictionary<string, int>();
+        private static readonly Dictionary<string, int> _mindStage = new Dictionary<string, int>();
 
         public static void Register()
         {
-            // 异能系：基因链（气力用途=异能能量槽）
-            for (int i = 0; i < GeneChainNames.Length; i++)
-            {
-                int lv = i + 1;
-                string id = GeneChainId(lv);
-                LocalizedTextManager.add("trait_" + id, GeneChainNames[i], pReplace: true);
-                LocalizedTextManager.add("trait_" + id + "_info",
-                    $"异能系基因链第{lv}阶（气力用途=异能能量槽）。", pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = id, path_icon = "ui/Icons/actor_traits/iconAcidBlood", group_id = "sm_gene",
-                    needs_to_be_explored = false, base_stats = new BaseStats()
-                };
-                t.base_stats["multiplier_damage"] = 1f + lv * 0.25f;
-                t.base_stats["intelligence"] = lv * 3f;
-                AssetManager.traits.add(t);
-            }
-
-            // 魔法系：魔力池（气力用途=魔力源泉）
-            for (int i = 0; i < ManaTierNames.Length; i++)
-            {
-                int lv = i + 1;
-                string id = ManaTierId(lv);
-                LocalizedTextManager.add("trait_" + id, ManaTierNames[i], pReplace: true);
-                LocalizedTextManager.add("trait_" + id + "_info",
-                    $"魔法系魔力池第{lv}层（气力用途=魔力源泉）。", pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = id, path_icon = "ui/Icons/actor_traits/iconArcaneReflexes", group_id = "sm_mana",
-                    needs_to_be_explored = false, base_stats = new BaseStats()
-                };
-                t.base_stats["mana"] = lv * 50f;
-                t.base_stats["intelligence"] = lv * 4f;
-                AssetManager.traits.add(t);
-            }
-
-            // 念力系：精神力（气力用途=精神力反应炉）
-            for (int i = 0; i < MindTierNames.Length; i++)
-            {
-                int lv = i + 1;
-                string id = MindTierId(lv);
-                LocalizedTextManager.add("trait_" + id, MindTierNames[i], pReplace: true);
-                LocalizedTextManager.add("trait_" + id + "_info",
-                    $"念力系精神力第{lv}阶（气力用途=精神力）。", pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = id, path_icon = "ui/Icons/actor_traits/iconColdAura", group_id = "sm_mind",
-                    needs_to_be_explored = false, base_stats = new BaseStats()
-                };
-                t.base_stats["intelligence"] = lv * 5f;
-                t.base_stats["multiplier_damage"] = 1f + lv * 0.15f;
-                AssetManager.traits.add(t);
-            }
-
-            Debug.Log("[超神机械师] 气力分系用途注册完成：基因链5+魔力5+精神力5");
+            // 不注册特质，阶段由知识树解锁数决定，单位面板显示
+            Debug.Log("[超神机械师] 气力分系用途系统初始化：基因链/魔力池/精神力（知识树驱动，不注册特质）");
         }
 
-        /// <summary>按气力值（SuperMechQi）自动更新各系用途等级。</summary>
+        /// <summary>按知识树解锁数自动更新各系用途等级。</summary>
         public static void TickCorePowers()
         {
             var units = World.world.units.units_only_alive;
@@ -107,92 +58,105 @@ namespace SuperMech.Code
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
 
-                // 统一气力值（所有系共用）
-                float qi = SuperMechQi.GetQi(a);
-
-                // 异能系：气力 → 基因链能级
+                // 异能系：基因链（基因树知识解锁数决定阶段）
                 if (a.hasTrait(SuperMechTraits.ClassPsi))
                 {
-                    int lv = CalcTier(qi, GeneChainThresholds);
-                    ApplyTier(a, GeneChainId, GeneChainThresholds.Length, lv);
+                    int knowCount = SuperMechKnowledge.GetUnlockedCount(a, "psi");
+                    int targetLv = CalcStageByKnowledge(knowCount, GeneChainKnowledgeReq);
+                    ApplyStage(a, _geneStage, targetLv);
                 }
 
-                // 魔法系：气力 → 魔力池
+                // 魔法系：魔力池（魔法知识树解锁数决定阶段）
                 if (a.hasTrait(SuperMechTraits.ClassMage))
                 {
-                    int lv = CalcTier(qi, ManaTierThresholds);
-                    ApplyTier(a, ManaTierId, ManaTierThresholds.Length, lv);
+                    int knowCount = SuperMechKnowledge.GetUnlockedCount(a, "mage");
+                    int targetLv = CalcStageByKnowledge(knowCount, ManaTierKnowledgeReq);
+                    ApplyStage(a, _manaStage, targetLv);
                 }
 
-                // 念力系：气力 → 精神力
+                // 念力系：精神力（精神修炼树解锁数决定阶段）
                 if (a.hasTrait(SuperMechTraits.ClassMind))
                 {
-                    int lv = CalcTier(qi, MindTierThresholds);
-                    ApplyTier(a, MindTierId, MindTierThresholds.Length, lv);
+                    int knowCount = SuperMechKnowledge.GetUnlockedCount(a, "mind");
+                    int targetLv = CalcStageByKnowledge(knowCount, MindTierKnowledgeReq);
+                    ApplyStage(a, _mindStage, targetLv);
                 }
             }
+        }
+
+        /// <summary>根据知识解锁数计算阶段（1-5）。</summary>
+        private static int CalcStageByKnowledge(int knowCount, int[] reqs)
+        {
+            int stage = 1;
+            for (int i = reqs.Length - 1; i >= 0; i--)
+            {
+                if (knowCount >= reqs[i]) { stage = i + 1; break; }
+            }
+            return stage;
+        }
+
+        /// <summary>应用阶段（只在变化时更新字典）。</summary>
+        private static void ApplyStage(Actor a, Dictionary<string, int> dict, int targetLv)
+        {
+            string id = a.data.id;
+            if (dict.TryGetValue(id, out int cur) && cur == targetLv) return;
+            dict[id] = targetLv;
         }
 
         /// <summary>获取异能系当前基因链阶段名。</summary>
         public static string GetGeneStageName(Actor a)
         {
-            for (int lv = GeneChainNames.Length; lv >= 1; lv--)
-            {
-                if (a.hasTrait(GeneChainId(lv))) return GeneChainNames[lv - 1];
-            }
-            return "基因未觉醒";
+            if (a == null) return "基因未觉醒";
+            if (_geneStage.TryGetValue(a.data.id, out int lv) && lv >= 1 && lv <= GeneChainNames.Length)
+                return GeneChainNames[lv - 1];
+            return "一阶基因链";
         }
 
         /// <summary>获取魔法系当前魔力池阶段名。</summary>
         public static string GetManaStageName(Actor a)
         {
-            for (int lv = ManaTierNames.Length; lv >= 1; lv--)
-            {
-                if (a.hasTrait(ManaTierId(lv))) return ManaTierNames[lv - 1];
-            }
-            return "魔力未觉醒";
+            if (a == null) return "魔力未觉醒";
+            if (_manaStage.TryGetValue(a.data.id, out int lv) && lv >= 1 && lv <= ManaTierNames.Length)
+                return ManaTierNames[lv - 1];
+            return "魔力初涌";
         }
 
         /// <summary>获取念力系当前精神力阶段名。</summary>
         public static string GetMindStageName(Actor a)
         {
-            for (int lv = MindTierNames.Length; lv >= 1; lv--)
-            {
-                if (a.hasTrait(MindTierId(lv))) return MindTierNames[lv - 1];
-            }
-            return "精神未觉醒";
+            if (a == null) return "精神未觉醒";
+            if (_mindStage.TryGetValue(a.data.id, out int lv) && lv >= 1 && lv <= MindTierNames.Length)
+                return MindTierNames[lv - 1];
+            return "精神觉醒";
         }
 
-        private static int CalcTier(float value, float[] thresholds)
+        /// <summary>获取异能系基因链阶段索引（1-5）。</summary>
+        public static int GetGeneStage(Actor a)
         {
-            int lv = 1;
-            for (int i = 0; i < thresholds.Length; i++)
-            {
-                if (value >= thresholds[i]) lv = i + 1;
-            }
-            return lv;
+            if (a == null) return 1;
+            return _geneStage.TryGetValue(a.data.id, out int lv) ? lv : 1;
         }
 
-        private static void ApplyTier(Actor a, System.Func<int, string> idFunc, int maxLv, int targetLv)
+        /// <summary>获取魔法系魔力池阶段索引（1-5）。</summary>
+        public static int GetManaStage(Actor a)
         {
-            string targetId = idFunc(targetLv);
-            if (a.hasTrait(targetId))
-            {
-                for (int lv = 1; lv <= maxLv; lv++)
-                {
-                    if (lv != targetLv && a.hasTrait(idFunc(lv))) a.removeTrait(idFunc(lv));
-                }
-                return;
-            }
-            for (int lv = 1; lv <= maxLv; lv++)
-            {
-                string id = idFunc(lv);
-                if (lv == targetLv) { if (!a.hasTrait(id)) a.addTrait(id); }
-                else if (a.hasTrait(id)) a.removeTrait(id);
-            }
+            if (a == null) return 1;
+            return _manaStage.TryGetValue(a.data.id, out int lv) ? lv : 1;
         }
 
-        /// <summary>清空核心能量数据（世界切换用，核心能量走特质无需清理）。</summary>
-        public static void Clear() { }
+        /// <summary>获取念力系精神力阶段索引（1-5）。</summary>
+        public static int GetMindStage(Actor a)
+        {
+            if (a == null) return 1;
+            return _mindStage.TryGetValue(a.data.id, out int lv) ? lv : 1;
+        }
+
+        /// <summary>清空核心能量数据（世界切换用）。</summary>
+        public static void Clear()
+        {
+            _geneStage.Clear();
+            _manaStage.Clear();
+            _mindStage.Clear();
+        }
     }
 }

@@ -204,6 +204,14 @@ namespace SuperMech.Code
                     ShowRow(__instance, "气力属性", $"{qiAttr} — {attrDesc}");
                 }
 
+                // 行9b2：分系核心能量阶段（原著：基因链/魔力池/精神力，由知识树解锁提升）
+                if (cls == "异能系")
+                    ShowRow(__instance, "基因链", SuperMechCorePower.GetGeneStageName(actor));
+                else if (cls == "魔法系")
+                    ShowRow(__instance, "魔力池", SuperMechCorePower.GetManaStageName(actor));
+                else if (cls == "念力系")
+                    ShowRow(__instance, "精神力", SuperMechCorePower.GetMindStageName(actor));
+
                 // 行9c：传说度（原著ch1196：传奇事迹影响突破，信息态权重）
                 int legend = SuperMechLegend.GetLegend(actor);
                 if (legend > 0)
