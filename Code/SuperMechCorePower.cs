@@ -151,6 +151,28 @@ namespace SuperMech.Code
             return _mindStage.TryGetValue(a.id, out int lv) ? lv : 1;
         }
 
+        /// <summary>提升单位对应系别的核心能量阶段（基因链/魔力池/精神力）。</summary>
+        public static void AdvanceStage(Actor a, int amount = 1)
+        {
+            if (a == null) return;
+            string cls = SuperMechBranch.GetClass(a);
+            if (cls == "异能系")
+            {
+                int cur = GetGeneStage(a);
+                _geneStage[a.id] = Mathf.Min(cur + amount, GeneChainNames.Length);
+            }
+            else if (cls == "魔法系")
+            {
+                int cur = GetManaStage(a);
+                _manaStage[a.id] = Mathf.Min(cur + amount, ManaTierNames.Length);
+            }
+            else if (cls == "念力系")
+            {
+                int cur = GetMindStage(a);
+                _mindStage[a.id] = Mathf.Min(cur + amount, MindTierNames.Length);
+            }
+        }
+
         /// <summary>清空核心能量数据（世界切换用）。</summary>
         public static void Clear()
         {

@@ -72,11 +72,11 @@ namespace SuperMech.Code
                         Debug.Log($"[超神机械师] {names[sanctuaryIndex]}未解锁，需集齐3碎片");
                         return;
                     }
-                    // 获取当前选中单位
-                    Actor selected = World.world?.getSelectedActor();
+                    // 获取当前光标附近的单位
+                    Actor selected = World.world.getActorNearCursor();
                     if (selected == null)
                     {
-                        Debug.Log("[超神机械师] 请先选中一个单位再进入圣所");
+                        Debug.Log("[超神机械师] 请先将鼠标移到一个单位上再进入圣所");
                         return;
                     }
                     if (SuperMechSanctuary.EnterSanctuary(selected, sanctuaryIndex))

@@ -216,7 +216,7 @@ namespace SuperMech.Code
             // 操作区域（整合原超能者面板功能）
             AddSectionHeader(_container.transform, "◆ 操作");
             string stage = SuperMechStage.GetStageName(actor);
-            string branch = SuperMechBranch.GetBranch(actor);
+            string branch = SuperMechBranch.GetBranchName(actor);
             AddInfoRow(_container.transform, $"职业阶段: {stage}", $"分支: {(string.IsNullOrEmpty(branch) ? "未选择" : branch)}");
             if (SuperMechAwakened.CanAdvanceStage(actor))
                 AddInfoRow(_container.transform, "转职", "可转职！用神权或进阶任务完成转职");
