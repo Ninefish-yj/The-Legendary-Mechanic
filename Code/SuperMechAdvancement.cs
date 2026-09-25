@@ -132,17 +132,17 @@ namespace SuperMech.Code
 
                 Debug.Log($"[超神机械师] {a.name} 阶位变更 {SuperMechRanks.All[targetIdx].name}（欧纳≈{onar:F0}）");
 
-                // 星海人突破感应（原著：没有面板，靠自身气息变化和他人感应确认突破）
-                // 主阶位提升时，模拟"气息质变"被周围超能者感知
+                // 星海人突破确认（原著ch267：没有面板，靠战斗表现和自身实力变化感知，不是能量爆发）
+                // 首领通过"肉身扛住拳头""气力浑厚程度超过自己"判断韩萧突破了界限
                 if (!SuperMechAwakened.IsAwakened(a) && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx > oldExact)
                 {
                     string rankName = SuperMechRanks.All[targetIdx].name;
-                    if (targetIdx >= 10) // S阶以上，突破动静大
-                        Debug.Log($"[超神机械师]【气息感应】{a.name} 突破{rankName}！能量波动席卷方圆，附近超能者均感知到这股质变的气息");
+                    if (targetIdx >= 10) // S阶以上，突破会引起高层关注
+                        Debug.Log($"[超神机械师]【实力跃升】{a.name} 迈入{rankName}，战力层次发生质变，同层次超能者通过交手可感知到差距变化");
                     else if (targetIdx >= 8) // A阶
-                        Debug.Log($"[超神机械师]【气息感应】{a.name} 迈入{rankName}，气息威压显著增强，同阶者心生感应");
+                        Debug.Log($"[超神机械师]【实力提升】{a.name} 达到{rankName}，战斗中可感觉到自身破坏力与生存能力显著增强");
                     else
-                        Debug.Log($"[超神机械师]【自身感应】{a.name} 突破{rankName}，气力与肉体发生质变，自身清晰感知到层次提升");
+                        Debug.Log($"[超神机械师]【修行精进】{a.name} 突破至{rankName}，长期修行积累转化为实力提升");
                 }
 
                 // 按精确阶位（含+位）施加属性倍率
