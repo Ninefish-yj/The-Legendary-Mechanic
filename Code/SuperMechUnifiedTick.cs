@@ -111,6 +111,7 @@ namespace SuperMech.Code
             try { SuperMechMageTower.Clear(); } catch { }
             try { SuperMechRelic.Clear(); } catch { }
             try { SuperMechCosmicRelic.Clear(); } catch { }
+            try { SuperMechEquipBag.Clear(); } catch { }
             try { SuperMechRace.Clear(); } catch { }
             try { SuperMechAdvancement.Clear(); } catch { }
             try { SuperMechAura.Clear(); } catch { }

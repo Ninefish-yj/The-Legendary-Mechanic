@@ -1,0 +1,296 @@
+using System.Collections.Generic;
+using System.Reflection;
+using HarmonyLib;
+using NeoModLoader.General;
+using UnityEngine;
+using UnityEngine.UI;
+
+namespace SuperMech.Code
+{
+    /// <summary>
+    /// 装备背包Tab：参考天人武道神藏Tab的实现方式，在单位面板添加自定义Tab。
+    /// 显示单位背包中的装备，点击可装备/卸下。
+    /// </summary>
+    [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
+    public static class SuperMechEquipBagTab
+    {
+        private const string TabName = "SuperMechEquipBagTab";
+        private const string ContainerName = "SuperMechEquipBagContent";
+
+        private static bool _callbacksRegistered;
+        private static WindowMetaTab _bagTab;
+        private static GameObject _container;
+        private static UnitWindow _boundWindow;
+        private static readonly FieldInfo TabsListField =
+            AccessTools.Field(typeof(WindowMetaTabButtonsContainer), "_tabs");
+
+        public static void Postfix(UnitWindow __instance)
+        {
+            try { Refresh(__instance); } catch { }
+        }
+
+        private static void Refresh(UnitWindow window)
+        {
+            if (window == null) return;
+            Actor actor = GetActor(window);
+            if (actor == null || !actor.isAlive()) return;
+            if (!SuperMechAdvancement.IsSuperMechUnit(actor)) return;
+
+            ScrollWindow scroll = window.scroll_window;
+            if (scroll == null)
+            {
+                Component host = (Component)(object)window;
+                scroll = host.GetComponent<ScrollWindow>() ?? host.GetComponentInParent<ScrollWindow>();
+            }
+            if (scroll?.tabs == null) return;
+
+            WindowMetaTab tab = FindOrCreateTab(scroll, window);
+            if (tab == null) return;
+
+            tab.gameObject.SetActive(true);
+            try { tab.toggleActive(true); } catch { }
+            EnsureContainer(scroll);
+            WireTab(tab, scroll);
+            RegisterCallbacks(scroll);
+
+            if (_container != null && !tab.tab_elements.Contains(_container.transform))
+            {
+                tab.tab_elements.Clear();
+                tab.tab_elements.Add(_container.transform);
+            }
+
+            bool onBag = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
+            if (!onBag && _container != null) _container.SetActive(false);
+
+            if (onBag) RenderBag(actor);
+        }
+
+        private static Actor GetActor(UnitWindow window)
+        {
+            try
+            {
+                var prop = typeof(UnitWindow).GetProperty("actor",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (prop != null) return prop.GetValue(window) as Actor;
+                var field = typeof(UnitWindow).GetField("actor",
+                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                if (field != null) return field.GetValue(window) as Actor;
+            }
+            catch { }
+            return null;
+        }
+
+        private static WindowMetaTab FindExistingTab(ScrollWindow scroll)
+        {
+            if (scroll?.tabs == null) return null;
+            foreach (WindowMetaTab t in scroll.tabs.GetComponentsInChildren<WindowMetaTab>(true))
+            {
+                if (t != null && t.name == TabName) return t;
+            }
+            return null;
+        }
+
+        private static WindowMetaTab FindOrCreateTab(ScrollWindow scroll, UnitWindow window)
+        {
+            WindowMetaTab existing = FindExistingTab(scroll);
+            if (existing != null) return existing;
+
+            WindowMetaTab[] all = scroll.tabs.GetComponentsInChildren<WindowMetaTab>(true);
+            if (all == null || all.Length == 0) return null;
+            WindowMetaTab source = all[0];
+
+            GameObject tabObj = Object.Instantiate(source.gameObject, scroll.tabs.transform);
+            tabObj.name = TabName;
+            WindowMetaTab newTab = tabObj.GetComponent<WindowMetaTab>();
+            if (newTab == null) return null;
+
+            newTab.tab_elements = new List<Transform>();
+            newTab.tab_action = new WindowMetaTabEvent();
+            newTab.tab_action.AddListener(_ => scroll.tabs.showTab(newTab));
+
+            // 设置图标和提示
+            Image icon = tabObj.GetComponentInChildren<Image>();
+            if (icon != null)
+            {
+                try { icon.sprite = SpriteLoader.get("ui/Icons/actor_traits/iconBlessing"); } catch { }
+            }
+            try
+            {
+                var tipField = typeof(WindowMetaTab).GetField("_worldtip_text",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                if (tipField != null) tipField.SetValue(newTab, "装备背包");
+            }
+            catch { }
+
+            return newTab;
+        }
+
+        private static void EnsureContainer(ScrollWindow scroll)
+        {
+            Transform scrollContent = scroll.transform_content;
+            if (scrollContent == null) return;
+
+            Transform existing = scrollContent.Find(ContainerName);
+            if (existing != null)
+            {
+                _container = existing.gameObject;
+                return;
+            }
+
+            _container = new GameObject(ContainerName, typeof(RectTransform));
+            _container.transform.SetParent(scrollContent, false);
+
+            RectTransform rt = _container.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+
+            ContentSizeFitter fitter = _container.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            VerticalLayoutGroup layout = _container.AddComponent<VerticalLayoutGroup>();
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.spacing = 4f;
+            layout.padding = new RectOffset(8, 8, 8, 8);
+
+            _container.SetActive(false);
+        }
+
+        private static void WireTab(WindowMetaTab tab, ScrollWindow scroll)
+        {
+            if (tab.tab_action == null)
+            {
+                tab.tab_action = new WindowMetaTabEvent();
+                tab.tab_action.AddListener(_ => scroll.tabs.showTab(tab));
+            }
+        }
+
+        private static void RegisterCallbacks(ScrollWindow scroll)
+        {
+            if (_callbacksRegistered || scroll.tabs == null) return;
+            _callbacksRegistered = true;
+            scroll.tabs.addTabShowCallback(OnTabShow);
+            scroll.tabs.addTabHideCallback(OnTabHide);
+        }
+
+        private static void OnTabShow(WindowMetaTab tab)
+        {
+            if (tab != _bagTab) { if (_container != null) _container.SetActive(false); return; }
+            if (_container != null)
+            {
+                _container.SetActive(true);
+                Actor actor = GetActor(_boundWindow);
+                if (actor != null) RenderBag(actor);
+            }
+        }
+
+        private static void OnTabHide(WindowMetaTab tab)
+        {
+            if (tab == _bagTab && _container != null) _container.SetActive(false);
+        }
+
+        /// <summary>渲染背包内容。</summary>
+        private static void RenderBag(Actor actor)
+        {
+            if (_container == null || actor == null) return;
+
+            // 清空旧内容
+            foreach (Transform child in _container.transform)
+            {
+                if (child.name != "LayoutGroup") Object.Destroy(child.gameObject);
+            }
+
+            // 标题
+            AddText(_container.transform, $"装备背包（{SuperMechEquipBag.GetBag(actor).Count}/{SuperMechEquipBag.MaxBagSize}）", 12, TextAnchor.MiddleCenter, new Color(0.92f, 0.86f, 0.55f));
+
+            // 当前装备
+            string currentEquip = SuperMechRelic.GetCurrentEquipName(actor);
+            AddText(_container.transform, $"当前装备：{currentEquip}", 10, TextAnchor.MiddleLeft, Color.white);
+
+            // 卸下按钮
+            if (SuperMechRelic.GetCurrentEquipIndex(actor) >= 0)
+            {
+                AddButton(_container.transform, "卸下当前装备", () =>
+                {
+                    SuperMechEquipBag.UnequipToBag(actor);
+                    RenderBag(actor);
+                });
+            }
+
+            // 分隔线
+            AddText(_container.transform, "—— 背包 ——", 10, TextAnchor.MiddleCenter, new Color(0.7f, 0.7f, 0.7f));
+
+            // 背包物品列表
+            var bag = SuperMechEquipBag.GetBag(actor);
+            if (bag.Count == 0)
+            {
+                AddText(_container.transform, "（空）", 10, TextAnchor.MiddleCenter, new Color(0.6f, 0.6f, 0.6f));
+            }
+            else
+            {
+                foreach (string equipId in bag)
+                {
+                    int idx = SuperMechRelic.GetEquipIndex(equipId);
+                    if (idx < 0) continue;
+                    var def = SuperMechRelic.Equipments[idx];
+                    AddButton(_container.transform, $"[{def.name}] 伤害×{def.dmgMul} 生命×{def.hpMul}  [点击装备]", () =>
+                    {
+                        SuperMechEquipBag.EquipFromBag(actor, equipId);
+                        RenderBag(actor);
+                    });
+                }
+            }
+        }
+
+        private static void AddText(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
+        {
+            GameObject obj = new GameObject("Text", typeof(RectTransform));
+            obj.transform.SetParent(parent, false);
+            LayoutElement le = obj.AddComponent<LayoutElement>();
+            le.minHeight = fontSize + 4;
+            le.preferredHeight = fontSize + 4;
+            Text t = obj.AddComponent<Text>();
+            t.font = LocalizedTextManager.current_font;
+            t.fontSize = fontSize;
+            t.color = color;
+            t.alignment = anchor;
+            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            t.text = text;
+        }
+
+        private static void AddButton(Transform parent, string text, System.Action onClick)
+        {
+            GameObject obj = new GameObject("Button", typeof(RectTransform));
+            obj.transform.SetParent(parent, false);
+            LayoutElement le = obj.AddComponent<LayoutElement>();
+            le.minHeight = 22;
+            le.preferredHeight = 22;
+
+            Image bg = obj.AddComponent<Image>();
+            bg.color = new Color(0.2f, 0.2f, 0.25f, 0.8f);
+
+            Button btn = obj.AddComponent<Button>();
+            btn.onClick.AddListener(() => onClick?.Invoke());
+
+            Text t = obj.AddComponent<Text>();
+            t.font = LocalizedTextManager.current_font;
+            t.fontSize = 9;
+            t.color = new Color(0.85f, 0.85f, 0.9f);
+            t.alignment = TextAnchor.MiddleCenter;
+            t.text = text;
+            t.transform.SetParent(obj.transform, false);
+            RectTransform trt = t.GetComponent<RectTransform>();
+            trt.anchorMin = Vector2.zero;
+            trt.anchorMax = Vector2.one;
+            trt.offsetMin = Vector2.zero;
+            trt.offsetMax = Vector2.zero;
+        }
+    }
+}

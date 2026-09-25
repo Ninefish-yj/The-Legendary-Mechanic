@@ -174,7 +174,7 @@ namespace SuperMech.Code
                 Debug.Log($"[超神机械师] {a.name} 战斗掉落装备：{Equipments[quality].name}（掉落率{dropChance:F0%}）");
         }
 
-        /// <summary>装备物品到amulet槽（高级替换低级）。用原版装备系统，不直接加单位属性。</summary>
+        /// <summary>装备物品到amulet槽（高级替换低级，旧装备自动回背包）。用原版装备系统，不直接加单位属性。</summary>
         public static void EquipItem(Actor a, int qualityIndex)
         {
             if (a == null || qualityIndex < 0 || qualityIndex >= Equipments.Count) return;
@@ -191,6 +191,11 @@ namespace SuperMech.Code
                 {
                     int currentIdx = GetEquipIndex(current);
                     if (currentIdx >= qualityIndex) return; // 已有同级或更高级，不替换
+                    // 旧装备放回背包
+                    if (currentIdx >= 0)
+                    {
+                        SuperMechEquipBag.AddToBag(a, Equipments[currentIdx].id);
+                    }
                     slot.takeAwayItem(); // 移除旧装备
                 }
             }
@@ -229,9 +234,16 @@ namespace SuperMech.Code
         {
             if (item == null || item.asset == null) return -1;
             string id = ((Asset)item.asset).id;
+            return GetEquipIndex(id);
+        }
+
+        /// <summary>从装备ID获取品质索引（public，供装备背包调用）。</summary>
+        public static int GetEquipIndex(string equipId)
+        {
+            if (string.IsNullOrEmpty(equipId)) return -1;
             for (int i = 0; i < Equipments.Count; i++)
             {
-                if (Equipments[i].id == id) return i;
+                if (Equipments[i].id == equipId) return i;
             }
             return -1;
         }
