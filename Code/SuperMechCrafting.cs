@@ -21,6 +21,7 @@ namespace SuperMech.Code
         {
             public string id;           // 神权id
             public string name;         // 显示名
+            public string desc;         // 描述
             public string creatureId;   // WorldBox生物id
             public int minStage;        // 最低机械阶段tier
             public float qiBase;        // 基础气力奖励
@@ -32,27 +33,27 @@ namespace SuperMech.Code
         public static readonly CraftRecipe[] Recipes =
         {
             new CraftRecipe {
-                id = "sm_craft_ranger", name = "制造·游骑兵",
+                id = "sm_craft_ranger", name = "制造·游骑兵", desc = "点击机械师单位制造游骑兵（tier1）",
                 creatureId = "soldier", minStage = 1, qiBase = 5f, expBase = 10f,
                 traits = new[] { "aggressive" }
             },
             new CraftRecipe {
-                id = "sm_craft_drone", name = "制造·侦察无人机",
+                id = "sm_craft_drone", name = "制造·侦察无人机", desc = "点击机械师单位制造侦察无人机（tier2）",
                 creatureId = "zebra", minStage = 2, qiBase = 8f, expBase = 15f,
                 traits = new[] { "aggressive", "fast" }
             },
             new CraftRecipe {
-                id = "sm_craft_mech", name = "制造·战斗机甲",
+                id = "sm_craft_mech", name = "制造·战斗机甲", desc = "点击机械师单位制造战斗机甲（tier4）",
                 creatureId = "titan", minStage = 4, qiBase = 20f, expBase = 40f,
                 traits = new[] { "aggressive", "tough" }
             },
             new CraftRecipe {
-                id = "sm_craft_fortress", name = "制造·战争堡垒",
+                id = "sm_craft_fortress", name = "制造·战争堡垒", desc = "点击机械师单位制造战争堡垒（tier6）",
                 creatureId = "titan", minStage = 6, qiBase = 50f, expBase = 100f,
                 traits = new[] { "aggressive", "tough", "strong" }
             },
             new CraftRecipe {
-                id = "sm_craft_virtual", name = "制造·虚拟生命体",
+                id = "sm_craft_virtual", name = "制造·虚拟生命体", desc = "点击机械师单位制造虚拟生命体（tier7）",
                 creatureId = "human", minStage = 7, qiBase = 80f, expBase = 150f,
                 traits = new[] { "aggressive", "immortal", "genius" }
             },
@@ -61,6 +62,13 @@ namespace SuperMech.Code
         /// <summary>注册制造神权。</summary>
         public static void Register()
         {
+            // 注册制造神权名称和描述本地化
+            foreach (var r in Recipes)
+            {
+                LocalizedTextManager.add(r.name, r.name, pReplace: true);
+                LocalizedTextManager.add(r.name + "_description", r.desc, pReplace: true);
+            }
+
             foreach (var r in Recipes)
             {
                 var p = new GodPower
