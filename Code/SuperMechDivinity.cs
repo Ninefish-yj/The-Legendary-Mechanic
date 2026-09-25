@@ -61,6 +61,12 @@ namespace SuperMech.Code
             int v; _speciesLayers.TryGetValue(a.id, out v); return v;
         }
 
+        /// <summary>获取神性蜕变总层数（职业+种族）。</summary>
+        public static int GetTotalLayers(Actor a)
+        {
+            return GetProfLayers(a) + GetSpeciesLayers(a);
+        }
+
         /// <summary>是否已触发神性蜕变。</summary>
         public static bool IsDivineAwakened(Actor a)
         {

@@ -59,11 +59,12 @@ namespace SuperMech.Code
                     if (stage != "—" && stage != "未入门")
                         ShowRow(__instance, "职业阶段", stage);
                     if (SuperMechAwakened.CanAdvanceStage(actor))
-                        ShowRow(__instance, "转职", "可转职！（进阶任务）");
-                    // 进阶任务状态（原著ch48/ch50：进阶任务完成后才能转职）
-                    string taskStatus = SuperMechAdvancementTask.GetTaskStatus(actor);
-                    if (taskStatus != null)
-                        ShowRow(__instance, "进阶任务", taskStatus);
+                    {
+                        ShowRow(__instance, "转职", "可转职！");
+                        string reqText = SuperMechAdvancementTask.GetReqText(actor);
+                        if (reqText != null)
+                            ShowRow(__instance, "转职条件", reqText);
+                    }
                 }
                 else
                 {

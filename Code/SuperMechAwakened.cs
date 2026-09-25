@@ -110,6 +110,21 @@ namespace SuperMech.Code
             return 1; // 降临者初始1级
         }
 
+        /// <summary>获取总等级（当前等级+之前所有阶段上限之和）。</summary>
+        public static int GetTotalLevel(Actor a)
+        {
+            if (a == null || !IsAwakened(a)) return 0;
+            int stage = SuperMechStage.GetStage(a);
+            if (stage <= 0) return GetLevel(a);
+            int total = 0;
+            for (int i = 0; i < stage - 1 && i < StageLevelCaps.Length; i++)
+            {
+                total += StageLevelCaps[i];
+            }
+            total += GetLevel(a);
+            return total;
+        }
+
         /// <summary>获取当前经验值。</summary>
         public static float GetXp(Actor a)
         {
@@ -235,11 +250,8 @@ namespace SuperMech.Code
                 if (a == null) continue;
                 if (!IsAwakened(a)) continue;
 
-                // 1. 达到等级上限后触发进阶任务（原著ch48/ch50：进阶任务完成后才能转职）
-                if (CanAdvanceStage(a) && !SuperMechAdvancementTask.HasActiveTask(a))
-                {
-                    SuperMechAdvancementTask.TryStartTask(a);
-                }
+                // 1. 达到等级上限后，转职条件系统自动检查（原著ch50/ch107/ch269/ch626）
+                // 不需要在这里触发，SuperMechAdvancementTask.TickTasks()会自动处理
 
                 // 2. 自动分配潜能点（解锁知识树）
                 int pot = SuperMechPotential.GetPotential(a);

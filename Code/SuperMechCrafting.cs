@@ -142,6 +142,8 @@ namespace SuperMech.Code
                             {
                                 SuperMechAwakened.AddXp(u, expGain);
                             }
+                            // 记录制造数量（转职条件用）
+                            SuperMechAdvancementTask.OnCraft(u);
 
                             // 【降临者专属】打造高级装备获得神性蜕变点数（ch1052/1053）
                             // 只有有面板的玩家能通过这个渠道获得点数，土著察觉不到
