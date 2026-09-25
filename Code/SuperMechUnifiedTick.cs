@@ -78,14 +78,52 @@ namespace SuperMech.Code
                 Debug.LogError($"[超神机械师] 统一tick异常(group={group}): {e.Message}");
             }
 
-            // 自动存档：每60秒
+            // 自动存档+死单位清理：每60秒
             float now = Time.time;
             if (now - _lastSaveTime >= 60f)
             {
                 _lastSaveTime = now;
                 try { SuperMechSaveData.Save(); }
                 catch (System.Exception e) { Debug.LogError($"[超神机械师] 自动存档异常: {e.Message}"); }
+                try { CleanupDeadActors(); }
+                catch (System.Exception e) { Debug.LogError($"[超神机械师] 死单位清理异常: {e.Message}"); }
             }
+        }
+
+        /// <summary>清理已死亡/移除单位的字典数据（防止内存泄漏）。</summary>
+        private static void CleanupDeadActors()
+        {
+            if (World.world == null || World.world.units == null) return;
+            var alive = new System.Collections.Generic.HashSet<long>();
+            foreach (var a in World.world.units) if (a != null) alive.Add(a.id);
+
+            int removed = 0;
+            removed += SuperMechQi.CleanupDead(alive);
+            removed += SuperMechStage.CleanupDead(alive);
+            removed += SuperMechPotential.CleanupDead(alive);
+            removed += SuperMechDivinity.CleanupDead(alive);
+            removed += SuperMechAdvancement.CleanupDead(alive);
+            removed += SuperMechAwakened.CleanupDead(alive);
+            removed += SuperMechHeritage.CleanupDead(alive);
+            removed += SuperMechCorePower.CleanupDead(alive);
+            removed += SuperMechInfoState.CleanupDead(alive);
+            removed += SuperMechEquipBag.CleanupDead(alive);
+            removed += SuperMechAura.CleanupDead(alive);
+            removed += SuperMechCrafting.CleanupDead(alive);
+            removed += SuperMechRefinement.CleanupDead(alive);
+            removed += SuperMechSubClass.CleanupDead(alive);
+            removed += SuperMechLegend.CleanupDead(alive);
+            removed += SuperMechIntuition.CleanupDead(alive);
+            removed += SuperMechTranscendence.CleanupDead(alive);
+            removed += SuperMechDimension.CleanupDead(alive);
+            removed += SuperMechMageTower.CleanupDead(alive);
+            removed += SuperMechRelic.CleanupDead(alive);
+            removed += SuperMechSanctuary.CleanupDead(alive);
+            removed += SuperMechPotentialRating.CleanupDead(alive);
+            removed += SuperMechQiAttribute.CleanupDead(alive);
+            removed += SuperMechAdvancementTask.CleanupDead(alive);
+            if (removed > 0 && SuperMechConfig.LogVerbose)
+                Debug.Log($"[超神机械师] 清理{removed}条死亡单位数据");
         }
 
         /// <summary>

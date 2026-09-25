@@ -152,6 +152,15 @@ namespace SuperMech.Code
 
         /// <summary>清除单位属性数据。</summary>
         public static void Clear() { _attr.Clear(); }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_attribute, alive);
+            removed += SuperMechCleanup.CleanDict(_assigned, alive);
+            return removed;
+        }
         public static void Clear(Actor a)
         {
             if (a != null) _attr.Remove(a.data.id);

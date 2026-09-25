@@ -413,6 +413,15 @@ namespace SuperMech.Code
 
         /// <summary>清除数据。</summary>
         public static void Clear() { _legacyPower.Clear(); _cooldown.Clear(); _transcended.Clear(); }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_legacySense, alive);
+            removed += SuperMechCleanup.CleanDict(_transcendenceState, alive);
+            return removed;
+        }
         public static void Clear(Actor a)
         {
             if (a == null) return;

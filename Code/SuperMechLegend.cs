@@ -106,5 +106,13 @@ namespace SuperMech.Code
             _legend.Clear();
             _lastDeed.Clear();
         }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_legend, alive);
+            return removed;
+        }
     }
 }

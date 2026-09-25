@@ -83,6 +83,9 @@ namespace SuperMech.Code
                 if (rankIdx >= 10) { t.addCombatAction("combat_instincts"); t.addCombatAction("combat_deflect_projectile"); } // S阶+
                 if (rankIdx >= 12) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); } // SS阶+
                 rankIdx++;
+                // 动态添加本地化（ID带数字前缀sm_rank_00_f，cz.json中key不带前缀，这里补全）
+                LocalizedTextManager.add("trait_" + r.id, r.name, pReplace: true);
+                LocalizedTextManager.add("trait_" + r.id + "_info", GetRankDesc(rankIdx - 1), pReplace: true);
                 AssetManager.traits.add(t);
             }
 
@@ -167,6 +170,23 @@ namespace SuperMech.Code
                     break;
             }
             AssetManager.traits.add(t);
+        }
+
+        /// <summary>阶位描述（原著设定）。</summary>
+        private static string GetRankDesc(int idx)
+        {
+            string[] descs = {
+                "凡人，未觉醒超能。",
+                "能级标准100欧纳，真正的超能者。",
+                "已掌握基础能力。",
+                "一方强者，可担任小队队长。",
+                "星球级精英。",
+                "可在行星地表掀起毁灭性灾难。",
+                "超A级，宇宙顶级存在。",
+                "巅峰超A级，触摸超神门槛。",
+                "超神级，你即是宇宙。"
+            };
+            return idx >= 0 && idx < descs.Length ? descs[idx] : "高阶超能者。";
         }
 
         private static void AddSkillTrait(string id, string name, string desc, int intell, float dmgMul)

@@ -618,5 +618,14 @@ namespace SuperMech.Code
             _divineSnapshot.Clear();
             Data = new SanctuaryData();
         }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_sanctuaryAccess, alive);
+            removed += SuperMechCleanup.CleanDict(_reviveQueue, alive);
+            return removed;
+        }
     }
 }

@@ -149,5 +149,17 @@ namespace SuperMech.Code
             // 简化：buff通过stats反射施加后持续存在，不做过期移除
             // 冷却由_cooldown控制再次进入
         }
+
+        /// <summary>清空数据。</summary>
+        public static void Clear() { _activeDimension.Clear(); _cooldown.Clear(); }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_activeDimension, alive);
+            removed += SuperMechCleanup.CleanDict(_cooldown, alive);
+            return removed;
+        }
     }
 }

@@ -313,6 +313,15 @@ namespace SuperMech.Code
         }
 
         public static void Clear() { _refineCount.Clear(); _emRefineCount.Clear(); _refineQiBonus.Clear(); _emRefineQiBonus.Clear(); }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_cultivation, alive);
+            removed += SuperMechCleanup.CleanDict(_perfectLevel, alive);
+            return removed;
+        }
         public static void Clear(Actor a)
         {
             if (a != null)

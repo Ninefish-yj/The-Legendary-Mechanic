@@ -404,5 +404,17 @@ namespace SuperMech.Code
             _combatTimer.Clear();
             _appliedLevel.Clear();
         }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_qiMap, alive);
+            removed += SuperMechCleanup.CleanDict(_qiMaxMap, alive);
+            removed += SuperMechCleanup.CleanDict(_qiRegen, alive);
+            removed += SuperMechCleanup.CleanDict(_qiSpent, alive);
+            removed += SuperMechCleanup.CleanDict(_appliedLevel, alive);
+            return removed;
+        }
     }
 }

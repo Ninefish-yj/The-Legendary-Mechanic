@@ -183,5 +183,14 @@ namespace SuperMech.Code
             _unitReqs.Clear();
             _craftCount.Clear();
         }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_unitReqs, alive);
+            removed += SuperMechCleanup.CleanDict(_craftCount, alive);
+            return removed;
+        }
     }
 }

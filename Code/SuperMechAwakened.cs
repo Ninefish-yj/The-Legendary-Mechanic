@@ -224,6 +224,15 @@ namespace SuperMech.Code
 
         /// <summary>清除数据（单位死亡时）。</summary>
         public static void Clear() { _level.Clear(); _xp.Clear(); }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_level, alive);
+            removed += SuperMechCleanup.CleanDict(_xp, alive);
+            return removed;
+        }
         public static void Clear(Actor a)
         {
             if (a == null) return;

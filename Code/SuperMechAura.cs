@@ -168,5 +168,14 @@ namespace SuperMech.Code
             _suppressed.Clear();
             _stunned.Clear();
         }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_suppressed, alive);
+            removed += SuperMechCleanup.CleanDict(_stunned, alive);
+            return removed;
+        }
     }
 }

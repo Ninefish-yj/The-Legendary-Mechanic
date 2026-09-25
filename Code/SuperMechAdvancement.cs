@@ -302,5 +302,14 @@ namespace SuperMech.Code
             _exactRank.Clear();
             _appliedRankIdx.Clear();
         }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_exactRank, alive);
+            removed += SuperMechCleanup.CleanDict(_appliedRankIdx, alive);
+            return removed;
+        }
     }
 }
