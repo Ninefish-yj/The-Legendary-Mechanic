@@ -233,6 +233,22 @@ namespace SuperMech.Code
                     AddInfoRow(_container.transform, syn.name, bonusText.Trim());
                 }
             }
+
+            // 知识融合（原著ch107：消耗经验融合知识获得图纸）
+            var fusionRecipes = SuperMechKnowledgeFusion.GetAvailableRecipes(actor);
+            if (fusionRecipes.Count > 0 && SuperMechAwakened.IsAwakened(actor))
+            {
+                int unlockedFusions = SuperMechKnowledgeFusion.GetUnlockedCount(actor);
+                AddSectionHeader(_container.transform, $"知识融合（已解锁{unlockedFusions}个图纸）");
+                foreach (var recipe in fusionRecipes)
+                {
+                    bool alreadyUnlocked = false;
+                    // 检查是否已融合过
+                    string status = $"经验{recipe.xpCost} 成功率{(recipe.successRate * 100):0}%";
+                    AddInfoRow(_container.transform, recipe.name, status);
+                }
+                AddInfoRow(_container.transform, "提示", "用神权「知识融合」选择配方进行融合");
+            }
         }
 
         private static string GetTreeName(string prefix)

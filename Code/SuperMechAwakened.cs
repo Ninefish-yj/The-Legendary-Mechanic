@@ -147,6 +147,16 @@ namespace SuperMech.Code
             _xp[a.data.id] = Mathf.Max(0, xp);
         }
 
+        /// <summary>消耗经验值（用于知识融合等）。</summary>
+        public static bool SpendXp(Actor a, float amount)
+        {
+            if (a == null || !IsAwakened(a) || amount <= 0) return false;
+            float cur = GetXp(a);
+            if (cur < amount) return false;
+            _xp[a.data.id] = cur - amount;
+            return true;
+        }
+
         /// <summary>添加经验值，自动升级。</summary>
         public static void AddXp(Actor a, float amount)
         {

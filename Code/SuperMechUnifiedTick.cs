@@ -109,6 +109,7 @@ namespace SuperMech.Code
             removed += SuperMechEquipAffix.CleanupDead(alive);
             removed += SuperMechEquipBreak.CleanupDead(alive);
             removed += SuperMechMechFusion.CleanupDead(alive);
+            removed += SuperMechKnowledgeFusion.CleanupDead(alive);
             removed += SuperMechDivinity.CleanupDead(alive);
             removed += SuperMechAdvancement.CleanupDead(alive);
             removed += SuperMechAwakened.CleanupDead(alive);
@@ -149,6 +150,7 @@ namespace SuperMech.Code
             try { SuperMechEquipAffix.Clear(); } catch { }
             try { SuperMechEquipBreak.Clear(); } catch { }
             try { SuperMechMechFusion.Clear(); } catch { }
+            try { SuperMechKnowledgeFusion.Clear(); } catch { }
             try { SuperMechDivinity.Clear(); } catch { }
             try { SuperMechTranscendence.Clear(); } catch { }
             try { SuperMechInfoState.Clear(); } catch { }
