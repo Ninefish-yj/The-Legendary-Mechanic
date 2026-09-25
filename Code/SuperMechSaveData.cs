@@ -73,6 +73,9 @@ namespace SuperMech.Code
             public string destinyName;
             public float destinyProgress;
             public bool destinyCompleted;
+            public string branch; // 职业分支（枪炮师/机械师/械武者等）
+            public string subclass; // 副职业ID
+            public int subclassLevel; // 副职业等级
         }
 
         [Serializable]
@@ -153,7 +156,10 @@ namespace SuperMech.Code
                             reviveCount = SuperMechSanctuary.GetReviveCount(a),
                             qiAttribute = SuperMechQiAttribute.GetAttribute(a),
                             legend = SuperMechLegend.GetLegend(a),
-                            lastDeed = SuperMechLegend.GetLastDeed(a)
+                            lastDeed = SuperMechLegend.GetLastDeed(a),
+                            branch = SuperMechBranch.GetBranchTrait(a),
+                            subclass = GetActiveSubClassId(a),
+                            subclassLevel = GetActiveSubLevel(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -222,6 +228,25 @@ namespace SuperMech.Code
         private static SaveData _pendingLoad;
         private static bool _loadPending = false;
 
+        /// <summary>获取单位当前激活的副职业ID。</summary>
+        private static string GetActiveSubClassId(Actor a)
+        {
+            if (a == null) return null;
+            foreach (string subId in SuperMechSubClass.AllSubClasses)
+            {
+                if (a.hasTrait(subId)) return subId;
+            }
+            return null;
+        }
+
+        /// <summary>获取单位当前激活的副职业等级。</summary>
+        private static int GetActiveSubLevel(Actor a)
+        {
+            string subId = GetActiveSubClassId(a);
+            if (string.IsNullOrEmpty(subId)) return 0;
+            return SuperMechSubClass.GetSubLevel(a, subId);
+        }
+
         /// <summary>
         /// 尝试恢复单位数据（在单位加载后调用，通过id匹配）。
         /// 世界加载时单位是逐步生成的，所以每次tick检查一次。
@@ -263,6 +288,15 @@ namespace SuperMech.Code
                     if (!string.IsNullOrEmpty(ad.qiAttribute) && ad.qiAttribute != SuperMechQiAttribute.AttrNone)
                         SuperMechQiAttribute.SetAttribute(a, ad.qiAttribute);
                     if (ad.legend > 0) SuperMechLegend.AddLegend(a, ad.legend, ad.lastDeed);
+                    // 恢复分支选择（通过特质）
+                    if (!string.IsNullOrEmpty(ad.branch) && !a.hasTrait(ad.branch))
+                        a.addTrait(ad.branch);
+                    // 恢复副职业（通过特质+等级）
+                    if (!string.IsNullOrEmpty(ad.subclass) && !a.hasTrait(ad.subclass))
+                    {
+                        a.addTrait(ad.subclass);
+                        SuperMechSubClass.AddSubXp(a, ad.subclass, 0); // 初始化字典
+                    }
 
                     _pendingLoad.actors.Remove(id);
                     restored++;
