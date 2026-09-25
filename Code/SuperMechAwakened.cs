@@ -52,8 +52,7 @@ namespace SuperMech.Code
             return Mathf.Round(baseXp);
         }
 
-        // 升级奖励（参考原著）
-        public static readonly float[] LevelQiReward = { 10f, 30f, 50f, 70f, 100f, 150f, 200f, 300f, 400f, 450f, 500f, 500f, 500f, 500f };
+        // 升级奖励（参考原著，气力奖励统一在SuperMechStage.LevelQiBonus）
         public static readonly int[] LevelStatPoints = { 2, 3, 3, 4, 4, 5, 5, 8, 10, 15, 15, 20, 20, 20 };
         public static readonly int[] LevelPotentialPoints = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
@@ -128,11 +127,12 @@ namespace SuperMech.Code
                 if (curXp < needed) break;
                 curXp -= needed;
                 lv++;
-                // 升级奖励
-                int idx = Mathf.Clamp(stage - 1, 0, LevelQiReward.Length - 1);
-                SuperMechQi.AddQiMax(a, LevelQiReward[idx]); // 升级提升气力上限
+                // 升级奖励（原著：每次升级加气力上限，当前值补满）
+                int idx = Mathf.Clamp(stage - 1, 0, SuperMechStage.LevelQiBonus.Length - 1);
+                SuperMechQi.AddQiMax(a, SuperMechStage.LevelQiBonus[idx]); // 升级提升气力上限
+                SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a)); // 升级后气力充盈
                 SuperMechPotential.AddPotential(a, LevelPotentialPoints[idx]);
-                Debug.Log($"[超神机械师] {a.name} 升级到Lv{lv}（阶段{stage}）");
+                Debug.Log($"[超神机械师] {a.name} 升级到Lv{lv}（阶段{stage}，气力+{SuperMechStage.LevelQiBonus[idx]:F0}）");
             }
 
             if (lv >= cap)

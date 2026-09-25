@@ -97,23 +97,28 @@ namespace SuperMech.Code
             var stats = SuperMechStats.Of(a);
             if (stats == null) return;
 
-            // 原著气力加成表（ch50机械师学徒基准，外推至40级）
-            stats["damage"] = level * 2f;
-            stats["warfare"] = level;
-            stats["intelligence"] = level;
-            stats["health"] = level * 15f;
-            stats["stamina"] = level * 12f;
-            stats["armor"] = level * 0.3f;
-            stats["speed"] = level * 0.04f;
-            stats["attack_speed"] = level * 0.02f;
-            stats["multiplier_damage"] = 1f + level * 0.02f;
-            stats["multiplier_health"] = 1f + level * 0.05f;
-            stats["multiplier_stamina"] = 1f + level * 0.03f;
-            stats["experience"] = 1f + level * 0.01f;
+            // 原著ch3：每一级增加的属性并非固定，会随着主职业转职而改变，越高阶的职业，属性加成就越多
+            // 职业阶段倍率：每进阶一个阶段+15%（入门者1.0x，神座约3.0x，超神约3.25x）
+            int stage = SuperMechStage.GetStage(a);
+            float stageMul = 1f + stage * 0.15f;
+
+            // 原著气力加成表（ch50机械师学徒基准，随职业阶段放大）
+            stats["damage"] = level * 2f * stageMul;
+            stats["warfare"] = level * stageMul;
+            stats["intelligence"] = level * stageMul;
+            stats["health"] = level * 15f * stageMul;
+            stats["stamina"] = level * 12f * stageMul;
+            stats["armor"] = level * 0.3f * stageMul;
+            stats["speed"] = level * 0.04f * stageMul;
+            stats["attack_speed"] = level * 0.02f * stageMul;
+            stats["multiplier_damage"] = 1f + level * 0.02f * stageMul;
+            stats["multiplier_health"] = 1f + level * 0.05f * stageMul;
+            stats["multiplier_stamina"] = 1f + level * 0.03f * stageMul;
+            stats["experience"] = 1f + level * 0.01f * stageMul;
             if (level >= 6)  // Lv6分水岭（原著ch146），额外暴击
             {
-                stats["critical_chance"] = (level - 5) * 0.01f;
-                stats["multiplier_crit"] = 1f + (level - 5) * 0.05f;
+                stats["critical_chance"] = (level - 5) * 0.01f * stageMul;
+                stats["multiplier_crit"] = 1f + (level - 5) * 0.05f * stageMul;
             }
             _appliedLevel[a.id] = level;
         }

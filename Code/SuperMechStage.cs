@@ -54,8 +54,17 @@ namespace SuperMech.Code
             "帝皇念力师", "主宰念力师", "神座念力师", "超神念力师"
         };
 
-        // 每阶段转职的气力奖励（机械系原著数值参考）
-        public static readonly float[] StageQiBonus = { 0, 5, 10, 20, 50, 80, 120, 200, 300, 500, 800, 1200, 2000, 5000 };
+        // 每阶段转职的气力奖励（原著原文确认）
+        // ch3入门+10, ch50学徒+30, ch107见习+50, ch237磁环+70, ch362数据+100,
+        // ch477战争+120, ch539虚拟+150, ch626星海+180, ch670真理+210, ch716使徒+240,
+        // ch762帝皇+300, 主宰推断+360(同升级奖励), 神座推断+450(同升级奖励), ch1402超神+700
+        public static readonly float[] StageQiBonus = { 10, 30, 50, 70, 100, 120, 150, 180, 210, 240, 300, 360, 450, 700 };
+
+        // 每阶段每次升级的气力奖励（原著原文确认）
+        // 入门+10(ch3), 见习+50(ch149), 磁环+180(ch266), 数据+240(ch362),
+        // 战争+120(ch477), 神座+450~500(ch1039/ch1201), 超神+700(ch1402)
+        // 未明确列出的阶段按相邻阶段插值
+        public static readonly float[] LevelQiBonus = { 10, 20, 50, 80, 120, 120, 150, 180, 200, 220, 300, 360, 450, 700 };
 
         private static readonly Dictionary<long, int> _stage = new Dictionary<long, int>();
 
@@ -105,10 +114,11 @@ namespace SuperMech.Code
             int cur = GetStage(a);
             if (cur >= 14) return false;
             SetStage(a, cur + 1);
-            // 转职气力奖励
+            // 转职气力奖励（原著：转职后气力上限提升，当前值补满，ch50显示160/160）
             if (cur + 1 <= StageQiBonus.Length && StageQiBonus[cur] > 0)
             {
-                SuperMechQi.AddQi(a, StageQiBonus[cur]);
+                SuperMechQi.AddQiMax(a, StageQiBonus[cur]);
+                SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a)); // 转职后气力充盈
             }
             // 第4阶段觉醒气力属性（各系不同）
             if (cur + 1 == 4)
