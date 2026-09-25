@@ -554,16 +554,39 @@ namespace SuperMech.Code
             // 恢复职业数据
             if (!string.IsNullOrEmpty(rec.classTrait)) a.addTrait(rec.classTrait);
             if (!string.IsNullOrEmpty(rec.branchTrait)) a.addTrait(rec.branchTrait);
-            if (rec.stage > 0) SuperMechStage.SetStage(a, rec.stage);
-            if (rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count)
-                SuperMechAdvancement.SetExactRank(a, rec.rankIndex);  // 含+位，自动挂主阶位特质+属性倍率
 
             // 复活次数（ch1214：复苏次数越多，信息丢失越严重）
             int reviveCount = rec.reviveCount + 1;
             SetReviveCount(a, reviveCount);
 
-            // 复活后削弱（ch1214：随机失去一些能力，复苏次数越多信息丢失越严重）
+            // 复活后信息丢失（ch1214：随机失去一些能力，复苏次数越多信息丢失越严重）
             float infoLoss = Mathf.Clamp(0.1f * reviveCount, 0.1f, 0.5f); // 每次多丢10%，最多50%
+
+            // ===== 降阶机制（信息丢失严重到一定程度会掉阶，掉到A级就失去复活资格）=====
+            int finalRank = rec.rankIndex;
+            int finalStage = rec.stage;
+            bool rankDropped = false;
+
+            // 信息丢失率越高，降阶概率越大
+            if (Random.value < infoLoss)
+            {
+                // 降1阶（从S+降到S，从S降到A+，从A+降到A...）
+                if (finalRank > 0)
+                {
+                    finalRank--;
+                    rankDropped = true;
+                    // 职业阶段也相应降低（每降1阶，阶段降1-2级）
+                    finalStage = Mathf.Max(0, finalStage - Random.Range(1, 3));
+                    Debug.Log($"[超神机械师] {rec.name} 复活降阶！{SuperMechRanks.GetRankName(rec.rankIndex)}→{SuperMechRanks.GetRankName(finalRank)}");
+                }
+            }
+
+            // 设置最终阶位和职业阶段
+            if (finalStage > 0) SuperMechStage.SetStage(a, finalStage);
+            if (finalRank >= 0 && finalRank < SuperMechRanks.All.Count)
+                SuperMechAdvancement.SetExactRank(a, finalRank);
+
+            // 气力削弱
             SuperMechQi.SetQi(a, rec.qi * (1f - infoLoss));
             if (!string.IsNullOrEmpty(rec.qiAttribute) && rec.qiAttribute != SuperMechQiAttribute.AttrNone)
                 SuperMechQiAttribute.SetAttribute(a, rec.qiAttribute);
@@ -577,15 +600,15 @@ namespace SuperMech.Code
                 s["intelligence"] = Mathf.Max(0f, ((s["intelligence"] == 0f ? 5f : s["intelligence"])) * (1f - infoLoss * 0.5f));
             }
 
-            // 复活后进阶任务进度打折（信息丢失影响突破潜力）
-            float oldProg = SuperMechTranscendence.GetAdvancementProgress(a);
-            if (oldProg > 0)
+            // 判断是否失去复活资格（降到A级以下，索引<10）
+            bool canResurrectAgain = finalRank >= 10; // S阶索引=10
+            if (!canResurrectAgain)
             {
-                // 用反射设置进度，或者通过公共方法
+                Debug.Log($"[超神机械师] {rec.name} 已降到{SuperMechRanks.GetRankName(finalRank)}，失去圣所复活资格！");
             }
 
             Save();
-            Debug.Log($"[超神机械师] 圣所复活：{rec.name}（第{reviveCount}次复活，信息丢失{infoLoss:P0}，消耗{ResurrectionCost}钥匙碎片）");
+            Debug.Log($"[超神机械师] 圣所复活：{rec.name}（第{reviveCount}次复活，信息丢失{infoLoss:P0}{(rankDropped ? "，降阶" : "")}{(canResurrectAgain ? "" : "，失去复活资格")}，消耗{ResurrectionCost}钥匙碎片）");
             return a;
         }
 

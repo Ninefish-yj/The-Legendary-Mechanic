@@ -98,7 +98,7 @@ namespace SuperMech.Code
             y -= 24f;
 
             // ===== 圣所复活（ch1134/ch1214：仅超A级可复活，超神级靠信息态重生）=====
-            _frame.AddLabel("◆ 圣所复活（S~SS阶，任意圣所+5钥匙，复活后气力80%/伤害-20%/生命-20%）", x, y, 540f, 20f, 13);
+            _frame.AddLabel("◆ 圣所复活（S~SS阶，任意圣所+5钥匙，复活后信息丢失可能降阶，降到A级失去复活资格）", x, y, 540f, 20f, 13);
             y -= 26f;
 
             bool canRes = SuperMechSanctuary.CanResurrect();
@@ -116,7 +116,11 @@ namespace SuperMech.Code
                     var rec = deadList[i];
                     string rankName = rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count
                         ? SuperMechRanks.All[rec.rankIndex].name : "?";
-                    string btnText = $"{rec.name} [{rankName}]  消耗5钥匙复活";
+                    // 显示复活次数和降阶风险
+                    int nextRevive = rec.reviveCount + 1;
+                    float infoLoss = Mathf.Clamp(0.1f * nextRevive, 0.1f, 0.5f);
+                    string riskText = nextRevive >= 4 ? "⚠高风险" : nextRevive >= 2 ? "有风险" : "低风险";
+                    string btnText = $"{rec.name} [{rankName}]  已复活{rec.reviveCount}次  下次信息丢失{infoLoss:P0}({riskText})  [5钥匙]";
                     Color btnBg = canRes ? new Color(0.2f, 0.15f, 0.1f, 0.9f) : new Color(0.15f, 0.15f, 0.15f, 0.8f);
                     int idx = i;
                     _frame.AddButton(btnText, x, y, 540f, 30f, () =>
