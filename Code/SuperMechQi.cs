@@ -105,10 +105,12 @@ namespace SuperMech.Code
             // 原著ch626/ch1402：气力等级加成对标原著
             // Lv21: 力量+3206/敏捷+3928/耐力+4870/智力+6505/体力上限+1381520
             // Lv25: 力量+6620/敏捷+7745/耐力+10308/智力+14187/体力上限+4382600
+            // Lv29: 力量+12480/敏捷+13640/耐力+17200/智力+22845/体力上限+11427000
             // 二次方拟合：力量=lv²×7.3, 敏捷=lv²×8.9, 耐力=lv²×11.0, 智力=lv²×14.7
             // WorldBox原版属性小，用multiplier百分比模拟成长曲线
-            // 高阶位增长更陡峭（Lv21→Lv25力量涨2倍，4级翻倍）
-            float qiMul = 1f + Mathf.Pow(level, 1.8f) * 0.015f * stageMul;
+            // 公式通用所有等级：qiMul = 1 + level² × 0.02 × stageMul
+            // Lv21≈16x, Lv25≈23x, Lv29≈30x, Lv40≈57x（高阶位增长感强但不爆炸）
+            float qiMul = 1f + level * level * 0.02f * stageMul;
 
             stats["multiplier_damage"] = qiMul;
             stats["multiplier_health"] = qiMul * 1.3f;

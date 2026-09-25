@@ -26,6 +26,7 @@ namespace SuperMech.Code
         public const string StatMindPower = "sm_mind_power";     // 精神力（念力系能量，当前值）
         public const string StatMindPowerMax = "sm_mind_power_max"; // 精神力上限
         public const string StatMechAffinity = "sm_mech_affinity"; // 械感（机械亲和度，百分比）
+        public const string StatMageAffinity = "sm_mage_affinity"; // 魔感（魔法亲和度，百分比）
         public const string StatMystery = "sm_mystery";          // 神秘（原著7项基础属性之一）
         public const string StatCharm = "sm_charm";              // 魅力（原著7项基础属性之一）
         public const string StatLuck = "sm_luck";                // 幸运（原著7项基础属性之一）
@@ -51,6 +52,8 @@ namespace SuperMech.Code
                 (StatMindPowerMax, "精神力上限", "精神力最大值（原著ch50）", true, 0f, 100000f, false),
                 // 械感（机械亲和度，百分比，原著ch626 Lv21+4282%）
                 (StatMechAffinity, "械感", "机械亲和度，机械师操控机械的核心天赋（原著ch50/ch626，气力属性【磁】增加机械亲和度）", true, 0f, 50000f, true),
+                // 魔感（魔法亲和度，百分比，原著领袖之证"职业特色气力属性：魔法亲和"）
+                (StatMageAffinity, "魔感", "魔法亲和度，魔法师操控元素的核心天赋（原著领袖之证，职业特色气力属性：魔法亲和）", true, 0f, 50000f, true),
                 // 原著7项基础属性中的3项（原版没有的）
                 (StatMystery, "神秘", "原著7项基础属性之一，影响异能/魔法强度（ch3）", true, 0f, 50000f, false),
                 (StatCharm, "魅力", "原著7项基础属性之一，影响社交/声望（ch3）", true, 0f, 50000f, false),
@@ -146,6 +149,9 @@ namespace SuperMech.Code
                 // 魔力=气力×魔法系转化率（简化，原著魔法师有独立魔力池）
                 stats[StatMana] = qi * 0.8f;
                 stats[StatManaMax] = qiMax * 0.8f;
+                // 魔感（魔法亲和度，百分比，原著领袖之证"职业特色气力属性：魔法亲和"）
+                int qiLvForMage = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
+                stats[StatMageAffinity] = 100f * Mathf.Pow(1.2f, qiLvForMage);
             }
 
             // 精神力（念力系能量，消耗条）

@@ -102,6 +102,14 @@ namespace SuperMech.Code
                     ShowRow(__instance, "械感", $"+{mechAffinity:F0}%（机械亲和度）");
                 }
 
+                // 行4c：魔感（魔法亲和度，百分比，原著领袖之证"职业特色气力属性：魔法亲和"）
+                if (cls == "魔法系")
+                {
+                    int qiLvForMage = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
+                    float mageAffinity = 100f * Mathf.Pow(1.2f, qiLvForMage);
+                    ShowRow(__instance, "魔感", $"+{mageAffinity:F0}%（魔法亲和度）");
+                }
+
                 // 行5：欧纳（能级）
                 float onar = SuperMechAdvancement.CalcOnar(actor);
                 ShowRow(__instance, "欧纳", $"{onar:F0}");
