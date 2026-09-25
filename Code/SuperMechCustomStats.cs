@@ -116,7 +116,7 @@ namespace SuperMech.Code
         public static void SyncStats(Actor a)
         {
             if (a == null || a.data == null) return;
-            var stats = a.data.stats;
+            var stats = a.stats;
             if (stats == null) return;
 
             // 气力（原著核心能量，消耗条：当前值/上限）
@@ -164,6 +164,13 @@ namespace SuperMech.Code
 
             // 职业等级（降临者）
             stats[StatProfessionLevel] = SuperMechStage.GetStage(a);
+        }
+
+        /// <summary>获取单位的自定义属性值。</summary>
+        public static float GetStat(Actor a, string statId)
+        {
+            if (a == null || a.stats == null) return 0f;
+            return a.stats[statId];
         }
     }
 }

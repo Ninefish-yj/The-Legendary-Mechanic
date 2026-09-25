@@ -261,7 +261,7 @@ namespace SuperMech.Code
         /// <summary>从职业系天赋池roll（模拟3次更换选最好）。</summary>
         private static string PickClassTalent(Actor a)
         {
-            string cls = SuperMechUnitWindow.GetClass(a);
+            string cls = SuperMechBranch.GetClass(a);
             var candidates = TalentPool.FindAll(t => t.classId == cls);
             if (candidates.Count == 0) candidates = TalentPool;
             return RollBest(candidates);
@@ -298,7 +298,7 @@ namespace SuperMech.Code
             string key = a.data.id.ToString();
             if (!_titles.ContainsKey(key))
             {
-                string cls = SuperMechUnitWindow.GetClass(a);
+                string cls = SuperMechBranch.GetClass(a);
                 _titles[key] = SuperMechTitleGenerator.Generate(cls);
             }
             return _titles[key];

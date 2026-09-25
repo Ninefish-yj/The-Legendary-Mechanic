@@ -112,7 +112,7 @@ namespace SuperMech.Code
             Image icon = tabObj.GetComponentInChildren<Image>();
             if (icon != null)
             {
-                try { icon.sprite = SpriteLoader.get("ui/Icons/actor_traits/iconBlessing"); } catch { }
+                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconBlessing"); } catch { }
             }
             try
             {
@@ -191,9 +191,9 @@ namespace SuperMech.Code
             }
         }
 
-        private static void OnTabHide(WindowMetaTab tab)
+        private static void OnTabHide()
         {
-            if (tab == _bagTab && _container != null) _container.SetActive(false);
+            if (_container != null) _container.SetActive(false);
         }
 
         /// <summary>渲染背包内容。</summary>
@@ -384,7 +384,7 @@ namespace SuperMech.Code
             img.color = tint;
             try
             {
-                Sprite sprite = SpriteLoader.get(iconPath);
+                Sprite sprite = SpriteTextureLoader.getSprite(iconPath);
                 if (sprite != null) img.sprite = sprite;
             }
             catch { }

@@ -232,7 +232,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>从物品获取品质索引。</summary>
-        private static int GetEquipIndex(Item item)
+        public static int GetEquipIndex(Item item)
         {
             if (item == null || item.asset == null) return -1;
             string id = ((Asset)item.asset).id;

@@ -36,7 +36,7 @@ namespace SuperMech.Code
             }
 
             // 伤害超过最大生命10%时，装备耐久下降
-            float maxHp = a.data.maxHealth;
+            float maxHp = a.getMaxHealth();
             if (maxHp <= 0) return;
             float damageRatio = damage / maxHp;
 

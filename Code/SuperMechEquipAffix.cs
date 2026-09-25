@@ -126,17 +126,14 @@ namespace SuperMech.Code
             {
                 if (affix.isMultiplier)
                 {
-                    if (stats.ContainsKey(affix.statKey))
-                        stats[affix.statKey] = (float)stats[affix.statKey] * (1f + affix.value);
-                    else
-                        stats[affix.statKey] = 1f + affix.value;
+                    // BaseStats索引器对不存在的key返回0，倍率类默认1
+                    float cur = stats[affix.statKey];
+                    if (cur <= 0f) cur = 1f;
+                    stats[affix.statKey] = cur * (1f + affix.value);
                 }
                 else
                 {
-                    if (stats.ContainsKey(affix.statKey))
-                        stats[affix.statKey] = (float)stats[affix.statKey] + affix.value;
-                    else
-                        stats[affix.statKey] = affix.value;
+                    stats[affix.statKey] = stats[affix.statKey] + affix.value;
                 }
             }
         }

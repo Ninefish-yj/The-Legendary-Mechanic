@@ -313,7 +313,7 @@ namespace SuperMech.Code
                     // 随机选择一个配方融合
                     var recipe = recipes[UnityEngine.Random.Range(0, recipes.Count)];
                     bool success = SuperMechKnowledgeFusion.TryFuse(u, recipe.id);
-                    Debug.Log($"[超神机械师] {u.name} 知识融合{(success ? "成功：" + recipe.name : "失败")}");
+                    Debug.Log($"[超神机械师] {u.name} 知识融合{(success ? "成功：" + recipe.equipName : "失败")}");
                     applied = true;
                 });
                 return applied;

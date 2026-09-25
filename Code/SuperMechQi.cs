@@ -266,7 +266,7 @@ namespace SuperMech.Code
                     spent += stamina / 3f;
                     a.data.stamina = 0;
                     float healthCost = (remaining - stamina / 3f) * 2f; // 体力空后扣生命更狠
-                    a.data.health = Mathf.Max(1f, a.data.health - healthCost);
+                    a.data.health = (int)Mathf.Max(1f, a.data.health - healthCost);
                     spent += (stamina / 3f);
                     if (SuperMechConfig.LogVerbose)
                         Debug.Log($"[超神机械师] {a.name} 气力体力双空，被异能榨干！扣生命{healthCost:F0}");

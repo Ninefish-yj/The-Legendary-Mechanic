@@ -92,11 +92,19 @@ namespace SuperMech.Code
             WindowMetaTab newTab = tabObj.GetComponent<WindowMetaTab>();
             if (newTab == null) return null;
 
-            newTab.id = "knowledge";
+            newTab.tab_elements = new List<Transform>();
+            newTab.tab_action = new WindowMetaTabEvent();
+            newTab.tab_action.AddListener(_ => scroll.tabs.showTab(newTab));
             newTab.gameObject.SetActive(true);
-            LocalizedTextManager.add("sm_knowledge_tab", "知识", pReplace: true);
-            LocalizedTextManager.add("sm_knowledge_tab_desc", "已解锁的职业知识节点", pReplace: true);
 
+            // 设置图标
+            Image icon = tabObj.GetComponentInChildren<Image>();
+            if (icon != null)
+            {
+                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconBlessing"); } catch { }
+            }
+
+            // 设置提示文本（反射）
             try
             {
                 FieldInfo tf = typeof(WindowMetaTab).GetField("_worldtip_text", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -126,35 +134,39 @@ namespace SuperMech.Code
         private static void EnsureContainer(ScrollWindow scroll)
         {
             if (_container != null) return;
+            Transform scrollContent = scroll.transform_content;
             _container = new GameObject(ContainerName, typeof(RectTransform));
-            _container.transform.SetParent(scroll.content.transform, false);
+            _container.transform.SetParent(scrollContent, false);
+
             RectTransform rt = _container.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0, 1);
-            rt.anchorMax = new Vector2(1, 1);
-            rt.pivot = new Vector2(0.5f, 1);
-            rt.sizeDelta = new Vector2(0, 600);
-            _container.SetActive(false);
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.pivot = new Vector2(0.5f, 1f);
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+
+            ContentSizeFitter fitter = _container.AddComponent<ContentSizeFitter>();
+            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             var layout = _container.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = 4;
-            layout.padding = new RectOffset(8, 8, 8, 8);
-            layout.childForceExpandWidth = true;
+            layout.childAlignment = TextAnchor.UpperCenter;
+            layout.childControlWidth = true;
             layout.childControlHeight = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
+            layout.spacing = 4f;
+            layout.padding = new RectOffset(8, 8, 8, 8);
+
+            _container.SetActive(false);
         }
 
         private static void WireTab(WindowMetaTab tab, ScrollWindow scroll)
         {
-            if (_container == null) return;
-            tab.toggle = tab.GetComponent<Toggle>();
-            if (tab.toggle != null)
+            if (tab.tab_action == null)
             {
-                tab.toggle.onValueChanged.RemoveAllListeners();
-                tab.toggle.onValueChanged.AddListener(on =>
-                {
-                    if (_container != null) _container.SetActive(on);
-                    if (on) { scroll.content.gameObject.SetActive(false); }
-                    else { scroll.content.gameObject.SetActive(true); }
-                });
+                tab.tab_action = new WindowMetaTabEvent();
+                tab.tab_action.AddListener(_ => scroll.tabs.showTab(tab));
             }
         }
 
@@ -415,8 +427,8 @@ namespace SuperMech.Code
                 WorldTip tip = go.GetComponent<WorldTip>();
                 if (tip == null) tip = go.AddComponent<WorldTip>();
                 string tierName = new[] { "基础", "进阶", "高端", "尖端", "终极" }[def.tier];
-                tip.text = $"{def.name}\n{def.desc}\n阶位：{tierName} | 分支：{branch}\n消耗：{def.cost}潜能点\n状态：{(unlocked ? "已解锁" : (canUnlock ? "可解锁" : "未解锁"))}";
-                tip.offset = new Vector2(0, 30);
+                string tipText = $"{def.name}\n{def.desc}\n阶位：{tierName} | 分支：{branch}\n消耗：{def.cost}潜能点\n状态：{(unlocked ? "已解锁" : (canUnlock ? "可解锁" : "未解锁"))}";
+                if (tip.text != null) tip.text.text = tipText;
             }
             catch { }
         }
