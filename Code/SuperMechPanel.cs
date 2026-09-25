@@ -210,10 +210,10 @@ namespace SuperMech.Code
                 }
                 y -= 38f;
 
-                // —— 修炼功法（统一入口，按系别自动传授）——
-                _frame.AddLabel("◆ 传授功法", leftX, y, 200f, 22f, 14);
+                // —— 提炼法（统一入口，按系别自动传授对应变种）——
+                _frame.AddLabel("◆ 传授提炼法", leftX, y, 200f, 22f, 14);
                 y -= 28f;
-                _frame.AddButton("传授修炼功法", leftX, y, 200f, 28f, () =>
+                _frame.AddButton("传授提炼法", leftX, y, 200f, 28f, () =>
                 {
                     var p = AssetManager.powers.get("sm_give_refinement");
                     if (p != null) p.click_action?.Invoke(a.current_tile, "sm_give_refinement");
@@ -233,11 +233,6 @@ namespace SuperMech.Code
                 {
                     var p = AssetManager.powers.get("sm_enter_sanctuary");
                     if (p != null) p.click_action?.Invoke(a.current_tile, "sm_enter_sanctuary");
-                    Refresh();
-                });
-                _frame.AddButton("传授提炼法", leftX + 270f, y, 105f, 28f, () =>
-                {
-                    a.addTrait(SuperMechRefinement.RefinementTrait);
                     Refresh();
                 });
             }

@@ -39,11 +39,11 @@ namespace SuperMech.Code
             };
             AssetManager.traits.add(t2);
 
-            // 注册传授修炼功法神权（统一入口：按系别自动传授对应功法）
+            // 注册传授提炼法神权（统一入口：按系别自动传授对应提炼法变种）
             var givePower = new GodPower
             {
                 id = "sm_give_refinement",
-                name = "传授修炼功法",
+                name = "传授提炼法",
                 path_icon = "ui/powers/power_bless",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
@@ -59,7 +59,7 @@ namespace SuperMech.Code
                 {
                     // 全系通用：气力提炼法（ch172：就连异能系也屁颠颠来学）
                     a.addTrait(RefinementTrait);
-                    // 按系别传授专属修炼功法
+                    // 按系别传授专属提炼法变种
                     if (a.hasTrait(SuperMechTraits.ClassMech))
                         a.addTrait(EmRefinementTrait);                                          // 机械系：电磁因子提炼法
                     if (a.hasTrait(SuperMechTraits.ClassPsi))
@@ -72,9 +72,9 @@ namespace SuperMech.Code
                 return true;
             };
             AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_refinement", "传授修炼功法", pReplace: true);
+            LocalizedTextManager.add("power_sm_give_refinement", "传授提炼法", pReplace: true);
 
-            Debug.Log("[超神机械师] 修炼功法系统注册完成（气力提炼法全系通用+四系专属功法）");
+            Debug.Log("[超神机械师] 提炼法系统注册完成（气力提炼法全系通用+四系专属功法）");
         }
 
         /// <summary>Tick：给有提炼法的单位气力额外加成。</summary>

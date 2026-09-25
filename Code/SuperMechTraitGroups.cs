@@ -21,7 +21,6 @@ namespace SuperMech.Code
             ("sm_gene",         "异能基因链", "#32CD32"),
             ("sm_mana",         "魔法魔力池", "#4169E1"),
             ("sm_mind",         "念力精神力", "#8A2BE2"),
-            ("sm_cultivation",  "修炼功法",   "#20B2AA"),
             ("sm_know_mech",    "机械知识",   "#FF8C00"),
             ("sm_know_martial", "武道知识",   "#DC143C"),
             ("sm_know_mage",    "魔法知识",   "#4169E1"),

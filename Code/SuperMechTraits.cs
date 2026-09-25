@@ -24,7 +24,6 @@ namespace SuperMech.Code
                 case "sm_gene":           return "ui/Icons/actor_traits/iconAcidBlood";
                 case "sm_mana":           return "ui/Icons/actor_traits/iconArcaneReflexes";
                 case "sm_mind":           return "ui/Icons/actor_traits/iconColdAura";
-                case "sm_cultivation":    return "ui/Icons/actor_traits/iconBoostedVitality";
                 case "sm_know_mech":      return "ui/Icons/actor_traits/iconGenius";
                 case "sm_know_martial":   return "ui/Icons/actor_traits/iconBattleReflexes";
                 case "sm_know_mage":      return "ui/Icons/actor_traits/iconArcaneReflexes";
