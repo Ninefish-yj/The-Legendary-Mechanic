@@ -63,6 +63,8 @@ namespace SuperMech.Code
                 // 觉醒时初始化气力
                 SuperMechQi.SetQi(a, 10f);
                 SuperMechQi.SetQiMax(a, 10f);
+                // 觉醒时随机潜力评级（原著ch1099：所有超能者都有潜力评级，决定阶位上限）
+                SuperMechPotentialRating.RollRating(a);
                 if (SuperMechConfig.LogVerbose)
                     Debug.Log($"[超神机械师] {a.name}（{a.age}岁）自然觉醒为 {cls}");
             }
@@ -86,6 +88,13 @@ namespace SuperMech.Code
                 }
                 if (targetIdx < 0) continue;
                 if (targetIdx > SuperMechConfig.AutoPromotionMaxRank) continue;
+
+                // 星海人（非降临者）受潜力评级上限限制（原著ch1099：评级代表最终能达到的阶位上限，玩家不适用）
+                if (!SuperMechAwakened.IsAwakened(a))
+                {
+                    int cap = SuperMechPotentialRating.GetMaxRank(a);
+                    if (targetIdx > cap) targetIdx = cap;
+                }
 
                 // 更新精确阶位字典（含+位）
                 int oldExact = GetExactRankIndex(a);
