@@ -185,9 +185,11 @@ namespace SuperMech.Code
             try
             {
                 if (btn == null) return;
-                var tip = btn.GetComponent<WorldTip>();
-                if (tip == null) tip = btn.gameObject.AddComponent<WorldTip>();
-                if (tip.text != null) tip.text.text = $"{title}\n{desc}";
+                // 使用TipButton组件设置tooltip（原版PowerButton的标准方式，不要用WorldTip）
+                var tipBtn = btn.GetComponent<TipButton>();
+                if (tipBtn == null) tipBtn = btn.gameObject.AddComponent<TipButton>();
+                tipBtn.textOnClick = title;
+                tipBtn.textOnClickDescription = desc;
             }
             catch { }
         }
