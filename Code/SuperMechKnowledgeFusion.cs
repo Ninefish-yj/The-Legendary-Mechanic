@@ -4,29 +4,37 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 知识融合系统：消耗经验将多个知识融合，随机获得图纸/装备/特殊加成。
+    /// 知识融合系统：消耗经验将多个知识融合，创造独特的新装备/图纸。
     /// 原著ch107："[是否进行知识融合（基础电磁原理lv4、基础能源理论lv3...），本次消耗2万经验]"
-    /// ch121/ch136/ch141/ch159/ch168：知识融合是机械师获得图纸的核心方式。
+    /// ch136：折叠式小型炮台，本体是知识融合出的固定炮台
+    /// ch141：电磁脉冲调理器，在一次知识融合中意外得到
+    /// ch168：蝰蛇轻装机甲，四个进阶知识组合的知识融合
+    /// 融合产物是独特的新装备，不是已有的9级品质装备。
     /// </summary>
     public static class SuperMechKnowledgeFusion
     {
-        /// <summary>融合配方定义。</summary>
+        /// <summary>融合配方定义——每个配方产出一个独特的新装备。</summary>
         public class FusionRecipe
         {
             public string id;
-            public string name;           // 产物名称
+            public string equipId;        // 产物装备ID（融合成功时动态注册）
+            public string equipName;      // 产物装备名称（原著图纸名）
             public string desc;
-            public string[] requiredKnowledge; // 需要的知识ID（全部满足才能融合）
-            public int xpCost;           // 经验消耗
-            public float successRate;    // 基础成功率
-            public string resultType;    // "equip" / "knowledge" / "potential" / "qi"
-            public string resultId;      // 产物ID（装备ID/知识ID）
-            public int resultValue;      // 产物数值（潜能点/气力）
-            public int minTier;          // 最低知识阶位要求
+            public string[] requiredKnowledge; // 需要的知识ID
+            public int xpCost;
+            public float successRate;
+            public float dmgMul;          // 产物装备伤害倍率
+            public float hpMul;           // 产物装备生命倍率
+            public float speedMul;        // 产物装备攻速倍率
+            public int qiBonus;           // 产物装备气力加成
+            public string icon;           // 产物装备图标
         }
 
         /// <summary>所有融合配方。</summary>
         private static readonly List<FusionRecipe> _recipes = new List<FusionRecipe>();
+
+        /// <summary>已注册的融合装备（equipId → recipe），避免重复注册。</summary>
+        private static readonly Dictionary<string, FusionRecipe> _registeredEquips = new Dictionary<string, FusionRecipe>();
 
         /// <summary>单位已融合出的图纸（actorId → HashSet<recipeId>）。</summary>
         private static readonly Dictionary<long, HashSet<string>> _unlockedRecipes = new Dictionary<long, HashSet<string>>();
@@ -36,69 +44,114 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            // 基础融合（基础知识组合，产出低级装备图纸）
-            Add("fusion_basic_assembly", "基础组装图纸", "基础机械知识融合，获得基础组装图纸",
+            // ===== 机械系融合（原著图纸名）=====
+            Add("fusion_foldable_turret", "sm_fusion_foldable_turret", "折叠式小型炮台",
+                "ch136：知识融合出的固定炮台，加入折叠技术，非常实用",
                 new[] { "sm_know_mech_0_0_0", "sm_know_mech_0_0_1" },
-                5000, 0.8f, "equip", "sm_eq_gray", 0, 0);
+                5000, 0.8f, 1.5f, 1.3f, 1.1f, 200, "ui/Icons/actor_traits/iconBlessing");
 
-            Add("fusion_energy_shield", "能量护盾图纸", "能量类知识融合，获得能量护盾图纸",
+            Add("fusion_emp_regulator", "sm_fusion_emp_regulator", "电磁脉冲调理器",
+                "ch141：用电磁波调理生物体的特殊装备，提升状态",
                 new[] { "sm_know_mech_1_1_0", "sm_know_mech_1_1_1" },
-                15000, 0.7f, "equip", "sm_eq_blue", 0, 1);
+                15000, 0.7f, 1.8f, 1.5f, 1.2f, 500, "ui/Icons/actor_traits/iconChosenOne");
 
-            Add("fusion_virtual_intrusion", "虚拟入侵协议", "虚拟类知识融合，获得虚拟入侵能力",
-                new[] { "sm_know_mech_2_2_0", "sm_know_mech_2_2_1" },
-                30000, 0.6f, "potential", "", 3, 2);
+            Add("fusion_viper_mech", "sm_fusion_viper_mech", "蝰蛇轻装机甲",
+                "ch168：四个进阶知识组合的知识融合，进阶标准稀有装备",
+                new[] { "sm_know_mech_2_0_0", "sm_know_mech_2_1_0", "sm_know_mech_2_2_0" },
+                40000, 0.5f, 3.0f, 2.5f, 1.3f, 1000, "ui/Icons/actor_traits/iconChosenOne");
 
-            Add("fusion_god_mech", "神级机械图纸", "尖端+终极知识融合，获得神级机械图纸",
+            Add("fusion_god_mech", "sm_fusion_god_mech", "神级机械核心",
+                "尖端+终极知识融合，接近古神机械师水平的造物",
                 new[] { "sm_know_mech_3_1_0", "sm_know_mech_4_1_0" },
-                100000, 0.4f, "equip", "sm_eq_orange", 0, 3);
+                100000, 0.35f, 6.0f, 4.5f, 1.5f, 3000, "ui/Icons/actor_traits/iconChosenOne");
 
-            // 武道系融合
-            Add("fusion_body_hardening", "炼体秘法", "体魄类知识融合，获得炼体秘法",
+            // ===== 武道系融合 =====
+            Add("fusion_body_armor", "sm_fusion_body_armor", "炼体护甲",
+                "体魄类知识融合，将炼体技巧化为护体装备",
                 new[] { "sm_know_martial_0_1_0", "sm_know_martial_0_1_1" },
-                8000, 0.75f, "qi", "", 500, 0);
+                8000, 0.75f, 1.3f, 2.0f, 1.0f, 300, "ui/Icons/actor_traits/iconBlessing");
 
-            Add("fusion_qi_burst", "暴气技巧", "气劲类知识融合，获得暴气技巧",
+            Add("fusion_qi_burst_device", "sm_fusion_qi_burst_device", "暴气增幅器",
+                "气劲类知识融合，辅助暴气技巧的装备",
                 new[] { "sm_know_martial_1_2_0", "sm_know_martial_2_2_0" },
-                20000, 0.65f, "potential", "", 2, 1);
+                20000, 0.65f, 2.0f, 1.5f, 1.4f, 600, "ui/Icons/actor_traits/iconChosenOne");
 
-            // 异能系融合
-            Add("fusion_gene_awaken", "基因觉醒剂", "基因类知识融合，获得基因觉醒剂",
+            // ===== 异能系融合 =====
+            Add("fusion_gene_catalyst", "sm_fusion_gene_catalyst", "基因觉醒催化剂",
+                "基因类知识融合，加速基因链觉醒的特殊装备",
                 new[] { "sm_know_psi_0_0_0", "sm_know_psi_1_0_0" },
-                10000, 0.7f, "qi", "", 800, 0);
+                10000, 0.7f, 1.6f, 1.4f, 1.1f, 400, "ui/Icons/actor_traits/iconBlessing");
 
-            // 魔法系融合
-            Add("fusion_element_resonance", "元素共鸣水晶", "元素类知识融合，获得元素共鸣水晶",
+            // ===== 魔法系融合 =====
+            Add("fusion_element_crystal", "sm_fusion_element_crystal", "元素共鸣水晶",
+                "元素类知识融合，储存元素能量的水晶",
                 new[] { "sm_know_mage_0_2_0", "sm_know_mage_1_2_0" },
-                12000, 0.7f, "equip", "sm_eq_purple", 0, 1);
+                12000, 0.7f, 1.7f, 1.6f, 1.2f, 500, "ui/Icons/actor_traits/iconBlessing");
 
-            // 念力系融合
-            Add("fusion_soul_link", "灵魂链接器", "灵魂类知识融合，获得灵魂链接器",
+            // ===== 念力系融合 =====
+            Add("fusion_soul_amplifier", "sm_fusion_soul_amplifier", "灵魂增幅器",
+                "灵魂类知识融合，放大精神力的装置",
                 new[] { "sm_know_mind_0_0_0", "sm_know_mind_1_0_0" },
-                15000, 0.65f, "potential", "", 3, 0);
+                15000, 0.65f, 1.8f, 1.5f, 1.3f, 700, "ui/Icons/actor_traits/iconChosenOne");
 
-            // 跨系融合（稀有，需要多系知识）
-            Add("fusion_cross_mech_martial", "械武者融合", "机械+武道知识融合，获得械武者专精",
+            // ===== 跨系融合（稀有）=====
+            Add("fusion_mech_martial", "sm_fusion_mech_martial", "械武者外骨骼",
+                "机械+武道知识融合，械武者专属外骨骼装甲",
                 new[] { "sm_know_mech_0_0_0", "sm_know_martial_0_1_0" },
-                25000, 0.5f, "potential", "", 5, 0);
+                25000, 0.5f, 2.5f, 2.0f, 1.3f, 800, "ui/Icons/actor_traits/iconChosenOne");
 
-            Add("fusion_cross_psi_mind", "异能念力融合", "异能+念力知识融合，获得精神异能",
+            Add("fusion_psi_mind", "sm_fusion_psi_mind", "精神异能核心",
+                "异能+念力知识融合，将基因异能与精神力结合",
                 new[] { "sm_know_psi_0_0_0", "sm_know_mind_0_0_0" },
-                30000, 0.45f, "qi", "", 1200, 0);
+                30000, 0.45f, 2.2f, 1.8f, 1.4f, 1000, "ui/Icons/actor_traits/iconChosenOne");
 
-            Debug.Log($"[超神机械师] 知识融合配方注册完成：{_recipes.Count}个配方");
+            Debug.Log($"[超神机械师] 知识融合配方注册完成：{_recipes.Count}个独特图纸");
         }
 
-        private static void Add(string id, string name, string desc, string[] required,
-            int xpCost, float successRate, string resultType, string resultId, int resultValue, int minTier)
+        private static void Add(string id, string equipId, string equipName, string desc,
+            string[] required, int xpCost, float successRate,
+            float dmgMul, float hpMul, float speedMul, int qiBonus, string icon)
         {
             _recipes.Add(new FusionRecipe
             {
-                id = id, name = name, desc = desc, requiredKnowledge = required,
-                xpCost = xpCost, successRate = successRate,
-                resultType = resultType, resultId = resultId, resultValue = resultValue,
-                minTier = minTier
+                id = id, equipId = equipId, equipName = equipName, desc = desc,
+                requiredKnowledge = required, xpCost = xpCost, successRate = successRate,
+                dmgMul = dmgMul, hpMul = hpMul, speedMul = speedMul, qiBonus = qiBonus,
+                icon = icon
             });
+        }
+
+        /// <summary>动态注册融合产物装备到物品库（首次融合成功时调用）。</summary>
+        private static void RegisterFusionEquip(FusionRecipe recipe)
+        {
+            if (_registeredEquips.ContainsKey(recipe.equipId)) return;
+
+            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
+            if (library == null) return;
+
+            EquipmentAsset template = library.get("$amulet") ?? library.get("$ring");
+            if (template == null) return;
+
+            EquipmentAsset asset = library.clone(recipe.equipId, template.id);
+            if (asset == null) return;
+
+            ((Asset)asset).id = recipe.equipId;
+            ((ItemAsset)asset).equipment_type = EquipmentType.Amulet;
+            ((ItemAsset)asset).material = string.Empty;
+            ((ItemAsset)asset).animated = false;
+            ((ItemAsset)asset).is_pool_weapon = false;
+            ((ItemAsset)asset).quality = Rarity.R3_Legendary;
+            ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = recipe.dmgMul;
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = recipe.hpMul;
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_speed"] = recipe.speedMul;
+            ((BaseUnlockableAsset)asset).unlock(true);
+
+            // 本地化名称
+            LocalizedTextManager.add(recipe.equipId, recipe.equipName, pReplace: true);
+
+            _registeredEquips[recipe.equipId] = recipe;
+            Debug.Log($"[超神机械师] 知识融合创造新装备：{recipe.equipName}（{recipe.equipId}）");
         }
 
         /// <summary>获取单位可融合的配方列表。</summary>
@@ -115,7 +168,6 @@ namespace SuperMech.Code
 
             foreach (var recipe in _recipes)
             {
-                // 检查是否所有前置知识都已解锁
                 bool canFuse = true;
                 foreach (string req in recipe.requiredKnowledge)
                 {
@@ -126,15 +178,12 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>尝试知识融合。</summary>
+        /// <summary>尝试知识融合。成功则创造独特新装备并给单位装备。</summary>
         public static bool TryFuse(Actor a, string recipeId)
         {
             if (a == null) return false;
-
-            // 检查冷却
             if (_cooldown.TryGetValue(a.id, out var cd) && Time.time < cd) return false;
 
-            // 查找配方
             FusionRecipe recipe = null;
             foreach (var r in _recipes)
             {
@@ -142,21 +191,16 @@ namespace SuperMech.Code
             }
             if (recipe == null) return false;
 
-            // 检查经验
-            if (!SuperMechAwakened.IsAwakened(a)) return false; // 只有降临者有经验
-            float currentXp = SuperMechAwakened.GetXp(a);
-            if (currentXp < recipe.xpCost) return false;
+            if (!SuperMechAwakened.IsAwakened(a)) return false;
+            if (!SuperMechAwakened.SpendXp(a, recipe.xpCost)) return false;
 
-            // 扣除经验
-            SuperMechAwakened.SpendXp(a, recipe.xpCost);
-
-            // 设置冷却（10秒）
             _cooldown[a.id] = Time.time + 10f;
 
-            // 成功率计算：基础成功率 + 知识数量加成
+            // 成功率：基础 + 知识数量加成（最多+20%）
             float rate = recipe.successRate;
-            int knowledgeCount = SuperMechKnowledge.GetUnlockedCount(a, SuperMechKnowledge.GetPrefixForClass(SuperMechBranch.GetClass(a)));
-            rate += Mathf.Min(knowledgeCount * 0.01f, 0.2f); // 最多+20%
+            int knowledgeCount = SuperMechKnowledge.GetUnlockedCount(a,
+                SuperMechKnowledge.GetPrefixForClass(SuperMechBranch.GetClass(a)));
+            rate += Mathf.Min(knowledgeCount * 0.01f, 0.2f);
 
             bool success = UnityEngine.Random.value < rate;
 
@@ -170,9 +214,16 @@ namespace SuperMech.Code
                 }
                 set.Add(recipeId);
 
-                // 应用产物
-                ApplyResult(a, recipe);
-                Debug.Log($"[超神机械师] {a.name} 知识融合成功！获得：{recipe.name}");
+                // 动态注册新装备（如果是首次融合出这个图纸）
+                RegisterFusionEquip(recipe);
+
+                // 给单位装备这个新装备
+                EquipFusionItem(a, recipe.equipId);
+
+                // 气力加成
+                if (recipe.qiBonus > 0) SuperMechQi.AddQi(a, recipe.qiBonus);
+
+                Debug.Log($"[超神机械师] {a.name} 知识融合成功！创造新装备：{recipe.equipName}");
             }
             else
             {
@@ -182,22 +233,42 @@ namespace SuperMech.Code
             return success;
         }
 
-        /// <summary>应用融合产物。</summary>
-        private static void ApplyResult(Actor a, FusionRecipe recipe)
+        /// <summary>给单位装备融合产物。</summary>
+        private static void EquipFusionItem(Actor a, string equipId)
         {
-            switch (recipe.resultType)
+            if (a == null || a.equipment == null) return;
+
+            var slot = a.equipment.getSlot(EquipmentType.Amulet);
+            if (slot == null) return;
+
+            // 旧装备放回背包
+            if (!slot.isEmpty())
             {
-                case "equip":
-                    // 获得装备图纸：直接给单位装备一件对应品质装备
-                    int eqIdx = SuperMechRelic.GetEquipIndex(recipe.resultId);
-                    if (eqIdx >= 0) SuperMechRelic.EquipItem(a, eqIdx);
-                    break;
-                case "potential":
-                    SuperMechPotential.AddPotential(a, recipe.resultValue);
-                    break;
-                case "qi":
-                    SuperMechQi.AddQi(a, recipe.resultValue);
-                    break;
+                Item current = slot.getItem();
+                if (current != null)
+                {
+                    int currentIdx = SuperMechRelic.GetEquipIndex(current);
+                    if (currentIdx >= 0) SuperMechEquipBag.AddToBag(a, SuperMechRelic.Equipments[currentIdx].id);
+                }
+                slot.takeAwayItem();
+            }
+
+            // 创建并装备融合产物
+            var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
+            EquipmentAsset asset = library.get(equipId);
+            if (asset == null) return;
+
+            try
+            {
+                Item item = World.world.items.generateItem(asset, a.kingdom, a.getName(), 0, a, 1, false);
+                if (item == null) return;
+                item.calculateValues();
+                slot.setItem(item, a);
+                SuperMechEquipAffix.OnEquip(a, 5); // 融合装备按粉色品质roll词条
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[超神机械师] 装备融合产物失败: {e.Message}");
             }
         }
 

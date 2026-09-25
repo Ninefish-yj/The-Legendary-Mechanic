@@ -234,20 +234,18 @@ namespace SuperMech.Code
                 }
             }
 
-            // 知识融合（原著ch107：消耗经验融合知识获得图纸）
+            // 知识融合（原著ch107：消耗经验融合知识创造独特图纸）
             var fusionRecipes = SuperMechKnowledgeFusion.GetAvailableRecipes(actor);
             if (fusionRecipes.Count > 0 && SuperMechAwakened.IsAwakened(actor))
             {
                 int unlockedFusions = SuperMechKnowledgeFusion.GetUnlockedCount(actor);
-                AddSectionHeader(_container.transform, $"知识融合（已解锁{unlockedFusions}个图纸）");
+                AddSectionHeader(_container.transform, $"知识融合（已创造{unlockedFusions}个图纸）");
                 foreach (var recipe in fusionRecipes)
                 {
-                    bool alreadyUnlocked = false;
-                    // 检查是否已融合过
-                    string status = $"经验{recipe.xpCost} 成功率{(recipe.successRate * 100):0}%";
-                    AddInfoRow(_container.transform, recipe.name, status);
+                    string status = $"经验{recipe.xpCost} 成功率{(recipe.successRate * 100):0}% 伤害×{recipe.dmgMul} 生命×{recipe.hpMul}";
+                    AddInfoRow(_container.transform, recipe.equipName, status);
                 }
-                AddInfoRow(_container.transform, "提示", "用神权「知识融合」选择配方进行融合");
+                AddInfoRow(_container.transform, "提示", "用神权「知识融合」随机融合一个配方，成功创造独特新装备");
             }
         }
 
