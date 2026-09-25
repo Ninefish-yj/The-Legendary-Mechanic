@@ -43,6 +43,8 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, bool> _advancementTaskDone = new Dictionary<long, bool>();
         // 进阶任务进度（unit.id -> progress 0-100）
         private static readonly Dictionary<long, float> _advancementProgress = new Dictionary<long, float>();
+        // 神之催化效果（unit.id -> 催化层数，每层+10%成功率，降低门槛）
+        private static readonly Dictionary<long, int> _divineCatalyst = new Dictionary<long, int>();
 
         // 超神遗力在地图上的生成点（模拟原著中分布在宇宙各处）
         private static readonly List<WorldTile> _legacySpawns = new List<WorldTile>();
@@ -246,6 +248,32 @@ namespace SuperMech.Code
         }
 
         /// <summary>
+        /// 神之催化：神消耗神力为单位施加催化效果，降低突破门槛、提升成功率。
+        /// 每层催化+10%成功率，最多5层。催化效果持续到突破成功或失败。
+        /// </summary>
+        public static bool CatalyzeBreakthrough(Actor a)
+        {
+            if (a == null || !a.isAlive()) return false;
+            int rank = SuperMechAdvancement.GetExactRankIndex(a);
+            if (rank < 12) return false; // 只有SS阶以上才能催化
+
+            if (!_divineCatalyst.TryGetValue(a.id, out int layers)) layers = 0;
+            if (layers >= 5) return false; // 最多5层
+
+            _divineCatalyst[a.id] = layers + 1;
+            Debug.Log($"[超神机械师] 神之催化：{a.name} 获得第{layers + 1}层催化（成功率+{(layers + 1) * 10}%）");
+            return true;
+        }
+
+        /// <summary>获取催化层数。</summary>
+        public static int GetCatalystLayers(Actor a)
+        {
+            if (a == null) return 0;
+            _divineCatalyst.TryGetValue(a.id, out int v);
+            return v;
+        }
+
+        /// <summary>
         /// 尝试突破超神级（ch1396）。
         /// 基础失败率90%~96%（即成功率4%~10%），每个条件+33.3%成功率。
         /// 【关键】三个条件全部满足才能真正突破到X阶（神化进阶）。
@@ -278,6 +306,10 @@ namespace SuperMech.Code
             // 传说度加成（原著ch1196：传奇事迹增加突破可能性，信息态层面权重变化）
             float legendBonus = SuperMechLegend.GetBreakthroughBonus(a);
             if (legendBonus > 0) successRate += legendBonus;
+
+            // 神之催化加成（每层+10%，最多5层）
+            int catalyst = GetCatalystLayers(a);
+            if (catalyst > 0) successRate += catalyst * 0.10f;
 
             successRate = Mathf.Clamp(successRate, 0.01f, 0.99f);
 

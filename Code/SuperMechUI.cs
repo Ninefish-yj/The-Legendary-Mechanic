@@ -23,7 +23,7 @@ namespace SuperMech.Code
             // 天灾类
             (SuperMechPowers.DisasterAlien,   "ui/powers/power_meteor",       "异化之灾",     "在点击位置生成异化体（天灾）"),
             // 突破类
-            (SuperMechPowers.AttemptTranscend,"ui/powers/power_bless",        "冲击超神级",   "点击单位尝试突破超神级（需满足三条件，有恶性变异风险）"),
+            (SuperMechPowers.AttemptTranscend,"ui/powers/power_bless",        "神之催化",     "点击SS阶以上单位施加催化效果，降低突破门槛、提升成功率（每层+10%，最多5层）"),
         };
 
         // 五系觉醒神权（合并为一个，点击后打开选择系别的窗口）

@@ -110,7 +110,7 @@ namespace SuperMech.Code
             AssetManager.powers.add(p);
         }
 
-        /// <summary>冲击超神级（ch1396：需要超神遗力+神性蜕变+助手，有恶性变异风险）。</summary>
+        /// <summary>神之催化：神消耗神力为SS阶以上单位施加催化效果，降低突破门槛、提升成功率（每层+10%，最多5层）。</summary>
         private static void AddTranscendPower(string id, string name, string icon)
         {
             var p = new GodPower
@@ -127,15 +127,19 @@ namespace SuperMech.Code
                 tile.doUnits(u =>
                 {
                     if (u == null || applied) return;
-                    if (SuperMechTranscendence.CanAttempt(u))
+                    if (SuperMechTranscendence.CatalyzeBreakthrough(u))
                     {
-                        bool success = SuperMechTranscendence.AttemptTranscend(u);
-                        Debug.Log($"[超神机械师] {u.name} 冲击超神级{(success ? "成功！" : "失败，恶性变异")}");
+                        int layers = SuperMechTranscendence.GetCatalystLayers(u);
+                        Debug.Log($"[超神机械师] 神之催化：{u.name} 获得第{layers}层催化（成功率+{layers * 10}%）");
                         applied = true;
                     }
                     else
                     {
-                        Debug.Log($"[超神机械师] {u.name} 无法突破：{SuperMechTranscendence.GetStatusText(u)}");
+                        int rank = SuperMechAdvancement.GetExactRankIndex(u);
+                        if (rank < 12)
+                            Debug.Log($"[超神机械师] {u.name} 阶位不足（需SS阶以上），无法催化");
+                        else
+                            Debug.Log($"[超神机械师] {u.name} 催化层数已满（5层）");
                     }
                 });
                 return applied;

@@ -208,6 +208,9 @@ namespace SuperMech.Code
                 if (SuperMechAdvancement.GetExactRankIndex(actor) >= 12 || SuperMechTranscendence.IsTranscended(actor))
                 {
                     ShowRow(__instance, "超神突破", SuperMechTranscendence.GetStatusText(actor));
+                    int catalyst = SuperMechTranscendence.GetCatalystLayers(actor);
+                    if (catalyst > 0)
+                        ShowRow(__instance, "神之催化", $"{catalyst}层（成功率+{catalyst * 10}%）");
                 }
 
                 // 行9：分支（五系各三分支，机械原著ch50，其他参考同人二创）
