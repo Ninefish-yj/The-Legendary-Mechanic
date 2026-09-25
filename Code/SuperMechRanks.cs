@@ -22,20 +22,23 @@ namespace SuperMech.Code
 
         public static readonly List<RankDef> All = new List<RankDef>
         {
+            // 原著确认门槛：E=100(ch3), D=800(ch116), D+=1600(ch116), C=2000(ch116),
+            // 普通超A上限=52000(ch1087/ch1206), 巅峰超A=70000(ch1209), X≈148800(ch1402)
+            // B/A/S门槛为插值推断（原著未明确给出具体数值）
             new RankDef { id="sm_rank_f",       name="阶位·F（凡人）",     onarFloor=0,         damageMul=1.00f, healthMul=1.00f },
             new RankDef { id="sm_rank_e",       name="阶位·E",            onarFloor=100,       damageMul=1.50f, healthMul=1.20f },
-            new RankDef { id="sm_rank_d",       name="阶位·D",            onarFloor=400,       damageMul=3.00f, healthMul=1.80f },
-            new RankDef { id="sm_rank_d_plus",  name="阶位·D+",           onarFloor=800,       damageMul=4.50f, healthMul=2.30f },
-            new RankDef { id="sm_rank_c",       name="阶位·C",            onarFloor=1500,      damageMul=7.00f, healthMul=3.00f },
-            new RankDef { id="sm_rank_c_plus",  name="阶位·C+",           onarFloor=3000,      damageMul=10.0f, healthMul=4.00f },
-            new RankDef { id="sm_rank_b",       name="阶位·B",            onarFloor=6000,      damageMul=15.0f, healthMul=6.00f },
-            new RankDef { id="sm_rank_b_plus",  name="阶位·B+",           onarFloor=12000,     damageMul=22.0f, healthMul=8.00f },
+            new RankDef { id="sm_rank_d",       name="阶位·D",            onarFloor=800,       damageMul=3.00f, healthMul=1.80f },
+            new RankDef { id="sm_rank_d_plus",  name="阶位·D+",           onarFloor=1600,      damageMul=4.50f, healthMul=2.30f },
+            new RankDef { id="sm_rank_c",       name="阶位·C",            onarFloor=2000,      damageMul=7.00f, healthMul=3.00f },
+            new RankDef { id="sm_rank_c_plus",  name="阶位·C+",           onarFloor=4000,      damageMul=10.0f, healthMul=4.00f },
+            new RankDef { id="sm_rank_b",       name="阶位·B",            onarFloor=8000,      damageMul=15.0f, healthMul=6.00f },
+            new RankDef { id="sm_rank_b_plus",  name="阶位·B+",           onarFloor=16000,     damageMul=22.0f, healthMul=8.00f },
             new RankDef { id="sm_rank_a",       name="阶位·A（天灾级）",    onarFloor=25000,     damageMul=35.0f, healthMul=12.0f },
-            new RankDef { id="sm_rank_a_plus",  name="阶位·A+",           onarFloor=50000,     damageMul=55.0f, healthMul=18.0f },
-            new RankDef { id="sm_rank_s",       name="阶位·S（超A级）",    onarFloor=100000,    damageMul=90.0f, healthMul=30.0f },
-            new RankDef { id="sm_rank_s_plus",  name="阶位·S+",           onarFloor=250000,    damageMul=150.0f, healthMul=50.0f },
-            new RankDef { id="sm_rank_ss",      name="阶位·SS（巅峰超A）", onarFloor=600000,    damageMul=300.0f, healthMul=100.0f },
-            new RankDef { id="sm_rank_x",       name="阶位·X（神化·你即是宇宙）",     onarFloor=2000000,   damageMul=1000.0f, healthMul=500.0f },
+            new RankDef { id="sm_rank_a_plus",  name="阶位·A+",           onarFloor=40000,     damageMul=55.0f, healthMul=18.0f },
+            new RankDef { id="sm_rank_s",       name="阶位·S（超A级）",    onarFloor=52000,     damageMul=90.0f, healthMul=30.0f },
+            new RankDef { id="sm_rank_s_plus",  name="阶位·S+",           onarFloor=60000,     damageMul=130.0f, healthMul=45.0f },
+            new RankDef { id="sm_rank_ss",      name="阶位·SS（巅峰超A）", onarFloor=70000,     damageMul=200.0f, healthMul=70.0f },
+            new RankDef { id="sm_rank_x",       name="阶位·X（神化·你即是宇宙）",     onarFloor=140000,  damageMul=500.0f, healthMul=200.0f },
         };
 
         static SuperMechRanks()
