@@ -37,6 +37,7 @@ namespace SuperMech
             SuperMechCosmicRelic.Register();
             SuperMechMageTower.Register();
             SuperMechAwakened.Register();
+            SuperMechAdvancementTask.Register();
             SuperMechSpecialty.Register();
             SuperMechRankSpecialty.Register();
             SuperMechRace.Register();

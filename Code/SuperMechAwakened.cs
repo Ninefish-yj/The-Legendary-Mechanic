@@ -235,10 +235,10 @@ namespace SuperMech.Code
                 if (a == null) continue;
                 if (!IsAwakened(a)) continue;
 
-                // 1. 自动转职（达到等级上限）
-                if (CanAdvanceStage(a))
+                // 1. 达到等级上限后触发进阶任务（原著ch48/ch50：进阶任务完成后才能转职）
+                if (CanAdvanceStage(a) && !SuperMechAdvancementTask.HasActiveTask(a))
                 {
-                    TryAdvanceStage(a);
+                    SuperMechAdvancementTask.TryStartTask(a);
                 }
 
                 // 2. 自动分配潜能点（解锁知识树）

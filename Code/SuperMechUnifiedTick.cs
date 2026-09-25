@@ -49,6 +49,7 @@ namespace SuperMech.Code
                     SuperMechSubClass.TickSubLevels();
                     SuperMechAwakened.TickXp();
                     SuperMechAwakened.TickAutoPlay();
+                    SuperMechAdvancementTask.TickTasks();
                     SuperMechHeritage.TickHeritage();
                 }
                 // 第2组：高阶系统（冥冥感应/神性蜕变/超神遗力/进阶任务/信息态）
@@ -99,6 +100,7 @@ namespace SuperMech.Code
             try { SuperMechTranscendence.Clear(); } catch { }
             try { SuperMechInfoState.Clear(); } catch { }
             try { SuperMechAwakened.Clear(); } catch { }
+            try { SuperMechAdvancementTask.Clear(); } catch { }
             try { SuperMechHeritage.Clear(); } catch { }
             try { SuperMechIntuition.Clear(); } catch { }
             try { SuperMechQiAttribute.Clear(); } catch { }
