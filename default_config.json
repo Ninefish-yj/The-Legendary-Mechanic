@@ -105,20 +105,73 @@
   "AutoFavorite": [
     {
       "Id": "auto_favorite_enabled",
-      "Name": "自动收藏",
+      "Name": "自动收藏总开关",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled"
     },
     {
-      "Id": "auto_favorite_rank",
-      "Name": "收藏阶位阈值",
-      "Type": "INT_SLIDER",
-      "IntVal": 8,
-      "MinIntVal": 0,
-      "MaxIntVal": 13,
-      "StepIntVal": 1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteRank"
+      "Id": "auto_favorite_f",
+      "Name": "F阶自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteF"
+    },
+    {
+      "Id": "auto_favorite_e",
+      "Name": "E阶自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteE"
+    },
+    {
+      "Id": "auto_favorite_d",
+      "Name": "D阶自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteD"
+    },
+    {
+      "Id": "auto_favorite_c",
+      "Name": "C阶自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteC"
+    },
+    {
+      "Id": "auto_favorite_b",
+      "Name": "B阶自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteB"
+    },
+    {
+      "Id": "auto_favorite_a",
+      "Name": "A阶自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteA"
+    },
+    {
+      "Id": "auto_favorite_s",
+      "Name": "S阶(超A)自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteS"
+    },
+    {
+      "Id": "auto_favorite_ss",
+      "Name": "SS阶自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteSS"
+    },
+    {
+      "Id": "auto_favorite_x",
+      "Name": "X阶(超神)自动收藏",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteX"
     }
   ],
   "Sanctuary": [

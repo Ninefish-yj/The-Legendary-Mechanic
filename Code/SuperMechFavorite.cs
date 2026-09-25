@@ -69,8 +69,6 @@ namespace SuperMech.Code
         public static void TickAutoFavorite()
         {
             if (!SuperMechConfig.AutoFavoriteEnabled) return;
-            int threshold = SuperMechConfig.AutoFavoriteRank;
-            if (threshold <= 0) return;  // 阈值0=F，等于全部收藏，无意义，跳过
 
             var list = World.world.units.units_only_alive;
             if (list == null) return;
@@ -82,19 +80,15 @@ namespace SuperMech.Code
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
                 if (IsFavorite(a)) continue;  // 已收藏的跳过
 
-                // 检查当前阶位是否达到阈值
-                int currentRankIdx = -1;
-                for (int i = SuperMechRanks.All.Count - 1; i >= 0; i--)
-                {
-                    if (a.hasTrait(SuperMechRanks.All[i].id)) { currentRankIdx = i; break; }
-                }
-                if (currentRankIdx >= threshold)
+                // 检查当前阶位是否在收藏列表中
+                int currentRankIdx = SuperMechAdvancement.GetExactRankIndex(a);
+                if (currentRankIdx >= 0 && SuperMechConfig.ShouldFavoriteRank(currentRankIdx))
                 {
                     if (SetFavorite(a, true)) favorited++;
                 }
             }
             if (favorited > 0 && SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] 自动收藏 {favorited} 个单位（阈值阶位索引={threshold}）");
+                Debug.Log($"[超神机械师] 自动收藏 {favorited} 个单位");
         }
     }
 }

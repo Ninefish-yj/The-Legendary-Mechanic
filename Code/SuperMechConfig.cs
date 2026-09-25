@@ -32,9 +32,17 @@ namespace SuperMech.Code
         public static int AutoPromotionMaxRank = 12;      // 自动晋升上限阶位索引（0=F~13=X，默认12=SS，X阶需手动突破）
         public static bool ShowRankInPanel = true;        // 单位面板显示阶位
 
-        // ========== 自动收藏 ==========
-        public static bool AutoFavoriteEnabled = true;    // 达到指定阶位自动收藏（星标）
-        public static int AutoFavoriteRank = 8;           // 自动收藏阶位阈值（默认8=A级，达到该阶位及以上自动收藏）
+        // ========== 自动收藏（每个主阶位独立开关，参考凡人修仙传）==========
+        public static bool AutoFavoriteEnabled = true;    // 自动收藏总开关
+        public static bool AutoFavoriteF = false;         // F阶自动收藏
+        public static bool AutoFavoriteE = false;         // E阶自动收藏
+        public static bool AutoFavoriteD = false;         // D阶自动收藏
+        public static bool AutoFavoriteC = false;         // C阶自动收藏
+        public static bool AutoFavoriteB = false;         // B阶自动收藏
+        public static bool AutoFavoriteA = true;          // A阶自动收藏
+        public static bool AutoFavoriteS = true;          // S阶（超A）自动收藏
+        public static bool AutoFavoriteSS = true;         // SS阶自动收藏
+        public static bool AutoFavoriteX = true;          // X阶（超神）自动收藏
 
         // ========== 圣所系统 ==========
         public static bool SanctuaryEnabled = true;       // 圣所跨存档
@@ -103,8 +111,16 @@ namespace SuperMech.Code
                 ("promotion_speed", "晋升速度", "欧纳积累速度倍率，影响整体晋升节奏"),
                 ("ona_multiplier", "欧纳计算倍率", "欧纳（战斗力函数）最终结果倍率"),
                 ("show_rank_in_panel", "面板显示阶位", "在单位属性面板注入阶位/职业/气力/欧纳数据行"),
-                ("auto_favorite_enabled", "自动收藏", "达到指定阶位的单位自动加星标收藏"),
-                ("auto_favorite_rank", "收藏阶位阈值", "达到哪个阶位及以上自动收藏"),
+                ("auto_favorite_enabled", "自动收藏总开关", "开启后达到指定阶位的单位自动加星标收藏"),
+                ("auto_favorite_f", "F阶自动收藏", "F阶单位自动收藏"),
+                ("auto_favorite_e", "E阶自动收藏", "E阶单位自动收藏"),
+                ("auto_favorite_d", "D阶自动收藏", "D阶（含D+）单位自动收藏"),
+                ("auto_favorite_c", "C阶自动收藏", "C阶（含C+）单位自动收藏"),
+                ("auto_favorite_b", "B阶自动收藏", "B阶（含B+）单位自动收藏"),
+                ("auto_favorite_a", "A阶自动收藏", "A阶（含A+）单位自动收藏"),
+                ("auto_favorite_s", "S阶(超A)自动收藏", "S阶（含S+）单位自动收藏"),
+                ("auto_favorite_ss", "SS阶自动收藏", "SS阶单位自动收藏"),
+                ("auto_favorite_x", "X阶(超神)自动收藏", "X阶单位自动收藏"),
                 ("sanctuary_enabled", "圣所跨存档", "圣所数据写入模组目录JSON，不随世界存档消失"),
                 ("sanctuary_count", "圣所数量", "可同时存在的圣所数量（原著共6大圣所）"),
                 ("sanctuary_autosave", "圣所自动保存", "圣所数据变更时自动写入JSON文件"),
@@ -150,13 +166,31 @@ namespace SuperMech.Code
         }
         public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; LogInfo($"[配置] 面板显示阶位: {val}"); }
 
-        // --- 自动收藏 ---
-        public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; LogInfo($"[配置] 自动收藏: {val}"); }
-        public static void SetAutoFavoriteRank(int val)
+        // --- 自动收藏（每个主阶位独立开关）---
+        public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; LogInfo($"[配置] 自动收藏总开关: {val}"); }
+        public static void SetAutoFavoriteF(bool val) { AutoFavoriteF = val; LogInfo($"[配置] F阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteE(bool val) { AutoFavoriteE = val; LogInfo($"[配置] E阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteD(bool val) { AutoFavoriteD = val; LogInfo($"[配置] D阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteC(bool val) { AutoFavoriteC = val; LogInfo($"[配置] C阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteB(bool val) { AutoFavoriteB = val; LogInfo($"[配置] B阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteA(bool val) { AutoFavoriteA = val; LogInfo($"[配置] A阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; LogInfo($"[配置] S阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; LogInfo($"[配置] SS阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; LogInfo($"[配置] X阶自动收藏: {val}"); }
+
+        /// <summary>检查指定阶位索引是否应自动收藏（+位跟随主阶位）。</summary>
+        public static bool ShouldFavoriteRank(int rankIdx)
         {
-            AutoFavoriteRank = Mathf.Clamp(val, 0, 13);
-            string[] rankNames = { "F", "E", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S", "S+", "SS", "X" };
-            LogInfo($"[配置] 自动收藏阈值: {rankNames[AutoFavoriteRank]}阶及以上");
+            // 主阶位索引：F=0,E=1,D=2,C=4,B=6,A=8,S=10,SS=12,X=13
+            if (rankIdx <= 0) return AutoFavoriteF;
+            if (rankIdx <= 1) return AutoFavoriteE;
+            if (rankIdx <= 3) return AutoFavoriteD;  // D和D+
+            if (rankIdx <= 5) return AutoFavoriteC;  // C和C+
+            if (rankIdx <= 7) return AutoFavoriteB;  // B和B+
+            if (rankIdx <= 9) return AutoFavoriteA;  // A和A+
+            if (rankIdx <= 11) return AutoFavoriteS; // S和S+
+            if (rankIdx <= 12) return AutoFavoriteSS;
+            return AutoFavoriteX;
         }
 
         // --- 圣所系统 ---
