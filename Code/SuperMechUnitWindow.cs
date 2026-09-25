@@ -27,7 +27,7 @@ namespace SuperMech.Code
                 if (actor == null || !actor.isAlive()) return;
 
                 // 只显示已觉醒五系的单位
-                string cls = GetClass(actor);
+                string cls = SuperMechBranch.GetClass(actor);
                 if (cls == null) return;
 
                 // 行1：阶位
@@ -39,10 +39,13 @@ namespace SuperMech.Code
                 if (race != "碳基人类（黄）")
                     ShowRow(__instance, "种族", race);
 
-                // 行1c：超A名号（原著ch770：种族名用名号命名）
-                string title = SuperMechRace.GetTitle(actor);
-                if (!string.IsNullOrEmpty(title) && actor.hasTrait(SuperMechRace.TraitSuperARace))
-                    ShowRow(__instance, "名号", title);
+                // 行1c：超A名号（原著ch770：种族名用名号命名，只有S阶以上种族才有）
+                if (actor.hasTrait(SuperMechRace.TraitSuperARace))
+                {
+                    string title = SuperMechRace.GetTitle(actor);
+                    if (!string.IsNullOrEmpty(title))
+                        ShowRow(__instance, "名号", title);
+                }
 
                 // 行2：职业系（原著：五系对应神灵五方面——武道=神体/念力=神魂/魔法=神权/异能=神通/机械=神器）
                 string clsAspect = GetClassAspect(cls);
@@ -315,16 +318,6 @@ namespace SuperMech.Code
             }
         }
 
-        public static string GetClass(Actor a)
-        {
-            if (HasTrait(a, SuperMechTraits.ClassMech)) return "机械系";
-            if (HasTrait(a, SuperMechTraits.ClassMartial)) return "武道系";
-            if (HasTrait(a, SuperMechTraits.ClassPsi)) return "异能系";
-            if (HasTrait(a, SuperMechTraits.ClassMage)) return "魔法系";
-            if (HasTrait(a, SuperMechTraits.ClassMind)) return "念力系";
-            return null;
-        }
-
         private static string GetRank(Actor a)
         {
             // 从精确阶位字典读取（含+位，+位不挂特质只在面板显示）
@@ -344,32 +337,49 @@ namespace SuperMech.Code
             }
         }
 
-        private static bool HasTrait(Actor a, string traitId)
-        {
-            if (a == null || a.traits == null) return false;
-            foreach (var t in a.traits)
-                if (t.id == traitId) return true;
-            return false;
-        }
-
         private static void ShowRow(UnitWindow window, string label, object value)
         {
             try
             {
                 if (_showStatRow == null)
                 {
-                    _showStatRow = typeof(UnitWindow).GetMethod("showStatRow",
-                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance,
-                        null,
-                        new Type[] { typeof(string), typeof(object), typeof(string), typeof(MetaType), typeof(long), typeof(bool), typeof(string), typeof(string), typeof(TooltipDataGetter), typeof(bool) },
-                        null);
+                    // 不硬编码参数类型，按方法名查找，兼容游戏版本更新后的签名变化
+                    var methods = typeof(UnitWindow).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    foreach (var m in methods)
+                    {
+                        if (m.Name == "showStatRow" && m.GetParameters().Length >= 2)
+                        {
+                            _showStatRow = m;
+                            break;
+                        }
+                    }
+                    if (_showStatRow == null)
+                    {
+                        Debug.LogWarning("[超神机械师] 未找到UnitWindow.showStatRow方法，单位面板注入将跳过");
+                        return;
+                    }
                 }
-                if (_showStatRow == null) return;
-                _showStatRow.Invoke(window, new object[] { label, value, null, MetaType.None, -1L, false, null, null, null, false });
+
+                // 动态构建参数数组：前两个参数是label和value，其余用默认值填充
+                ParameterInfo[] parms = _showStatRow.GetParameters();
+                object[] args = new object[parms.Length];
+                args[0] = label;
+                args[1] = value;
+                for (int i = 2; i < parms.Length; i++)
+                {
+                    Type pt = parms[i].ParameterType;
+                    if (pt == typeof(string)) args[i] = null;
+                    else if (pt == typeof(bool)) args[i] = false;
+                    else if (pt == typeof(long)) args[i] = -1L;
+                    else if (pt == typeof(MetaType)) args[i] = MetaType.None;
+                    else if (pt.IsEnum) args[i] = System.Enum.ToObject(pt, 0);
+                    else args[i] = null;
+                }
+                _showStatRow.Invoke(window, args);
             }
             catch (Exception e)
             {
-                Debug.LogWarning("[超神机械师] showStatRow反射失败: " + e.Message);
+                Debug.LogWarning("[超神机械师] showStatRow调用失败: " + e.Message);
             }
         }
     }
