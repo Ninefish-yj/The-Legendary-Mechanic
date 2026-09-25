@@ -85,8 +85,7 @@ namespace SuperMech.Code
                     "六圣所", "查看六圣所解锁进度与碎片（跨存档）",
                     "排行榜", "超能者欧纳/气力/阶位排行榜（前20名）",
                     "装备背包", "查看与管理单位的装备背包",
-                    "知识", "查看已解锁的知识节点与职业树",
-                    "??????"
+                    "知识", "查看已解锁的知识节点与职业树"
                 };
                 foreach (var text in tooltipTexts)
                     LocalizedTextManager.add(text, text, pReplace: true);
@@ -113,9 +112,13 @@ namespace SuperMech.Code
                         GodPower power = AssetManager.powers.get(id);
                         if (power == null) { Debug.LogWarning("[超神机械师] 神权未注册: " + id); continue; }
                         Sprite icon = SpriteTextureLoader.getSprite(iconPath);
+                        if (icon == null) icon = SpriteTextureLoader.getSprite("iconDivineLight"); // fallback
                         PowerButton btn = PowerButtonCreator.CreateGodPowerButton(id, icon);
                         if (btn == null) continue;
                         btn.godPower = power;
+                        // 防御：确保icon.sprite不为null，避免drawCursorSprite崩溃
+                        if (btn.icon != null && btn.icon.sprite == null && icon != null)
+                            btn.icon.sprite = icon;
                         SetupTooltip(btn, tipTitle, tipDesc);
                         _tab.AddPowerButton(Layout, btn);
                     }
@@ -129,10 +132,13 @@ namespace SuperMech.Code
                     if (power != null)
                     {
                         Sprite icon = SpriteTextureLoader.getSprite("iconInspiration");
+                        if (icon == null) icon = SpriteTextureLoader.getSprite("iconDivineLight");
                         PowerButton btn = PowerButtonCreator.CreateGodPowerButton(AwakenPowerId, icon);
                         if (btn != null)
                         {
                             btn.godPower = power;
+                            if (btn.icon != null && btn.icon.sprite == null && icon != null)
+                                btn.icon.sprite = icon;
                             SetupTooltip(btn, AwakenPowerName, "点击单位后选择觉醒系别（机械/武道/异能/魔法/念力）");
                             _tab.AddPowerButton(Layout, btn);
                         }
@@ -146,8 +152,11 @@ namespace SuperMech.Code
                     try
                     {
                         Sprite icon = SpriteTextureLoader.getSprite("iconUnity");
+                        if (icon == null) icon = SpriteTextureLoader.getSprite("iconDivineLight");
                         PowerButton btn = PowerButtonCreator.CreateSimpleButton(name, () => { try { action?.Invoke(); } catch (System.Exception e) { Debug.LogError("[超神机械师] 开窗异常: " + e.Message); } }, icon);
                         if (btn == null) continue;
+                        if (btn.icon != null && btn.icon.sprite == null && icon != null)
+                            btn.icon.sprite = icon;
                         SetupTooltip(btn, name, tip);
                         _tab.AddPowerButton(Layout, btn);
                     }
