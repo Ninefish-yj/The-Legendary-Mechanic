@@ -83,17 +83,23 @@ namespace SuperMech.Code
                 int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
                 ShowRow(__instance, "职业树", $"{treeName}（{unlocked}节点）");
 
-                // 行4：气力/械力（原著面板格式：128,452【Lv19】）
+                // 行4：气力（原著五系统一，ch3/ch50。机械系不叫"械力"，叫气力）
                 float qi = SuperMechQi.GetQi(actor);
                 float qiMax = SuperMechQi.GetQiMax(actor);
                 int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
                 string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : "未入流";
-                string qiLabel = cls == "机械系" ? "械力" : "气力";
                 int dec = SuperMechConfig.QiDisplayDecimals;
                 string fmt = dec > 0 ? $"F{dec}" : "N0";
                 string qiValue = qi >= 1000 && dec == 0 ? $"{qi:N0}" : qi.ToString(fmt);
                 string qiMaxValue = qiMax > 0 ? (qiMax >= 1000 && dec == 0 ? $"{qiMax:N0}" : qiMax.ToString(fmt)) : qiValue;
-                ShowRow(__instance, qiLabel, $"{qiValue}/{qiMaxValue}【{qiLvText}】");
+                ShowRow(__instance, "气力", $"{qiValue}/{qiMaxValue}【{qiLvText}】");
+
+                // 行4b：械感（机械亲和度，机械师核心天赋，原著ch50气力属性【磁】增加机械亲和度）
+                if (cls == "机械系")
+                {
+                    float mechAffinity = qiMax * 0.05f + actor.data.stats["intelligence"] * 2f;
+                    ShowRow(__instance, "械感", $"{mechAffinity:F0}（机械亲和度）");
+                }
 
                 // 行5：欧纳（能级）
                 float onar = SuperMechAdvancement.CalcOnar(actor);
