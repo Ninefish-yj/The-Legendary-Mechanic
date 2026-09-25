@@ -78,54 +78,55 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
         // 战斗状态计时（unit.id -> 剩余战斗秒数）
         private static readonly Dictionary<long, float> _combatTimer = new Dictionary<long, float>();
+        // 上次应用的气力等级（避免重复写BaseStats）
+        private static readonly Dictionary<long, int> _appliedLevel = new Dictionary<long, int>();
 
-        // 隐藏组：不注册到 ActorTraitGroupLibrary，因此不在特质编辑器显示
-        private const string HiddenGroup = "sm_qi_hidden";
-
-        public static string GetId(int level) => $"sm_qi_{level}";
-
+        /// <summary>气力等级不注册特质，属性加成直接写BaseStats，等级只在单位面板显示。</summary>
         public static void Register()
         {
-            for (int i = 0; i < Thresholds.Length; i++)
-            {
-                int lv = i + 1;
-                string id = GetId(lv);
+            Debug.Log($"[超神机械师] 气力等级系统初始化：{Thresholds.Length} 级（纯内部数据，不注册特质）");
+        }
 
-                var t = new ActorTrait
-                {
-                    id = id,
-                    path_icon = "ui/Icons/actor_traits/iconHardSkin",
-                    group_id = HiddenGroup,  // 未注册组 → 不在特质编辑器显示
-                    needs_to_be_explored = false,
-                    base_stats = new BaseStats()
-                };
-                // 原著气力加成表（ch50机械师学徒基准，外推至40级）：
-                // Lv1(10): 力量+1 敏捷+1 耐力+1 智力+1 体力上限+20 机械威力+1% 制造速度+1%
-                // Lv2(50): 力量+3 敏捷+2 耐力+3 智力+1 体力上限+50 机械威力+2% 制造速度+2%
-                // Lv3(100):力量+3 敏捷+3 耐力+5 智力+2 体力上限+100 机械威力+3% 制造速度+3%
-                // 映射到WorldBox stat key：
-                //   力量→damage/warfare, 敏捷→speed/attack_speed, 耐力→health/stamina/armor,
-                //   智力→intelligence, 体力上限→stamina, 机械威力→multiplier_damage, 制造速度→experience
-                t.base_stats["damage"] = lv * 2f;               // 力量
-                t.base_stats["warfare"] = lv;                   // 战斗技能（力量）
-                t.base_stats["intelligence"] = lv;              // 智力
-                t.base_stats["health"] = lv * 15f;              // 耐力→生命
-                t.base_stats["stamina"] = lv * 12f;             // 耐力/体力上限
-                t.base_stats["armor"] = lv * 0.3f;              // 耐力→护甲
-                t.base_stats["speed"] = lv * 0.04f;             // 敏捷
-                t.base_stats["attack_speed"] = lv * 0.02f;      // 敏捷→攻速
-                t.base_stats["multiplier_damage"] = 1f + lv * 0.02f;   // 机械威力（Lv29=1.58x）
-                t.base_stats["multiplier_health"] = 1f + lv * 0.05f;   // 耐力倍率
-                t.base_stats["multiplier_stamina"] = 1f + lv * 0.03f;  // 体力上限倍率
-                t.base_stats["experience"] = 1f + lv * 0.01f;          // 制造速度→经验获取
-                if (lv >= 6)  // Lv6分水岭（原著ch146），额外暴击
-                {
-                    t.base_stats["critical_chance"] = (lv - 5) * 0.01f;
-                    t.base_stats["multiplier_crit"] = 1f + (lv - 5) * 0.05f;
-                }
-                AssetManager.traits.add(t);
+        /// <summary>把气力等级的属性加成直接写到单位BaseStats（替代特质方案）。</summary>
+        public static void ApplyQiStats(Actor a, int level)
+        {
+            if (a == null || level <= 0) return;
+            int last;
+            if (_appliedLevel.TryGetValue(a.id, out last) && last == level) return;
+
+            var stats = SuperMechStats.Of(a);
+            if (stats == null) return;
+
+            // 原著气力加成表（ch50机械师学徒基准，外推至40级）
+            stats["damage"] = level * 2f;
+            stats["warfare"] = level;
+            stats["intelligence"] = level;
+            stats["health"] = level * 15f;
+            stats["stamina"] = level * 12f;
+            stats["armor"] = level * 0.3f;
+            stats["speed"] = level * 0.04f;
+            stats["attack_speed"] = level * 0.02f;
+            stats["multiplier_damage"] = 1f + level * 0.02f;
+            stats["multiplier_health"] = 1f + level * 0.05f;
+            stats["multiplier_stamina"] = 1f + level * 0.03f;
+            stats["experience"] = 1f + level * 0.01f;
+            if (level >= 6)  // Lv6分水岭（原著ch146），额外暴击
+            {
+                stats["critical_chance"] = (level - 5) * 0.01f;
+                stats["multiplier_crit"] = 1f + (level - 5) * 0.05f;
             }
-            Debug.Log($"[超神机械师] 气力等级注册完成：{Thresholds.Length} 级（隐藏特质，原著属性加成表）");
+            _appliedLevel[a.id] = level;
+        }
+
+        /// <summary>单位死亡/移除时清理气力数据。</summary>
+        public static void Clear(Actor a)
+        {
+            if (a == null) return;
+            _qiMap.Remove(a.id);
+            _qiMaxMap.Remove(a.id);
+            _lastHealth.Remove(a.id);
+            _combatTimer.Remove(a.id);
+            _appliedLevel.Remove(a.id);
         }
 
         /// <summary>获取单位气力当前值。</summary>
@@ -302,20 +303,9 @@ namespace SuperMech.Code
                     AddQiMax(a, maxGrowth);
                 }
 
-                // —— 同步气力等级特质（低于阈值自动降级，丧失加成）——
+                // —— 同步气力等级属性加成（直接写BaseStats，不注册特质）——
                 int targetLv = GetLevel(qi);
-                for (int lv = 1; lv <= Thresholds.Length; lv++)
-                {
-                    string id = GetId(lv);
-                    if (lv == targetLv)
-                    {
-                        if (targetLv > 0 && !a.hasTrait(id)) a.addTrait(id);
-                    }
-                    else if (a.hasTrait(id))
-                    {
-                        a.removeTrait(id);
-                    }
-                }
+                ApplyQiStats(a, targetLv);
             }
         }
 
@@ -326,6 +316,7 @@ namespace SuperMech.Code
             _qiMaxMap.Clear();
             _lastHealth.Clear();
             _combatTimer.Clear();
+            _appliedLevel.Clear();
         }
     }
 }

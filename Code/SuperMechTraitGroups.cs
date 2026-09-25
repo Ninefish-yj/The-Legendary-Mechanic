@@ -38,7 +38,6 @@ namespace SuperMech.Code
             ("sm_race",         "种族进化",   "#9932CC"),
             ("sm_skills",       "职业技能",   "#FF4500"),
             ("sm_sanctuary",    "圣所",       "#FFD700"),
-            ("sm_qi_hidden",    "气力等级",   "#87CEEB"),
         };
 
         public static void Register()
