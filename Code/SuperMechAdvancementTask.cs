@@ -81,6 +81,17 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>获取单位的知识树前缀。</summary>
+        private static string GetKnowledgePrefix(Actor a)
+        {
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return "mech";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "martial";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "psi";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "mage";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "mind";
+            return "mech";
+        }
+
         public static bool CheckReq(Actor a, int stage)
         {
             if (stage <= 0 || stage >= 14) return false;
@@ -88,7 +99,9 @@ namespace SuperMech.Code
             switch (req.type)
             {
                 case ReqType.Knowledge:
-                    bool knowledgeOk = SuperMechPotential.GetUnlockedCount(a) >= req.intValue;
+                    // 原著ch269：学会5项机械系进阶知识——特指进阶阶（tier=1）的知识
+                    string prefix = GetKnowledgePrefix(a);
+                    bool knowledgeOk = SuperMechKnowledge.GetTierKnowledgeCount(a, prefix, 1) >= req.intValue;
                     if (!string.IsNullOrEmpty(req.statKey))
                     {
                         var stats = SuperMechStats.Of(a);

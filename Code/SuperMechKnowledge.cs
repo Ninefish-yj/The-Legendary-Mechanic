@@ -218,6 +218,20 @@ namespace SuperMech.Code
             return count;
         }
 
+        /// <summary>统计单位已解锁的特定阶知识数（原著ch269：学会5项进阶知识）。
+        /// tier: 0=基础, 1=进阶, 2=高端, 3=尖端, 4=终极</summary>
+        public static int GetTierKnowledgeCount(Actor a, string prefix, int tier)
+        {
+            if (a == null || a.traits == null) return 0;
+            int count = 0;
+            string key = $"sm_know_{prefix}_{tier}_";
+            foreach (var t in a.traits)
+            {
+                if (t.id != null && t.id.StartsWith(key)) count++;
+            }
+            return count;
+        }
+
         /// <summary>获取系对应的知识树前缀。</summary>
         public static string GetPrefixForClass(string cls)
         {
