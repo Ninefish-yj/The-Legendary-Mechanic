@@ -127,6 +127,9 @@ namespace SuperMech.Code
                         Debug.Log($"[超神机械师] {killer.name} 信息态转化 {target.name}！");
                     }
                 }
+
+                // 传说度：击杀高阶单位获得传说度（原著ch1196传奇事迹影响突破）
+                SuperMechLegend.OnKill(killer, target);
             }
             catch
             {

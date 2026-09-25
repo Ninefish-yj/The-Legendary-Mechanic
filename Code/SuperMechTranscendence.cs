@@ -251,6 +251,10 @@ namespace SuperMech.Code
             // 每份额外超神遗力+2%
             successRate += Mathf.Max(0, GetLegacyPower(a) - 1) * 0.02f;
 
+            // 传说度加成（原著ch1196：传奇事迹增加突破可能性，信息态层面权重变化）
+            float legendBonus = SuperMechLegend.GetBreakthroughBonus(a);
+            if (legendBonus > 0) successRate += legendBonus;
+
             successRate = Mathf.Clamp(successRate, 0.01f, 0.99f);
 
             bool allMet = cond1 && cond2 && cond3;

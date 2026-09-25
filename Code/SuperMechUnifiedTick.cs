@@ -100,6 +100,7 @@ namespace SuperMech.Code
             try { SuperMechQiAttribute.Clear(); } catch { }
             try { SuperMechCorePower.Clear(); } catch { }
             try { SuperMechSubClass.Clear(); } catch { }
+            try { SuperMechLegend.Clear(); } catch { }
             try { SuperMechSanctuary.Clear(); } catch { }
             try { SuperMechMageTower.Clear(); } catch { }
             try { SuperMechRelic.Clear(); } catch { }

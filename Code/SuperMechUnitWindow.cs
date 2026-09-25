@@ -197,6 +197,21 @@ namespace SuperMech.Code
                     ShowRow(__instance, "气力属性", $"{qiAttr} — {attrDesc}");
                 }
 
+                // 行9c：传说度（原著ch1196：传奇事迹影响突破，信息态权重）
+                int legend = SuperMechLegend.GetLegend(actor);
+                if (legend > 0)
+                {
+                    string legendTier = SuperMechLegend.GetTierName(actor);
+                    string lastDeed = SuperMechLegend.GetLastDeed(actor);
+                    bool isAwakened = SuperMechAwakened.IsAwakened(actor);
+                    // 降临者显示精确数值，星海人只显示等级和"隐约感到突破契机"
+                    string legendText = isAwakened ?
+                        $"{legendTier}（{legend}点，突破+{SuperMechLegend.GetBreakthroughBonus(actor):P0}）" :
+                        $"{legendTier}（隐约感到突破契机）";
+                    if (!string.IsNullOrEmpty(lastDeed)) legendText += $" 最近：{lastDeed}";
+                    ShowRow(__instance, "传说度", legendText);
+                }
+
                 // 行10：副职业等级（原著：特工lv9/黑夜潜行者lv10）
                 string subText = SuperMechSubClass.GetSubLevelText(actor);
                 if (!string.IsNullOrEmpty(subText))

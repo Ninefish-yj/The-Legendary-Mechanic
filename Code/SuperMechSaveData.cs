@@ -68,6 +68,8 @@ namespace SuperMech.Code
             public int subclassLevel;
             public string subclass;
             public string qiAttribute;
+            public int legend;
+            public string lastDeed;
             public string destinyName;
             public float destinyProgress;
             public bool destinyCompleted;
@@ -149,7 +151,9 @@ namespace SuperMech.Code
                             awakenedXp = SuperMechAwakened.GetXp(a),
                             heritage = SuperMechHeritage.GetHeritage(a),
                             reviveCount = SuperMechSanctuary.GetReviveCount(a),
-                            qiAttribute = SuperMechQiAttribute.GetAttribute(a)
+                            qiAttribute = SuperMechQiAttribute.GetAttribute(a),
+                            legend = SuperMechLegend.GetLegend(a),
+                            lastDeed = SuperMechLegend.GetLastDeed(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -258,6 +262,7 @@ namespace SuperMech.Code
                     SuperMechSanctuary.SetReviveCount(a, ad.reviveCount);
                     if (!string.IsNullOrEmpty(ad.qiAttribute) && ad.qiAttribute != SuperMechQiAttribute.AttrNone)
                         SuperMechQiAttribute.SetAttribute(a, ad.qiAttribute);
+                    if (ad.legend > 0) SuperMechLegend.AddLegend(a, ad.legend, ad.lastDeed);
 
                     _pendingLoad.actors.Remove(id);
                     restored++;
