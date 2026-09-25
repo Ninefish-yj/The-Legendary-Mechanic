@@ -104,12 +104,9 @@ namespace SuperMech.Code
 
             // 3. 种族进化移至 SuperMechRace.cs（原著6阶段，与阶位挂钩自动进化）
 
-            // 4. 职业技能
-            AddSkillTrait(SkillQiMod,        "气力改装·LVMAX", "气力数值按比例增加制造机械的效率与品质", 5, 1.1f);
-            AddSkillTrait(SkillVirtualPurify, "虚拟净化复原·LVMAX", "净化病毒感染的智能目标", 3, 1.05f);
-            AddSkillTrait(SkillDimensionMarch, "次级维度行军·LVMAX", "打开黑色传送门进行维度行军", 8, 1.2f);
+            // 4. 职业技能移至 SuperMechSkills.cs（独立技能系统，参考西幻世界，不注册为特质）
 
-            Debug.Log("[超神机械师] 特质注册完成：阶位9(主阶位) + 五系觉醒5 + 职业技能3");
+            Debug.Log("[超神机械师] 特质注册完成：阶位9(主阶位) + 五系觉醒5");
         }
 
         private static void AddClassTrait(string id, string name, int intell, int str, int stam,

@@ -124,11 +124,15 @@ namespace SuperMech.Code
             var knowFusion = SuperMechKnowledgeFusion.GetFusionBonus(a);
             qiMul *= knowFusion.dmgMul;
 
+            // 职业技能加成（独立技能系统，参考西幻世界）
+            var skillBonus = SuperMechSkills.GetBonus(a);
+            qiMul *= skillBonus.dmgMul;
+
             stats["multiplier_damage"] = qiMul;
-            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul * fusionMul * knowFusion.hpMul;
+            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul * fusionMul * knowFusion.hpMul * skillBonus.hpMul;
             stats["multiplier_stamina"] = qiMul * 1.2f;
             stats["armor"] = Mathf.Min(80f, level * 0.5f * stageMul);
-            stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul * knowFusion.speedMul;
+            stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul * knowFusion.speedMul * skillBonus.speedMul;
             stats["multiplier_crit"] = 1f + level * 0.018f * stageMul;
             stats["experience"] = 1f + level * 0.01f;
 
@@ -136,7 +140,7 @@ namespace SuperMech.Code
             stats["damage"] = level * level * 0.05f * stageMul;
             stats["health"] = level * level * 0.5f * stageMul;
             stats["stamina"] = level * level * 0.3f * stageMul;
-            stats["intelligence"] = level * 0.3f * stageMul;
+            stats["intelligence"] = level * 0.3f * stageMul + skillBonus.intelligence;
 
             if (level >= 6)  // Lv6分水岭（原著ch146），额外暴击
             {

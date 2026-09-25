@@ -86,6 +86,14 @@ namespace SuperMech.Code
                 int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
                 ShowRow(__instance, "职业树", $"{treeName}（{unlocked}节点）");
 
+                // 行3c：职业技能（独立技能系统，参考西幻世界，不注册为特质）
+                var skills = SuperMechSkills.GetLearned(actor);
+                if (skills.Count > 0)
+                {
+                    string skillNames = string.Join("、", skills.ConvertAll(s => s.name));
+                    ShowRow(__instance, "职业技能", skillNames);
+                }
+
                 // 行4：气力（原著五系统一，ch3/ch50。机械系不叫"械力"，叫气力）
                 float qi = SuperMechQi.GetQi(actor);
                 float qiMax = SuperMechQi.GetQiMax(actor);

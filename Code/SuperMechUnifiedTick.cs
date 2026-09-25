@@ -54,6 +54,7 @@ namespace SuperMech.Code
                     SuperMechHeritage.TickHeritage();
                     SuperMechKnowledgeSynergy.TickSynergy();
                     SuperMechMechFusion.TickFusion();
+                    SuperMechSkills.TickAutoLearnAll(); // 自动学习职业技能
                 }
                 // 第2组：高阶系统（冥冥感应/神性蜕变/超神遗力/进阶任务/信息态）
                 else if (group == 2)
@@ -129,6 +130,7 @@ namespace SuperMech.Code
             removed += SuperMechRelic.CleanupDead(alive);
             removed += SuperMechCosmicRelic.CleanupDead(alive);
             removed += SuperMechSanctuary.CleanupDead(alive);
+            removed += SuperMechSkills.CleanupDead(alive);
             removed += SuperMechPotentialRating.CleanupDead(alive);
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechAdvancementTask.CleanupDead(alive);

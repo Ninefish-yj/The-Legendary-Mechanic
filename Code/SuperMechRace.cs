@@ -338,18 +338,33 @@ namespace SuperMech.Code
         {
             LocalizedTextManager.add("subspecies_trait_" + id, name, pReplace: true);
             LocalizedTextManager.add("subspecies_trait_" + id + "_info", desc, pReplace: true);
-            var st = new SubspeciesTrait
+
+            // 用clone从模板创建（原版方式），避免直接new缺少初始化
+            SubspeciesTrait st = AssetManager.subspecies_traits.clone(id, "$adaptation$");
+            if (st == null)
             {
-                id = id, group_id = "sm_race_talents",
-                path_icon = "ui/Icons/actor_traits/iconGiant",
-                needs_to_be_explored = false, base_stats_meta = new BaseStats()
-            };
+                // 模板不存在时直接new
+                st = new SubspeciesTrait
+                {
+                    id = id, group_id = "sm_race_talents",
+                    path_icon = "ui/Icons/actor_traits/iconGiant",
+                    needs_to_be_explored = false, base_stats_meta = new BaseStats()
+                };
+                AssetManager.subspecies_traits.add(st);
+            }
+            else
+            {
+                st.group_id = "sm_race_talents";
+                st.path_icon = "ui/Icons/actor_traits/iconGiant";
+                st.needs_to_be_explored = false;
+                if (st.base_stats_meta == null) st.base_stats_meta = new BaseStats();
+            }
+
             if (intel > 0) st.base_stats_meta["intelligence"] = intel;
             if (dmgMul > 0) st.base_stats_meta["multiplier_damage"] = 1f + dmgMul;
             if (hpMul > 0) st.base_stats_meta["multiplier_health"] = 1f + hpMul;
             if (spdMul > 0) st.base_stats_meta["multiplier_speed"] = 1f + spdMul;
             if (armor > 0) st.base_stats_meta["armor"] = armor;
-            AssetManager.subspecies_traits.add(st);
         }
 
         private static void AddSubspeciesTraitToSpecies(Subspecies species, string traitId)

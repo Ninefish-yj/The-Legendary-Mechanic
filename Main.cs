@@ -26,6 +26,7 @@ namespace SuperMech
             SuperMechTraitGroups.Register();  // 必须最先：自定义group_id不注册会导致特质面板KeyNotFound崩溃
             SuperMechCustomStats.Register();  // 自定义属性（气力/能级/械力等），在特质注册前
             SuperMechTraits.Register();
+            SuperMechSkills.Register();  // 独立技能系统（不注册为特质）
             SuperMechKnowledge.Register();
             SuperMechKnowledgeSynergy.Register();
             SuperMechKnowledgeFusion.Register();
