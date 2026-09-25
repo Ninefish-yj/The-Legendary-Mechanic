@@ -177,7 +177,7 @@ namespace SuperMech.Code
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
                 hold_action = false,
-                unselect_when_window = true,
+                unselect_when_window = false, // 打开窗口后保持神权选中，避免窗口被立即关闭
                 requires_premium = false
             };
             p.click_action += (tile, powerId) =>

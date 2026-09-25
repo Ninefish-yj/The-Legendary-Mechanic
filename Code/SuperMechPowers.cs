@@ -32,7 +32,7 @@ namespace SuperMech.Code
             AddSpawnPower(SummonRanger, "召唤机械游骑兵", "ui/powers/power_summon_units", "soldier", 1);
             AddSpawnPower(SummonMech, "召唤机甲单位", "ui/powers/power_summon_units", "titan", 3);
             AddAwakenedPower(SummonAwakened, "召唤降临者", "ui/powers/power_summon_units");
-            AddTranscendPower(AttemptTranscend, "冲击超神级", "ui/powers/power_bless");
+            AddTranscendPower(AttemptTranscend, "神之催化", "ui/powers/power_bless");
 
             AddDisaster(DisasterAlien, "异化之灾（天灾）");
 
