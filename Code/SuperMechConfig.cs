@@ -29,7 +29,7 @@ namespace SuperMech.Code
         public static float PromotionSpeed = 1.0f;        // 晋升速度倍率
         public static float OnaMultiplier = 1.0f;         // 欧纳计算倍率
         public static bool AutoPromotion = true;          // 自动晋升
-        public static int AutoPromotionMaxRank = 12;      // 自动晋升上限阶位索引（0=F~13=X，默认12=SS，X阶需手动突破）
+        public static int AutoPromotionMaxRank = 12;      // 自动晋升上限阶位索引（0=F~13=X，默认12=SS，X阶需通过超神突破系统晋升（满足三条件后自动尝试或手动触发））
         public static bool ShowRankInPanel = true;        // 单位面板显示阶位
 
         // ========== 自动收藏（每个主阶位独立开关，参考凡人修仙传）==========
@@ -107,7 +107,7 @@ namespace SuperMech.Code
                 ("qi_growth_rate", "气力增长倍率", "气力值增长速度倍率，越高升级越快（默认1.0x）"),
                 ("qi_unlimited", "气力无上限", "原著设定：气力等级无固定上限，越往后越难提升"),
                 ("auto_promotion", "自动晋升", "单位欧纳达到阶位门槛后自动晋升"),
-                ("auto_promotion_max_rank", "自动晋升上限", "自动晋升最高到哪个阶位，超过需手动晋升"),
+                ("auto_promotion_max_rank", "自动晋升上限", "自动晋升最高到哪个阶位，X阶需通过超神突破系统晋升"),
                 ("promotion_speed", "晋升速度", "欧纳积累速度倍率，影响整体晋升节奏"),
                 ("ona_multiplier", "欧纳计算倍率", "欧纳（战斗力函数）最终结果倍率"),
                 ("show_rank_in_panel", "面板显示阶位", "在单位属性面板注入阶位/职业/气力/欧纳数据行"),

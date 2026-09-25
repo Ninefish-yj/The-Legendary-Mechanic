@@ -60,6 +60,7 @@ namespace SuperMech.Code
                     SuperMechDivinity.TickNativeInsight();
                     SuperMechTranscendence.TickLegacySense();
                     SuperMechTranscendence.TickAdvancementTask();
+                    SuperMechTranscendence.TickAutoAttempt();
                     SuperMechInfoState.TickInfoState();
                 }
                 // 第3组：辅助系统（圣所/法师塔/宝物/自动收藏/气势震慑）

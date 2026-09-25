@@ -25,7 +25,7 @@ namespace SuperMech.Code
     /// - 克苏耶条件齐了但没突破，就是因为进阶任务没完成
     ///
     /// 模组实现：
-    /// - X阶（index13）不自动晋升，需要手动突破
+    /// - X阶（index13）不自动晋升，需通过超神突破系统（三条件+成功率）
     /// - 进阶任务进度随战斗/制造/修炼缓慢增长
     /// - 完成进阶任务后才能感知超神遗力
     /// - 三条件全满足才能真正升阶，否则即使成功也不升阶
@@ -129,6 +129,30 @@ namespace SuperMech.Code
                     Debug.Log($"[超神机械师] {a.name} 完成进阶任务【{GetAdvancementTaskName(a)}】！进入可进阶状态，可感知超神遗力");
                 }
                 _advancementProgress[a.id] = progress;
+            }
+        }
+
+        /// <summary>
+        /// 自动尝试突破超神级（原著：超A级满足条件后自己尝试突破，不是等玩家手动点）。
+        /// 每tick检查SS阶以上单位，满足CanAttempt且AllConditionsMet时自动尝试。
+        /// 突破失败后设置冷却，避免频繁尝试。
+        /// </summary>
+        public static void TickAutoAttempt()
+        {
+            var units = World.world.units.units_only_alive;
+            if (units == null) return;
+
+            foreach (Actor a in units)
+            {
+                if (a == null) continue;
+                if (!CanAttempt(a)) continue;
+                if (!AllConditionsMet(a)) continue; // 三条件全满足才自动尝试
+
+                Debug.Log($"[超神机械师] {a.name} 满足超神突破三条件，自动尝试突破！");
+                AttemptTranscend(a);
+
+                // 无论成功失败，设置冷却（原著：突破失败后需要长时间恢复）
+                _cooldown[a.id] = Time.time + 3600f; // 1游戏小时冷却
             }
         }
 
