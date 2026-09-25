@@ -22,6 +22,10 @@ namespace SuperMech.Code
 
         public static void Register()
         {
+            // 注册神权名称本地化（GodPower.name会被当作本地化key查找）
+            string[] powerNames = { "召唤机械游骑兵", "召唤机甲单位", "召唤降临者", "冲击超神级", "异化之灾（天灾）", "异化之灾_天灾", "查看潜能点", "解锁知识·武装系", "解锁知识·能量系", "解锁知识·虚拟系" };
+            foreach (var n in powerNames) LocalizedTextManager.add(n, n, pReplace: true);
+
             AddSpawnPower(SummonRanger, "召唤机械游骑兵", "ui/powers/power_summon_units", "soldier", 1);
             AddSpawnPower(SummonMech, "召唤机甲单位", "ui/powers/power_summon_units", "titan", 3);
             AddAwakenedPower(SummonAwakened, "召唤降临者", "ui/powers/power_summon_units");

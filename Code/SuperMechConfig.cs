@@ -66,13 +66,61 @@ namespace SuperMech.Code
             try
             {
                 LogInfo("[超神机械师] 配置系统初始化");
-                // NML 会在加载 default_config.json 后自动设置初始值
-                // 这里只做日志和状态确认
+                RegisterLocalization();
                 LogInfo($"[超神机械师] 配置: 模组启用={ModEnabled}, 自动觉醒={AutoAwakening}, 气力倍率={QiGrowthRate}");
             }
             catch (Exception e)
             {
                 Debug.LogError("[超神机械师] 配置初始化异常: " + e.Message);
+            }
+        }
+
+        /// <summary>注册配置项与分类的本地化文本（NML配置面板用Id查文本）。</summary>
+        private static void RegisterLocalization()
+        {
+            // 分类名
+            LocalizedTextManager.add("超神机械师·总控", "超神机械师·总控", pReplace: true);
+            LocalizedTextManager.add("觉醒系统", "觉醒系统", pReplace: true);
+            LocalizedTextManager.add("气力系统", "气力系统", pReplace: true);
+            LocalizedTextManager.add("晋升系统", "晋升系统", pReplace: true);
+            LocalizedTextManager.add("自动收藏", "自动收藏", pReplace: true);
+            LocalizedTextManager.add("圣所系统", "圣所系统", pReplace: true);
+            LocalizedTextManager.add("机械系", "机械系", pReplace: true);
+            LocalizedTextManager.add("提炼法与宝物", "提炼法与宝物", pReplace: true);
+            LocalizedTextManager.add("性能与调试", "性能与调试", pReplace: true);
+
+            // 配置项名称 + 描述（key格式：Id 和 Id+" Description"）
+            var items = new (string id, string name, string desc)[]
+            {
+                ("mod_enabled", "模组总开关", "关闭后所有超神机械师系统停止运行（已赋予的特质保留）"),
+                ("auto_awakening", "自然觉醒", "单位是否会随时间自然觉醒为超能者（五系随机）"),
+                ("awakening_chance", "觉醒概率", "每个主循环周期内单位自然觉醒的概率（默认5%）"),
+                ("awakening_min_age", "最小觉醒年龄", "单位达到多少岁后才可能自然觉醒（默认16岁）"),
+                ("qi_growth_rate", "气力增长倍率", "气力值增长速度倍率，越高升级越快（默认1.0x）"),
+                ("qi_unlimited", "气力无上限", "原著设定：气力等级无固定上限，越往后越难提升"),
+                ("auto_promotion", "自动晋升", "单位欧纳达到阶位门槛后自动晋升"),
+                ("auto_promotion_max_rank", "自动晋升上限", "自动晋升最高到哪个阶位，超过需手动晋升"),
+                ("promotion_speed", "晋升速度", "欧纳积累速度倍率，影响整体晋升节奏"),
+                ("ona_multiplier", "欧纳计算倍率", "欧纳（战斗力函数）最终结果倍率"),
+                ("show_rank_in_panel", "面板显示阶位", "在单位属性面板注入阶位/职业/气力/欧纳数据行"),
+                ("auto_favorite_enabled", "自动收藏", "达到指定阶位的单位自动加星标收藏"),
+                ("auto_favorite_rank", "收藏阶位阈值", "达到哪个阶位及以上自动收藏"),
+                ("sanctuary_enabled", "圣所跨存档", "圣所数据写入模组目录JSON，不随世界存档消失"),
+                ("sanctuary_count", "圣所数量", "可同时存在的圣所数量（原著共6大圣所）"),
+                ("sanctuary_autosave", "圣所自动保存", "圣所数据变更时自动写入JSON文件"),
+                ("mech_summon_enabled", "机械召唤", "机械师召唤无人机/机甲/机器人（爆兵流）"),
+                ("max_summoned_units", "最大召唤单位", "全场机械召唤物上限，防止爆兵流拖垮性能"),
+                ("refinement_bonus", "提炼法气力加成", "修炼提炼法的单位气力增长额外倍率"),
+                ("relic_drop_enabled", "宇宙宝物掉落", "高阶单位死亡时有概率掉落宇宙宝物"),
+                ("relic_drop_rate", "宝物掉落率", "高阶单位死亡掉落宇宙宝物的概率"),
+                ("tick_interval", "主循环间隔", "晋升/气力/能量计算的执行间隔（秒）"),
+                ("max_tracked_actors", "最大追踪单位", "同时参与气力/晋升计算的单位数上限"),
+                ("log_verbose", "详细日志", "在Player.log中输出所有配置变更和系统运行细节"),
+            };
+            foreach (var (id, name, desc) in items)
+            {
+                LocalizedTextManager.add(id, name, pReplace: true);
+                LocalizedTextManager.add(id + " Description", desc, pReplace: true);
             }
         }
 
