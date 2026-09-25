@@ -182,7 +182,7 @@ namespace SuperMech.Code
             {
                 id = AwakenPowerId,
                 name = AwakenPowerName,
-                path_icon = "ui/powers/power_bless",
+                path_icon = "iconInspiration",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
