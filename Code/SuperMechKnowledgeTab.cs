@@ -105,12 +105,11 @@ namespace SuperMech.Code
 
             newTab.gameObject.SetActive(true);
 
-            // 用TipButton设置文本（参考天人武道，不用反射）
+            // 用TipButton设置文本（参考蛊真人：title+description合并到textOnClick）
             TipButton tip = newTab.GetComponent<TipButton>();
             if (tip != null)
             {
-                tip.textOnClick = "知识";
-                tip.textOnClickDescription = "查看已解锁的知识节点与职业树";
+                tip.textOnClick = "知识\n查看已解锁的知识节点与职业树";
                 tip.text_description_2 = string.Empty;
             }
 

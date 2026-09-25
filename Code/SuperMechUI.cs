@@ -201,11 +201,11 @@ namespace SuperMech.Code
             try
             {
                 if (btn == null) return;
-                // 使用TipButton组件设置tooltip（原版PowerButton的标准方式，不要用WorldTip）
+                // 参考蛊真人：title和description合并成一个字符串，设置到textOnClick
+                // 不要分别设置textOnClickDescription（会被当作本地化key查找导致缺失）
                 var tipBtn = btn.GetComponent<TipButton>();
                 if (tipBtn == null) tipBtn = btn.gameObject.AddComponent<TipButton>();
-                tipBtn.textOnClick = title;
-                tipBtn.textOnClickDescription = desc;
+                tipBtn.textOnClick = title + "\n" + desc;
             }
             catch { }
         }

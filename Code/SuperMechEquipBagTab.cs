@@ -117,12 +117,11 @@ namespace SuperMech.Code
 
             newTab.gameObject.SetActive(true);
 
-            // 用TipButton设置文本（参考天人武道，不用反射）
+            // 用TipButton设置文本（参考蛊真人：title+description合并到textOnClick）
             TipButton tip = newTab.GetComponent<TipButton>();
             if (tip != null)
             {
-                tip.textOnClick = "装备背包";
-                tip.textOnClickDescription = "查看与管理单位的装备背包";
+                tip.textOnClick = "装备背包\n查看与管理单位的装备背包";
                 tip.text_description_2 = string.Empty;
             }
 
