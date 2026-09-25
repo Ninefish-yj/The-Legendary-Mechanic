@@ -62,7 +62,7 @@ namespace SuperMech
             // 启动约4秒后，等语言加载与全部中文注册完成，导出一次完整 cz.json
             if (!_localeExported)
             {
-                _localeTimer += Time.deltaTime;
+                _localeTimer += Time.unscaledDeltaTime;
                 if (_localeTimer >= 4f)
                 {
                     _localeExported = true;
@@ -98,6 +98,7 @@ namespace SuperMech
             if (_worldInitPending)
             {
                 try { SuperMechSaveData.TryRestoreActors(); } catch { }
+                if (!SuperMechSaveData.IsRestoring) _worldInitPending = false;
             }
 
             _promoTimer += Time.unscaledDeltaTime;

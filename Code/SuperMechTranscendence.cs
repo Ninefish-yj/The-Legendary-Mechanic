@@ -308,11 +308,11 @@ namespace SuperMech.Code
                     stats["damage"] = Mathf.Max(0f, (stats["damage"]) - 80f);
                 }
                 // 10%概率直接死亡（恶性变异致死）
-                if (Random.value < 0.1f && a.data.health > 1f)
+                if (Random.value < 0.1f && a.isAlive())
                 {
-                    a.data.health = 0;
                     // ch1396/ch1399：突破失败死亡者化身为超神遗力，无法圣所复苏
                     SuperMechSanctuary.MarkTranscendenceFailed(a);
+                    a.dieSimpleNone(); // 触发原版死亡流程，而非直接设health=0
                     Debug.Log($"[超神机械师] {a.name} 突破失败，恶性变异致死！化为超神遗力，无法圣所复苏");
                 }
                 else
@@ -418,8 +418,8 @@ namespace SuperMech.Code
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
-            removed += SuperMechCleanup.CleanDict(_legacySense, alive);
-            removed += SuperMechCleanup.CleanDict(_transcendenceState, alive);
+            removed += SuperMechCleanup.CleanDict(_legacyPower, alive);
+            removed += SuperMechCleanup.CleanDict(_transcended, alive);
             return removed;
         }
         public static void Clear(Actor a)

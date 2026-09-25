@@ -623,8 +623,8 @@ namespace SuperMech.Code
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
-            removed += SuperMechCleanup.CleanDict(_sanctuaryAccess, alive);
-            removed += SuperMechCleanup.CleanDict(_reviveQueue, alive);
+            removed += SuperMechCleanup.CleanDict(_reviveCount, alive);
+            removed += SuperMechCleanup.CleanDict(_aliveSnapshot, alive);
             return removed;
         }
     }

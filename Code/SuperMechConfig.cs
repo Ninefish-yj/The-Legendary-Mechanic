@@ -54,7 +54,7 @@ namespace SuperMech.Code
         public static int MaxSummonedUnits = 50;          // 最大召唤单位数（性能保护）
 
         // ========== 性能优化 ==========
-        public static float TickInterval = 5.0f;          // 主循环间隔（秒）
+        public static float TickInterval = 1.25f;          // 主循环间隔（秒）
         public static int MaxTrackedActors = 500;         // 最大追踪单位数
         public static bool LogVerbose = false;            // 详细日志
 
@@ -160,7 +160,7 @@ namespace SuperMech.Code
         public static void SetAutoPromotion(bool val) { AutoPromotion = val; LogInfo($"[配置] 自动晋升: {val}"); }
         public static void SetAutoPromotionMaxRank(int val)
         {
-            AutoPromotionMaxRank = Mathf.Clamp(val, 0, 13);
+            AutoPromotionMaxRank = Mathf.Clamp(val, 0, 12);
             string[] rankNames = { "F", "E", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S", "S+", "SS", "X(无上限)" };
             LogInfo($"[配置] 自动晋升上限: {rankNames[AutoPromotionMaxRank]}");
         }

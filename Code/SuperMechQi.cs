@@ -413,8 +413,8 @@ namespace SuperMech.Code
             int removed = 0;
             removed += SuperMechCleanup.CleanDict(_qiMap, alive);
             removed += SuperMechCleanup.CleanDict(_qiMaxMap, alive);
-            removed += SuperMechCleanup.CleanDict(_qiRegen, alive);
-            removed += SuperMechCleanup.CleanDict(_qiSpent, alive);
+            removed += SuperMechCleanup.CleanDict(_lastHealth, alive);
+            removed += SuperMechCleanup.CleanDict(_combatTimer, alive);
             removed += SuperMechCleanup.CleanDict(_appliedLevel, alive);
             return removed;
         }

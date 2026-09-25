@@ -119,6 +119,7 @@ namespace SuperMech.Code
             removed += SuperMechDimension.CleanupDead(alive);
             removed += SuperMechMageTower.CleanupDead(alive);
             removed += SuperMechRelic.CleanupDead(alive);
+            removed += SuperMechCosmicRelic.CleanupDead(alive);
             removed += SuperMechSanctuary.CleanupDead(alive);
             removed += SuperMechPotentialRating.CleanupDead(alive);
             removed += SuperMechQiAttribute.CleanupDead(alive);

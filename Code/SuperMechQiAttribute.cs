@@ -157,8 +157,7 @@ namespace SuperMech.Code
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
-            removed += SuperMechCleanup.CleanDict(_attribute, alive);
-            removed += SuperMechCleanup.CleanDict(_assigned, alive);
+            removed += SuperMechCleanup.CleanDict(_attr, alive);
             return removed;
         }
         public static void Clear(Actor a)

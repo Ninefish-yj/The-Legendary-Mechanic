@@ -273,8 +273,8 @@ namespace SuperMech.Code
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
-            removed += SuperMechCleanup.CleanDict(_equipped, alive);
-            removed += SuperMechCleanup.CleanDict(_cooldown, alive);
+            removed += SuperMechCleanup.CleanDict(_lastHealth, alive);
+            removed += SuperMechCleanup.CleanDict(_combatTime, alive);
             return removed;
         }
     }
@@ -396,6 +396,12 @@ namespace SuperMech.Code
         public static void Clear()
         {
             _equipped.Clear();
+        }
+
+        /// <summary>清理已死亡单位的字典数据。</summary>
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            return SuperMechCleanup.CleanDict(_equipped, alive);
         }
     }
 }

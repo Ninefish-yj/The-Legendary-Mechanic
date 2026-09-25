@@ -135,7 +135,7 @@ namespace SuperMech.Code
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
-            removed += SuperMechCleanup.CleanDict(_towerData, alive);
+            removed += SuperMechCleanup.CleanDict(_towerLevel, alive);
             return removed;
         }
     }

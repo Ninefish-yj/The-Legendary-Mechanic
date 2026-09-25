@@ -38,9 +38,9 @@ namespace SuperMech.Code
         public static readonly int[] MindTierKnowledgeReq = { 0, 3, 8, 15, 25 };
 
         // 内部字典追踪当前阶段（unit.id -> stage 1-5）
-        private static readonly Dictionary<string, int> _geneStage = new Dictionary<string, int>();
-        private static readonly Dictionary<string, int> _manaStage = new Dictionary<string, int>();
-        private static readonly Dictionary<string, int> _mindStage = new Dictionary<string, int>();
+        private static readonly Dictionary<long, int> _geneStage = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> _manaStage = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> _mindStage = new Dictionary<long, int>();
 
         public static void Register()
         {
@@ -96,9 +96,9 @@ namespace SuperMech.Code
         }
 
         /// <summary>应用阶段（只在变化时更新字典）。</summary>
-        private static void ApplyStage(Actor a, Dictionary<string, int> dict, int targetLv)
+        private static void ApplyStage(Actor a, Dictionary<long, int> dict, int targetLv)
         {
-            string id = a.data.id;
+            long id = a.id;
             if (dict.TryGetValue(id, out int cur) && cur == targetLv) return;
             dict[id] = targetLv;
         }
@@ -107,7 +107,7 @@ namespace SuperMech.Code
         public static string GetGeneStageName(Actor a)
         {
             if (a == null) return "基因未觉醒";
-            if (_geneStage.TryGetValue(a.data.id, out int lv) && lv >= 1 && lv <= GeneChainNames.Length)
+            if (_geneStage.TryGetValue(a.id, out int lv) && lv >= 1 && lv <= GeneChainNames.Length)
                 return GeneChainNames[lv - 1];
             return "一阶基因链";
         }
@@ -116,7 +116,7 @@ namespace SuperMech.Code
         public static string GetManaStageName(Actor a)
         {
             if (a == null) return "魔力未觉醒";
-            if (_manaStage.TryGetValue(a.data.id, out int lv) && lv >= 1 && lv <= ManaTierNames.Length)
+            if (_manaStage.TryGetValue(a.id, out int lv) && lv >= 1 && lv <= ManaTierNames.Length)
                 return ManaTierNames[lv - 1];
             return "魔力初涌";
         }
@@ -125,7 +125,7 @@ namespace SuperMech.Code
         public static string GetMindStageName(Actor a)
         {
             if (a == null) return "精神未觉醒";
-            if (_mindStage.TryGetValue(a.data.id, out int lv) && lv >= 1 && lv <= MindTierNames.Length)
+            if (_mindStage.TryGetValue(a.id, out int lv) && lv >= 1 && lv <= MindTierNames.Length)
                 return MindTierNames[lv - 1];
             return "精神觉醒";
         }
@@ -134,21 +134,21 @@ namespace SuperMech.Code
         public static int GetGeneStage(Actor a)
         {
             if (a == null) return 1;
-            return _geneStage.TryGetValue(a.data.id, out int lv) ? lv : 1;
+            return _geneStage.TryGetValue(a.id, out int lv) ? lv : 1;
         }
 
         /// <summary>获取魔法系魔力池阶段索引（1-5）。</summary>
         public static int GetManaStage(Actor a)
         {
             if (a == null) return 1;
-            return _manaStage.TryGetValue(a.data.id, out int lv) ? lv : 1;
+            return _manaStage.TryGetValue(a.id, out int lv) ? lv : 1;
         }
 
         /// <summary>获取念力系精神力阶段索引（1-5）。</summary>
         public static int GetMindStage(Actor a)
         {
             if (a == null) return 1;
-            return _mindStage.TryGetValue(a.data.id, out int lv) ? lv : 1;
+            return _mindStage.TryGetValue(a.id, out int lv) ? lv : 1;
         }
 
         /// <summary>清空核心能量数据（世界切换用）。</summary>

@@ -232,6 +232,9 @@ namespace SuperMech.Code
         private static SaveData _pendingLoad;
         private static bool _loadPending = false;
 
+        /// <summary>是否正在等待恢复存档数据。</summary>
+        public static bool IsRestoring => _loadPending;
+
         /// <summary>获取单位当前激活的副职业ID。</summary>
         private static string GetActiveSubClassId(Actor a)
         {

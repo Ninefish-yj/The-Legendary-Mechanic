@@ -132,7 +132,7 @@ namespace SuperMech.Code
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
-            removed += SuperMechCleanup.CleanDict(_rating, alive);
+            removed += SuperMechCleanup.CleanDict(_ratings, alive);
             return removed;
         }
         public static void Clear(Actor a)
