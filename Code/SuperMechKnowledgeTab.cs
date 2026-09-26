@@ -54,8 +54,10 @@ namespace SuperMech.Code
 
             if (_container != null && !tab.tab_elements.Contains(_container.transform))
             {
-                tab.tab_elements.Clear();
                 tab.tab_elements.Add(_container.transform);
+                // 更新_tabs_with_content列表
+                try { scroll.tabs.GetType().GetMethod("refillTabsWithContent",
+                    BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(scroll.tabs, null); } catch { }
             }
 
             // 只有在知识Tab激活时才渲染内容，避免内容出现在其他Tab（如原版装备Tab）中
@@ -100,6 +102,26 @@ namespace SuperMech.Code
             // 清空而不是new（参考天人武道）
             if (newTab.tab_elements != null) newTab.tab_elements.Clear();
             else newTab.tab_elements = new List<Transform>();
+
+            // 关键：把克隆的Tab注册到_tabs列表，否则isActiveTab/showTab都不认识它
+            try
+            {
+                var tabsField = typeof(WindowMetaTabButtonsContainer).GetField("_tabs",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                if (tabsField != null)
+                {
+                    var tabsList = tabsField.GetValue(scroll.tabs) as List<WindowMetaTab>;
+                    if (tabsList != null && !tabsList.Contains(newTab))
+                    {
+                        tabsList.Add(newTab);
+                        newTab.container = scroll.tabs;
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 注册知识Tab到_tabs失败: " + e.Message);
+            }
 
             // 重置tab_action
             if (newTab.tab_action == null) newTab.tab_action = new WindowMetaTabEvent();
@@ -481,6 +503,8 @@ namespace SuperMech.Code
             t.fontStyle = FontStyle.Bold;
             t.color = color ?? new Color(0.6f, 0.8f, 1f);
             t.alignment = TextAnchor.MiddleLeft;
+            t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.verticalOverflow = VerticalWrapMode.Truncate;
             if (t.font == null) t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(0, 22);
@@ -500,6 +524,8 @@ namespace SuperMech.Code
             t.fontStyle = FontStyle.Bold;
             t.color = Color.white;
             t.alignment = TextAnchor.MiddleCenter;
+            t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.verticalOverflow = VerticalWrapMode.Truncate;
             if (t.font == null) t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
             var img = go.AddComponent<Image>();
@@ -520,6 +546,8 @@ namespace SuperMech.Code
             var layout = go.AddComponent<HorizontalLayoutGroup>();
             layout.spacing = 8;
             layout.childForceExpandWidth = true;
+            layout.childControlWidth = true;
+            layout.childControlHeight = true;
 
             GameObject leftGo = new GameObject("Left", typeof(RectTransform));
             leftGo.transform.SetParent(go.transform, false);
@@ -527,7 +555,12 @@ namespace SuperMech.Code
             lt.text = left;
             lt.fontSize = 12;
             lt.color = Color.white;
+            lt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            lt.verticalOverflow = VerticalWrapMode.Truncate;
             if (lt.font == null) lt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var leftLE = leftGo.AddComponent<LayoutElement>();
+            leftLE.minWidth = 80;
+            leftLE.flexibleWidth = 1;
 
             GameObject rightGo = new GameObject("Right", typeof(RectTransform));
             rightGo.transform.SetParent(go.transform, false);
@@ -536,7 +569,12 @@ namespace SuperMech.Code
             rt2.fontSize = 12;
             rt2.color = new Color(0.7f, 0.7f, 0.7f);
             rt2.alignment = TextAnchor.MiddleRight;
+            rt2.horizontalOverflow = HorizontalWrapMode.Overflow;
+            rt2.verticalOverflow = VerticalWrapMode.Truncate;
             if (rt2.font == null) rt2.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var rightLE = rightGo.AddComponent<LayoutElement>();
+            rightLE.minWidth = 80;
+            rightLE.flexibleWidth = 2;
 
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(0, 20);

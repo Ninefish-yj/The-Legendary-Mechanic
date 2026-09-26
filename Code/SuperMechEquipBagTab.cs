@@ -55,8 +55,10 @@ namespace SuperMech.Code
 
             if (_container != null && !tab.tab_elements.Contains(_container.transform))
             {
-                tab.tab_elements.Clear();
                 tab.tab_elements.Add(_container.transform);
+                // 更新_tabs_with_content列表
+                try { scroll.tabs.GetType().GetMethod("refillTabsWithContent",
+                    BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(scroll.tabs, null); } catch { }
             }
 
             bool onBag = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
@@ -110,6 +112,26 @@ namespace SuperMech.Code
             // 清空而不是new（参考天人武道）
             if (newTab.tab_elements != null) newTab.tab_elements.Clear();
             else newTab.tab_elements = new List<Transform>();
+
+            // 关键：把克隆的Tab注册到_tabs列表，否则isActiveTab/showTab都不认识它
+            try
+            {
+                var tabsField = typeof(WindowMetaTabButtonsContainer).GetField("_tabs",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                if (tabsField != null)
+                {
+                    var tabsList = tabsField.GetValue(scroll.tabs) as List<WindowMetaTab>;
+                    if (tabsList != null && !tabsList.Contains(newTab))
+                    {
+                        tabsList.Add(newTab);
+                        newTab.container = scroll.tabs;
+                    }
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 注册背包Tab到_tabs失败: " + e.Message);
+            }
 
             // 重置tab_action
             if (newTab.tab_action == null) newTab.tab_action = new WindowMetaTabEvent();
