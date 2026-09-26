@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using HarmonyLib;
@@ -55,7 +56,7 @@ namespace SuperMech.Code
                         string specText = "";
                         foreach (var s in specs)
                         {
-                            string specName = LocalizedTextManager.getText("trait_" + s, s);
+                            string specName = LocalizedTextManager.getText("trait_" + s);
                             specText += specName + " ";
                         }
                         ShowRow(__instance, "具体异能", specText.Trim());
@@ -69,7 +70,7 @@ namespace SuperMech.Code
                     string perkText = "";
                     foreach (var p in perks)
                     {
-                        string perkName = LocalizedTextManager.getText("trait_" + p, p);
+                        string perkName = LocalizedTextManager.getText("trait_" + p);
                         perkText += perkName + " ";
                     }
                     ShowRow(__instance, "专长", perkText.Trim());

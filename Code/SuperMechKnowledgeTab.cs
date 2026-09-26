@@ -360,7 +360,7 @@ namespace SuperMech.Code
                 if (crossUnlocked > 0 || true) // 始终显示跨系区域
                 {
                     AddSectionHeader(_container.transform, $"跨系兼修·{allClassNames[i]}（{crossUnlocked}/{crossDefs.Count}，消耗×3）", new Color(0.5f, 0.5f, 0.7f));
-                    Transform crossRow = AddIconRow(_container.transform);
+                    GameObject crossRow = null;
                     int crossIdx = 0;
                     foreach (var def in crossDefs)
                     {
@@ -612,7 +612,7 @@ namespace SuperMech.Code
             var tip = go.AddComponent<TipButton>();
             bool crossClass = SuperMechPotential.IsCrossClass(actor, def.id);
             bool hasSynergy = SuperMechPotential.HasPowerSynergy(actor, SuperMechPotential.GetKnowledgePrefix(def.id));
-            float intel = actor.stats.intelligence;
+            float intel = actor.stats["intelligence"];
             string costText = $"{actualCost}潜能点";
             if (crossClass)
             {

@@ -22,6 +22,14 @@ namespace SuperMech.Code
         public static readonly string[] GeneChainNames = {
             "一阶基因链", "二阶基因链", "三阶基因链", "四阶基因链", "五阶基因链"
         };
+        // 魔法系：魔力池5层
+        public static readonly string[] ManaTierNames = {
+            "魔力初涌", "魔力流转", "魔力浩瀚", "魔力深渊", "魔力神域"
+        };
+        // 念力系：精神力5阶
+        public static readonly string[] MindTierNames = {
+            "精神觉醒", "精神凝练", "精神外放", "精神造物", "精神神域"
+        };
         // 每阶需要的修炼进度（突破阈值）
         public static readonly int[] StageProgressReq = { 0, 100, 300, 600, 1000 };
 
@@ -51,8 +59,8 @@ namespace SuperMech.Code
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
 
-                // 判断是否在战斗中（攻击动画或最近被攻击）
-                bool inCombat = a.data.blocked_action != null || a.data.in_duel;
+                // 判断是否在战斗中（使用气力系统的战斗计时器）
+                bool inCombat = SuperMechQi.IsInCombat(a);
 
                 // 异能系：基因链修炼
                 if (a.hasTrait(SuperMechTraits.ClassPsi))
@@ -121,8 +129,8 @@ namespace SuperMech.Code
         /// <summary>应用各系能量阶段的属性加成（原著：基因链提升异能威力，魔力池提升魔法威力，精神力提升念力威力）。</summary>
         private static void ApplyStageEffects(Actor a)
         {
-            if (a == null || a.data == null) return;
-            var stats = a.data.base_stats;
+            if (a == null) return;
+            var stats = a.stats;
             if (stats == null) return;
 
             // 异能系：基因链提升伤害（每阶+10%伤害，+5%攻速）

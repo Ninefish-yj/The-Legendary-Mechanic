@@ -121,7 +121,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>判断具体异能是否和目标职业搭配。</summary>
-        private static bool HasPowerSynergy(Actor a, string classPrefix)
+        public static bool HasPowerSynergy(Actor a, string classPrefix)
         {
             var powers = GetSpecificPowers(a);
             foreach (var p in powers)
@@ -166,7 +166,7 @@ namespace SuperMech.Code
             }
 
             // 跨系兼修：智力门槛+异能搭配
-            float intel = a.stats.intelligence;
+            float intel = a.stats["intelligence"];
             float multiplier = 3f;  // 默认×3
 
             // 智力门槛（原著：双修需要高智力，智力不够效率极低）

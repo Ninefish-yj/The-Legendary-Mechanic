@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using NeoModLoader.api;
 using NeoModLoader.services;
 using UnityEngine;
@@ -200,7 +201,7 @@ namespace SuperMech.Code
             if (specId != null && !a.hasTrait(specId))
             {
                 a.addTrait(specId);
-                Debug.Log($"[超神机械师] {a.name} 选择分支后获得特色能力：{LocalizedTextManager.getText("trait_" + specId, specId)}");
+                Debug.Log($"[超神机械师] {a.name} 选择分支后获得特色能力：{LocalizedTextManager.getText("trait_" + specId)}");
             }
         }
         /// <summary>获取单位已有的特色能力列表。</summary>
