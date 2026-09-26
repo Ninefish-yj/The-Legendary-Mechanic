@@ -544,21 +544,21 @@ namespace SuperMech.Code
             string[] tierNames = { "基础", "进阶", "高端", "尖端", "终极" };
             string[] branchNames = GetBranchNames(prefix);
 
-            // 图谱容器（深色背景）
+            // 图谱容器（深色背景，参考心智技能树）
             var graphGo = new GameObject("KnowledgeGraph", typeof(RectTransform));
             graphGo.transform.SetParent(parent, false);
             var graphBg = graphGo.AddComponent<Image>();
-            graphBg.color = new Color(0.05f, 0.05f, 0.08f, 0.9f);
+            graphBg.color = new Color(0.03f, 0.04f, 0.08f, 0.95f);
             var graphLayout = graphGo.AddComponent<VerticalLayoutGroup>();
             graphLayout.spacing = 0;
             graphLayout.childAlignment = TextAnchor.LowerCenter;
             graphLayout.childControlWidth = true;
-            graphLayout.childControlHeight = true;
+            graphLayout.childControlHeight = false;
             graphLayout.childForceExpandWidth = true;
             graphLayout.childForceExpandHeight = false;
-            graphLayout.padding = new RectOffset(10, 10, 10, 10);
+            graphLayout.padding = new RectOffset(8, 8, 8, 8);
             var graphLE = graphGo.AddComponent<LayoutElement>();
-            graphLE.minHeight = 320;
+            graphLE.minHeight = 400;
 
             int totalUnlocked = 0;
             int totalAll = 0;
@@ -577,39 +577,87 @@ namespace SuperMech.Code
 
                 bool tierUnlocked_flag = (tier == 0) || SuperMechKnowledge.GetTierKnowledgeCount(actor, prefix, tier - 1) > 0;
 
-                // 层标签（左侧）
-                var labelGo = new GameObject("TierLabel", typeof(RectTransform));
-                labelGo.transform.SetParent(graphGo.transform, false);
-                var labelText = labelGo.AddComponent<Text>();
-                labelText.text = $"{tierNames[tier]} {tierUnlocked}/{allDefs.Count}{(tierUnlocked_flag ? "" : " 🔒")}";
-                labelText.fontSize = 11;
+                // 层标签+进度条
+                var headerGo = new GameObject("TierHeader", typeof(RectTransform));
+                headerGo.transform.SetParent(graphGo.transform, false);
+                var headerLayout = headerGo.AddComponent<HorizontalLayoutGroup>();
+                headerLayout.spacing = 8;
+                headerLayout.childAlignment = TextAnchor.MiddleLeft;
+                headerLayout.childControlWidth = false;
+                headerLayout.childControlHeight = true;
+                headerLayout.childForceExpandWidth = false;
+                headerLayout.childForceExpandHeight = false;
+                headerGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 22);
+
+                var labelText = headerGo.AddComponent<Text>();
+                labelText.text = $"{tierNames[tier]}阶";
+                labelText.fontSize = 12;
                 labelText.fontStyle = FontStyle.Bold;
                 labelText.color = GetTierColor(tier);
                 labelText.alignment = TextAnchor.MiddleLeft;
                 labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
                 if (labelText.font == null) labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                labelGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 18);
+                labelText.GetComponent<RectTransform>().sizeDelta = new Vector2(50, 20);
 
-                // 节点行
+                var progressText = headerGo.AddComponent<Text>();
+                progressText.text = $"{tierUnlocked}/{allDefs.Count}{(tierUnlocked_flag ? "" : " 🔒")}";
+                progressText.fontSize = 10;
+                progressText.color = tierUnlocked_flag ? new Color(0.7f, 0.8f, 1f) : new Color(0.5f, 0.5f, 0.5f);
+                progressText.alignment = TextAnchor.MiddleLeft;
+                progressText.horizontalOverflow = HorizontalWrapMode.Overflow;
+                if (progressText.font == null) progressText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                progressText.GetComponent<RectTransform>().sizeDelta = new Vector2(60, 20);
+
+                // 节点行（按分支分组，节点更大更清晰）
                 var nodeRow = new GameObject("TierRow", typeof(RectTransform));
                 nodeRow.transform.SetParent(graphGo.transform, false);
                 var rowLayout = nodeRow.AddComponent<HorizontalLayoutGroup>();
-                rowLayout.spacing = 6;
+                rowLayout.spacing = 10;
                 rowLayout.childAlignment = TextAnchor.UpperCenter;
                 rowLayout.childControlWidth = false;
                 rowLayout.childControlHeight = false;
                 rowLayout.childForceExpandWidth = false;
                 rowLayout.childForceExpandHeight = false;
-                rowLayout.padding = new RectOffset(4, 4, 2, 2);
-                nodeRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 42);
+                rowLayout.padding = new RectOffset(4, 4, 4, 4);
+                nodeRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 52);
 
-                foreach (var def in allDefs)
+                // 按分支分组渲染
+                for (int bi = 0; bi < branchNames.Length; bi++)
                 {
-                    bool unlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
-                    int actualCost = SuperMechPotential.GetActualCost(actor, def.id, def.cost);
-                    bool canUnlock = !unlocked && tierUnlocked_flag && pot >= actualCost;
-                    string branchName = def.branch < branchNames.Length ? branchNames[def.branch] : "?";
-                    AddKnowledgeIcon(nodeRow.transform, actor, def, branchName, unlocked, canUnlock, actualCost);
+                    var branchDefs = allDefs.FindAll(d => d.branch == bi);
+                    if (branchDefs.Count == 0) continue;
+
+                    // 分支组容器
+                    var branchGroup = new GameObject($"Branch_{bi}", typeof(RectTransform));
+                    branchGroup.transform.SetParent(nodeRow.transform, false);
+                    var branchLayout = branchGroup.AddComponent<HorizontalLayoutGroup>();
+                    branchLayout.spacing = 6;
+                    branchLayout.childAlignment = TextAnchor.UpperCenter;
+                    branchLayout.childControlWidth = false;
+                    branchLayout.childControlHeight = false;
+                    branchLayout.childForceExpandWidth = false;
+                    branchLayout.childForceExpandHeight = false;
+                    branchLayout.padding = new RectOffset(2, 2, 0, 0);
+                    branchGroup.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 48);
+
+                    foreach (var def in branchDefs)
+                    {
+                        bool unlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
+                        int actualCost = SuperMechPotential.GetActualCost(actor, def.id, def.cost);
+                        bool canUnlock = !unlocked && tierUnlocked_flag && pot >= actualCost;
+                        string branchName = def.branch < branchNames.Length ? branchNames[def.branch] : "?";
+                        AddKnowledgeIcon(branchGroup.transform, actor, def, branchName, unlocked, canUnlock, actualCost);
+                    }
+
+                    // 分支分隔线（除了最后一个分支）
+                    if (bi < branchNames.Length - 1)
+                    {
+                        var sepGo = new GameObject("BranchSep", typeof(RectTransform));
+                        sepGo.transform.SetParent(nodeRow.transform, false);
+                        var sepImg = sepGo.AddComponent<Image>();
+                        sepImg.color = new Color(0.2f, 0.25f, 0.35f, 0.5f);
+                        sepGo.GetComponent<RectTransform>().sizeDelta = new Vector2(1, 44);
+                    }
                 }
 
                 // 层间连接线（除了最底层）
@@ -618,17 +666,17 @@ namespace SuperMech.Code
                     var connectorGo = new GameObject("Connector", typeof(RectTransform));
                     connectorGo.transform.SetParent(graphGo.transform, false);
                     var connectorImg = connectorGo.AddComponent<Image>();
-                    connectorImg.color = new Color(0.3f, 0.4f, 0.6f, 0.4f);
+                    connectorImg.color = new Color(0.15f, 0.2f, 0.3f, 0.6f);
                     var connectorLE = connectorGo.AddComponent<LayoutElement>();
-                    connectorLE.minHeight = 12;
-                    connectorLE.preferredHeight = 12;
-                    connectorGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 12);
+                    connectorLE.minHeight = 16;
+                    connectorLE.preferredHeight = 16;
+                    connectorGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 16);
 
-                    // 中心竖线
+                    // 中心竖线（更明显）
                     var lineGo = new GameObject("Line", typeof(RectTransform));
                     lineGo.transform.SetParent(connectorGo.transform, false);
                     var lineImg = lineGo.AddComponent<Image>();
-                    lineImg.color = new Color(0.4f, 0.5f, 0.7f, 0.5f);
+                    lineImg.color = tierUnlocked_flag ? new Color(0.4f, 0.6f, 0.9f, 0.7f) : new Color(0.25f, 0.25f, 0.3f, 0.5f);
                     RectTransform lineRt = lineGo.GetComponent<RectTransform>();
                     lineRt.anchorMin = new Vector2(0.5f, 0f);
                     lineRt.anchorMax = new Vector2(0.5f, 1f);
@@ -674,14 +722,14 @@ namespace SuperMech.Code
             innerRt.offsetMin = Vector2.zero;
             innerRt.offsetMax = Vector2.zero;
 
-            // 原版技能图标
+            // 知识节点独特图标（按系别+分支+阶位组合）
             var iconGo = new GameObject("Icon", typeof(RectTransform));
             iconGo.transform.SetParent(innerGo.transform, false);
             var iconImg = iconGo.AddComponent<Image>();
-            string iconPath = GetTierIcon(def.tier);
+            string iconPath = def.icon ?? GetTierIcon(def.tier);
             Sprite sprite = SpriteTextureLoader.getSprite(iconPath);
             if (sprite != null) iconImg.sprite = sprite;
-            iconImg.color = unlocked ? Color.white : new Color(0.4f, 0.4f, 0.4f, 0.6f);
+            iconImg.color = unlocked ? Color.white : (canUnlock ? new Color(0.6f, 0.8f, 1f, 0.9f) : new Color(0.4f, 0.4f, 0.4f, 0.6f));
             RectTransform iconRt = iconGo.GetComponent<RectTransform>();
             iconRt.anchorMin = new Vector2(0.15f, 0.15f);
             iconRt.anchorMax = new Vector2(0.85f, 0.85f);
@@ -708,7 +756,7 @@ namespace SuperMech.Code
             }
 
             RectTransform rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(36, 36);
+            rt.sizeDelta = new Vector2(44, 44);
 
             // 可解锁的点击解锁
             if (canUnlock)

@@ -160,6 +160,7 @@ namespace SuperMech.Code
             public int tier;       // 0=基础,1=进阶,2=高端,3=尖端,4=终极
             public int branch;     // 分支索引
             public int cost;       // 潜能点消耗
+            public string icon;    // 图标路径（按系别+分支+阶位组合）
         }
 
         /// <summary>所有知识定义（id→def）。</summary>
@@ -189,6 +190,66 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识节点（内部字典，不注册为特质）");
         }
 
+        /// <summary>按系别+分支+阶位+知识索引选择独特图标（参考原版技能/特质图标）。</summary>
+        private static readonly string[][] MechIcons = {
+            // 枪炮师：射击/火力相关
+            new[] { "ui/Icons/skills/iconSkillShoot", "ui/Icons/skills/iconSkillRanged", "ui/Icons/skills/iconSkillProjectile", "ui/Icons/skills/iconSkillSnipe", "ui/Icons/skills/iconSkillCannon" },
+            // 机械师：齿轮/工具/制造相关
+            new[] { "ui/Icons/skills/iconSkillBuild", "ui/Icons/skills/iconSkillRepair", "ui/Icons/skills/iconSkillCraft", "ui/Icons/skills/iconSkillMechanic", "ui/Icons/skills/iconSkillEngineer" },
+            // 械武者：近战/殖装相关
+            new[] { "ui/Icons/skills/iconSkillSlash", "ui/Icons/skills/iconSkillBlade", "ui/Icons/skills/iconSkillFist", "ui/Icons/skills/iconSkillArmor", "ui/Icons/skills/iconSkillMelee" }
+        };
+        private static readonly string[][] MartialIcons = {
+            // 敏捷：速度/闪避相关
+            new[] { "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/skills/iconSkillSwift", "ui/Icons/skills/iconSkillAgility" },
+            // 力量：攻击/力量相关
+            new[] { "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillHeavy", "ui/Icons/skills/iconSkillSmash", "ui/Icons/skills/iconSkillPower", "ui/Icons/skills/iconSkillStrength" },
+            // 防御：护甲/盾牌相关
+            new[] { "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/skills/iconSkillGuard", "ui/Icons/skills/iconSkillShield", "ui/Icons/skills/iconSkillTough", "ui/Icons/skills/iconSkillDefense" }
+        };
+        private static readonly string[][] PsiIcons = {
+            // 能级：能量/爆炸相关
+            new[] { "ui/Icons/skills/iconSkillFireball", "ui/Icons/skills/iconSkillBlast", "ui/Icons/skills/iconSkillEnergy", "ui/Icons/skills/iconSkillPower", "ui/Icons/skills/iconSkillNova" },
+            // 操控：手/控制相关
+            new[] { "ui/Icons/skills/iconSkillMindControl", "ui/Icons/skills/iconSkillTelekinesis", "ui/Icons/skills/iconSkillControl", "ui/Icons/skills/iconSkillManipulate", "ui/Icons/skills/iconSkillCommand" },
+            // 持久力：生命/耐力相关
+            new[] { "ui/Icons/skills/iconSkillRegen", "ui/Icons/skills/iconSkillEndurance", "ui/Icons/skills/iconSkillVitality", "ui/Icons/skills/iconSkillSurvive", "ui/Icons/skills/iconSkillStamina" }
+        };
+        private static readonly string[][] MageIcons = {
+            // 专精法师：法术/符文相关
+            new[] { "ui/Icons/skills/iconSkillFireball", "ui/Icons/skills/iconSkillFrost", "ui/Icons/skills/iconSkillLightning", "ui/Icons/skills/iconSkillArcane", "ui/Icons/skills/iconSkillRune" },
+            // 魔网法师：魔法阵/网络相关
+            new[] { "ui/Icons/skills/iconSkillMana", "ui/Icons/skills/iconSkillWeave", "ui/Icons/skills/iconSkillChannel", "ui/Icons/skills/iconSkillFocus", "ui/Icons/skills/iconSkillMeditate" },
+            // 元素：元素相关
+            new[] { "ui/Icons/skills/iconSkillFireball", "ui/Icons/skills/iconSkillFrost", "ui/Icons/skills/iconSkillLightning", "ui/Icons/skills/iconSkillEarth", "ui/Icons/skills/iconSkillWind" }
+        };
+        private static readonly string[][] MindIcons = {
+            // 灵魂：灵魂/精神相关
+            new[] { "ui/Icons/skills/iconSkillMindControl", "ui/Icons/skills/iconSkillSoul", "ui/Icons/skills/iconSkillSpirit", "ui/Icons/skills/iconSkillEthereal", "ui/Icons/skills/iconSkillGhost" },
+            // 法则：眼睛/洞察相关
+            new[] { "ui/Icons/skills/iconSkillInsight", "ui/Icons/skills/iconSkillVision", "ui/Icons/skills/iconSkillClairvoyance", "ui/Icons/skills/iconSkillForesight", "ui/Icons/skills/iconSkillTruth" },
+            // 现实：扭曲/改变相关
+            new[] { "ui/Icons/skills/iconSkillTelekinesis", "ui/Icons/skills/iconSkillWarp", "ui/Icons/skills/iconSkillBend", "ui/Icons/skills/iconSkillAlter", "ui/Icons/skills/iconSkillReality" }
+        };
+
+        private static string GetKnowledgeIcon(string prefix, int branch, int tier, int knowledgeIdx)
+        {
+            string[][] icons = prefix switch
+            {
+                "mech" => MechIcons,
+                "martial" => MartialIcons,
+                "psi" => PsiIcons,
+                "mage" => MageIcons,
+                "mind" => MindIcons,
+                _ => MechIcons
+            };
+            if (branch >= icons.Length) branch = 0;
+            var branchIcons = icons[branch];
+            // 按阶位+知识索引循环选择图标，确保同一分支内不同知识有不同图标
+            int idx = (tier * 2 + knowledgeIdx) % branchIcons.Length;
+            return branchIcons[idx];
+        }
+
         private static int RegisterTree(string prefix, string treeName, string[] branchNames, string[][][] tiers)
         {
             int n = 0;
@@ -212,7 +273,8 @@ namespace SuperMech.Code
                             prefix = prefix,
                             tier = ti,
                             branch = bi,
-                            cost = (ti + 1) * 2  // 基础2点，进阶4点，高端6点...
+                            cost = (ti + 1) * 2,  // 基础2点，进阶4点，高端6点...
+                            icon = GetKnowledgeIcon(prefix, bi, ti, ki)
                         };
                         _allKnowledge[id] = def;
                         n++;
