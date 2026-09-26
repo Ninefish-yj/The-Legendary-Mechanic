@@ -46,7 +46,6 @@ namespace SuperMech.Code
 
         // ========== 圣所系统 ==========
         public static bool SanctuaryEnabled = true;       // 圣所跨存档
-        public static int SanctuaryCount = 6;             // 圣所数量（原著6个）
         public static bool SanctuaryAutoSave = true;      // 圣所自动保存
 
         // ========== 机械系 ==========
@@ -195,7 +194,6 @@ namespace SuperMech.Code
 
         // --- 圣所系统 ---
         public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"[配置] 圣所跨存档: {val}"); }
-        public static void SetSanctuaryCount(int val) { SanctuaryCount = Mathf.Clamp(val, 1, 12); LogInfo($"[配置] 圣所数量: {val}"); }
         public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"[配置] 圣所自动保存: {val}"); }
 
         // --- 机械系 ---

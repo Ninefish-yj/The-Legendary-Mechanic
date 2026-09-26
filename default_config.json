@@ -183,16 +183,6 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnabled"
     },
     {
-      "Id": "sanctuary_count",
-      "Name": "圣所数量",
-      "Type": "INT_SLIDER",
-      "IntVal": 6,
-      "MinIntVal": 1,
-      "MaxIntVal": 12,
-      "StepIntVal": 1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryCount"
-    },
-    {
       "Id": "sanctuary_autosave",
       "Name": "圣所自动保存",
       "Type": "SWITCH",
