@@ -244,9 +244,9 @@ namespace SuperMech.Code
                 }, new Color(0.6f, 0.4f, 0.1f));
             }
 
-            AddInfoRow(_container.transform, "提示", "知识解锁点击下方节点");
+            AddInfoRow(_container.transform, "提示", "点击蓝色卡片解锁知识");
 
-            // 按阶位分组显示所有知识（未解锁的灰色可点击）
+            // 按阶位分组显示所有知识（卡片式网格布局，参考魔兽世界天赋树）
             string[] tierNames = { "基础", "进阶", "高端", "尖端", "终极" };
             string[] branchNames = GetBranchNames(prefix);
 
@@ -265,17 +265,26 @@ namespace SuperMech.Code
                 }
                 totalUnlocked += tierUnlocked;
 
-                // 前置依赖：上一阶至少学1个才能学下一阶（tier>0时）
+                // 前置依赖：上一阶至少学1个才能学下一阶
                 bool tierUnlocked_flag = (tier == 0) || SuperMechKnowledge.GetTierKnowledgeCount(actor, prefix, tier - 1) > 0;
 
-                AddSectionHeader(_container.transform, $"{tierNames[tier]}知识（{tierUnlocked}/{allDefs.Count}）{(tierUnlocked_flag ? "" : " 🔒需先学上一阶")}");
+                // 阶位标题+进度条
+                AddSectionHeader(_container.transform, $"{tierNames[tier]}知识{(tierUnlocked_flag ? "" : " 🔒需先学上一阶")}");
+                AddProgressBar(_container.transform, tierUnlocked, allDefs.Count, "进度");
 
+                // 网格布局：每行2个卡片
+                GameObject currentRow = null;
+                int cardIndex = 0;
                 foreach (var def in allDefs)
                 {
+                    if (cardIndex % 2 == 0)
+                        currentRow = AddGridRow(_container.transform);
+
                     bool unlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
                     bool canUnlock = !unlocked && tierUnlocked_flag && pot >= def.cost;
                     string branchName = def.branch < branchNames.Length ? branchNames[def.branch] : "?";
-                    AddKnowledgeRow(_container.transform, actor, def, branchName, unlocked, canUnlock);
+                    AddKnowledgeRow(currentRow.transform, actor, def, branchName, unlocked, canUnlock);
+                    cardIndex++;
                 }
             }
 
@@ -445,49 +454,70 @@ namespace SuperMech.Code
 
         private static void AddKnowledgeRow(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock)
         {
-            GameObject go = new GameObject("Knowledge", typeof(RectTransform));
+            // 卡片式知识节点（参考魔兽世界天赋树/原神天赋面板）
+            GameObject go = new GameObject("KnowledgeCard", typeof(RectTransform));
             go.transform.SetParent(parent, false);
-            var layout = go.AddComponent<HorizontalLayoutGroup>();
-            layout.spacing = 6;
-            layout.padding = new RectOffset(4, 4, 2, 2);
-            layout.childForceExpandWidth = true;
 
-            // 名称
-            GameObject nameGo = new GameObject("Name", typeof(RectTransform));
-            nameGo.transform.SetParent(go.transform, false);
-            Text nt = nameGo.AddComponent<Text>();
+            var layout = go.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = 4;
+            layout.padding = new RectOffset(6, 6, 4, 4);
+            layout.childForceExpandWidth = true;
+            layout.childControlWidth = true;
+
+            // 左侧状态指示点
+            GameObject dotGo = new GameObject("Dot", typeof(RectTransform));
+            dotGo.transform.SetParent(go.transform, false);
+            Image dotImg = dotGo.AddComponent<Image>();
+            dotImg.color = unlocked ? new Color(0.3f, 1f, 0.3f) : (canUnlock ? new Color(0.4f, 0.7f, 1f) : new Color(0.4f, 0.4f, 0.4f));
+            RectTransform dotRt = dotGo.GetComponent<RectTransform>();
+            dotRt.sizeDelta = new Vector2(8, 8);
+
+            // 名称+分支
+            GameObject textGo = new GameObject("Text", typeof(RectTransform));
+            textGo.transform.SetParent(go.transform, false);
+            var textLayout = textGo.AddComponent<VerticalLayoutGroup>();
+            textLayout.spacing = 0;
+            textLayout.childForceExpandWidth = true;
+
+            Text nt = textGo.AddComponent<Text>();
             nt.text = def.name;
             nt.fontSize = 11;
-            nt.color = unlocked ? new Color(0.9f, 0.9f, 0.9f) : (canUnlock ? new Color(0.6f, 0.8f, 1f) : new Color(0.4f, 0.4f, 0.4f));
+            nt.fontStyle = FontStyle.Bold;
+            nt.color = unlocked ? new Color(0.9f, 0.9f, 0.9f) : (canUnlock ? new Color(0.7f, 0.85f, 1f) : new Color(0.5f, 0.5f, 0.5f));
             if (nt.font == null) nt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-            // 分支
-            GameObject branchGo = new GameObject("Branch", typeof(RectTransform));
-            branchGo.transform.SetParent(go.transform, false);
-            Text bt = branchGo.AddComponent<Text>();
+            Text bt = textGo.AddComponent<Text>();
             bt.text = branch;
-            bt.fontSize = 10;
+            bt.fontSize = 9;
             bt.color = new Color(0.5f, 0.7f, 1f);
-            bt.alignment = TextAnchor.MiddleRight;
             if (bt.font == null) bt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-            // 消耗/状态
+            // 右侧消耗/状态
             GameObject costGo = new GameObject("Cost", typeof(RectTransform));
             costGo.transform.SetParent(go.transform, false);
             Text ct = costGo.AddComponent<Text>();
             ct.text = unlocked ? "✓" : $"{def.cost}点";
-            ct.fontSize = 10;
+            ct.fontSize = 11;
+            ct.fontStyle = FontStyle.Bold;
             ct.color = unlocked ? new Color(0.3f, 1f, 0.3f) : (canUnlock ? new Color(1f, 0.84f, 0f) : new Color(0.5f, 0.5f, 0.5f));
             ct.alignment = TextAnchor.MiddleRight;
             if (ct.font == null) ct.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform costRt = costGo.GetComponent<RectTransform>();
+            costRt.sizeDelta = new Vector2(35, 0);
 
             RectTransform rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(0, 20);
+            rt.sizeDelta = new Vector2(0, 36);
 
+            // 背景色+边框效果
             var img = go.AddComponent<Image>();
-            img.color = unlocked ? new Color(0.15f, 0.25f, 0.15f, 0.6f) : (canUnlock ? new Color(0.15f, 0.15f, 0.25f, 0.6f) : new Color(0.1f, 0.1f, 0.1f, 0.4f));
+            if (unlocked)
+                img.color = new Color(0.12f, 0.25f, 0.12f, 0.8f);
+            else if (canUnlock)
+                img.color = new Color(0.1f, 0.18f, 0.3f, 0.8f);
+            else
+                img.color = new Color(0.08f, 0.08f, 0.08f, 0.6f);
 
-            // 可解锁的添加点击事件
+            // 可解锁的添加点击事件+高亮边框
             if (canUnlock)
             {
                 var btn = go.AddComponent<Button>();
@@ -496,12 +526,73 @@ namespace SuperMech.Code
                 {
                     if (SuperMechPotential.UnlockNode(actor, def.id, def.cost))
                     {
-                        RenderContent(actor); // 刷新面板
+                        RenderContent(actor);
                     }
                 });
+                // 可解锁的用亮色边框模拟
+                img.color = new Color(0.15f, 0.25f, 0.4f, 0.9f);
             }
+        }
 
-            // 知识行已显示名称和描述，无需额外tooltip（避免WorldTip.Awake崩溃）
+        /// <summary>添加网格行（每行2个卡片）</summary>
+        private static GameObject AddGridRow(Transform parent)
+        {
+            GameObject go = new GameObject("GridRow", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var layout = go.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = 6;
+            layout.childForceExpandWidth = true;
+            layout.childControlWidth = true;
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 40);
+            return go;
+        }
+
+        /// <summary>添加进度条（参考主流游戏天赋进度）</summary>
+        private static void AddProgressBar(Transform parent, int current, int total, string label)
+        {
+            GameObject go = new GameObject("ProgressBar", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var layout = go.AddComponent<HorizontalLayoutGroup>();
+            layout.spacing = 6;
+            layout.childForceExpandWidth = true;
+
+            Text labelText = go.AddComponent<Text>();
+            labelText.text = label;
+            labelText.fontSize = 10;
+            labelText.color = new Color(0.7f, 0.7f, 0.7f);
+            if (labelText.font == null) labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform labelRt = labelText.GetComponent<RectTransform>();
+            labelRt.sizeDelta = new Vector2(60, 0);
+
+            // 进度条背景
+            GameObject barBg = new GameObject("BarBg", typeof(RectTransform));
+            barBg.transform.SetParent(go.transform, false);
+            Image bgImg = barBg.AddComponent<Image>();
+            bgImg.color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
+
+            // 进度条填充
+            GameObject barFill = new GameObject("BarFill", typeof(RectTransform));
+            barFill.transform.SetParent(barBg.transform, false);
+            Image fillImg = barFill.AddComponent<Image>();
+            fillImg.color = new Color(0.3f, 0.7f, 1f, 0.9f);
+            RectTransform fillRt = barFill.GetComponent<RectTransform>();
+            fillRt.anchorMin = new Vector2(0, 0);
+            fillRt.anchorMax = new Vector2(total > 0 ? (float)current / total : 0, 1);
+            fillRt.offsetMin = Vector2.zero;
+            fillRt.offsetMax = Vector2.zero;
+
+            Text countText = go.AddComponent<Text>();
+            countText.text = $"{current}/{total}";
+            countText.fontSize = 10;
+            countText.color = new Color(0.8f, 0.8f, 0.8f);
+            countText.alignment = TextAnchor.MiddleRight;
+            if (countText.font == null) countText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform countRt = countText.GetComponent<RectTransform>();
+            countRt.sizeDelta = new Vector2(40, 0);
+
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 18);
         }
     }
 }
