@@ -129,10 +129,12 @@ namespace SuperMech.Code
                 if (SuperMechAwakened.IsAwakened(killer))
                 {
                     int targetRankIdx = SuperMechAdvancement.GetExactRankIndex(target);
-                    // 按目标阶位给经验：F阶100，每阶×2.5，X阶约150万
                     float xpGain = 100f * Mathf.Pow(2.5f, targetRankIdx);
                     SuperMechAwakened.AddXp(killer, xpGain);
                 }
+
+                // ===== 3.5 造兵击杀反哺主人经验（原著：机械军团作战经验归机械师）=====
+                SuperMechCrafting.OnMinionKill(killer, target);
 
                 // ===== 4. 装备掉落：击杀单位概率掉落装备（原著：超能者掉落装备/材料）=====
                 SuperMechEquipDrop.TryDrop(killer, target);
