@@ -179,7 +179,7 @@ namespace SuperMech.Code
         public static void SetAutoFavoriteB(bool val) { AutoFavoriteB = val; LogInfo($"[配置] B阶自动收藏: {val}"); }
         public static void SetAutoFavoriteA(bool val) { AutoFavoriteA = val; LogInfo($"[配置] A阶自动收藏: {val}"); }
         public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; LogInfo($"[配置] S阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteSs(bool val) { AutoFavoriteSS = val; LogInfo($"[配置] SS阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; LogInfo($"[配置] SS阶自动收藏: {val}"); }
         public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; LogInfo($"[配置] X阶自动收藏: {val}"); }
 
         /// <summary>检查指定阶位索引是否应自动收藏（+位跟随主阶位）。</summary>
@@ -199,7 +199,7 @@ namespace SuperMech.Code
 
         // --- 圣所系统 ---
         public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"[配置] 圣所跨存档: {val}"); }
-        public static void SetSanctuaryAutosave(bool val) { SanctuaryAutoSave = val; LogInfo($"[配置] 圣所自动保存: {val}"); }
+        public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"[配置] 圣所自动保存: {val}"); }
 
         // --- 机械系 ---
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; LogInfo($"[配置] 机械召唤: {val}"); }
