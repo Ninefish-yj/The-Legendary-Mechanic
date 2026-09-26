@@ -59,12 +59,15 @@ namespace SuperMech.Code
                 float onar = SuperMechAdvancement.CalcOnar(actor);
                 ShowRow(__instance, "能级", $"{onar:F0}欧纳");
 
-                // 行4：气力等级（原著五系统一，ch3/ch50）
+                // 行4：气力消耗条（原著ch3：气力有当前值/上限，消耗空→耗体力→减生命）
+                // 各系表现形式不同：机械磁环后=械力，魔法=魔力，念力=精神力，武道/异能=气力
                 float qi = SuperMechQi.GetQi(actor);
                 float qiMax = SuperMechQi.GetQiMax(actor);
                 int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
                 string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : "未入流";
-                ShowRow(__instance, "气力等级", qiLvText);
+                string qiName = GetQiDisplayName(actor);
+                string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
+                ShowRow(__instance, qiName, $"{qiBar}（{qiLvText}）");
 
                 // 行5：降临者标识
                 if (SuperMechAwakened.IsAwakened(actor))
@@ -117,6 +120,26 @@ namespace SuperMech.Code
         {
             // 从精确阶位字典读取（含+位，+位不挂特质只在面板显示）
             return SuperMechRanks.GetRankName(a);
+        }
+
+        /// <summary>
+        /// 获取气力的显示名称（各系表现形式不同，原著ch3/ch50/ch237）。
+        /// 机械系磁环后=械力，魔法系=魔力，念力系=精神力，武道/异能=气力。
+        /// </summary>
+        private static string GetQiDisplayName(Actor a)
+        {
+            if (!SuperMechProfession.HasProfession(a)) return "气力";
+            string cls = SuperMechProfession.GetClass(a);
+            switch (cls)
+            {
+                case "机械系":
+                    // ch237：磁环阶段后气力改称械力（阶段索引3=磁环）
+                    int stage = SuperMechStage.GetStage(a);
+                    return stage >= 3 ? "械力" : "气力";
+                case "魔法系": return "魔力";
+                case "念力系": return "精神力";
+                default: return "气力";
+            }
         }
 
         /// <summary>获取知识树名（百度百科：每系职业树名各不相同）。</summary>
@@ -211,15 +234,8 @@ namespace SuperMech.Code
                 foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
                 if (sanctuaryTotal > 0) ShowRow(window, "圣所权限", sanctuaryTotal + "碎片");
 
-                // 魔力（魔法系能量，ch50）
-                float mana = a.stats[SuperMechCustomStats.StatMana];
-                float manaMax = a.stats[SuperMechCustomStats.StatManaMax];
-                if (manaMax > 0) ShowRow(window, "魔力", $"{mana:F0}/{manaMax:F0}");
-
-                // 精神力（念力系能量，ch50）
-                float mind = a.stats[SuperMechCustomStats.StatMindPower];
-                float mindMax = a.stats[SuperMechCustomStats.StatMindPowerMax];
-                if (mindMax > 0) ShowRow(window, "精神力", $"{mind:F0}/{mindMax:F0}");
+                // 注：魔力/精神力不单独显示——它们就是气力在魔法系/念力系的表现形式，
+                // 已在主面板"气力/魔力/精神力"消耗条中显示（原著ch3/ch50：气力是五系统一基础）
 
                 // 械感（机械亲和度，ch50：气力属性【磁】增加机械亲和度）
                 float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
