@@ -750,10 +750,7 @@ namespace SuperMech.Code
         /// <summary>更新图谱容器旋转。</summary>
         private void UpdateGraphTransform()
         {
-            if (_graphContainer != null)
-            {
-                _graphContainer.transform.localRotation = Quaternion.Euler(_rotationX, _rotationY, 0);
-            }
+            // 不旋转容器，只通过UpdateNodes旋转节点位置，避免双重旋转
         }
 
         void Update()
