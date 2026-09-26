@@ -308,7 +308,7 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval;
+            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
             int maxTracked = SuperMechConfig.MaxTrackedActors;
             int processed = 0;
 

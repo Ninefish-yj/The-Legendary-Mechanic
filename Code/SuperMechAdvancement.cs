@@ -316,10 +316,14 @@ namespace SuperMech.Code
                 string id = SuperMechRanks.All[index].id;
                 if (!a.hasTrait(id))
                 {
-                    foreach (var r in SuperMechRanks.All)
-                        if (!SuperMechRanks.IsPlusRank(System.Array.IndexOf(SuperMechRanks.All.ToArray(), r))
-                            && a.hasTrait(r.id) && r.id != id)
+                    // 移除其他主阶位特质（用索引遍历，避免每次ToArray）
+                    for (int i = 0; i < SuperMechRanks.All.Count; i++)
+                    {
+                        if (SuperMechRanks.IsPlusRank(i)) continue;
+                        var r = SuperMechRanks.All[i];
+                        if (a.hasTrait(r.id) && r.id != id)
                             a.removeTrait(r.id);
+                    }
                     a.addTrait(id);
                 }
             }

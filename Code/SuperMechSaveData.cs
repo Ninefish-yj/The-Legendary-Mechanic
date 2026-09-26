@@ -105,8 +105,8 @@ namespace SuperMech.Code
             string modDir = GetModDirectory();
             string dir = Path.Combine(modDir, SaveDirName);
             if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
-            // 用世界种子作为文件名，每个世界独立存档
-            string seed = MapBox.current_world_seed_id.ToString() ?? "default";
+            // 用世界种子作为文件名，每个世界独立存档（current_world_seed_id是int值类型，不会为null）
+            string seed = MapBox.current_world_seed_id.ToString();
             return Path.Combine(dir, seed + FileExt);
         }
 
