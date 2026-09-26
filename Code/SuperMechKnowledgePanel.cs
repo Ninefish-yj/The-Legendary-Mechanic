@@ -397,8 +397,15 @@ namespace SuperMech.Code
         {
             if (_graph3D == null || _graphContent == null) return;
 
-            // 使用3D知识图谱（球面分布+轴突+神经冲动+拖拽旋转）
-            _graph3D.Init(_currentActor, _currentPrefix, _graphContent);
+            try
+            {
+                // 使用3D知识图谱（球面分布+轴突+神经冲动+拖拽旋转）
+                _graph3D.Init(_currentActor, _currentPrefix, _graphContent);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[超神机械师] 3D知识图谱刷新失败: {e.Message}\n{e.StackTrace}");
+            }
         }
 
         private static void CreateKnowledgeNode(SuperMechKnowledge.KnowledgeDef def, float x, float y, int tier)

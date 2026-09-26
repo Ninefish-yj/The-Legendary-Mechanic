@@ -129,6 +129,9 @@ namespace SuperMech.Code
             _rotationX = 15f;
             _targetRotationY = _rotationY;
             _targetRotationX = _rotationX;
+            // 立即更新节点位置（否则所有节点重叠在中心看不见）
+            UpdateNodes();
+            UpdateAxons();
             UpdateGraphTransform();
         }
 
