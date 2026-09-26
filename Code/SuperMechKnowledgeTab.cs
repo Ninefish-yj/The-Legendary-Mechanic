@@ -62,8 +62,16 @@ namespace SuperMech.Code
 
             // 只有在知识Tab激活时才渲染内容，避免内容出现在其他Tab（如原版装备Tab）中
             bool onKnowTab = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
-            if (!onKnowTab && _container != null) _container.SetActive(false);
-            if (onKnowTab) RenderContent(actor);
+            if (!onKnowTab && _container != null)
+            {
+                _container.SetActive(false);
+                RestoreOtherContent(scroll); // 离开知识Tab时恢复其他内容
+            }
+            if (onKnowTab)
+            {
+                HideOtherContent(scroll); // 知识Tab激活时隐藏单位面板其他内容
+                RenderContent(actor);
+            }
         }
 
         private static Actor GetActor(UnitWindow window)
@@ -207,6 +215,35 @@ namespace SuperMech.Code
             layout.padding = new RectOffset(8, 8, 8, 8);
 
             _container.SetActive(false);
+        }
+
+        // 记录被隐藏的其他内容，用于恢复
+        private static readonly List<GameObject> _hiddenOtherContent = new List<GameObject>();
+
+        /// <summary>知识Tab激活时，隐藏scroll_content下除我们container外的所有内容。</summary>
+        private static void HideOtherContent(ScrollWindow scroll)
+        {
+            if (scroll?.transform_content == null) return;
+            _hiddenOtherContent.Clear();
+            foreach (Transform child in scroll.transform_content)
+            {
+                if (child == _container?.transform) continue;
+                if (child.gameObject.activeSelf)
+                {
+                    _hiddenOtherContent.Add(child.gameObject);
+                    child.gameObject.SetActive(false);
+                }
+            }
+        }
+
+        /// <summary>离开知识Tab时，恢复被隐藏的其他内容。</summary>
+        private static void RestoreOtherContent(ScrollWindow scroll)
+        {
+            foreach (var go in _hiddenOtherContent)
+            {
+                if (go != null) go.SetActive(true);
+            }
+            _hiddenOtherContent.Clear();
         }
 
         private static void WireTab(WindowMetaTab tab, ScrollWindow scroll)

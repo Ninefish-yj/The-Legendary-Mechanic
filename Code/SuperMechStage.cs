@@ -193,6 +193,12 @@ namespace SuperMech.Code
             if (a == null) return "—";
             int s = GetStage(a);
             if (s <= 0) return "未入门";
+            // 机械系单位：检查是否已选分支
+            bool isMechClass = a.hasTrait(SuperMechTraits.ClassMech);
+            bool hasMechBranch = a.hasTrait(SuperMechBranch.BranchMech) ||
+                                 a.hasTrait(SuperMechBranch.BranchGunner) ||
+                                 a.hasTrait(SuperMechBranch.BranchMartial);
+            if (isMechClass && !hasMechBranch) return "未选择分支（磁环后可选）";
             // 机械师分支：完整14阶段
             if (a.hasTrait(SuperMechBranch.BranchMech))
             {
