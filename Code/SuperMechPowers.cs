@@ -36,22 +36,15 @@ namespace SuperMech.Code
 
             AddDisaster(DisasterAlien, "异化之灾（天灾）");
 
-            // 潜能点与知识树（面板窗口调用）
-            AddCheckPotentialPower(CheckPotential, "查看潜能点");
-            AddUnlockKnowledgePower(UnlockArmed, "解锁知识·武装系", "armed", 2);
-            AddUnlockKnowledgePower(UnlockEnergy, "解锁知识·能量系", "energy", 2);
-            AddUnlockKnowledgePower(UnlockVirtual, "解锁知识·虚拟系", "virtual", 3);
+            // 以下功能已移到知识Tab「◆ 操作」区域，不再注册神权：
+            // - 查看潜能点（知识Tab顶部显示）
+            // - 解锁知识×3（知识Tab点击节点解锁）
+            // - 械力融合（知识Tab操作按钮）
+            // - 知识融合（知识Tab操作按钮）
+            // - 制造装备（知识Tab操作按钮）
+            // - 造兵配方×9（知识Tab操作按钮，机械系专属）
 
-            // 械力融合（机械系专属，装备与身体融合）
-            AddMechFusionPower(MechFusion, "械力融合");
-
-            // 知识融合（消耗经验融合知识获得图纸，原著ch107）
-            AddKnowledgeFusionPower(KnowledgeFusion, "知识融合");
-
-            // 制造装备（机械系专属，用学会的图纸制造装备）
-            AddCraftEquipPower(CraftEquip, "制造装备");
-
-            Debug.Log("[超神机械师] 神权注册完成：2召唤 + 1天灾 + 1查看 + 3知识解锁 + 1械力融合 + 1知识融合 + 1制造装备");
+            Debug.Log("[超神机械师] 神权注册完成：3召唤 + 1天灾 + 1催化 = 5个核心神权");
         }
 
         private static void AddSpawnPower(string id, string name, string icon, string creatureId, int mechStage)

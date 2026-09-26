@@ -565,6 +565,80 @@ namespace SuperMech.Code
                     AddInfoRow(_container.transform, "提示", "用神权「知识融合」随机融合一个配方");
                 }
             }
+
+            // ◆ 操作区域（械力融合/知识融合/制造装备/机械造兵）
+            AddSectionHeader(_container.transform, "◆ 操作");
+
+            // 械力融合（所有超能者可用，融合装备提升属性）
+            bool isFused = SuperMechMechFusion.IsFused(actor);
+            string fuseBtnText = isFused ?
+                $"解除械力融合（Lv{SuperMechMechFusion.GetFusionLevel(actor)} 属性×{SuperMechMechFusion.GetFusionMultiplier(actor):0.0}）" :
+                "械力融合（融合装备提升属性）";
+            AddActionButton(_container.transform, fuseBtnText, () =>
+            {
+                if (isFused) SuperMechMechFusion.Unfuse(actor);
+                else SuperMechMechFusion.TryFuse(actor);
+                RenderContent(actor);
+            }, new Color(0.3f, 0.5f, 0.7f));
+
+            // 知识融合（仅降临者，消耗经验随机融合配方）
+            if (SuperMechAwakened.IsAwakened(actor))
+            {
+                bool fusionCD = SuperMechKnowledgeFusion.IsOnCooldown(actor);
+                string fusionBtnText = fusionCD ? "知识融合（冷却中...）" : $"知识融合（可融合{fusionRecipes.Count}个配方）";
+                AddActionButton(_container.transform, fusionBtnText, () =>
+                {
+                    if (fusionCD) return;
+                    var available = SuperMechKnowledgeFusion.GetAvailableRecipes(actor);
+                    if (available.Count > 0)
+                    {
+                        var recipe = available[Random.Range(0, available.Count)];
+                        SuperMechKnowledgeFusion.TryFuse(actor, recipe.id);
+                    }
+                    RenderContent(actor);
+                }, new Color(0.5f, 0.3f, 0.6f));
+            }
+
+            // 制造装备（仅学会图纸的降临者）
+            var learned = SuperMechKnowledgeFusion.GetLearnedRecipes(actor);
+            bool craftCD = SuperMechKnowledgeFusion.IsCraftOnCooldown(actor);
+            if (learned.Count > 0 && SuperMechAwakened.IsAwakened(actor))
+            {
+                string craftBtnText = craftCD ? "制造装备（冷却中...）" : $"制造装备（{learned.Count}张图纸）";
+                AddActionButton(_container.transform, craftBtnText, () =>
+                {
+                    if (craftCD) return;
+                    // 制造第一个可制造的图纸
+                    foreach (var recipe in learned)
+                    {
+                        if (recipe.productType == "图纸" || recipe.productType == "秘法" || recipe.productType == "配方")
+                        {
+                            if (SuperMechKnowledgeFusion.CraftEquip(actor, recipe.id)) break;
+                        }
+                    }
+                    RenderContent(actor);
+                }, new Color(0.4f, 0.6f, 0.3f));
+            }
+
+            // 机械造兵（仅机械系）
+            if (actor.hasTrait(SuperMechTraits.ClassMech))
+            {
+                var craftRecipes = SuperMechCrafting.GetAvailableRecipes(actor);
+                float craftCD2 = SuperMechCrafting.GetCraftCooldown(actor);
+                string craftBtnText = craftCD2 > 0 ?
+                    $"机械造兵（冷却{craftCD2:F1}s，已造{SuperMechCrafting.GetMinionCount(actor)}个）" :
+                    $"机械造兵（{craftRecipes.Count}种可造，已造{SuperMechCrafting.GetMinionCount(actor)}个）";
+                AddActionButton(_container.transform, craftBtnText, () =>
+                {
+                    if (craftCD2 > 0) return;
+                    if (craftRecipes.Count > 0)
+                    {
+                        var recipe = craftRecipes[Random.Range(0, craftRecipes.Count)];
+                        SuperMechCrafting.TryCraft(actor, recipe.id, actor.current_tile);
+                    }
+                    RenderContent(actor);
+                }, new Color(0.6f, 0.4f, 0.2f));
+            }
         }
 
         private static string GetTreeName(string prefix)

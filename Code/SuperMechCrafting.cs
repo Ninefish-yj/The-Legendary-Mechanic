@@ -114,6 +114,101 @@ namespace SuperMech.Code
         };
 
         /// <summary>注册制造神权。</summary>
+        /// <summary>尝试制造一个机械单位（公共方法，供知识Tab按钮调用）。返回true=成功。</summary>
+        public static bool TryCraft(Actor maker, string recipeId, WorldTile tile)
+        {
+            if (maker == null || !maker.isAlive() || tile == null) return false;
+            if (!maker.hasTrait(SuperMechTraits.ClassMech)) return false;
+            if (!SuperMechConfig.MechSummonEnabled) return false;
+
+            CraftRecipe r = null;
+            foreach (var recipe in Recipes)
+            {
+                if (recipe.id == recipeId) { r = recipe; break; }
+            }
+            if (r == null) return false;
+
+            int stage = GetMechStageTier(maker);
+            if (stage < r.minStage) return false;
+
+            if (!string.IsNullOrEmpty(r.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(maker, r.requiredKnowledge))
+                return false;
+
+            float now = Time.time;
+            float cd;
+            if (_cooldown.TryGetValue(maker.id, out cd) && now < cd) return false;
+
+            if (!ConsumeMaterials(maker, r.cost)) return false;
+
+            float intel = 1f;
+            var stats = SuperMechStats.Of(maker);
+            if (stats != null)
+            {
+                float iv = stats["intelligence"];
+                intel = 1f + iv * 0.05f;
+            }
+            float perfection = Mathf.Clamp(0.5f + intel * 0.1f + stage * 0.03f, 0.5f, 1.5f);
+
+            _summonedIds.RemoveWhere(id => World.world.units.get(id) == null || !World.world.units.get(id).isAlive());
+            if (_summonedIds.Count >= SuperMechConfig.MaxSummonedUnits) return false;
+
+            Actor spawned = World.world.units.createNewUnit(
+                r.creatureId, tile, pMiracleSpawn: false, pAdultAge: true);
+            if (spawned == null) return false;
+
+            _summonedIds.Add(spawned.id);
+            _masterMap[spawned.id] = maker.id;
+            if (!_minions.ContainsKey(maker.id)) _minions[maker.id] = new List<long>();
+            _minions[maker.id].Add(spawned.id);
+
+            foreach (var tid in r.traits)
+            {
+                if (AssetManager.traits.get(tid) != null) spawned.addTrait(tid);
+            }
+
+            float qiGain = r.qiBase * perfection;
+            float expGain = r.expBase * perfection * 100f;
+            SuperMechQi.AddQi(maker, qiGain);
+            if (SuperMechAwakened.IsAwakened(maker))
+                SuperMechAwakened.AddXp(maker, expGain);
+            SuperMechAdvancementTask.OnCraft(maker);
+
+            if (SuperMechAwakened.IsAwakened(maker) && stage >= 4 && perfection >= 1.0f)
+                SuperMechDivinity.AwardCraftingPoints(maker);
+
+            if (SuperMechConfig.LogVerbose)
+                Debug.Log($"[超神机械师] {maker.name} 制造{r.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
+
+            float cdTime = Mathf.Max(2f, 5f - intel * 0.2f);
+            _cooldown[maker.id] = now + cdTime;
+            return true;
+        }
+
+        /// <summary>获取单位可制造的配方列表（阶段+知识条件满足）。</summary>
+        public static List<CraftRecipe> GetAvailableRecipes(Actor maker)
+        {
+            var result = new List<CraftRecipe>();
+            if (maker == null || !maker.hasTrait(SuperMechTraits.ClassMech)) return result;
+            int stage = GetMechStageTier(maker);
+            foreach (var r in Recipes)
+            {
+                if (stage < r.minStage) continue;
+                if (!string.IsNullOrEmpty(r.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(maker, r.requiredKnowledge)) continue;
+                result.Add(r);
+            }
+            return result;
+        }
+
+        /// <summary>获取制造冷却剩余秒数。</summary>
+        public static float GetCraftCooldown(Actor maker)
+        {
+            if (maker == null) return 0f;
+            float cd;
+            if (_cooldown.TryGetValue(maker.id, out cd))
+                return Mathf.Max(0f, cd - Time.time);
+            return 0f;
+        }
+
         public static void Register()
         {
             foreach (var r in Recipes)
@@ -122,127 +217,9 @@ namespace SuperMech.Code
                 LocalizedTextManager.add(r.name + "_description", r.desc, pReplace: true);
             }
 
-            foreach (var r in Recipes)
-            {
-                var p = new GodPower
-                {
-                    id = r.id,
-                    name = r.name,
-                    path_icon = "iconSprite",
-                    rank = PowerRank.Rank0_free,
-                    force_map_mode = MetaType.None,
-                    ignore_fast_spawn = true,
-                    hold_action = false,
-                    unselect_when_window = true,
-                    requires_premium = false
-                };
-                p.click_action += (tile, powerId) =>
-                {
-                    if (tile == null) return false;
-                    if (!SuperMechConfig.MechSummonEnabled) return false;
-                    bool crafted = false;
-                    tile.doUnits(u =>
-                    {
-                        if (u == null) return;
-                        if (!u.hasTrait(SuperMechTraits.ClassMech)) return;
-                        if (crafted) return;
-
-                        int stage = GetMechStageTier(u);
-                        if (stage < r.minStage)
-                        {
-                            Debug.Log($"[超神机械师] {u.name} 阶段不足（需要tier{r.minStage}，当前tier{stage}）");
-                            return;
-                        }
-
-                        // 知识解锁检查
-                        if (!string.IsNullOrEmpty(r.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(u, r.requiredKnowledge))
-                        {
-                            Debug.Log($"[超神机械师] {u.name} 未学习知识 {r.requiredKnowledge}");
-                            return;
-                        }
-
-                        // 检查冷却
-                        float now = Time.time;
-                        float cd;
-                        if (_cooldown.TryGetValue(u.id, out cd) && now < cd)
-                        {
-                            Debug.Log($"[超神机械师] {u.name} 制造冷却中（剩余{cd - now:F1}秒）");
-                            return;
-                        }
-
-                        // 检查材料（从所在城市仓库扣除）
-                        if (!ConsumeMaterials(u, r.cost))
-                        {
-                            Debug.Log($"[超神机械师] {u.name} 材料不足，无法制造{r.name}");
-                            return;
-                        }
-
-                        // 计算完美度
-                        float intel = 1f;
-                        var stats = SuperMechStats.Of(u);
-                        if (stats != null)
-                        {
-                            float iv = stats["intelligence"];
-                            intel = 1f + iv * 0.05f;
-                        }
-                        float perfection = Mathf.Clamp(0.5f + intel * 0.1f + stage * 0.03f, 0.5f, 1.5f);
-
-                        // 清理已死亡召唤物
-                        _summonedIds.RemoveWhere(id => World.world.units.get(id) == null || !World.world.units.get(id).isAlive());
-                        if (_summonedIds.Count >= SuperMechConfig.MaxSummonedUnits)
-                        {
-                            Debug.Log($"[超神机械师] 召唤物已达上限({SuperMechConfig.MaxSummonedUnits})");
-                            return;
-                        }
-
-                        // 制造单位
-                        Actor spawned = World.world.units.createNewUnit(
-                            r.creatureId, tile, pMiracleSpawn: false, pAdultAge: true);
-                        if (spawned != null)
-                        {
-                            _summonedIds.Add(spawned.id);
-                            // 建立主人关系
-                            _masterMap[spawned.id] = u.id;
-                            if (!_minions.ContainsKey(u.id)) _minions[u.id] = new List<long>();
-                            _minions[u.id].Add(spawned.id);
-
-                            foreach (var tid in r.traits)
-                            {
-                                if (AssetManager.traits.get(tid) != null) spawned.addTrait(tid);
-                            }
-
-                            // 制造者获得气力和经验
-                            float qiGain = r.qiBase * perfection;
-                            float expGain = r.expBase * perfection * 100f;
-                            SuperMechQi.AddQi(u, qiGain);
-                            if (SuperMechAwakened.IsAwakened(u))
-                            {
-                                SuperMechAwakened.AddXp(u, expGain);
-                            }
-                            SuperMechAdvancementTask.OnCraft(u);
-
-                            // 降临者打造高级装备获得神性蜕变点数
-                            if (SuperMechAwakened.IsAwakened(u) && stage >= 4 && perfection >= 1.0f)
-                            {
-                                if (SuperMechDivinity.AwardCraftingPoints(u))
-                                {
-                                    Debug.Log($"[超神机械师] {u.name}（降临者）打造{r.name}获得1神性蜕变点数！");
-                                }
-                            }
-
-                            if (SuperMechConfig.LogVerbose)
-                                Debug.Log($"[超神机械师] {u.name} 制造{r.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
-
-                            float cdTime = Mathf.Max(2f, 5f - intel * 0.2f);
-                            _cooldown[u.id] = now + cdTime;
-                            crafted = true;
-                        }
-                    });
-                    return crafted;
-                };
-                AssetManager.powers.add(p);
-            }
-            Debug.Log($"[超神机械师] 制造系统注册完成：{Recipes.Length} 种制造配方");
+            // 造兵功能已移到知识Tab「◆ 操作」区域，不再注册9个神权按钮
+            // 公共方法 TryCraft(Actor, recipeId, tile) 供知识Tab按钮调用
+            Debug.Log($"[超神机械师] 制造系统注册完成：{Recipes.Length} 种制造配方（知识Tab操作）");
         }
 
         /// <summary>从单位所在城市仓库扣除材料。返回true=扣除成功。</summary>
