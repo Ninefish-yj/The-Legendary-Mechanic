@@ -79,6 +79,8 @@ namespace SuperMech.Code
                 SuperMechQi.SetQiMax(a, 100f);
                 // 随机潜力评级（原著ch1099：所有超能者都有潜力评级，决定阶位上限）
                 SuperMechPotentialRating.RollRating(a);
+                // 初始装备：1-2件低品质装备（确保背包非空）
+                GrantStarterEquipment(a);
 
                 var talents = SuperMechTalent.GetTalents(a);
                 string talentText = "";
@@ -86,6 +88,20 @@ namespace SuperMech.Code
                     talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
                 if (SuperMechConfig.LogVerbose)
                     Debug.Log($"[超神机械师] {a.name}（{a.age}岁）激发潜能，天赋：{talentText.Trim()}");
+            }
+        }
+
+        /// <summary>给新激发潜能的单位初始装备（1-2件低品质，确保背包非空）。</summary>
+        private static void GrantStarterEquipment(Actor a)
+        {
+            if (a == null) return;
+            // 1-2件灰色/绿色装备
+            int count = Random.Range(1, 3);
+            string[] starterIds = { "sm_eq_gray", "sm_eq_green" };
+            for (int i = 0; i < count; i++)
+            {
+                string equipId = starterIds[Random.Range(0, starterIds.Length)];
+                SuperMechEquipBag.AddToBag(a, equipId);
             }
         }
 

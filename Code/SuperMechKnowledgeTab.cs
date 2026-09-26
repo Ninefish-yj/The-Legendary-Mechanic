@@ -218,6 +218,13 @@ namespace SuperMech.Code
                     SuperMechAdvancement.SetExactRank(actor, 0);
                     SuperMechSpecialty.AssignRandomSpecialty(actor);
                     SuperMechPerks.GrantRandomPerks(actor);  // 随机赋予1-2个天赋专长
+                    SuperMechQi.SetQi(actor, 100f);
+                    SuperMechQi.SetQiMax(actor, 100f);
+                    // 初始装备：1-2件低品质装备
+                    string[] starterIds = { "sm_eq_gray", "sm_eq_green" };
+                    int count = Random.Range(1, 3);
+                    for (int i = 0; i < count; i++)
+                        SuperMechEquipBag.AddToBag(actor, starterIds[Random.Range(0, starterIds.Length)]);
                     Debug.Log($"[超神机械师] {actor.name} 激发潜能，踏入超能");
                     RenderContent(actor);
                 }, new Color(0.2f, 0.4f, 0.6f));
