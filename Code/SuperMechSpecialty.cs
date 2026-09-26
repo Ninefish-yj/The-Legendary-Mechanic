@@ -155,38 +155,15 @@ namespace SuperMech.Code
             AssetManager.traits.add(t);
         }
 
-        /// <summary>觉醒时随机分配特色（在赋予觉醒神权时调用）。</summary>
+        /// <summary>踏入超能时随机分配具体异能（仅异能系，原著：异能系天生有具体异能，其他四系无此设定）。</summary>
         public static void AssignRandomSpecialty(Actor a)
         {
+            // 只有异能系有天生具体异能（原著：异能系是基因觉醒，天生有异能类型）
+            // 其他四系（机械/武道/魔法/念力）的特色是后天学习的职业技能，通过知识树/阶段获得，不随机分配
             if (a.hasTrait(SuperMechTraits.ClassPsi))
             {
                 string[] specs = { PsiFire, PsiIce, PsiElectric, PsiTransform, PsiControl, PsiLuck,
                     PsiDeath, PsiCarbon, PsiHeal, PsiMagnet, PsiSoulFire };
-                a.addTrait(specs[Random.Range(0, specs.Length)]);
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassMartial))
-            {
-                string[] specs = { MartialWave, MartialFlash, MartialShield, MartialBurst,
-                    MartialReserve, MartialSky, MartialSync, MartialAbyss,
-                    MartialCompress, MartialForm, MartialExplode, MartialShock, MartialSurge,
-                    MartialSword, MartialBlade, MartialFist };
-                a.addTrait(specs[Random.Range(0, specs.Length)]);
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassMech))
-            {
-                string[] specs = { MechMech, MechDrone, MechTurret,
-                    MechOverload, MechSurge, MechWill };
-                a.addTrait(specs[Random.Range(0, specs.Length)]);
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassMage))
-            {
-                string[] specs = { MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark };
-                a.addTrait(specs[Random.Range(0, specs.Length)]);
-            }
-            else if (a.hasTrait(SuperMechTraits.ClassMind))
-            {
-                string[] specs = { MindControl, MindDetect, MindTelekinesis, MindTelepathy,
-                    MindShield, MindCurrent };
                 a.addTrait(specs[Random.Range(0, specs.Length)]);
             }
         }

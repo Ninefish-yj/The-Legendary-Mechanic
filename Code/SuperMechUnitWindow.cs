@@ -46,17 +46,20 @@ namespace SuperMech.Code
                     talentText = "★五系天才★ " + talentText;
                 ShowRow(__instance, "天赋倾向", talentText.Trim());
 
-                // 显示具体异能/特色能力（踏入超能后觉醒，原著中异能系最复杂）
-                var specs = SuperMechSpecialty.GetSpecialties(actor);
-                if (specs.Count > 0)
+                // 显示具体异能（仅异能系，原著：异能系天生有具体异能，其他四系无此设定）
+                if (actor.hasTrait(SuperMechTraits.ClassPsi))
                 {
-                    string specText = "";
-                    foreach (var s in specs)
+                    var specs = SuperMechSpecialty.GetSpecialties(actor);
+                    if (specs.Count > 0)
                     {
-                        string specName = LocalizedTextManager.getText("trait_" + s, s);
-                        specText += specName + " ";
+                        string specText = "";
+                        foreach (var s in specs)
+                        {
+                            string specName = LocalizedTextManager.getText("trait_" + s, s);
+                            specText += specName + " ";
+                        }
+                        ShowRow(__instance, "具体异能", specText.Trim());
                     }
-                    ShowRow(__instance, "具体能力", specText.Trim());
                 }
 
                 // 显示专长
