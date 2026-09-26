@@ -31,8 +31,8 @@ namespace SuperMech.Code
                 bool hasTalent = SuperMechTalent.HasTalent(actor);
                 if (!hasTalent)
                 {
-                    ShowRow(__instance, "阶位", "凡人（未踏入超能之路）");
-                    ShowRow(__instance, "提示", "在知识Tab点击「激发潜能」踏入超能");
+                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"));
+                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_hint"), LocalizedTextManager.getText("sm_ui_hint_awaken"));
                     return;
                 }
 
@@ -40,7 +40,7 @@ namespace SuperMech.Code
 
                 // 行1：阶位
                 string rank = GetRank(actor);
-                ShowRow(__instance, "阶位", rank);
+                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_rank"), rank);
 
                 // 行2：体系（选定方向才显示，否则显示野生超能者）
                 bool hasProfession = SuperMechProfession.HasProfession(actor);
@@ -48,23 +48,23 @@ namespace SuperMech.Code
                 {
                     string cls = SuperMechProfession.GetClass(actor);
                     string clsAspect = GetClassAspect(cls);
-                    ShowRow(__instance, "体系", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
+                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_class"), cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
                 }
                 else
                 {
-                    ShowRow(__instance, "体系", "野生超能者（未选定方向）");
+                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"));
                 }
 
                 // 行3：能级（原著：能级是概念，欧纳是单位）
                 float onar = SuperMechAdvancement.CalcOnar(actor);
-                ShowRow(__instance, "能级", $"{onar:F0}欧纳");
+                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}");
 
                 // 行4：气力消耗条（原著ch3：气力有当前值/上限，消耗空→耗体力→减生命）
                 // 各系表现形式不同：机械磁环后=械力，魔法=魔力，念力=精神力，武道/异能=气力
                 float qi = SuperMechQi.GetQi(actor);
                 float qiMax = SuperMechQi.GetQiMax(actor);
                 int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-                string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : "未入流";
+                string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
                 string qiName = GetQiDisplayName(actor);
                 string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
                 ShowRow(__instance, qiName, $"{qiBar}（{qiLvText}）");
@@ -72,14 +72,14 @@ namespace SuperMech.Code
                 // 行5：降临者标识
                 if (SuperMechAwakened.IsAwakened(actor))
                 {
-                    ShowRow(__instance, "身份", "降临者");
+                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"));
                 }
 
                 // === 自定义属性（注册为BaseStatAsset，参与计算但原版图标栏不显示，这里手动插入）===
                 ShowCustomStats(__instance, actor);
 
                 // 提示：详细信息在知识Tab
-                ShowRow(__instance, "提示", "详细修炼状态/天赋/职业树/技能在知识Tab查看");
+                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_hint"), LocalizedTextManager.getText("sm_ui_hint_detail"));
             }
             catch (System.Exception e)
             {
@@ -107,11 +107,11 @@ namespace SuperMech.Code
         {
             switch (cls)
             {
-                case "武道系": return "神体";
-                case "念力系": return "神魂";
-                case "魔法系": return "神权";
-                case "异能系": return "神通";
-                case "机械系": return "神器";
+                case "武道系": return LocalizedTextManager.getText("sm_aspect_martial");
+                case "念力系": return LocalizedTextManager.getText("sm_aspect_mind");
+                case "魔法系": return LocalizedTextManager.getText("sm_aspect_mage");
+                case "异能系": return LocalizedTextManager.getText("sm_aspect_psi");
+                case "机械系": return LocalizedTextManager.getText("sm_aspect_mech");
                 default: return "";
             }
         }
@@ -128,17 +128,17 @@ namespace SuperMech.Code
         /// </summary>
         private static string GetQiDisplayName(Actor a)
         {
-            if (!SuperMechProfession.HasProfession(a)) return "气力";
+            if (!SuperMechProfession.HasProfession(a)) return LocalizedTextManager.getText("sm_qi_qi");
             string cls = SuperMechProfession.GetClass(a);
             switch (cls)
             {
                 case "机械系":
                     // ch237：磁环阶段后气力改称械力（阶段索引3=磁环）
                     int stage = SuperMechStage.GetStage(a);
-                    return stage >= 3 ? "械力" : "气力";
-                case "魔法系": return "魔力";
-                case "念力系": return "精神力";
-                default: return "气力";
+                    return stage >= 3 ? LocalizedTextManager.getText("sm_qi_mech") : LocalizedTextManager.getText("sm_qi_qi");
+                case "魔法系": return LocalizedTextManager.getText("sm_qi_mage");
+                case "念力系": return LocalizedTextManager.getText("sm_qi_mind");
+                default: return LocalizedTextManager.getText("sm_qi_qi");
             }
         }
 
@@ -147,11 +147,11 @@ namespace SuperMech.Code
         {
             switch (cls)
             {
-                case "武道系": return "御气技巧树";
-                case "异能系": return "基因树";
-                case "魔法系": return "魔法知识树";
-                case "念力系": return "精神修炼树";
-                default: return "机械知识树";
+                case "武道系": return LocalizedTextManager.getText("sm_tree_martial");
+                case "异能系": return LocalizedTextManager.getText("sm_tree_psi");
+                case "魔法系": return LocalizedTextManager.getText("sm_tree_mage");
+                case "念力系": return LocalizedTextManager.getText("sm_tree_mind");
+                default: return LocalizedTextManager.getText("sm_tree_mech");
             }
         }
 

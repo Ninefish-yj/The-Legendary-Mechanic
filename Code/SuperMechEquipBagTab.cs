@@ -157,7 +157,7 @@ namespace SuperMech.Code
             TipButton tip = newTab.GetComponent<TipButton>();
             if (tip != null)
             {
-                tip.textOnClick = "背包\n9级品质装备·词条属性·装备掉落·按品质排序";
+                tip.textOnClick = LocalizedTextManager.getText("sm_tab_bag_tip");
                 tip.textOnClickDescription = string.Empty;
                 tip.text_description_2 = string.Empty;
             }
@@ -292,7 +292,7 @@ namespace SuperMech.Code
             else
             {
                 // 空槽位（参考原版空装备槽）
-                CreateEmptySlot(equippedBox, 48, "未装备");
+                CreateEmptySlot(equippedBox, 48, LocalizedTextManager.getText("sm_ui_unequipped"));
             }
 
             // 分隔

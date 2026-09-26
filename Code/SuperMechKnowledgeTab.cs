@@ -149,7 +149,7 @@ namespace SuperMech.Code
             TipButton tip = newTab.GetComponent<TipButton>();
             if (tip != null)
             {
-                tip.textOnClick = "知识\n3D知识图谱·潜能点解锁·跨系兼修·知识融合";
+                tip.textOnClick = LocalizedTextManager.getText("sm_tab_knowledge_tip");
                 tip.textOnClickDescription = string.Empty;
                 tip.text_description_2 = string.Empty;
             }
@@ -252,8 +252,8 @@ namespace SuperMech.Code
             {
                 AddHeader(_container.transform, "普通人");
                 AddInfoRow(_container.transform, "这个单位还没有踏入超能", "点击下方按钮激发潜能，获得天赋倾向");
-                AddSectionHeader(_container.transform, "◆ 操作");
-                AddActionButton(_container.transform, "激发潜能", () =>
+                AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_operation"));
+                AddActionButton(_container.transform, LocalizedTextManager.getText("sm_ui_awaken_potential"), () =>
                 {
                     SuperMechTalent.GrantTalents(actor);
                     // 激发潜能即获得F阶（原著：踏入超能就是F阶）
@@ -293,7 +293,7 @@ namespace SuperMech.Code
 
                 AddHeader(_container.transform, "野生超能者（未选定方向）");
                 AddInfoRow(_container.transform, "状态", "有天赋但没系统学习职业知识，靠本能战斗");
-                AddSectionHeader(_container.transform, "◆ 选定主职业方向");
+                AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_select_class"));
 
                 // 五个方向按钮
                 var directions = new[]
@@ -331,7 +331,7 @@ namespace SuperMech.Code
 
             // === 详细信息框（从主面板移过来，用框框起来）===
             // 框1：修炼状态
-            Transform detail1 = CreateDetailBox(_container.transform, "修炼状态",
+            Transform detail1 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_cultivation"),
                 new Color(0.05f, 0.08f, 0.12f, 0.9f), new Color(0.25f, 0.35f, 0.5f, 0.8f));
             string cultStatus = SuperMechCultivationStatus.GetStatusSummary(actor);
             AddInfoRow(detail1, "修炼境界", cultStatus);
@@ -356,7 +356,7 @@ namespace SuperMech.Code
                 AddInfoRow(detail1, "气力属性", qiAttr);
 
             // 框2：天赋与专长
-            Transform detail2 = CreateDetailBox(_container.transform, "天赋与专长",
+            Transform detail2 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_talent"),
                 new Color(0.06f, 0.05f, 0.1f, 0.9f), new Color(0.4f, 0.3f, 0.5f, 0.8f));
             AddInfoRow(detail2, "天赋倾向", talentText.Trim());
             if (actor.hasTrait(SuperMechTraits.ClassPsi))
@@ -385,7 +385,7 @@ namespace SuperMech.Code
             }
 
             // 框3：职业信息
-            Transform detail3 = CreateDetailBox(_container.transform, "职业信息",
+            Transform detail3 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_profession"),
                 new Color(0.05f, 0.1f, 0.08f, 0.9f), new Color(0.3f, 0.5f, 0.35f, 0.8f));
             if (isAwakened)
             {
@@ -415,7 +415,7 @@ namespace SuperMech.Code
             if (!string.IsNullOrEmpty(refineText)) AddInfoRow(detail3, "提炼法", refineText);
 
             // 框4：特殊状态与物品
-            Transform detail4 = CreateDetailBox(_container.transform, "特殊状态与物品",
+            Transform detail4 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_special"),
                 new Color(0.08f, 0.06f, 0.05f, 0.9f), new Color(0.5f, 0.4f, 0.25f, 0.8f));
             // 传说度
             int legend = SuperMechLegend.GetLegend(actor);
@@ -550,7 +550,7 @@ namespace SuperMech.Code
             }
 
             // ◆ 操作区域（械力融合/知识融合/制造装备/机械造兵）
-            AddSectionHeader(_container.transform, "◆ 操作");
+            AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_operation"));
 
             // 械力融合（所有超能者可用，融合装备提升属性）
             bool isFused = SuperMechMechFusion.IsFused(actor);
