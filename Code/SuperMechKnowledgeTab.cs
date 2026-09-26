@@ -99,6 +99,10 @@ namespace SuperMech.Code
             WindowMetaTab newTab = tabObj.GetComponent<WindowMetaTab>();
             if (newTab == null) return null;
 
+            // 移除拖拽排序组件（自定义Tab不需要拖拽，否则会触发DragOrderContainer的KeyNotFoundException）
+            DragOrderElement dragElem = newTab.GetComponent<DragOrderElement>();
+            if (dragElem != null) Object.Destroy(dragElem);
+
             // 清空而不是new（参考天人武道）
             if (newTab.tab_elements != null) newTab.tab_elements.Clear();
             else newTab.tab_elements = new List<Transform>();
