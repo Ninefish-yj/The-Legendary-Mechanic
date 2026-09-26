@@ -323,8 +323,8 @@ namespace SuperMech.Code
                 string catName = GetQualityName(q);
                 Color qColor = GetQualityColor(q);
 
-                // 创建带框的分类容器
-                var catBox = CreateCategoryBox(_container.transform, catName, qColor);
+                // 创建带框的分类容器（带计数，参考原版特质分组框）
+                var catBox = CreateCategoryBox(_container.transform, catName, qColor, items.Count);
 
                 if (items.Count > 0)
                 {
@@ -383,7 +383,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>创建带背景框的分类容器（参考原版物品栏分类框）。</summary>
-        private static Transform CreateCategoryBox(Transform parent, string title, Color? titleColor)
+        private static Transform CreateCategoryBox(Transform parent, string title, Color? titleColor, int count = -1)
         {
             // 外框容器
             GameObject box = new GameObject("CategoryBox", typeof(RectTransform));
@@ -392,11 +392,11 @@ namespace SuperMech.Code
             boxLe.minHeight = 60f;
             boxLe.flexibleHeight = 0f;
 
-            // 背景（深色）
+            // 背景（深色半透明，参考原版特质分组框）
             GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
             bgGo.transform.SetParent(box.transform, false);
             Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0.06f, 0.07f, 0.1f, 0.9f);
+            bgImg.color = new Color(0.08f, 0.09f, 0.12f, 0.85f);
             bgImg.raycastTarget = false;
             RectTransform bgRt = bgGo.GetComponent<RectTransform>();
             bgRt.anchorMin = Vector2.zero;
@@ -404,29 +404,51 @@ namespace SuperMech.Code
             bgRt.offsetMin = Vector2.zero;
             bgRt.offsetMax = Vector2.zero;
 
-            // 边框（用品品质颜色，2px明显边框，参考知识库卡片）
+            // 边框（用品品质颜色，2px，参考知识库卡片）
             Color borderColor = titleColor ?? new Color(0.4f, 0.45f, 0.5f);
             AddBoxBorder(box.transform, borderColor);
 
-            // 标题栏
+            // 标题栏（左对齐，参考原版特质分组框的title字段）
             GameObject titleGo = new GameObject("Title", typeof(RectTransform));
             titleGo.transform.SetParent(box.transform, false);
             RectTransform titleRt = titleGo.GetComponent<RectTransform>();
             titleRt.anchorMin = new Vector2(0, 1);
             titleRt.anchorMax = new Vector2(1, 1);
-            titleRt.pivot = new Vector2(0.5f, 1f);
-            titleRt.sizeDelta = new Vector2(0, 20f);
-            titleRt.offsetMin = new Vector2(4, -20);
-            titleRt.offsetMax = new Vector2(-4, 0);
+            titleRt.pivot = new Vector2(0f, 1f);
+            titleRt.sizeDelta = new Vector2(0, 18f);
+            titleRt.offsetMin = new Vector2(8, -18);
+            titleRt.offsetMax = new Vector2(-8, 0);
 
             Text titleTxt = titleGo.AddComponent<Text>();
             titleTxt.text = title;
-            titleTxt.fontSize = 12;
+            titleTxt.fontSize = 11;
             titleTxt.fontStyle = FontStyle.Bold;
             titleTxt.color = titleColor ?? new Color(0.9f, 0.85f, 0.6f);
-            titleTxt.alignment = TextAnchor.MiddleCenter;
+            titleTxt.alignment = TextAnchor.MiddleLeft;
             titleTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (titleTxt.font == null) titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+            // 计数（右上角，参考原版特质分组框的counter字段）
+            if (count >= 0)
+            {
+                GameObject counterGo = new GameObject("Counter", typeof(RectTransform));
+                counterGo.transform.SetParent(box.transform, false);
+                RectTransform counterRt = counterGo.GetComponent<RectTransform>();
+                counterRt.anchorMin = new Vector2(1, 1);
+                counterRt.anchorMax = new Vector2(1, 1);
+                counterRt.pivot = new Vector2(1f, 1f);
+                counterRt.sizeDelta = new Vector2(60, 18f);
+                counterRt.offsetMin = new Vector2(-68, -18);
+                counterRt.offsetMax = new Vector2(-8, 0);
+
+                Text counterTxt = counterGo.AddComponent<Text>();
+                counterTxt.text = count.ToString();
+                counterTxt.fontSize = 10;
+                counterTxt.color = new Color(0.7f, 0.7f, 0.75f);
+                counterTxt.alignment = TextAnchor.MiddleRight;
+                counterTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+                if (counterTxt.font == null) counterTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            }
 
             // 内容容器（标题下方）
             GameObject contentGo = new GameObject("Content", typeof(RectTransform));
