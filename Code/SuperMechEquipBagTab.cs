@@ -286,7 +286,7 @@ namespace SuperMech.Code
             // 分隔
             AddText(_container.transform, "—— 背包 ——", 10, TextAnchor.MiddleCenter, new Color(0.7f, 0.7f, 0.7f));
 
-            // 背包物品：图标网格（每行4个，参考原版物品栏）
+            // 背包物品：图标网格（参考原版城市资源仓库ButtonResource风格）
             var bag = SuperMechEquipBag.GetBag(actor);
             if (bag.Count == 0)
             {
@@ -298,15 +298,15 @@ namespace SuperMech.Code
                 int iconIndex = 0;
                 foreach (string equipId in bag)
                 {
-                    if (iconIndex % 4 == 0)
+                    if (iconIndex % 5 == 0)
                     {
                         currentRow = new GameObject("BagRow", typeof(RectTransform));
                         currentRow.transform.SetParent(_container.transform, false);
                         var rowLayout = currentRow.AddComponent<HorizontalLayoutGroup>();
-                        rowLayout.spacing = 6;
+                        rowLayout.spacing = 4;
                         rowLayout.childAlignment = TextAnchor.UpperLeft;
                         RectTransform rrt = currentRow.GetComponent<RectTransform>();
-                        rrt.sizeDelta = new Vector2(0, 50);
+                        rrt.sizeDelta = new Vector2(0, 40);
                     }
 
                     int idx = SuperMechRelic.GetEquipIndex(equipId);
@@ -314,38 +314,67 @@ namespace SuperMech.Code
                     var def = SuperMechRelic.Equipments[idx];
                     Color qColor = GetQualityColor(def.qualityLevel);
 
-                    // 装备图标方块（带品质颜色，点击装备）
+                    // 装备图标（参考原版ButtonResource：图标为主，品质边框）
                     var iconGo = new GameObject("BagItem", typeof(RectTransform));
                     iconGo.transform.SetParent(currentRow.transform, false);
-                    var iconImg = iconGo.AddComponent<Image>();
-                    iconImg.color = new Color(qColor.r * 0.3f, qColor.g * 0.3f, qColor.b * 0.3f, 0.8f);
 
-                    // 图标
+                    // 品质边框（背景）
+                    var borderImg = iconGo.AddComponent<Image>();
+                    borderImg.color = qColor;
+
+                    // 内部图标区域（深色背景，突出图标）
+                    var innerGo = new GameObject("Inner", typeof(RectTransform));
+                    innerGo.transform.SetParent(iconGo.transform, false);
+                    var innerImg = innerGo.AddComponent<Image>();
+                    innerImg.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
+                    RectTransform innerRt = innerGo.GetComponent<RectTransform>();
+                    innerRt.anchorMin = new Vector2(0.08f, 0.08f);
+                    innerRt.anchorMax = new Vector2(0.92f, 0.92f);
+                    innerRt.offsetMin = Vector2.zero;
+                    innerRt.offsetMax = Vector2.zero;
+
+                    // 装备图标
                     var itemIcon = new GameObject("Icon", typeof(RectTransform));
-                    itemIcon.transform.SetParent(iconGo.transform, false);
+                    itemIcon.transform.SetParent(innerGo.transform, false);
                     var itemImg = itemIcon.AddComponent<Image>();
                     Sprite iconSprite = SpriteTextureLoader.getSprite(def.icon);
                     if (iconSprite != null) itemImg.sprite = iconSprite;
-                    itemImg.color = qColor;
+                    itemImg.color = Color.white;
                     RectTransform iconRt = itemIcon.GetComponent<RectTransform>();
-                    iconRt.anchorMin = new Vector2(0.2f, 0.2f);
-                    iconRt.anchorMax = new Vector2(0.8f, 0.8f);
+                    iconRt.anchorMin = new Vector2(0.15f, 0.15f);
+                    iconRt.anchorMax = new Vector2(0.85f, 0.85f);
                     iconRt.offsetMin = Vector2.zero;
                     iconRt.offsetMax = Vector2.zero;
 
-                    RectTransform irt = iconGo.GetComponent<RectTransform>();
-                    irt.sizeDelta = new Vector2(42, 42);
+                    // 角落品质标签（参考原版textAmount）
+                    var qtyGo = new GameObject("Quality", typeof(RectTransform));
+                    qtyGo.transform.SetParent(iconGo.transform, false);
+                    Text qtyText = qtyGo.AddComponent<Text>();
+                    qtyText.text = GetQualityShortName(def.qualityLevel);
+                    qtyText.fontSize = 8;
+                    qtyText.fontStyle = FontStyle.Bold;
+                    qtyText.alignment = TextAnchor.LowerRight;
+                    qtyText.color = qColor;
+                    if (qtyText.font == null) qtyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    RectTransform qtyRt = qtyGo.GetComponent<RectTransform>();
+                    qtyRt.anchorMin = new Vector2(0.5f, 0f);
+                    qtyRt.anchorMax = new Vector2(1f, 0.4f);
+                    qtyRt.offsetMin = new Vector2(-2, 0);
+                    qtyRt.offsetMax = new Vector2(-2, 0);
 
-                    // 点击装备
+                    RectTransform irt = iconGo.GetComponent<RectTransform>();
+                    irt.sizeDelta = new Vector2(34, 34);
+
+                    // 点击装备（参考原版ButtonResource点击行为）
                     var btn = iconGo.AddComponent<Button>();
-                    btn.targetGraphic = iconImg;
+                    btn.targetGraphic = borderImg;
                     btn.onClick.AddListener(() =>
                     {
                         SuperMechEquipBag.EquipFromBag(actor, equipId);
                         RenderBag(actor);
                     });
 
-                    // Tooltip（悬停显示详情，参考原版物品tooltip）
+                    // Tooltip（参考原版资源tooltip）
                     var tip = iconGo.AddComponent<TipButton>();
                     tip.textOnClick = $"{def.name}\n品质: {GetQualityName(def.qualityLevel)}\n伤害×{def.dmgMul}  生命×{def.hpMul}\n点击装备";
 
@@ -369,6 +398,24 @@ namespace SuperMech.Code
                 case 7: return new Color(0.8f, 0.8f, 0.9f); // 银橙(使徒兵器)
                 case 8: return new Color(1f, 0.84f, 0f);    // 金(宇宙宝物级)
                 default: return Color.white;
+            }
+        }
+
+        /// <summary>品质简称（角落标签用）。</summary>
+        private static string GetQualityShortName(int q)
+        {
+            switch (q)
+            {
+                case 0: return "灰";
+                case 1: return "绿";
+                case 2: return "蓝";
+                case 3: return "淡紫";
+                case 4: return "紫";
+                case 5: return "粉";
+                case 6: return "橙";
+                case 7: return "银";
+                case 8: return "金";
+                default: return "?";
             }
         }
 
