@@ -78,6 +78,7 @@ namespace SuperMech.Code
             _container = new GameObject(ContainerName, typeof(RectTransform));
             _container.transform.SetParent(parent, false);
             RectTransform rt = _container.GetComponent<RectTransform>();
+            // 填满父元素（panelHost高度固定480），不用ContentSizeFitter避免布局冲突
             rt.anchorMin = Vector2.zero;
             rt.anchorMax = Vector2.one;
             rt.pivot = new Vector2(0.5f, 1f);
@@ -92,10 +93,7 @@ namespace SuperMech.Code
             vlg.childForceExpandHeight = false;
             vlg.spacing = 2f;
             vlg.padding = new RectOffset(2, 2, 2, 2);
-
-            ContentSizeFitter fitter = _container.AddComponent<ContentSizeFitter>();
-            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            // 不添加ContentSizeFitter——容器已填满父元素，再加ContentSizeFitter会与anchorMax=1冲突导致高度为0
         }
 
         private static void CreateHeaderLayer()
@@ -383,9 +381,9 @@ namespace SuperMech.Code
         {
             if (_currentActor == null || !_currentActor.isAlive()) return;
 
-            RefreshHeader();
-            RefreshGraph();
-            RefreshLibrary();
+            try { RefreshHeader(); } catch (System.Exception e) { Debug.LogError($"[超神机械师] 知识面板Header刷新失败: {e.Message}"); }
+            try { RefreshGraph(); } catch (System.Exception e) { Debug.LogError($"[超神机械师] 知识面板Graph刷新失败: {e.Message}"); }
+            try { RefreshLibrary(); } catch (System.Exception e) { Debug.LogError($"[超神机械师] 知识面板Library刷新失败: {e.Message}"); }
         }
 
         private static void RefreshGraph()

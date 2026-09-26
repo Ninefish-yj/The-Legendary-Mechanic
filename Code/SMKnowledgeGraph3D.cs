@@ -100,9 +100,10 @@ namespace SuperMech.Code
             // 固定大小（不用parent.rect，同一帧UI未布局时rect为0导致节点不可见）
             float w = parent.GetComponent<RectTransform>().rect.width;
             float h = parent.GetComponent<RectTransform>().rect.height;
-            if (w <= 0) w = 300f;
-            if (h <= 0) h = 200f;
+            if (w <= 10f) w = 340f;
+            if (h <= 10f) h = 220f;
             grt.sizeDelta = new Vector2(w, h);
+            Debug.Log($"[超神机械师] 3D知识图谱初始化: prefix={_prefix}, 容器大小={w}x{h}, 知识数={SuperMechKnowledge.GetAllByPrefix(_prefix)?.Count ?? 0}");
 
             // 背景层（按系别主题色渐变+光点装饰）
             CreateBackground(_graphContainer.transform);
