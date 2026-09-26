@@ -90,11 +90,11 @@ namespace SuperMech.Code
                 registered++;
             }
 
-            // 注册"赐予金装"神权
+            // 注册"赐予装备"神权（随机赐予金色装备或宇宙宝物）
             var givePower = new GodPower
             {
-                id = "sm_give_relic_gold",
-                name = "赐予金色装备",
+                id = "sm_give_equip",
+                name = "赐予装备",
                 path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
@@ -106,11 +106,31 @@ namespace SuperMech.Code
             givePower.click_action += (WorldTile tile, string powerId) =>
             {
                 if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { EquipItem(a, 8); }); // index 8 = 金色·宇宙宝物级
+                tile.doUnits(delegate (Actor a)
+                {
+                    // 50%概率赐予金色装备，50%概率赐予宇宙宝物
+                    if (Random.value < 0.5f)
+                    {
+                        EquipItem(a, 8); // index 8 = 金色·宇宙宝物级
+                    }
+                    else
+                    {
+                        var manMade = SuperMechCosmicRelic.Relics.FindAll(r => !r.isWonder);
+                        if (manMade.Count > 0)
+                        {
+                            var pick = manMade[Random.Range(0, manMade.Count)];
+                            SuperMechCosmicRelic.EquipCosmicRelic(a, pick.id);
+                        }
+                        else
+                        {
+                            EquipItem(a, 8);
+                        }
+                    }
+                });
                 return true;
             };
             AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_relic_gold", "赐予金色装备", pReplace: true);
+            LocalizedTextManager.add("power_sm_give_equip", "赐予装备", pReplace: true);
 
             Debug.Log($"[超神机械师] 装备系统注册完成：{registered}件装备（普通→金色，原版EquipmentAsset）");
         }
@@ -339,32 +359,7 @@ namespace SuperMech.Code
                 AssetManager.traits.add(t);
             }
 
-            // 注册"赐予随机宇宙宝物"神权
-            var givePower = new GodPower
-            {
-                id = "sm_give_cosmic_relic",
-                name = "赐予宇宙宝物",
-                path_icon = "iconDivineLight",
-                rank = PowerRank.Rank0_free,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = false
-            };
-            givePower.click_action += (WorldTile tile, string powerId) =>
-            {
-                if (tile == null) return true;
-                tile.doUnits(delegate (Actor a)
-                {
-                    var manMade = Relics.FindAll(r => !r.isWonder);
-                    var pick = manMade[Random.Range(0, manMade.Count)];
-                    EquipCosmicRelic(a, pick.id);
-                });
-                return true;
-            };
-            AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_cosmic_relic", "赐予宇宙宝物", pReplace: true);
+            // "赐予宇宙宝物"神权已合并到"赐予装备"神权（上方），不再单独注册
 
             int wonderCount = Relics.FindAll(r => r.isWonder).Count;
             Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（人造{Relics.Count - wonderCount}件 + 宇宙奇观{wonderCount}件）");

@@ -50,13 +50,10 @@ namespace SuperMech.Code
             AddSubClass(SubScribe,   "学者",     6, 0, 0f,       "知识研究，智力提升。");
             AddSubClass(SubScout,    "侦察兵",   0, 2, 0.03f,    "侦察与追踪。");
 
-            // 注册副职业赋予神权
-            AddGivePower(SubAgent,     "赋予副职业：特工");
-            AddGivePower(SubNinja,    "赋予副职业：黑夜潜行者");
-            AddGivePower(SubHacker,   "赋予副职业：黑客");
-            AddGivePower(SubMerchant, "赋予副职业：商人");
+            // 副职业学习已移到知识Tab「◆ 操作」区域，不再注册神权
+            // AddGivePower 方法保留供未来使用
 
-            Debug.Log("[超神机械师] 副职业系统注册完成：8个副职业（含等级系统）");
+            Debug.Log("[超神机械师] 副职业系统注册完成：8个副职业（含等级系统，知识Tab学习）");
         }
 
         /// <summary>每tick：战斗中获取副职业经验，自动升级。</summary>

@@ -639,6 +639,49 @@ namespace SuperMech.Code
                     RenderContent(actor);
                 }, new Color(0.6f, 0.4f, 0.2f));
             }
+
+            // 副职业学习（所有超能者可用，消耗2潜能点学习一个未拥有的副职业）
+            int subLearned = 0;
+            string subList = "";
+            foreach (string subId in SuperMechSubClass.AllSubClasses)
+            {
+                if (actor.hasTrait(subId))
+                {
+                    subLearned++;
+                    string subName = subId.Replace("sm_sub_", "");
+                    subList += subName + " ";
+                }
+            }
+            int subTotal = SuperMechSubClass.AllSubClasses.Length;
+            if (subLearned < subTotal)
+            {
+                int pot = SuperMechPotential.GetPotential(actor);
+                string subBtnText = pot >= 2 ?
+                    $"学习副职业（{subLearned}/{subTotal}，消耗2潜能点）" :
+                    $"学习副职业（{subLearned}/{subTotal}，潜能点不足）";
+                AddActionButton(_container.transform, subBtnText, () =>
+                {
+                    if (SuperMechPotential.GetPotential(actor) < 2) return;
+                    // 随机学习一个未拥有的副职业
+                    var unlearned = new System.Collections.Generic.List<string>();
+                    foreach (string subId in SuperMechSubClass.AllSubClasses)
+                    {
+                        if (!actor.hasTrait(subId)) unlearned.Add(subId);
+                    }
+                    if (unlearned.Count > 0)
+                    {
+                        string newSub = unlearned[Random.Range(0, unlearned.Count)];
+                        actor.addTrait(newSub);
+                        SuperMechPotential.AddPotential(actor, -2);
+                        Debug.Log($"[超神机械师] {actor.name} 学习副职业: {newSub}");
+                    }
+                    RenderContent(actor);
+                }, new Color(0.4f, 0.4f, 0.6f));
+            }
+            if (subLearned > 0)
+            {
+                AddInfoRow(_container.transform, "已学副职业", subList.Trim());
+            }
         }
 
         private static string GetTreeName(string prefix)
