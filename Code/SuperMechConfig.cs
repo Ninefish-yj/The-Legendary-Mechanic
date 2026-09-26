@@ -200,6 +200,7 @@ namespace SuperMech.Code
         // --- 圣所系统 ---
         public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"[配置] 圣所跨存档: {val}"); }
         public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"[配置] 圣所自动保存: {val}"); }
+        public static void SetSanctuaryCount(int val) { /* 兼容旧配置：圣所数量已固定为6个，此选项已废弃 */ }
 
         // --- 机械系 ---
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; LogInfo($"[配置] 机械召唤: {val}"); }
