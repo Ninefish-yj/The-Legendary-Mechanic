@@ -626,7 +626,6 @@ namespace SuperMech.Code
             int subTotal = SuperMechSubClass.AllSubClasses.Length;
             if (subLearned < subTotal)
             {
-                int pot = SuperMechPotential.GetPotential(actor);
                 string subBtnText = pot >= 2 ?
                     $"学习副职业（{subLearned}/{subTotal}，消耗2潜能点）" :
                     $"学习副职业（{subLearned}/{subTotal}，潜能点不足）";

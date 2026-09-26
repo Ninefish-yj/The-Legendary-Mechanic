@@ -121,24 +121,24 @@ namespace SuperMech.Code
             if (!maker.hasTrait(SuperMechTraits.ClassMech)) return false;
             if (!SuperMechConfig.MechSummonEnabled) return false;
 
-            CraftRecipe r = null;
+            CraftRecipe? r = null;
             foreach (var recipe in Recipes)
             {
                 if (recipe.id == recipeId) { r = recipe; break; }
             }
-            if (r == null) return false;
+            if (!r.HasValue) return false;
 
             int stage = GetMechStageTier(maker);
-            if (stage < r.minStage) return false;
+            if (stage < r.Value.minStage) return false;
 
-            if (!string.IsNullOrEmpty(r.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(maker, r.requiredKnowledge))
+            if (!string.IsNullOrEmpty(r.Value.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(maker, r.Value.requiredKnowledge))
                 return false;
 
             float now = Time.time;
             float cd;
             if (_cooldown.TryGetValue(maker.id, out cd) && now < cd) return false;
 
-            if (!ConsumeMaterials(maker, r.cost)) return false;
+            if (!ConsumeMaterials(maker, r.Value.cost)) return false;
 
             float intel = 1f;
             var stats = SuperMechStats.Of(maker);
@@ -153,7 +153,7 @@ namespace SuperMech.Code
             if (_summonedIds.Count >= SuperMechConfig.MaxSummonedUnits) return false;
 
             Actor spawned = World.world.units.createNewUnit(
-                r.creatureId, tile, pMiracleSpawn: false, pAdultAge: true);
+                r.Value.creatureId, tile, pMiracleSpawn: false, pAdultAge: true);
             if (spawned == null) return false;
 
             _summonedIds.Add(spawned.id);
@@ -161,13 +161,13 @@ namespace SuperMech.Code
             if (!_minions.ContainsKey(maker.id)) _minions[maker.id] = new List<long>();
             _minions[maker.id].Add(spawned.id);
 
-            foreach (var tid in r.traits)
+            foreach (var tid in r.Value.traits)
             {
                 if (AssetManager.traits.get(tid) != null) spawned.addTrait(tid);
             }
 
-            float qiGain = r.qiBase * perfection;
-            float expGain = r.expBase * perfection * 100f;
+            float qiGain = r.Value.qiBase * perfection;
+            float expGain = r.Value.expBase * perfection * 100f;
             SuperMechQi.AddQi(maker, qiGain);
             if (SuperMechAwakened.IsAwakened(maker))
                 SuperMechAwakened.AddXp(maker, expGain);
@@ -177,7 +177,7 @@ namespace SuperMech.Code
                 SuperMechDivinity.AwardCraftingPoints(maker);
 
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {maker.name} 制造{r.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
+                Debug.Log($"[超神机械师] {maker.name} 制造{r.Value.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
 
             float cdTime = Mathf.Max(2f, 5f - intel * 0.2f);
             _cooldown[maker.id] = now + cdTime;
