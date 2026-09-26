@@ -462,34 +462,7 @@ namespace SuperMech.Code
             return contentGo.transform;
         }
 
-        /// <summary>创建分类标题（参考原版物品栏分类标题）。</summary>
-        private static GameObject CreateCategoryHeader(Transform parent, string text, Color? color = null)
-        {
-            var header = new GameObject("CategoryHeader", typeof(RectTransform));
-            header.transform.SetParent(parent, false);
-            header.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 24);
-
-            // 背景条（参考原版分类背景）
-            var bgObj = new GameObject("Bg", typeof(RectTransform));
-            bgObj.transform.SetParent(header.transform, false);
-            var bgImg = bgObj.AddComponent<UnityEngine.UI.Image>();
-            bgImg.color = new Color(0.15f, 0.15f, 0.18f, 0.8f);
-            var bgRt = bgObj.GetComponent<RectTransform>();
-            bgRt.anchorMin = Vector2.zero;
-            bgRt.anchorMax = Vector2.one;
-            bgRt.offsetMin = Vector2.zero;
-            bgRt.offsetMax = Vector2.zero;
-
-            // 标题文字
-            var txt = CreateText(header.transform, text, 13, TextAnchor.MiddleCenter, color ?? new Color(0.9f, 0.85f, 0.6f));
-            var txtRt = txt.GetComponent<RectTransform>();
-            txtRt.anchorMin = Vector2.zero;
-            txtRt.anchorMax = Vector2.one;
-            txtRt.offsetMin = Vector2.zero;
-            txtRt.offsetMax = Vector2.zero;
-
-            return header;
-        }
+        // CreateCategoryHeader 方法已移除（旧版UI遗留，当前使用CreateCategoryBox）
 
         /// <summary>创建空槽位（参考原版空装备槽）。</summary>
         private static GameObject CreateEmptySlot(Transform parent, int size, string label)
@@ -581,23 +554,7 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>品质简称（角落标签用）。</summary>
-        private static string GetQualityShortName(int q)
-        {
-            switch (q)
-            {
-                case 0: return "灰";
-                case 1: return "绿";
-                case 2: return "蓝";
-                case 3: return "淡紫";
-                case 4: return "紫";
-                case 5: return "粉";
-                case 6: return "橙";
-                case 7: return "银";
-                case 8: return "金";
-                default: return "?";
-            }
-        }
+        // GetQualityShortName 已移除（旧版角落标签用，当前使用GetQualityName）
 
         /// <summary>原著9级品质名。</summary>
         private static string GetQualityName(int q)
@@ -621,21 +578,7 @@ namespace SuperMech.Code
             return t;
         }
 
-        private static void AddText(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
-        {
-            GameObject obj = new GameObject("Text", typeof(RectTransform));
-            obj.transform.SetParent(parent, false);
-            LayoutElement le = obj.AddComponent<LayoutElement>();
-            le.minHeight = fontSize + 4;
-            le.preferredHeight = fontSize + 4;
-            Text t = obj.AddComponent<Text>();
-            t.font = LocalizedTextManager.current_font;
-            t.fontSize = fontSize;
-            t.color = color;
-            t.alignment = anchor;
-            t.horizontalOverflow = HorizontalWrapMode.Wrap;
-            t.text = text;
-        }
+        // AddText 已移除（旧版UI方法，当前使用CreateText）
 
         private static void AddButton(Transform parent, string text, System.Action onClick)
         {
@@ -665,43 +608,6 @@ namespace SuperMech.Code
             trt.offsetMax = Vector2.zero;
         }
 
-        /// <summary>添加图标（带品质颜色tint）。</summary>
-        private static void AddIcon(Transform parent, string iconPath, Color tint, int size = 20)
-        {
-            GameObject obj = new GameObject("Icon", typeof(RectTransform));
-            obj.transform.SetParent(parent, false);
-            LayoutElement le = obj.AddComponent<LayoutElement>();
-            le.minWidth = size;
-            le.preferredWidth = size;
-            le.minHeight = size;
-            le.preferredHeight = size;
-
-            Image img = obj.AddComponent<Image>();
-            img.color = tint;
-            try
-            {
-                Sprite sprite = SpriteTextureLoader.getSprite(iconPath);
-                if (sprite != null) img.sprite = sprite;
-            }
-            catch { }
-        }
-
-        /// <summary>添加文字到指定父物体（不强制撑满宽度）。</summary>
-        private static void AddTextTo(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
-        {
-            GameObject obj = new GameObject("Text", typeof(RectTransform));
-            obj.transform.SetParent(parent, false);
-            LayoutElement le = obj.AddComponent<LayoutElement>();
-            le.minHeight = fontSize + 4;
-            le.preferredHeight = fontSize + 4;
-            le.flexibleWidth = 1;
-            Text t = obj.AddComponent<Text>();
-            t.font = LocalizedTextManager.current_font;
-            t.fontSize = fontSize;
-            t.color = color;
-            t.alignment = anchor;
-            t.horizontalOverflow = HorizontalWrapMode.Wrap;
-            t.text = text;
-        }
+        // AddIcon 和 AddTextTo 方法已移除（旧版UI遗留，当前使用CreateText和直接创建Image）
     }
 }

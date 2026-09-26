@@ -213,34 +213,7 @@ namespace SuperMech.Code
             _container.SetActive(false);
         }
 
-        // 记录被隐藏的其他内容，用于恢复
-        private static readonly List<GameObject> _hiddenOtherContent = new List<GameObject>();
-
-        /// <summary>知识Tab激活时，隐藏scroll_content下除我们container外的所有内容。</summary>
-        private static void HideOtherContent(ScrollWindow scroll)
-        {
-            if (scroll?.transform_content == null) return;
-            _hiddenOtherContent.Clear();
-            foreach (Transform child in scroll.transform_content)
-            {
-                if (child == _container?.transform) continue;
-                if (child.gameObject.activeSelf)
-                {
-                    _hiddenOtherContent.Add(child.gameObject);
-                    child.gameObject.SetActive(false);
-                }
-            }
-        }
-
-        /// <summary>离开知识Tab时，恢复被隐藏的其他内容。</summary>
-        private static void RestoreOtherContent(ScrollWindow scroll)
-        {
-            foreach (var go in _hiddenOtherContent)
-            {
-                if (go != null) go.SetActive(true);
-            }
-            _hiddenOtherContent.Clear();
-        }
+        // HideOtherContent/RestoreOtherContent/_hiddenOtherContent 已移除（tab_elements机制自动处理显示/隐藏）
 
         private static void WireTab(WindowMetaTab tab, ScrollWindow scroll)
         {
@@ -684,31 +657,9 @@ namespace SuperMech.Code
             }
         }
 
-        private static string GetTreeName(string prefix)
-        {
-            switch (prefix)
-            {
-                case "mech": return "机械知识树";
-                case "martial": return "御气技巧树";
-                case "mage": return "魔法知识树";
-                case "mind": return "精神修炼树";
-                case "psi": return "基因树";
-                default: return "知识树";
-            }
-        }
+        // GetTreeName 已移除（旧版知识树名称，当前使用SuperMechKnowledgePanel）
 
-        private static string[] GetBranchNames(string prefix)
-        {
-            switch (prefix)
-            {
-                case "mech": return new[] { "枪炮师", "机械师", "械武者" };
-                case "martial": return new[] { "敏捷", "力量", "防御" };
-                case "mage": return new[] { "专精法师", "魔网法师", "元素" };
-                case "mind": return new[] { "灵魂", "法则", "现实" };
-                case "psi": return new[] { "能级", "操控", "持久力" };
-                default: return new[] { "?", "?", "?" };
-            }
-        }
+        // GetBranchNames 已移除（旧版知识树分支名，当前使用SuperMechKnowledgePanel）
 
         private static void AddHeader(Transform parent, string text)
         {
@@ -894,113 +845,7 @@ namespace SuperMech.Code
             rt.sizeDelta = new Vector2(0, 20);
         }
 
-        /// <summary>知识图谱：节点图谱式布局，5层从下到上（基础→终极），层间连接线。</summary>
-        private static void RenderKnowledgeGraph(Transform parent, Actor actor, string prefix, int pot)
-        {
-            string[] tierNames = { "基础", "进阶", "高端", "尖端", "终极" };
-            string[] branchNames = GetBranchNames(prefix);
-
-            // 容器（学特质Tab风格：浅色背景+分组网格）
-            var containerGo = new GameObject("KnowledgeContainer", typeof(RectTransform));
-            containerGo.transform.SetParent(parent, false);
-            var containerBg = containerGo.AddComponent<Image>();
-            containerBg.color = new Color(0.06f, 0.06f, 0.08f, 0.9f);
-            var containerLayout = containerGo.AddComponent<VerticalLayoutGroup>();
-            containerLayout.spacing = 6;
-            containerLayout.childAlignment = TextAnchor.UpperCenter;
-            containerLayout.childControlWidth = true;
-            containerLayout.childControlHeight = false;
-            containerLayout.childForceExpandWidth = true;
-            containerLayout.childForceExpandHeight = false;
-            containerLayout.padding = new RectOffset(8, 8, 8, 8);
-            var containerLE = containerGo.AddComponent<LayoutElement>();
-            containerLE.minHeight = 300;
-
-            int totalUnlocked = 0;
-            int totalAll = 0;
-
-            // 从低到高渲染（基础在最上，终极在最下，学特质Tab排序）
-            for (int tier = 0; tier <= 4; tier++)
-            {
-                var allDefs = SuperMechKnowledge.GetAllByTier(prefix, tier);
-                if (allDefs.Count == 0) continue;
-                totalAll += allDefs.Count;
-
-                int tierUnlocked = 0;
-                foreach (var def in allDefs)
-                    if (SuperMechKnowledge.IsUnlocked(actor, def.id)) tierUnlocked++;
-                totalUnlocked += tierUnlocked;
-
-                bool tierUnlocked_flag = (tier == 0) || SuperMechKnowledge.GetTierKnowledgeCount(actor, prefix, tier - 1) > 0;
-
-                // 分组标题（学特质Tab的"普通特质/已解锁特质"标题风格）
-                var headerGo = new GameObject($"TierHeader_{tier}", typeof(RectTransform));
-                headerGo.transform.SetParent(containerGo.transform, false);
-                var headerLayout = headerGo.AddComponent<HorizontalLayoutGroup>();
-                headerLayout.spacing = 8;
-                headerLayout.childAlignment = TextAnchor.MiddleLeft;
-                headerLayout.childControlWidth = false;
-                headerLayout.childControlHeight = true;
-                headerLayout.childForceExpandWidth = false;
-                headerLayout.childForceExpandHeight = false;
-                headerGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 20);
-
-                // 标题文字
-                var titleText = headerGo.AddComponent<Text>();
-                titleText.text = $"◆ {tierNames[tier]}知识";
-                titleText.fontSize = 12;
-                titleText.fontStyle = FontStyle.Bold;
-                titleText.color = GetTierColor(tier);
-                titleText.alignment = TextAnchor.MiddleLeft;
-                titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                if (titleText.font == null) titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                titleText.GetComponent<RectTransform>().sizeDelta = new Vector2(80, 18);
-
-                // 进度文字
-                var progressText = headerGo.AddComponent<Text>();
-                progressText.text = $"{tierUnlocked}/{allDefs.Count}{(tierUnlocked_flag ? "" : "  🔒未解锁")}";
-                progressText.fontSize = 10;
-                progressText.color = tierUnlocked_flag ? new Color(0.7f, 0.8f, 1f) : new Color(0.5f, 0.5f, 0.5f);
-                progressText.alignment = TextAnchor.MiddleLeft;
-                progressText.horizontalOverflow = HorizontalWrapMode.Overflow;
-                if (progressText.font == null) progressText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                progressText.GetComponent<RectTransform>().sizeDelta = new Vector2(100, 18);
-
-                // 知识网格（学特质Tab的网格布局，每行5个）
-                var gridGo = new GameObject($"TierGrid_{tier}", typeof(RectTransform));
-                gridGo.transform.SetParent(containerGo.transform, false);
-                var gridLayout = gridGo.AddComponent<GridLayoutGroup>();
-                gridLayout.cellSize = new Vector2(44, 44);
-                gridLayout.spacing = new Vector2(8, 8);
-                gridLayout.childAlignment = TextAnchor.UpperLeft;
-                gridLayout.constraint = GridLayoutGroup.Constraint.Flexible;
-                gridLayout.padding = new RectOffset(4, 4, 2, 6);
-                int rows = Mathf.CeilToInt(allDefs.Count / 5f);
-                gridGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, rows * 52);
-
-                foreach (var def in allDefs)
-                {
-                    bool unlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
-                    int actualCost = SuperMechPotential.GetActualCost(actor, def.id, def.cost);
-                    bool canUnlock = !unlocked && tierUnlocked_flag && pot >= actualCost;
-                    string branchName = def.branch < branchNames.Length ? branchNames[def.branch] : "?";
-                    AddKnowledgeIcon(gridGo.transform, actor, def, branchName, unlocked, canUnlock, actualCost);
-                }
-            }
-
-            // 总计（学特质Tab底部统计）
-            var totalGo = new GameObject("Total", typeof(RectTransform));
-            totalGo.transform.SetParent(containerGo.transform, false);
-            var totalText = totalGo.AddComponent<Text>();
-            totalText.text = $"已解锁: {totalUnlocked} / {totalAll}  |  潜能点: {pot}";
-            totalText.fontSize = 13;
-            totalText.fontStyle = FontStyle.Bold;
-            totalText.color = new Color(1f, 0.84f, 0f);
-            totalText.alignment = TextAnchor.MiddleCenter;
-            totalText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (totalText.font == null) totalText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            totalGo.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 24);
-        }
+        // RenderKnowledgeGraph 已移除（旧版2D图谱，当前使用SuperMechKnowledgePanel三层结构+SMKnowledgeGraph3D）
 
         /// <summary>知识图标（原版图标+品质颜色边框，参考原版特质/物品面板）</summary>
         private static void AddKnowledgeIcon(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock, int actualCost = 0)

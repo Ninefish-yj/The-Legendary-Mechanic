@@ -32,9 +32,7 @@ namespace SuperMech.Code
         private static string _currentPrefix = "mech";
         private static bool _dragging;
         private static Vector2 _dragOffset;
-        private static Vector2 _graphOffset = Vector2.zero;
-        private static readonly Dictionary<string, GameObject> _nodeObjects = new Dictionary<string, GameObject>();
-        private static readonly List<GameObject> _connectionLines = new List<GameObject>();
+        // _graphOffset/_nodeObjects/_connectionLines 已移除（旧版2D图谱遗留，当前使用SMKnowledgeGraph3D）
         private static readonly Color[] TierColors =
         {
             new Color(0.5f, 0.5f, 0.5f),  // 基础 - 灰
@@ -274,14 +272,7 @@ namespace SuperMech.Code
             _graphContent = gcRt;
         }
 
-        private static void OnGraphDrag(Vector2 delta)
-        {
-            _graphOffset += delta * 0.5f;
-            _graphOffset.x = Mathf.Clamp(_graphOffset.x, -200f, 200f);
-            _graphOffset.y = Mathf.Clamp(_graphOffset.y, -100f, 100f);
-            if (_graphContent != null)
-                _graphContent.anchoredPosition = _graphOffset;
-        }
+        // OnGraphDrag 已移除（旧版2D图谱拖拽，当前使用SMKnowledgeGraph3D组件的拖拽）
 
         private static void CreateLibraryLayer()
         {
@@ -401,88 +392,7 @@ namespace SuperMech.Code
             }
         }
 
-        private static void CreateKnowledgeNode(SuperMechKnowledge.KnowledgeDef def, float x, float y, int tier)
-        {
-            GameObject node = new GameObject("Node_" + def.id, typeof(RectTransform));
-            node.transform.SetParent(_graphContent, false);
-            RectTransform rt = node.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0, 0.5f);
-            rt.anchorMax = new Vector2(0, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-            rt.anchoredPosition = new Vector2(x, y - GraphHeight / 2f);
-            rt.sizeDelta = new Vector2(28, 28);
-
-            Image img = node.AddComponent<Image>();
-            bool unlocked = SuperMechKnowledge.IsUnlocked(_currentActor, def.id);
-            int pot = SuperMechPotential.GetPotential(_currentActor);
-            int actualCost = SuperMechPotential.GetActualCost(_currentActor, def.id, def.cost);
-            bool tierUnlocked = def.tier == 0 || SuperMechKnowledge.GetTierKnowledgeCount(_currentActor, _currentPrefix, def.tier - 1) > 0;
-            bool canUnlock = !unlocked && tierUnlocked && pot >= actualCost;
-            img.color = unlocked
-                ? TierColors[tier]
-                : canUnlock
-                    ? new Color(TierColors[tier].r * 0.6f, TierColors[tier].g * 0.6f, TierColors[tier].b * 0.6f, 0.8f)
-                    : new Color(0.2f, 0.2f, 0.2f, 0.5f);
-
-            // 图标
-            if (!string.IsNullOrEmpty(def.icon))
-            {
-                GameObject iconObj = new GameObject("Icon", typeof(RectTransform));
-                iconObj.transform.SetParent(node.transform, false);
-                RectTransform iconRt = iconObj.GetComponent<RectTransform>();
-                iconRt.anchorMin = Vector2.zero;
-                iconRt.anchorMax = Vector2.one;
-                iconRt.offsetMin = new Vector2(3, 3);
-                iconRt.offsetMax = new Vector2(-3, -3);
-                Image iconImg = iconObj.AddComponent<Image>();
-                try { iconImg.sprite = SpriteTextureLoader.getSprite(def.icon); } catch { }
-                iconImg.color = unlocked ? Color.white : new Color(1, 1, 1, 0.5f);
-            }
-
-            // 点击解锁
-            Button btn = node.AddComponent<Button>();
-            btn.onClick.AddListener(() =>
-            {
-                if (SuperMechPotential.UnlockNode(_currentActor, def.id, def.cost))
-                {
-                    Refresh();
-                }
-            });
-
-            // Tooltip
-            TipButton tip = node.AddComponent<TipButton>();
-            tip.textOnClick = def.name;
-            tip.textOnClickDescription = def.desc + $"\n消耗: {actualCost}潜能点\n阶位: {GetTierName(def.tier)}";
-            tip.text_description_2 = string.Empty;
-
-            _nodeObjects[def.id] = node;
-        }
-
-        private static void CreateConnectionLine(GameObject from, GameObject to)
-        {
-            GameObject line = new GameObject("Line", typeof(RectTransform));
-            line.transform.SetParent(_graphContent, false);
-            line.transform.SetAsFirstSibling();
-            RectTransform rt = line.GetComponent<RectTransform>();
-            rt.anchorMin = new Vector2(0, 0.5f);
-            rt.anchorMax = new Vector2(0, 0.5f);
-            rt.pivot = new Vector2(0.5f, 0.5f);
-
-            Vector2 fromPos = ((RectTransform)from.transform).anchoredPosition;
-            Vector2 toPos = ((RectTransform)to.transform).anchoredPosition;
-            Vector2 mid = (fromPos + toPos) / 2f;
-            float dist = Vector2.Distance(fromPos, toPos);
-            float angle = Mathf.Atan2(toPos.y - fromPos.y, toPos.x - fromPos.x) * Mathf.Rad2Deg;
-
-            rt.anchoredPosition = mid;
-            rt.sizeDelta = new Vector2(dist, 2);
-            rt.rotation = Quaternion.Euler(0, 0, angle);
-
-            Image img = line.AddComponent<Image>();
-            img.color = new Color(0.4f, 0.5f, 0.7f, 0.4f);
-
-            _connectionLines.Add(line);
-        }
+        // CreateKnowledgeNode 和 CreateConnectionLine 方法已移除（旧版2D图谱遗留，当前使用SMKnowledgeGraph3D组件）
 
         private static void RefreshLibrary()
         {

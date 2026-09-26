@@ -198,29 +198,7 @@ namespace SuperMech.Code
             AssetManager.traits.add(t);
         }
 
-        private static void AddGivePower(string traitId, string name)
-        {
-            var p = new GodPower
-            {
-                id = "sm_give_" + traitId,
-                name = name,
-                path_icon = "iconDivineLight",
-                rank = PowerRank.Rank0_free,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = false
-            };
-            p.click_action += (WorldTile tile, string powerId) =>
-            {
-                if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { a.addTrait(traitId); });
-                return true;
-            };
-            AssetManager.powers.add(p);
-            LocalizedTextManager.add("power_sm_give_" + traitId, name, pReplace: true);
-        }
+        // AddGivePower 方法已移除（副职业学习移到知识Tab◆操作区域）
 
         /// <summary>清空所有副职业数据（世界切换用）。</summary>
         public static void Clear()

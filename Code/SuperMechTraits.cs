@@ -186,20 +186,6 @@ namespace SuperMech.Code
             return idx >= 0 && idx < descs.Length ? descs[idx] : "高阶超能者。";
         }
 
-        private static void AddSkillTrait(string id, string name, string desc, int intell, float dmgMul)
-        {
-            var t = new ActorTrait
-            {
-                id = id, path_icon = "ui/Icons/actor_traits/iconBattleReflexes", group_id = "sm_skills",
-                needs_to_be_explored = false, base_stats = new BaseStats()
-            };
-            t.base_stats["intelligence"] = intell;
-            t.base_stats["multiplier_damage"] = dmgMul;
-            // 职业技能绑定战斗动作
-            if (id == SkillQiMod) t.addCombatAction("combat_instincts");        // 气力改装→战斗本能
-            if (id == SkillVirtualPurify) t.addCombatAction("combat_cast_spell"); // 虚拟净化→施法
-            if (id == SkillDimensionMarch) t.addCombatAction("combat_dash");     // 维度行军→冲刺
-            AssetManager.traits.add(t);
-        }
+        // AddSkillTrait 方法已移除（旧版技能系统遗留，当前职业技能使用SuperMechSkills注册）
     }
 }
