@@ -607,10 +607,22 @@ namespace SuperMech.Code
                 });
             }
 
-            // Tooltip（名称+描述+消耗+分支，跨系兼修显示×3）
+            // Tooltip（名称+描述+消耗+分支，跨系显示智力门槛和搭配）
             var tip = go.AddComponent<TipButton>();
             bool crossClass = SuperMechPotential.IsCrossClass(actor, def.id);
-            string costText = crossClass ? $"{actualCost}潜能点（跨系×3）" : $"{def.cost}潜能点";
+            bool hasSynergy = SuperMechPotential.HasPowerSynergy(actor, SuperMechPotential.GetKnowledgePrefix(def.id));
+            float intel = actor.stats.intelligence;
+            string costText = $"{actualCost}潜能点";
+            if (crossClass)
+            {
+                string intelText = intel < 10f ? "（智力不足，×5）" : intel >= 20f ? "（高智力，×2）" : "（跨系×3）";
+                string synergyText = hasSynergy ? " 异能搭配-30%" : "";
+                costText = $"{actualCost}潜能点 {intelText}{synergyText}";
+            }
+            else if (hasSynergy)
+            {
+                costText = $"{actualCost}潜能点（异能搭配-30%）";
+            }
             tip.textOnClick = $"{def.name}\n{def.desc}\n分支: {branch} | 消耗: {costText}";
         }
 

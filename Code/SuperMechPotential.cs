@@ -72,6 +72,71 @@ namespace SuperMech.Code
             return "";
         }
 
+        // 异能-职业搭配表（具体异能 -> 适合的职业前缀，搭配时学习消耗降低）
+        private static readonly Dictionary<string, string[]> PowerClassSynergy = new Dictionary<string, string[]>
+        {
+            { "电磁操控", new[] { "mech" } },        // 电磁操控特别适合机械系
+            { "能量亲和", new[] { "mech", "mage" } }, // 能量亲和适合机械/魔法
+            { "虚拟意识", new[] { "mech", "mind" } }, // 虚拟意识适合机械/念力
+            { "机械心灵", new[] { "mech" } },        // 机械心灵适合机械系
+            { "纳米操控", new[] { "mech" } },        // 纳米操控适合机械系
+            { "量子计算", new[] { "mech", "mind" } }, // 量子计算适合机械/念力
+            { "体魄强化", new[] { "martial" } },     // 体魄强化适合武道
+            { "气血澎湃", new[] { "martial" } },     // 气血澎湃适合武道
+            { "战斗本能", new[] { "martial" } },     // 战斗本能适合武道
+            { "气劲外放", new[] { "martial", "psi" } }, // 气劲外放适合武道/异能
+            { "金刚不坏", new[] { "martial" } },     // 金刚不坏适合武道
+            { "血脉觉醒", new[] { "martial", "psi" } }, // 血脉觉醒适合武道/异能
+            { "元素异能", new[] { "mage", "psi" } },  // 元素异能适合魔法/异能
+            { "身体变异", new[] { "martial", "psi" } }, // 身体变异适合武道/异能
+            { "感官强化", new[] { "psi", "mind" } },  // 感官强化适合异能/念力
+            { "再生能力", new[] { "martial", "psi" } }, // 再生能力适合武道/异能
+            { "物质干涉", new[] { "psi", "mech" } },  // 物质干涉适合异能/机械
+            { "能量放射", new[] { "psi", "mage" } },  // 能量放射适合异能/魔法
+            { "元素魔法", new[] { "mage" } },        // 元素魔法适合魔法
+            { "变化术", new[] { "mage", "psi" } },    // 变化术适合魔法/异能
+            { "造物术", new[] { "mage", "mech" } },   // 造物术适合魔法/机械
+            { "召唤术", new[] { "mage" } },          // 召唤术适合魔法
+            { "结界术", new[] { "mage", "mind" } },   // 结界术适合魔法/念力
+            { "符文魔法", new[] { "mage", "mech" } }, // 符文魔法适合魔法/机械
+            { "念动力", new[] { "mind", "mech" } },   // 念动力适合念力/机械
+            { "灵魂感知", new[] { "mind" } },        // 灵魂感知适合念力
+            { "精神冲击", new[] { "mind" } },        // 精神冲击适合念力
+            { "记忆操控", new[] { "mind" } },        // 记忆操控适合念力
+            { "心灵感应", new[] { "mind", "psi" } },  // 心灵感应适合念力/异能
+            { "预知未来", new[] { "mind", "psi" } },  // 预知未来适合念力/异能
+        };
+
+        /// <summary>获取单位的具体异能类型列表。</summary>
+        private static List<string> GetSpecificPowers(Actor a)
+        {
+            var list = new List<string>();
+            var talents = SuperMechTalent.GetTalents(a);
+            foreach (var t in talents)
+            {
+                if (!string.IsNullOrEmpty(t.specificPower))
+                    list.Add(t.specificPower);
+            }
+            return list;
+        }
+
+        /// <summary>判断具体异能是否和目标职业搭配。</summary>
+        private static bool HasPowerSynergy(Actor a, string classPrefix)
+        {
+            var powers = GetSpecificPowers(a);
+            foreach (var p in powers)
+            {
+                if (PowerClassSynergy.TryGetValue(p, out var classes))
+                {
+                    foreach (var c in classes)
+                    {
+                        if (c == classPrefix) return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         /// <summary>判断知识节点是否是跨系兼修（和主职业方向不同）。五系天才不惩罚。</summary>
         public static bool IsCrossClass(Actor a, string nodeId)
         {
@@ -83,11 +148,35 @@ namespace SuperMech.Code
             return prefix != mainPrefix;
         }
 
-        /// <summary>获取知识节点的实际消耗（跨系兼修×3，原著ch611：其他分支知识潜能点费用×3）。</summary>
+        /// <summary>获取知识节点的实际消耗（跨系兼修受智力和异能搭配影响，原著ch611）。</summary>
         public static int GetActualCost(Actor a, string nodeId, int baseCost)
         {
-            if (IsCrossClass(a, nodeId)) return baseCost * 3;
-            return baseCost;
+            if (SuperMechTalent.IsFiveSystemGenius(a)) return baseCost;  // 五系天才无惩罚
+
+            string prefix = GetKnowledgePrefix(nodeId);
+            string mainClass = SuperMechProfession.GetClass(a);
+            string mainPrefix = string.IsNullOrEmpty(mainClass) ? "" : SuperMechKnowledge.GetPrefixForClass(mainClass);
+            bool isCross = prefix != mainPrefix;
+
+            if (!isCross)
+            {
+                // 本系：异能搭配有加成
+                if (HasPowerSynergy(a, prefix)) return Mathf.Max(1, (int)(baseCost * 0.7f));  // 搭配-30%
+                return baseCost;
+            }
+
+            // 跨系兼修：智力门槛+异能搭配
+            float intel = a.stats.intelligence;
+            float multiplier = 3f;  // 默认×3
+
+            // 智力门槛（原著：双修需要高智力，智力不够效率极低）
+            if (intel < 10f) multiplier = 5f;       // 智力<10，×5
+            else if (intel >= 20f) multiplier = 2f;  // 智力>=20，×2
+
+            // 异能搭配加成（如果具体异能和兼修职业搭配，消耗降低）
+            if (HasPowerSynergy(a, prefix)) multiplier *= 0.7f;  // 搭配-30%
+
+            return Mathf.Max(1, (int)(baseCost * multiplier));
         }
 
         /// <summary>解锁知识节点（消耗潜能点，跨系兼修×3）。返回是否成功。</summary>
