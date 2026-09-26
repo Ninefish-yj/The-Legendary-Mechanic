@@ -99,17 +99,17 @@ namespace SuperMech.Code
             WindowMetaTab source = FindCloneSource(scroll.tabs);
             if (source == null) return null;
 
-            // 参考天人武道：克隆到source的父对象，设置兄弟索引
+            // 参考天人武道：克隆到source的父对象，放在最后面（不影响原版Tab的拖拽排序索引）
             GameObject tabObj = Object.Instantiate(source.gameObject, source.transform.parent);
             tabObj.name = TabName;
-            tabObj.transform.SetSiblingIndex(source.transform.GetSiblingIndex() + 1);
+            tabObj.transform.SetAsLastSibling();
 
             WindowMetaTab newTab = tabObj.GetComponent<WindowMetaTab>();
             if (newTab == null) return null;
 
-            // 移除拖拽排序组件（自定义Tab不需要拖拽，否则会触发DragOrderContainer的KeyNotFoundException）
+            // 立即移除拖拽排序组件（用DestroyImmediate，避免延迟销毁期间被DragOrderContainer扫描到）
             DragOrderElement dragElem = newTab.GetComponent<DragOrderElement>();
-            if (dragElem != null) Object.Destroy(dragElem);
+            if (dragElem != null) Object.DestroyImmediate(dragElem);
 
             // 清空而不是new（参考天人武道）
             if (newTab.tab_elements != null) newTab.tab_elements.Clear();
