@@ -184,24 +184,39 @@ namespace SuperMech.Code
         }
 
         /// <summary>获取单位职业阶段名称。
-        /// 原著逻辑：只有机械系有明确的14阶段分支职业链（ch50）；
-        /// 武道/异能/魔法/念力四系原著未列出明确阶段链，用"阶位+职业名"格式（如"A级武道家""超A级魔法师"）。</summary>
+        /// 原著逻辑：
+        /// - 机械师分支：完整14阶段职业链（ch50/ch1039）
+        /// - 枪炮师/械武者分支：前7阶按能力命名（含原著【战争堡垒】【机甲操控师】），后7阶用"阶位+职业名"
+        /// - 武道/异能/魔法/念力四系：原著未列出明确阶段链，用"阶位+职业名"格式</summary>
         public static string GetStageName(Actor a)
         {
             if (a == null) return "—";
             int s = GetStage(a);
             if (s <= 0) return "未入门";
-            // 只有机械系有14阶段职业链
-            if (a.hasTrait(SuperMechTraits.ClassMech))
+            // 机械师分支：完整14阶段
+            if (a.hasTrait(SuperMechBranch.BranchMech))
             {
                 string[] arr = GetStageArray(a);
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
                 return arr[idx];
             }
+            // 枪炮师/械武者分支：前7阶有职业名，后7阶用阶位+职业名
+            if (a.hasTrait(SuperMechBranch.BranchGunner) || a.hasTrait(SuperMechBranch.BranchMartial))
+            {
+                if (s <= 7)
+                {
+                    string[] arr = GetStageArray(a);
+                    int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
+                    return arr[idx];
+                }
+                string rank = SuperMechRanks.GetRankName(a);
+                string subClass = a.hasTrait(SuperMechBranch.BranchGunner) ? "枪炮师" : "械武者";
+                return $"{rank}{subClass}";
+            }
             // 其他四系：阶位+职业名（原著逻辑）
-            string rank = SuperMechRanks.GetRankName(a);
+            string rankName = SuperMechRanks.GetRankName(a);
             string className = GetGenericClassName(a);
-            return $"{rank}{className}";
+            return $"{rankName}{className}";
         }
 
         /// <summary>获取其他四系的通用职业名（原著称呼）。</summary>
