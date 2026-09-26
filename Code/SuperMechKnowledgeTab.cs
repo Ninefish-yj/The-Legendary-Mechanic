@@ -154,7 +154,7 @@ namespace SuperMech.Code
             TipButton tip = newTab.GetComponent<TipButton>();
             if (tip != null)
             {
-                tip.textOnClick = "知识\n查看已解锁的知识节点与职业树";
+                tip.textOnClick = "知识\n3D知识图谱·潜能点解锁·跨系兼修·知识融合";
                 tip.text_description_2 = string.Empty;
             }
 

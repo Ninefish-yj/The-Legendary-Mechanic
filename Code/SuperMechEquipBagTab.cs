@@ -159,7 +159,7 @@ namespace SuperMech.Code
             TipButton tip = newTab.GetComponent<TipButton>();
             if (tip != null)
             {
-                tip.textOnClick = "背包\n查看与管理单位的背包物品";
+                tip.textOnClick = "背包\n9级品质装备·词条属性·装备掉落·按品质排序";
                 tip.text_description_2 = string.Empty;
             }
 
