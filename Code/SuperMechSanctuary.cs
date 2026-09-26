@@ -116,11 +116,20 @@ namespace SuperMech.Code
                 _unitAuthority[a.id] = arr;
             }
             arr[sanctuaryIndex] += amount;
-            // 同步到自定义属性
+            // 同步到自定义属性（6个圣所独立权限）
             var stats = SuperMechStats.Of(a);
             if (stats != null)
             {
-                stats[SuperMechCustomStats.StatSanctuaryAuthority] = GetTotalAuthority(a);
+                string[] statIds = {
+                    SuperMechCustomStats.StatSanctuary1,
+                    SuperMechCustomStats.StatSanctuary2,
+                    SuperMechCustomStats.StatSanctuary3,
+                    SuperMechCustomStats.StatSanctuary4,
+                    SuperMechCustomStats.StatSanctuary5,
+                    SuperMechCustomStats.StatSanctuary6
+                };
+                for (int i = 0; i < 6; i++)
+                    stats[statIds[i]] = arr[i];
             }
         }
 

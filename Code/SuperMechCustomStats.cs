@@ -31,7 +31,17 @@ namespace SuperMech.Code
         public const string StatCharm = "sm_charm";              // 魅力（原著7项基础属性之一）
         public const string StatLuck = "sm_luck";                // 幸运（原著7项基础属性之一）
         public const string StatProfessionLevel = "sm_profession_level"; // 职业等级（降临者）
-        public const string StatSanctuaryAuthority = "sm_sanctuary_authority"; // 圣所权限（综合等级，原著ch1266：碎片=权限）
+        // 潜能点（解锁知识消耗，原著ch48：潜能点用于学习技能/知识）
+        public const string StatPotentialPoints = "sm_potential_points";
+        // 神性蜕变总层数（职业+种族，原著ch1039：气力Lv21+78000欧纳触发神性蜕变）
+        public const string StatDivinityLayers = "sm_divinity_layers";
+        // 6个圣所权限（原著ch1266：圣所碎片=权限，每个圣所独立权限）
+        public const string StatSanctuary1 = "sm_sanctuary_1";   // 第一圣所（机械系）
+        public const string StatSanctuary2 = "sm_sanctuary_2";   // 第二圣所（武道系）
+        public const string StatSanctuary3 = "sm_sanctuary_3";   // 第三圣所（异能系）
+        public const string StatSanctuary4 = "sm_sanctuary_4";   // 第四圣所（魔法系）
+        public const string StatSanctuary5 = "sm_sanctuary_5";   // 第五圣所（念力系）
+        public const string StatSanctuary6 = "sm_sanctuary_6";   // 第六圣所（信息态技术）
 
         private static bool _registered = false;
 
@@ -61,8 +71,17 @@ namespace SuperMech.Code
                 (StatLuck, "幸运", "原著7项基础属性之一，影响暴击/掉落/突破概率（ch3）", true, 0f, 50000f, false),
                 // 职业等级（降临者面板属性）
                 (StatProfessionLevel, "职业等级", "降临者职业总等级（原著ch48，20级进阶转职）", false, 0f, 600f, false),
-                // 圣所权限（原著ch1266：圣所碎片=权限，越多能办的事越多，每次进入带出去的知识由权限决定）
-                (StatSanctuaryAuthority, "圣所权限", "圣所碎片代表的权限等级，影响进入圣所能带走的知识量（原著ch1266）", false, 0f, 100f, false),
+                // 潜能点（解锁知识消耗，原著ch48：潜能点用于学习技能/知识）
+                (StatPotentialPoints, "潜能点", "用于解锁知识节点的点数（原著ch48：升级获得潜能点，学习技能消耗）", false, 0f, 10000f, false),
+                // 神性蜕变总层数（职业+种族，原著ch1039：气力Lv21+78000欧纳触发神性蜕变）
+                (StatDivinityLayers, "神性蜕变", "神性蜕变总层数（职业蜕变+种族蜕变，原著ch1039：突破超神的前置条件）", false, 0f, 20f, false),
+                // 6个圣所权限（原著ch1266：圣所碎片=权限，每个圣所独立权限，影响进入能带出的知识量）
+                (StatSanctuary1, "第一圣所权限", "第一圣所（机械系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
+                (StatSanctuary2, "第二圣所权限", "第二圣所（武道系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
+                (StatSanctuary3, "第三圣所权限", "第三圣所（异能系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
+                (StatSanctuary4, "第四圣所权限", "第四圣所（魔法系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
+                (StatSanctuary5, "第五圣所权限", "第五圣所（念力系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
+                (StatSanctuary6, "第六圣所权限", "第六圣所（信息态技术）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
             };
 
             int registered = 0;
@@ -91,7 +110,7 @@ namespace SuperMech.Code
                 registered++;
             }
 
-            Debug.Log($"[超神机械师] 自定义属性注册完成：{registered}个（气力/气力上限/魔力/魔力上限/精神力/精神力上限/械感/神秘/魅力/幸运/职业等级）");
+            Debug.Log($"[超神机械师] 自定义属性注册完成：{registered}个（气力/气力上限/魔力/魔力上限/精神力/精神力上限/械感/魔感/神秘/魅力/幸运/职业等级/潜能点/神性蜕变/6圣所权限）");
         }
 
         /// <summary>每tick：遍历所有超神机械师单位，同步属性到BaseStats。</summary>
@@ -168,8 +187,19 @@ namespace SuperMech.Code
             // 职业等级（降临者）
             stats[StatProfessionLevel] = SuperMechStage.GetStage(a);
 
-            // 圣所权限（综合等级，原著ch1266：碎片=权限，影响进入圣所能带走的知识量）
-            stats[StatSanctuaryAuthority] = SuperMechSanctuary.GetTotalAuthority(a);
+            // 潜能点（解锁知识消耗）
+            stats[StatPotentialPoints] = SuperMechPotential.GetPotential(a);
+
+            // 神性蜕变总层数（职业+种族）
+            stats[StatDivinityLayers] = SuperMechDivinity.GetTotalLayers(a);
+
+            // 6个圣所权限（每个圣所独立权限等级）
+            stats[StatSanctuary1] = SuperMechSanctuary.GetAuthority(a, 0);
+            stats[StatSanctuary2] = SuperMechSanctuary.GetAuthority(a, 1);
+            stats[StatSanctuary3] = SuperMechSanctuary.GetAuthority(a, 2);
+            stats[StatSanctuary4] = SuperMechSanctuary.GetAuthority(a, 3);
+            stats[StatSanctuary5] = SuperMechSanctuary.GetAuthority(a, 4);
+            stats[StatSanctuary6] = SuperMechSanctuary.GetAuthority(a, 5);
         }
 
         /// <summary>获取单位的自定义属性值。</summary>
