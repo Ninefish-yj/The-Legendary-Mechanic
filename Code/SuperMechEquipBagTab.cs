@@ -257,15 +257,15 @@ namespace SuperMech.Code
                 if (child.name != "LayoutGroup") Object.Destroy(child.gameObject);
             }
 
-            // === 已装备区域（参考原版装备槽）===
-            var equippedHeader = CreateCategoryHeader(_container.transform, "已装备");
+            // === 已装备区域（带框，参考原版装备槽）===
+            var equippedBox = CreateCategoryBox(_container.transform, "已装备", null);
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
             if (currentIdx >= 0)
             {
                 var cur = SuperMechRelic.Equipments[currentIdx];
                 Color qColor = GetQualityColor(cur.qualityLevel);
 
-                var equipSlot = CreateItemIcon(_container.transform, cur.icon, qColor, 48, cur.name,
+                var equipSlot = CreateItemIcon(equippedBox, cur.icon, qColor, 48, cur.name,
                     $"品质: {GetQualityName(cur.qualityLevel)}\n伤害×{cur.dmgMul}  生命×{cur.hpMul}\n点击卸下");
                 var btn = equipSlot.GetComponent<Button>();
                 if (btn != null)
@@ -281,15 +281,15 @@ namespace SuperMech.Code
             else
             {
                 // 空槽位（参考原版空装备槽）
-                var emptySlot = CreateEmptySlot(_container.transform, 48, "未装备");
+                CreateEmptySlot(equippedBox, 48, "未装备");
             }
 
             // 分隔
             var spacer = new GameObject("Spacer", typeof(RectTransform));
             spacer.transform.SetParent(_container.transform, false);
-            spacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 12);
+            spacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 8);
 
-            // === 背包物品：按品质分组（参考原版物品栏分类）===
+            // === 背包物品：按品质分组（带框，参考原版物品栏分类）===
             var bag = SuperMechEquipBag.GetBag(actor);
 
             // 按品质分组
@@ -312,8 +312,8 @@ namespace SuperMech.Code
                 string catName = GetQualityName(q);
                 Color qColor = GetQualityColor(q);
 
-                // 分类标题
-                CreateCategoryHeader(_container.transform, catName, qColor);
+                // 创建带框的分类容器
+                var catBox = CreateCategoryBox(_container.transform, catName, qColor);
 
                 if (items.Count > 0)
                 {
@@ -325,7 +325,7 @@ namespace SuperMech.Code
                         if (iconIndex % 5 == 0)
                         {
                             currentRow = new GameObject("BagRow", typeof(RectTransform));
-                            currentRow.transform.SetParent(_container.transform, false);
+                            currentRow.transform.SetParent(catBox, false);
                             var rowLayout = currentRow.AddComponent<HorizontalLayoutGroup>();
                             rowLayout.spacing = 6;
                             rowLayout.childAlignment = TextAnchor.UpperLeft;
@@ -354,7 +354,7 @@ namespace SuperMech.Code
                 {
                     // 空槽位（参考原版空分类显示）
                     var emptyRow = new GameObject("EmptyRow", typeof(RectTransform));
-                    emptyRow.transform.SetParent(_container.transform, false);
+                    emptyRow.transform.SetParent(catBox, false);
                     emptyRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 36);
                     var emptyText = CreateText(emptyRow.transform, "— 无 —", 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.5f, 0.6f));
                     var emptyRt = emptyText.GetComponent<RectTransform>();
@@ -369,6 +369,97 @@ namespace SuperMech.Code
                 catSpacer.transform.SetParent(_container.transform, false);
                 catSpacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 6);
             }
+        }
+
+        /// <summary>创建带背景框的分类容器（参考原版物品栏分类框）。</summary>
+        private static Transform CreateCategoryBox(Transform parent, string title, Color? titleColor)
+        {
+            // 外框容器
+            GameObject box = new GameObject("CategoryBox", typeof(RectTransform));
+            box.transform.SetParent(parent, false);
+            LayoutElement boxLe = box.AddComponent<LayoutElement>();
+            boxLe.minHeight = 60f;
+            boxLe.flexibleHeight = 0f;
+
+            // 背景框（带边框效果）
+            GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
+            bgGo.transform.SetParent(box.transform, false);
+            Image bgImg = bgGo.AddComponent<Image>();
+            bgImg.color = new Color(0.12f, 0.13f, 0.16f, 0.9f);
+            bgImg.raycastTarget = false;
+            RectTransform bgRt = bgGo.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.offsetMin = new Vector2(2, 2);
+            bgRt.offsetMax = new Vector2(-2, -2);
+
+            // 内边框（1px，模拟原版边框）
+            GameObject borderGo = new GameObject("Border", typeof(RectTransform));
+            borderGo.transform.SetParent(box.transform, false);
+            Image borderImg = borderGo.AddComponent<Image>();
+            borderImg.color = new Color(0.25f, 0.27f, 0.32f, 0.8f);
+            borderImg.raycastTarget = false;
+            RectTransform borderRt = borderGo.GetComponent<RectTransform>();
+            borderRt.anchorMin = Vector2.zero;
+            borderRt.anchorMax = Vector2.one;
+            borderRt.offsetMin = Vector2.zero;
+            borderRt.offsetMax = Vector2.zero;
+            // 用镂空效果：中心再盖一层背景
+            GameObject innerGo = new GameObject("Inner", typeof(RectTransform));
+            innerGo.transform.SetParent(borderGo.transform, false);
+            Image innerImg = innerGo.AddComponent<Image>();
+            innerImg.color = new Color(0.12f, 0.13f, 0.16f, 0.9f);
+            innerImg.raycastTarget = false;
+            RectTransform innerRt = innerGo.GetComponent<RectTransform>();
+            innerRt.anchorMin = Vector2.zero;
+            innerRt.anchorMax = Vector2.one;
+            innerRt.offsetMin = new Vector2(1, 1);
+            innerRt.offsetMax = new Vector2(-1, -1);
+
+            // 标题栏
+            GameObject titleGo = new GameObject("Title", typeof(RectTransform));
+            titleGo.transform.SetParent(box.transform, false);
+            RectTransform titleRt = titleGo.GetComponent<RectTransform>();
+            titleRt.anchorMin = new Vector2(0, 1);
+            titleRt.anchorMax = new Vector2(1, 1);
+            titleRt.pivot = new Vector2(0.5f, 1f);
+            titleRt.sizeDelta = new Vector2(0, 20f);
+            titleRt.offsetMin = new Vector2(4, -20);
+            titleRt.offsetMax = new Vector2(-4, 0);
+
+            Text titleTxt = titleGo.AddComponent<Text>();
+            titleTxt.text = title;
+            titleTxt.fontSize = 12;
+            titleTxt.fontStyle = FontStyle.Bold;
+            titleTxt.color = titleColor ?? new Color(0.9f, 0.85f, 0.6f);
+            titleTxt.alignment = TextAnchor.MiddleCenter;
+            titleTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            if (titleTxt.font == null) titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+            // 内容容器（标题下方）
+            GameObject contentGo = new GameObject("Content", typeof(RectTransform));
+            contentGo.transform.SetParent(box.transform, false);
+            RectTransform contentRt = contentGo.GetComponent<RectTransform>();
+            contentRt.anchorMin = Vector2.zero;
+            contentRt.anchorMax = Vector2.one;
+            contentRt.pivot = new Vector2(0.5f, 1f);
+            contentRt.offsetMin = new Vector2(6, 6);
+            contentRt.offsetMax = new Vector2(-6, -24);
+
+            VerticalLayoutGroup contentVlg = contentGo.AddComponent<VerticalLayoutGroup>();
+            contentVlg.childAlignment = TextAnchor.UpperCenter;
+            contentVlg.childControlWidth = true;
+            contentVlg.childControlHeight = true;
+            contentVlg.childForceExpandWidth = true;
+            contentVlg.childForceExpandHeight = false;
+            contentVlg.spacing = 4f;
+            contentVlg.padding = new RectOffset(4, 4, 4, 4);
+
+            ContentSizeFitter contentFitter = contentGo.AddComponent<ContentSizeFitter>();
+            contentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            return contentGo.transform;
         }
 
         /// <summary>创建分类标题（参考原版物品栏分类标题）。</summary>
