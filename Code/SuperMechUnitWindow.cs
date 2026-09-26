@@ -72,6 +72,9 @@ namespace SuperMech.Code
                     ShowRow(__instance, "身份", "降临者");
                 }
 
+                // === 自定义属性（注册为BaseStatAsset，参与计算但原版图标栏不显示，这里手动插入）===
+                ShowCustomStats(__instance, actor);
+
                 // 提示：详细信息在知识Tab
                 ShowRow(__instance, "提示", "详细修炼状态/天赋/职业树/技能在知识Tab查看");
             }
@@ -176,6 +179,67 @@ namespace SuperMech.Code
             catch (Exception e)
             {
                 Debug.LogWarning("[超神机械师] showStatRow调用失败: " + e.Message);
+            }
+        }
+
+        /// <summary>
+        /// 显示自定义属性（注册为BaseStatAsset但原版图标栏不自动显示，这里手动插入）。
+        /// 只显示非零值，避免面板臃肿。
+        /// </summary>
+        private static void ShowCustomStats(UnitWindow window, Actor a)
+        {
+            try
+            {
+                // 潜能点（所有超能者都有，初始5点）
+                float pp = a.stats[SuperMechCustomStats.StatPotentialPoints];
+                if (pp > 0) ShowRow(window, "潜能点", pp.ToString("F0"));
+
+                // 神性蜕变层数（职业+种族各10层，ch1039）
+                float div = a.stats[SuperMechCustomStats.StatDivinityLayers];
+                if (div > 0) ShowRow(window, "神性蜕变", div.ToString("F0") + "层");
+
+                // 圣所权限（6个圣所独立权限，ch1266：碎片=权限）
+                int sanctuaryTotal = 0;
+                string[] sanctuaryStats = {
+                    SuperMechCustomStats.StatSanctuary1,
+                    SuperMechCustomStats.StatSanctuary2,
+                    SuperMechCustomStats.StatSanctuary3,
+                    SuperMechCustomStats.StatSanctuary4,
+                    SuperMechCustomStats.StatSanctuary5,
+                    SuperMechCustomStats.StatSanctuary6
+                };
+                foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
+                if (sanctuaryTotal > 0) ShowRow(window, "圣所权限", sanctuaryTotal + "碎片");
+
+                // 魔力（魔法系能量，ch50）
+                float mana = a.stats[SuperMechCustomStats.StatMana];
+                float manaMax = a.stats[SuperMechCustomStats.StatManaMax];
+                if (manaMax > 0) ShowRow(window, "魔力", $"{mana:F0}/{manaMax:F0}");
+
+                // 精神力（念力系能量，ch50）
+                float mind = a.stats[SuperMechCustomStats.StatMindPower];
+                float mindMax = a.stats[SuperMechCustomStats.StatMindPowerMax];
+                if (mindMax > 0) ShowRow(window, "精神力", $"{mind:F0}/{mindMax:F0}");
+
+                // 械感（机械亲和度，ch50：气力属性【磁】增加机械亲和度）
+                float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
+                if (mechAff > 0) ShowRow(window, "械感", mechAff.ToString("F0") + "%");
+
+                // 魔感（魔法亲和度）
+                float mageAff = a.stats[SuperMechCustomStats.StatMageAffinity];
+                if (mageAff > 0) ShowRow(window, "魔感", mageAff.ToString("F0") + "%");
+
+                // 原著7属性补充：神秘/魅力/幸运（ch3）
+                float mystery = a.stats[SuperMechCustomStats.StatMystery];
+                if (mystery > 0) ShowRow(window, "神秘", mystery.ToString("F0"));
+                float charm = a.stats[SuperMechCustomStats.StatCharm];
+                if (charm > 0) ShowRow(window, "魅力", charm.ToString("F0"));
+                float luck = a.stats[SuperMechCustomStats.StatLuck];
+                if (luck > 0) ShowRow(window, "幸运", luck.ToString("F0"));
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 自定义属性显示失败: " + e.Message);
             }
         }
     }
