@@ -60,11 +60,12 @@ namespace SuperMech.Code
                 string clsAspect = GetClassAspect(cls);
                 ShowRow(__instance, "职业", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
 
-                // 行3：土著/降临者区分（原著双轨制：都有职业阶段，区别是降临者有面板可主动转职，土著靠修行）
+                // 行3：土著/降临者区分（原著双轨制：都属于五系，区别是降临者有面板可主动转职，土著靠修行）
                 bool isAwakened = SuperMechAwakened.IsAwakened(actor);
                 if (isAwakened)
                 {
                     // 降临者：显示职业等级+经验+阶段
+                    ShowRow(__instance, "成长方式", "降临者（面板转职）");
                     string lvText = SuperMechAwakened.GetLevelText(actor);
                     ShowRow(__instance, "职业等级", lvText);
                     string stage = SuperMechStage.GetStageName(actor);
@@ -81,12 +82,10 @@ namespace SuperMech.Code
                 else
                 {
                     // 土著：也有职业阶段（原著ch267：NPC也有二十级进阶，只是没面板靠修行突破）
-                    // 玩家有面板可以查看土著的职业阶段
+                    ShowRow(__instance, "成长方式", "土著（阶位修炼）");
                     string stage = SuperMechStage.GetStageName(actor);
                     if (stage != "—" && stage != "未入门")
-                        ShowRow(__instance, "职业阶段", stage + "（土著）");
-                    else
-                        ShowRow(__instance, "体系", "土著（阶位修炼）");
+                        ShowRow(__instance, "职业阶段", stage);
                 }
 
                 // 行3b：职业树进度（百度百科：每系职业树名各不相同）
