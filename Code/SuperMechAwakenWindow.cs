@@ -12,13 +12,13 @@ namespace SuperMech.Code
         private static SMWindowFrame _window;
         private static Actor _target;
 
-        private static readonly (string traitId, string name, string desc, string aspect)[] Classes =
+        private static readonly (string traitId, string nameKey, string descKey, string aspectKey)[] Classes =
         {
-            (SuperMechTraits.ClassMech,    "机械系", "械感天赋·机械知识树·一人成军",     "神器"),
-            (SuperMechTraits.ClassMartial, "武道系", "体魄天赋·御气技巧树·近战格斗大师", "神体"),
-            (SuperMechTraits.ClassPsi,     "异能系", "异能潜力·基因树·天赋神通",         "神通"),
-            (SuperMechTraits.ClassMage,    "魔法系", "魔法天赋·魔法知识树·规则掌控",     "神权"),
-            (SuperMechTraits.ClassMind,    "念力系", "精神天赋·精神修炼树·灵魂攻击",     "神魂"),
+            (SuperMechTraits.ClassMech,    "sm_class_mech",    "sm_awaken_desc_mech",    "sm_aspect_mech"),
+            (SuperMechTraits.ClassMartial, "sm_class_martial", "sm_awaken_desc_martial", "sm_aspect_martial"),
+            (SuperMechTraits.ClassPsi,     "sm_class_psi",     "sm_awaken_desc_psi",     "sm_aspect_psi"),
+            (SuperMechTraits.ClassMage,    "sm_class_mage",    "sm_awaken_desc_mage",    "sm_aspect_mage"),
+            (SuperMechTraits.ClassMind,    "sm_class_mind",    "sm_awaken_desc_mind",    "sm_aspect_mind"),
         };
 
         public static void Show(Actor target)
@@ -28,7 +28,7 @@ namespace SuperMech.Code
 
             if (_window == null)
             {
-                _window = SMWindowFrame.Create("五系觉醒", 280, 340);
+                _window = SMWindowFrame.Create(LocalizedTextManager.getText("sm_awaken_title"), 280, 340);
                 BuildContent();
             }
             _window.Show();
@@ -39,20 +39,22 @@ namespace SuperMech.Code
             if (_window == null) return;
 
             // 说明文字
-            _window.AddLabel("选择觉醒系别（原著：超能者自然觉醒，天赋决定系别）",
+            _window.AddLabel(LocalizedTextManager.getText("sm_awaken_desc"),
                 10f, -55f, 260f, 30f, 12, TextAnchor.MiddleCenter);
 
             // 五个系别按钮
             float y = -95f;
-            foreach (var (traitId, name, descText, aspect) in Classes)
+            foreach (var (traitId, nameKey, descKey, aspectKey) in Classes)
             {
+                string name = LocalizedTextManager.getText(nameKey);
+                string aspect = LocalizedTextManager.getText(aspectKey);
                 string btnText = $"{name}（{aspect}）";
                 var btn = _window.AddButton(btnText, 20f, y, 240f, 32f, () => Awaken(traitId, name));
                 y -= 40f;
             }
 
             // 取消按钮
-            _window.AddButton("取消", 20f, y, 240f, 32f, () => _window.Hide(),
+            _window.AddButton(LocalizedTextManager.getText("sm_ui_cancel"), 20f, y, 240f, 32f, () => _window.Hide(),
                 new Color(0.3f, 0.15f, 0.15f));
         }
 

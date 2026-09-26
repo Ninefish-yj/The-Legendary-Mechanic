@@ -269,7 +269,7 @@ namespace SuperMech.Code
             }
 
             // === 已装备区域（带框，参考原版装备槽）===
-            var equippedBox = CreateCategoryBox(_container.transform, "已装备", null);
+            var equippedBox = CreateCategoryBox(_container.transform, LocalizedTextManager.getText("sm_ui_equipped"), null);
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
             if (currentIdx >= 0)
             {
@@ -277,7 +277,7 @@ namespace SuperMech.Code
                 Color qColor = GetQualityColor(cur.qualityLevel);
 
                 var equipSlot = CreateItemIcon(equippedBox, cur.icon, qColor, 48, cur.name,
-                    $"品质: {GetQualityName(cur.qualityLevel)}\n伤害×{cur.dmgMul}  生命×{cur.hpMul}\n点击卸下");
+                    $"{LocalizedTextManager.getText(\"sm_ui_quality\")}: {GetQualityName(cur.qualityLevel)}\n{LocalizedTextManager.getText(\"sm_ui_damage\")}×{cur.dmgMul}  {LocalizedTextManager.getText(\"sm_ui_health\")}×{cur.hpMul}\n{LocalizedTextManager.getText(\"sm_ui_unequip\")}");
                 var btn = equipSlot.GetComponent<Button>();
                 if (btn != null)
                 {
@@ -348,7 +348,7 @@ namespace SuperMech.Code
                         var def = SuperMechRelic.Equipments[idx];
 
                         var iconGo = CreateItemIcon(currentRow.transform, def.icon, qColor, 34, def.name,
-                            $"品质: {GetQualityName(def.qualityLevel)}\n伤害×{def.dmgMul}  生命×{def.hpMul}\n点击装备");
+                            $"{LocalizedTextManager.getText(\"sm_ui_quality\")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText(\"sm_ui_damage\")}×{def.dmgMul}  {LocalizedTextManager.getText(\"sm_ui_health\")}×{def.hpMul}\n{LocalizedTextManager.getText(\"sm_ui_equip\")}");
                         var btn = iconGo.GetComponent<Button>();
                         if (btn != null)
                         {
@@ -367,7 +367,7 @@ namespace SuperMech.Code
                     var emptyRow = new GameObject("EmptyRow", typeof(RectTransform));
                     emptyRow.transform.SetParent(catBox, false);
                     emptyRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 36);
-                    var emptyText = CreateText(emptyRow.transform, "— 无 —", 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.5f, 0.6f));
+                    var emptyText = CreateText(emptyRow.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.5f, 0.6f));
                     var emptyRt = emptyText.GetComponent<RectTransform>();
                     emptyRt.anchorMin = Vector2.zero;
                     emptyRt.anchorMax = Vector2.one;
@@ -618,11 +618,12 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>原著9级品质名。</summary>
+        /// <summary>原著9级品质名（本地化）。</summary>
         private static string GetQualityName(int q)
         {
-            string[] names = { "普通", "精良", "稀有", "史诗", "传说", "珍稀", "神器", "使徒兵器", "宇宙宝物" };
-            return q >= 0 && q < names.Length ? names[q] : "?";
+            string[] keys = { "sm_quality_0", "sm_quality_1", "sm_quality_2", "sm_quality_3", "sm_quality_4",
+                              "sm_quality_5", "sm_quality_6", "sm_quality_7", "sm_quality_8" };
+            return q >= 0 && q < keys.Length ? LocalizedTextManager.getText(keys[q]) : "?";
         }
 
         private static Text CreateText(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)

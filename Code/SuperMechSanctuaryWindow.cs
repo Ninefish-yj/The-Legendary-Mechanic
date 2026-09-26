@@ -25,7 +25,7 @@ namespace SuperMech.Code
         {
             try
             {
-                _frame = SMWindowFrame.Create("超神机械师·六圣所", 580f, 720f);
+                _frame = SMWindowFrame.Create(LocalizedTextManager.getText("sm_sanctuary_title"), 580f, 720f);
                 if (_frame == null) return;
                 Debug.Log("[超神机械师] 圣所状态窗口创建成功");
             }
@@ -42,18 +42,13 @@ namespace SuperMech.Code
             float y = -8f;
             const float x = 12f;
 
-            _frame.AddLabel("六圣所（跨存档·跨迭代）", x, y, 540f, 26f, 16, TextAnchor.MiddleCenter);
+            _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_subtitle"), x, y, 540f, 26f, 16, TextAnchor.MiddleCenter);
             y -= 34f;
 
-            string[] names = { "第一圣所·机械", "第二圣所·武道", "第三圣所·异能", "第四圣所·魔法", "第五圣所·念力", "第六圣所·信息态" };
-            string[] descs = {
-                "机械系技能碎片，神性蜕变后解锁",
-                "武道系技能碎片，神性蜕变后解锁",
-                "异能系技能碎片，神性蜕变后解锁",
-                "魔法系技能碎片，神性蜕变后解锁",
-                "念力系技能碎片，神性蜕变后解锁",
-                "信息态技术资料，克制世界树，需前五齐聚"
-            };
+            string[] nameKeys = { "sm_sanctuary_1", "sm_sanctuary_2", "sm_sanctuary_3", "sm_sanctuary_4", "sm_sanctuary_5", "sm_sanctuary_6" };
+            string[] names = System.Array.ConvertAll(nameKeys, k => LocalizedTextManager.getText(k));
+            string[] descKeys = { "sm_sanctuary_desc_1", "sm_sanctuary_desc_2", "sm_sanctuary_desc_3", "sm_sanctuary_desc_4", "sm_sanctuary_desc_5", "sm_sanctuary_desc_6" };
+            string[] descs = System.Array.ConvertAll(descKeys, k => LocalizedTextManager.getText(k));
 
             var data = SuperMechSanctuary.Data;
             for (int i = 0; i < 6; i++)
@@ -94,18 +89,18 @@ namespace SuperMech.Code
             foreach (int f in data.sanctuary_fragments) total += f;
             int unlockedCount = 0;
             for (int i = 0; i < 6; i++) if ((data.unlocked_sanctuaries & (1 << i)) != 0) unlockedCount++;
-            _frame.AddLabel($"碎片:{total}  解锁:{unlockedCount}/6  钥匙:{data.key_fragments}  进入:{data.total_visits}次(权限)  复活:{data.total_resurrections}次", x, y, 540f, 18f, 12);
+            _frame.AddLabel($"{LocalizedTextManager.getText(\"sm_sanctuary_fragments\")}:{total}  {LocalizedTextManager.getText(\"sm_sanctuary_unlocked\")}:{unlockedCount}/6  {LocalizedTextManager.getText(\"sm_sanctuary_keys\")}:{data.key_fragments}  {LocalizedTextManager.getText(\"sm_sanctuary_visits\")}:{data.total_visits}  {LocalizedTextManager.getText(\"sm_sanctuary_resurrect\")}:{data.total_resurrections}", x, y, 540f, 18f, 12);
             y -= 24f;
 
             // ===== 圣所复活（ch1134/ch1214：仅超A级可复活，超神级靠信息态重生）=====
-            _frame.AddLabel("◆ 圣所复活（S~SS阶，任意圣所+5钥匙，复活后信息丢失可能降阶，降到A级失去复活资格）", x, y, 540f, 20f, 13);
+            _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_resurrect_title"), x, y, 540f, 20f, 13);
             y -= 26f;
 
             bool canRes = SuperMechSanctuary.CanResurrect();
             var deadList = SuperMechSanctuary.GetDeadList();
             if (deadList.Count == 0)
             {
-                _frame.AddLabel("暂无死者记录（S~SS阶超能者死亡后自动记录；X阶超神级信息态自动重生）", x, y, 540f, 18f, 11);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_no_dead"), x, y, 540f, 18f, 11);
                 y -= 24f;
             }
             else
@@ -144,14 +139,14 @@ namespace SuperMech.Code
 
             y -= 6f;
             // ===== 次级维度（ch1071）=====
-            _frame.AddLabel("◆ 次级维度（A阶以上可进入，获得限时强化）", x, y, 540f, 20f, 13);
+            _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_dimension_title"), x, y, 540f, 20f, 13);
             y -= 26f;
 
             Actor selected = MoveCamera.getFocusUnit();
             var dims = SuperMechDimension.GetAvailableDimensions(selected);
             if (dims.Count == 0)
             {
-                _frame.AddLabel("选中一个A阶以上超能者查看可进入维度", x, y, 540f, 18f, 11);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_dimension_hint"), x, y, 540f, 18f, 11);
             }
             else
             {
