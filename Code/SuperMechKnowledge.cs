@@ -190,64 +190,34 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识节点（内部字典，不注册为特质）");
         }
 
-        /// <summary>按系别+分支+阶位+知识索引选择图标（全部使用原版确认存在的图标）。</summary>
-        private static readonly string[][] MechIcons = {
-            // 枪炮师：射击/火力相关（用Lightning/FireBlood等）
-            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep" },
-            // 机械师：齿轮/工具/制造相关（用Strong/Tough等）
-            new[] { "ui/Icons/actor_traits/iconStrong", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconBoostedVitality" },
-            // 械武者：近战/殖装相关（用StrongMinded/Agile等）
-            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconAgile", "ui/Icons/actor_traits/iconFast", "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillDash" }
+        /// <summary>按系别+阶位选择书籍图标（参考原版书籍系统）。</summary>
+        private static readonly string[] BookIconsByTier = {
+            "ui/Icons/iconBooks",          // 基础：普通书籍
+            "ui/Icons/iconBooksRead",      // 进阶：已读书籍
+            "ui/Icons/iconBooksWritten",   // 高端：已写书籍
+            "ui/Icons/iconBooks",          // 尖端：普通书籍（用颜色区分）
+            "ui/Icons/iconBooksDestroyed"  // 终极：神秘书籍
         };
-        private static readonly string[][] MartialIcons = {
-            // 敏捷：速度/闪避相关
-            new[] { "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/actor_traits/iconAgile", "ui/Icons/actor_traits/iconFast" },
-            // 力量：攻击/力量相关
-            new[] { "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconStrong", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconFireBlood" },
-            // 防御：护甲/盾牌相关
-            new[] { "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconBubbleDefense", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconBoostedVitality" }
-        };
-        private static readonly string[][] PsiIcons = {
-            // 能级：能量/爆炸相关
-            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconStrong" },
-            // 操控：手/控制相关
-            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/actor_traits/iconAgile" },
-            // 持久力：生命/耐力相关
-            new[] { "ui/Icons/actor_traits/iconRegeneration", "ui/Icons/actor_traits/iconBoostedVitality", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconStrong" }
-        };
-        private static readonly string[][] MageIcons = {
-            // 专精法师：法术/符文相关
-            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge" },
-            // 魔网法师：魔法阵/网络相关
-            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconAgile" },
-            // 元素：元素相关
-            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/actor_traits/iconBubbleDefense", "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillDash" }
-        };
-        private static readonly string[][] MindIcons = {
-            // 灵魂：灵魂/精神相关
-            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/skills/iconSkillDodge", "ui/Icons/actor_traits/iconAgile" },
-            // 法则：眼睛/洞察相关
-            new[] { "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconFast" },
-            // 现实：扭曲/改变相关
-            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconLightning", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/actor_traits/iconFireBlood" }
+
+        private static readonly string[][] BookIconsByClass = {
+            // 机械系：数学/战争/经济手册
+            new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
+            // 武道系：战争手册/寓言
+            new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
+            // 异能系：生物书/寓言
+            new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
+            // 魔法系：寓言/故事书
+            new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
+            // 念力系：历史书/外交手册
+            new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" }
         };
 
         private static string GetKnowledgeIcon(string prefix, int branch, int tier, int knowledgeIdx)
         {
-            string[][] icons = prefix switch
-            {
-                "mech" => MechIcons,
-                "martial" => MartialIcons,
-                "psi" => PsiIcons,
-                "mage" => MageIcons,
-                "mind" => MindIcons,
-                _ => MechIcons
-            };
-            if (branch >= icons.Length) branch = 0;
-            var branchIcons = icons[branch];
-            // 按阶位+知识索引循环选择图标，确保同一分支内不同知识有不同图标
-            int idx = (tier * 2 + knowledgeIdx) % branchIcons.Length;
-            return branchIcons[idx];
+            // 用书籍图标，按阶位选择不同类型
+            if (tier >= 0 && tier < BookIconsByTier.Length)
+                return BookIconsByTier[tier];
+            return "ui/Icons/iconBooks";
         }
 
         private static int RegisterTree(string prefix, string treeName, string[] branchNames, string[][][] tiers)
