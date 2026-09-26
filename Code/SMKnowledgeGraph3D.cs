@@ -12,7 +12,7 @@ namespace SuperMech.Code
     public class SMKnowledgeGraph3D : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         // 球面分布参数
-        private const float Radius = 120f;
+        private const float Radius = 90f;
         private const float NodeScaleMin = 0.7f;
         private const float NodeScaleMax = 1.3f;
         private const float DragSpeed = 0.3f;
@@ -93,10 +93,11 @@ namespace SuperMech.Code
             _graphContainer = new GameObject("Graph3D", typeof(RectTransform));
             _graphContainer.transform.SetParent(parent, false);
             RectTransform grt = _graphContainer.GetComponent<RectTransform>();
-            grt.anchorMin = Vector2.zero;
-            grt.anchorMax = Vector2.one;
-            grt.offsetMin = Vector2.zero;
-            grt.offsetMax = Vector2.zero;
+            grt.anchorMin = new Vector2(0.5f, 0.5f);
+            grt.anchorMax = new Vector2(0.5f, 0.5f);
+            grt.pivot = new Vector2(0.5f, 0.5f);
+            grt.localPosition = Vector3.zero;
+            grt.sizeDelta = new Vector2(parent.GetComponent<RectTransform>().rect.width, parent.GetComponent<RectTransform>().rect.height);
 
             // 背景层（按系别主题色渐变+光点装饰）
             CreateBackground(_graphContainer.transform);
@@ -112,10 +113,11 @@ namespace SuperMech.Code
             foreach (Transform t in new[] { _axonsParent.transform, _nodesParent.transform, _impulsesParent.transform })
             {
                 RectTransform rt = t.GetComponent<RectTransform>();
-                rt.anchorMin = Vector2.zero;
-                rt.anchorMax = Vector2.one;
-                rt.offsetMin = Vector2.zero;
-                rt.offsetMax = Vector2.zero;
+                rt.anchorMin = new Vector2(0.5f, 0.5f);
+                rt.anchorMax = new Vector2(0.5f, 0.5f);
+                rt.pivot = new Vector2(0.5f, 0.5f);
+                rt.localPosition = Vector3.zero;
+                rt.sizeDelta = _graphContainer.GetComponent<RectTransform>().sizeDelta;
             }
 
             // 生成节点
