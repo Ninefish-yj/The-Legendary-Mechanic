@@ -97,7 +97,12 @@ namespace SuperMech.Code
             grt.anchorMax = new Vector2(0.5f, 0.5f);
             grt.pivot = new Vector2(0.5f, 0.5f);
             grt.localPosition = Vector3.zero;
-            grt.sizeDelta = new Vector2(parent.GetComponent<RectTransform>().rect.width, parent.GetComponent<RectTransform>().rect.height);
+            // 固定大小（不用parent.rect，同一帧UI未布局时rect为0导致节点不可见）
+            float w = parent.GetComponent<RectTransform>().rect.width;
+            float h = parent.GetComponent<RectTransform>().rect.height;
+            if (w <= 0) w = 300f;
+            if (h <= 0) h = 200f;
+            grt.sizeDelta = new Vector2(w, h);
 
             // 背景层（按系别主题色渐变+光点装饰）
             CreateBackground(_graphContainer.transform);
