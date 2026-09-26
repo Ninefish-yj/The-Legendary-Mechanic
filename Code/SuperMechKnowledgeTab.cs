@@ -334,51 +334,13 @@ namespace SuperMech.Code
             // 第三步：已选定方向，显示知识树
             string cls = SuperMechProfession.GetClass(actor);
             string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
-            string treeName = GetTreeName(prefix);
 
-            // 标题
-            AddHeader(_container.transform, $"{treeName}（{cls}）");
-
-            // 潜能点/觉醒点
-            int pot = SuperMechPotential.GetPotential(actor);
-            int awk = SuperMechPotential.GetAwakening(actor);
-            AddInfoRow(_container.transform, $"潜能点: {pot}", $"觉醒点: {awk}");
-
-            // 操作区域（整合原超能者面板功能）
-            AddSectionHeader(_container.transform, "◆ 操作");
-            string stage = SuperMechStage.GetStageName(actor);
-            string branch = SuperMechBranch.GetBranchName(actor);
-            AddInfoRow(_container.transform, $"职业阶段: {stage}", $"分支: {(string.IsNullOrEmpty(branch) ? "未选择" : branch)}");
-            if (SuperMechAwakened.CanAdvanceStage(actor))
-                AddInfoRow(_container.transform, "转职", "可转职！完成进阶任务后自动转职");
-            if (cls == "机械系")
-                AddInfoRow(_container.transform, "制造", "机械系可制造机械单位（需达到对应阶段）");
-
-            // 神之催化按钮（仅SS阶以上显示）
-            int rankIdx = SuperMechAdvancement.GetExactRankIndex(actor);
-            if (rankIdx >= 12) // SS阶以上
-            {
-                int layers = SuperMechTranscendence.GetCatalystLayers(actor);
-                string btnText = layers > 0 ? $"神之催化（{layers}/5层）" : "神之催化";
-                AddActionButton(_container.transform, btnText, () =>
-                {
-                    if (SuperMechTranscendence.CatalyzeBreakthrough(actor))
-                    {
-                        int newLayers = SuperMechTranscendence.GetCatalystLayers(actor);
-                        Debug.Log($"[超神机械师] 神之催化：{actor.name} 获得第{newLayers}层催化");
-                        RenderContent(actor); // 刷新面板
-                    }
-                }, new Color(0.6f, 0.4f, 0.1f));
-            }
-
-            AddInfoRow(_container.transform, "提示", "点击蓝色图标解锁知识，拖拽图谱可旋转视角");
-
-            // 三层知识面板（系别层+图谱层+知识库层）
+            // 三层知识面板（信息栏+图谱层+知识库层）
             GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
             panelHost.transform.SetParent(_container.transform, false);
             LayoutElement panelLe = panelHost.AddComponent<LayoutElement>();
-            panelLe.minHeight = 420f;
-            panelLe.preferredHeight = 420f;
+            panelLe.minHeight = 480f;
+            panelLe.preferredHeight = 480f;
             panelLe.flexibleHeight = 0f;
             SuperMechKnowledgePanel.Ensure(panelHost.transform, actor);
 
