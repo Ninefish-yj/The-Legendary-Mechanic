@@ -104,7 +104,15 @@ namespace SuperMech.Code
             // 重置tab_action
             if (newTab.tab_action == null) newTab.tab_action = new WindowMetaTabEvent();
             else newTab.tab_action.RemoveAllListeners();
-            newTab.tab_action.AddListener(_ => scroll.tabs.showTab(newTab));
+            newTab.tab_action.AddListener(_ =>
+            {
+                scroll.tabs.showTab(newTab);
+                // Tab切换时触发内容刷新
+                if (_boundWindow != null)
+                {
+                    try { Refresh(_boundWindow); } catch { }
+                }
+            });
 
             newTab.gameObject.SetActive(true);
 

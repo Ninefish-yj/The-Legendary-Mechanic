@@ -26,14 +26,18 @@ namespace SuperMech.Code
                 Actor actor = GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return;
 
-                // 未觉醒单位也显示基础信息
+                // 未觉醒且无阶位的单位显示提示
                 string cls = SuperMechBranch.GetClass(actor);
-                if (cls == null)
+                int rankIdx = SuperMechAdvancement.GetExactRankIndex(actor);
+                if (cls == null && rankIdx < 0)
                 {
                     ShowRow(__instance, "体系", "未觉醒（普通单位）");
                     ShowRow(__instance, "提示", "用神权「五系觉醒」赋予天赋");
                     return;
                 }
+
+                // F阶及以上但未明确系别的单位，显示为"未定系超能者"
+                if (cls == null) cls = "未定系超能者";
 
                 // 行1：阶位
                 string rank = GetRank(actor);
