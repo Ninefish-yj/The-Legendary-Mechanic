@@ -26,17 +26,15 @@ namespace SuperMech.Code
                 Actor actor = GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return;
 
-                // 未觉醒且无阶位的单位显示提示
+                // 原著：觉醒=获得F阶+选择系别，两者同时发生。无系别=未觉醒=普通人，不存在"有阶位无系别"的中间状态
                 string cls = SuperMechBranch.GetClass(actor);
-                int rankIdx = SuperMechAdvancement.GetExactRankIndex(actor);
-                if (cls == null && rankIdx < 0)
+                if (cls == null)
                 {
                     ShowRow(__instance, "体系", "未觉醒（普通单位）");
                     ShowRow(__instance, "提示", "用神权「五系觉醒」赋予天赋");
                     return;
                 }
 
-                bool hasClass = cls != null;
                 bool isAwakened = SuperMechAwakened.IsAwakened(actor);
 
                 // 行1：阶位
@@ -56,59 +54,49 @@ namespace SuperMech.Code
                         ShowRow(__instance, "名号", title);
                 }
 
-                // 有系别才显示职业相关信息
-                if (hasClass)
+                // 行2：体系（原著：五系=机械/武道/异能/魔法/念力，对应神灵五方面）
+                string clsAspect = GetClassAspect(cls);
+                ShowRow(__instance, "体系", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
+
+                // 行3：土著/降临者区分（原著双轨制：都属于五系，区别是降临者有面板可主动转职，土著靠修行）
+                if (isAwakened)
                 {
-                    // 行2：体系（原著：五系=机械/武道/异能/魔法/念力，对应神灵五方面）
-                    string clsAspect = GetClassAspect(cls);
-                    ShowRow(__instance, "体系", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
-
-                    // 行3：土著/降临者区分（原著双轨制：都属于五系，区别是降临者有面板可主动转职，土著靠修行）
-                    if (isAwakened)
+                    // 降临者：显示职业等级+经验+阶段
+                    ShowRow(__instance, "成长方式", "降临者（面板转职）");
+                    string lvText = SuperMechAwakened.GetLevelText(actor);
+                    ShowRow(__instance, "职业等级", lvText);
+                    string stage = SuperMechStage.GetStageName(actor);
+                    if (stage != "—" && stage != "未入门")
+                        ShowRow(__instance, "职业阶段", stage);
+                    if (SuperMechAwakened.CanAdvanceStage(actor))
                     {
-                        // 降临者：显示职业等级+经验+阶段
-                        ShowRow(__instance, "成长方式", "降临者（面板转职）");
-                        string lvText = SuperMechAwakened.GetLevelText(actor);
-                        ShowRow(__instance, "职业等级", lvText);
-                        string stage = SuperMechStage.GetStageName(actor);
-                        if (stage != "—" && stage != "未入门")
-                            ShowRow(__instance, "职业阶段", stage);
-                        if (SuperMechAwakened.CanAdvanceStage(actor))
-                        {
-                            ShowRow(__instance, "转职", "可转职！");
-                            string reqText = SuperMechAdvancementTask.GetReqText(actor);
-                            if (reqText != null)
-                                ShowRow(__instance, "转职条件", reqText);
-                        }
-                    }
-                    else
-                    {
-                        // 土著：也有职业阶段（原著ch267：NPC也有二十级进阶，只是没面板靠修行突破）
-                        ShowRow(__instance, "成长方式", "土著（阶位修炼）");
-                        string stage = SuperMechStage.GetStageName(actor);
-                        if (stage != "—" && stage != "未入门")
-                            ShowRow(__instance, "职业阶段", stage);
-                    }
-
-                    // 行3b：职业树进度（百度百科：每系职业树名各不相同）
-                    string treeName = GetKnowledgeTreeName(cls);
-                    string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
-                    int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
-                    ShowRow(__instance, "职业树", $"{treeName}（{unlocked}节点）");
-
-                    // 行3c：职业技能（独立技能系统，参考西幻世界，不注册为特质）
-                    var skills = SuperMechSkills.GetLearned(actor);
-                    if (skills.Count > 0)
-                    {
-                        string skillNames = string.Join("、", skills.ConvertAll(s => s.name));
-                        ShowRow(__instance, "职业技能", skillNames);
+                        ShowRow(__instance, "转职", "可转职！");
+                        string reqText = SuperMechAdvancementTask.GetReqText(actor);
+                        if (reqText != null)
+                            ShowRow(__instance, "转职条件", reqText);
                     }
                 }
                 else
                 {
-                    // 有阶位但没系别：提示选择体系
-                    ShowRow(__instance, "体系", "未选择系别");
-                    ShowRow(__instance, "提示", "用神权「五系觉醒」选择体系");
+                    // 土著：也有职业阶段（原著ch267：NPC也有二十级进阶，只是没面板靠修行突破）
+                    ShowRow(__instance, "成长方式", "土著（阶位修炼）");
+                    string stage = SuperMechStage.GetStageName(actor);
+                    if (stage != "—" && stage != "未入门")
+                        ShowRow(__instance, "职业阶段", stage);
+                }
+
+                // 行3b：职业树进度（百度百科：每系职业树名各不相同）
+                string treeName = GetKnowledgeTreeName(cls);
+                string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
+                int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
+                ShowRow(__instance, "职业树", $"{treeName}（{unlocked}节点）");
+
+                // 行3c：职业技能（独立技能系统，参考西幻世界，不注册为特质）
+                var skills = SuperMechSkills.GetLearned(actor);
+                if (skills.Count > 0)
+                {
+                    string skillNames = string.Join("、", skills.ConvertAll(s => s.name));
+                    ShowRow(__instance, "职业技能", skillNames);
                 }
 
                 // 行4：气力（原著五系统一，ch3/ch50。机械系不叫"械力"，叫气力）
