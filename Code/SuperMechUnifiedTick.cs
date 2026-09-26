@@ -41,7 +41,7 @@ namespace SuperMech.Code
                     SuperMechRefinement.TickCultivation();
                     SuperMechCustomStats.TickSync(); // 同步自定义属性到BaseStats（单位面板显示）
                 }
-                // 第1组：晋升与成长（阶位/潜能/副职业/降临者/土著）
+                // 第1组：晋升与成长（阶位/潜能/副职业/降临者/星海人）
                 else if (group == 1)
                 {
                     SuperMechAdvancement.TickAutoAwakening();

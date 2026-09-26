@@ -16,9 +16,9 @@ namespace SuperMech.Code
     ///    - 影响条件：最高属性>20000、次要属性>15000、能级>85000、
     ///      职业知识全满级、与宇宙宝物灵魂链接，每满足一个多1点
     ///    - 打造宇宙宝物级装备也给点数（ch1052/1053）
-    /// 4. 降临者vs土著核心差异：
+    /// 4. 降临者vs星海人核心差异：
     ///    - 降临者（有面板）：点数可直接加点，打造宇宙宝物额外得点数，升级瞬间增强
-    ///    - 土著（无面板）：点数是"经验/感悟"，需长时间锻炼转化为层数（ch1178）
+    ///    - 星海人（无面板）：点数是"经验/感悟"，需长时间锻炼转化为层数（ch1178）
     /// 5. 冥冥感应（ch1204）：高段蜕变产生，感应到蜕变使命
     /// 6. 进阶门槛（ch1043）：后续进阶要求神性蜕变达到层数，不够则卡死
     /// </summary>
@@ -30,7 +30,7 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _profLayers = new Dictionary<long, int>();
         // 种族路线层数（unit.id -> layers）
         private static readonly Dictionary<long, int> _speciesLayers = new Dictionary<long, int>();
-        // 土著感悟转化进度（unit.id -> 0-100，满了转化1层）
+        // 星海人感悟转化进度（unit.id -> 0-100，满了转化1层）
         private static readonly Dictionary<long, float> _insightProgress = new Dictionary<long, float>();
         // 是否已触发神性蜕变
         private static readonly Dictionary<long, bool> _awakened = new Dictionary<long, bool>();
@@ -100,7 +100,7 @@ namespace SuperMech.Code
 
         /// <summary>
         /// 降临者：消耗点数加点到职业/种族路线（直接生效）。
-        /// 土著不能直接加点，只能靠感悟慢慢转化。
+        /// 星海人不能直接加点，只能靠感悟慢慢转化。
         /// </summary>
         public static bool SpendPoints(Actor a, string route, int layers = 1)
         {
@@ -131,7 +131,7 @@ namespace SuperMech.Code
         /// <summary>
         /// 进阶时获得神性蜕变点数（ch1043）。
         /// 基础1点，每满足一个条件多1点。
-        /// 降临者和土著都能通过进阶获得点数。
+        /// 降临者和星海人都能通过进阶获得点数。
         /// </summary>
         public static int AwardAdvancementPoints(Actor a)
         {
@@ -168,7 +168,7 @@ namespace SuperMech.Code
         /// <summary>
         /// 打造宇宙宝物获得神性蜕变点数（ch1052/1053）。
         /// 【降临者专属】只有有面板的玩家能通过这个渠道获得点数！
-        /// 土著没有面板，察觉不到这个效果。
+        /// 星海人没有面板，察觉不到这个效果。
         /// </summary>
         public static bool AwardCraftingPoints(Actor a)
         {
@@ -179,8 +179,8 @@ namespace SuperMech.Code
         }
 
         /// <summary>
-        /// Tick：土著感悟转化为神性蜕变层数（ch1178）。
-        /// 土著的点数是"经验/感悟"，需要长时间锻炼才能转化。
+        /// Tick：星海人感悟转化为神性蜕变层数（ch1178）。
+        /// 星海人的点数是"经验/感悟"，需要长时间锻炼才能转化。
         /// 降临者不需要这个（直接加点）。
         /// </summary>
         public static void TickNativeInsight()
@@ -215,7 +215,7 @@ namespace SuperMech.Code
                     if (pts >= PointsPerLayer)
                     {
                         _points[a.id] = pts - PointsPerLayer;
-                        // 土著优先转化职业路线
+                        // 星海人优先转化职业路线
                         int prof = GetProfLayers(a);
                         int spec = GetSpeciesLayers(a);
                         if (prof <= spec && prof < MaxLayers)
@@ -228,7 +228,7 @@ namespace SuperMech.Code
                             _speciesLayers[a.id] = spec + 1;
                             ApplySpeciesBonus(a, 1);
                         }
-                        Debug.Log($"[超神机械师] {a.name}（土著）感悟转化为1层神性蜕变");
+                        Debug.Log($"[超神机械师] {a.name}（星海人）感悟转化为1层神性蜕变");
                     }
                 }
                 _insightProgress[a.id] = progress;

@@ -155,7 +155,7 @@ namespace SuperMech.Code
                             SuperMechAdvancementTask.OnCraft(u);
 
                             // 【降临者专属】打造高级装备获得神性蜕变点数（ch1052/1053）
-                            // 只有有面板的玩家能通过这个渠道获得点数，土著察觉不到
+                            // 只有有面板的玩家能通过这个渠道获得点数，星海人察觉不到
                             if (SuperMechAwakened.IsAwakened(u) && stage >= 4 && perfection >= 1.0f)
                             {
                                 if (SuperMechDivinity.AwardCraftingPoints(u))

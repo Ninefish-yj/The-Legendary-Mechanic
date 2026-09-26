@@ -58,7 +58,7 @@ namespace SuperMech.Code
                 string clsAspect = GetClassAspect(cls);
                 ShowRow(__instance, "体系", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
 
-                // 行3：降临者标识（原著双轨制：降临者有面板可主动转职，土著靠修行。土著默认不显示）
+                // 行3：降临者标识（原著双轨制：降临者有面板可主动转职，星海人靠修行。星海人默认不显示）
                 if (isAwakened)
                 {
                     ShowRow(__instance, "身份", "降临者");
@@ -78,7 +78,7 @@ namespace SuperMech.Code
                 }
                 else
                 {
-                    // 土著：也有职业阶段（原著ch267：NPC也有二十级进阶，只是没面板靠修行突破）
+                    // 星海人：也有职业阶段（原著ch267：NPC也有二十级进阶，只是没面板靠修行突破）
                     string stage = SuperMechStage.GetStageName(actor);
                     if (stage != "—" && stage != "未入门")
                         ShowRow(__instance, "职业阶段", stage);
@@ -129,7 +129,7 @@ namespace SuperMech.Code
                 float onar = SuperMechAdvancement.CalcOnar(actor);
                 ShowRow(__instance, "欧纳", $"{onar:F0}");
 
-                // 行6：潜能点/传承度（双轨制：降临者=潜能点，土著=传承度）
+                // 行6：潜能点/传承度（双轨制：降临者=潜能点，星海人=传承度）
                 int unlockedK = SuperMechPotential.GetUnlockedCount(actor);
                 if (isAwakened)
                 {
@@ -217,7 +217,7 @@ namespace SuperMech.Code
                     ShowRow(__instance, "冥冥感应", "正在感应中...");
                 }
 
-                // 行8c：超神级突破（ch1396：X阶需手动突破，土著无法感知超神遗力）
+                // 行8c：超神级突破（ch1396：X阶需手动突破，星海人无法感知超神遗力）
                 if (SuperMechAdvancement.GetExactRankIndex(actor) >= 12 || SuperMechTranscendence.IsTranscended(actor))
                 {
                     ShowRow(__instance, "超神突破", SuperMechTranscendence.GetStatusText(actor));

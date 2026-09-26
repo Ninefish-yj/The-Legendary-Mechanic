@@ -250,7 +250,7 @@ namespace SuperMech.Code
                 bool hasEmRefine = a.hasTrait(EmRefinementTrait);
                 if (!hasRefine && !hasEmRefine) continue;
 
-                // 土著自动锻炼（每tick10%概率）
+                // 星海人自动锻炼（每tick10%概率）
                 if (!SuperMechAwakened.IsAwakened(a))
                 {
                     if (hasRefine && Random.value < 0.1f) TryRefine(a);

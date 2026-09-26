@@ -270,7 +270,7 @@ namespace SuperMech.Code
             SuperMechRankSpecialty.OnRankUp(a, index);
             SuperMechRace.AutoEvolve(a, index);  // 种族进化与阶位挂钩
 
-            // 土著（非降临者）阶位提升时，自动提升职业阶段
+            // 星海人（非降临者）阶位提升时，自动提升职业阶段
             // 原著ch267：NPC也有二十级进阶，只是没面板，靠修行和运气突破
             if (!SuperMechAwakened.IsAwakened(a))
             {
@@ -281,7 +281,7 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>阶位→土著职业阶段映射（原著NPC靠修行突破，职业阶段与阶位大致对应）。</summary>
+        /// <summary>阶位→星海人职业阶段映射（原著NPC靠修行突破，职业阶段与阶位大致对应）。</summary>
         private static int RankToStage(int rankIdx)
         {
             // F→0, E→1, D→2, C→3, B→4, A→6, S→8, SS→11, X→13

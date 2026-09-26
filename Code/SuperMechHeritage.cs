@@ -4,17 +4,17 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 土著传承度系统（原著：星海人没有面板，靠传承/流派/实战感悟学习知识）。
+    /// 星海人传承度系统（原著：星海人没有面板，靠传承/流派/实战感悟学习知识）。
     ///
     /// 【双轨制】
     /// - 降临者（玩家）：潜能点系统，升级获得，手动点知识树
-    /// - 土著（星海人）：传承度系统，随时间/战斗/师徒自动增长，自动解锁知识
+    /// - 星海人（星海人）：传承度系统，随时间/战斗/师徒自动增长，自动解锁知识
     ///
     /// 原著设定：
-    /// - 土著靠传承（师徒、流派、种族传承）学习技能
+    /// - 星海人靠传承（师徒、流派、种族传承）学习技能
     /// - 实战中感悟突破
     /// - 没有量化的潜能点，知识是"学会"的不是"点出来"的
-    /// - 高阶位土著传承度增长更快（阅历丰富）
+    /// - 高阶位星海人传承度增长更快（阅历丰富）
     /// </summary>
     public static class SuperMechHeritage
     {
@@ -52,7 +52,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>
-        /// Tick：土著传承度增长 + 自动解锁知识。
+        /// Tick：星海人传承度增长 + 自动解锁知识。
         /// 降临者不走这个系统（用潜能点）。
         /// </summary>
         public static void TickHeritage()
@@ -83,7 +83,7 @@ namespace SuperMech.Code
                 AddHeritage(a, growth);
 
                 // —— 潜移默化属性成长（原著ch741：NPC水磨工夫潜移默化提升）——
-                // 土著没有面板加点，属性按修炼方向自动偏向增长
+                // 星海人没有面板加点，属性按修炼方向自动偏向增长
                 AutoGrowStats(a, growth);
 
                 // 自动解锁知识节点
@@ -112,12 +112,12 @@ namespace SuperMech.Code
                     _autoUnlocked[a.id] = unlocked;
                     cost = GetCost(unlocked);
                     if (SuperMechConfig.LogVerbose)
-                        Debug.Log($"[超神机械师] {a.name}（土著）传承度突破，自动解锁知识{nodeId}（共{unlocked}个）");
+                        Debug.Log($"[超神机械师] {a.name}（星海人）传承度突破，自动解锁知识{nodeId}（共{unlocked}个）");
                 }
             }
         }
 
-        /// <summary>获取土著已自动解锁的知识节点数。</summary>
+        /// <summary>获取星海人已自动解锁的知识节点数。</summary>
         public static int GetAutoUnlockedCount(Actor a)
         {
             if (a == null) return 0;
@@ -143,7 +143,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>
-        /// 土著潜移默化属性成长（原著ch741：NPC没有面板，水磨工夫潜移默化提升）。
+        /// 星海人潜移默化属性成长（原著ch741：NPC没有面板，水磨工夫潜移默化提升）。
         /// 属性按所属系和分支自动偏向增长，不需要手动加点。
         /// </summary>
         private static void AutoGrowStats(Actor a, float growthAmount)

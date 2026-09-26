@@ -8,7 +8,7 @@ namespace SuperMech.Code
     /// 降临者（玩家）等级职业体系（原著ch3/ch48）。
     ///
     /// 【双轨制设计】
-    /// - 土著（星海人）：只有阶位体系（F→X），无职业等级，靠修炼水到渠成
+    /// - 星海人（星海人）：只有阶位体系（F→X），无职业等级，靠修炼水到渠成
     /// - 降临者（玩家）：有面板，职业等级+经验值+进阶任务转职+潜能点
     ///
     /// 原著设定：
@@ -93,7 +93,7 @@ namespace SuperMech.Code
             AssetManager.traits.add(t);
             LocalizedTextManager.add("trait_" + AwakenedTrait, "降临者", pReplace: true);
             LocalizedTextManager.add("trait_" + AwakenedTrait + "_info",
-                "携带玩家面板的降临者，拥有职业等级与经验值体系，需完成进阶任务转职。土著则只有阶位体系。", pReplace: true);
+                "携带玩家面板的降临者，拥有职业等级与经验值体系，需完成进阶任务转职。星海人则只有阶位体系。", pReplace: true);
             Debug.Log("[超神机械师] 降临者体系注册完成");
         }
 
