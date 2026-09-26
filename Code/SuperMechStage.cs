@@ -178,15 +178,35 @@ namespace SuperMech.Code
             return 0;
         }
 
-        /// <summary>获取单位职业阶段名称（按分支显示独立阶段名）。</summary>
+        /// <summary>获取单位职业阶段名称。
+        /// 原著逻辑：只有机械系有明确的14阶段分支职业链（ch50）；
+        /// 武道/异能/魔法/念力四系原著未列出明确阶段链，用"阶位+职业名"格式（如"A级武道家""超A级魔法师"）。</summary>
         public static string GetStageName(Actor a)
         {
             if (a == null) return "—";
             int s = GetStage(a);
             if (s <= 0) return "未入门";
-            string[] arr = GetStageArray(a);
-            int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
-            return arr[idx];
+            // 只有机械系有14阶段职业链
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+            {
+                string[] arr = GetStageArray(a);
+                int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
+                return arr[idx];
+            }
+            // 其他四系：阶位+职业名（原著逻辑）
+            string rank = SuperMechRanks.GetRankName(a);
+            string className = GetGenericClassName(a);
+            return $"{rank}{className}";
+        }
+
+        /// <summary>获取其他四系的通用职业名（原著称呼）。</summary>
+        private static string GetGenericClassName(Actor a)
+        {
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道家";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "异能者";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "魔法师";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "念力师";
+            return "超能者";
         }
 
         /// <summary>设置单位职业阶段（转职时调用）。</summary>
