@@ -53,31 +53,38 @@ namespace SuperMech.Code
                 * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
         }
 
-        /// <summary>自然觉醒：未觉醒单位达到年龄后有概率随机觉醒为五系之一。</summary>
+        /// <summary>自然激发潜能：未踏入超能的单位达到年龄后有概率激发潜能，获得天赋倾向（不定死系别）。</summary>
         public static void TickAutoAwakening()
         {
             if (!SuperMechConfig.AutoAwakening) return;
             var list = World.world.units.units_only_alive;
             if (list == null) return;
-            string[] classes = {
-                SuperMechTraits.ClassMech, SuperMechTraits.ClassMartial,
-                SuperMechTraits.ClassPsi, SuperMechTraits.ClassMage, SuperMechTraits.ClassMind
-            };
             foreach (Actor a in list)
             {
                 if (a == null) continue;
-                if (IsSuperMechUnit(a)) continue; // 已觉醒
+                if (SuperMechTalent.HasTalent(a)) continue; // 已踏入超能
                 if (a.age < SuperMechConfig.AwakeningMinAge) continue;
                 if (Random.value > SuperMechConfig.AwakeningChance) continue;
-                string cls = classes[Random.Range(0, classes.Length)];
-                a.addTrait(cls);
-                // 觉醒时初始化气力
+
+                // 激发潜能：获得天赋倾向+F阶
+                SuperMechTalent.GrantTalents(a);
+                if (!a.hasTrait("sm_rank_00_f"))
+                    a.addTrait("sm_rank_00_f");
+                SetExactRank(a, 0);
+                SuperMechSpecialty.AssignRandomSpecialty(a);
+
+                // 初始化气力
                 SuperMechQi.SetQi(a, 10f);
                 SuperMechQi.SetQiMax(a, 10f);
-                // 觉醒时随机潜力评级（原著ch1099：所有超能者都有潜力评级，决定阶位上限）
+                // 随机潜力评级（原著ch1099：所有超能者都有潜力评级，决定阶位上限）
                 SuperMechPotentialRating.RollRating(a);
+
+                var talents = SuperMechTalent.GetTalents(a);
+                string talentText = "";
+                foreach (var t in talents)
+                    talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
                 if (SuperMechConfig.LogVerbose)
-                    Debug.Log($"[超神机械师] {a.name}（{a.age}岁）自然觉醒为 {cls}");
+                    Debug.Log($"[超神机械师] {a.name}（{a.age}岁）激发潜能，天赋：{talentText.Trim()}");
             }
         }
 
@@ -218,9 +225,13 @@ namespace SuperMech.Code
             _appliedRankIdx[a.id] = newRankIdx;
         }
 
-        /// <summary>判断单位是否已觉醒五系之一。</summary>
+        /// <summary>判断单位是否已踏入超能（有天赋倾向，或兼容旧存档的五系特质）。</summary>
         public static bool IsSuperMechUnit(Actor a)
         {
+            if (a == null) return false;
+            // 新系统：有天赋倾向就是踏入超能
+            if (SuperMechTalent.HasTalent(a)) return true;
+            // 兼容旧存档：有五系特质
             return a.hasTrait(SuperMechTraits.ClassMech)
                 || a.hasTrait(SuperMechTraits.ClassPsi)
                 || a.hasTrait(SuperMechTraits.ClassMartial)

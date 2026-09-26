@@ -99,9 +99,13 @@ namespace SuperMech.Code
                 Actor a = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
                 if (a != null)
                 {
-                    a.addTrait(SuperMechTraits.ClassMech); // 默认机械系
+                    // 降临者：激发潜能+选定机械系方向（玩家有明确职业）
+                    SuperMechTalent.GrantTalents(a);
+                    SuperMechProfession.SetProfession(a, SuperMechProfession.ProfessionType.Mechanical);
                     a.addTrait(SuperMechAwakened.AwakenedTrait);
-                    SuperMechStage.SetStage(a, 1); // 入门者
+                    if (!a.hasTrait("sm_rank_00_f"))
+                        a.addTrait("sm_rank_00_f");
+                    SuperMechAdvancement.SetExactRank(a, 0);
                     SuperMechSpecialty.AssignRandomSpecialty(a);
                     Debug.Log($"[超神机械师] 召唤降临者：{a.name}（机械系Lv1）");
                 }

@@ -26,14 +26,26 @@ namespace SuperMech.Code
                 Actor actor = GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return;
 
-                // 原著：觉醒=获得F阶+选择系别，两者同时发生。无系别=未觉醒=普通人，不存在"有阶位无系别"的中间状态
-                string cls = SuperMechBranch.GetClass(actor);
-                if (cls == null)
+                // 原著：踏入超能=获得天赋倾向，职业方向后天选择。无天赋=普通人，有天赋无方向=野生超能者
+                bool hasTalent = SuperMechTalent.HasTalent(actor);
+                if (!hasTalent)
                 {
-                    ShowRow(__instance, "体系", "未觉醒（普通单位）");
-                    ShowRow(__instance, "提示", "用神权「五系觉醒」赋予天赋");
+                    ShowRow(__instance, "状态", "普通人（未踏入超能）");
+                    ShowRow(__instance, "提示", "在知识Tab点击「激发潜能」踏入超能");
                     return;
                 }
+
+                // 显示天赋倾向
+                var talents = SuperMechTalent.GetTalents(actor);
+                string talentText = "";
+                foreach (var t in talents)
+                {
+                    talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
+                }
+                ShowRow(__instance, "天赋倾向", talentText.Trim());
+
+                bool hasProfession = SuperMechProfession.HasProfession(actor);
+                string cls = hasProfession ? SuperMechProfession.GetClass(actor) : null;
 
                 bool isAwakened = SuperMechAwakened.IsAwakened(actor);
 
@@ -54,48 +66,59 @@ namespace SuperMech.Code
                         ShowRow(__instance, "名号", title);
                 }
 
-                // 行2：体系（原著：五系=机械/武道/异能/魔法/念力，对应神灵五方面）
-                string clsAspect = GetClassAspect(cls);
-                ShowRow(__instance, "体系", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
-
-                // 行3：降临者标识（原著双轨制：降临者有面板可主动转职，星海人靠修行。星海人默认不显示）
-                if (isAwakened)
+                // 行2：体系（选定方向才显示，否则显示野生超能者）
+                if (hasProfession)
                 {
-                    ShowRow(__instance, "身份", "降临者");
-                    // 降临者：显示职业等级+经验+阶段
-                    string lvText = SuperMechAwakened.GetLevelText(actor);
-                    ShowRow(__instance, "职业等级", lvText);
-                    string stage = SuperMechStage.GetStageName(actor);
-                    if (stage != "—" && stage != "未入门")
-                        ShowRow(__instance, "职业阶段", stage);
-                    if (SuperMechAwakened.CanAdvanceStage(actor))
-                    {
-                        ShowRow(__instance, "转职", "可转职！");
-                        string reqText = SuperMechAdvancementTask.GetReqText(actor);
-                        if (reqText != null)
-                            ShowRow(__instance, "转职条件", reqText);
-                    }
+                    string clsAspect = GetClassAspect(cls);
+                    ShowRow(__instance, "体系", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
                 }
                 else
                 {
-                    // 星海人：也有职业阶段（原著ch267：NPC也有二十级进阶，只是没面板靠修行突破）
-                    string stage = SuperMechStage.GetStageName(actor);
-                    if (stage != "—" && stage != "未入门")
-                        ShowRow(__instance, "职业阶段", stage);
+                    ShowRow(__instance, "体系", "野生超能者（未选定方向）");
+                    ShowRow(__instance, "提示", "在知识Tab选定主职业方向");
                 }
 
-                // 行3b：职业树进度（百度百科：每系职业树名各不相同）
-                string treeName = GetKnowledgeTreeName(cls);
-                string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
-                int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
-                ShowRow(__instance, "职业树", $"{treeName}（{unlocked}节点）");
-
-                // 行3c：职业技能（独立技能系统，参考西幻世界，不注册为特质）
-                var skills = SuperMechSkills.GetLearned(actor);
-                if (skills.Count > 0)
+                // 行3：降临者标识 + 职业相关（只有选定方向才显示）
+                if (hasProfession)
                 {
-                    string skillNames = string.Join("、", skills.ConvertAll(s => s.name));
-                    ShowRow(__instance, "职业技能", skillNames);
+                    if (isAwakened)
+                    {
+                        ShowRow(__instance, "身份", "降临者");
+                        // 降临者：显示职业等级+经验+阶段
+                        string lvText = SuperMechAwakened.GetLevelText(actor);
+                        ShowRow(__instance, "职业等级", lvText);
+                        string stage = SuperMechStage.GetStageName(actor);
+                        if (stage != "—" && stage != "未入门")
+                            ShowRow(__instance, "职业阶段", stage);
+                        if (SuperMechAwakened.CanAdvanceStage(actor))
+                        {
+                            ShowRow(__instance, "转职", "可转职！");
+                            string reqText = SuperMechAdvancementTask.GetReqText(actor);
+                            if (reqText != null)
+                                ShowRow(__instance, "转职条件", reqText);
+                        }
+                    }
+                    else
+                    {
+                        // 星海人：也有职业阶段
+                        string stage = SuperMechStage.GetStageName(actor);
+                        if (stage != "—" && stage != "未入门")
+                            ShowRow(__instance, "职业阶段", stage);
+                    }
+
+                    // 行3b：职业树进度
+                    string treeName = GetKnowledgeTreeName(cls);
+                    string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
+                    int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
+                    ShowRow(__instance, "职业树", $"{treeName}（{unlocked}节点）");
+
+                    // 行3c：职业技能
+                    var skills = SuperMechSkills.GetLearned(actor);
+                    if (skills.Count > 0)
+                    {
+                        string skillNames = string.Join("、", skills.ConvertAll(s => s.name));
+                        ShowRow(__instance, "职业技能", skillNames);
+                    }
                 }
 
                 // 行4：气力（原著五系统一，ch3/ch50。机械系不叫"械力"，叫气力）

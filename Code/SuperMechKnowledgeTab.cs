@@ -203,17 +203,65 @@ namespace SuperMech.Code
             if (_container == null) return;
             foreach (Transform child in _container.transform) Object.Destroy(child.gameObject);
 
-            // 未觉醒单位：显示觉醒按钮
-            if (!SuperMechAdvancement.IsSuperMechUnit(actor))
+            // 第一步：未踏入超能（无天赋倾向）
+            if (!SuperMechTalent.HasTalent(actor))
             {
-                AddHeader(_container.transform, "未觉醒");
-                AddInfoRow(_container.transform, "这个单位还没有觉醒超能系", "点击下方按钮选择觉醒系别");
+                AddHeader(_container.transform, "普通人");
+                AddInfoRow(_container.transform, "这个单位还没有踏入超能", "点击下方按钮激发潜能，获得天赋倾向");
                 AddSectionHeader(_container.transform, "◆ 操作");
-                AddActionButton(_container.transform, "五系觉醒", () => SuperMechAwakenWindow.Show(actor), new Color(0.2f, 0.4f, 0.6f));
+                AddActionButton(_container.transform, "激发潜能", () =>
+                {
+                    SuperMechTalent.GrantTalents(actor);
+                    // 激发潜能即获得F阶（原著：踏入超能就是F阶）
+                    if (!actor.hasTrait("sm_rank_00_f"))
+                        actor.addTrait("sm_rank_00_f");
+                    SuperMechAdvancement.SetExactRank(actor, 0);
+                    SuperMechSpecialty.AssignRandomSpecialty(actor);
+                    Debug.Log($"[超神机械师] {actor.name} 激发潜能，踏入超能");
+                    RenderContent(actor);
+                }, new Color(0.2f, 0.4f, 0.6f));
                 return;
             }
 
-            string cls = SuperMechBranch.GetClass(actor);
+            // 显示天赋倾向
+            var talents = SuperMechTalent.GetTalents(actor);
+            string talentText = "";
+            foreach (var t in talents)
+            {
+                talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
+            }
+            AddInfoRow(_container.transform, "天赋倾向", talentText.Trim());
+
+            // 第二步：已踏入超能但没选定方向（野生超能者）
+            if (!SuperMechProfession.HasProfession(actor))
+            {
+                AddHeader(_container.transform, "野生超能者（未选定方向）");
+                AddInfoRow(_container.transform, "状态", "有天赋但没系统学习职业知识，靠本能战斗");
+                AddSectionHeader(_container.transform, "◆ 选定主职业方向");
+
+                // 五个方向按钮
+                var directions = new[]
+                {
+                    new { name = "机械系", type = SuperMechProfession.ProfessionType.Mechanical, color = new Color(0.3f, 0.5f, 0.7f) },
+                    new { name = "武道系", type = SuperMechProfession.ProfessionType.Martial, color = new Color(0.7f, 0.3f, 0.3f) },
+                    new { name = "异能系", type = SuperMechProfession.ProfessionType.Psi, color = new Color(0.5f, 0.3f, 0.7f) },
+                    new { name = "魔法系", type = SuperMechProfession.ProfessionType.Mage, color = new Color(0.3f, 0.7f, 0.5f) },
+                    new { name = "念力系", type = SuperMechProfession.ProfessionType.Mind, color = new Color(0.7f, 0.5f, 0.3f) }
+                };
+                foreach (var d in directions)
+                {
+                    AddActionButton(_container.transform, d.name, () =>
+                    {
+                        SuperMechProfession.SetProfession(actor, d.type);
+                        Debug.Log($"[超神机械师] {actor.name} 选定主职业方向：{d.name}");
+                        RenderContent(actor);
+                    }, d.color);
+                }
+                return;
+            }
+
+            // 第三步：已选定方向，显示知识树
+            string cls = SuperMechProfession.GetClass(actor);
             string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
             string treeName = GetTreeName(prefix);
 

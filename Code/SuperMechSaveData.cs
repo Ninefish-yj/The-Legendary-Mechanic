@@ -81,6 +81,9 @@ namespace SuperMech.Code
             public int mechFusionLevel; // 械力融合等级（0=未融合）
             public string fusedEquip; // 械力融合的装备ID
             public int[] sanctuaryAuthority; // 圣所权限（6个圣所的碎片数，原著ch1266：碎片=权限）
+            public string talents; // 天赋倾向（JSON序列化）
+            public int profession; // 主职业方向（0=无,1=机械,2=武道,3=异能,4=魔法,5=念力）
+            public int switchCount; // 更换职业次数
         }
 
         [Serializable]
@@ -136,7 +139,7 @@ namespace SuperMech.Code
                 {
                     foreach (Actor a in units)
                     {
-                        if (a == null || !SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                        if (a == null || !SuperMechTalent.HasTalent(a)) continue;
                         var ad = new ActorSaveData
                         {
                             name = a.name ?? "",
@@ -171,7 +174,10 @@ namespace SuperMech.Code
                             fusionRecipes = GetLearnedFusionRecipes(a),
                             mechFusionLevel = SuperMechMechFusion.GetFusionLevel(a),
                             fusedEquip = SuperMechMechFusion.GetFusedEquipId(a),
-                            sanctuaryAuthority = GetSanctuaryAuthority(a)
+                            sanctuaryAuthority = GetSanctuaryAuthority(a),
+                            talents = SerializeTalents(a),
+                            profession = (int)SuperMechProfession.GetProfession(a),
+                            switchCount = SuperMechProfession.GetSwitchCount(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -355,6 +361,16 @@ namespace SuperMech.Code
                                 SuperMechSanctuary.AddAuthority(a, i, ad.sanctuaryAuthority[i]);
                         }
                     }
+                    // 恢复天赋倾向
+                    if (!string.IsNullOrEmpty(ad.talents))
+                    {
+                        DeserializeTalents(a, ad.talents);
+                    }
+                    // 恢复主职业方向
+                    if (ad.profession > 0)
+                    {
+                        SuperMechProfession.SetProfession(a, (SuperMechProfession.ProfessionType)ad.profession);
+                    }
 
                     _pendingLoad.actors.Remove(id);
                     restored++;
@@ -402,6 +418,42 @@ namespace SuperMech.Code
             for (int i = 0; i < 6; i++)
                 arr[i] = SuperMechSanctuary.GetAuthority(a, i);
             return arr;
+        }
+
+        /// <summary>序列化天赋倾向为JSON字符串。</summary>
+        private static string SerializeTalents(Actor a)
+        {
+            var talents = SuperMechTalent.GetTalents(a);
+            if (talents == null || talents.Count == 0) return null;
+            var list = new List<object>();
+            foreach (var t in talents)
+            {
+                list.Add(new Dictionary<string, object> { { "type", (int)t.type }, { "rating", t.rating } });
+            }
+            return JsonConvert.SerializeObject(list);
+        }
+
+        /// <summary>从JSON字符串反序列化天赋倾向。</summary>
+        private static void DeserializeTalents(Actor a, string json)
+        {
+            try
+            {
+                var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(json);
+                if (list == null) return;
+                var talents = new List<SuperMechTalent.TalentInfo>();
+                foreach (var d in list)
+                {
+                    talents.Add(new SuperMechTalent.TalentInfo
+                    {
+                        type = (SuperMechTalent.TalentType)System.Convert.ToInt32(d["type"]),
+                        rating = System.Convert.ToInt32(d["rating"])
+                    });
+                }
+                // 直接设置天赋（绕过GrantTalents的已有检查）
+                typeof(SuperMechTalent).GetField("_talents", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+                    ?.SetValue(null, new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } });
+            }
+            catch { }
         }
     }
 }
