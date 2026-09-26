@@ -117,7 +117,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>获取知识树名（百度百科：每系职业树名各不相同）。</summary>
-        private static string GetKnowledgeTreeName(string cls)
+        public static string GetKnowledgeTreeName(string cls)
         {
             switch (cls)
             {

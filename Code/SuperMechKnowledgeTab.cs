@@ -732,7 +732,7 @@ namespace SuperMech.Code
             txt.color = Color.white;
             txt.horizontalOverflow = HorizontalWrapMode.Overflow;
             txt.verticalOverflow = VerticalWrapMode.Overflow;
-            if (WindowConfig.current_font != null) txt.font = WindowConfig.current_font;
+            if (LocalizedTextManager.current_font != null) txt.font = LocalizedTextManager.current_font;
             return txt;
         }
 
