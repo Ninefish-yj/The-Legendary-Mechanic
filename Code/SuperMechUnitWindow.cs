@@ -183,20 +183,21 @@ namespace SuperMech.Code
                 float onar = SuperMechAdvancement.CalcOnar(actor);
                 ShowRow(__instance, "欧纳", $"{onar:F0}");
 
-                // 行6：潜能点/传承度（双轨制：降临者=潜能点，星海人=传承度）
+                // 行6：潜能点（神可以看到所有单位的完整信息，降临者和星海人都显示）
                 int unlockedK = SuperMechPotential.GetUnlockedCount(actor);
+                int pot = SuperMechPotential.GetPotential(actor);
+                int awk = SuperMechPotential.GetAwakening(actor);
+                string potText = awk > 0 ? $"{pot}（觉醒点{awk}）" : $"{pot}";
                 if (isAwakened)
                 {
-                    int pot = SuperMechPotential.GetPotential(actor);
-                    int awk = SuperMechPotential.GetAwakening(actor);
-                    string potText = awk > 0 ? $"{pot}（觉醒点{awk}）" : $"{pot}";
                     ShowRow(__instance, "潜能点", $"{potText} | 知识{unlockedK}个");
                 }
                 else
                 {
+                    // 星海人：潜能点+传承度（他们靠感悟自动解锁知识）
                     float heritage = SuperMechHeritage.GetHeritage(actor);
                     int autoUnlocked = SuperMechHeritage.GetAutoUnlockedCount(actor);
-                    ShowRow(__instance, "传承度", $"{heritage:F0} | 已悟{autoUnlocked}项（知识{unlockedK}个）");
+                    ShowRow(__instance, "潜能点", $"{potText} | 知识{unlockedK}个（传承度{heritage:F0}，已悟{autoUnlocked}项）");
                 }
 
                 // 行7：圣所/神性蜕变（原著 ch1039/ch1362：六圣所=五系+信息态）

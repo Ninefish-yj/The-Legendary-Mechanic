@@ -202,10 +202,18 @@ namespace SuperMech.Code
             return lv >= StageLevelCaps[stage - 1];
         }
 
-        /// <summary>转职（降临者专用，需达到等级上限）。</summary>
+        /// <summary>转职（降临者专用，需达到等级上限+满足进阶任务条件）。</summary>
         public static bool TryAdvanceStage(Actor a)
         {
             if (!CanAdvanceStage(a)) return false;
+            // 原著：转职需要满足进阶任务条件（ch50/ch107/ch269/ch626/ch1201）
+            int stage = SuperMechStage.GetStage(a);
+            if (!SuperMechAdvancementTask.CheckReq(a, stage))
+            {
+                if (SuperMechConfig.LogVerbose)
+                    Debug.Log($"[超神机械师] {a.name} 转职条件未满足：{SuperMechAdvancementTask.GetReqText(a)}");
+                return false;
+            }
             SuperMechStage.Advance(a);
             // 转职后等级重置为1，经验清零
             _level[a.data.id] = 1;
