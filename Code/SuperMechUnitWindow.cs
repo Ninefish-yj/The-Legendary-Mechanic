@@ -190,9 +190,9 @@ namespace SuperMech.Code
                     ShowRow(__instance, "魔感", $"+{mageAffinity:F0}%（魔法亲和度）");
                 }
 
-                // 行5：欧纳（能级）
+                // 行5：欧纳（能级，原著单位就是"欧纳"）
                 float onar = SuperMechAdvancement.CalcOnar(actor);
-                ShowRow(__instance, "欧纳", $"{onar:F0}");
+                ShowRow(__instance, "欧纳", $"{onar:F0}欧纳");
 
                 // 行6：潜能点（神可以看到所有单位的完整信息，降临者和星海人都显示）
                 int unlockedK = SuperMechPotential.GetUnlockedCount(actor);
@@ -231,7 +231,7 @@ namespace SuperMech.Code
                     float qiMaxForDiv = SuperMechQi.GetQiMax(actor);
                     if (qiMaxForDiv <= 0) qiMaxForDiv = SuperMechQi.GetQi(actor);
                     int qiLvForDiv = SuperMechQi.GetLevel(qiMaxForDiv);
-                    string divText = $"未触发（需气力Lv21+78000欧纳，当前Lv{qiLvForDiv}/{onarForDiv:F0}）";
+                    string divText = $"未触发（需气力Lv21+78000欧纳，当前Lv{qiLvForDiv}/{onarForDiv:F0}欧纳）";
                     ShowRow(__instance, "神性蜕变", divText);
                 }
 
