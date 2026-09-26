@@ -71,7 +71,12 @@ namespace SuperMech.Code
             SuperMechStage.SetStage(_target, 1); // 入门者
             SuperMechSpecialty.AssignRandomSpecialty(_target);
 
-            Debug.Log($"[超神机械师] {_target.name} 觉醒为{className}");
+            // 觉醒即获得F阶（原著：只要有阶位都是超能者，F阶是最低级超能者，没有阶位才是凡人）
+            if (!_target.hasTrait("sm_rank_00_f"))
+                _target.addTrait("sm_rank_00_f");
+            SuperMechAdvancement.SetExactRank(_target, 0);
+
+            Debug.Log($"[超神机械师] {_target.name} 觉醒为{className}，获得F阶");
             _window?.Hide();
         }
     }
