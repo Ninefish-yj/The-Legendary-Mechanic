@@ -18,6 +18,7 @@ namespace SuperMech.Code
             public string icon;
             public string requiredClass; // 需要的职业系（"机械"/"武道"/"异能"/"魔法"/"念力"/""=全系）
             public int requiredStage;     // 需要的职业阶段（0=入门者，3=磁环...）
+            public string requiredKnowledge; // 需要学会的知识节点ID（""=无前置知识）
             public int intelligence;      // 智力加成
             public float dmgMul;          // 伤害倍率
             public float hpMul;           // 生命倍率
@@ -31,49 +32,49 @@ namespace SuperMech.Code
                 id = "sm_skill_qimod", name = "气力改装·LVMAX",
                 desc = "气力数值按比例增加制造机械的效率与品质（原著ch237：电磁因子提炼法）",
                 icon = "ui/Icons/actor_traits/iconBattleReflexes",
-                requiredClass = "机械", requiredStage = 3, // 磁环阶段
+                requiredClass = "机械", requiredStage = 3, requiredKnowledge = "sm_know_mech_1_0_0", // 电磁理论进阶知识
                 intelligence = 5, dmgMul = 1.1f, hpMul = 1f, speedMul = 1f
             },
             new SkillDef {
                 id = "sm_skill_virtual_purify", name = "虚拟净化复原·LVMAX",
                 desc = "净化病毒感染的智能目标（原著ch539：虚拟生命净化技术）",
                 icon = "ui/Icons/actor_traits/iconChosenOne",
-                requiredClass = "机械", requiredStage = 6, // 虚拟阶段
+                requiredClass = "机械", requiredStage = 6, requiredKnowledge = "sm_know_mech_2_0_0", // 虚拟技术高端知识
                 intelligence = 3, dmgMul = 1.05f, hpMul = 1.05f, speedMul = 1f
             },
             new SkillDef {
                 id = "sm_skill_dimension_march", name = "次级维度行军·LVMAX",
                 desc = "打开黑色传送门进行维度行军（原著ch626：星海阶段维度技术）",
                 icon = "ui/Icons/actor_traits/iconBlessing",
-                requiredClass = "机械", requiredStage = 7, // 星海阶段
+                requiredClass = "机械", requiredStage = 7, requiredKnowledge = "sm_know_mech_3_0_0", // 维度技术尖端知识
                 intelligence = 8, dmgMul = 1.2f, hpMul = 1.1f, speedMul = 1.1f
             },
             new SkillDef {
                 id = "sm_skill_qi_burst", name = "暴气·LVMAX",
                 desc = "气劲外放，短时间内大幅提升攻击力（原著ch50：武道超能离体波动）",
                 icon = "ui/Icons/actor_traits/iconRage",
-                requiredClass = "武道", requiredStage = 4, // D阶以上
+                requiredClass = "武道", requiredStage = 4, requiredKnowledge = "sm_know_martial_1_2_0", // 超能分支进阶知识（气劲外放）
                 intelligence = 0, dmgMul = 1.3f, hpMul = 1f, speedMul = 1.2f
             },
             new SkillDef {
                 id = "sm_skill_gene_awaken", name = "基因觉醒·LVMAX",
                 desc = "激发基因链潜力，临时提升异能强度（原著ch50：二阶基因链）",
                 icon = "ui/Icons/actor_traits/iconGenius",
-                requiredClass = "异能", requiredStage = 4,
+                requiredClass = "异能", requiredStage = 4, requiredKnowledge = "sm_know_psi_1_0_0", // 攻效分支进阶知识（基因链理论）
                 intelligence = 3, dmgMul = 1.25f, hpMul = 1f, speedMul = 1f
             },
             new SkillDef {
                 id = "sm_skill_element_mastery", name = "元素掌控·LVMAX",
                 desc = "掌控元素能量，提升魔法伤害与范围（原著ch50：魔法元素亲和）",
                 icon = "ui/Icons/actor_traits/iconFire",
-                requiredClass = "魔法", requiredStage = 4,
+                requiredClass = "魔法", requiredStage = 4, requiredKnowledge = "sm_know_mage_1_0_0", // 元素魔法进阶知识
                 intelligence = 4, dmgMul = 1.3f, hpMul = 1f, speedMul = 1f
             },
             new SkillDef {
                 id = "sm_skill_soul_shock", name = "灵魂冲击·LVMAX",
                 desc = "精神力直接攻击对方灵魂，造成精神伤害（原著ch50：念力灵魂攻击）",
                 icon = "ui/Icons/actor_traits/iconMind",
-                requiredClass = "念力", requiredStage = 4,
+                requiredClass = "念力", requiredStage = 4, requiredKnowledge = "sm_know_mind_1_0_0", // 灵魂分支进阶知识
                 intelligence = 5, dmgMul = 1.35f, hpMul = 1f, speedMul = 1.1f
             }
         };
@@ -103,6 +104,10 @@ namespace SuperMech.Code
             if (a == null) return false;
             var def = GetDef(skillId);
             if (def == null) return false;
+
+            // 知识前置检查（原著：学会知识才能掌握对应技能）
+            if (!string.IsNullOrEmpty(def.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(a, def.requiredKnowledge))
+                return false;
 
             if (!_learned.TryGetValue(a.id, out var set))
             {
@@ -145,6 +150,8 @@ namespace SuperMech.Code
                 if (HasSkill(a, def.id)) continue;
                 if (!string.IsNullOrEmpty(def.requiredClass) && (cls == null || !cls.Contains(def.requiredClass))) continue;
                 if (stage < def.requiredStage) continue;
+                // 知识前置：学会对应知识才能学习技能（原著：知识→技能）
+                if (!string.IsNullOrEmpty(def.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(a, def.requiredKnowledge)) continue;
                 list.Add(def);
             }
             return list;
@@ -172,16 +179,25 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取所有已学会技能的总属性加成。</summary>
+        /// <summary>获取所有已学会技能的总属性加成（知识提升技能威力：同系知识每+1个，技能伤害+2%）。</summary>
         public static SkillBonus GetBonus(Actor a)
         {
             var bonus = new SkillBonus();
             if (a == null || !_learned.TryGetValue(a.id, out var set)) return bonus;
+            string cls = SuperMechBranch.GetClass(a);
+            string prefix = "";
+            if (cls == "机械系") prefix = "mech";
+            else if (cls == "武道系") prefix = "martial";
+            else if (cls == "异能系") prefix = "psi";
+            else if (cls == "魔法系") prefix = "mage";
+            else if (cls == "念力系") prefix = "mind";
+            int knowCount = !string.IsNullOrEmpty(prefix) ? SuperMechKnowledge.GetUnlockedCount(a, prefix) : 0;
+            float knowMul = 1f + knowCount * 0.02f; // 每学会1个同系知识，技能伤害+2%
             foreach (var def in AllSkills)
             {
                 if (!set.Contains(def.id)) continue;
                 bonus.intelligence += def.intelligence;
-                bonus.dmgMul *= def.dmgMul;
+                bonus.dmgMul *= def.dmgMul * knowMul; // 知识提升技能威力
                 bonus.hpMul *= def.hpMul;
                 bonus.speedMul *= def.speedMul;
             }
