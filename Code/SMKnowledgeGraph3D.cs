@@ -145,19 +145,18 @@ namespace SuperMech.Code
             UpdateGraphTransform();
         }
 
-        /// <summary>创建背景层（星云+天体+轨道环+光点装饰）。</summary>
+        /// <summary>创建背景层（参考原版知识窗口：简洁深空+少量光点+系别标识）。</summary>
         private void CreateBackground(Transform parent)
         {
-            // 系别主题色
             Color themeColor = GetThemeColor(_prefix);
             System.Random rng = new System.Random(_prefix.GetHashCode() + 42);
 
-            // 深空背景
+            // 深空背景（简洁深色，参考原版窗口背景）
             GameObject bgGo = new GameObject("Background", typeof(RectTransform));
             bgGo.transform.SetParent(parent, false);
             bgGo.transform.SetAsFirstSibling();
             Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0.01f, 0.015f, 0.04f, 0.97f);
+            bgImg.color = new Color(0.03f, 0.04f, 0.07f, 0.95f);
             bgImg.raycastTarget = false;
             RectTransform bgRt = bgGo.GetComponent<RectTransform>();
             bgRt.anchorMin = Vector2.zero;
@@ -165,170 +164,59 @@ namespace SuperMech.Code
             bgRt.offsetMin = Vector2.zero;
             bgRt.offsetMax = Vector2.zero;
 
-            // === 多层星云 ===
-            // 星云1：主题色，左上
-            CreateNebula(bgGo.transform, new Vector2(-120, 60), 220, themeColor, 0.08f);
-            // 星云2：互补色，右下
-            Color complement = new Color(1f - themeColor.r, 1f - themeColor.g, 1f - themeColor.b);
-            CreateNebula(bgGo.transform, new Vector2(100, -50), 180, complement, 0.06f);
-            // 星云3：白色，中心
-            CreateNebula(bgGo.transform, new Vector2(0, 0), 260, Color.white, 0.04f);
+            // 中心微光（主题色，非常淡）
+            GameObject glowGo = new GameObject("CenterGlow", typeof(RectTransform));
+            glowGo.transform.SetParent(bgGo.transform, false);
+            Image glowImg = glowGo.AddComponent<Image>();
+            Color glowColor = themeColor;
+            glowColor.a = 0.06f;
+            glowImg.color = glowColor;
+            glowImg.raycastTarget = false;
+            RectTransform glowRt = glowGo.GetComponent<RectTransform>();
+            glowRt.anchorMin = new Vector2(0.5f, 0.5f);
+            glowRt.anchorMax = new Vector2(0.5f, 0.5f);
+            glowRt.pivot = new Vector2(0.5f, 0.5f);
+            glowRt.sizeDelta = new Vector2(200f, 200f);
 
-            // === 轨道环（同心圆，模拟星系）===
-            for (int i = 0; i < 3; i++)
-            {
-                GameObject ringGo = new GameObject("OrbitRing_" + i, typeof(RectTransform));
-                ringGo.transform.SetParent(bgGo.transform, false);
-                Image ringImg = ringGo.AddComponent<Image>();
-                Color ringColor = themeColor;
-                ringColor.a = 0.06f + i * 0.02f;
-                ringImg.color = ringColor;
-                ringImg.raycastTarget = false;
-                RectTransform ringRt = ringGo.GetComponent<RectTransform>();
-                ringRt.anchorMin = new Vector2(0.5f, 0.5f);
-                ringRt.anchorMax = new Vector2(0.5f, 0.5f);
-                ringRt.pivot = new Vector2(0.5f, 0.5f);
-                float ringSize = 120f + i * 60f;
-                ringRt.sizeDelta = new Vector2(ringSize, ringSize);
-                // 用大尺寸+小alpha模拟圆环（实际是实心圆，靠中心光晕覆盖中心部分）
-            }
-
-            // === 天体装饰 ===
-            // 主天体（大发光球，右上角）
-            CreateCelestialBody(bgGo.transform, new Vector2(140, 70), 36, themeColor, 0.25f, true);
-            // 副天体（小球，左下角）
-            CreateCelestialBody(bgGo.transform, new Vector2(-130, -60), 20, complement, 0.2f, false);
-            // 微型天体（随机位置）
-            for (int i = 0; i < 3; i++)
-            {
-                float x = (float)rng.NextDouble() * 300f - 150f;
-                float y = (float)rng.NextDouble() * 140f - 70f;
-                float size = 6f + (float)rng.NextDouble() * 8f;
-                Color c = (rng.Next(0, 2) == 0) ? themeColor : Color.white;
-                CreateCelestialBody(bgGo.transform, new Vector2(x, y), size, c, 0.15f, false);
-            }
-
-            // === 光点装饰（模拟星空，不同大小和颜色）===
-            int starCount = 80;
+            // 少量光点（模拟星空，30个，比之前少）
+            int starCount = 30;
             for (int i = 0; i < starCount; i++)
             {
                 GameObject star = new GameObject("Star_" + i, typeof(RectTransform));
                 star.transform.SetParent(bgGo.transform, false);
                 Image starImg = star.AddComponent<Image>();
-                // 70%白色，20%主题色，10%互补色
-                int colorRoll = rng.Next(0, 10);
-                Color starColor;
-                if (colorRoll < 7) starColor = Color.white;
-                else if (colorRoll < 9) starColor = themeColor;
-                else starColor = complement;
-                starColor.a = 0.15f + (float)rng.NextDouble() * 0.5f;
+                Color starColor = (rng.Next(0, 3) == 0) ? themeColor : Color.white;
+                starColor.a = 0.1f + (float)rng.NextDouble() * 0.3f;
                 starImg.color = starColor;
                 starImg.raycastTarget = false;
                 RectTransform starRt = star.GetComponent<RectTransform>();
                 starRt.anchorMin = new Vector2(0f, 0f);
                 starRt.anchorMax = new Vector2(0f, 0f);
                 starRt.pivot = new Vector2(0.5f, 0.5f);
-                float x = (float)rng.NextDouble() * 420f - 210f;
-                float y = (float)rng.NextDouble() * 220f - 110f;
+                float x = (float)rng.NextDouble() * 400f - 200f;
+                float y = (float)rng.NextDouble() * 200f - 100f;
                 starRt.anchoredPosition = new Vector2(x, y);
-                float size = 0.8f + (float)rng.NextDouble() * 2.5f;
+                float size = 0.8f + (float)rng.NextDouble() * 1.5f;
                 starRt.sizeDelta = new Vector2(size, size);
             }
 
-            // === 流星/彗星装饰（2-3条斜线）===
-            for (int i = 0; i < 2; i++)
-            {
-                GameObject meteorGo = new GameObject("Meteor_" + i, typeof(RectTransform));
-                meteorGo.transform.SetParent(bgGo.transform, false);
-                Image meteorImg = meteorGo.AddComponent<Image>();
-                Color meteorColor = themeColor;
-                meteorColor.a = 0.12f;
-                meteorImg.color = meteorColor;
-                meteorImg.raycastTarget = false;
-                RectTransform meteorRt = meteorGo.GetComponent<RectTransform>();
-                meteorRt.anchorMin = new Vector2(0f, 0f);
-                meteorRt.anchorMax = new Vector2(0f, 0f);
-                meteorRt.pivot = new Vector2(0.5f, 0.5f);
-                float mx = (float)rng.NextDouble() * 300f - 150f;
-                float my = (float)rng.NextDouble() * 140f - 70f;
-                meteorRt.anchoredPosition = new Vector2(mx, my);
-                meteorRt.sizeDelta = new Vector2(60f, 1.5f);
-                meteorRt.localRotation = Quaternion.Euler(0, 0, -30f - i * 15f);
-            }
-
-            // === 系别标识（左上角）===
+            // 系别标识（左上角，简洁）
             GameObject labelGo = new GameObject("ThemeLabel", typeof(RectTransform));
             labelGo.transform.SetParent(bgGo.transform, false);
-            // 标识背景
-            Image labelBg = labelGo.AddComponent<Image>();
-            labelBg.color = new Color(0f, 0f, 0f, 0.4f);
-            labelBg.raycastTarget = false;
             Text labelText = labelGo.AddComponent<Text>();
             labelText.text = GetThemeName(_prefix);
             labelText.fontSize = 11;
             labelText.color = themeColor;
             labelText.alignment = TextAnchor.MiddleLeft;
             labelText.fontStyle = FontStyle.Bold;
+            labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (labelText.font == null) labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             RectTransform labelRt = labelGo.GetComponent<RectTransform>();
             labelRt.anchorMin = new Vector2(0f, 1f);
             labelRt.anchorMax = new Vector2(0f, 1f);
             labelRt.pivot = new Vector2(0f, 1f);
             labelRt.anchoredPosition = new Vector2(6f, -4f);
-            labelRt.sizeDelta = new Vector2(110, 18);
-        }
-
-        /// <summary>创建星云（大尺寸半透明渐变圆）。</summary>
-        private void CreateNebula(Transform parent, Vector2 pos, float size, Color color, float alpha)
-        {
-            GameObject nebulaGo = new GameObject("Nebula", typeof(RectTransform));
-            nebulaGo.transform.SetParent(parent, false);
-            Image nebulaImg = nebulaGo.AddComponent<Image>();
-            Color c = color;
-            c.a = alpha;
-            nebulaImg.color = c;
-            nebulaImg.raycastTarget = false;
-            RectTransform nebulaRt = nebulaGo.GetComponent<RectTransform>();
-            nebulaRt.anchorMin = new Vector2(0.5f, 0.5f);
-            nebulaRt.anchorMax = new Vector2(0.5f, 0.5f);
-            nebulaRt.pivot = new Vector2(0.5f, 0.5f);
-            nebulaRt.anchoredPosition = pos;
-            nebulaRt.sizeDelta = new Vector2(size, size);
-        }
-
-        /// <summary>创建天体（发光球体+光晕）。</summary>
-        private void CreateCelestialBody(Transform parent, Vector2 pos, float size, Color color, float alpha, bool hasGlow)
-        {
-            GameObject bodyGo = new GameObject("CelestialBody", typeof(RectTransform));
-            bodyGo.transform.SetParent(parent, false);
-            Image bodyImg = bodyGo.AddComponent<Image>();
-            Color c = color;
-            c.a = alpha;
-            bodyImg.color = c;
-            bodyImg.raycastTarget = false;
-            RectTransform bodyRt = bodyGo.GetComponent<RectTransform>();
-            bodyRt.anchorMin = new Vector2(0.5f, 0.5f);
-            bodyRt.anchorMax = new Vector2(0.5f, 0.5f);
-            bodyRt.pivot = new Vector2(0.5f, 0.5f);
-            bodyRt.anchoredPosition = pos;
-            bodyRt.sizeDelta = new Vector2(size, size);
-
-            if (hasGlow)
-            {
-                // 外层光晕
-                GameObject glowGo = new GameObject("Glow", typeof(RectTransform));
-                glowGo.transform.SetParent(bodyGo.transform, false);
-                Image glowImg = glowGo.AddComponent<Image>();
-                Color glowColor = color;
-                glowColor.a = alpha * 0.3f;
-                glowImg.color = glowColor;
-                glowImg.raycastTarget = false;
-                RectTransform glowRt = glowGo.GetComponent<RectTransform>();
-                glowRt.anchorMin = new Vector2(0.5f, 0.5f);
-                glowRt.anchorMax = new Vector2(0.5f, 0.5f);
-                glowRt.pivot = new Vector2(0.5f, 0.5f);
-                glowRt.sizeDelta = new Vector2(size * 2.5f, size * 2.5f);
-            }
+            labelRt.sizeDelta = new Vector2(100f, 16f);
         }
 
         /// <summary>获取系别主题色。</summary>

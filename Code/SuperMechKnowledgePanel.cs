@@ -415,43 +415,182 @@ namespace SuperMech.Code
             List<SuperMechKnowledge.KnowledgeDef> defs = SuperMechKnowledge.GetAllByPrefix(_currentPrefix);
             if (defs == null) return;
 
-            // 按阶位分组
+            // 按阶位分组，每个阶位一个卡片（参考原版知识窗口KnowledgeElement）
             for (int tier = 0; tier <= 4; tier++)
             {
                 var tierDefs = defs.FindAll(d => d.tier == tier);
                 if (tierDefs.Count == 0) continue;
 
                 int unlocked = tierDefs.FindAll(d => SuperMechKnowledge.IsUnlocked(_currentActor, d.id)).Count;
-
-                // 分组标题
-                GameObject titleObj = new GameObject("TierTitle_" + tier, typeof(RectTransform));
-                titleObj.transform.SetParent(_libraryLayer, false);
-                LayoutElement titleLe = titleObj.AddComponent<LayoutElement>();
-                titleLe.minHeight = 18f;
-                titleLe.preferredHeight = 18f;
-                Text titleTxt = CreateText(titleObj.transform,
-                    $"◆ {GetTierName(tier)}  {unlocked}/{tierDefs.Count}",
-                    10, TextAnchor.MiddleLeft);
-                titleTxt.color = TierColors[tier];
-
-                // 知识网格
-                GameObject gridObj = new GameObject("TierGrid_" + tier, typeof(RectTransform));
-                gridObj.transform.SetParent(_libraryLayer, false);
-                LayoutElement gridLe = gridObj.AddComponent<LayoutElement>();
-                gridLe.minHeight = 36f;
-                gridLe.preferredHeight = 36f * Mathf.CeilToInt(tierDefs.Count / 6f);
-
-                GridLayoutGroup grid = gridObj.AddComponent<GridLayoutGroup>();
-                grid.cellSize = new Vector2(32, 32);
-                grid.spacing = new Vector2(4, 4);
-                grid.childAlignment = TextAnchor.UpperLeft;
-                grid.padding = new RectOffset(4, 4, 2, 2);
-
-                foreach (var def in tierDefs)
-                {
-                    CreateLibraryIcon(gridObj.transform, def);
-                }
+                CreateTierCard(_libraryLayer, tier, tierDefs, unlocked);
             }
+        }
+
+        /// <summary>创建阶位卡片（参考原版知识窗口KnowledgeElement：图标+名称+进度条+展开网格）。</summary>
+        private static void CreateTierCard(Transform parent, int tier, List<SuperMechKnowledge.KnowledgeDef> defs, int unlocked)
+        {
+            Color tierColor = TierColors[tier];
+
+            // 卡片容器
+            GameObject card = new GameObject($"TierCard_{tier}", typeof(RectTransform));
+            card.transform.SetParent(parent, false);
+            LayoutElement cardLe = card.AddComponent<LayoutElement>();
+            cardLe.minHeight = 36f;
+            cardLe.preferredHeight = 36f;
+            cardLe.flexibleWidth = 1f;
+
+            // 卡片背景+边框（阶位颜色）
+            Image cardBg = card.AddComponent<Image>();
+            cardBg.color = new Color(0.06f, 0.07f, 0.1f, 0.9f);
+            cardBg.raycastTarget = false;
+
+            // 边框（用4个Image模拟1px边框）
+            AddCardBorder(card.transform, tierColor);
+
+            // 卡片头部（图标+名称+进度条+展开按钮）
+            GameObject header = new GameObject("Header", typeof(RectTransform));
+            header.transform.SetParent(card.transform, false);
+            RectTransform headerRt = header.GetComponent<RectTransform>();
+            headerRt.anchorMin = new Vector2(0, 1);
+            headerRt.anchorMax = new Vector2(1, 1);
+            headerRt.pivot = new Vector2(0.5f, 1f);
+            headerRt.sizeDelta = new Vector2(0, 28f);
+
+            // 阶位图标（左侧）
+            GameObject iconGo = new GameObject("TierIcon", typeof(RectTransform));
+            iconGo.transform.SetParent(header.transform, false);
+            Image iconImg = iconGo.AddComponent<Image>();
+            iconImg.color = tierColor;
+            iconImg.raycastTarget = false;
+            RectTransform iconRt = iconGo.GetComponent<RectTransform>();
+            iconRt.anchorMin = new Vector2(0, 0.5f);
+            iconRt.anchorMax = new Vector2(0, 0.5f);
+            iconRt.pivot = new Vector2(0.5f, 0.5f);
+            iconRt.anchoredPosition = new Vector2(16f, 0f);
+            iconRt.sizeDelta = new Vector2(14f, 14f);
+
+            // 阶位名称
+            Text nameTxt = CreateText(header.transform, GetTierName(tier), 11, TextAnchor.MiddleLeft);
+            nameTxt.color = tierColor;
+            nameTxt.fontStyle = FontStyle.Bold;
+            RectTransform nameRt = nameTxt.GetComponent<RectTransform>();
+            nameRt.anchorMin = new Vector2(0, 0);
+            nameRt.anchorMax = new Vector2(0, 1);
+            nameRt.pivot = new Vector2(0, 0.5f);
+            nameRt.offsetMin = new Vector2(28f, 0);
+            nameRt.offsetMax = new Vector2(100f, 0);
+
+            // 进度条背景
+            GameObject barBgGo = new GameObject("ProgressBarBg", typeof(RectTransform));
+            barBgGo.transform.SetParent(header.transform, false);
+            Image barBg = barBgGo.AddComponent<Image>();
+            barBg.color = new Color(0.1f, 0.12f, 0.18f, 0.8f);
+            barBg.raycastTarget = false;
+            RectTransform barBgRt = barBgGo.GetComponent<RectTransform>();
+            barBgRt.anchorMin = new Vector2(0, 0.5f);
+            barBgRt.anchorMax = new Vector2(1, 0.5f);
+            barBgRt.pivot = new Vector2(0.5f, 0.5f);
+            barBgRt.offsetMin = new Vector2(100f, -4f);
+            barBgRt.offsetMax = new Vector2(-50f, 4f);
+
+            // 进度条填充
+            GameObject barFillGo = new GameObject("ProgressBarFill", typeof(RectTransform));
+            barFillGo.transform.SetParent(barBgGo.transform, false);
+            Image barFill = barFillGo.AddComponent<Image>();
+            barFill.color = tierColor;
+            barFill.raycastTarget = false;
+            RectTransform barFillRt = barFillGo.GetComponent<RectTransform>();
+            barFillRt.anchorMin = new Vector2(0, 0);
+            barFillRt.anchorMax = new Vector2(0, 1);
+            barFillRt.pivot = new Vector2(0, 0.5f);
+            float progress = defs.Count > 0 ? (float)unlocked / defs.Count : 0f;
+            barFillRt.offsetMin = Vector2.zero;
+            barFillRt.offsetMax = new Vector2(barBgRt.rect.width * progress, 0);
+
+            // 进度文字（右侧）
+            Text progressTxt = CreateText(header.transform, $"{unlocked}/{defs.Count}", 9, TextAnchor.MiddleRight);
+            progressTxt.color = new Color(0.7f, 0.75f, 0.8f);
+            RectTransform progRt = progressTxt.GetComponent<RectTransform>();
+            progRt.anchorMin = new Vector2(1, 0);
+            progRt.anchorMax = new Vector2(1, 1);
+            progRt.pivot = new Vector2(1, 0.5f);
+            progRt.offsetMin = new Vector2(-46f, 0);
+            progRt.offsetMax = new Vector2(-6f, 0);
+
+            // 知识网格（默认展开）
+            GameObject gridObj = new GameObject("KnowledgeGrid", typeof(RectTransform));
+            gridObj.transform.SetParent(card.transform, false);
+            RectTransform gridRt = gridObj.GetComponent<RectTransform>();
+            gridRt.anchorMin = new Vector2(0, 0);
+            gridRt.anchorMax = new Vector2(1, 0);
+            gridRt.pivot = new Vector2(0.5f, 0f);
+            gridRt.sizeDelta = new Vector2(0, Mathf.CeilToInt(defs.Count / 6f) * 34f + 6f);
+
+            GridLayoutGroup grid = gridObj.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(28, 28);
+            grid.spacing = new Vector2(3, 3);
+            grid.childAlignment = TextAnchor.UpperLeft;
+            grid.padding = new RectOffset(6, 6, 4, 4);
+
+            foreach (var def in defs)
+            {
+                CreateLibraryIcon(gridObj.transform, def);
+            }
+
+            // 更新卡片高度（头部+网格）
+            cardLe.preferredHeight = 28f + gridRt.sizeDelta.y;
+        }
+
+        /// <summary>给卡片添加1px边框（4个Image模拟）。</summary>
+        private static void AddCardBorder(Transform parent, Color color)
+        {
+            // 上
+            GameObject top = new GameObject("BorderTop", typeof(RectTransform));
+            top.transform.SetParent(parent, false);
+            Image topImg = top.AddComponent<Image>();
+            topImg.color = color;
+            topImg.raycastTarget = false;
+            RectTransform topRt = top.GetComponent<RectTransform>();
+            topRt.anchorMin = new Vector2(0, 1);
+            topRt.anchorMax = new Vector2(1, 1);
+            topRt.pivot = new Vector2(0.5f, 1f);
+            topRt.sizeDelta = new Vector2(0, 1f);
+
+            // 下
+            GameObject bottom = new GameObject("BorderBottom", typeof(RectTransform));
+            bottom.transform.SetParent(parent, false);
+            Image bottomImg = bottom.AddComponent<Image>();
+            bottomImg.color = color;
+            bottomImg.raycastTarget = false;
+            RectTransform bottomRt = bottom.GetComponent<RectTransform>();
+            bottomRt.anchorMin = new Vector2(0, 0);
+            bottomRt.anchorMax = new Vector2(1, 0);
+            bottomRt.pivot = new Vector2(0.5f, 0f);
+            bottomRt.sizeDelta = new Vector2(0, 1f);
+
+            // 左
+            GameObject left = new GameObject("BorderLeft", typeof(RectTransform));
+            left.transform.SetParent(parent, false);
+            Image leftImg = left.AddComponent<Image>();
+            leftImg.color = color;
+            leftImg.raycastTarget = false;
+            RectTransform leftRt = left.GetComponent<RectTransform>();
+            leftRt.anchorMin = new Vector2(0, 0);
+            leftRt.anchorMax = new Vector2(0, 1);
+            leftRt.pivot = new Vector2(0f, 0.5f);
+            leftRt.sizeDelta = new Vector2(1f, 0);
+
+            // 右
+            GameObject right = new GameObject("BorderRight", typeof(RectTransform));
+            right.transform.SetParent(parent, false);
+            Image rightImg = right.AddComponent<Image>();
+            rightImg.color = color;
+            rightImg.raycastTarget = false;
+            RectTransform rightRt = right.GetComponent<RectTransform>();
+            rightRt.anchorMin = new Vector2(1, 0);
+            rightRt.anchorMax = new Vector2(1, 1);
+            rightRt.pivot = new Vector2(1f, 0.5f);
+            rightRt.sizeDelta = new Vector2(1f, 0);
         }
 
         private static void CreateLibraryIcon(Transform parent, SuperMechKnowledge.KnowledgeDef def)
