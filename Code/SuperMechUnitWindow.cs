@@ -59,9 +59,9 @@ namespace SuperMech.Code
                 // 有系别才显示职业相关信息
                 if (hasClass)
                 {
-                    // 行2：职业系（原著：五系对应神灵五方面——武道=神体/念力=神魂/魔法=神权/异能=神通/机械=神器）
+                    // 行2：体系（原著：五系=机械/武道/异能/魔法/念力，对应神灵五方面）
                     string clsAspect = GetClassAspect(cls);
-                    ShowRow(__instance, "职业", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
+                    ShowRow(__instance, "体系", cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
 
                     // 行3：土著/降临者区分（原著双轨制：都属于五系，区别是降临者有面板可主动转职，土著靠修行）
                     if (isAwakened)
@@ -106,9 +106,9 @@ namespace SuperMech.Code
                 }
                 else
                 {
-                    // 有阶位但没系别：提示选择系别
-                    ShowRow(__instance, "职业", "未选择系别");
-                    ShowRow(__instance, "提示", "用神权「五系觉醒」选择职业系");
+                    // 有阶位但没系别：提示选择体系
+                    ShowRow(__instance, "体系", "未选择系别");
+                    ShowRow(__instance, "提示", "用神权「五系觉醒」选择体系");
                 }
 
                 // 行4：气力（原著五系统一，ch3/ch50。机械系不叫"械力"，叫气力）
