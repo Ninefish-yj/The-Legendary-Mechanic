@@ -39,6 +39,7 @@ namespace SuperMech.Code
             public GameObject gameObject;
             public Image image;
             public Button button;
+            public float spawnTimer; // 自动冲动生成计时器
         }
 
         // 轴突数据
@@ -583,46 +584,35 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>生成轴突连接线（基于空间距离+同阶位相邻）。</summary>
+        /// <summary>生成轴突连接线（参考原版prepareAxons：基于空间距离全局连接）。</summary>
         private void GenerateAxons()
         {
             if (_nodes.Count < 2) return;
 
-            // 连接策略：每个节点连接最近的2-3个节点
-            float maxDist = Radius * 1.2f;
-            for (int i = 0; i < _nodes.Count; i++)
+            // 原版算法：距离阈值 = 250 / sqrt(节点数) * 1.5
+            float maxDist = 250f / Mathf.Sqrt(_nodes.Count) * 1.5f;
+            for (int i = 0; i < _nodes.Count - 1; i++)
             {
-                // 找最近的3个节点
-                List<(int idx, float dist)> nearest = new List<(int, float)>();
-                for (int j = 0; j < _nodes.Count; j++)
+                for (int j = i + 1; j < _nodes.Count; j++)
                 {
-                    if (i == j) continue;
                     float d = Vector3.Distance(_nodes[i].spherePos, _nodes[j].spherePos);
-                    if (d < maxDist)
+                    if (d <= maxDist)
                     {
-                        nearest.Add((j, d));
+                        // 避免重复连接
+                        if (_axons.Exists(a =>
+                            (a.from == _nodes[i] && a.to == _nodes[j]) ||
+                            (a.from == _nodes[j] && a.to == _nodes[i])))
+                            continue;
+
+                        Axon axon = new Axon
+                        {
+                            from = _nodes[i],
+                            to = _nodes[j],
+                            active = _nodes[i].unlocked && _nodes[j].unlocked
+                        };
+                        CreateAxonGameObject(axon);
+                        _axons.Add(axon);
                     }
-                }
-                nearest.Sort((a, b) => a.dist.CompareTo(b.dist));
-
-                int connectCount = Mathf.Min(2, nearest.Count);
-                for (int k = 0; k < connectCount; k++)
-                {
-                    int j = nearest[k].idx;
-                    // 避免重复连接
-                    if (_axons.Exists(a =>
-                        (a.from == _nodes[i] && a.to == _nodes[j]) ||
-                        (a.from == _nodes[j] && a.to == _nodes[i])))
-                        continue;
-
-                    Axon axon = new Axon
-                    {
-                        from = _nodes[i],
-                        to = _nodes[j],
-                        active = _nodes[i].unlocked && _nodes[j].unlocked
-                    };
-                    CreateAxonGameObject(axon);
-                    _axons.Add(axon);
                 }
             }
         }
@@ -840,9 +830,27 @@ namespace SuperMech.Code
             // 轴突高亮衰减
             _axonHighlight = Mathf.Lerp(_axonHighlight, 0f, Time.deltaTime * 2f);
 
+            // 自动冲动生成（参考原版updateNeuronImpulseAutoSpawn）
+            UpdateAutoImpulseSpawn();
+
             UpdateNodes();
             UpdateAxons();
             UpdateImpulses();
+        }
+
+        /// <summary>自动冲动生成（每个已解锁节点定期发射冲动，参考原版）。</summary>
+        private void UpdateAutoImpulseSpawn()
+        {
+            foreach (var node in _nodes)
+            {
+                if (!node.unlocked) continue;
+                node.spawnTimer -= Time.deltaTime;
+                if (node.spawnTimer <= 0f)
+                {
+                    node.spawnTimer = Random.Range(3f, 8f); // 3-8秒生成一次
+                    FireImpulseFromNode(node, 1);
+                }
+            }
         }
 
         /// <summary>全图冲动爆发（参考原版fireImpulsesEverywhere，拖拽结束时触发）。</summary>
