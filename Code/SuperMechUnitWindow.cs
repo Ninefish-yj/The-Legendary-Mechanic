@@ -31,10 +31,14 @@ namespace SuperMech.Code
                 bool hasTalent = SuperMechTalent.HasTalent(actor);
                 if (!hasTalent)
                 {
-                    ShowRow(__instance, "状态", "普通人（未踏入超能）");
+                    ShowRow(__instance, "修炼境界", "凡人（未踏入超能之路）");
                     ShowRow(__instance, "提示", "在知识Tab点击「激发潜能」踏入超能");
                     return;
                 }
+
+                // === 修炼状态信息栏（参考天人武道"先天之躯"，符合原著）===
+                string cultStatus = SuperMechCultivationStatus.GetStatusSummary(actor);
+                ShowRow(__instance, "修炼境界", cultStatus);
 
                 // 显示天赋倾向（系别+评级，不显示具体异能，具体异能由SuperMechSpecialty负责）
                 var talents = SuperMechTalent.GetTalents(actor);
