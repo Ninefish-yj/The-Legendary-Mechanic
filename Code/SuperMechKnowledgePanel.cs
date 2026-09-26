@@ -22,6 +22,7 @@ namespace SuperMech.Code
         private static GameObject _container;
         private static Transform _headerLayer;   // 系别切换层
         private static Transform _graphLayer;    // 知识图谱层
+        private static SMKnowledgeGraph3D _graph3D; // 3D知识图谱组件
         private static Transform _libraryLayer;  // 知识库层
         private static RectTransform _graphContent;
         private static Actor _currentActor;
@@ -190,20 +191,10 @@ namespace SuperMech.Code
             le.flexibleHeight = 0f;
 
             Image bg = graph.AddComponent<Image>();
-            bg.color = new Color(0.05f, 0.06f, 0.1f, 0.9f);
+            bg.color = new Color(0.03f, 0.04f, 0.08f, 0.95f);
 
-            // 拖拽组件
-            GraphDragHandler drag = graph.AddComponent<GraphDragHandler>();
-            drag.OnDragDelta = OnGraphDrag;
-
-            // 内容容器（可偏移）
-            GameObject content = new GameObject("GraphContent", typeof(RectTransform));
-            content.transform.SetParent(graph.transform, false);
-            _graphContent = content.GetComponent<RectTransform>();
-            _graphContent.anchorMin = Vector2.zero;
-            _graphContent.anchorMax = Vector2.one;
-            _graphContent.offsetMin = Vector2.zero;
-            _graphContent.offsetMax = Vector2.zero;
+            // 3D知识图谱组件（球面分布+轴突+神经冲动+拖拽旋转）
+            _graph3D = graph.AddComponent<SMKnowledgeGraph3D>();
 
             _graphLayer = graph.transform;
         }
@@ -282,71 +273,10 @@ namespace SuperMech.Code
 
         private static void RefreshGraph()
         {
-            // 清除旧节点和连线
-            foreach (var kv in _nodeObjects)
-                if (kv.Value != null) UnityEngine.Object.Destroy(kv.Value);
-            _nodeObjects.Clear();
-            foreach (var line in _connectionLines)
-                if (line != null) UnityEngine.Object.Destroy(line);
-            _connectionLines.Clear();
+            if (_graph3D == null || _graphLayer == null) return;
 
-            if (_graphContent == null) return;
-
-            // 获取当前系别的知识定义
-            List<SuperMechKnowledge.KnowledgeDef> defs = SuperMechKnowledge.GetAllByPrefix(_currentPrefix);
-            if (defs == null || defs.Count == 0) return;
-
-            // 按阶位分层，球面分布（模拟3D）
-            Dictionary<int, List<SuperMechKnowledge.KnowledgeDef>> byTier = new Dictionary<int, List<SuperMechKnowledge.KnowledgeDef>>();
-            foreach (var def in defs)
-            {
-                if (!byTier.ContainsKey(def.tier)) byTier[def.tier] = new List<SuperMechKnowledge.KnowledgeDef>();
-                byTier[def.tier].Add(def);
-            }
-
-            float graphWidth = _graphContent.rect.width > 0 ? _graphContent.rect.width : 400f;
-            float graphHeight = GraphHeight - 20f;
-            float centerX = graphWidth / 2f;
-            float centerY = graphHeight / 2f;
-
-            // 每层半径不同（终极在中心，基础在外层）
-            float[] tierRadius = { 90f, 70f, 50f, 30f, 10f };
-
-            foreach (var tier in byTier.Keys)
-            {
-                var tierDefs = byTier[tier];
-                float radius = tier < tierRadius.Length ? tierRadius[tier] : 20f;
-                for (int i = 0; i < tierDefs.Count; i++)
-                {
-                    var def = tierDefs[i];
-                    float angle = (float)i / tierDefs.Count * Mathf.PI * 2f + tier * 0.5f;
-                    float x = centerX + Mathf.Cos(angle) * radius;
-                    float y = centerY + Mathf.Sin(angle) * radius * 0.7f;
-                    CreateKnowledgeNode(def, x, y, tier);
-                }
-            }
-
-            // 创建阶位关系连线（同阶位相邻节点 + 低阶到高阶的中心连接）
-            for (int tier = 0; tier <= 4; tier++)
-            {
-                var tierNodes = defs.FindAll(d => d.tier == tier);
-                for (int i = 0; i < tierNodes.Count; i++)
-                {
-                    // 同阶位相邻节点连线
-                    if (i + 1 < tierNodes.Count)
-                    {
-                        if (_nodeObjects.ContainsKey(tierNodes[i].id) && _nodeObjects.ContainsKey(tierNodes[i + 1].id))
-                            CreateConnectionLine(_nodeObjects[tierNodes[i].id], _nodeObjects[tierNodes[i + 1].id]);
-                    }
-                    // 低阶到高阶连线（每个节点连接到上一阶位的第一个节点）
-                    if (tier > 0)
-                    {
-                        var prevTierNodes = defs.FindAll(d => d.tier == tier - 1);
-                        if (prevTierNodes.Count > 0 && _nodeObjects.ContainsKey(tierNodes[i].id) && _nodeObjects.ContainsKey(prevTierNodes[0].id))
-                            CreateConnectionLine(_nodeObjects[prevTierNodes[0].id], _nodeObjects[tierNodes[i].id]);
-                    }
-                }
-            }
+            // 使用3D知识图谱（球面分布+轴突+神经冲动+拖拽旋转）
+            _graph3D.Init(_currentActor, _currentPrefix, _graphLayer);
         }
 
         private static void CreateKnowledgeNode(SuperMechKnowledge.KnowledgeDef def, float x, float y, int tier)
