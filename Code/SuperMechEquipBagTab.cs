@@ -286,7 +286,7 @@ namespace SuperMech.Code
             // 分隔
             AddText(_container.transform, "—— 背包 ——", 10, TextAnchor.MiddleCenter, new Color(0.7f, 0.7f, 0.7f));
 
-            // 背包物品：图标网格（参考原版城市资源仓库ButtonResource风格）
+            // 背包物品：图标网格（按品质从高到低排序，参考原版物品栏）
             var bag = SuperMechEquipBag.GetBag(actor);
             if (bag.Count == 0)
             {
@@ -294,9 +294,16 @@ namespace SuperMech.Code
             }
             else
             {
+                // 按品质从高到低排序（金→银橙→橙→粉→紫→淡紫→蓝→绿→灰）
+                var sortedBag = bag.OrderByDescending(id =>
+                {
+                    int idx = SuperMechRelic.GetEquipIndex(id);
+                    return idx >= 0 ? SuperMechRelic.Equipments[idx].qualityLevel : -1;
+                }).ToList();
+
                 GameObject currentRow = null;
                 int iconIndex = 0;
-                foreach (string equipId in bag)
+                foreach (string equipId in sortedBag)
                 {
                     if (iconIndex % 5 == 0)
                     {
