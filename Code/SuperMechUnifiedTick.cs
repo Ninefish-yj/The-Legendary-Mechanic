@@ -79,7 +79,7 @@ namespace SuperMech.Code
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[超神机械师] 统一tick异常(group={group}): {e.Message}");
+                Debug.LogError($"[超神机械师] 统一tick异常(group={group}): {e.Message}\n{e.StackTrace}");
             }
 
             // 自动存档+死单位清理：每60秒

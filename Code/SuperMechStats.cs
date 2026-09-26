@@ -18,8 +18,9 @@ namespace SuperMech.Code
         /// <summary>取得单位当前的 BaseStats（可通过公开索引器读写任意属性）。</summary>
         public static BaseStats Of(Actor a)
         {
-            if (a == null) return null;
-            return (BaseStats)StatsField.GetValue(a);
+            if (a == null || StatsField == null) return null;
+            try { return (BaseStats)StatsField.GetValue(a); }
+            catch { return null; }
         }
     }
 }

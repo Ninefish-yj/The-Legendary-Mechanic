@@ -85,16 +85,22 @@ namespace SuperMech.Code
         /// <summary>注册配置项与分类的本地化文本（NML配置面板用Id查文本）。</summary>
         private static void RegisterLocalization()
         {
-            // 分类名
-            LocalizedTextManager.add("超神机械师·总控", "超神机械师·总控", pReplace: true);
-            LocalizedTextManager.add("觉醒系统", "觉醒系统", pReplace: true);
-            LocalizedTextManager.add("气力系统", "气力系统", pReplace: true);
-            LocalizedTextManager.add("晋升系统", "晋升系统", pReplace: true);
-            LocalizedTextManager.add("自动收藏", "自动收藏", pReplace: true);
-            LocalizedTextManager.add("圣所系统", "圣所系统", pReplace: true);
-            LocalizedTextManager.add("机械系", "机械系", pReplace: true);
-            LocalizedTextManager.add("提炼法与宝物", "提炼法与宝物", pReplace: true);
-            LocalizedTextManager.add("性能与调试", "性能与调试", pReplace: true);
+            // 分类名（default_config.json中用英文key，这里注册中文显示）
+            var categories = new (string key, string name)[]
+            {
+                ("General", "总控"),
+                ("Awakening", "觉醒系统"),
+                ("Qi", "气力系统"),
+                ("Promotion", "晋升系统"),
+                ("AutoFavorite", "自动收藏"),
+                ("Sanctuary", "圣所系统"),
+                ("Mech", "机械系"),
+                ("Refinement", "提炼法与宝物"),
+                ("Relic", "宇宙宝物"),
+                ("Performance", "性能与调试"),
+            };
+            foreach (var (key, name) in categories)
+                LocalizedTextManager.add(key, name, pReplace: true);
 
             // 配置项名称 + 描述（key格式：Id 和 Id+" Description"）
             var items = new (string id, string name, string desc)[]

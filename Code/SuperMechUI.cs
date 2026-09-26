@@ -156,6 +156,8 @@ namespace SuperMech.Code
                 var tipBtn = btn.GetComponent<TipButton>();
                 if (tipBtn == null) tipBtn = btn.gameObject.AddComponent<TipButton>();
                 tipBtn.textOnClick = title + "\n" + desc;
+                tipBtn.textOnClickDescription = string.Empty;  // 清除，避免被本地化查找
+                tipBtn.text_description_2 = string.Empty;
             }
             catch { }
         }
