@@ -10,7 +10,7 @@ namespace SuperMech.Code
     /// - 冥土维度：异能系，生死能量，生命/死亡强化
     /// - 秘法维度：魔法系，魔力充盈，法术强化
     /// - 机库维度：机械系，机械空间，制造/机械强化
-    /// A阶以上单位可进入，获得限时buff。
+    /// A阶以上单位可进入，获得限时buff，过期自动移除。
     /// </summary>
     public static class SuperMechDimension
     {
@@ -21,6 +21,7 @@ namespace SuperMech.Code
             public string desc;
             public string classTrait;  // 对应系
             public System.Action<BaseStats> applyBuff;
+            public System.Action<BaseStats> removeBuff;  // 反向移除buff
             public int minRankIndex = 8;  // A阶（index 8）
         }
 
@@ -34,6 +35,12 @@ namespace SuperMech.Code
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.3f;
                     s["speed"] = (s["speed"]) + 0.5f;
                     s["intelligence"] = (s["intelligence"]) + 10f;
+                },
+                removeBuff = s => {
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / 1.3f;
+                    if (Mathf.Approximately(s["multiplier_damage"], 1f)) s["multiplier_damage"] = 0f;
+                    s["speed"] = (s["speed"]) - 0.5f;
+                    s["intelligence"] = (s["intelligence"]) - 10f;
                 }
             },
             new DimensionDef
@@ -44,6 +51,13 @@ namespace SuperMech.Code
                     s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * 1.4f;
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.25f;
                     s["stamina"] = (s["stamina"]) + 30f;
+                },
+                removeBuff = s => {
+                    s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / 1.4f;
+                    if (Mathf.Approximately(s["multiplier_health"], 1f)) s["multiplier_health"] = 0f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / 1.25f;
+                    if (Mathf.Approximately(s["multiplier_damage"], 1f)) s["multiplier_damage"] = 0f;
+                    s["stamina"] = (s["stamina"]) - 30f;
                 }
             },
             new DimensionDef
@@ -55,6 +69,12 @@ namespace SuperMech.Code
                     s["mana"] = (s["mana"]) + 50f;
                     s["damage"] = (s["damage"]) + 5f;
                     s["health"] = (s["health"]) + 15f;
+                },
+                removeBuff = s => {
+                    s["intelligence"] = (s["intelligence"]) - 20f;
+                    s["mana"] = (s["mana"]) - 50f;
+                    s["damage"] = (s["damage"]) - 5f;
+                    s["health"] = (s["health"]) - 15f;
                 }
             },
             new DimensionDef
@@ -65,6 +85,13 @@ namespace SuperMech.Code
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.3f;
                     s["intelligence"] = (s["intelligence"]) + 15f;
                     s["experience"] = ((s["experience"] == 0f ? 1f : s["experience"])) * 1.5f;
+                },
+                removeBuff = s => {
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / 1.3f;
+                    if (Mathf.Approximately(s["multiplier_damage"], 1f)) s["multiplier_damage"] = 0f;
+                    s["intelligence"] = (s["intelligence"]) - 15f;
+                    s["experience"] = ((s["experience"] == 0f ? 1f : s["experience"])) / 1.5f;
+                    if (Mathf.Approximately(s["experience"], 1f)) s["experience"] = 0f;
                 }
             },
             new DimensionDef
@@ -75,6 +102,12 @@ namespace SuperMech.Code
                     s["attack_speed"] = (s["attack_speed"]) + 0.3f;
                     s["critical_chance"] = (s["critical_chance"]) + 0.15f;
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.2f;
+                },
+                removeBuff = s => {
+                    s["attack_speed"] = (s["attack_speed"]) - 0.3f;
+                    s["critical_chance"] = (s["critical_chance"]) - 0.15f;
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / 1.2f;
+                    if (Mathf.Approximately(s["multiplier_damage"], 1f)) s["multiplier_damage"] = 0f;
                 }
             },
             new DimensionDef
@@ -86,16 +119,33 @@ namespace SuperMech.Code
                     s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * 1.1f;
                     s["intelligence"] = (s["intelligence"]) + 15f;
                     s["armor_penetration"] = (s["armor_penetration"]) + 0.15f;
+                },
+                removeBuff = s => {
+                    s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / 1.1f;
+                    if (Mathf.Approximately(s["multiplier_damage"], 1f)) s["multiplier_damage"] = 0f;
+                    s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / 1.1f;
+                    if (Mathf.Approximately(s["multiplier_health"], 1f)) s["multiplier_health"] = 0f;
+                    s["intelligence"] = (s["intelligence"]) - 15f;
+                    s["armor_penetration"] = (s["armor_penetration"]) - 0.15f;
                 }
             },
         };
 
         // 单位当前所在维度（null=不在维度中）
         private static readonly Dictionary<long, string> _activeDimension = new Dictionary<long, string>();
+        // buff结束时间戳（单位id → DateTime.Ticks）
+        private static readonly Dictionary<long, long> _buffEndTime = new Dictionary<long, long>();
         // 维度进入冷却（单位id → 结束时间戳）
         private static readonly Dictionary<long, long> _cooldown = new Dictionary<long, long>();
-        public const long BuffDurationTicks = 60;  // buff持续60个tick（约5分钟）
-        public const long CooldownTicks = 120;     // 冷却120tick
+        public const float BuffDurationSeconds = 120f;  // buff持续120秒（2分钟）
+        public const float CooldownSeconds = 300f;      // 冷却300秒（5分钟）
+
+        /// <summary>获取维度定义。</summary>
+        public static DimensionDef GetDef(string id)
+        {
+            foreach (var d in Dimensions) if (d.id == id) return d;
+            return null;
+        }
 
         /// <summary>获取单位当前所在维度名。</summary>
         public static string GetActiveDimension(Actor a)
@@ -109,12 +159,14 @@ namespace SuperMech.Code
         public static bool CanEnter(Actor a, DimensionDef dim)
         {
             if (a == null || dim == null) return false;
-            if (!a.hasTrait(dim.classTrait)) return false;
+            // 已经在维度中，不能重复进入（防止buff叠加）
+            if (_activeDimension.ContainsKey(a.id)) return false;
+            if (dim.classTrait != null && !a.hasTrait(dim.classTrait)) return false;
             if (SuperMechAdvancement.GetRankIndex(a) < dim.minRankIndex) return false;
-            if (_cooldown.ContainsKey(a.id))
+            if (_cooldown.TryGetValue(a.id, out long cdEnd))
             {
                 long now = System.DateTime.Now.Ticks;
-                if (now < _cooldown[a.id]) return false;
+                if (now < cdEnd) return false;
             }
             return true;
         }
@@ -125,9 +177,12 @@ namespace SuperMech.Code
             if (!CanEnter(a, dim)) return false;
             var stats = SuperMechStats.Of(a);
             if (stats != null) dim.applyBuff(stats);
+            long now = System.DateTime.Now.Ticks;
             _activeDimension[a.id] = dim.id;
-            _cooldown[a.id] = System.DateTime.Now.Ticks + System.TimeSpan.FromSeconds(300).Ticks;
-            Debug.Log($"[超神机械师] {a.name} 进入{dim.name}，获得限时强化");
+            _buffEndTime[a.id] = now + System.TimeSpan.FromSeconds(BuffDurationSeconds).Ticks;
+            _cooldown[a.id] = now + System.TimeSpan.FromSeconds(CooldownSeconds).Ticks;
+            if (SuperMechConfig.LogVerbose)
+                Debug.Log($"[超神机械师] {a.name} 进入{dim.name}，获得限时强化（{BuffDurationSeconds}秒）");
             return true;
         }
 
@@ -138,26 +193,52 @@ namespace SuperMech.Code
             if (a == null) return list;
             foreach (var dim in Dimensions)
             {
-                if (a.hasTrait(dim.classTrait)) list.Add(dim);
+                if (dim.classTrait == null || a.hasTrait(dim.classTrait)) list.Add(dim);
             }
             return list;
         }
 
-        /// <summary>定期检查buff过期。</summary>
+        /// <summary>定期检查buff过期，过期后自动移除。</summary>
         public static void TickDimensionBuffs()
         {
-            // 简化：buff通过stats反射施加后持续存在，不做过期移除
-            // 冷却由_cooldown控制再次进入
+            if (World.world == null || World.world.units == null) return;
+            long now = System.DateTime.Now.Ticks;
+            var expired = new List<long>();
+            foreach (var kv in _buffEndTime)
+            {
+                if (now >= kv.Value) expired.Add(kv.Key);
+            }
+            foreach (long id in expired)
+            {
+                Actor a = null;
+                foreach (var u in World.world.units) if (u != null && u.id == id) { a = u; break; }
+                if (a != null && _activeDimension.TryGetValue(id, out string dimId))
+                {
+                    var dim = GetDef(dimId);
+                    var stats = SuperMechStats.Of(a);
+                    if (dim != null && stats != null) dim.removeBuff(stats);
+                    if (SuperMechConfig.LogVerbose)
+                        Debug.Log($"[超神机械师] {a.name} 的{dim?.name ?? "维度"}buff已过期");
+                }
+                _activeDimension.Remove(id);
+                _buffEndTime.Remove(id);
+            }
         }
 
         /// <summary>清空数据。</summary>
-        public static void Clear() { _activeDimension.Clear(); _cooldown.Clear(); }
+        public static void Clear()
+        {
+            _activeDimension.Clear();
+            _buffEndTime.Clear();
+            _cooldown.Clear();
+        }
 
         /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
             removed += SuperMechCleanup.CleanDict(_activeDimension, alive);
+            removed += SuperMechCleanup.CleanDict(_buffEndTime, alive);
             removed += SuperMechCleanup.CleanDict(_cooldown, alive);
             return removed;
         }
