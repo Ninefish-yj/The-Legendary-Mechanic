@@ -114,16 +114,23 @@ namespace SuperMech.Code
 
             _headerLayer = header.transform;
 
-            // 5个系别按钮
+            // 5个系别按钮（图标+tooltip）
             string[] prefixes = { "mech", "martial", "psi", "mage", "mind" };
             string[] names = { "机械系", "武道系", "异能系", "魔法系", "念力系" };
+            string[] icons = {
+                "ui/Icons/actor_traits/iconStrong",       // 机械系 - 力量/坚固
+                "ui/Icons/actor_traits/iconAgile",        // 武道系 - 敏捷/战斗
+                "ui/Icons/actor_traits/iconLightning",    // 异能系 - 闪电/超能力
+                "ui/Icons/actor_traits/iconFireBlood",    // 魔法系 - 火焰/魔法
+                "ui/Icons/actor_traits/iconStrongMinded"  // 念力系 - 精神/念力
+            };
             for (int i = 0; i < prefixes.Length; i++)
             {
-                CreateClassButton(prefixes[i], names[i]);
+                CreateClassButton(prefixes[i], names[i], icons[i]);
             }
         }
 
-        private static void CreateClassButton(string prefix, string name)
+        private static void CreateClassButton(string prefix, string name, string iconPath)
         {
             GameObject btnObj = new GameObject("ClassBtn_" + prefix, typeof(RectTransform));
             btnObj.transform.SetParent(_headerLayer, false);
@@ -133,8 +140,21 @@ namespace SuperMech.Code
                 ? new Color(0.25f, 0.45f, 0.75f, 0.9f)
                 : new Color(0.2f, 0.2f, 0.25f, 0.8f);
 
-            Text txt = CreateText(btnObj.transform, name, 11, TextAnchor.MiddleCenter);
-            txt.color = Color.white;
+            // 图标
+            GameObject iconObj = new GameObject("Icon", typeof(RectTransform));
+            iconObj.transform.SetParent(btnObj.transform, false);
+            RectTransform iconRt = iconObj.GetComponent<RectTransform>();
+            iconRt.anchorMin = Vector2.zero;
+            iconRt.anchorMax = Vector2.one;
+            iconRt.offsetMin = new Vector2(4, 4);
+            iconRt.offsetMax = new Vector2(-4, -4);
+            Image iconImg = iconObj.AddComponent<Image>();
+            try { iconImg.sprite = SpriteTextureLoader.getSprite(iconPath); } catch { }
+            iconImg.color = Color.white;
+
+            // Tooltip显示系别名
+            TipButton tip = btnObj.AddComponent<TipButton>();
+            tip.textOnClick = name;
 
             string p = prefix;
             btn.onClick.AddListener(() =>
