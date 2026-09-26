@@ -95,7 +95,7 @@ namespace SuperMech.Code
             {
                 id = "sm_give_relic_gold",
                 name = "赐予金色装备",
-                path_icon = "ui/powers/power_bless",
+                path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
@@ -344,7 +344,7 @@ namespace SuperMech.Code
             {
                 id = "sm_give_cosmic_relic",
                 name = "赐予宇宙宝物",
-                path_icon = "ui/powers/power_bless",
+                path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,

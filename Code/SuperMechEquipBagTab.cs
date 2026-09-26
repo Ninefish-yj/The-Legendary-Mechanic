@@ -163,7 +163,7 @@ namespace SuperMech.Code
             Image icon = tabObj.GetComponentInChildren<Image>();
             if (icon != null)
             {
-                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconArmor"); } catch { }
+                try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/iconArmor"); } catch { }
             }
 
             // CanvasGroup控制可见性

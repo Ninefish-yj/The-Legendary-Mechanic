@@ -29,10 +29,10 @@ namespace SuperMech.Code
             string[] powerNames = { "召唤机械游骑兵", "召唤机甲单位", "召唤降临者", "冲击超神级", "异化之灾（天灾）", "异化之灾_天灾", "查看潜能点", "解锁知识·武装系", "解锁知识·能量系", "解锁知识·虚拟系" };
             foreach (var n in powerNames) LocalizedTextManager.add(n, n, pReplace: true);
 
-            AddSpawnPower(SummonRanger, "召唤机械游骑兵", "ui/powers/power_summon_units", "soldier", 1);
-            AddSpawnPower(SummonMech, "召唤机甲单位", "ui/powers/power_summon_units", "titan", 3);
-            AddAwakenedPower(SummonAwakened, "召唤降临者", "ui/powers/power_summon_units");
-            AddTranscendPower(AttemptTranscend, "神之催化", "ui/powers/power_bless");
+            AddSpawnPower(SummonRanger, "召唤机械游骑兵", "iconSprite", "soldier", 1);
+            AddSpawnPower(SummonMech, "召唤机甲单位", "iconSprite", "titan", 3);
+            AddAwakenedPower(SummonAwakened, "召唤降临者", "iconSprite");
+            AddTranscendPower(AttemptTranscend, "神之催化", "iconDivineLight");
 
             AddDisaster(DisasterAlien, "异化之灾（天灾）");
 

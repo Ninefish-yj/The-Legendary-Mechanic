@@ -72,7 +72,7 @@ namespace SuperMech.Code
             {
                 id = "sm_give_refinement",
                 name = "传授提炼法",
-                path_icon = "ui/powers/power_bless",
+                path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,

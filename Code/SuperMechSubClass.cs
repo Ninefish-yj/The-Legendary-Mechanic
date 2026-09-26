@@ -207,7 +207,7 @@ namespace SuperMech.Code
             {
                 id = "sm_give_" + traitId,
                 name = name,
-                path_icon = "ui/powers/power_bless",
+                path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,

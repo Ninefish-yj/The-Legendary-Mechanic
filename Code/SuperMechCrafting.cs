@@ -128,7 +128,7 @@ namespace SuperMech.Code
                 {
                     id = r.id,
                     name = r.name,
-                    path_icon = "ui/powers/power_summon_units",
+                    path_icon = "iconSprite",
                     rank = PowerRank.Rank0_free,
                     force_map_mode = MetaType.None,
                     ignore_fast_spawn = true,

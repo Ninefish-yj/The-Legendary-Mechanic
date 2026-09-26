@@ -190,46 +190,46 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识节点（内部字典，不注册为特质）");
         }
 
-        /// <summary>按系别+分支+阶位+知识索引选择独特图标（参考原版技能/特质图标）。</summary>
+        /// <summary>按系别+分支+阶位+知识索引选择图标（全部使用原版确认存在的图标）。</summary>
         private static readonly string[][] MechIcons = {
-            // 枪炮师：射击/火力相关
-            new[] { "ui/Icons/skills/iconSkillShoot", "ui/Icons/skills/iconSkillRanged", "ui/Icons/skills/iconSkillProjectile", "ui/Icons/skills/iconSkillSnipe", "ui/Icons/skills/iconSkillCannon" },
-            // 机械师：齿轮/工具/制造相关
-            new[] { "ui/Icons/skills/iconSkillBuild", "ui/Icons/skills/iconSkillRepair", "ui/Icons/skills/iconSkillCraft", "ui/Icons/skills/iconSkillMechanic", "ui/Icons/skills/iconSkillEngineer" },
-            // 械武者：近战/殖装相关
-            new[] { "ui/Icons/skills/iconSkillSlash", "ui/Icons/skills/iconSkillBlade", "ui/Icons/skills/iconSkillFist", "ui/Icons/skills/iconSkillArmor", "ui/Icons/skills/iconSkillMelee" }
+            // 枪炮师：射击/火力相关（用Lightning/FireBlood等）
+            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep" },
+            // 机械师：齿轮/工具/制造相关（用Strong/Tough等）
+            new[] { "ui/Icons/actor_traits/iconStrong", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconBoostedVitality" },
+            // 械武者：近战/殖装相关（用StrongMinded/Agile等）
+            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconAgile", "ui/Icons/actor_traits/iconFast", "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillDash" }
         };
         private static readonly string[][] MartialIcons = {
             // 敏捷：速度/闪避相关
-            new[] { "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/skills/iconSkillSwift", "ui/Icons/skills/iconSkillAgility" },
+            new[] { "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/actor_traits/iconAgile", "ui/Icons/actor_traits/iconFast" },
             // 力量：攻击/力量相关
-            new[] { "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillHeavy", "ui/Icons/skills/iconSkillSmash", "ui/Icons/skills/iconSkillPower", "ui/Icons/skills/iconSkillStrength" },
+            new[] { "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconStrong", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconFireBlood" },
             // 防御：护甲/盾牌相关
-            new[] { "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/skills/iconSkillGuard", "ui/Icons/skills/iconSkillShield", "ui/Icons/skills/iconSkillTough", "ui/Icons/skills/iconSkillDefense" }
+            new[] { "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconBubbleDefense", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconBoostedVitality" }
         };
         private static readonly string[][] PsiIcons = {
             // 能级：能量/爆炸相关
-            new[] { "ui/Icons/skills/iconSkillFireball", "ui/Icons/skills/iconSkillBlast", "ui/Icons/skills/iconSkillEnergy", "ui/Icons/skills/iconSkillPower", "ui/Icons/skills/iconSkillNova" },
+            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconStrong" },
             // 操控：手/控制相关
-            new[] { "ui/Icons/skills/iconSkillMindControl", "ui/Icons/skills/iconSkillTelekinesis", "ui/Icons/skills/iconSkillControl", "ui/Icons/skills/iconSkillManipulate", "ui/Icons/skills/iconSkillCommand" },
+            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillDodge", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/actor_traits/iconAgile" },
             // 持久力：生命/耐力相关
-            new[] { "ui/Icons/skills/iconSkillRegen", "ui/Icons/skills/iconSkillEndurance", "ui/Icons/skills/iconSkillVitality", "ui/Icons/skills/iconSkillSurvive", "ui/Icons/skills/iconSkillStamina" }
+            new[] { "ui/Icons/actor_traits/iconRegeneration", "ui/Icons/actor_traits/iconBoostedVitality", "ui/Icons/actor_traits/iconTough", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconStrong" }
         };
         private static readonly string[][] MageIcons = {
             // 专精法师：法术/符文相关
-            new[] { "ui/Icons/skills/iconSkillFireball", "ui/Icons/skills/iconSkillFrost", "ui/Icons/skills/iconSkillLightning", "ui/Icons/skills/iconSkillArcane", "ui/Icons/skills/iconSkillRune" },
+            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge" },
             // 魔网法师：魔法阵/网络相关
-            new[] { "ui/Icons/skills/iconSkillMana", "ui/Icons/skills/iconSkillWeave", "ui/Icons/skills/iconSkillChannel", "ui/Icons/skills/iconSkillFocus", "ui/Icons/skills/iconSkillMeditate" },
+            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/actor_traits/iconAgile" },
             // 元素：元素相关
-            new[] { "ui/Icons/skills/iconSkillFireball", "ui/Icons/skills/iconSkillFrost", "ui/Icons/skills/iconSkillLightning", "ui/Icons/skills/iconSkillEarth", "ui/Icons/skills/iconSkillWind" }
+            new[] { "ui/Icons/actor_traits/iconLightning", "ui/Icons/actor_traits/iconFireBlood", "ui/Icons/actor_traits/iconBubbleDefense", "ui/Icons/skills/iconSkillBlock", "ui/Icons/skills/iconSkillDash" }
         };
         private static readonly string[][] MindIcons = {
             // 灵魂：灵魂/精神相关
-            new[] { "ui/Icons/skills/iconSkillMindControl", "ui/Icons/skills/iconSkillSoul", "ui/Icons/skills/iconSkillSpirit", "ui/Icons/skills/iconSkillEthereal", "ui/Icons/skills/iconSkillGhost" },
+            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/skills/iconSkillBackstep", "ui/Icons/skills/iconSkillDodge", "ui/Icons/actor_traits/iconAgile" },
             // 法则：眼睛/洞察相关
-            new[] { "ui/Icons/skills/iconSkillInsight", "ui/Icons/skills/iconSkillVision", "ui/Icons/skills/iconSkillClairvoyance", "ui/Icons/skills/iconSkillForesight", "ui/Icons/skills/iconSkillTruth" },
+            new[] { "ui/Icons/actor_traits/iconEagleEye", "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/skills/iconSkillDeflectProjectile", "ui/Icons/skills/iconSkillBlock", "ui/Icons/actor_traits/iconFast" },
             // 现实：扭曲/改变相关
-            new[] { "ui/Icons/skills/iconSkillTelekinesis", "ui/Icons/skills/iconSkillWarp", "ui/Icons/skills/iconSkillBend", "ui/Icons/skills/iconSkillAlter", "ui/Icons/skills/iconSkillReality" }
+            new[] { "ui/Icons/actor_traits/iconStrongMinded", "ui/Icons/actor_traits/iconLightning", "ui/Icons/skills/iconSkillDash", "ui/Icons/skills/iconSkillDodge", "ui/Icons/actor_traits/iconFireBlood" }
         };
 
         private static string GetKnowledgeIcon(string prefix, int branch, int tier, int knowledgeIdx)
