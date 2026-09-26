@@ -154,8 +154,20 @@ namespace SuperMech.Code
                 tip.text_description_2 = string.Empty;
             }
 
-            // 设置图标
-            Image icon = tabObj.GetComponentInChildren<Image>();
+            // 设置图标（精确找到图标Image，跳过背景Image）
+            Image[] allImages = tabObj.GetComponentsInChildren<Image>(true);
+            Image icon = null;
+            foreach (Image img in allImages)
+            {
+                // 跳过全屏背景（sizeDelta接近Tab大小），找较小的图标
+                RectTransform rt = img.GetComponent<RectTransform>();
+                if (rt != null && rt.sizeDelta.x < 50 && rt.sizeDelta.y < 50)
+                {
+                    icon = img;
+                    break;
+                }
+            }
+            if (icon == null && allImages.Length > 1) icon = allImages[1]; // 第二个Image通常是图标
             if (icon != null)
             {
                 try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconGenius"); } catch { }
