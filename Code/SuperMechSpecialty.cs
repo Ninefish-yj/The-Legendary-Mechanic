@@ -167,6 +167,42 @@ namespace SuperMech.Code
                 a.addTrait(specs[Random.Range(0, specs.Length)]);
             }
         }
+
+        /// <summary>选择分支后获得对应的特色能力（其他四系的特色是后天学习的职业技能）。</summary>
+        public static void GrantBranchSpecialty(Actor a, string branchTraitId)
+        {
+            if (a == null) return;
+            string specId = null;
+
+            // 机械系分支 → 机械专精
+            if (branchTraitId == SuperMechBranch.BranchGunner) specId = MechTurret;      // 枪炮师 → 炮塔专精
+            else if (branchTraitId == SuperMechBranch.BranchMech) specId = MechMech;      // 机械师 → 机甲专精
+            else if (branchTraitId == SuperMechBranch.BranchMartial) specId = MechDrone;  // 械武者 → 无人机专精
+
+            // 武道系分支 → 武道技巧
+            else if (branchTraitId == SuperMechBranch.BranchMartialBody) specId = MartialShield;    // 体魄 → 护体气罩
+            else if (branchTraitId == SuperMechBranch.BranchMartialTactic) specId = MartialFlash;   // 战术 → 闪气
+            else if (branchTraitId == SuperMechBranch.BranchMartialPower) specId = MartialExplode;  // 超能 → 爆气
+
+            // 魔法系分支 → 魔法属性（原著：魔法系只有专精法师/魔网法师两类）
+            else if (branchTraitId == SuperMechBranch.BranchMageSpecialist)
+            {
+                string[] elements = { MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark };
+                specId = elements[Random.Range(0, elements.Length)];
+            }
+            else if (branchTraitId == SuperMechBranch.BranchMageWeave) specId = MageLight;  // 魔网法师 → 光辉专精
+
+            // 念力系分支 → 精神能力
+            else if (branchTraitId == SuperMechBranch.BranchMindSoul) specId = MindControl;      // 灵魂 → 精神控制
+            else if (branchTraitId == SuperMechBranch.BranchMindLaw) specId = MindDetect;        // 法则 → 心灵探测
+            else if (branchTraitId == SuperMechBranch.BranchMindReality) specId = MindTelekinesis; // 现实 → 念动
+
+            if (specId != null && !a.hasTrait(specId))
+            {
+                a.addTrait(specId);
+                Debug.Log($"[超神机械师] {a.name} 选择分支后获得特色能力：{LocalizedTextManager.getText("trait_" + specId, specId)}");
+            }
+        }
         /// <summary>获取单位已有的特色能力列表。</summary>
         public static List<string> GetSpecialties(Actor a)
         {

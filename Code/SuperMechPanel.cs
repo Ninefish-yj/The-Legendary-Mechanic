@@ -165,6 +165,8 @@ namespace SuperMech.Code
                                 SuperMechStage.SetStage(a, 4);
                             }
                             SuperMechQiAttribute.AutoAssign(a);
+                            // 选择分支后获得对应的特色能力（原著：其他四系的特色是后天学习的职业技能）
+                            SuperMechSpecialty.GrantBranchSpecialty(a, branches[idx].traitId);
                             Debug.Log($"[超神机械师] {a.name} 转职 {branches[idx].name}");
                             Refresh();
                         });

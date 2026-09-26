@@ -333,6 +333,8 @@ namespace SuperMech.Code
             // 随机选一个分支（AI随机，玩家可用神权覆盖）
             var b = branches[Random.Range(0, branches.Count)];
             a.addTrait(b.traitId);
+            // 选择分支后获得对应的特色能力
+            SuperMechSpecialty.GrantBranchSpecialty(a, b.traitId);
             Debug.Log($"[超神机械师] {a.name} 自动选择分支：{b.name}");
         }
 
