@@ -58,7 +58,10 @@ namespace SuperMech.Code
                 tab.tab_elements.Add(_container.transform);
             }
 
-            RenderContent(actor);
+            // 只有在知识Tab激活时才渲染内容，避免内容出现在其他Tab（如原版装备Tab）中
+            bool onKnowTab = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
+            if (!onKnowTab && _container != null) _container.SetActive(false);
+            if (onKnowTab) RenderContent(actor);
         }
 
         private static Actor GetActor(UnitWindow window)
