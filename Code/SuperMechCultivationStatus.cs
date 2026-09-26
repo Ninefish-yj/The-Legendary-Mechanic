@@ -149,7 +149,13 @@ namespace SuperMech.Code
             string divinity = GetDivinityDesc(profLayer, speciesLayer);
             string state = GetCultivationState(a, rankIndex, qiLevel);
 
-            return $"【{title}】{desc}\n气力：{qiDesc}（Lv{qiLevel}）\n神性：{divinity}\n状态：{state}";
+            // 简化：阶位+描述一行，气力一行，神性/状态只在有内容时显示
+            string result = $"【{title}】{desc}\n气力：{qiDesc}";
+            if (profLayer > 0 || speciesLayer > 0)
+                result += $"\n神性：{divinity}";
+            if (!string.IsNullOrEmpty(state) && state != "修炼中")
+                result += $"\n状态：{state}";
+            return result;
         }
 
         /// <summary>获取简短状态（单行，用于面板标题）。</summary>
