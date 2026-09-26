@@ -15,16 +15,19 @@ namespace SuperMech.Code
     {
         private const string ContainerName = "SMKnowledgePanel";
         private const float PanelHeight = 480f;
-        private const float HeaderHeight = 56f;
-        private const float GraphHeight = 240f;
-        private const float LibraryHeight = 180f;
+        private const float HeaderHeight = 36f;
+        private const float GraphHeight = 260f;
+        private const float LibraryHeight = 184f;
 
         private static GameObject _container;
         private static Transform _headerLayer;   // 系别切换层
         private static Transform _graphLayer;    // 知识图谱层
+        private static Transform _graphContent;  // 图谱内容容器
+        private static Text _graphTitle;         // 图谱标题
         private static SMKnowledgeGraph3D _graph3D; // 3D知识图谱组件
         private static Transform _libraryLayer;  // 知识库内容层
         private static Text _libraryTitle;       // 知识库标题
+        private static Text _libraryProgress;    // 知识库进度（右下角）
         private static RectTransform _graphContent;
         private static Actor _currentActor;
         private static string _currentPrefix = "mech";
@@ -96,12 +99,6 @@ namespace SuperMech.Code
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
-        private static Text _headerClassName;
-        private static Text _headerStage;
-        private static Text _headerBranch;
-        private static Text _headerPotential;
-        private static Text _headerProgress;
-
         private static void CreateHeaderLayer()
         {
             GameObject header = new GameObject("HeaderLayer", typeof(RectTransform));
@@ -113,129 +110,27 @@ namespace SuperMech.Code
 
             // 背景
             Image bg = header.AddComponent<Image>();
-            bg.color = new Color(0.08f, 0.1f, 0.15f, 0.9f);
+            bg.color = new Color(0.06f, 0.08f, 0.12f, 0.9f);
             bg.raycastTarget = false;
 
             _headerLayer = header.transform;
 
-            // 左侧：系别图标+名称
-            GameObject leftGo = new GameObject("Left", typeof(RectTransform));
-            leftGo.transform.SetParent(header.transform, false);
-            HorizontalLayoutGroup leftHlg = leftGo.AddComponent<HorizontalLayoutGroup>();
-            leftHlg.childAlignment = TextAnchor.MiddleLeft;
-            leftHlg.childControlWidth = true;
-            leftHlg.childControlHeight = true;
-            leftHlg.childForceExpandWidth = false;
-            leftHlg.childForceExpandHeight = true;
-            leftHlg.spacing = 6f;
-            leftHlg.padding = new RectOffset(6, 0, 4, 4);
-            RectTransform leftRt = leftGo.GetComponent<RectTransform>();
-            leftRt.anchorMin = new Vector2(0, 0);
-            leftRt.anchorMax = new Vector2(0.4f, 1);
-            leftRt.offsetMin = Vector2.zero;
-            leftRt.offsetMax = Vector2.zero;
-
-            // 系别图标
-            GameObject iconGo = new GameObject("ClassIcon", typeof(RectTransform));
-            iconGo.transform.SetParent(leftGo.transform, false);
-            Image iconImg = iconGo.AddComponent<Image>();
-            iconImg.raycastTarget = false;
-            RectTransform iconRt = iconGo.GetComponent<RectTransform>();
-            iconRt.sizeDelta = new Vector2(32, 32);
-            _headerClassIcon = iconImg;
-
-            // 系别名称+知识树名
-            GameObject nameGo = new GameObject("ClassName", typeof(RectTransform));
-            nameGo.transform.SetParent(leftGo.transform, false);
-            Text nameText = nameGo.AddComponent<Text>();
-            nameText.fontSize = 13;
-            nameText.fontStyle = FontStyle.Bold;
-            nameText.color = new Color(1f, 0.84f, 0f);
-            nameText.alignment = TextAnchor.MiddleLeft;
-            nameText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (nameText.font == null) nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _headerClassName = nameText;
-
-            // 中间：职业阶段+分支
-            GameObject midGo = new GameObject("Middle", typeof(RectTransform));
-            midGo.transform.SetParent(header.transform, false);
-            VerticalLayoutGroup midVlg = midGo.AddComponent<VerticalLayoutGroup>();
-            midVlg.childAlignment = TextAnchor.MiddleLeft;
-            midVlg.childControlWidth = true;
-            midVlg.childControlHeight = true;
-            midVlg.childForceExpandWidth = true;
-            midVlg.childForceExpandHeight = false;
-            midVlg.spacing = 1f;
-            midVlg.padding = new RectOffset(4, 4, 2, 2);
-            RectTransform midRt = midGo.GetComponent<RectTransform>();
-            midRt.anchorMin = new Vector2(0.4f, 0);
-            midRt.anchorMax = new Vector2(0.7f, 1);
-            midRt.offsetMin = Vector2.zero;
-            midRt.offsetMax = Vector2.zero;
-
-            Text stageText = midGo.AddComponent<Text>();
-            stageText.fontSize = 11;
-            stageText.color = new Color(0.8f, 0.9f, 1f);
-            stageText.alignment = TextAnchor.MiddleLeft;
-            stageText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (stageText.font == null) stageText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _headerStage = stageText;
-
-            GameObject branchGo = new GameObject("Branch", typeof(RectTransform));
-            branchGo.transform.SetParent(midGo.transform, false);
-            Text branchText = branchGo.AddComponent<Text>();
-            branchText.fontSize = 10;
-            branchText.color = new Color(0.6f, 0.7f, 0.8f);
-            branchText.alignment = TextAnchor.MiddleLeft;
-            branchText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (branchText.font == null) branchText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _headerBranch = branchText;
-
-            // 右侧：潜能点+进度
-            GameObject rightGo = new GameObject("Right", typeof(RectTransform));
-            rightGo.transform.SetParent(header.transform, false);
-            VerticalLayoutGroup rightVlg = rightGo.AddComponent<VerticalLayoutGroup>();
-            rightVlg.childAlignment = TextAnchor.MiddleRight;
-            rightVlg.childControlWidth = true;
-            rightVlg.childControlHeight = true;
-            rightVlg.childForceExpandWidth = true;
-            rightVlg.childForceExpandHeight = false;
-            rightVlg.spacing = 1f;
-            rightVlg.padding = new RectOffset(4, 6, 2, 2);
-            RectTransform rightRt = rightGo.GetComponent<RectTransform>();
-            rightRt.anchorMin = new Vector2(0.7f, 0);
-            rightRt.anchorMax = new Vector2(1f, 1);
-            rightRt.offsetMin = Vector2.zero;
-            rightRt.offsetMax = Vector2.zero;
-
-            Text potText = rightGo.AddComponent<Text>();
-            potText.fontSize = 11;
-            potText.color = new Color(0.5f, 1f, 0.6f);
-            potText.alignment = TextAnchor.MiddleRight;
-            potText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (potText.font == null) potText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _headerPotential = potText;
-
-            GameObject progGo = new GameObject("Progress", typeof(RectTransform));
-            progGo.transform.SetParent(rightGo.transform, false);
-            Text progText = progGo.AddComponent<Text>();
-            progText.fontSize = 10;
-            progText.color = new Color(0.7f, 0.7f, 0.7f);
-            progText.alignment = TextAnchor.MiddleRight;
-            progText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (progText.font == null) progText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _headerProgress = progText;
-
-            // 底部：系别切换小图标
+            // 系别切换小图标（居中）
             GameObject switcherGo = new GameObject("ClassSwitcher", typeof(RectTransform));
             switcherGo.transform.SetParent(header.transform, false);
             HorizontalLayoutGroup swHlg = switcherGo.AddComponent<HorizontalLayoutGroup>();
             swHlg.childAlignment = TextAnchor.MiddleCenter;
             swHlg.childControlWidth = true;
             swHlg.childControlHeight = true;
-            swHlg.childForceExpandWidth = true;
+            swHlg.childForceExpandWidth = false;
             swHlg.childForceExpandHeight = true;
-            swHlg.spacing = 2f;
+            swHlg.spacing = 8f;
+            swHlg.padding = new RectOffset(4, 4, 2, 2);
+            RectTransform swRt = switcherGo.GetComponent<RectTransform>();
+            swRt.anchorMin = Vector2.zero;
+            swRt.anchorMax = Vector2.one;
+            swRt.offsetMin = Vector2.zero;
+            swRt.offsetMax = Vector2.zero;
             swHlg.padding = new RectOffset(2, 2, 0, 0);
             RectTransform swRt = switcherGo.GetComponent<RectTransform>();
             swRt.anchorMin = new Vector2(0, 0);
@@ -260,7 +155,6 @@ namespace SuperMech.Code
             }
         }
 
-        private static Image _headerClassIcon;
         private static Transform _classSwitcher;
 
         private static void CreateClassSwitchButton(string prefix, string name, string iconPath)
@@ -331,44 +225,11 @@ namespace SuperMech.Code
             int idx = System.Array.IndexOf(prefixes, _currentPrefix);
             if (idx < 0) idx = 0;
 
-            // 系别图标
-            if (_headerClassIcon != null)
-            {
-                try { _headerClassIcon.sprite = SpriteTextureLoader.getSprite(icons[idx]); } catch { }
-            }
-
-            // 系别名称+知识树名
-            if (_headerClassName != null)
-                _headerClassName.text = $"{names[idx]} · {treeNames[idx]}";
-
-            // 职业阶段
-            if (_headerStage != null)
+            // 更新图谱标题（显示系别+职业阶段）
+            if (_graphTitle != null && _currentActor != null)
             {
                 string stage = SuperMechStage.GetStageName(_currentActor);
-                _headerStage.text = $"职业: {stage}";
-            }
-
-            // 分支
-            if (_headerBranch != null)
-            {
-                string branch = SuperMechBranch.GetBranchName(_currentActor);
-                _headerBranch.text = string.IsNullOrEmpty(branch) ? "分支: 未选择" : $"分支: {branch}";
-            }
-
-            // 潜能点
-            if (_headerPotential != null)
-            {
-                int pot = SuperMechPotential.GetPotential(_currentActor);
-                _headerPotential.text = $"潜能点: {pot}";
-            }
-
-            // 进度
-            if (_headerProgress != null)
-            {
-                var allDefs = SuperMechKnowledge.GetAllByPrefix(_currentPrefix);
-                int total = allDefs != null ? allDefs.Count : 0;
-                int unlocked = SuperMechKnowledge.GetUnlockedCount(_currentActor, _currentPrefix);
-                _headerProgress.text = $"进度: {unlocked}/{total}";
+                _graphTitle.text = $"{names[idx]} · {stage}";
             }
 
             UpdateSwitcherColors();
@@ -383,13 +244,45 @@ namespace SuperMech.Code
             le.preferredHeight = GraphHeight;
             le.flexibleHeight = 0f;
 
+            // 背景
             Image bg = graph.AddComponent<Image>();
             bg.color = new Color(0.03f, 0.04f, 0.08f, 0.95f);
+            bg.raycastTarget = false;
+
+            // 标题栏（"知识图谱"，居中大字，类似天人武道的"隐窍"）
+            GameObject titleGo = new GameObject("GraphTitle", typeof(RectTransform));
+            titleGo.transform.SetParent(graph.transform, false);
+            Text titleText = titleGo.AddComponent<Text>();
+            titleText.text = "知识图谱";
+            titleText.fontSize = 14;
+            titleText.fontStyle = FontStyle.Bold;
+            titleText.color = new Color(0.9f, 0.9f, 0.95f);
+            titleText.alignment = TextAnchor.MiddleCenter;
+            titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            if (titleText.font == null) titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform titleRt = titleGo.GetComponent<RectTransform>();
+            titleRt.anchorMin = new Vector2(0, 1);
+            titleRt.anchorMax = new Vector2(1, 1);
+            titleRt.pivot = new Vector2(0.5f, 1f);
+            titleRt.offsetMin = new Vector2(0, -22);
+            titleRt.offsetMax = Vector2.zero;
+            _graphTitle = titleText;
+
+            // 图谱内容容器（标题下方）
+            GameObject graphContent = new GameObject("GraphContent", typeof(RectTransform));
+            graphContent.transform.SetParent(graph.transform, false);
+            RectTransform gcRt = graphContent.GetComponent<RectTransform>();
+            gcRt.anchorMin = Vector2.zero;
+            gcRt.anchorMax = new Vector2(1, 1);
+            gcRt.pivot = new Vector2(0.5f, 0.5f);
+            gcRt.offsetMin = new Vector2(0, 0);
+            gcRt.offsetMax = new Vector2(0, -22);
 
             // 3D知识图谱组件（球面分布+轴突+神经冲动+拖拽旋转）
-            _graph3D = graph.AddComponent<SMKnowledgeGraph3D>();
+            _graph3D = graphContent.AddComponent<SMKnowledgeGraph3D>();
 
             _graphLayer = graph.transform;
+            _graphContent = graphContent.transform;
         }
 
         private static void OnGraphDrag(Vector2 delta)
@@ -414,26 +307,43 @@ namespace SuperMech.Code
             bg.color = new Color(0.06f, 0.07f, 0.1f, 0.9f);
             bg.raycastTarget = false;
 
-            // 标题栏
+            // 标题栏（居中大字，类似天人武道的"隐窍库"）
             GameObject titleGo = new GameObject("LibTitle", typeof(RectTransform));
             titleGo.transform.SetParent(lib.transform, false);
             RectTransform titleRt = titleGo.GetComponent<RectTransform>();
             titleRt.anchorMin = new Vector2(0, 1);
             titleRt.anchorMax = new Vector2(1, 1);
             titleRt.pivot = new Vector2(0.5f, 1f);
-            titleRt.sizeDelta = new Vector2(0, 20f);
+            titleRt.sizeDelta = new Vector2(0, 22f);
             Image titleBg = titleGo.AddComponent<Image>();
             titleBg.color = new Color(0.1f, 0.12f, 0.18f, 0.9f);
             titleBg.raycastTarget = false;
             Text titleTxt = titleGo.AddComponent<Text>();
-            titleTxt.fontSize = 11;
+            titleTxt.text = "知识库";
+            titleTxt.fontSize = 13;
             titleTxt.fontStyle = FontStyle.Bold;
-            titleTxt.color = new Color(0.8f, 0.85f, 0.9f);
-            titleTxt.alignment = TextAnchor.MiddleLeft;
+            titleTxt.color = new Color(0.85f, 0.88f, 0.92f);
+            titleTxt.alignment = TextAnchor.MiddleCenter;
             titleTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (titleTxt.font == null) titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            RectOffset titlePadding = new RectOffset(8, 8, 0, 0);
             _libraryTitle = titleTxt;
+
+            // 右下角进度（类似天人武道的"41/41"）
+            GameObject progressGo = new GameObject("LibProgress", typeof(RectTransform));
+            progressGo.transform.SetParent(titleGo.transform, false);
+            Text progressTxt = progressGo.AddComponent<Text>();
+            progressTxt.fontSize = 10;
+            progressTxt.color = new Color(0.6f, 0.7f, 0.8f);
+            progressTxt.alignment = TextAnchor.MiddleRight;
+            progressTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            if (progressTxt.font == null) progressTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform progRt = progressGo.GetComponent<RectTransform>();
+            progRt.anchorMin = new Vector2(1, 0);
+            progRt.anchorMax = new Vector2(1, 1);
+            progRt.pivot = new Vector2(1f, 0.5f);
+            progRt.offsetMin = new Vector2(-80, 0);
+            progRt.offsetMax = new Vector2(-6, 0);
+            _libraryProgress = progressTxt;
 
             // 滚动区域
             ScrollRect scroll = lib.AddComponent<ScrollRect>();
@@ -490,10 +400,10 @@ namespace SuperMech.Code
 
         private static void RefreshGraph()
         {
-            if (_graph3D == null || _graphLayer == null) return;
+            if (_graph3D == null || _graphContent == null) return;
 
             // 使用3D知识图谱（球面分布+轴突+神经冲动+拖拽旋转）
-            _graph3D.Init(_currentActor, _currentPrefix, _graphLayer);
+            _graph3D.Init(_currentActor, _currentPrefix, _graphContent);
         }
 
         private static void CreateKnowledgeNode(SuperMechKnowledge.KnowledgeDef def, float x, float y, int tier)
@@ -582,13 +492,17 @@ namespace SuperMech.Code
         {
             if (_libraryLayer == null) return;
 
-            // 更新标题
+            // 更新标题和进度
             if (_libraryTitle != null && _currentActor != null)
+            {
+                _libraryTitle.text = "知识库";
+            }
+            if (_libraryProgress != null && _currentActor != null)
             {
                 var allDefs = SuperMechKnowledge.GetAllByPrefix(_currentPrefix);
                 int total = allDefs != null ? allDefs.Count : 0;
                 int unlocked = SuperMechKnowledge.GetUnlockedCount(_currentActor, _currentPrefix);
-                _libraryTitle.text = $"◆ 知识库  {unlocked}/{total}  （点击图标解锁知识）";
+                _libraryProgress.text = $"{unlocked}/{total}";
             }
 
             // 清除旧内容
