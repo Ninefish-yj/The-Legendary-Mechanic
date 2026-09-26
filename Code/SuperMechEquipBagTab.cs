@@ -227,28 +227,52 @@ namespace SuperMech.Code
             // 标题
             AddText(_container.transform, $"装备背包（{SuperMechEquipBag.GetBag(actor).Count}/{SuperMechEquipBag.MaxBagSize}）", 12, TextAnchor.MiddleCenter, new Color(0.92f, 0.86f, 0.55f));
 
-            // 当前装备（带品质颜色和详情）
+            // 当前装备（大图标+详情，参考原版装备面板）
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
             if (currentIdx >= 0)
             {
                 var cur = SuperMechRelic.Equipments[currentIdx];
                 Color qColor = GetQualityColor(cur.qualityLevel);
-                AddText(_container.transform, $"当前装备：{cur.name}", 11, TextAnchor.MiddleLeft, qColor);
-                AddText(_container.transform, $"  伤害×{cur.dmgMul}  生命×{cur.hpMul}  品质：{GetQualityName(cur.qualityLevel)}", 9, TextAnchor.MiddleLeft, new Color(0.7f, 0.7f, 0.7f));
 
-                // 装备词条（随机属性）
+                AddText(_container.transform, "当前装备", 11, TextAnchor.MiddleLeft, new Color(0.8f, 0.8f, 0.8f));
+
+                // 当前装备行：大图标+名称+属性
+                var equipRow = new GameObject("CurrentEquip", typeof(RectTransform));
+                equipRow.transform.SetParent(_container.transform, false);
+                var eqLayout = equipRow.AddComponent<HorizontalLayoutGroup>();
+                eqLayout.spacing = 8;
+                eqLayout.childForceExpandWidth = true;
+                RectTransform ert = equipRow.GetComponent<RectTransform>();
+                ert.sizeDelta = new Vector2(0, 48);
+
+                // 大图标（带品质颜色边框）
+                AddIcon(eqLayout.transform, cur.icon, qColor, 40);
+
+                // 名称+属性
+                var infoGo = new GameObject("Info", typeof(RectTransform));
+                infoGo.transform.SetParent(eqLayout.transform, false);
+                var infoLayout = infoGo.AddComponent<VerticalLayoutGroup>();
+                infoLayout.spacing = 2;
+                infoLayout.childForceExpandWidth = true;
+
+                AddTextTo(infoLayout.transform, cur.name, 12, TextAnchor.MiddleLeft, qColor);
+                AddTextTo(infoLayout.transform, $"伤害×{cur.dmgMul}  生命×{cur.hpMul}  {GetQualityName(cur.qualityLevel)}", 9, TextAnchor.MiddleLeft, new Color(0.7f, 0.7f, 0.7f));
+
+                // 装备词条
                 var affixes = SuperMechEquipAffix.GetAffixes(actor);
                 if (affixes.Count > 0)
                 {
-                    AddText(_container.transform, $"  词条（{affixes.Count}）：", 9, TextAnchor.MiddleLeft, new Color(0.85f, 0.75f, 0.4f));
+                    string affixText = "";
                     foreach (var affix in affixes)
                     {
                         string valText = affix.isMultiplier ? $"+{(affix.value * 100):0}%" : $"+{affix.value:0.##}";
-                        AddText(_container.transform, $"    · {affix.name} {valText}", 8, TextAnchor.MiddleLeft, new Color(0.75f, 0.7f, 0.55f));
+                        affixText += $"{affix.name}{valText} ";
                     }
+                    AddTextTo(infoLayout.transform, affixText.Trim(), 8, TextAnchor.MiddleLeft, new Color(0.85f, 0.75f, 0.4f));
                 }
 
-                AddButton(_container.transform, "卸下当前装备", () =>
+                // 卸下按钮
+                AddButton(_container.transform, "卸下", () =>
                 {
                     SuperMechEquipBag.UnequipToBag(actor);
                     RenderBag(actor);
@@ -256,13 +280,13 @@ namespace SuperMech.Code
             }
             else
             {
-                AddText(_container.transform, "当前装备：无", 10, TextAnchor.MiddleLeft, new Color(0.6f, 0.6f, 0.6f));
+                AddText(_container.transform, "当前装备：无", 10, TextAnchor.MiddleCenter, new Color(0.6f, 0.6f, 0.6f));
             }
 
-            // 分隔线
+            // 分隔
             AddText(_container.transform, "—— 背包 ——", 10, TextAnchor.MiddleCenter, new Color(0.7f, 0.7f, 0.7f));
 
-            // 背包物品列表（带品质颜色、详情、丢弃按钮）
+            // 背包物品：图标网格（每行4个，参考原版物品栏）
             var bag = SuperMechEquipBag.GetBag(actor);
             if (bag.Count == 0)
             {
@@ -270,49 +294,62 @@ namespace SuperMech.Code
             }
             else
             {
+                GameObject currentRow = null;
+                int iconIndex = 0;
                 foreach (string equipId in bag)
                 {
+                    if (iconIndex % 4 == 0)
+                    {
+                        currentRow = new GameObject("BagRow", typeof(RectTransform));
+                        currentRow.transform.SetParent(_container.transform, false);
+                        var rowLayout = currentRow.AddComponent<HorizontalLayoutGroup>();
+                        rowLayout.spacing = 6;
+                        rowLayout.childAlignment = TextAnchor.UpperLeft;
+                        RectTransform rrt = currentRow.GetComponent<RectTransform>();
+                        rrt.sizeDelta = new Vector2(0, 50);
+                    }
+
                     int idx = SuperMechRelic.GetEquipIndex(equipId);
                     if (idx < 0) continue;
                     var def = SuperMechRelic.Equipments[idx];
                     Color qColor = GetQualityColor(def.qualityLevel);
 
-                    // 装备行：图标+名称
-                    var equipRow = new GameObject("EquipRow", typeof(RectTransform));
-                    equipRow.transform.SetParent(_container.transform, false);
-                    var eqLayout = equipRow.AddComponent<HorizontalLayoutGroup>();
-                    eqLayout.spacing = 6;
-                    eqLayout.childForceExpandWidth = true;
-                    RectTransform ert = equipRow.GetComponent<RectTransform>();
-                    ert.sizeDelta = new Vector2(0, 24);
+                    // 装备图标方块（带品质颜色，点击装备）
+                    var iconGo = new GameObject("BagItem", typeof(RectTransform));
+                    iconGo.transform.SetParent(currentRow.transform, false);
+                    var iconImg = iconGo.AddComponent<Image>();
+                    iconImg.color = new Color(qColor.r * 0.3f, qColor.g * 0.3f, qColor.b * 0.3f, 0.8f);
 
                     // 图标
-                    AddIcon(eqLayout.transform, def.icon, qColor);
-                    // 名称
-                    AddTextTo(eqLayout.transform, def.name, 11, TextAnchor.MiddleLeft, qColor);
+                    var itemIcon = new GameObject("Icon", typeof(RectTransform));
+                    itemIcon.transform.SetParent(iconGo.transform, false);
+                    var itemImg = itemIcon.AddComponent<Image>();
+                    Sprite iconSprite = SpriteTextureLoader.getSprite(def.icon);
+                    if (iconSprite != null) itemImg.sprite = iconSprite;
+                    itemImg.color = qColor;
+                    RectTransform iconRt = itemIcon.GetComponent<RectTransform>();
+                    iconRt.anchorMin = new Vector2(0.2f, 0.2f);
+                    iconRt.anchorMax = new Vector2(0.8f, 0.8f);
+                    iconRt.offsetMin = Vector2.zero;
+                    iconRt.offsetMax = Vector2.zero;
 
-                    // 详情
-                    AddText(_container.transform, $"  伤害×{def.dmgMul}  生命×{def.hpMul}  {GetQualityName(def.qualityLevel)}", 9, TextAnchor.MiddleLeft, new Color(0.6f, 0.6f, 0.6f));
+                    RectTransform irt = iconGo.GetComponent<RectTransform>();
+                    irt.sizeDelta = new Vector2(42, 42);
 
-                    // 装备/丢弃按钮行
-                    var btnRow = new GameObject("BtnRow", typeof(RectTransform));
-                    btnRow.transform.SetParent(_container.transform, false);
-                    var hLayout = btnRow.AddComponent<HorizontalLayoutGroup>();
-                    hLayout.spacing = 4;
-                    hLayout.childForceExpandWidth = true;
-                    RectTransform brt = btnRow.GetComponent<RectTransform>();
-                    brt.sizeDelta = new Vector2(0, 22);
-
-                    AddButton(btnRow.transform, "装备", () =>
+                    // 点击装备
+                    var btn = iconGo.AddComponent<Button>();
+                    btn.targetGraphic = iconImg;
+                    btn.onClick.AddListener(() =>
                     {
                         SuperMechEquipBag.EquipFromBag(actor, equipId);
                         RenderBag(actor);
                     });
-                    AddButton(btnRow.transform, "丢弃", () =>
-                    {
-                        SuperMechEquipBag.RemoveFromBag(actor, equipId);
-                        RenderBag(actor);
-                    });
+
+                    // Tooltip（悬停显示详情，参考原版物品tooltip）
+                    var tip = iconGo.AddComponent<TipButton>();
+                    tip.textOnClick = $"{def.name}\n品质: {GetQualityName(def.qualityLevel)}\n伤害×{def.dmgMul}  生命×{def.hpMul}\n点击装备";
+
+                    iconIndex++;
                 }
             }
         }
@@ -387,15 +424,15 @@ namespace SuperMech.Code
         }
 
         /// <summary>添加图标（带品质颜色tint）。</summary>
-        private static void AddIcon(Transform parent, string iconPath, Color tint)
+        private static void AddIcon(Transform parent, string iconPath, Color tint, int size = 20)
         {
             GameObject obj = new GameObject("Icon", typeof(RectTransform));
             obj.transform.SetParent(parent, false);
             LayoutElement le = obj.AddComponent<LayoutElement>();
-            le.minWidth = 20;
-            le.preferredWidth = 20;
-            le.minHeight = 20;
-            le.preferredHeight = 20;
+            le.minWidth = size;
+            le.preferredWidth = size;
+            le.minHeight = size;
+            le.preferredHeight = size;
 
             Image img = obj.AddComponent<Image>();
             img.color = tint;
