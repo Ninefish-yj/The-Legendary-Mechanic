@@ -455,16 +455,18 @@ namespace SuperMech.Code
             {
                 if (_showStatRow == null)
                 {
-                    // 不硬编码参数类型，按方法名查找，兼容游戏版本更新后的签名变化
+                    // 优先匹配参数最多的重载（含pLocalize参数），避免中文标签被本地化查找
                     var methods = typeof(UnitWindow).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    MethodInfo best = null;
                     foreach (var m in methods)
                     {
                         if (m.Name == "showStatRow" && m.GetParameters().Length >= 2)
                         {
-                            _showStatRow = m;
-                            break;
+                            if (best == null || m.GetParameters().Length > best.GetParameters().Length)
+                                best = m;
                         }
                     }
+                    _showStatRow = best;
                     if (_showStatRow == null)
                     {
                         Debug.LogWarning("[超神机械师] 未找到UnitWindow.showStatRow方法，单位面板注入将跳过");
@@ -480,6 +482,8 @@ namespace SuperMech.Code
                 for (int i = 2; i < parms.Length; i++)
                 {
                     Type pt = parms[i].ParameterType;
+                    string pname = parms[i].Name;
+                    if (pname == "pLocalize") { args[i] = false; continue; }  // 中文标签不本地化
                     if (pt == typeof(string)) args[i] = null;
                     else if (pt == typeof(bool)) args[i] = false;
                     else if (pt == typeof(long)) args[i] = -1L;
