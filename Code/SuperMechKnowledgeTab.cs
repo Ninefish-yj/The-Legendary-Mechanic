@@ -292,18 +292,18 @@ namespace SuperMech.Code
                 return;
             }
 
-            // 显示天赋倾向（含具体异能类型）
-            var talents = SuperMechTalent.GetTalents(actor);
-            string talentText = "";
-            foreach (var t in talents)
-            {
-                talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
-            }
-            AddInfoRow(_container.transform, "天赋倾向", talentText.Trim());
-
             // 第二步：已踏入超能但没选定方向（野生超能者）
             if (!SuperMechProfession.HasProfession(actor))
             {
+                // 显示天赋倾向（含具体异能类型）
+                var talents2 = SuperMechTalent.GetTalents(actor);
+                string talentText2 = "";
+                foreach (var t in talents2)
+                {
+                    talentText2 += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
+                }
+                AddInfoRow(_container.transform, "天赋倾向", talentText2.Trim());
+
                 AddHeader(_container.transform, "野生超能者（未选定方向）");
                 AddInfoRow(_container.transform, "状态", "有天赋但没系统学习职业知识，靠本能战斗");
                 AddSectionHeader(_container.transform, "◆ 选定主职业方向");
@@ -332,6 +332,153 @@ namespace SuperMech.Code
             // 第三步：已选定方向，显示知识树
             string cls = SuperMechProfession.GetClass(actor);
             string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
+            bool isAwakened = SuperMechAwakened.IsAwakened(actor);
+
+            // 天赋倾向文本（用于详细信息框）
+            var talents = SuperMechTalent.GetTalents(actor);
+            string talentText = "";
+            foreach (var t in talents)
+            {
+                talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
+            }
+
+            // === 详细信息框（从主面板移过来，用框框起来）===
+            // 框1：修炼状态
+            Transform detail1 = CreateDetailBox(_container.transform, "修炼状态",
+                new Color(0.05f, 0.08f, 0.12f, 0.9f), new Color(0.25f, 0.35f, 0.5f, 0.8f));
+            string cultStatus = SuperMechCultivationStatus.GetStatusSummary(actor);
+            AddInfoRow(detail1, "修炼境界", cultStatus);
+            // 气力详细值
+            float qi = SuperMechQi.GetQi(actor);
+            float qiMax = SuperMechQi.GetQiMax(actor);
+            int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
+            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : "未入流";
+            string qiLabel = "气力";
+            if (cls == "机械系" && SuperMechStage.GetStage(actor) >= 4) qiLabel = "械力";
+            AddInfoRow(detail1, qiLabel, $"{qi:F0}/{qiMax:F0}【{qiLvText}】");
+            // 分系核心能量
+            if (cls == "异能系")
+                AddInfoRow(detail1, "基因链", $"{SuperMechCorePower.GetGeneStageName(actor)}（{SuperMechCorePower.GetGeneProgress(actor):F0}%）");
+            else if (cls == "魔法系")
+                AddInfoRow(detail1, "魔力池", $"{SuperMechCorePower.GetManaStageName(actor)}（{SuperMechCorePower.GetManaProgress(actor):F0}%）");
+            else if (cls == "念力系")
+                AddInfoRow(detail1, "精神力", $"{SuperMechCorePower.GetMindStageName(actor)}（{SuperMechCorePower.GetMindProgress(actor):F0}%）");
+            // 气力属性
+            string qiAttr = SuperMechQiAttribute.GetAttribute(actor);
+            if (qiAttr != SuperMechQiAttribute.AttrNone)
+                AddInfoRow(detail1, "气力属性", qiAttr);
+
+            // 框2：天赋与专长
+            Transform detail2 = CreateDetailBox(_container.transform, "天赋与专长",
+                new Color(0.06f, 0.05f, 0.1f, 0.9f), new Color(0.4f, 0.3f, 0.5f, 0.8f));
+            AddInfoRow(detail2, "天赋倾向", talentText.Trim());
+            if (actor.hasTrait(SuperMechTraits.ClassPsi))
+            {
+                var specs = SuperMechSpecialty.GetSpecialties(actor);
+                if (specs.Count > 0)
+                {
+                    string specText = "";
+                    foreach (var s in specs) specText += LocalizedTextManager.getText("trait_" + s) + " ";
+                    AddInfoRow(detail2, "具体异能", specText.Trim());
+                }
+            }
+            var perks = SuperMechPerks.GetPerks(actor);
+            if (perks.Count > 0)
+            {
+                string perkText = "";
+                foreach (var p in perks) perkText += LocalizedTextManager.getText("trait_" + p) + " ";
+                AddInfoRow(detail2, "专长", perkText.Trim());
+            }
+            // 异能潜力评级
+            if (actor.hasTrait(SuperMechTraits.ClassPsi))
+            {
+                string rating = SuperMechPotentialRating.GetRating(actor);
+                if (!string.IsNullOrEmpty(rating))
+                    AddInfoRow(detail2, "潜力评级", $"{rating}级（气力增长×{SuperMechPotentialRating.GetQiGrowthMult(actor):F1}）");
+            }
+
+            // 框3：职业信息
+            Transform detail3 = CreateDetailBox(_container.transform, "职业信息",
+                new Color(0.05f, 0.1f, 0.08f, 0.9f), new Color(0.3f, 0.5f, 0.35f, 0.8f));
+            if (isAwakened)
+            {
+                AddInfoRow(detail3, "职业等级", SuperMechAwakened.GetLevelText(actor));
+                if (SuperMechAwakened.CanAdvanceStage(actor))
+                {
+                    AddInfoRow(detail3, "转职", "可转职！");
+                    string reqText = SuperMechAdvancementTask.GetReqText(actor);
+                    if (reqText != null) AddInfoRow(detail3, "转职条件", reqText);
+                }
+            }
+            string stage = SuperMechStage.GetStageName(actor);
+            if (stage != "—" && stage != "未入门") AddInfoRow(detail3, "职业阶段", stage);
+            string branch = SuperMechBranch.GetBranchName(actor);
+            if (branch != "未选择") AddInfoRow(detail3, "分支", branch);
+            string treeName = SuperMechUnitWindow.GetKnowledgeTreeName(cls);
+            int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
+            AddInfoRow(detail3, "职业树", $"{treeName}（{unlocked}节点）");
+            var skills = SuperMechSkills.GetLearned(actor);
+            if (skills.Count > 0)
+                AddInfoRow(detail3, "职业技能", string.Join("、", skills.ConvertAll(s => s.name)));
+            // 副职业
+            string subText = SuperMechSubClass.GetSubLevelText(actor);
+            if (!string.IsNullOrEmpty(subText)) AddInfoRow(detail3, "副职业", subText);
+            // 提炼法
+            string refineText = SuperMechRefinement.GetStatusText(actor);
+            if (!string.IsNullOrEmpty(refineText)) AddInfoRow(detail3, "提炼法", refineText);
+
+            // 框4：特殊状态与物品
+            Transform detail4 = CreateDetailBox(_container.transform, "特殊状态与物品",
+                new Color(0.08f, 0.06f, 0.05f, 0.9f), new Color(0.5f, 0.4f, 0.25f, 0.8f));
+            // 传说度
+            int legend = SuperMechLegend.GetLegend(actor);
+            if (legend > 0)
+            {
+                string legendText = isAwakened ?
+                    $"{SuperMechLegend.GetTierName(actor)}（{legend}点，突破+{SuperMechLegend.GetBreakthroughBonus(actor):P0}）" :
+                    $"{SuperMechLegend.GetTierName(actor)}（隐约感到突破契机）";
+                AddInfoRow(detail4, "传说度", legendText);
+            }
+            // 信息态
+            string infoText = SuperMechInfoState.GetStatusText(actor);
+            if (!string.IsNullOrEmpty(infoText)) AddInfoRow(detail4, "信息态", infoText);
+            // 冥冥感应
+            var destiny = SuperMechIntuition.GetDestiny(actor);
+            if (destiny != null)
+                AddInfoRow(detail4, "冥冥感应", destiny.completed ? $"【{destiny.name}】已证道！" : $"【{destiny.name}】{destiny.progress:F0}/{destiny.target:F0}");
+            else if (SuperMechAdvancement.GetExactRankIndex(actor) >= 10)
+                AddInfoRow(detail4, "冥冥感应", "正在感应中...");
+            // 超神突破
+            if (SuperMechAdvancement.GetExactRankIndex(actor) >= 12 || SuperMechTranscendence.IsTranscended(actor))
+            {
+                AddInfoRow(detail4, "超神突破", SuperMechTranscendence.GetStatusText(actor));
+                int catalyst = SuperMechTranscendence.GetCatalystLayers(actor);
+                if (catalyst > 0) AddInfoRow(detail4, "神之催化", $"{catalyst}层（成功率+{catalyst * 10}%）");
+            }
+            // 装备
+            string relic = SuperMechRelic.GetCurrentEquipName(actor);
+            if (relic != "无")
+                AddInfoRow(detail4, "装备", $"{relic}（耐久{SuperMechEquipBreak.GetDurability(actor):0}%）");
+            // 械力融合
+            if (SuperMechMechFusion.IsFused(actor))
+                AddInfoRow(detail4, "械力融合", $"Lv{SuperMechMechFusion.GetFusionLevel(actor)}（属性×{SuperMechMechFusion.GetFusionMultiplier(actor):0.0}）");
+            // 宇宙宝物
+            string cosmic = SuperMechCosmicRelic.GetEquippedName(actor);
+            if (!string.IsNullOrEmpty(cosmic)) AddInfoRow(detail4, "宇宙宝物", cosmic);
+            // 法师塔
+            if (actor.hasTrait(SuperMechTraits.ClassMage))
+            {
+                string tower = SuperMechMageTower.GetTowerName(actor);
+                if (tower != "无") AddInfoRow(detail4, "法师塔", tower + "（完全状态）");
+            }
+            // 次级维度
+            string dim = SuperMechDimension.GetActiveDimension(actor);
+            if (!string.IsNullOrEmpty(dim)) AddInfoRow(detail4, "次级维度", dim + " 强化中");
+            // 气势震慑状态
+            if (SuperMechAura.IsStunned(actor))
+                AddInfoRow(detail4, "状态", "【震慑眩晕】被高阶气势压制，无法行动");
+            else if (SuperMechAura.IsSuppressed(actor))
+                AddInfoRow(detail4, "状态", "【被气势震慑】速度/攻击降低");
 
             // 三层知识面板（信息栏+图谱层+知识库层）
             GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
@@ -502,6 +649,87 @@ namespace SuperMech.Code
 
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(0, 26);
+        }
+
+        /// <summary>创建带框的详细信息容器（背景+1px边框），返回内容区域Transform。</summary>
+        private static Transform CreateDetailBox(Transform parent, string title, Color bgColor, Color borderColor)
+        {
+            GameObject box = new GameObject("DetailBox_" + title, typeof(RectTransform));
+            box.transform.SetParent(parent, false);
+            LayoutElement le = box.AddComponent<LayoutElement>();
+            le.minHeight = 40f;
+            le.flexibleHeight = 0f;
+
+            // 背景
+            Image bg = box.AddComponent<Image>();
+            bg.color = bgColor;
+            bg.raycastTarget = false;
+
+            // 边框（4个1px Image）
+            string[] borderNames = { "Top", "Bottom", "Left", "Right" };
+            Vector2[] anchorMin = { new Vector2(0, 1), new Vector2(0, 0), new Vector2(0, 0), new Vector2(1, 0) };
+            Vector2[] anchorMax = { new Vector2(1, 1), new Vector2(1, 0), new Vector2(0, 1), new Vector2(1, 1) };
+            Vector2[] pivot = { new Vector2(0.5f, 1f), new Vector2(0.5f, 0f), new Vector2(0f, 0.5f), new Vector2(1f, 0.5f) };
+            Vector2[] sizeDelta = { new Vector2(0, 1f), new Vector2(0, 1f), new Vector2(1f, 0), new Vector2(1f, 0) };
+            for (int i = 0; i < 4; i++)
+            {
+                GameObject border = new GameObject("Border" + borderNames[i], typeof(RectTransform));
+                border.transform.SetParent(box.transform, false);
+                Image bImg = border.AddComponent<Image>();
+                bImg.color = borderColor;
+                bImg.raycastTarget = false;
+                RectTransform brt = border.GetComponent<RectTransform>();
+                brt.anchorMin = anchorMin[i];
+                brt.anchorMax = anchorMax[i];
+                brt.pivot = pivot[i];
+                brt.sizeDelta = sizeDelta[i];
+                brt.offsetMin = Vector2.zero;
+                brt.offsetMax = Vector2.zero;
+            }
+
+            // 标题
+            Text titleText = CreateText(box.transform, "◆ " + title, 13, TextAnchor.MiddleLeft);
+            titleText.color = new Color(0.8f, 0.85f, 1f);
+            RectTransform titleRt = titleText.GetComponent<RectTransform>();
+            titleRt.anchorMin = new Vector2(0, 1);
+            titleRt.anchorMax = new Vector2(1, 1);
+            titleRt.pivot = new Vector2(0.5f, 1f);
+            titleRt.sizeDelta = new Vector2(0, 20f);
+            titleRt.offsetMin = new Vector2(8, 0);
+            titleRt.offsetMax = new Vector2(-8, 0);
+
+            // 内容区域
+            GameObject content = new GameObject("Content", typeof(RectTransform));
+            content.transform.SetParent(box.transform, false);
+            VerticalLayoutGroup vlg = content.AddComponent<VerticalLayoutGroup>();
+            vlg.spacing = 2f;
+            vlg.padding = new RectOffset(8, 8, 4, 6);
+            vlg.childControlWidth = true;
+            vlg.childControlHeight = true;
+            vlg.childForceExpandWidth = true;
+            vlg.childForceExpandHeight = false;
+            RectTransform contentRt = content.GetComponent<RectTransform>();
+            contentRt.anchorMin = Vector2.zero;
+            contentRt.anchorMax = Vector2.one;
+            contentRt.offsetMin = new Vector2(0, 0);
+            contentRt.offsetMax = new Vector2(0, -20f);
+
+            return content.transform;
+        }
+
+        private static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor)
+        {
+            GameObject txtObj = new GameObject("Text", typeof(RectTransform));
+            txtObj.transform.SetParent(parent, false);
+            Text txt = txtObj.AddComponent<Text>();
+            txt.text = content;
+            txt.fontSize = fontSize;
+            txt.alignment = anchor;
+            txt.color = Color.white;
+            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            txt.verticalOverflow = VerticalWrapMode.Overflow;
+            if (WindowConfig.current_font != null) txt.font = WindowConfig.current_font;
+            return txt;
         }
 
         private static void AddInfoRow(Transform parent, string left, string right)
