@@ -130,18 +130,19 @@ namespace SuperMech.Code
             UpdateGraphTransform();
         }
 
-        /// <summary>创建背景层（按系别主题色渐变+光点装饰）。</summary>
+        /// <summary>创建背景层（星云+天体+轨道环+光点装饰）。</summary>
         private void CreateBackground(Transform parent)
         {
             // 系别主题色
             Color themeColor = GetThemeColor(_prefix);
+            System.Random rng = new System.Random(_prefix.GetHashCode() + 42);
 
-            // 背景渐变（中心亮，边缘暗）
+            // 深空背景
             GameObject bgGo = new GameObject("Background", typeof(RectTransform));
             bgGo.transform.SetParent(parent, false);
             bgGo.transform.SetAsFirstSibling();
             Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0.02f, 0.03f, 0.06f, 0.95f);
+            bgImg.color = new Color(0.01f, 0.015f, 0.04f, 0.97f);
             bgImg.raycastTarget = false;
             RectTransform bgRt = bgGo.GetComponent<RectTransform>();
             bgRt.anchorMin = Vector2.zero;
@@ -149,60 +150,170 @@ namespace SuperMech.Code
             bgRt.offsetMin = Vector2.zero;
             bgRt.offsetMax = Vector2.zero;
 
-            // 中心光晕（径向渐变效果，用大尺寸半透明Image模拟）
-            GameObject glowGo = new GameObject("CenterGlow", typeof(RectTransform));
-            glowGo.transform.SetParent(bgGo.transform, false);
-            Image glowImg = glowGo.AddComponent<Image>();
-            Color glowColor = themeColor;
-            glowColor.a = 0.12f;
-            glowImg.color = glowColor;
-            glowImg.raycastTarget = false;
-            RectTransform glowRt = glowGo.GetComponent<RectTransform>();
-            glowRt.anchorMin = new Vector2(0.5f, 0.5f);
-            glowRt.anchorMax = new Vector2(0.5f, 0.5f);
-            glowRt.pivot = new Vector2(0.5f, 0.5f);
-            glowRt.sizeDelta = new Vector2(300, 300);
-            glowRt.localScale = Vector3.one;
+            // === 多层星云 ===
+            // 星云1：主题色，左上
+            CreateNebula(bgGo.transform, new Vector2(-120, 60), 220, themeColor, 0.08f);
+            // 星云2：互补色，右下
+            Color complement = new Color(1f - themeColor.r, 1f - themeColor.g, 1f - themeColor.b);
+            CreateNebula(bgGo.transform, new Vector2(100, -50), 180, complement, 0.06f);
+            // 星云3：白色，中心
+            CreateNebula(bgGo.transform, new Vector2(0, 0), 260, Color.white, 0.04f);
 
-            // 光点装饰（模拟星空，随机分布）
-            System.Random rng = new System.Random(_prefix.GetHashCode());
-            int starCount = 40;
+            // === 轨道环（同心圆，模拟星系）===
+            for (int i = 0; i < 3; i++)
+            {
+                GameObject ringGo = new GameObject("OrbitRing_" + i, typeof(RectTransform));
+                ringGo.transform.SetParent(bgGo.transform, false);
+                Image ringImg = ringGo.AddComponent<Image>();
+                Color ringColor = themeColor;
+                ringColor.a = 0.06f + i * 0.02f;
+                ringImg.color = ringColor;
+                ringImg.raycastTarget = false;
+                RectTransform ringRt = ringGo.GetComponent<RectTransform>();
+                ringRt.anchorMin = new Vector2(0.5f, 0.5f);
+                ringRt.anchorMax = new Vector2(0.5f, 0.5f);
+                ringRt.pivot = new Vector2(0.5f, 0.5f);
+                float ringSize = 120f + i * 60f;
+                ringRt.sizeDelta = new Vector2(ringSize, ringSize);
+                // 用大尺寸+小alpha模拟圆环（实际是实心圆，靠中心光晕覆盖中心部分）
+            }
+
+            // === 天体装饰 ===
+            // 主天体（大发光球，右上角）
+            CreateCelestialBody(bgGo.transform, new Vector2(140, 70), 36, themeColor, 0.25f, true);
+            // 副天体（小球，左下角）
+            CreateCelestialBody(bgGo.transform, new Vector2(-130, -60), 20, complement, 0.2f, false);
+            // 微型天体（随机位置）
+            for (int i = 0; i < 3; i++)
+            {
+                float x = (float)rng.NextDouble() * 300f - 150f;
+                float y = (float)rng.NextDouble() * 140f - 70f;
+                float size = 6f + (float)rng.NextDouble() * 8f;
+                Color c = (rng.Next(0, 2) == 0) ? themeColor : Color.white;
+                CreateCelestialBody(bgGo.transform, new Vector2(x, y), size, c, 0.15f, false);
+            }
+
+            // === 光点装饰（模拟星空，不同大小和颜色）===
+            int starCount = 80;
             for (int i = 0; i < starCount; i++)
             {
                 GameObject star = new GameObject("Star_" + i, typeof(RectTransform));
                 star.transform.SetParent(bgGo.transform, false);
                 Image starImg = star.AddComponent<Image>();
-                Color starColor = (rng.Next(0, 3) == 0) ? themeColor : Color.white;
-                starColor.a = 0.2f + (float)rng.NextDouble() * 0.4f;
+                // 70%白色，20%主题色，10%互补色
+                int colorRoll = rng.Next(0, 10);
+                Color starColor;
+                if (colorRoll < 7) starColor = Color.white;
+                else if (colorRoll < 9) starColor = themeColor;
+                else starColor = complement;
+                starColor.a = 0.15f + (float)rng.NextDouble() * 0.5f;
                 starImg.color = starColor;
                 starImg.raycastTarget = false;
                 RectTransform starRt = star.GetComponent<RectTransform>();
                 starRt.anchorMin = new Vector2(0f, 0f);
                 starRt.anchorMax = new Vector2(0f, 0f);
                 starRt.pivot = new Vector2(0.5f, 0.5f);
-                float x = (float)rng.NextDouble() * 400f - 200f;
-                float y = (float)rng.NextDouble() * 200f - 100f;
+                float x = (float)rng.NextDouble() * 420f - 210f;
+                float y = (float)rng.NextDouble() * 220f - 110f;
                 starRt.anchoredPosition = new Vector2(x, y);
-                float size = 1f + (float)rng.NextDouble() * 2f;
+                float size = 0.8f + (float)rng.NextDouble() * 2.5f;
                 starRt.sizeDelta = new Vector2(size, size);
             }
 
-            // 系别标识（左上角小图标+文字）
+            // === 流星/彗星装饰（2-3条斜线）===
+            for (int i = 0; i < 2; i++)
+            {
+                GameObject meteorGo = new GameObject("Meteor_" + i, typeof(RectTransform));
+                meteorGo.transform.SetParent(bgGo.transform, false);
+                Image meteorImg = meteorGo.AddComponent<Image>();
+                Color meteorColor = themeColor;
+                meteorColor.a = 0.12f;
+                meteorImg.color = meteorColor;
+                meteorImg.raycastTarget = false;
+                RectTransform meteorRt = meteorGo.GetComponent<RectTransform>();
+                meteorRt.anchorMin = new Vector2(0f, 0f);
+                meteorRt.anchorMax = new Vector2(0f, 0f);
+                meteorRt.pivot = new Vector2(0.5f, 0.5f);
+                float mx = (float)rng.NextDouble() * 300f - 150f;
+                float my = (float)rng.NextDouble() * 140f - 70f;
+                meteorRt.anchoredPosition = new Vector2(mx, my);
+                meteorRt.sizeDelta = new Vector2(60f, 1.5f);
+                meteorRt.localRotation = Quaternion.Euler(0, 0, -30f - i * 15f);
+            }
+
+            // === 系别标识（左上角）===
             GameObject labelGo = new GameObject("ThemeLabel", typeof(RectTransform));
             labelGo.transform.SetParent(bgGo.transform, false);
+            // 标识背景
+            Image labelBg = labelGo.AddComponent<Image>();
+            labelBg.color = new Color(0f, 0f, 0f, 0.4f);
+            labelBg.raycastTarget = false;
             Text labelText = labelGo.AddComponent<Text>();
             labelText.text = GetThemeName(_prefix);
             labelText.fontSize = 11;
             labelText.color = themeColor;
-            labelText.alignment = TextAnchor.UpperLeft;
+            labelText.alignment = TextAnchor.MiddleLeft;
             labelText.fontStyle = FontStyle.Bold;
             if (labelText.font == null) labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             RectTransform labelRt = labelGo.GetComponent<RectTransform>();
             labelRt.anchorMin = new Vector2(0f, 1f);
             labelRt.anchorMax = new Vector2(0f, 1f);
             labelRt.pivot = new Vector2(0f, 1f);
-            labelRt.anchoredPosition = new Vector2(8f, -4f);
-            labelRt.sizeDelta = new Vector2(120, 16);
+            labelRt.anchoredPosition = new Vector2(6f, -4f);
+            labelRt.sizeDelta = new Vector2(110, 18);
+        }
+
+        /// <summary>创建星云（大尺寸半透明渐变圆）。</summary>
+        private void CreateNebula(Transform parent, Vector2 pos, float size, Color color, float alpha)
+        {
+            GameObject nebulaGo = new GameObject("Nebula", typeof(RectTransform));
+            nebulaGo.transform.SetParent(parent, false);
+            Image nebulaImg = nebulaGo.AddComponent<Image>();
+            Color c = color;
+            c.a = alpha;
+            nebulaImg.color = c;
+            nebulaImg.raycastTarget = false;
+            RectTransform nebulaRt = nebulaGo.GetComponent<RectTransform>();
+            nebulaRt.anchorMin = new Vector2(0.5f, 0.5f);
+            nebulaRt.anchorMax = new Vector2(0.5f, 0.5f);
+            nebulaRt.pivot = new Vector2(0.5f, 0.5f);
+            nebulaRt.anchoredPosition = pos;
+            nebulaRt.sizeDelta = new Vector2(size, size);
+        }
+
+        /// <summary>创建天体（发光球体+光晕）。</summary>
+        private void CreateCelestialBody(Transform parent, Vector2 pos, float size, Color color, float alpha, bool hasGlow)
+        {
+            GameObject bodyGo = new GameObject("CelestialBody", typeof(RectTransform));
+            bodyGo.transform.SetParent(parent, false);
+            Image bodyImg = bodyGo.AddComponent<Image>();
+            Color c = color;
+            c.a = alpha;
+            bodyImg.color = c;
+            bodyImg.raycastTarget = false;
+            RectTransform bodyRt = bodyGo.GetComponent<RectTransform>();
+            bodyRt.anchorMin = new Vector2(0.5f, 0.5f);
+            bodyRt.anchorMax = new Vector2(0.5f, 0.5f);
+            bodyRt.pivot = new Vector2(0.5f, 0.5f);
+            bodyRt.anchoredPosition = pos;
+            bodyRt.sizeDelta = new Vector2(size, size);
+
+            if (hasGlow)
+            {
+                // 外层光晕
+                GameObject glowGo = new GameObject("Glow", typeof(RectTransform));
+                glowGo.transform.SetParent(bodyGo.transform, false);
+                Image glowImg = glowGo.AddComponent<Image>();
+                Color glowColor = color;
+                glowColor.a = alpha * 0.3f;
+                glowImg.color = glowColor;
+                glowImg.raycastTarget = false;
+                RectTransform glowRt = glowGo.GetComponent<RectTransform>();
+                glowRt.anchorMin = new Vector2(0.5f, 0.5f);
+                glowRt.anchorMax = new Vector2(0.5f, 0.5f);
+                glowRt.pivot = new Vector2(0.5f, 0.5f);
+                glowRt.sizeDelta = new Vector2(size * 2.5f, size * 2.5f);
+            }
         }
 
         /// <summary>获取系别主题色。</summary>
@@ -219,14 +330,27 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>获取阶位颜色。</summary>
+        private Color GetTierColor(int tier)
+        {
+            switch (tier)
+            {
+                case 0: return new Color(0.6f, 0.6f, 0.65f);  // 基础-灰
+                case 1: return new Color(0.4f, 0.8f, 0.5f);   // 进阶-绿
+                case 2: return new Color(0.4f, 0.6f, 1f);    // 高端-蓝
+                case 3: return new Color(0.8f, 0.4f, 1f);    // 尖端-紫
+                case 4: return new Color(1f, 0.8f, 0.3f);    // 终极-金
+                default: return new Color(0.6f, 0.6f, 0.65f);
+            }
+        }
+
         /// <summary>获取系别中文名。</summary>
         private string GetThemeName(string prefix)
         {
             switch (prefix)
             {
                 case "mech": return "机械知识树";
-                case "martial": return "御气技巧树";
-                case "psi": return "基因树";
+                case "martial": return "御气技巧树";                case "psi": return "基因树";
                 case "mage": return "魔法知识树";
                 case "mind": return "精神修炼树";
                 default: return "知识树";
@@ -282,14 +406,53 @@ namespace SuperMech.Code
             GameObject go = new GameObject("Node_" + node.id, typeof(RectTransform));
             go.transform.SetParent(_nodesParent.transform, false);
 
-            // 背景（发光效果）
+            // 节点大小按阶位区分（高阶位更大）
+            float nodeSize = 32f + node.tier * 4f;
+
+            // 外层光晕（已解锁节点有发光效果）
+            if (node.unlocked)
+            {
+                GameObject glowGo = new GameObject("Glow", typeof(RectTransform));
+                glowGo.transform.SetParent(go.transform, false);
+                Image glowImg = glowGo.AddComponent<Image>();
+                Color glowColor = GetTierColor(node.tier);
+                glowColor.a = 0.25f;
+                glowImg.color = glowColor;
+                glowImg.raycastTarget = false;
+                RectTransform glowRt = glowGo.GetComponent<RectTransform>();
+                glowRt.anchorMin = new Vector2(0.5f, 0.5f);
+                glowRt.anchorMax = new Vector2(0.5f, 0.5f);
+                glowRt.pivot = new Vector2(0.5f, 0.5f);
+                glowRt.sizeDelta = new Vector2(nodeSize * 1.8f, nodeSize * 1.8f);
+            }
+
+            // 外边框（按状态着色）
+            GameObject borderGo = new GameObject("Border", typeof(RectTransform));
+            borderGo.transform.SetParent(go.transform, false);
+            Image borderImg = borderGo.AddComponent<Image>();
+            Color borderColor;
+            if (node.unlocked) borderColor = GetTierColor(node.tier);
+            else if (node.unlockable) borderColor = new Color(0.4f, 0.7f, 1f);
+            else borderColor = new Color(0.3f, 0.3f, 0.35f);
+            borderImg.color = borderColor;
+            borderImg.raycastTarget = false;
+            RectTransform borderRt = borderGo.GetComponent<RectTransform>();
+            borderRt.anchorMin = new Vector2(0.5f, 0.5f);
+            borderRt.anchorMax = new Vector2(0.5f, 0.5f);
+            borderRt.pivot = new Vector2(0.5f, 0.5f);
+            borderRt.sizeDelta = new Vector2(nodeSize + 4, nodeSize + 4);
+
+            // 背景（深色底）
             GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
             bgGo.transform.SetParent(go.transform, false);
             Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = node.unlocked ? ColorUnlocked : (node.unlockable ? ColorUnlockable : ColorLocked);
-            bgImg.type = Image.Type.Simple;
+            bgImg.color = new Color(0.05f, 0.06f, 0.1f, 0.9f);
+            bgImg.raycastTarget = false;
             RectTransform bgRt = bgGo.GetComponent<RectTransform>();
-            bgRt.sizeDelta = new Vector2(40, 40);
+            bgRt.anchorMin = new Vector2(0.5f, 0.5f);
+            bgRt.anchorMax = new Vector2(0.5f, 0.5f);
+            bgRt.pivot = new Vector2(0.5f, 0.5f);
+            bgRt.sizeDelta = new Vector2(nodeSize, nodeSize);
 
             // 图标
             GameObject iconGo = new GameObject("Icon", typeof(RectTransform));
@@ -301,21 +464,28 @@ namespace SuperMech.Code
             }
             if (iconImg.sprite == null)
             {
-                // 默认图标：按阶位选颜色
                 iconImg.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconStrong");
             }
-            iconImg.color = node.unlocked ? Color.white : new Color(1f, 1f, 1f, node.unlockable ? 0.9f : 0.4f);
+            iconImg.color = node.unlocked ? Color.white : new Color(1f, 1f, 1f, node.unlockable ? 0.85f : 0.35f);
+            iconImg.raycastTarget = false;
             RectTransform iconRt = iconGo.GetComponent<RectTransform>();
-            iconRt.sizeDelta = new Vector2(28, 28);
+            iconRt.anchorMin = new Vector2(0.5f, 0.5f);
+            iconRt.anchorMax = new Vector2(0.5f, 0.5f);
+            iconRt.pivot = new Vector2(0.5f, 0.5f);
+            iconRt.sizeDelta = new Vector2(nodeSize * 0.65f, nodeSize * 0.65f);
 
-            // 按钮
+            // 按钮（透明，覆盖整个节点）
             Button btn = go.AddComponent<Button>();
             ColorBlock cb = btn.colors;
-            cb.normalColor = Color.white;
-            cb.highlightedColor = new Color(1f, 1f, 1f, 0.8f);
-            cb.pressedColor = new Color(0.8f, 0.8f, 0.8f, 1f);
+            cb.normalColor = new Color(1f, 1f, 1f, 0f);
+            cb.highlightedColor = new Color(1f, 1f, 1f, 0.15f);
+            cb.pressedColor = new Color(0.8f, 0.8f, 0.8f, 0.2f);
             btn.colors = cb;
-            btn.targetGraphic = iconImg;
+            btn.targetGraphic = bgImg;
+
+            // Tooltip
+            TipButton tip = go.AddComponent<TipButton>();
+            tip.textOnClick = $"{node.name}\n{node.description}\n消耗: {node.cost}潜能点";
 
             string nodeId = node.id;
             btn.onClick.AddListener(() =>
@@ -357,15 +527,27 @@ namespace SuperMech.Code
         private void UpdateNodeVisual(KnowledgeNode node)
         {
             if (node.gameObject == null) return;
-            Image bg = node.gameObject.transform.Find("Bg")?.GetComponent<Image>();
-            if (bg != null)
+
+            // 更新边框颜色
+            Image border = node.gameObject.transform.Find("Border")?.GetComponent<Image>();
+            if (border != null)
             {
-                bg.color = node.unlocked ? ColorUnlocked : (node.unlockable ? ColorUnlockable : ColorLocked);
+                Color borderColor;
+                if (node.unlocked) borderColor = GetTierColor(node.tier);
+                else if (node.unlockable) borderColor = new Color(0.4f, 0.7f, 1f);
+                else borderColor = new Color(0.3f, 0.3f, 0.35f);
+                border.color = borderColor;
             }
+
+            // 更新图标透明度
             if (node.image != null)
             {
-                node.image.color = node.unlocked ? Color.white : new Color(1f, 1f, 1f, node.unlockable ? 0.9f : 0.4f);
+                node.image.color = node.unlocked ? Color.white : new Color(1f, 1f, 1f, node.unlockable ? 0.85f : 0.35f);
             }
+
+            // 已解锁节点显示光晕，未解锁隐藏
+            Transform glow = node.gameObject.transform.Find("Glow");
+            if (glow != null) glow.gameObject.SetActive(node.unlocked);
         }
 
         /// <summary>生成轴突连接线（基于空间距离+同阶位相邻）。</summary>
