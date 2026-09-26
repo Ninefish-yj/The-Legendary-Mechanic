@@ -152,7 +152,7 @@ namespace SuperMech.Code
                     }
                 }
 
-                // 行4：气力（原著五系统一，ch3/ch50。机械系不叫"械力"，叫气力）
+                // 行4：气力（原著五系统一，ch3/ch50。机械系磁环阶段后改称械力，ch237）
                 float qi = SuperMechQi.GetQi(actor);
                 float qiMax = SuperMechQi.GetQiMax(actor);
                 int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
@@ -161,7 +161,11 @@ namespace SuperMech.Code
                 string fmt = dec > 0 ? $"F{dec}" : "N0";
                 string qiValue = qi >= 1000 && dec == 0 ? $"{qi:N0}" : qi.ToString(fmt);
                 string qiMaxValue = qiMax > 0 ? (qiMax >= 1000 && dec == 0 ? $"{qiMax:N0}" : qiMax.ToString(fmt)) : qiValue;
-                ShowRow(__instance, "气力", $"{qiValue}/{qiMaxValue}【{qiLvText}】");
+                // 机械系磁环阶段（阶段4，索引3）后改称械力（原著ch237）
+                string qiLabel = "气力";
+                if (cls == "机械系" && SuperMechStage.GetStage(actor) >= 4)
+                    qiLabel = "械力";
+                ShowRow(__instance, qiLabel, $"{qiValue}/{qiMaxValue}【{qiLvText}】");
 
                 // 行4b：械感（机械亲和度，百分比，原著ch626 Lv21+4282%）
                 if (cls == "机械系")

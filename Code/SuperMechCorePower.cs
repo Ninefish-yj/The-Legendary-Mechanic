@@ -95,12 +95,49 @@ namespace SuperMech.Code
             return stage;
         }
 
-        /// <summary>应用阶段（只在变化时更新字典）。</summary>
+        /// <summary>应用阶段（只在变化时更新字典，并应用属性加成）。</summary>
         private static void ApplyStage(Actor a, Dictionary<long, int> dict, int targetLv)
         {
             long id = a.id;
             if (dict.TryGetValue(id, out int cur) && cur == targetLv) return;
             dict[id] = targetLv;
+            // 应用阶段属性加成
+            ApplyStageEffects(a);
+        }
+
+        /// <summary>应用各系能量阶段的属性加成（原著：基因链提升异能威力，魔力池提升魔法威力，精神力提升念力威力）。</summary>
+        private static void ApplyStageEffects(Actor a)
+        {
+            if (a == null || a.data == null) return;
+            var stats = a.data.base_stats;
+            if (stats == null) return;
+
+            // 异能系：基因链提升伤害（每阶+10%伤害，+5%攻速）
+            if (a.hasTrait(SuperMechTraits.ClassPsi) && _geneStage.TryGetValue(a.id, out int geneLv))
+            {
+                float dmgBonus = 1f + geneLv * 0.10f;
+                float spdBonus = geneLv * 0.05f;
+                stats["multiplier_damage"] = dmgBonus;
+                stats["attack_speed"] = spdBonus;
+            }
+
+            // 魔法系：魔力池提升伤害和魔力上限（每阶+12%伤害，+20魔力）
+            if (a.hasTrait(SuperMechTraits.ClassMage) && _manaStage.TryGetValue(a.id, out int manaLv))
+            {
+                float dmgBonus = 1f + manaLv * 0.12f;
+                float manaBonus = manaLv * 20f;
+                stats["multiplier_damage"] = dmgBonus;
+                stats["mana"] = manaBonus;
+            }
+
+            // 念力系：精神力提升伤害和智力（每阶+10%伤害，+3智力）
+            if (a.hasTrait(SuperMechTraits.ClassMind) && _mindStage.TryGetValue(a.id, out int mindLv))
+            {
+                float dmgBonus = 1f + mindLv * 0.10f;
+                float intBonus = mindLv * 3f;
+                stats["multiplier_damage"] = dmgBonus;
+                stats["intelligence"] = intBonus;
+            }
         }
 
         /// <summary>获取异能系当前基因链阶段名。</summary>
