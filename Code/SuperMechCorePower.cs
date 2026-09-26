@@ -22,33 +22,26 @@ namespace SuperMech.Code
         public static readonly string[] GeneChainNames = {
             "一阶基因链", "二阶基因链", "三阶基因链", "四阶基因链", "五阶基因链"
         };
-        // 每阶需要的知识解锁数（基础+进阶+高端+尖端+终极）
-        public static readonly int[] GeneChainKnowledgeReq = { 0, 3, 8, 15, 25 };
-
-        // 魔法系：魔力池5层
-        public static readonly string[] ManaTierNames = {
-            "魔力初涌", "魔力流动", "魔力充盈", "魔力磅礴", "魔力浩瀚"
-        };
-        public static readonly int[] ManaTierKnowledgeReq = { 0, 3, 8, 15, 25 };
-
-        // 念力系：精神力5阶
-        public static readonly string[] MindTierNames = {
-            "精神觉醒", "精神外放", "精神干涉", "精神领域", "精神造物"
-        };
-        public static readonly int[] MindTierKnowledgeReq = { 0, 3, 8, 15, 25 };
+        // 每阶需要的修炼进度（突破阈值）
+        public static readonly int[] StageProgressReq = { 0, 100, 300, 600, 1000 };
 
         // 内部字典追踪当前阶段（unit.id -> stage 1-5）
         private static readonly Dictionary<long, int> _geneStage = new Dictionary<long, int>();
         private static readonly Dictionary<long, int> _manaStage = new Dictionary<long, int>();
         private static readonly Dictionary<long, int> _mindStage = new Dictionary<long, int>();
 
+        // 修炼进度（unit.id -> progress）
+        private static readonly Dictionary<long, int> _geneProgress = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> _manaProgress = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> _mindProgress = new Dictionary<long, int>();
+
         public static void Register()
         {
-            // 不注册特质，阶段由知识树解锁数决定，单位面板显示
-            Debug.Log("[超神机械师] 气力分系用途系统初始化：基因链/魔力池/精神力（知识树驱动，不注册特质）");
+            // 独立修炼系统：基因链/魔力池/精神力通过修炼提升，不是知识树解锁
+            Debug.Log("[超神机械师] 气力分系用途系统初始化：基因链/魔力池/精神力（独立修炼系统，原著ch49/ch50）");
         }
 
-        /// <summary>按知识树解锁数自动更新各系用途等级。</summary>
+        /// <summary>独立修炼tick：被动增长修炼进度，进度满后自动突破。</summary>
         public static void TickCorePowers()
         {
             var units = World.world.units.units_only_alive;
@@ -58,51 +51,59 @@ namespace SuperMech.Code
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
 
-                // 异能系：基因链（基因树知识解锁数决定阶段）
+                // 判断是否在战斗中（攻击动画或最近被攻击）
+                bool inCombat = a.data.blocked_action != null || a.data.in_duel;
+
+                // 异能系：基因链修炼
                 if (a.hasTrait(SuperMechTraits.ClassPsi))
                 {
-                    int knowCount = SuperMechKnowledge.GetUnlockedCount(a, "psi");
-                    int targetLv = CalcStageByKnowledge(knowCount, GeneChainKnowledgeReq);
-                    ApplyStage(a, _geneStage, targetLv);
+                    TickCultivation(a, _geneStage, _geneProgress, "基因链", inCombat ? 3 : 1);
                 }
 
-                // 魔法系：魔力池（魔法知识树解锁数决定阶段）
+                // 魔法系：魔力池修炼
                 if (a.hasTrait(SuperMechTraits.ClassMage))
                 {
-                    int knowCount = SuperMechKnowledge.GetUnlockedCount(a, "mage");
-                    int targetLv = CalcStageByKnowledge(knowCount, ManaTierKnowledgeReq);
-                    ApplyStage(a, _manaStage, targetLv);
+                    TickCultivation(a, _manaStage, _manaProgress, "魔力池", inCombat ? 3 : 1);
                 }
 
-                // 念力系：精神力（精神修炼树解锁数决定阶段）
+                // 念力系：精神力修炼
                 if (a.hasTrait(SuperMechTraits.ClassMind))
                 {
-                    int knowCount = SuperMechKnowledge.GetUnlockedCount(a, "mind");
-                    int targetLv = CalcStageByKnowledge(knowCount, MindTierKnowledgeReq);
-                    ApplyStage(a, _mindStage, targetLv);
+                    TickCultivation(a, _mindStage, _mindProgress, "精神力", inCombat ? 3 : 1);
                 }
             }
         }
 
-        /// <summary>根据知识解锁数计算阶段（1-5）。</summary>
-        private static int CalcStageByKnowledge(int knowCount, int[] reqs)
-        {
-            int stage = 1;
-            for (int i = reqs.Length - 1; i >= 0; i--)
-            {
-                if (knowCount >= reqs[i]) { stage = i + 1; break; }
-            }
-            return stage;
-        }
-
-        /// <summary>应用阶段（只在变化时更新字典，并应用属性加成）。</summary>
-        private static void ApplyStage(Actor a, Dictionary<long, int> dict, int targetLv)
+        /// <summary>通用修炼tick：被动增长进度，满后突破。</summary>
+        private static void TickCultivation(Actor a, Dictionary<long, int> stageDict, Dictionary<long, int> progDict, string name, int gain)
         {
             long id = a.id;
-            if (dict.TryGetValue(id, out int cur) && cur == targetLv) return;
-            dict[id] = targetLv;
-            // 应用阶段属性加成
-            ApplyStageEffects(a);
+            if (!stageDict.TryGetValue(id, out int stage)) stage = 1;
+            if (stage >= 5) return;  // 已满阶
+
+            if (!progDict.TryGetValue(id, out int prog)) prog = 0;
+            prog += gain;
+            progDict[id] = prog;
+
+            // 检查是否突破
+            int req = StageProgressReq[stage];  // stage是1-4，对应下阶阈值
+            if (prog >= req)
+            {
+                progDict[id] = 0;
+                stageDict[id] = stage + 1;
+                ApplyStageEffects(a);
+                if (SuperMechConfig.LogVerbose)
+                    Debug.Log($"[超神机械师] {a.name} {name}突破到{GetStageName(name, stage + 1)}！");
+            }
+        }
+
+        /// <summary>获取阶段名称。</summary>
+        private static string GetStageName(string type, int stage)
+        {
+            if (type == "基因链") return GeneChainNames[stage - 1];
+            if (type == "魔力池") return ManaTierNames[stage - 1];
+            if (type == "精神力") return MindTierNames[stage - 1];
+            return "";
         }
 
         /// <summary>应用各系能量阶段的属性加成（原著：基因链提升异能威力，魔力池提升魔法威力，精神力提升念力威力）。</summary>
@@ -186,6 +187,39 @@ namespace SuperMech.Code
         {
             if (a == null) return 1;
             return _mindStage.TryGetValue(a.id, out int lv) ? lv : 1;
+        }
+
+        /// <summary>获取异能系基因链修炼进度（0-100%）。</summary>
+        public static float GetGeneProgress(Actor a)
+        {
+            if (a == null) return 0f;
+            int stage = GetGeneStage(a);
+            if (stage >= 5) return 100f;
+            if (!_geneProgress.TryGetValue(a.id, out int prog)) prog = 0;
+            int req = StageProgressReq[stage];
+            return Mathf.Clamp01((float)prog / req) * 100f;
+        }
+
+        /// <summary>获取魔法系魔力池修炼进度（0-100%）。</summary>
+        public static float GetManaProgress(Actor a)
+        {
+            if (a == null) return 0f;
+            int stage = GetManaStage(a);
+            if (stage >= 5) return 100f;
+            if (!_manaProgress.TryGetValue(a.id, out int prog)) prog = 0;
+            int req = StageProgressReq[stage];
+            return Mathf.Clamp01((float)prog / req) * 100f;
+        }
+
+        /// <summary>获取念力系精神力修炼进度（0-100%）。</summary>
+        public static float GetMindProgress(Actor a)
+        {
+            if (a == null) return 0f;
+            int stage = GetMindStage(a);
+            if (stage >= 5) return 100f;
+            if (!_mindProgress.TryGetValue(a.id, out int prog)) prog = 0;
+            int req = StageProgressReq[stage];
+            return Mathf.Clamp01((float)prog / req) * 100f;
         }
 
         /// <summary>提升单位对应系别的核心能量阶段（基因链/魔力池/精神力）。</summary>
