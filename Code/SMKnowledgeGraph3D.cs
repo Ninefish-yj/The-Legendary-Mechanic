@@ -98,6 +98,9 @@ namespace SuperMech.Code
             grt.offsetMin = Vector2.zero;
             grt.offsetMax = Vector2.zero;
 
+            // 背景层（按系别主题色渐变+光点装饰）
+            CreateBackground(_graphContainer.transform);
+
             // 三层父对象：轴突在最底层，节点在中间，冲动在最上层
             _axonsParent = new GameObject("Axons", typeof(RectTransform));
             _axonsParent.transform.SetParent(_graphContainer.transform, false);
@@ -125,6 +128,109 @@ namespace SuperMech.Code
             _targetRotationY = _rotationY;
             _targetRotationX = _rotationX;
             UpdateGraphTransform();
+        }
+
+        /// <summary>创建背景层（按系别主题色渐变+光点装饰）。</summary>
+        private void CreateBackground(Transform parent)
+        {
+            // 系别主题色
+            Color themeColor = GetThemeColor(_prefix);
+
+            // 背景渐变（中心亮，边缘暗）
+            GameObject bgGo = new GameObject("Background", typeof(RectTransform));
+            bgGo.transform.SetParent(parent, false);
+            bgGo.transform.SetAsFirstSibling();
+            Image bgImg = bgGo.AddComponent<Image>();
+            bgImg.color = new Color(0.02f, 0.03f, 0.06f, 0.95f);
+            bgImg.raycastTarget = false;
+            RectTransform bgRt = bgGo.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.offsetMin = Vector2.zero;
+            bgRt.offsetMax = Vector2.zero;
+
+            // 中心光晕（径向渐变效果，用大尺寸半透明Image模拟）
+            GameObject glowGo = new GameObject("CenterGlow", typeof(RectTransform));
+            glowGo.transform.SetParent(bgGo.transform, false);
+            Image glowImg = glowGo.AddComponent<Image>();
+            Color glowColor = themeColor;
+            glowColor.a = 0.12f;
+            glowImg.color = glowColor;
+            glowImg.raycastTarget = false;
+            RectTransform glowRt = glowGo.GetComponent<RectTransform>();
+            glowRt.anchorMin = new Vector2(0.5f, 0.5f);
+            glowRt.anchorMax = new Vector2(0.5f, 0.5f);
+            glowRt.pivot = new Vector2(0.5f, 0.5f);
+            glowRt.sizeDelta = new Vector2(300, 300);
+            glowRt.localScale = Vector3.one;
+
+            // 光点装饰（模拟星空，随机分布）
+            System.Random rng = new System.Random(_prefix.GetHashCode());
+            int starCount = 40;
+            for (int i = 0; i < starCount; i++)
+            {
+                GameObject star = new GameObject("Star_" + i, typeof(RectTransform));
+                star.transform.SetParent(bgGo.transform, false);
+                Image starImg = star.AddComponent<Image>();
+                Color starColor = (rng.Next(0, 3) == 0) ? themeColor : Color.white;
+                starColor.a = 0.2f + (float)rng.NextDouble() * 0.4f;
+                starImg.color = starColor;
+                starImg.raycastTarget = false;
+                RectTransform starRt = star.GetComponent<RectTransform>();
+                starRt.anchorMin = new Vector2(0f, 0f);
+                starRt.anchorMax = new Vector2(0f, 0f);
+                starRt.pivot = new Vector2(0.5f, 0.5f);
+                float x = (float)rng.NextDouble() * 400f - 200f;
+                float y = (float)rng.NextDouble() * 200f - 100f;
+                starRt.anchoredPosition = new Vector2(x, y);
+                float size = 1f + (float)rng.NextDouble() * 2f;
+                starRt.sizeDelta = new Vector2(size, size);
+            }
+
+            // 系别标识（左上角小图标+文字）
+            GameObject labelGo = new GameObject("ThemeLabel", typeof(RectTransform));
+            labelGo.transform.SetParent(bgGo.transform, false);
+            Text labelText = labelGo.AddComponent<Text>();
+            labelText.text = GetThemeName(_prefix);
+            labelText.fontSize = 11;
+            labelText.color = themeColor;
+            labelText.alignment = TextAnchor.UpperLeft;
+            labelText.fontStyle = FontStyle.Bold;
+            if (labelText.font == null) labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform labelRt = labelGo.GetComponent<RectTransform>();
+            labelRt.anchorMin = new Vector2(0f, 1f);
+            labelRt.anchorMax = new Vector2(0f, 1f);
+            labelRt.pivot = new Vector2(0f, 1f);
+            labelRt.anchoredPosition = new Vector2(8f, -4f);
+            labelRt.sizeDelta = new Vector2(120, 16);
+        }
+
+        /// <summary>获取系别主题色。</summary>
+        private Color GetThemeColor(string prefix)
+        {
+            switch (prefix)
+            {
+                case "mech": return new Color(0.4f, 0.7f, 1f);    // 机械系-蓝
+                case "martial": return new Color(1f, 0.5f, 0.3f);  // 武道系-橙
+                case "psi": return new Color(0.8f, 0.4f, 1f);      // 异能系-紫
+                case "mage": return new Color(0.4f, 1f, 0.6f);     // 魔法系-绿
+                case "mind": return new Color(1f, 0.8f, 0.3f);     // 念力系-金
+                default: return new Color(0.6f, 0.6f, 0.6f);
+            }
+        }
+
+        /// <summary>获取系别中文名。</summary>
+        private string GetThemeName(string prefix)
+        {
+            switch (prefix)
+            {
+                case "mech": return "机械知识树";
+                case "martial": return "御气技巧树";
+                case "psi": return "基因树";
+                case "mage": return "魔法知识树";
+                case "mind": return "精神修炼树";
+                default: return "知识树";
+            }
         }
 
         /// <summary>生成知识节点（球面分布）。</summary>
