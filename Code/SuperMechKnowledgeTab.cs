@@ -485,7 +485,7 @@ namespace SuperMech.Code
                 var crossDefs = SuperMechKnowledge.GetAllByPrefix(allPrefixes[i]);
                 int crossUnlocked = 0;
                 foreach (var d in crossDefs) if (SuperMechKnowledge.IsUnlocked(actor, d.id)) crossUnlocked++;
-                if (crossUnlocked > 0 || true) // 始终显示跨系区域
+                if (crossUnlocked > 0) // 只有解锁了跨系知识才显示
                 {
                     AddSectionHeader(_container.transform, $"跨系兼修·{allClassNames[i]}（{crossUnlocked}/{crossDefs.Count}，消耗×3）", new Color(0.5f, 0.5f, 0.7f));
                     GameObject crossRow = null;

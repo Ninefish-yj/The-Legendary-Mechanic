@@ -30,8 +30,6 @@ namespace SuperMech.Code
         private static Text _libraryProgress;    // 知识库进度（右下角）
         private static Actor _currentActor;
         private static string _currentPrefix = "mech";
-        private static bool _dragging;
-        private static Vector2 _dragOffset;
         private static readonly Color[] TierColors =
         {
             new Color(0.5f, 0.5f, 0.5f),  // 基础 - 灰
@@ -58,16 +56,6 @@ namespace SuperMech.Code
             CreateGraphLayer();
             CreateLibraryLayer();
             Refresh();
-        }
-
-        internal static void Hide()
-        {
-            if (_container != null) _container.SetActive(false);
-        }
-
-        internal static void Show()
-        {
-            if (_container != null) _container.SetActive(true);
         }
 
         private static void CreateContainer(Transform parent)
