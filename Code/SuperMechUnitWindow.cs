@@ -89,10 +89,12 @@ namespace SuperMech.Code
                 string rank = GetRank(actor);
                 ShowRow(__instance, "阶位", rank);
 
-                // 行1b：种族（原著：阶位到了自动进化种族）
-                string race = SuperMechRace.GetRaceName(actor);
-                if (race != "碳基人类（黄）")
+                // 行1b：种族（原著：S阶以上超A才会进化出专属种族，普通单位原版已有"物种"显示）
+                if (actor.hasTrait(SuperMechRace.TraitSuperARace) || actor.hasTrait(SuperMechRace.TraitDivineRace))
+                {
+                    string race = SuperMechRace.GetRaceName(actor);
                     ShowRow(__instance, "种族", race);
+                }
 
                 // 行1c：超A名号（原著ch770：种族名用名号命名，只有S阶以上种族才有）
                 if (actor.hasTrait(SuperMechRace.TraitSuperARace))
