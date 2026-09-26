@@ -120,17 +120,25 @@ namespace SuperMech.Code
             if (units == null) return;
             int processed = 0;
             int maxTracked = SuperMechConfig.MaxTrackedActors;
+            int errors = 0;
 
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                // 所有单位都同步自定义属性（未觉醒的显示0或基础值）
-                if (processed >= maxTracked)
+                // 已觉醒单位必须同步（确保属性面板显示），未觉醒单位受maxTracked限制
+                bool isAwakened = SuperMechTalent.HasTalent(a);
+                if (!isAwakened && processed >= maxTracked)
                 {
                     if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue;
                 }
                 processed++;
-                try { SyncStats(a); } catch { }
+                try { SyncStats(a); }
+                catch (System.Exception e)
+                {
+                    errors++;
+                    if (errors <= 3)  // 只打印前3个错误，避免日志刷屏
+                        Debug.LogError($"[超神机械师] SyncStats异常({a.name}): {e.Message}\n{e.StackTrace}");
+                }
             }
         }
 
