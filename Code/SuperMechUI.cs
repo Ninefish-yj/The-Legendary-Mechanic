@@ -21,7 +21,7 @@ namespace SuperMech.Code
         private static readonly (string id, string icon, string tipTitle, string tipDesc)[] CorePowers =
         {
             // 召唤类
-            (SuperMechPowers.SummonAwakened,  "iconSprite",      "召唤降临者", "在点击位置生成一个有面板的降临者单位（走等级职业体系）"),
+            (SuperMechPowers.SummonAwakened,  "ui/Icons/actor_traits/iconChosenOne",      "召唤降临者", "在点击位置生成一个有面板的降临者单位（走等级职业体系）"),
             // 天灾类
             (SuperMechPowers.DisasterAlien,   "iconDiscord",     "异化之灾",     "在点击位置生成异化体（天灾）"),
         };
@@ -104,7 +104,7 @@ namespace SuperMech.Code
                         GodPower power = AssetManager.powers.get(id);
                         if (power == null) { Debug.LogWarning("[超神机械师] 神权未注册: " + id); continue; }
                         Sprite icon = SpriteTextureLoader.getSprite(iconPath);
-                        if (icon == null) icon = SpriteTextureLoader.getSprite("iconDivineLight"); // fallback
+                        if (icon == null) icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight"); // fallback
                         PowerButton btn = PowerButtonCreator.CreateGodPowerButton(id, icon);
                         if (btn == null) continue;
                         btn.godPower = power;
@@ -124,8 +124,8 @@ namespace SuperMech.Code
                 {
                     try
                     {
-                        Sprite icon = SpriteTextureLoader.getSprite("iconUnity");
-                        if (icon == null) icon = SpriteTextureLoader.getSprite("iconDivineLight");
+                        Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconUnity");
+                        if (icon == null) icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight");
                         PowerButton btn = PowerButtonCreator.CreateSimpleButton(name, () => { try { action?.Invoke(); } catch (System.Exception e) { Debug.LogError("[超神机械师] 开窗异常: " + e.Message); } }, icon);
                         if (btn == null) continue;
                         if (btn.icon != null && btn.icon.sprite == null && icon != null)
