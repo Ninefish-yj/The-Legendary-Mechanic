@@ -485,10 +485,6 @@ namespace SuperMech.Code
             btn.colors = cb;
             btn.targetGraphic = bgImg;
 
-            // Tooltip
-            TipButton tip = go.AddComponent<TipButton>();
-            tip.textOnClick = $"{node.name}\n{node.description}\n消耗: {node.cost}潜能点";
-
             string nodeId = node.id;
             btn.onClick.AddListener(() =>
             {

@@ -22,13 +22,12 @@ namespace SuperMech.Code
         private static GameObject _container;
         private static Transform _headerLayer;   // 系别切换层
         private static Transform _graphLayer;    // 知识图谱层
-        private static Transform _graphContent;  // 图谱内容容器
+        private static RectTransform _graphContent;  // 图谱内容容器
         private static Text _graphTitle;         // 图谱标题
         private static SMKnowledgeGraph3D _graph3D; // 3D知识图谱组件
         private static Transform _libraryLayer;  // 知识库内容层
         private static Text _libraryTitle;       // 知识库标题
         private static Text _libraryProgress;    // 知识库进度（右下角）
-        private static RectTransform _graphContent;
         private static Actor _currentActor;
         private static string _currentPrefix = "mech";
         private static bool _dragging;
@@ -131,12 +130,6 @@ namespace SuperMech.Code
             swRt.anchorMax = Vector2.one;
             swRt.offsetMin = Vector2.zero;
             swRt.offsetMax = Vector2.zero;
-            swHlg.padding = new RectOffset(2, 2, 0, 0);
-            RectTransform swRt = switcherGo.GetComponent<RectTransform>();
-            swRt.anchorMin = new Vector2(0, 0);
-            swRt.anchorMax = new Vector2(1, 0);
-            swRt.pivot = new Vector2(0.5f, 0f);
-            swRt.sizeDelta = new Vector2(0, 16f);
             _classSwitcher = switcherGo.transform;
 
             // 5个系别切换按钮

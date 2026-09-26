@@ -266,6 +266,8 @@ namespace SuperMech.Code
             if (_container == null) return;
             foreach (Transform child in _container.transform) Object.Destroy(child.gameObject);
 
+            int pot = SuperMechPotential.GetPotential(actor);
+
             // 第一步：未踏入超能（无天赋倾向）
             if (!SuperMechTalent.HasTalent(actor))
             {
