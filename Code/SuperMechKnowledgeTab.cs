@@ -268,8 +268,8 @@ namespace SuperMech.Code
                 // 前置依赖
                 bool tierUnlocked_flag = (tier == 0) || SuperMechKnowledge.GetTierKnowledgeCount(actor, prefix, tier - 1) > 0;
 
-                // 阶位标题（原版风格：简洁文字+计数）
-                AddSectionHeader(_container.transform, $"{tierNames[tier]}（{tierUnlocked}/{allDefs.Count}）{(tierUnlocked_flag ? "" : " 🔒")}");
+                // 阶位标题（品质颜色）
+                AddSectionHeader(_container.transform, $"{tierNames[tier]}（{tierUnlocked}/{allDefs.Count}）{(tierUnlocked_flag ? "" : " 🔒")}", GetTierColor(tier));
 
                 // 图标网格：每行4个（参考原版特质面板）
                 GameObject currentRow = null;
@@ -380,7 +380,7 @@ namespace SuperMech.Code
             rt.sizeDelta = new Vector2(0, 28);
         }
 
-        private static void AddSectionHeader(Transform parent, string text)
+        private static void AddSectionHeader(Transform parent, string text, Color? color = null)
         {
             GameObject go = new GameObject("Section", typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -388,7 +388,7 @@ namespace SuperMech.Code
             t.text = text;
             t.fontSize = 13;
             t.fontStyle = FontStyle.Bold;
-            t.color = new Color(0.6f, 0.8f, 1f);
+            t.color = color ?? new Color(0.6f, 0.8f, 1f);
             t.alignment = TextAnchor.MiddleLeft;
             if (t.font == null) t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             RectTransform rt = go.GetComponent<RectTransform>();
@@ -451,38 +451,70 @@ namespace SuperMech.Code
             rt.sizeDelta = new Vector2(0, 20);
         }
 
-        /// <summary>知识图标方块（参考原版特质面板风格）</summary>
+        /// <summary>知识图标（原版图标+品质颜色边框，参考原版特质/物品面板）</summary>
         private static void AddKnowledgeIcon(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock)
         {
+            Color qColor = GetTierColor(def.tier);
+
             GameObject go = new GameObject("KnowledgeIcon", typeof(RectTransform));
             go.transform.SetParent(parent, false);
 
-            // 图标背景
-            var img = go.AddComponent<Image>();
-            if (unlocked)
-                img.color = new Color(0.2f, 0.4f, 0.2f, 0.9f);
-            else if (canUnlock)
-                img.color = new Color(0.15f, 0.25f, 0.45f, 0.9f);
-            else
-                img.color = new Color(0.12f, 0.12f, 0.12f, 0.8f);
+            // 品质边框
+            var borderImg = go.AddComponent<Image>();
+            borderImg.color = unlocked ? qColor : new Color(0.3f, 0.3f, 0.3f, 0.8f);
 
-            // 图标文字（首字母或✓）
-            Text iconText = go.AddComponent<Text>();
-            iconText.text = unlocked ? "✓" : (canUnlock ? def.name.Substring(0, System.Math.Min(1, def.name.Length)) : "?");
-            iconText.fontSize = 14;
-            iconText.fontStyle = FontStyle.Bold;
-            iconText.alignment = TextAnchor.MiddleCenter;
-            iconText.color = unlocked ? new Color(0.5f, 1f, 0.5f) : (canUnlock ? new Color(0.6f, 0.8f, 1f) : new Color(0.4f, 0.4f, 0.4f));
-            if (iconText.font == null) iconText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            // 内部深色区域
+            var innerGo = new GameObject("Inner", typeof(RectTransform));
+            innerGo.transform.SetParent(go.transform, false);
+            var innerImg = innerGo.AddComponent<Image>();
+            innerImg.color = new Color(0.08f, 0.08f, 0.08f, 0.95f);
+            RectTransform innerRt = innerGo.GetComponent<RectTransform>();
+            innerRt.anchorMin = new Vector2(0.08f, 0.08f);
+            innerRt.anchorMax = new Vector2(0.92f, 0.92f);
+            innerRt.offsetMin = Vector2.zero;
+            innerRt.offsetMax = Vector2.zero;
+
+            // 原版技能图标
+            var iconGo = new GameObject("Icon", typeof(RectTransform));
+            iconGo.transform.SetParent(innerGo.transform, false);
+            var iconImg = iconGo.AddComponent<Image>();
+            string iconPath = GetTierIcon(def.tier);
+            Sprite sprite = SpriteTextureLoader.getSprite(iconPath);
+            if (sprite != null) iconImg.sprite = sprite;
+            iconImg.color = unlocked ? Color.white : new Color(0.4f, 0.4f, 0.4f, 0.6f);
+            RectTransform iconRt = iconGo.GetComponent<RectTransform>();
+            iconRt.anchorMin = new Vector2(0.15f, 0.15f);
+            iconRt.anchorMax = new Vector2(0.85f, 0.85f);
+            iconRt.offsetMin = Vector2.zero;
+            iconRt.offsetMax = Vector2.zero;
+
+            // 已解锁标记（角落✓）
+            if (unlocked)
+            {
+                var markGo = new GameObject("Mark", typeof(RectTransform));
+                markGo.transform.SetParent(go.transform, false);
+                Text markText = markGo.AddComponent<Text>();
+                markText.text = "✓";
+                markText.fontSize = 10;
+                markText.fontStyle = FontStyle.Bold;
+                markText.alignment = TextAnchor.UpperRight;
+                markText.color = new Color(0.5f, 1f, 0.5f);
+                if (markText.font == null) markText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                RectTransform markRt = markGo.GetComponent<RectTransform>();
+                markRt.anchorMin = new Vector2(0.6f, 0.6f);
+                markRt.anchorMax = new Vector2(1f, 1f);
+                markRt.offsetMin = new Vector2(0, -2);
+                markRt.offsetMax = new Vector2(-2, 0);
+            }
 
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(36, 36);
 
-            // 可解锁的添加点击事件
+            // 可解锁的点击解锁
             if (canUnlock)
             {
                 var btn = go.AddComponent<Button>();
-                btn.targetGraphic = img;
+                btn.targetGraphic = borderImg;
                 btn.onClick.AddListener(() =>
                 {
                     if (SuperMechPotential.UnlockNode(actor, def.id, def.cost))
@@ -492,9 +524,37 @@ namespace SuperMech.Code
                 });
             }
 
-            // Tooltip（参考原版特质按钮，悬停显示详情）
+            // Tooltip（名称+描述+消耗+分支，不显示"状态"）
             var tip = go.AddComponent<TipButton>();
-            tip.textOnClick = $"{def.name}\n分支: {branch}\n消耗: {def.cost}潜能点\n{(unlocked ? "状态: 已解锁" : (canUnlock ? "状态: 可解锁" : "状态: 未解锁"))}";
+            tip.textOnClick = $"{def.name}\n{def.desc}\n分支: {branch} | 消耗: {def.cost}潜能点";
+        }
+
+        /// <summary>按阶位获取品质颜色（基础=灰，进阶=绿，高端=蓝，尖端=紫，终极=金）</summary>
+        private static Color GetTierColor(int tier)
+        {
+            switch (tier)
+            {
+                case 0: return new Color(0.6f, 0.6f, 0.6f); // 基础-灰
+                case 1: return new Color(0.3f, 0.8f, 0.3f); // 进阶-绿
+                case 2: return new Color(0.3f, 0.5f, 1f);   // 高端-蓝
+                case 3: return new Color(0.7f, 0.4f, 1f);   // 尖端-紫
+                case 4: return new Color(1f, 0.84f, 0f);    // 终极-金
+                default: return Color.white;
+            }
+        }
+
+        /// <summary>按阶位获取原版图标</summary>
+        private static string GetTierIcon(int tier)
+        {
+            switch (tier)
+            {
+                case 0: return "ui/Icons/skills/iconSkillBlock";
+                case 1: return "ui/Icons/skills/iconSkillDash";
+                case 2: return "ui/Icons/skills/iconSkillDodge";
+                case 3: return "ui/Icons/skills/iconSkillBackstep";
+                case 4: return "ui/Icons/skills/iconSkillDeflectProjectile";
+                default: return "ui/Icons/skills/iconSkillBlock";
+            }
         }
 
         /// <summary>图标网格行（每行4个）</summary>
