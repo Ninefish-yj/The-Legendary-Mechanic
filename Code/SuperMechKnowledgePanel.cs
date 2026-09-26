@@ -275,7 +275,7 @@ namespace SuperMech.Code
             _graph3D = graphContent.AddComponent<SMKnowledgeGraph3D>();
 
             _graphLayer = graph.transform;
-            _graphContent = graphContent.transform;
+            _graphContent = gcRt;
         }
 
         private static void OnGraphDrag(Vector2 delta)
