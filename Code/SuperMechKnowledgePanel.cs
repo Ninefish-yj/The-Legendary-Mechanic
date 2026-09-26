@@ -174,6 +174,8 @@ namespace SuperMech.Code
 
             TipButton tip = btnObj.AddComponent<TipButton>();
             tip.textOnClick = name;
+            tip.textOnClickDescription = string.Empty;
+            tip.text_description_2 = string.Empty;
 
             string p = prefix;
             btn.onClick.AddListener(() =>
@@ -451,6 +453,7 @@ namespace SuperMech.Code
             TipButton tip = node.AddComponent<TipButton>();
             tip.textOnClick = def.name;
             tip.textOnClickDescription = def.desc + $"\n消耗: {actualCost}潜能点\n阶位: {GetTierName(def.tier)}";
+            tip.text_description_2 = string.Empty;
 
             _nodeObjects[def.id] = node;
         }
@@ -587,6 +590,7 @@ namespace SuperMech.Code
             TipButton tip = iconObj.AddComponent<TipButton>();
             tip.textOnClick = def.name;
             tip.textOnClickDescription = def.desc + $"\n消耗: {actualCost}潜能点";
+            tip.text_description_2 = string.Empty;
         }
 
         private static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor)

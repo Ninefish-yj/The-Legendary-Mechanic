@@ -150,6 +150,7 @@ namespace SuperMech.Code
             if (tip != null)
             {
                 tip.textOnClick = "知识\n3D知识图谱·潜能点解锁·跨系兼修·知识融合";
+                tip.textOnClickDescription = string.Empty;
                 tip.text_description_2 = string.Empty;
             }
 

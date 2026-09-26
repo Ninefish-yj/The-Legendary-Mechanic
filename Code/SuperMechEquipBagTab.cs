@@ -158,6 +158,7 @@ namespace SuperMech.Code
             if (tip != null)
             {
                 tip.textOnClick = "背包\n9级品质装备·词条属性·装备掉落·按品质排序";
+                tip.textOnClickDescription = string.Empty;
                 tip.text_description_2 = string.Empty;
             }
 
@@ -371,6 +372,8 @@ namespace SuperMech.Code
             // Tooltip
             var tip = iconGo.AddComponent<TipButton>();
             tip.textOnClick = tooltip;
+            tip.textOnClickDescription = string.Empty;
+            tip.text_description_2 = string.Empty;
 
             return iconGo;
         }
