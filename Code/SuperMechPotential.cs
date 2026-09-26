@@ -72,9 +72,10 @@ namespace SuperMech.Code
             return "";
         }
 
-        /// <summary>判断知识节点是否是跨系兼修（和主职业方向不同）。</summary>
+        /// <summary>判断知识节点是否是跨系兼修（和主职业方向不同）。五系天才不惩罚。</summary>
         public static bool IsCrossClass(Actor a, string nodeId)
         {
+            if (SuperMechTalent.IsFiveSystemGenius(a)) return false;  // 五系天才跨系不惩罚
             string prefix = GetKnowledgePrefix(nodeId);
             string mainClass = SuperMechProfession.GetClass(a);
             if (string.IsNullOrEmpty(mainClass)) return false;

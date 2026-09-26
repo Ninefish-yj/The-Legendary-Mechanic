@@ -42,6 +42,8 @@ namespace SuperMech.Code
                 {
                     talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
                 }
+                if (SuperMechTalent.IsFiveSystemGenius(actor))
+                    talentText = "★五系天才★ " + talentText;
                 ShowRow(__instance, "天赋倾向", talentText.Trim());
 
                 bool hasProfession = SuperMechProfession.HasProfession(actor);

@@ -25,13 +25,13 @@ namespace SuperMech.Code
             public string specificPower;  // 具体异能类型（电磁/火焰/念动力等）
         }
 
-        // 具体异能类型库（原著+同人补全）
+        // 具体异能类型库（原著+同人补全，按各系核心体系分类）
         private static readonly string[][] SpecificPowers = {
-            new[] { "电磁操控", "能量亲和", "虚拟意识", "机械心灵", "纳米操控", "量子计算" },  // 机械系
-            new[] { "体魄强化", "气血澎湃", "战本能", "气劲外放", "金刚不坏", "血脉觉醒" },  // 武道系
-            new[] { "元素操控", "念动力", "空间异能", "时间感知", "物质转化", "心灵感应" },  // 异能系
-            new[] { "元素魔法", "变化术", "造物术", "召唤术", "结界术", "符文魔法" },        // 魔法系
-            new[] { "灵魂感知", "法则之眼", "现实扭曲", "精神冲击", "记忆操控", "预知未来" }   // 念力系
+            new[] { "电磁操控", "能量亲和", "虚拟意识", "机械心灵", "纳米操控", "量子计算" },  // 机械系（神器·机械知识树）
+            new[] { "体魄强化", "气血澎湃", "战斗本能", "气劲外放", "金刚不坏", "血脉觉醒" },  // 武道系（神体·御气技巧树）
+            new[] { "元素异能", "身体变异", "感官强化", "再生能力", "物质干涉", "能量放射" },  // 异能系（神通·基因树，基因变异类）
+            new[] { "元素魔法", "变化术", "造物术", "召唤术", "结界术", "符文魔法" },        // 魔法系（神权·魔法知识树）
+            new[] { "念动力", "灵魂感知", "精神冲击", "记忆操控", "心灵感应", "预知未来" }   // 念力系（神魂·精神修炼树，精神力类）
         };
 
         // unit.id -> 天赋倾向列表
@@ -68,19 +68,48 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>踏入超能：随机获得1-3个天赋倾向，带评级。</summary>
+        // 五系天才标记（unit.id -> true）
+        private static readonly HashSet<long> _fiveSystemGenius = new HashSet<long>();
+
+        /// <summary>是否是五系天才（同时拥有五系天赋，跨系兼修不惩罚）。</summary>
+        public static bool IsFiveSystemGenius(Actor a)
+        {
+            if (a == null) return false;
+            return _fiveSystemGenius.Contains(a.id);
+        }
+
+        /// <summary>踏入超能：随机获得1-3个天赋倾向，带评级。极低概率（1/10000）触发五系天才。</summary>
         public static List<TalentInfo> GenerateTalents()
         {
             var talents = new List<TalentInfo>();
+
+            // 五系天才稀有事件（1/10000）
+            if (Random.value < 0.0001f)
+            {
+                var allTypes = new[] { TalentType.Mechanical, TalentType.Martial, TalentType.Psi, TalentType.Mage, TalentType.Mind };
+                foreach (var type in allTypes)
+                {
+                    // 五系天才评级偏高（B-S）
+                    int rating = Random.Range(4, 7);  // B/A/S
+                    talents.Add(new TalentInfo
+                    {
+                        type = type,
+                        rating = rating,
+                        specificPower = SpecificPowers[(int)type][Random.Range(0, SpecificPowers[(int)type].Length)]
+                    });
+                }
+                return talents;
+            }
+
             int count = Random.Range(1, 4);  // 1-3个
 
-            var allTypes = new List<TalentType> { TalentType.Mechanical, TalentType.Martial, TalentType.Psi, TalentType.Mage, TalentType.Mind };
+            var allTypesList = new List<TalentType> { TalentType.Mechanical, TalentType.Martial, TalentType.Psi, TalentType.Mage, TalentType.Mind };
             for (int i = 0; i < count; i++)
             {
-                if (allTypes.Count == 0) break;
-                int idx = Random.Range(0, allTypes.Count);
-                var type = allTypes[idx];
-                allTypes.RemoveAt(idx);
+                if (allTypesList.Count == 0) break;
+                int idx = Random.Range(0, allTypesList.Count);
+                var type = allTypesList[idx];
+                allTypesList.RemoveAt(idx);
 
                 // 评级：F(40%) E(25%) D(15%) C(10%) B(6%) A(3%) S(1%)
                 float roll = Random.value;
@@ -108,7 +137,14 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             if (_talents.ContainsKey(a.id)) return;  // 已有天赋
-            _talents[a.id] = GenerateTalents();
+            var talents = GenerateTalents();
+            _talents[a.id] = talents;
+            // 五系天才标记（同时拥有五系天赋）
+            if (talents.Count >= 5)
+            {
+                _fiveSystemGenius.Add(a.id);
+                Debug.Log($"[超神机械师] ★五系天才诞生：{a.name}（同时拥有五系天赋，跨系兼修不惩罚）");
+            }
         }
 
         /// <summary>获取单位的天赋倾向。</summary>

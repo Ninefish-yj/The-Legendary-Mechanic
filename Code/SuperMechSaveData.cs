@@ -84,6 +84,7 @@ namespace SuperMech.Code
             public string talents; // 天赋倾向（JSON序列化）
             public int profession; // 主职业方向（0=无,1=机械,2=武道,3=异能,4=魔法,5=念力）
             public int switchCount; // 更换职业次数
+            public bool fiveSystemGenius; // 五系天才标记
         }
 
         [Serializable]
@@ -177,7 +178,8 @@ namespace SuperMech.Code
                             sanctuaryAuthority = GetSanctuaryAuthority(a),
                             talents = SerializeTalents(a),
                             profession = (int)SuperMechProfession.GetProfession(a),
-                            switchCount = SuperMechProfession.GetSwitchCount(a)
+                            switchCount = SuperMechProfession.GetSwitchCount(a),
+                            fiveSystemGenius = SuperMechTalent.IsFiveSystemGenius(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -370,6 +372,12 @@ namespace SuperMech.Code
                     if (ad.profession > 0)
                     {
                         SuperMechProfession.SetProfession(a, (SuperMechProfession.ProfessionType)ad.profession);
+                    }
+                    // 恢复五系天才标记
+                    if (ad.fiveSystemGenius)
+                    {
+                        typeof(SuperMechTalent).GetField("_fiveSystemGenius", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
+                            ?.SetValue(null, new HashSet<long> { a.id });
                     }
 
                     _pendingLoad.actors.Remove(id);
