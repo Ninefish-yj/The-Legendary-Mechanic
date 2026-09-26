@@ -257,7 +257,8 @@ namespace SuperMech.Code
                 if (child.name != "LayoutGroup") Object.Destroy(child.gameObject);
             }
 
-            // 当前装备：大图标+品质边框（参考原版装备槽）
+            // === 已装备区域（参考原版装备槽）===
+            var equippedHeader = CreateCategoryHeader(_container.transform, "已装备");
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
             if (currentIdx >= 0)
             {
@@ -277,55 +278,148 @@ namespace SuperMech.Code
                     });
                 }
             }
+            else
+            {
+                // 空槽位（参考原版空装备槽）
+                var emptySlot = CreateEmptySlot(_container.transform, 48, "未装备");
+            }
 
-            // 分隔：空行
+            // 分隔
             var spacer = new GameObject("Spacer", typeof(RectTransform));
             spacer.transform.SetParent(_container.transform, false);
-            spacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 8);
+            spacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 12);
 
-            // 背包物品：图标网格（每行5个，按品质从高到低排序）
+            // === 背包物品：按品质分组（参考原版物品栏分类）===
             var bag = SuperMechEquipBag.GetBag(actor);
-            if (bag.Count > 0)
+
+            // 按品质分组
+            var byQuality = new Dictionary<int, List<string>>();
+            for (int q = 0; q <= 8; q++) byQuality[q] = new List<string>();
+            foreach (string equipId in bag)
             {
-                var sortedBag = bag.OrderByDescending(id =>
+                int idx = SuperMechRelic.GetEquipIndex(equipId);
+                if (idx >= 0)
                 {
-                    int idx = SuperMechRelic.GetEquipIndex(id);
-                    return idx >= 0 ? SuperMechRelic.Equipments[idx].qualityLevel : -1;
-                }).ToList();
-
-                GameObject currentRow = null;
-                int iconIndex = 0;
-                foreach (string equipId in sortedBag)
-                {
-                    if (iconIndex % 5 == 0)
-                    {
-                        currentRow = new GameObject("BagRow", typeof(RectTransform));
-                        currentRow.transform.SetParent(_container.transform, false);
-                        var rowLayout = currentRow.AddComponent<HorizontalLayoutGroup>();
-                        rowLayout.spacing = 4;
-                        rowLayout.childAlignment = TextAnchor.UpperLeft;
-                        currentRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 40);
-                    }
-
-                    int idx = SuperMechRelic.GetEquipIndex(equipId);
-                    if (idx < 0) continue;
-                    var def = SuperMechRelic.Equipments[idx];
-                    Color qColor = GetQualityColor(def.qualityLevel);
-
-                    var iconGo = CreateItemIcon(currentRow.transform, def.icon, qColor, 34, def.name,
-                        $"品质: {GetQualityName(def.qualityLevel)}\n伤害×{def.dmgMul}  生命×{def.hpMul}\n点击装备");
-                    var btn = iconGo.GetComponent<Button>();
-                    if (btn != null)
-                    {
-                        btn.onClick.AddListener(() =>
-                        {
-                            SuperMechEquipBag.EquipFromBag(actor, equipId);
-                            RenderBag(actor);
-                        });
-                    }
-                    iconIndex++;
+                    int q = SuperMechRelic.Equipments[idx].qualityLevel;
+                    byQuality[q].Add(equipId);
                 }
             }
+
+            // 从高到低显示每个品质组
+            for (int q = 8; q >= 0; q--)
+            {
+                var items = byQuality[q];
+                string catName = GetQualityName(q);
+                Color qColor = GetQualityColor(q);
+
+                // 分类标题
+                CreateCategoryHeader(_container.transform, catName, qColor);
+
+                if (items.Count > 0)
+                {
+                    // 图标网格（每行5个）
+                    GameObject currentRow = null;
+                    int iconIndex = 0;
+                    foreach (string equipId in items)
+                    {
+                        if (iconIndex % 5 == 0)
+                        {
+                            currentRow = new GameObject("BagRow", typeof(RectTransform));
+                            currentRow.transform.SetParent(_container.transform, false);
+                            var rowLayout = currentRow.AddComponent<HorizontalLayoutGroup>();
+                            rowLayout.spacing = 6;
+                            rowLayout.childAlignment = TextAnchor.UpperLeft;
+                            currentRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 40);
+                        }
+
+                        int idx = SuperMechRelic.GetEquipIndex(equipId);
+                        if (idx < 0) continue;
+                        var def = SuperMechRelic.Equipments[idx];
+
+                        var iconGo = CreateItemIcon(currentRow.transform, def.icon, qColor, 34, def.name,
+                            $"品质: {GetQualityName(def.qualityLevel)}\n伤害×{def.dmgMul}  生命×{def.hpMul}\n点击装备");
+                        var btn = iconGo.GetComponent<Button>();
+                        if (btn != null)
+                        {
+                            btn.onClick.AddListener(() =>
+                            {
+                                SuperMechEquipBag.EquipFromBag(actor, equipId);
+                                RenderBag(actor);
+                            });
+                        }
+                        iconIndex++;
+                    }
+                }
+                else
+                {
+                    // 空槽位（参考原版空分类显示）
+                    var emptyRow = new GameObject("EmptyRow", typeof(RectTransform));
+                    emptyRow.transform.SetParent(_container.transform, false);
+                    emptyRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 36);
+                    var emptyText = CreateText(emptyRow.transform, "— 无 —", 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.5f, 0.6f));
+                    var emptyRt = emptyText.GetComponent<RectTransform>();
+                    emptyRt.anchorMin = Vector2.zero;
+                    emptyRt.anchorMax = Vector2.one;
+                    emptyRt.offsetMin = Vector2.zero;
+                    emptyRt.offsetMax = Vector2.zero;
+                }
+
+                // 分类间距
+                var catSpacer = new GameObject("CatSpacer", typeof(RectTransform));
+                catSpacer.transform.SetParent(_container.transform, false);
+                catSpacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 6);
+            }
+        }
+
+        /// <summary>创建分类标题（参考原版物品栏分类标题）。</summary>
+        private static GameObject CreateCategoryHeader(Transform parent, string text, Color? color = null)
+        {
+            var header = new GameObject("CategoryHeader", typeof(RectTransform));
+            header.transform.SetParent(parent, false);
+            header.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 24);
+
+            // 背景条（参考原版分类背景）
+            var bgObj = new GameObject("Bg", typeof(RectTransform));
+            bgObj.transform.SetParent(header.transform, false);
+            var bgImg = bgObj.AddComponent<UnityEngine.UI.Image>();
+            bgImg.color = new Color(0.15f, 0.15f, 0.18f, 0.8f);
+            var bgRt = bgObj.GetComponent<RectTransform>();
+            bgRt.anchorMin = Vector2.zero;
+            bgRt.anchorMax = Vector2.one;
+            bgRt.offsetMin = Vector2.zero;
+            bgRt.offsetMax = Vector2.zero;
+
+            // 标题文字
+            var txt = CreateText(header.transform, text, 13, TextAnchor.MiddleCenter, color ?? new Color(0.9f, 0.85f, 0.6f));
+            var txtRt = txt.GetComponent<RectTransform>();
+            txtRt.anchorMin = Vector2.zero;
+            txtRt.anchorMax = Vector2.one;
+            txtRt.offsetMin = Vector2.zero;
+            txtRt.offsetMax = Vector2.zero;
+
+            return header;
+        }
+
+        /// <summary>创建空槽位（参考原版空装备槽）。</summary>
+        private static GameObject CreateEmptySlot(Transform parent, int size, string label)
+        {
+            var slot = new GameObject("EmptySlot", typeof(RectTransform));
+            slot.transform.SetParent(parent, false);
+            slot.GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
+
+            // 边框
+            var border = slot.AddComponent<UnityEngine.UI.Image>();
+            border.color = new Color(0.3f, 0.3f, 0.35f, 0.5f);
+
+            // 文字
+            var txt = CreateText(slot.transform, label, 10, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.7f));
+            var txtRt = txt.GetComponent<RectTransform>();
+            txtRt.anchorMin = Vector2.zero;
+            txtRt.anchorMax = Vector2.one;
+            txtRt.offsetMin = Vector2.zero;
+            txtRt.offsetMax = Vector2.zero;
+
+            return slot;
         }
 
         /// <summary>创建物品图标（参考原版ButtonResource：品质边框+内部图标+tooltip）。</summary>
@@ -419,6 +513,21 @@ namespace SuperMech.Code
         {
             string[] names = { "普通", "精良", "稀有", "史诗", "传说", "珍稀", "神器", "使徒兵器", "宇宙宝物" };
             return q >= 0 && q < names.Length ? names[q] : "?";
+        }
+
+        private static Text CreateText(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
+        {
+            GameObject obj = new GameObject("Text", typeof(RectTransform));
+            obj.transform.SetParent(parent, false);
+            Text t = obj.AddComponent<Text>();
+            t.font = LocalizedTextManager.current_font;
+            t.fontSize = fontSize;
+            t.color = color;
+            t.alignment = anchor;
+            t.horizontalOverflow = HorizontalWrapMode.Overflow;
+            t.verticalOverflow = VerticalWrapMode.Overflow;
+            t.text = text;
+            return t;
         }
 
         private static void AddText(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
