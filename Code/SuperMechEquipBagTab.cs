@@ -65,8 +65,6 @@ namespace SuperMech.Code
             }
 
             bool onBag = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
-            if (!onBag && _container != null) _container.SetActive(false);
-
             if (onBag) RenderBag(actor);
         }
 
@@ -237,18 +235,14 @@ namespace SuperMech.Code
 
         private static void OnTabShow(WindowMetaTab tab)
         {
-            if (tab != _bagTab) { if (_container != null) _container.SetActive(false); return; }
-            if (_container != null)
-            {
-                _container.SetActive(true);
-                Actor actor = GetActor(_boundWindow);
-                if (actor != null) RenderBag(actor);
-            }
+            if (tab != _bagTab) return;
+            Actor actor = GetActor(_boundWindow);
+            if (actor != null) RenderBag(actor);
         }
 
         private static void OnTabHide()
         {
-            if (_container != null) _container.SetActive(false);
+            // tab_elements机制会自动隐藏内容，不需要手动SetActive
         }
 
         /// <summary>渲染背包内容（纯图标网格，参考原版城市资源仓库ButtonResource）。</summary>

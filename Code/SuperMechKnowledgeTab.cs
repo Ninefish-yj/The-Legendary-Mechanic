@@ -60,16 +60,11 @@ namespace SuperMech.Code
                     BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(scroll.tabs, null); } catch { }
             }
 
-            // 只有在知识Tab激活时才渲染内容，避免内容出现在其他Tab（如原版装备Tab）中
+            // 只有在知识Tab激活时才渲染内容
+            // tab_elements机制会自动处理显示/隐藏，不需要手动HideOtherContent/RestoreOtherContent
             bool onKnowTab = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
-            if (!onKnowTab && _container != null)
-            {
-                _container.SetActive(false);
-                RestoreOtherContent(scroll); // 离开知识Tab时恢复其他内容
-            }
             if (onKnowTab)
             {
-                HideOtherContent(scroll); // 知识Tab激活时隐藏单位面板其他内容
                 RenderContent(actor);
             }
         }
