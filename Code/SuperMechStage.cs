@@ -151,35 +151,28 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<long, int> _stage = new Dictionary<long, int>();
 
-        /// <summary>获取单位所属分支的阶段名数组。</summary>
+        /// <summary>获取单位所属分支的阶段名数组。
+        /// 原著逻辑：机械系（枪炮师/械武者/机械师）和魔法系（专精/魔网）是独立职业，有分支阶段名；
+        /// 武道系（敏捷/力量/防御）、异能系（威力/操控/持久）、念力系（心智/念动/感应）是发展方向，用统一阶段名。</summary>
         private static string[] GetStageArray(Actor a)
         {
             if (a == null) return Stage_GenericMech;
-            // 机械系分支
+            // 机械系分支（独立职业，ch50）
             if (a.hasTrait(SuperMechBranch.BranchGunner)) return Stage_Gunner;
             if (a.hasTrait(SuperMechBranch.BranchMech)) return Stage_Mech;
             if (a.hasTrait(SuperMechBranch.BranchMartial)) return Stage_MechMartial;
-            // 武道系分支
-            if (a.hasTrait(SuperMechBranch.BranchMartialBody)) return Stage_MartialBody;
-            if (a.hasTrait(SuperMechBranch.BranchMartialTactic)) return Stage_MartialTactic;
-            if (a.hasTrait(SuperMechBranch.BranchMartialPower)) return Stage_MartialPower;
-            // 异能系分支
-            if (a.hasTrait(SuperMechBranch.BranchPsiAttack)) return Stage_PsiAttack;
-            if (a.hasTrait(SuperMechBranch.BranchPsiCycle)) return Stage_PsiCycle;
-            if (a.hasTrait(SuperMechBranch.BranchPsiFunc)) return Stage_PsiFunc;
-            // 魔法系分支
+            // 魔法系分支（独立职业，ch410：专精法师/魔网法师）
             if (a.hasTrait(SuperMechBranch.BranchMageSpecialist)) return Stage_MageSpecialist;
             if (a.hasTrait(SuperMechBranch.BranchMageWeave)) return Stage_MageWeave;
-            // 念力系分支
-            if (a.hasTrait(SuperMechBranch.BranchMindSoul)) return Stage_MindSoul;
-            if (a.hasTrait(SuperMechBranch.BranchMindLaw)) return Stage_MindLaw;
-            if (a.hasTrait(SuperMechBranch.BranchMindReality)) return Stage_MindReality;
+            // 武道系：分支是发展方向（敏捷/力量/防御），用统一阶段名（ch48）
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return Stage_GenericMartial;
+            // 异能系：分支是基因链三维度（威力/操控/持久），用统一阶段名（ch48）
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return Stage_GenericPsi;
+            // 念力系：分支是发展方向（心智/念动/感应），用统一阶段名（ch1384）
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return Stage_GenericMind;
             // 未选分支：按系返回通用
             if (a.hasTrait(SuperMechTraits.ClassMech)) return Stage_GenericMech;
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return Stage_GenericMartial;
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return Stage_GenericPsi;
             if (a.hasTrait(SuperMechTraits.ClassMage)) return Stage_GenericMage;
-            if (a.hasTrait(SuperMechTraits.ClassMind)) return Stage_GenericMind;
             return Stage_GenericMech;
         }
 
