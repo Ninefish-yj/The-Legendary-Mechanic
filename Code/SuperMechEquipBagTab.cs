@@ -392,40 +392,21 @@ namespace SuperMech.Code
             boxLe.minHeight = 60f;
             boxLe.flexibleHeight = 0f;
 
-            // 背景框（带边框效果）
+            // 背景（深色）
             GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
             bgGo.transform.SetParent(box.transform, false);
             Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0.12f, 0.13f, 0.16f, 0.9f);
+            bgImg.color = new Color(0.06f, 0.07f, 0.1f, 0.9f);
             bgImg.raycastTarget = false;
             RectTransform bgRt = bgGo.GetComponent<RectTransform>();
             bgRt.anchorMin = Vector2.zero;
             bgRt.anchorMax = Vector2.one;
-            bgRt.offsetMin = new Vector2(2, 2);
-            bgRt.offsetMax = new Vector2(-2, -2);
+            bgRt.offsetMin = Vector2.zero;
+            bgRt.offsetMax = Vector2.zero;
 
-            // 内边框（1px，模拟原版边框）
-            GameObject borderGo = new GameObject("Border", typeof(RectTransform));
-            borderGo.transform.SetParent(box.transform, false);
-            Image borderImg = borderGo.AddComponent<Image>();
-            borderImg.color = new Color(0.25f, 0.27f, 0.32f, 0.8f);
-            borderImg.raycastTarget = false;
-            RectTransform borderRt = borderGo.GetComponent<RectTransform>();
-            borderRt.anchorMin = Vector2.zero;
-            borderRt.anchorMax = Vector2.one;
-            borderRt.offsetMin = Vector2.zero;
-            borderRt.offsetMax = Vector2.zero;
-            // 用镂空效果：中心再盖一层背景
-            GameObject innerGo = new GameObject("Inner", typeof(RectTransform));
-            innerGo.transform.SetParent(borderGo.transform, false);
-            Image innerImg = innerGo.AddComponent<Image>();
-            innerImg.color = new Color(0.12f, 0.13f, 0.16f, 0.9f);
-            innerImg.raycastTarget = false;
-            RectTransform innerRt = innerGo.GetComponent<RectTransform>();
-            innerRt.anchorMin = Vector2.zero;
-            innerRt.anchorMax = Vector2.one;
-            innerRt.offsetMin = new Vector2(1, 1);
-            innerRt.offsetMax = new Vector2(-1, -1);
+            // 边框（用品品质颜色，2px明显边框，参考知识库卡片）
+            Color borderColor = titleColor ?? new Color(0.4f, 0.45f, 0.5f);
+            AddBoxBorder(box.transform, borderColor);
 
             // 标题栏
             GameObject titleGo = new GameObject("Title", typeof(RectTransform));
@@ -471,6 +452,58 @@ namespace SuperMech.Code
             contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             return contentGo.transform;
+        }
+
+        /// <summary>给容器添加2px边框（4个Image模拟，参考知识库卡片）。</summary>
+        private static void AddBoxBorder(Transform parent, Color color)
+        {
+            // 上
+            GameObject top = new GameObject("BorderTop", typeof(RectTransform));
+            top.transform.SetParent(parent, false);
+            Image topImg = top.AddComponent<Image>();
+            topImg.color = color;
+            topImg.raycastTarget = false;
+            RectTransform topRt = top.GetComponent<RectTransform>();
+            topRt.anchorMin = new Vector2(0, 1);
+            topRt.anchorMax = new Vector2(1, 1);
+            topRt.pivot = new Vector2(0.5f, 1f);
+            topRt.sizeDelta = new Vector2(0, 2f);
+
+            // 下
+            GameObject bottom = new GameObject("BorderBottom", typeof(RectTransform));
+            bottom.transform.SetParent(parent, false);
+            Image bottomImg = bottom.AddComponent<Image>();
+            bottomImg.color = color;
+            bottomImg.raycastTarget = false;
+            RectTransform bottomRt = bottom.GetComponent<RectTransform>();
+            bottomRt.anchorMin = new Vector2(0, 0);
+            bottomRt.anchorMax = new Vector2(1, 0);
+            bottomRt.pivot = new Vector2(0.5f, 0f);
+            bottomRt.sizeDelta = new Vector2(0, 2f);
+
+            // 左
+            GameObject left = new GameObject("BorderLeft", typeof(RectTransform));
+            left.transform.SetParent(parent, false);
+            Image leftImg = left.AddComponent<Image>();
+            leftImg.color = color;
+            leftImg.raycastTarget = false;
+            RectTransform leftRt = left.GetComponent<RectTransform>();
+            leftRt.anchorMin = new Vector2(0, 0);
+            leftRt.anchorMax = new Vector2(0, 1);
+            leftRt.pivot = new Vector2(0f, 0.5f);
+            leftRt.sizeDelta = new Vector2(2f, 0);
+
+            // 右
+            GameObject right = new GameObject("BorderRight", typeof(RectTransform));
+            right.transform.SetParent(parent, false);
+            Image rightImg = right.AddComponent<Image>();
+            rightImg.color = color;
+            rightImg.raycastTarget = false;
+            RectTransform rightRt = right.GetComponent<RectTransform>();
+            rightRt.anchorMin = new Vector2(1, 0);
+            rightRt.anchorMax = new Vector2(1, 1);
+            rightRt.pivot = new Vector2(1f, 0.5f);
+            rightRt.sizeDelta = new Vector2(2f, 0);
         }
 
         /// <summary>创建空槽位（参考原版空装备槽）。</summary>
