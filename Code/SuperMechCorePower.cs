@@ -74,15 +74,27 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>通用修炼tick：被动增长进度，满后突破。</summary>
+        // 每阶需要的气力等级（原著：气力是基础，决定基因链/魔力池/精神力的阶位上限）
+        public static readonly int[] StageQiLevelReq = { 0, 1, 5, 10, 15, 21 };
+
+        /// <summary>通用修炼tick：被动增长进度，满后突破（受气力等级限制，原著：气力是五系统一基础）。</summary>
         private static void TickCultivation(Actor a, Dictionary<long, int> stageDict, Dictionary<long, int> progDict, string name, int gain)
         {
             long id = a.id;
             if (!stageDict.TryGetValue(id, out int stage)) stage = 1;
             if (stage >= 5) return;  // 已满阶
 
+            // 气力等级限制：下一阶需要的气力等级（原著：气力决定能量阶位上限）
+            int nextStage = stage + 1;
+            int qiLvReq = StageQiLevelReq[nextStage];
+            float qi = SuperMechQi.GetQi(a);
+            int qiLv = SuperMechQi.GetLevel(qi);
+            if (qiLv < qiLvReq) return;  // 气力等级不够，无法突破
+
             if (!progDict.TryGetValue(id, out int prog)) prog = 0;
-            prog += gain;
+            // 修炼进度增长和气力修炼速度挂钩（气力涨得越快，能量修炼也越快）
+            float qiMul = 1f + qiLv * 0.05f;
+            prog += (int)(gain * qiMul);
             progDict[id] = prog;
 
             // 检查是否突破
@@ -93,7 +105,7 @@ namespace SuperMech.Code
                 stageDict[id] = stage + 1;
                 ApplyStageEffects(a);
                 if (SuperMechConfig.LogVerbose)
-                    Debug.Log($"[超神机械师] {a.name} {name}突破到{GetStageName(name, stage + 1)}！");
+                    Debug.Log($"[超神机械师] {a.name} {name}突破到{GetStageName(name, stage + 1)}！（气力Lv{qiLv}）");
             }
         }
 
