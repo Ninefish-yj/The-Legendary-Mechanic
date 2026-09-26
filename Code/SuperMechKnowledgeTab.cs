@@ -330,10 +330,16 @@ namespace SuperMech.Code
                 }, new Color(0.6f, 0.4f, 0.1f));
             }
 
-            AddInfoRow(_container.transform, "提示", "点击蓝色图标解锁知识");
+            AddInfoRow(_container.transform, "提示", "点击蓝色图标解锁知识，拖拽图谱可旋转视角");
 
-            // 知识图谱（节点图谱式布局，参考技能树）
-            RenderKnowledgeGraph(_container.transform, actor, prefix, pot);
+            // 三层知识面板（系别层+图谱层+知识库层）
+            GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
+            panelHost.transform.SetParent(_container.transform, false);
+            LayoutElement panelLe = panelHost.AddComponent<LayoutElement>();
+            panelLe.minHeight = 420f;
+            panelLe.preferredHeight = 420f;
+            panelLe.flexibleHeight = 0f;
+            SuperMechKnowledgePanel.Ensure(panelHost.transform, actor);
 
             // 跨系兼修（原著ch611：其他分支知识潜能点费用×3）
             string[] allPrefixes = { "mech", "martial", "psi", "mage", "mind" };
