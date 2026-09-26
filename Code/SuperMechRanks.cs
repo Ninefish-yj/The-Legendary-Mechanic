@@ -26,7 +26,9 @@ namespace SuperMech.Code
             // B=5000(ch368), A=10000(ch368), 普通超A上限=52000(ch1087/ch1206),
             // 巅峰超A=70000(ch1209), 神性蜕变=78000(ch1039), X≈148800(ch1402)
             // C+/B+/A+/S+门槛为插值推断（原著未明确给出具体数值）
-            new RankDef { id="sm_rank_00_f",       name="阶位·F",            onarFloor=0,         damageMul=1.00f, healthMul=1.00f },
+            // F阶仅降临者（玩家）lv1-20专属（ch476），星海人刚觉醒直接E级（ch1051）
+            // F阶门槛=10（避免0能级被算成F阶，普通人能级不适用）
+            new RankDef { id="sm_rank_00_f",       name="阶位·F",            onarFloor=10,        damageMul=1.00f, healthMul=1.00f },
             new RankDef { id="sm_rank_01_e",       name="阶位·E",            onarFloor=100,       damageMul=1.50f, healthMul=1.20f },
             new RankDef { id="sm_rank_02_d",       name="阶位·D",            onarFloor=800,       damageMul=3.00f, healthMul=1.80f },
             new RankDef { id="sm_rank_03_d_plus",  name="阶位·D+",           onarFloor=1600,      damageMul=4.50f, healthMul=2.30f },

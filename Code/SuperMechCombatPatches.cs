@@ -33,8 +33,13 @@ namespace SuperMech.Code
         [HarmonyPriority(Priority.Low)]
         public static bool Actor_GetHit_Prefix(
             Actor __instance,
-            AttackType pAttackType = AttackType.None,
-            BaseSimObject pAttacker = null)
+            float pDamage,
+            bool pFlash,
+            AttackType pAttackType,
+            BaseSimObject pAttacker = null,
+            bool pSkipIfShake = true,
+            bool pMetallicWeapon = false,
+            bool pCheckDamageReduction = true)
         {
             Actor target = __instance;
             if (target?.data == null || !target.isAlive()) return true;
@@ -101,8 +106,13 @@ namespace SuperMech.Code
         [HarmonyPatch(typeof(Actor), nameof(Actor.getHit))]
         public static void Actor_GetHit_Postfix(
             Actor __instance,
-            AttackType pAttackType = AttackType.None,
-            BaseSimObject pAttacker = null)
+            float pDamage,
+            bool pFlash,
+            AttackType pAttackType,
+            BaseSimObject pAttacker = null,
+            bool pSkipIfShake = true,
+            bool pMetallicWeapon = false,
+            bool pCheckDamageReduction = true)
         {
             Actor target = __instance;
             if (target?.data == null || target.isAlive()) return;

@@ -23,33 +23,32 @@ namespace SuperMech.Code
         public static float CalcOnar(Actor a)
         {
             if (a == null) return 0;
+            // 原著ch51："气力是超能者的基础，很大部分决定了超能者的能级与位阶"
+            // 原著ch3："E级超能者的能级标准是100欧纳"，刚觉醒气力≈100 → 能级≈100
+            // 欧纳是斯图尔特·欧纳创立的战斗力函数（ch3），原著未给出完整公式，此处基于数据点拟合：
+            //   能级 ≈ 气力值 × 职业阶段转化率 × 属性微加成
+            //   刚觉醒(E级)：气力100 × 1.0 × 1.0 ≈ 100欧纳 ✓
+            //   韩萧最终(X级)：气力481200 × 高阶转化率 ≈ 148800欧纳(ch1402)
+            float qi = SuperMechQi.GetQiMax(a);
+            if (qi <= 0) return 0;
+
+            // 职业阶段影响转化率（原著ch3：越高阶职业，气力等级属性加成越多）
+            int stage = SuperMechStage.GetStage(a);
+            float stageFactor = 1f + stage * 0.03f;  // 每阶段+3%转化率
+
+            // 属性微加成（攻击/生存/智力，小幅度，避免属性主导能级）
             var s = SuperMechStats.Of(a);
             float dmg = s["damage"];
             float hp = s["health"];
             float intell = s["intelligence"];
-            float armor = s["armor"];
-            float mul = s["multiplier_damage"] > 1f ? s["multiplier_damage"] : 1f;
+            float attrFactor = 1f + (dmg / 100f + hp / 1000f + intell / 20f) * 0.02f;
 
-            // 气力等级直接影响能级（原著ch3：气力是超能者基础，气力等级加属性）
-            int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(a));
-            float qiFactor = 1f + qiLv * 0.15f;  // 每级气力+15%能级
+            // 高阶位气力边际效益递减（超神级能级增长放缓，符合ch1402韩萧最终数据）
+            int qiLv = SuperMechQi.GetLevel(qi);
+            float decay = 1f;
+            if (qiLv > 12) decay = 1f / (1f + (qiLv - 12) * 0.06f);
 
-            // 职业阶段影响能级转化率（原著ch3：越高阶职业，气力等级属性加成越多）
-            int stage = SuperMechStage.GetStage(a);
-            float stageFactor = 1f + stage * 0.1f;  // 每阶段+10%能级
-
-            float dmgRatio = Mathf.Max(dmg, 1f) / 50f;
-            float hpRatio = Mathf.Max(hp, 1f) / 500f;
-            float armorRatio = Mathf.Max(armor, 0f) / 10f;
-            float intRatio = Mathf.Max(intell, 0f) / 10f;
-
-            // 曲线函数（原著ch3：计算方式并非加减，而是复杂的函数模式，总体趋势为曲线上升）
-            // 攻击指数1.8（更陡峭），生存指数0.6，智力影响放大
-            float offense = Mathf.Pow(dmgRatio, 1.8f);
-            float survival = Mathf.Pow(hpRatio, 0.6f) * Mathf.Pow(1f + armorRatio, 1.3f);
-            float skill = 1f + intRatio * 1.5f;
-
-            return offense * survival * skill * mul * qiFactor * stageFactor * 15f
+            return qi * stageFactor * attrFactor * decay
                 * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
         }
 
@@ -66,17 +65,18 @@ namespace SuperMech.Code
                 if (a.age < SuperMechConfig.AwakeningMinAge) continue;
                 if (Random.value > SuperMechConfig.AwakeningChance) continue;
 
-                // 激发潜能：获得天赋倾向+F阶
+                // 激发潜能：获得天赋倾向+E阶（原著ch1051："刚觉醒都是E级超能者"，星海人无F阶）
+                // F阶仅降临者（玩家）lv1-20专属（ch476），星海人刚觉醒直接E级
                 SuperMechTalent.GrantTalents(a);
-                if (!a.hasTrait("sm_rank_00_f"))
-                    a.addTrait("sm_rank_00_f");
-                SetExactRank(a, 0);
+                if (!a.hasTrait("sm_rank_01_e"))
+                    a.addTrait("sm_rank_01_e");
+                SetExactRank(a, 1);
                 SuperMechSpecialty.AssignRandomSpecialty(a);
                 SuperMechPerks.GrantRandomPerks(a);  // 随机赋予1-2个天赋专长
 
-                // 初始化气力
-                SuperMechQi.SetQi(a, 10f);
-                SuperMechQi.SetQiMax(a, 10f);
+                // 初始化气力（E级标准100欧纳对应气力Lv3≈100）
+                SuperMechQi.SetQi(a, 100f);
+                SuperMechQi.SetQiMax(a, 100f);
                 // 随机潜力评级（原著ch1099：所有超能者都有潜力评级，决定阶位上限）
                 SuperMechPotentialRating.RollRating(a);
 
