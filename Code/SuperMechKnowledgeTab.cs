@@ -192,11 +192,13 @@ namespace SuperMech.Code
             if (_container == null) return;
             foreach (Transform child in _container.transform) Object.Destroy(child.gameObject);
 
-            // 未觉醒单位显示提示
+            // 未觉醒单位：显示觉醒按钮
             if (!SuperMechAdvancement.IsSuperMechUnit(actor))
             {
                 AddHeader(_container.transform, "未觉醒");
-                AddInfoRow(_container.transform, "这个单位还没有觉醒超能系", "用神权「五系觉醒」赋予天赋");
+                AddInfoRow(_container.transform, "这个单位还没有觉醒超能系", "点击下方按钮选择觉醒系别");
+                AddSectionHeader(_container.transform, "◆ 操作");
+                AddActionButton(_container.transform, "五系觉醒", () => SuperMechAwakenWindow.Show(actor), new Color(0.2f, 0.4f, 0.6f));
                 return;
             }
 
@@ -218,10 +220,28 @@ namespace SuperMech.Code
             string branch = SuperMechBranch.GetBranchName(actor);
             AddInfoRow(_container.transform, $"职业阶段: {stage}", $"分支: {(string.IsNullOrEmpty(branch) ? "未选择" : branch)}");
             if (SuperMechAwakened.CanAdvanceStage(actor))
-                AddInfoRow(_container.transform, "转职", "可转职！用神权或进阶任务完成转职");
+                AddInfoRow(_container.transform, "转职", "可转职！完成进阶任务后自动转职");
             if (cls == "机械系")
                 AddInfoRow(_container.transform, "制造", "机械系可制造机械单位（需达到对应阶段）");
-            AddInfoRow(_container.transform, "提示", "觉醒/转职/制造用神权操作，知识解锁点击下方节点");
+
+            // 神之催化按钮（仅SS阶以上显示）
+            int rankIdx = SuperMechAdvancement.GetExactRankIndex(actor);
+            if (rankIdx >= 12) // SS阶以上
+            {
+                int layers = SuperMechTranscendence.GetCatalystLayers(actor);
+                string btnText = layers > 0 ? $"神之催化（{layers}/5层）" : "神之催化";
+                AddActionButton(_container.transform, btnText, () =>
+                {
+                    if (SuperMechTranscendence.CatalyzeBreakthrough(actor))
+                    {
+                        int newLayers = SuperMechTranscendence.GetCatalystLayers(actor);
+                        Debug.Log($"[超神机械师] 神之催化：{actor.name} 获得第{newLayers}层催化");
+                        RenderContent(actor); // 刷新面板
+                    }
+                }, new Color(0.6f, 0.4f, 0.1f));
+            }
+
+            AddInfoRow(_container.transform, "提示", "知识解锁点击下方节点");
 
             // 按阶位分组显示所有知识（未解锁的灰色可点击）
             string[] tierNames = { "基础", "进阶", "高端", "尖端", "终极" };
@@ -362,6 +382,33 @@ namespace SuperMech.Code
             if (t.font == null) t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(0, 22);
+        }
+
+        private static void AddActionButton(Transform parent, string text, System.Action onClick, Color bgColor)
+        {
+            GameObject go = new GameObject("ActionButton", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            var layout = go.AddComponent<HorizontalLayoutGroup>();
+            layout.childAlignment = TextAnchor.MiddleCenter;
+            layout.padding = new RectOffset(4, 4, 2, 2);
+
+            Text t = go.AddComponent<Text>();
+            t.text = text;
+            t.fontSize = 12;
+            t.fontStyle = FontStyle.Bold;
+            t.color = Color.white;
+            t.alignment = TextAnchor.MiddleCenter;
+            if (t.font == null) t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+            var img = go.AddComponent<Image>();
+            img.color = bgColor;
+
+            var btn = go.AddComponent<Button>();
+            btn.targetGraphic = img;
+            btn.onClick.AddListener(() => { try { onClick?.Invoke(); } catch (System.Exception e) { Debug.LogError("[超神机械师] 操作按钮异常: " + e.Message); } });
+
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 26);
         }
 
         private static void AddInfoRow(Transform parent, string left, string right)
