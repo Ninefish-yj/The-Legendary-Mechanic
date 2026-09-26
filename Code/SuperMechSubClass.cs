@@ -198,8 +198,6 @@ namespace SuperMech.Code
             AssetManager.traits.add(t);
         }
 
-        // AddGivePower 方法已移除（副职业学习移到知识Tab◆操作区域）
-
         /// <summary>清空所有副职业数据（世界切换用）。</summary>
         public static void Clear()
         {

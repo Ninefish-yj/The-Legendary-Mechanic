@@ -462,8 +462,6 @@ namespace SuperMech.Code
             return contentGo.transform;
         }
 
-        // CreateCategoryHeader 方法已移除（旧版UI遗留，当前使用CreateCategoryBox）
-
         /// <summary>创建空槽位（参考原版空装备槽）。</summary>
         private static GameObject CreateEmptySlot(Transform parent, int size, string label)
         {
@@ -554,8 +552,6 @@ namespace SuperMech.Code
             }
         }
 
-        // GetQualityShortName 已移除（旧版角落标签用，当前使用GetQualityName）
-
         /// <summary>原著9级品质名。</summary>
         private static string GetQualityName(int q)
         {
@@ -577,8 +573,6 @@ namespace SuperMech.Code
             t.text = text;
             return t;
         }
-
-        // AddText 已移除（旧版UI方法，当前使用CreateText）
 
         private static void AddButton(Transform parent, string text, System.Action onClick)
         {
@@ -607,7 +601,5 @@ namespace SuperMech.Code
             trt.offsetMin = Vector2.zero;
             trt.offsetMax = Vector2.zero;
         }
-
-        // AddIcon 和 AddTextTo 方法已移除（旧版UI遗留，当前使用CreateText和直接创建Image）
     }
 }

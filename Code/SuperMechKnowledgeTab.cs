@@ -213,8 +213,6 @@ namespace SuperMech.Code
             _container.SetActive(false);
         }
 
-        // HideOtherContent/RestoreOtherContent/_hiddenOtherContent 已移除（tab_elements机制自动处理显示/隐藏）
-
         private static void WireTab(WindowMetaTab tab, ScrollWindow scroll)
         {
             if (tab.tab_action == null)
@@ -657,10 +655,6 @@ namespace SuperMech.Code
             }
         }
 
-        // GetTreeName 已移除（旧版知识树名称，当前使用SuperMechKnowledgePanel）
-
-        // GetBranchNames 已移除（旧版知识树分支名，当前使用SuperMechKnowledgePanel）
-
         private static void AddHeader(Transform parent, string text)
         {
             GameObject go = new GameObject("Header", typeof(RectTransform));
@@ -844,8 +838,6 @@ namespace SuperMech.Code
             RectTransform rt = go.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(0, 20);
         }
-
-        // RenderKnowledgeGraph 已移除（旧版2D图谱，当前使用SuperMechKnowledgePanel三层结构+SMKnowledgeGraph3D）
 
         /// <summary>知识图标（原版图标+品质颜色边框，参考原版特质/物品面板）</summary>
         private static void AddKnowledgeIcon(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock, int actualCost = 0)

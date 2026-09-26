@@ -185,7 +185,5 @@ namespace SuperMech.Code
             };
             return idx >= 0 && idx < descs.Length ? descs[idx] : "高阶超能者。";
         }
-
-        // AddSkillTrait 方法已移除（旧版技能系统遗留，当前职业技能使用SuperMechSkills注册）
     }
 }

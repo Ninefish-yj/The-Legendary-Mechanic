@@ -32,7 +32,6 @@ namespace SuperMech.Code
         private static string _currentPrefix = "mech";
         private static bool _dragging;
         private static Vector2 _dragOffset;
-        // _graphOffset/_nodeObjects/_connectionLines 已移除（旧版2D图谱遗留，当前使用SMKnowledgeGraph3D）
         private static readonly Color[] TierColors =
         {
             new Color(0.5f, 0.5f, 0.5f),  // 基础 - 灰
@@ -272,8 +271,6 @@ namespace SuperMech.Code
             _graphContent = gcRt;
         }
 
-        // OnGraphDrag 已移除（旧版2D图谱拖拽，当前使用SMKnowledgeGraph3D组件的拖拽）
-
         private static void CreateLibraryLayer()
         {
             GameObject lib = new GameObject("LibraryLayer", typeof(RectTransform));
@@ -391,8 +388,6 @@ namespace SuperMech.Code
                 Debug.LogError($"[超神机械师] 3D知识图谱刷新失败: {e.Message}\n{e.StackTrace}");
             }
         }
-
-        // CreateKnowledgeNode 和 CreateConnectionLine 方法已移除（旧版2D图谱遗留，当前使用SMKnowledgeGraph3D组件）
 
         private static void RefreshLibrary()
         {

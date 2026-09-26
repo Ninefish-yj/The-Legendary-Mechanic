@@ -172,13 +172,5 @@ namespace SuperMech.Code
             };
             AssetManager.powers.add(p);
         }
-
-        /// <summary>查看单位潜能点/觉醒点（点击单位）。</summary>
-        // 以下神权注册方法已移除（功能移到知识Tab◆操作区域）：
-        // AddCheckPotentialPower - 查看潜能点（知识Tab顶部显示）
-        // AddUnlockKnowledgePower - 解锁知识×3（知识Tab点击节点解锁）
-        // AddMechFusionPower - 械力融合（知识Tab操作按钮）
-        // AddKnowledgeFusionPower - 知识融合（知识Tab操作按钮）
-        // AddCraftEquipPower - 制造装备（知识Tab操作按钮）
     }
 }
