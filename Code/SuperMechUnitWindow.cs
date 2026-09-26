@@ -190,9 +190,9 @@ namespace SuperMech.Code
                     ShowRow(__instance, "魔感", $"+{mageAffinity:F0}%（魔法亲和度）");
                 }
 
-                // 行5：欧纳（能级，原著单位就是"欧纳"）
+                // 行5：能级（原著：能级是概念，欧纳是单位）
                 float onar = SuperMechAdvancement.CalcOnar(actor);
-                ShowRow(__instance, "欧纳", $"{onar:F0}欧纳");
+                ShowRow(__instance, "能级", $"{onar:F0}欧纳");
 
                 // 行6：潜能点（神可以看到所有单位的完整信息，降临者和星海人都显示）
                 int unlockedK = SuperMechPotential.GetUnlockedCount(actor);

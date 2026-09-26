@@ -44,12 +44,12 @@ namespace SuperMech.Code
             const float x = 12f;
 
             // 排序切换
-            _frame.AddButton("按欧纳", x, y, 90f, 26f, () => { _sortMode = 0; Refresh(); }, _sortMode == 0 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
+            _frame.AddButton("按能级", x, y, 90f, 26f, () => { _sortMode = 0; Refresh(); }, _sortMode == 0 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
             _frame.AddButton("按气力", x + 95f, y, 90f, 26f, () => { _sortMode = 1; Refresh(); }, _sortMode == 1 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
             _frame.AddButton("按阶位", x + 190f, y, 90f, 26f, () => { _sortMode = 2; Refresh(); }, _sortMode == 2 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
             y -= 36f;
 
-            _frame.AddLabel("排名  名称              系别    阶位    气力      欧纳", x, y, 600f, 20f, 12);
+            _frame.AddLabel("排名  名称              系别    阶位    气力      能级", x, y, 600f, 20f, 12);
             y -= 24f;
 
             // 收集所有觉醒单位
