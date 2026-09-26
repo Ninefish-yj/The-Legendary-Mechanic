@@ -138,6 +138,13 @@ namespace SuperMech.Code
         public static string GetStatusSummary(Actor a)
         {
             int rankIndex = SuperMechAdvancement.GetExactRankIndex(a);
+
+            // 普通人（无阶位）：只显示阶位+描述，不显示气力/神性/状态
+            if (rankIndex <= 0)
+            {
+                return $"【{GetRankTitle(rankIndex)}】{GetRankDesc(rankIndex)}";
+            }
+
             float qiValue = SuperMechQi.GetQi(a);
             int qiLevel = SuperMechQi.GetLevel(qiValue);
             int profLayer = SuperMechDivinity.GetProfLayers(a);
