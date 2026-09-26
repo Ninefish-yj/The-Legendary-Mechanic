@@ -47,6 +47,9 @@ namespace SuperMech.Code
             WindowMetaTab tab = FindOrCreateTab(scroll, window);
             if (tab == null) return;
 
+            _bagTab = tab;
+            _boundWindow = window;
+
             tab.gameObject.SetActive(true);
             try { tab.toggleActive(true); } catch { }
             EnsureContainer(scroll);

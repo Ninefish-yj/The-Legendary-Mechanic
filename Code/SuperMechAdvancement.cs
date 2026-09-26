@@ -38,9 +38,9 @@ namespace SuperMech.Code
 
             // 属性微加成（攻击/生存/智力，小幅度，避免属性主导能级）
             var s = SuperMechStats.Of(a);
-            float dmg = s["damage"];
-            float hp = s["health"];
-            float intell = s["intelligence"];
+            float dmg = s != null ? s["damage"] : 0;
+            float hp = s != null ? s["health"] : 0;
+            float intell = s != null ? s["intelligence"] : 0;
             float attrFactor = 1f + (dmg / 100f + hp / 1000f + intell / 20f) * 0.02f;
 
             // 高阶位气力边际效益递减（超神级能级增长放缓，符合ch1402韩萧最终数据）
@@ -74,15 +74,44 @@ namespace SuperMech.Code
                 SuperMechSpecialty.AssignRandomSpecialty(a);
                 SuperMechPerks.GrantRandomPerks(a);  // 随机赋予1-2个天赋专长
 
+                // 自动选定主职业方向：按最高天赋评级选择系别（天赋是潜在的，选定后才获得系别特质）
+                var talents = SuperMechTalent.GetTalents(a);
+                if (talents != null && talents.Count > 0)
+                {
+                    var best = talents[0];
+                    foreach (var t in talents)
+                        if (t.rating > best.rating) best = t;
+                    string classTrait = best.type switch
+                    {
+                        SuperMechTalent.TalentType.Mechanical => SuperMechTraits.ClassMech,
+                        SuperMechTalent.TalentType.Martial => SuperMechTraits.ClassMartial,
+                        SuperMechTalent.TalentType.Psi => SuperMechTraits.ClassPsi,
+                        SuperMechTalent.TalentType.Mage => SuperMechTraits.ClassMage,
+                        _ => SuperMechTraits.ClassMind
+                    };
+                    if (!a.hasTrait(classTrait)) a.addTrait(classTrait);
+                    // 同时设置职业方向（知识Tab检查的是这个，不是系别特质）
+                    SuperMechProfession.ProfessionType pType = best.type switch
+                    {
+                        SuperMechTalent.TalentType.Mechanical => SuperMechProfession.ProfessionType.Mechanical,
+                        SuperMechTalent.TalentType.Martial => SuperMechProfession.ProfessionType.Martial,
+                        SuperMechTalent.TalentType.Psi => SuperMechProfession.ProfessionType.Psi,
+                        SuperMechTalent.TalentType.Mage => SuperMechProfession.ProfessionType.Mage,
+                        _ => SuperMechProfession.ProfessionType.Mind
+                    };
+                    SuperMechProfession.SetProfession(a, pType);
+                }
+
                 // 初始化气力（E级标准100欧纳对应气力Lv3≈100）
                 SuperMechQi.SetQi(a, 100f);
                 SuperMechQi.SetQiMax(a, 100f);
+                // 初始潜能点：3-5点（让新觉醒单位能解锁基础知识，原著：觉醒后获得潜能点解锁知识）
+                SuperMechPotential.SetPotential(a, Random.Range(3, 6));
                 // 随机潜力评级（原著ch1099：所有超能者都有潜力评级，决定阶位上限）
                 SuperMechPotentialRating.RollRating(a);
                 // 初始装备：1-2件低品质装备（确保背包非空）
                 GrantStarterEquipment(a);
 
-                var talents = SuperMechTalent.GetTalents(a);
                 string talentText = "";
                 foreach (var t in talents)
                     talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
