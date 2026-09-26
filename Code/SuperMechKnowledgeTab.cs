@@ -217,6 +217,7 @@ namespace SuperMech.Code
                         actor.addTrait("sm_rank_00_f");
                     SuperMechAdvancement.SetExactRank(actor, 0);
                     SuperMechSpecialty.AssignRandomSpecialty(actor);
+                    SuperMechPerks.GrantRandomPerks(actor);  // 随机赋予1-2个天赋专长
                     Debug.Log($"[超神机械师] {actor.name} 激发潜能，踏入超能");
                     RenderContent(actor);
                 }, new Color(0.2f, 0.4f, 0.6f));

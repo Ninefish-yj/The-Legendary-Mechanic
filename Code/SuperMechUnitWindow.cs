@@ -35,16 +35,42 @@ namespace SuperMech.Code
                     return;
                 }
 
-                // 显示天赋倾向（含具体异能类型）
+                // 显示天赋倾向（系别+评级，不显示具体异能，具体异能由SuperMechSpecialty负责）
                 var talents = SuperMechTalent.GetTalents(actor);
                 string talentText = "";
                 foreach (var t in talents)
                 {
-                    talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
+                    talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
                 }
                 if (SuperMechTalent.IsFiveSystemGenius(actor))
                     talentText = "★五系天才★ " + talentText;
                 ShowRow(__instance, "天赋倾向", talentText.Trim());
+
+                // 显示具体异能/特色能力（踏入超能后觉醒，原著中异能系最复杂）
+                var specs = SuperMechSpecialty.GetSpecialties(actor);
+                if (specs.Count > 0)
+                {
+                    string specText = "";
+                    foreach (var s in specs)
+                    {
+                        string specName = LocalizedTextManager.getText("trait_" + s, s);
+                        specText += specName + " ";
+                    }
+                    ShowRow(__instance, "具体能力", specText.Trim());
+                }
+
+                // 显示专长
+                var perks = SuperMechPerks.GetPerks(actor);
+                if (perks.Count > 0)
+                {
+                    string perkText = "";
+                    foreach (var p in perks)
+                    {
+                        string perkName = LocalizedTextManager.getText("trait_" + p, p);
+                        perkText += perkName + " ";
+                    }
+                    ShowRow(__instance, "专长", perkText.Trim());
+                }
 
                 bool hasProfession = SuperMechProfession.HasProfession(actor);
                 string cls = hasProfession ? SuperMechProfession.GetClass(actor) : null;

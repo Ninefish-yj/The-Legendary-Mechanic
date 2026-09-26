@@ -72,6 +72,7 @@ namespace SuperMech.Code
                     a.addTrait("sm_rank_00_f");
                 SetExactRank(a, 0);
                 SuperMechSpecialty.AssignRandomSpecialty(a);
+                SuperMechPerks.GrantRandomPerks(a);  // 随机赋予1-2个天赋专长
 
                 // 初始化气力
                 SuperMechQi.SetQi(a, 10f);

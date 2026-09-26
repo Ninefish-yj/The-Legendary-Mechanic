@@ -190,5 +190,26 @@ namespace SuperMech.Code
                 a.addTrait(specs[Random.Range(0, specs.Length)]);
             }
         }
+        /// <summary>获取单位已有的特色能力列表。</summary>
+        public static List<string> GetSpecialties(Actor a)
+        {
+            var list = new List<string>();
+            if (a == null) return list;
+            string[] allSpecs = {
+                PsiFire, PsiIce, PsiElectric, PsiTransform, PsiControl, PsiLuck,
+                PsiDeath, PsiCarbon, PsiHeal, PsiMagnet, PsiSoulFire,
+                MartialWave, MartialFlash, MartialShield, MartialBurst, MartialReserve,
+                MartialSky, MartialSync, MartialAbyss, MartialCompress, MartialForm,
+                MartialExplode, MartialShock, MartialSurge, MartialSword, MartialBlade, MartialFist,
+                MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark,
+                MindControl, MindDetect, MindTelekinesis, MindTelepathy, MindShield, MindCurrent,
+                MechMech, MechDrone, MechTurret, MechOverload, MechSurge, MechWill
+            };
+            foreach (var specId in allSpecs)
+            {
+                if (a.hasTrait(specId)) list.Add(specId);
+            }
+            return list;
+        }
     }
 }

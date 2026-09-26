@@ -126,5 +126,47 @@ namespace SuperMech.Code
             if (dmgMul > 0) t.base_stats["multiplier_damage"] = 1f + dmgMul;
             AssetManager.traits.add(t);
         }
+
+        // 天赋专长列表（踏入超能时随机获得1-2个）
+        private static readonly string[] TalentPerks = {
+            PerkGeomind, PerkIronWill, PerkBerserk, PerkQuickThink, PerkFortune,
+            PerkSharpEye, PerkToughBody, PerkFastRegen, PerkVeteran, PerkNightVision
+        };
+
+        /// <summary>踏入超能时随机赋予1-2个天赋专长。</summary>
+        public static void GrantRandomPerks(Actor a)
+        {
+            if (a == null) return;
+            int count = Random.Range(1, 3);  // 1-2个
+            var available = new List<string>(TalentPerks);
+            for (int i = 0; i < count && available.Count > 0; i++)
+            {
+                int idx = Random.Range(0, available.Count);
+                string perkId = available[idx];
+                available.RemoveAt(idx);
+                if (!a.hasTrait(perkId))
+                    a.addTrait(perkId);
+            }
+        }
+
+        /// <summary>获取单位已有的专长列表。</summary>
+        public static List<string> GetPerks(Actor a)
+        {
+            var list = new List<string>();
+            if (a == null) return list;
+            foreach (var perkId in TalentPerks)
+            {
+                if (a.hasTrait(perkId)) list.Add(perkId);
+            }
+            // 职业专长
+            string[] classPerks = { PerkMechAffinity, PerkMechSurge, PerkMechCraft, PerkMechTactical,
+                PerkPsiControl, PerkPsiRange, PerkMartialBreath, PerkMartialFlurry,
+                PerkManaEff, PerkSpellMaster, PerkMindShield, PerkMindCrush };
+            foreach (var perkId in classPerks)
+            {
+                if (a.hasTrait(perkId)) list.Add(perkId);
+            }
+            return list;
+        }
     }
 }
