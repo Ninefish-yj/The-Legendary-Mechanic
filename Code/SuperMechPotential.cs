@@ -63,20 +63,48 @@ namespace SuperMech.Code
             return SuperMechKnowledge.IsUnlocked(a, nodeId);
         }
 
-        /// <summary>解锁知识节点（消耗潜能点）。返回是否成功。</summary>
+        /// <summary>获取知识节点的系别前缀。</summary>
+        public static string GetKnowledgePrefix(string nodeId)
+        {
+            // 格式：sm_know_{前缀}_{阶}_{分支}_{序号}
+            string[] parts = nodeId.Split('_');
+            if (parts.Length >= 3) return parts[2];
+            return "";
+        }
+
+        /// <summary>判断知识节点是否是跨系兼修（和主职业方向不同）。</summary>
+        public static bool IsCrossClass(Actor a, string nodeId)
+        {
+            string prefix = GetKnowledgePrefix(nodeId);
+            string mainClass = SuperMechProfession.GetClass(a);
+            if (string.IsNullOrEmpty(mainClass)) return false;
+            string mainPrefix = SuperMechKnowledge.GetPrefixForClass(mainClass);
+            return prefix != mainPrefix;
+        }
+
+        /// <summary>获取知识节点的实际消耗（跨系兼修×3，原著ch611：其他分支知识潜能点费用×3）。</summary>
+        public static int GetActualCost(Actor a, string nodeId, int baseCost)
+        {
+            if (IsCrossClass(a, nodeId)) return baseCost * 3;
+            return baseCost;
+        }
+
+        /// <summary>解锁知识节点（消耗潜能点，跨系兼修×3）。返回是否成功。</summary>
         public static bool UnlockNode(Actor a, string nodeId, int cost)
         {
             if (a == null) return false;
             if (IsNodeUnlocked(a, nodeId)) return false;
-            if (!SpendPotential(a, cost)) return false;
+            int actualCost = GetActualCost(a, nodeId, cost);
+            if (!SpendPotential(a, actualCost)) return false;
             SuperMechKnowledge.Unlock(a, nodeId);
             // 降临者学习知识获得经验（ch132：学基础组装得1000经验）
             if (SuperMechAwakened.IsAwakened(a))
             {
                 SuperMechAwakened.AddXp(a, 1000f);
             }
+            bool cross = IsCrossClass(a, nodeId);
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 解锁知识节点 {nodeId}（消耗{cost}潜能点，剩余{GetPotential(a)}）");
+                Debug.Log($"[超神机械师] {a.name} 解锁知识节点 {nodeId}（消耗{actualCost}潜能点{(cross ? "，跨系兼修×3" : "")}，剩余{GetPotential(a)}）");
             return true;
         }
 

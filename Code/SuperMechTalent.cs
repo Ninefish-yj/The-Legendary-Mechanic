@@ -22,7 +22,17 @@ namespace SuperMech.Code
         {
             public TalentType type;
             public int rating;  // 0=F, 1=E, 2=D, 3=C, 4=B, 5=A, 6=S
+            public string specificPower;  // 具体异能类型（电磁/火焰/念动力等）
         }
+
+        // 具体异能类型库（原著+同人补全）
+        private static readonly string[][] SpecificPowers = {
+            new[] { "电磁操控", "能量亲和", "虚拟意识", "机械心灵", "纳米操控", "量子计算" },  // 机械系
+            new[] { "体魄强化", "气血澎湃", "战本能", "气劲外放", "金刚不坏", "血脉觉醒" },  // 武道系
+            new[] { "元素操控", "念动力", "空间异能", "时间感知", "物质转化", "心灵感应" },  // 异能系
+            new[] { "元素魔法", "变化术", "造物术", "召唤术", "结界术", "符文魔法" },        // 魔法系
+            new[] { "灵魂感知", "法则之眼", "现实扭曲", "精神冲击", "记忆操控", "预知未来" }   // 念力系
+        };
 
         // unit.id -> 天赋倾向列表
         private static readonly Dictionary<long, List<TalentInfo>> _talents = new Dictionary<long, List<TalentInfo>>();
@@ -83,7 +93,12 @@ namespace SuperMech.Code
                 else if (roll < 0.99f) rating = 5;   // A
                 else rating = 6;                      // S
 
-                talents.Add(new TalentInfo { type = type, rating = rating });
+                talents.Add(new TalentInfo
+                {
+                    type = type,
+                    rating = rating,
+                    specificPower = SpecificPowers[(int)type][Random.Range(0, SpecificPowers[(int)type].Length)]
+                });
             }
             return talents;
         }

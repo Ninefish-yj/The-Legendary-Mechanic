@@ -291,6 +291,24 @@ namespace SuperMech.Code
             return list;
         }
 
+        /// <summary>获取某系所有知识定义（不管是否解锁）。</summary>
+        public static List<KnowledgeDef> GetAllByPrefix(string prefix)
+        {
+            var list = new List<KnowledgeDef>();
+            string key = $"sm_know_{prefix}_";
+            foreach (var kv in _allKnowledge)
+            {
+                if (kv.Key.StartsWith(key)) list.Add(kv.Value);
+            }
+            list.Sort((a, b) =>
+            {
+                int tierCompare = a.tier.CompareTo(b.tier);
+                if (tierCompare != 0) return tierCompare;
+                return a.branch.CompareTo(b.branch);
+            });
+            return list;
+        }
+
         /// <summary>获取知识定义。</summary>
         public static KnowledgeDef GetDef(string id)
         {

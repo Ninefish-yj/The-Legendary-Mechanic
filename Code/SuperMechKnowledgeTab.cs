@@ -223,12 +223,12 @@ namespace SuperMech.Code
                 return;
             }
 
-            // 显示天赋倾向
+            // 显示天赋倾向（含具体异能类型）
             var talents = SuperMechTalent.GetTalents(actor);
             string talentText = "";
             foreach (var t in talents)
             {
-                talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
+                talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
             }
             AddInfoRow(_container.transform, "天赋倾向", talentText.Trim());
 
@@ -336,15 +336,42 @@ namespace SuperMech.Code
                         currentRow = AddIconRow(_container.transform);
 
                     bool unlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
-                    bool canUnlock = !unlocked && tierUnlocked_flag && pot >= def.cost;
+                    int actualCost = SuperMechPotential.GetActualCost(actor, def.id, def.cost);
+                    bool canUnlock = !unlocked && tierUnlocked_flag && pot >= actualCost;
                     string branchName = def.branch < branchNames.Length ? branchNames[def.branch] : "?";
-                    AddKnowledgeIcon(currentRow.transform, actor, def, branchName, unlocked, canUnlock);
+                    AddKnowledgeIcon(currentRow.transform, actor, def, branchName, unlocked, canUnlock, actualCost);
                     iconIndex++;
                 }
             }
 
             // 总计
             AddHeader(_container.transform, $"已解锁: {totalUnlocked} / {totalAll}");
+
+            // 跨系兼修（原著ch611：其他分支知识潜能点费用×3）
+            string[] allPrefixes = { "mech", "martial", "psi", "mage", "mind" };
+            string[] allClassNames = { "机械系", "武道系", "异能系", "魔法系", "念力系" };
+            for (int i = 0; i < allPrefixes.Length; i++)
+            {
+                if (allPrefixes[i] == prefix) continue; // 跳过主职业
+                var crossDefs = SuperMechKnowledge.GetAllByPrefix(allPrefixes[i]);
+                int crossUnlocked = 0;
+                foreach (var d in crossDefs) if (SuperMechKnowledge.IsUnlocked(actor, d.id)) crossUnlocked++;
+                if (crossUnlocked > 0 || true) // 始终显示跨系区域
+                {
+                    AddSectionHeader(_container.transform, $"跨系兼修·{allClassNames[i]}（{crossUnlocked}/{crossDefs.Count}，消耗×3）", new Color(0.5f, 0.5f, 0.7f));
+                    Transform crossRow = AddIconRow(_container.transform);
+                    int crossIdx = 0;
+                    foreach (var def in crossDefs)
+                    {
+                        if (crossIdx % 4 == 0) crossRow = AddIconRow(_container.transform);
+                        bool cUnlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
+                        int cActualCost = SuperMechPotential.GetActualCost(actor, def.id, def.cost);
+                        bool cCanUnlock = !cUnlocked && pot >= cActualCost;
+                        AddKnowledgeIcon(crossRow.transform, actor, def, allClassNames[i], cUnlocked, cCanUnlock, cActualCost);
+                        crossIdx++;
+                    }
+                }
+            }
 
             // 知识协同效应（特定知识组合触发额外加成）
             var synergies = SuperMechKnowledgeSynergy.GetActiveSynergies(actor);
@@ -508,7 +535,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>知识图标（原版图标+品质颜色边框，参考原版特质/物品面板）</summary>
-        private static void AddKnowledgeIcon(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock)
+        private static void AddKnowledgeIcon(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock, int actualCost = 0)
         {
             Color qColor = GetTierColor(def.tier);
 
@@ -580,9 +607,11 @@ namespace SuperMech.Code
                 });
             }
 
-            // Tooltip（名称+描述+消耗+分支，不显示"状态"）
+            // Tooltip（名称+描述+消耗+分支，跨系兼修显示×3）
             var tip = go.AddComponent<TipButton>();
-            tip.textOnClick = $"{def.name}\n{def.desc}\n分支: {branch} | 消耗: {def.cost}潜能点";
+            bool crossClass = SuperMechPotential.IsCrossClass(actor, def.id);
+            string costText = crossClass ? $"{actualCost}潜能点（跨系×3）" : $"{def.cost}潜能点";
+            tip.textOnClick = $"{def.name}\n{def.desc}\n分支: {branch} | 消耗: {costText}";
         }
 
         /// <summary>按阶位获取品质颜色（基础=灰，进阶=绿，高端=蓝，尖端=紫，终极=金）</summary>

@@ -428,7 +428,12 @@ namespace SuperMech.Code
             var list = new List<object>();
             foreach (var t in talents)
             {
-                list.Add(new Dictionary<string, object> { { "type", (int)t.type }, { "rating", t.rating } });
+                list.Add(new Dictionary<string, object>
+                {
+                    { "type", (int)t.type },
+                    { "rating", t.rating },
+                    { "specificPower", t.specificPower ?? "" }
+                });
             }
             return JsonConvert.SerializeObject(list);
         }
@@ -446,7 +451,8 @@ namespace SuperMech.Code
                     talents.Add(new SuperMechTalent.TalentInfo
                     {
                         type = (SuperMechTalent.TalentType)System.Convert.ToInt32(d["type"]),
-                        rating = System.Convert.ToInt32(d["rating"])
+                        rating = System.Convert.ToInt32(d["rating"]),
+                        specificPower = d.ContainsKey("specificPower") ? d["specificPower"].ToString() : ""
                     });
                 }
                 // 直接设置天赋（绕过GrantTalents的已有检查）

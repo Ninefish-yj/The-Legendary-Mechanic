@@ -35,12 +35,12 @@ namespace SuperMech.Code
                     return;
                 }
 
-                // 显示天赋倾向
+                // 显示天赋倾向（含具体异能类型）
                 var talents = SuperMechTalent.GetTalents(actor);
                 string talentText = "";
                 foreach (var t in talents)
                 {
-                    talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
+                    talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
                 }
                 ShowRow(__instance, "天赋倾向", talentText.Trim());
 
