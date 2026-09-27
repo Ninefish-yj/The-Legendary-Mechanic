@@ -260,7 +260,7 @@ namespace SuperMech.Code
                 var cur = SuperMechRelic.Equipments[currentIdx];
                 Color qColor = GetQualityColor(cur.qualityLevel);
 
-                var equipSlot = CreateItemIcon(equippedBox, cur.icon, qColor, 48, cur.name,
+                var equipSlot = CreateItemIcon(equippedBox, cur.icon, qColor, 56, cur.name,
                     $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(cur.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{cur.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{cur.hpMul}\n{LocalizedTextManager.getText("sm_ui_unequip")}");
                 var btn = equipSlot.GetComponent<Button>();
                 if (btn != null)
@@ -275,7 +275,7 @@ namespace SuperMech.Code
             }
             else
             {
-                CreateEmptySlot(equippedBox, 48, LocalizedTextManager.getText("sm_ui_unequipped"));
+                CreateEmptySlot(equippedBox, 56, LocalizedTextManager.getText("sm_ui_unequipped"));
             }
 
             var spacer = new GameObject("Spacer", typeof(RectTransform));
@@ -283,77 +283,71 @@ namespace SuperMech.Code
             spacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 8);
 
             var bag = SuperMechEquipBag.GetBag(actor);
+            int bagCount = bag != null ? bag.Count : 0;
 
-            var byQuality = new Dictionary<int, List<string>>();
-            for (int q = 0; q <= 8; q++) byQuality[q] = new List<string>();
-            foreach (string equipId in bag)
+            var bagBox = CreateCategoryBox(_container.transform, LocalizedTextManager.getText("sm_ui_bag"), new Color(0.5f, 0.55f, 0.65f), bagCount);
+
+            GameObject gridGo = new GameObject("BagGrid", typeof(RectTransform));
+            gridGo.transform.SetParent(bagBox, false);
+            RectTransform gridRt = gridGo.GetComponent<RectTransform>();
+            gridRt.anchorMin = Vector2.zero;
+            gridRt.anchorMax = Vector2.one;
+            gridRt.offsetMin = Vector2.zero;
+            gridRt.offsetMax = Vector2.zero;
+
+            GridLayoutGroup grid = gridGo.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(40, 40);
+            grid.spacing = new Vector2(4, 4);
+            grid.childAlignment = TextAnchor.UpperLeft;
+            grid.constraint = GridLayoutGroup.Constraint.Flexible;
+
+            ContentSizeFitter gridFitter = gridGo.AddComponent<ContentSizeFitter>();
+            gridFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            gridFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            if (bagCount > 0)
             {
-                int idx = SuperMechRelic.GetEquipIndex(equipId);
-                if (idx >= 0)
+                var sortedBag = new List<string>(bag);
+                sortedBag.Sort((a, b) =>
                 {
-                    int q = SuperMechRelic.Equipments[idx].qualityLevel;
-                    byQuality[q].Add(equipId);
-                }
-            }
+                    int idxA = SuperMechRelic.GetEquipIndex(a);
+                    int idxB = SuperMechRelic.GetEquipIndex(b);
+                    int qA = idxA >= 0 ? SuperMechRelic.Equipments[idxA].qualityLevel : 0;
+                    int qB = idxB >= 0 ? SuperMechRelic.Equipments[idxB].qualityLevel : 0;
+                    return qB.CompareTo(qA);
+                });
 
-            for (int q = 8; q >= 0; q--)
-            {
-                var items = byQuality[q];
-                string catName = GetQualityName(q);
-                Color qColor = GetQualityColor(q);
-
-                var catBox = CreateCategoryBox(_container.transform, catName, qColor, items.Count);
-
-                if (items.Count > 0)
+                foreach (string equipId in sortedBag)
                 {
-                    GameObject currentRow = null;
-                    int iconIndex = 0;
-                    foreach (string equipId in items)
+                    int idx = SuperMechRelic.GetEquipIndex(equipId);
+                    if (idx < 0) continue;
+                    var def = SuperMechRelic.Equipments[idx];
+                    Color qColor = GetQualityColor(def.qualityLevel);
+
+                    var iconGo = CreateItemIcon(gridGo.transform, def.icon, qColor, 36, def.name,
+                        $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{LocalizedTextManager.getText("sm_ui_equip")}");
+                    var btn = iconGo.GetComponent<Button>();
+                    if (btn != null)
                     {
-                        if (iconIndex % 5 == 0)
+                        btn.onClick.AddListener(() =>
                         {
-                            currentRow = new GameObject("BagRow", typeof(RectTransform));
-                            currentRow.transform.SetParent(catBox, false);
-                            var rowLayout = currentRow.AddComponent<HorizontalLayoutGroup>();
-                            rowLayout.spacing = 6;
-                            rowLayout.childAlignment = TextAnchor.UpperLeft;
-                            currentRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 40);
-                        }
-
-                        int idx = SuperMechRelic.GetEquipIndex(equipId);
-                        if (idx < 0) continue;
-                        var def = SuperMechRelic.Equipments[idx];
-
-                        var iconGo = CreateItemIcon(currentRow.transform, def.icon, qColor, 34, def.name,
-                            $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{LocalizedTextManager.getText("sm_ui_equip")}");
-                        var btn = iconGo.GetComponent<Button>();
-                        if (btn != null)
-                        {
-                            btn.onClick.AddListener(() =>
-                            {
-                                SuperMechEquipBag.EquipFromBag(actor, equipId);
-                                RenderBag(actor);
-                            });
-                        }
-                        iconIndex++;
+                            SuperMechEquipBag.EquipFromBag(actor, equipId);
+                            RenderBag(actor);
+                        });
                     }
                 }
-                else
-                {
-                    var emptyRow = new GameObject("EmptyRow", typeof(RectTransform));
-                    emptyRow.transform.SetParent(catBox, false);
-                    emptyRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 36);
-                    var emptyText = CreateText(emptyRow.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.5f, 0.6f));
-                    var emptyRt = emptyText.GetComponent<RectTransform>();
-                    emptyRt.anchorMin = Vector2.zero;
-                    emptyRt.anchorMax = Vector2.one;
-                    emptyRt.offsetMin = Vector2.zero;
-                    emptyRt.offsetMax = Vector2.zero;
-                }
-
-                var catSpacer = new GameObject("CatSpacer", typeof(RectTransform));
-                catSpacer.transform.SetParent(_container.transform, false);
-                catSpacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 6);
+            }
+            else
+            {
+                var emptyText = CreateText(gridGo.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.6f));
+                var emptyRt = emptyText.GetComponent<RectTransform>();
+                emptyRt.anchorMin = Vector2.zero;
+                emptyRt.anchorMax = Vector2.one;
+                emptyRt.offsetMin = Vector2.zero;
+                emptyRt.offsetMax = Vector2.zero;
+                LayoutElement emptyLe = emptyText.AddComponent<LayoutElement>();
+                emptyLe.minWidth = 200;
+                emptyLe.minHeight = 40;
             }
         }
 
