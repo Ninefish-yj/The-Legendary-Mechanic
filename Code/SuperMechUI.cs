@@ -134,7 +134,7 @@ namespace SuperMech.Code
                 if (btn == null) return;
                 var tipBtn = btn.GetComponent<TipButton>();
                 if (tipBtn == null) tipBtn = btn.gameObject.AddComponent<TipButton>();
-                tipBtn.textOnClick = title + "\n" + desc;
+                tipBtn.textOnClick = LocalizedTextManager.getText(title) + "\n" + LocalizedTextManager.getText(desc);
                 tipBtn.textOnClickDescription = string.Empty;
                 tipBtn.text_description_2 = string.Empty;
             }

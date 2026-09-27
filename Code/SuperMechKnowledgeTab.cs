@@ -915,7 +915,7 @@ namespace SuperMech.Code
             {
                 costText = $"sm_knowledgetab_874";
             }
-            tip.textOnClick = $"sm_knowledgetab_875";
+            tip.textOnClick = LocalizedTextManager.getText("sm_knowledgetab_875");
         }
 
         private static Color GetTierColor(int tier)

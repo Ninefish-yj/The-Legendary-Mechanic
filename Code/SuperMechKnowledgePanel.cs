@@ -149,7 +149,7 @@ namespace SuperMech.Code
             iconImg.raycastTarget = false;
 
             TipButton tip = btnObj.AddComponent<TipButton>();
-            tip.textOnClick = name;
+            tip.textOnClick = LocalizedTextManager.getText(name);
             tip.textOnClickDescription = string.Empty;
             tip.text_description_2 = string.Empty;
 
