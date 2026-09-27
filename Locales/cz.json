@@ -3842,5 +3842,9 @@
   "sm_ui_click_to_eat": "点击食用",
   "sm_ui_unit_info": "超能者信息",
   "sm_ui_open_info": "查看超能者信息",
-  "sm_ui_resources": "资源"
+  "sm_ui_resources": "资源",
+  "sm_ui_knowledge_tab": "知识",
+  "sm_ui_knowledge_tab_desc": "查看知识树和职业信息",
+  "sm_ui_bag_tab": "背包",
+  "sm_ui_bag_tab_desc": "查看装备和资源"
 }
