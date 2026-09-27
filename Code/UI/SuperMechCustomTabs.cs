@@ -100,18 +100,40 @@ namespace SuperMech.Code
                 tabsList.Add(customTab);
             }
 
-            UnitGenealogyElement genealogyElement = window.transform.GetComponentInChildren<UnitGenealogyElement>(true);
-            if (genealogyElement == null) return;
+            GameObject contentObj = null;
 
-            GameObject contentObj = UnityEngine.Object.Instantiate(
-                genealogyElement.gameObject,
-                window.transform.Find("Background/Scroll View/Viewport/Content"));
-            contentObj.name = KnowledgeContentName;
-
-            UnitGenealogyElement genealogyComp = contentObj.GetComponent<UnitGenealogyElement>();
-            if (genealogyComp != null)
+            KnowledgeWindow knowledgeWindow = UnityEngine.Object.FindObjectOfType<KnowledgeWindow>();
+            if (knowledgeWindow != null)
             {
-                UnityEngine.Object.DestroyImmediate(genealogyComp);
+                var prefabField = typeof(KnowledgeWindow).GetField("_element_prefab",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                KnowledgeElement elementPrefab = prefabField?.GetValue(knowledgeWindow) as KnowledgeElement;
+                if (elementPrefab != null)
+                {
+                    contentObj = UnityEngine.Object.Instantiate(
+                        elementPrefab.gameObject,
+                        window.transform.Find("Background/Scroll View/Viewport/Content"));
+                    contentObj.name = KnowledgeContentName;
+
+                    KnowledgeElement keComp = contentObj.GetComponent<KnowledgeElement>();
+                    if (keComp != null)
+                        UnityEngine.Object.DestroyImmediate(keComp);
+                }
+            }
+
+            if (contentObj == null)
+            {
+                UnitGenealogyElement genealogyElement = window.transform.GetComponentInChildren<UnitGenealogyElement>(true);
+                if (genealogyElement == null) return;
+
+                contentObj = UnityEngine.Object.Instantiate(
+                    genealogyElement.gameObject,
+                    window.transform.Find("Background/Scroll View/Viewport/Content"));
+                contentObj.name = KnowledgeContentName;
+
+                UnitGenealogyElement genealogyComp = contentObj.GetComponent<UnitGenealogyElement>();
+                if (genealogyComp != null)
+                    UnityEngine.Object.DestroyImmediate(genealogyComp);
             }
 
             foreach (var old in contentObj.GetComponents<LayoutGroup>())
