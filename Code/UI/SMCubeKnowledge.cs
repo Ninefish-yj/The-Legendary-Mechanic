@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -142,6 +143,14 @@ namespace SuperMech.Code
 
     public class SMCubeKnowledge : MonoBehaviour, IInitializePotentialDragHandler, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
+        private const float DRAG_ROTATE_SPEED = 0.005f;
+        private const float NODE_SCALE_MIN = 0.4f;
+        private const float NODE_SCALE_MAX = 1.2f;
+        private const float PERSPECTIVE_STRENGTH_MAIN = 3f;
+        private const float SPEED_MOD_INNER = 0.2f;
+        private const float SPEED_MOD_OUTER = 0.2f;
+        private const float SPEED_MOD_4D = 0.3f;
+
         private SMCubeNode _active_node;
         private SMCubeNode _prefab_node;
         private SMCubeNodeConnection _prefab_connection;
@@ -155,6 +164,12 @@ namespace SuperMech.Code
         private Vector2 _last_mouse_delta;
         private float _offset_x;
         private float _offset_y;
+
+        private float _angle_4d;
+        private Quaternion _rotation_q = Quaternion.identity;
+        private Quaternion _rotation_q_2 = Quaternion.identity;
+        private float _perspective_strength_main = PERSPECTIVE_STRENGTH_MAIN;
+        public float spacing = 25f;
 
         private List<SMCubeNode> _nodes_by_index = new List<SMCubeNode>();
         private List<SMCubeNode> _nodes = new List<SMCubeNode>();
@@ -173,6 +188,13 @@ namespace SuperMech.Code
                 _initialized = true;
             }
             GenerateNodes();
+
+            if (_object_main != null)
+            {
+                _object_main.transform.DOKill();
+                _object_main.transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+                _object_main.transform.DOScale(1f, 0.6f).SetEase(Ease.OutBack);
+            }
         }
 
         private void CreateStructure()
@@ -312,40 +334,95 @@ namespace SuperMech.Code
         {
             if (!_initialized || _nodes.Count == 0) return;
 
+            UpdateRotationAndSpeeds();
+            UpdateVisual();
+        }
+
+        private void UpdateRotationAndSpeeds()
+        {
             if (!_is_dragging)
             {
+                _angle_4d += Time.deltaTime * SPEED_MOD_4D;
                 _offset_target_x += Time.deltaTime * 0.05f;
             }
+
+            if (Input.GetMouseButton(0))
+            {
+                _perspective_strength_main = Mathf.Lerp(_perspective_strength_main, 4f, 0.1f);
+            }
+            else
+            {
+                _perspective_strength_main = Mathf.Lerp(_perspective_strength_main, PERSPECTIVE_STRENGTH_MAIN, 0.1f);
+            }
+
             _offset_x = Mathf.Lerp(_offset_x, _offset_target_x, Time.deltaTime * 2f);
             _offset_y = Mathf.Lerp(_offset_y, _offset_target_y, Time.deltaTime * 2f);
 
-            UpdateVisual();
+            float num = 0f - _offset_x;
+            float num2 = 0f - _offset_y;
+            float num3 = _offset_y;
+            float num4 = _offset_y;
+            if (!_is_dragging)
+            {
+                num += SPEED_MOD_INNER;
+                num2 += SPEED_MOD_INNER;
+                num3 += SPEED_MOD_OUTER;
+                num4 += SPEED_MOD_OUTER;
+            }
+            Quaternion quaternion = Quaternion.Euler(num, num2, 0f);
+            _rotation_q = quaternion * _rotation_q;
+            Quaternion quaternion2 = Quaternion.Euler(num3, num4, 0f);
+            _rotation_q_2 = quaternion2 * _rotation_q_2;
+        }
+
+        private Vector4 Rotate4D(Vector4 pPoint, float pAngle)
+        {
+            float num = Mathf.Cos(pAngle);
+            float num2 = Mathf.Sin(pAngle);
+            float x = pPoint.x * num - pPoint.w * num2;
+            float w = pPoint.x * num2 + pPoint.w * num;
+            float y = pPoint.y * num - pPoint.z * num2;
+            float z = pPoint.y * num2 + pPoint.z * num;
+            return new Vector4(x, y, z, w);
+        }
+
+        private Vector3 Project4Dto3D(Vector4 p)
+        {
+            float num = _perspective_strength_main;
+            float num5 = num - p.w;
+            if (Mathf.Abs(num5) < 0.01f)
+            {
+                num5 = 0.01f * Mathf.Sign(num5);
+            }
+            float num6 = ((num5 == 0f) ? 0f : (num / num5));
+            return new Vector3(p.x * num6, p.y * num6, p.z * num6);
         }
 
         private void UpdateVisual()
         {
-            float cosX = Mathf.Cos(_offset_x);
-            float sinX = Mathf.Sin(_offset_x);
-            float cosY = Mathf.Cos(_offset_y);
-            float sinY = Mathf.Sin(_offset_y);
+            float angle_4d = _angle_4d;
+            float centerX = GetComponent<RectTransform>().rect.width / 2f;
+            float centerY = GetComponent<RectTransform>().rect.height / 2f;
 
             foreach (SMCubeNode node in _nodes)
             {
-                Vector4 p = node.logical_pos;
-                float x = p.x * cosX - p.z * sinX;
-                float z = p.x * sinX + p.z * cosX;
-                float y = p.y * cosY - z * sinY;
-                float depth = z;
+                bool isInner = node.logical_pos.w < 0f;
+                Vector4 p = Rotate4D(node.logical_pos, angle_4d);
+                Vector3 vector = Project4Dto3D(p) * spacing;
+                Vector3 localPosition = (isInner ? _rotation_q : _rotation_q_2) * vector;
 
-                node.render_depth = depth;
-                float scale = Mathf.Lerp(0.6f, 1.3f, (depth + 1f) / 2f) * node.scale_mod_spawn;
+                node.render_depth = localPosition.z;
+                float depthNorm = (localPosition.z + 1f) / 2f;
+                float scale = Mathf.Lerp(NODE_SCALE_MIN, NODE_SCALE_MAX, depthNorm) * node.scale_mod_spawn;
                 node.transform.localScale = new Vector3(scale, scale, 1f);
 
                 RectTransform nodeRt = node.GetComponent<RectTransform>();
-                float centerX = (GetComponent<RectTransform>().rect.width / 2f);
-                float centerY = (GetComponent<RectTransform>().rect.height / 2f);
-                nodeRt.anchoredPosition = new Vector2(centerX + x * 200f, centerY + y * 200f);
-                nodeRt.SetSiblingIndex((int)((depth + 1f) * 1000f));
+                nodeRt.anchoredPosition = new Vector2(centerX + localPosition.x, centerY + localPosition.y);
+                nodeRt.SetSiblingIndex((int)((depthNorm) * 1000f));
+
+                Color baseColor = GetNodeColor(node.tier, node.unlocked);
+                float colorLerp = Mathf.Clamp01(depthNorm);
+                node.setColor(Color.Lerp(new Color(baseColor.r * 0.3f, baseColor.g * 0.3f, baseColor.b * 0.3f, baseColor.a), baseColor, colorLerp));
             }
 
             foreach (SMCubeNodeConnection conn in _pool_connections.getListTotal())
