@@ -430,29 +430,18 @@ namespace SuperMech.Code
 
             AddSectionTitle(contentGo.transform, LocalizedTextManager.getText("sm_ui_resources"));
 
-            GridLayoutGroup resGrid = contentGo.AddComponent<GridLayoutGroup>();
+            GameObject resContainer = new GameObject("ResourceContainer", typeof(RectTransform));
+            resContainer.transform.SetParent(contentGo.transform, false);
+            RectTransform resRt = resContainer.GetComponent<RectTransform>();
+            resRt.sizeDelta = new Vector2(0, 200f);
+
+            GridLayoutGroup resGrid = resContainer.AddComponent<GridLayoutGroup>();
             resGrid.cellSize = new Vector2(48, 48);
             resGrid.spacing = new Vector2(6, 6);
             resGrid.constraint = GridLayoutGroup.Constraint.Flexible;
             resGrid.childAlignment = TextAnchor.UpperLeft;
 
-            if (_actor.inventory != null)
-            {
-                var resources = new List<(ResourceAsset asset, int amount)>();
-                foreach (var kv in _actor.inventory.dict)
-                {
-                    ResourceAsset res = AssetManager.resources.get(kv.Key);
-                    if (res != null && kv.Value.amount > 0)
-                    {
-                        resources.Add((res, kv.Value.amount));
-                    }
-                }
-                resources.Sort((a, b) => a.asset.order.CompareTo(b.asset.order));
-                foreach (var r in resources)
-                {
-                    CreateResourceIcon(resGrid.transform, r.asset, r.amount);
-                }
-            }
+            SMUnitBag.Render(resContainer.transform, _actor);
         }
 
         private static void AddSectionTitle(Transform parent, string title)
@@ -545,49 +534,6 @@ namespace SuperMech.Code
                     SuperMechEquipBag.EquipFromBag(_actor, def.id);
                 }
                 Refresh();
-            });
-        }
-
-        private static void CreateResourceIcon(Transform parent, ResourceAsset res, int amount)
-        {
-            GameObject go = new GameObject("Res_" + res.id, typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-            RectTransform rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(48, 48);
-
-            Image bg = go.AddComponent<Image>();
-            bg.color = PanelBg;
-            bg.raycastTarget = true;
-
-            Image icon = new GameObject("Icon", typeof(RectTransform)).AddComponent<Image>();
-            icon.transform.SetParent(go.transform, false);
-            icon.raycastTarget = false;
-            try
-            {
-                Sprite sprite = SpriteTextureLoader.getSprite(res.path_icon);
-                if (sprite != null) icon.sprite = sprite;
-            }
-            catch { }
-            RectTransform iconRt = icon.GetComponent<RectTransform>();
-            iconRt.anchorMin = new Vector2(0.15f, 0.15f);
-            iconRt.anchorMax = new Vector2(0.85f, 0.85f);
-
-            Text amountTxt = SuperMechUtils.CreateText(go.transform, amount.ToString(), 10, TextAnchor.LowerRight, TextPrimary);
-            RectTransform amtRt = amountTxt.rectTransform;
-            amtRt.anchorMin = new Vector2(0, 0);
-            amtRt.anchorMax = new Vector2(1, 0.3f);
-            amtRt.offsetMin = new Vector2(0, 0);
-            amtRt.offsetMax = new Vector2(-2f, 0);
-
-            Button btn = go.AddComponent<Button>();
-            btn.onClick.AddListener(() =>
-            {
-                if (res.type == ResType.Food && amount > 0)
-                {
-                    _actor.consumeFoodResource(res);
-                    _actor.inventory.remove(res.id, 1);
-                    Refresh();
-                }
             });
         }
 
