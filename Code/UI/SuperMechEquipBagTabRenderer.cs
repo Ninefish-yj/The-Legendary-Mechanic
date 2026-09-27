@@ -21,38 +21,8 @@ namespace SuperMech.Code
                 if (child.name != "LayoutGroup") Object.Destroy(child.gameObject);
             }
 
-            var equippedBox = CreateCategoryBox(_container.transform, LocalizedTextManager.getText("sm_ui_equipped"), null);
-            int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
-            if (currentIdx >= 0)
-            {
-                var cur = SuperMechRelic.Equipments[currentIdx];
-                Color qColor = GetQualityColor(cur.qualityLevel);
-
-                var equipSlot = CreateItemIcon(equippedBox, cur.icon, qColor, 56, cur.name,
-                    $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(cur.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{cur.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{cur.hpMul}\n{LocalizedTextManager.getText("sm_ui_unequip")}");
-                var btn = equipSlot.GetComponent<Button>();
-                if (btn != null)
-                {
-                    btn.onClick.RemoveAllListeners();
-                    btn.onClick.AddListener(() =>
-                    {
-                        SuperMechEquipBag.UnequipToBag(actor);
-                        RenderBag(actor);
-                    });
-                }
-            }
-            else
-            {
-                CreateEmptySlot(equippedBox, 56, LocalizedTextManager.getText("sm_ui_unequipped"));
-            }
-
-            var bag = SuperMechEquipBag.GetBag(actor);
-            int bagCount = bag != null ? bag.Count : 0;
-
-            var bagBox = CreateCategoryBox(_container.transform, LocalizedTextManager.getText("sm_ui_bag"), new Color(0.5f, 0.55f, 0.65f), bagCount);
-
             GameObject gridGo = new GameObject("BagGrid", typeof(RectTransform));
-            gridGo.transform.SetParent(bagBox, false);
+            gridGo.transform.SetParent(_container.transform, false);
             RectTransform gridRt = gridGo.GetComponent<RectTransform>();
             gridRt.anchorMin = Vector2.zero;
             gridRt.anchorMax = Vector2.one;
@@ -69,7 +39,28 @@ namespace SuperMech.Code
             gridFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             gridFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            if (bagCount == 0)
+            var allItems = new List<(string equipId, int idx, bool equipped)>();
+
+            int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
+            if (currentIdx >= 0)
+            {
+                allItems.Add((SuperMechRelic.Equipments[currentIdx].id, currentIdx, true));
+            }
+
+            var bag = SuperMechEquipBag.GetBag(actor);
+            if (bag != null)
+            {
+                foreach (string equipId in bag)
+                {
+                    int idx = SuperMechRelic.GetEquipIndex(equipId);
+                    if (idx >= 0 && idx != currentIdx)
+                    {
+                        allItems.Add((equipId, idx, false));
+                    }
+                }
+            }
+
+            if (allItems.Count == 0)
             {
                 var emptyText = SuperMechUtils.CreateText(gridGo.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.6f));
                 var emptyRt = emptyText.GetComponent<RectTransform>();
@@ -83,189 +74,58 @@ namespace SuperMech.Code
                 return;
             }
 
-            var sortedBag = new List<string>(bag);
-            sortedBag.Sort((a, b) =>
+            allItems.Sort((a, b) =>
             {
-                int idxA = SuperMechRelic.GetEquipIndex(a);
-                int idxB = SuperMechRelic.GetEquipIndex(b);
-                int qA = idxA >= 0 ? SuperMechRelic.Equipments[idxA].qualityLevel : 0;
-                int qB = idxB >= 0 ? SuperMechRelic.Equipments[idxB].qualityLevel : 0;
+                if (a.equipped != b.equipped) return a.equipped ? -1 : 1;
+                int qA = SuperMechRelic.Equipments[a.idx].qualityLevel;
+                int qB = SuperMechRelic.Equipments[b.idx].qualityLevel;
                 return qB.CompareTo(qA);
             });
 
-            foreach (string equipId in sortedBag)
+            foreach (var item in allItems)
             {
-                int idx = SuperMechRelic.GetEquipIndex(equipId);
-                if (idx < 0) continue;
-                var def = SuperMechRelic.Equipments[idx];
+                var def = SuperMechRelic.Equipments[item.idx];
                 Color qColor = GetQualityColor(def.qualityLevel);
 
-                var iconGo = CreateItemIcon(gridGo.transform, def.icon, qColor, 40, def.name,
-                    $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{LocalizedTextManager.getText("sm_ui_equip")}");
+                string actionText = item.equipped
+                    ? LocalizedTextManager.getText("sm_ui_unequip")
+                    : LocalizedTextManager.getText("sm_ui_equip");
+
+                string tooltip = $"{def.name}\n{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{actionText}";
+
+                var iconGo = CreateItemIcon(gridGo.transform, def.icon, qColor, 44, def.name, tooltip);
+
+                if (item.equipped)
+                {
+                    var equippedMark = new GameObject("EquippedMark", typeof(RectTransform));
+                    equippedMark.transform.SetParent(iconGo.transform, false);
+                    var markImg = equippedMark.AddComponent<Image>();
+                    markImg.color = new Color(1f, 0.84f, 0f, 0.25f);
+                    var markRt = equippedMark.GetComponent<RectTransform>();
+                    markRt.anchorMin = Vector2.zero;
+                    markRt.anchorMax = Vector2.one;
+                    markRt.offsetMin = Vector2.zero;
+                    markRt.offsetMax = Vector2.zero;
+                    markRt.raycastTarget = false;
+                }
+
                 var btn = iconGo.GetComponent<Button>();
                 if (btn != null)
                 {
                     btn.onClick.AddListener(() =>
                     {
-                        SuperMechEquipBag.EquipFromBag(actor, equipId);
+                        if (item.equipped)
+                        {
+                            SuperMechEquipBag.UnequipToBag(actor);
+                        }
+                        else
+                        {
+                            SuperMechEquipBag.EquipFromBag(actor, item.equipId);
+                        }
                         RenderBag(actor);
                     });
                 }
             }
-        }
-
-        private static Transform CreateCategoryBox(Transform parent, string title, Color? titleColor, int count = -1)
-        {
-            title = LocalizedTextManager.getText(title);
-            GameObject box = new GameObject("CategoryBox", typeof(RectTransform));
-            box.transform.SetParent(parent, false);
-            LayoutElement boxLe = box.AddComponent<LayoutElement>();
-            boxLe.minHeight = 60f;
-            boxLe.flexibleHeight = 0f;
-
-            GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
-            bgGo.transform.SetParent(box.transform, false);
-            Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0.08f, 0.09f, 0.12f, 0.85f);
-            bgImg.raycastTarget = false;
-            RectTransform bgRt = bgGo.GetComponent<RectTransform>();
-            bgRt.anchorMin = Vector2.zero;
-            bgRt.anchorMax = Vector2.one;
-            bgRt.offsetMin = Vector2.zero;
-            bgRt.offsetMax = Vector2.zero;
-
-            Color borderColor = titleColor ?? new Color(0.4f, 0.45f, 0.5f);
-            AddBoxBorder(box.transform, borderColor);
-
-            GameObject titleGo = new GameObject("Title", typeof(RectTransform));
-            titleGo.transform.SetParent(box.transform, false);
-            RectTransform titleRt = titleGo.GetComponent<RectTransform>();
-            titleRt.anchorMin = new Vector2(0, 1);
-            titleRt.anchorMax = new Vector2(1, 1);
-            titleRt.pivot = new Vector2(0f, 1f);
-            titleRt.sizeDelta = new Vector2(0, 18f);
-            titleRt.offsetMin = new Vector2(8, -18);
-            titleRt.offsetMax = new Vector2(-8, 0);
-
-            Text titleTxt = titleGo.AddComponent<Text>();
-            titleTxt.text = title;
-            titleTxt.fontSize = 11;
-            titleTxt.fontStyle = FontStyle.Bold;
-            titleTxt.color = titleColor ?? new Color(0.9f, 0.85f, 0.6f);
-            titleTxt.alignment = TextAnchor.MiddleLeft;
-            titleTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (titleTxt.font == null) titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-
-            if (count >= 0)
-            {
-                GameObject counterGo = new GameObject("Counter", typeof(RectTransform));
-                counterGo.transform.SetParent(box.transform, false);
-                RectTransform counterRt = counterGo.GetComponent<RectTransform>();
-                counterRt.anchorMin = new Vector2(1, 1);
-                counterRt.anchorMax = new Vector2(1, 1);
-                counterRt.pivot = new Vector2(1f, 1f);
-                counterRt.sizeDelta = new Vector2(60, 18f);
-                counterRt.offsetMin = new Vector2(-68, -18);
-                counterRt.offsetMax = new Vector2(-8, 0);
-
-                Text counterTxt = counterGo.AddComponent<Text>();
-                counterTxt.text = count.ToString();
-                counterTxt.fontSize = 10;
-                counterTxt.color = new Color(0.7f, 0.7f, 0.75f);
-                counterTxt.alignment = TextAnchor.MiddleRight;
-                counterTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
-                if (counterTxt.font == null) counterTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            }
-
-            GameObject contentGo = new GameObject("Content", typeof(RectTransform));
-            contentGo.transform.SetParent(box.transform, false);
-            RectTransform contentRt = contentGo.GetComponent<RectTransform>();
-            contentRt.anchorMin = Vector2.zero;
-            contentRt.anchorMax = Vector2.one;
-            contentRt.pivot = new Vector2(0.5f, 1f);
-            contentRt.offsetMin = new Vector2(6, 6);
-            contentRt.offsetMax = new Vector2(-6, -24);
-
-            VerticalLayoutGroup contentVlg = contentGo.AddComponent<VerticalLayoutGroup>();
-            contentVlg.childAlignment = TextAnchor.UpperCenter;
-            contentVlg.childControlWidth = true;
-            contentVlg.childControlHeight = true;
-            contentVlg.childForceExpandWidth = true;
-            contentVlg.childForceExpandHeight = false;
-            contentVlg.spacing = 4f;
-            contentVlg.padding = new RectOffset(4, 4, 4, 4);
-
-            ContentSizeFitter contentFitter = contentGo.AddComponent<ContentSizeFitter>();
-            contentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            return contentGo.transform;
-        }
-
-        private static void AddBoxBorder(Transform parent, Color color)
-        {
-            GameObject top = new GameObject("BorderTop", typeof(RectTransform));
-            top.transform.SetParent(parent, false);
-            Image topImg = top.AddComponent<Image>();
-            topImg.color = color;
-            topImg.raycastTarget = false;
-            RectTransform topRt = top.GetComponent<RectTransform>();
-            topRt.anchorMin = new Vector2(0, 1);
-            topRt.anchorMax = new Vector2(1, 1);
-            topRt.pivot = new Vector2(0.5f, 1f);
-            topRt.sizeDelta = new Vector2(0, 2f);
-
-            GameObject bottom = new GameObject("BorderBottom", typeof(RectTransform));
-            bottom.transform.SetParent(parent, false);
-            Image bottomImg = bottom.AddComponent<Image>();
-            bottomImg.color = color;
-            bottomImg.raycastTarget = false;
-            RectTransform bottomRt = bottom.GetComponent<RectTransform>();
-            bottomRt.anchorMin = new Vector2(0, 0);
-            bottomRt.anchorMax = new Vector2(1, 0);
-            bottomRt.pivot = new Vector2(0.5f, 0f);
-            bottomRt.sizeDelta = new Vector2(0, 2f);
-
-            GameObject left = new GameObject("BorderLeft", typeof(RectTransform));
-            left.transform.SetParent(parent, false);
-            Image leftImg = left.AddComponent<Image>();
-            leftImg.color = color;
-            leftImg.raycastTarget = false;
-            RectTransform leftRt = left.GetComponent<RectTransform>();
-            leftRt.anchorMin = new Vector2(0, 0);
-            leftRt.anchorMax = new Vector2(0, 1);
-            leftRt.pivot = new Vector2(0f, 0.5f);
-            leftRt.sizeDelta = new Vector2(2f, 0);
-
-            GameObject right = new GameObject("BorderRight", typeof(RectTransform));
-            right.transform.SetParent(parent, false);
-            Image rightImg = right.AddComponent<Image>();
-            rightImg.color = color;
-            rightImg.raycastTarget = false;
-            RectTransform rightRt = right.GetComponent<RectTransform>();
-            rightRt.anchorMin = new Vector2(1, 0);
-            rightRt.anchorMax = new Vector2(1, 1);
-            rightRt.pivot = new Vector2(1f, 0.5f);
-            rightRt.sizeDelta = new Vector2(2f, 0);
-        }
-
-        private static GameObject CreateEmptySlot(Transform parent, int size, string label)
-        {
-            var slot = new GameObject("EmptySlot", typeof(RectTransform));
-            slot.transform.SetParent(parent, false);
-            slot.GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
-
-            var border = slot.AddComponent<Image>();
-            border.color = new Color(0.3f, 0.3f, 0.35f, 0.5f);
-
-            var txt = SuperMechUtils.CreateText(slot.transform, label, 10, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.7f));
-            var txtRt = txt.GetComponent<RectTransform>();
-            txtRt.anchorMin = Vector2.zero;
-            txtRt.anchorMax = Vector2.one;
-            txtRt.offsetMin = Vector2.zero;
-            txtRt.offsetMax = Vector2.zero;
-
-            return slot;
         }
 
         private static void InitEquipmentButton(EquipmentButton btn)
@@ -401,34 +261,6 @@ namespace SuperMech.Code
             string[] keys = { "sm_quality_0", "sm_quality_1", "sm_quality_2", "sm_quality_3", "sm_quality_4",
                               "sm_quality_5", "sm_quality_6", "sm_quality_7", "sm_quality_8" };
             return q >= 0 && q < keys.Length ? LocalizedTextManager.getText(keys[q]) : "?";
-        }
-
-        private static void AddButton(Transform parent, string text, System.Action onClick)
-        {
-            GameObject obj = new GameObject("Button", typeof(RectTransform));
-            obj.transform.SetParent(parent, false);
-            LayoutElement le = obj.AddComponent<LayoutElement>();
-            le.minHeight = 22;
-            le.preferredHeight = 22;
-
-            Image bg = obj.AddComponent<Image>();
-            bg.color = new Color(0.2f, 0.2f, 0.25f, 0.8f);
-
-            Button btn = obj.AddComponent<Button>();
-            btn.onClick.AddListener(() => onClick?.Invoke());
-
-            Text t = obj.AddComponent<Text>();
-            t.font = LocalizedTextManager.current_font;
-            t.fontSize = 9;
-            t.color = new Color(0.85f, 0.85f, 0.9f);
-            t.alignment = TextAnchor.MiddleCenter;
-            t.text = text;
-            t.transform.SetParent(obj.transform, false);
-            RectTransform trt = t.GetComponent<RectTransform>();
-            trt.anchorMin = Vector2.zero;
-            trt.anchorMax = Vector2.one;
-            trt.offsetMin = Vector2.zero;
-            trt.offsetMax = Vector2.zero;
         }
     }
 }
