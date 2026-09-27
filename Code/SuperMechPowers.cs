@@ -23,9 +23,6 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            string[] powerNames = { "sm_powers_920", "sm_powers_921", "sm_powers_922", "sm_powers_923", "sm_powers_924", "sm_powers_925", "sm_powers_926", "sm_powers_927", "sm_powers_928", "sm_powers_929" };
-            foreach (var n in powerNames) LocalizedTextManager.add(n, n, pReplace: true);
-
             AddSpawnPower(SummonRanger, "sm_powers_920", "actor_traits/iconStrong", "soldier", 1);
             AddSpawnPower(SummonMech, "sm_powers_921", "actor_traits/iconGiant", "titan", 3);
             AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");

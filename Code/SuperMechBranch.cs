@@ -69,8 +69,8 @@ namespace SuperMech.Code
                     base_stats = bs
                 };
                 AssetManager.traits.add(t);
-                LocalizedTextManager.add("trait_" + b.traitId, b.name, pReplace: true);
-                LocalizedTextManager.add("trait_" + b.traitId + "_info", b.desc, pReplace: true);
+                LocalizedTextManager.add("trait_" + b.traitId, LocalizedTextManager.getText(b.name), pReplace: true);
+                LocalizedTextManager.add("trait_" + b.traitId + "_info", LocalizedTextManager.getText(b.desc), pReplace: true);
             }
 
             Debug.Log($"[超神机械师] 五系分支特质注册完成：{AllBranches.Count}个");

@@ -71,9 +71,9 @@ namespace SuperMech.Code
                 ((BaseUnlockableAsset)asset).path_icon = def.icon;
                 ((BaseUnlockableAsset)asset).unlock(true);
 
-                LocalizedTextManager.add("item_" + def.id, def.name, pReplace: true);
+                LocalizedTextManager.add("item_" + def.id, LocalizedTextManager.getText(def.name), pReplace: true);
                 LocalizedTextManager.add("item_" + def.id + "_desc",
-                    $"sm_relic_103", pReplace: true);
+                    LocalizedTextManager.getText("sm_relic_103"), pReplace: true);
                 registered++;
             }
 
@@ -305,10 +305,10 @@ namespace SuperMech.Code
         {
             foreach (var r in Relics)
             {
-                string typeName = r.isWonder ? $"sm_relic_133" : "sm_relic_134";
-                LocalizedTextManager.add("trait_" + r.id, r.name, pReplace: true);
+                string typeName = r.isWonder ? LocalizedTextManager.getText("sm_relic_133") : "sm_relic_134";
+                LocalizedTextManager.add("trait_" + r.id, LocalizedTextManager.getText(r.name), pReplace: true);
                 LocalizedTextManager.add("trait_" + r.id + "_info",
-                    $"sm_relic_135", pReplace: true);
+                    LocalizedTextManager.getText("sm_relic_135"), pReplace: true);
                 var t = new ActorTrait
                 {
                     id = r.id, path_icon = "ui/Icons/actor_traits/iconChosenOne", group_id = "sm_cosmic_relic",

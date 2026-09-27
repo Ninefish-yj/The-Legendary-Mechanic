@@ -94,8 +94,8 @@ namespace SuperMech.Code
 
         private static void AddPerk(string id, string name, int intell, float dmgAdd, float dmgMul, string desc)
         {
-            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
+            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
             var t = new ActorTrait
             {
                 id = id, path_icon = "ui/Icons/actor_traits/iconBattleReflexes", group_id = "sm_perks",

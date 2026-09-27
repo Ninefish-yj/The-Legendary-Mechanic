@@ -359,6 +359,7 @@ namespace SuperMech.Code
 
         private static Transform CreateCategoryBox(Transform parent, string title, Color? titleColor, int count = -1)
         {
+            title = LocalizedTextManager.getText(title);
             GameObject box = new GameObject("CategoryBox", typeof(RectTransform));
             box.transform.SetParent(parent, false);
             LayoutElement boxLe = box.AddComponent<LayoutElement>();

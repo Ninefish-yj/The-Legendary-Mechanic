@@ -632,7 +632,7 @@ namespace SuperMech.Code
 
             LocalizedTextManager.add("power_sm_enter_sanctuary", LocalizedTextManager.getText("sm_sanctuary_974"), pReplace: true);
             LocalizedTextManager.add("power_sm_enter_sanctuary_desc",
-                $"sm_sanctuary_975", pReplace: true);
+                LocalizedTextManager.getText("sm_sanctuary_975"), pReplace: true);
             LocalizedTextManager.add("trait_sm_divinity_ascended", LocalizedTextManager.getText("sm_sanctuary_976"), pReplace: true);
             LocalizedTextManager.add("trait_sm_divinity_ascended_info", LocalizedTextManager.getText("sm_sanctuary_977"), pReplace: true);
 

@@ -106,7 +106,7 @@ namespace SuperMech.Code
         private static void RegisterFusionName(FusionRecipe recipe)
         {
             if (_registeredEquips.ContainsKey(recipe.equipId)) return;
-            LocalizedTextManager.add(recipe.equipId, recipe.equipName, pReplace: true);
+            LocalizedTextManager.add(recipe.equipId, LocalizedTextManager.getText(recipe.equipName), pReplace: true);
             _registeredEquips[recipe.equipId] = recipe;
         }
 
@@ -281,7 +281,7 @@ namespace SuperMech.Code
             ((BaseUnlockableAsset)asset).base_stats["multiplier_speed"] = recipe.speedMul;
             ((BaseUnlockableAsset)asset).unlock(true);
 
-            LocalizedTextManager.add(craftedId, recipe.equipName, pReplace: true);
+            LocalizedTextManager.add(craftedId, LocalizedTextManager.getText(recipe.equipName), pReplace: true);
             _registeredEquips[craftedId] = recipe;
         }
 

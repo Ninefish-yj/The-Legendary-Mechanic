@@ -188,8 +188,8 @@ namespace SuperMech.Code
         {
             foreach (var r in Recipes)
             {
-                LocalizedTextManager.add(r.name, r.name, pReplace: true);
-                LocalizedTextManager.add(r.name + "_description", r.desc, pReplace: true);
+                LocalizedTextManager.add(r.name, LocalizedTextManager.getText(r.name), pReplace: true);
+                LocalizedTextManager.add(r.name + "_description", LocalizedTextManager.getText(r.desc), pReplace: true);
             }
 
             Debug.Log($"[超神机械师] 制造系统注册完成：{Recipes.Length} 种制造配方（知识Tab操作）");

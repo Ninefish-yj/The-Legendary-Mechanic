@@ -163,8 +163,8 @@ namespace SuperMech.Code
 
         private static void AddSubClass(string id, string name, int intell, int dmgAdd, float dmgMul, string desc)
         {
-            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
+            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
             var t = new ActorTrait
             {
                 id = id, path_icon = "ui/Icons/actor_traits/iconAmbitious", group_id = "sm_subclass",

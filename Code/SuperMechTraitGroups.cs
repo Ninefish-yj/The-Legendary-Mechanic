@@ -42,7 +42,7 @@ namespace SuperMech.Code
                 };
                 AssetManager.trait_groups.add(group);
 
-                LocalizedTextManager.add("trait_group_" + id, name, pReplace: true);
+                LocalizedTextManager.add("trait_group_" + id, LocalizedTextManager.getText(name), pReplace: true);
             }
 
             Debug.Log($"[超神机械师] 特质组注册完成：{Groups.Length} 个自定义组");

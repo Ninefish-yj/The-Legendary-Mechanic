@@ -71,8 +71,8 @@ namespace SuperMech.Code
             float dmg = 0f, float hp = 0f, int intel = 0, float stamina = 0f,
             float armor = 0f, float lifespan = 0f, float exp = 0f)
         {
-            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
+            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
             var t = new ActorTrait
             {
                 id = id,

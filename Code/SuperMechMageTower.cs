@@ -32,9 +32,9 @@ namespace SuperMech.Code
             for (int i = 0; i < TowerIds.Length; i++)
             {
                 var b = TowerBonus[i];
-                LocalizedTextManager.add("trait_" + TowerIds[i], TowerNames[i], pReplace: true);
+                LocalizedTextManager.add("trait_" + TowerIds[i], LocalizedTextManager.getText(TowerNames[i]), pReplace: true);
                 LocalizedTextManager.add("trait_" + TowerIds[i] + "_info",
-                    $"sm_magetower_362", pReplace: true);
+                    LocalizedTextManager.getText("sm_magetower_362"), pReplace: true);
                 var t = new ActorTrait
                 {
                     id = TowerIds[i],

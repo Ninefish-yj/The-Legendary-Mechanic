@@ -55,8 +55,7 @@ namespace SuperMech.Code
                     "sm_ui_1122", "sm_ui_1123", "sm_ui_1124", "sm_ui_1125", "sm_ui_1126", "sm_ui_1127", "sm_ui_1128",
                     "sm_ui_1129", "sm_ui_1066", "sm_ui_1130", "sm_ui_1131"
                 };
-                foreach (var label in panelLabels)
-                    LocalizedTextManager.add(label, label, pReplace: true);
+
 
                 string[] tooltipTexts = {
                     "sm_ui_1055", "sm_ui_1132", "sm_ui_1056",
@@ -69,8 +68,7 @@ namespace SuperMech.Code
                     "sm_ui_1142", "sm_ui_1143",
                     "sm_ui_1144", "sm_ui_1145"
                 };
-                foreach (var text in tooltipTexts)
-                    LocalizedTextManager.add(text, text, pReplace: true);
+
 
                 Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconChosenOne");
                 _tab = TabManager.CreateTab("supermech_mod_tab", "supermech.tab", "supermech.tab_desc", tabIcon);

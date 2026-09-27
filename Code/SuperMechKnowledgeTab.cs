@@ -628,6 +628,7 @@ namespace SuperMech.Code
 
         private static void AddHeader(Transform parent, string text)
         {
+            text = LocalizedTextManager.getText(text);
             GameObject go = new GameObject("Header", typeof(RectTransform));
             go.transform.SetParent(parent, false);
             Text t = go.AddComponent<Text>();
@@ -661,6 +662,7 @@ namespace SuperMech.Code
 
         private static void AddActionButton(Transform parent, string text, System.Action onClick, Color bgColor)
         {
+            text = LocalizedTextManager.getText(text);
             GameObject go = new GameObject("ActionButton", typeof(RectTransform));
             go.transform.SetParent(parent, false);
             var layout = go.AddComponent<HorizontalLayoutGroup>();
@@ -766,6 +768,8 @@ namespace SuperMech.Code
 
         private static void AddInfoRow(Transform parent, string left, string right)
         {
+            left = LocalizedTextManager.getText(left);
+            right = LocalizedTextManager.getText(right);
             GameObject go = new GameObject("InfoRow", typeof(RectTransform));
             go.transform.SetParent(parent, false);
             var layout = go.AddComponent<HorizontalLayoutGroup>();

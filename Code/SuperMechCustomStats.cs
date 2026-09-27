@@ -82,8 +82,8 @@ namespace SuperMech.Code
                 };
                 AssetManager.base_stats_library.add(asset);
 
-                LocalizedTextManager.add(id, name, pReplace: true);
-                LocalizedTextManager.add(id + "_info", desc, pReplace: true);
+                LocalizedTextManager.add(id, LocalizedTextManager.getText(name), pReplace: true);
+                LocalizedTextManager.add(id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
                 registered++;
             }
 

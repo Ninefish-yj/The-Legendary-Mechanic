@@ -278,8 +278,8 @@ namespace SuperMech.Code
         private static void AddMarkerTrait(string id, string name, string desc,
             float dmg, float hp, int intel)
         {
-            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
+            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
             var t = new ActorTrait
             {
                 id = id, path_icon = "ui/Icons/actor_traits/iconGiant",
@@ -306,8 +306,8 @@ namespace SuperMech.Code
         private static void AddSubspeciesTrait(string id, string name, string desc,
             int intel, float dmgMul, float hpMul, float spdMul, float armor = 0f)
         {
-            LocalizedTextManager.add("subspecies_trait_" + id, name, pReplace: true);
-            LocalizedTextManager.add("subspecies_trait_" + id + "_info", desc, pReplace: true);
+            LocalizedTextManager.add("subspecies_trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
+            LocalizedTextManager.add("subspecies_trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
 
             SubspeciesTrait st = AssetManager.subspecies_traits.clone(id, "$adaptation$");
             if (st == null)

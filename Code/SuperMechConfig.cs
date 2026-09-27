@@ -79,7 +79,7 @@ namespace SuperMech.Code
                 ("Performance", "sm_config_558"),
             };
             foreach (var (key, name) in categories)
-                LocalizedTextManager.add(key, name, pReplace: true);
+                LocalizedTextManager.add(key, LocalizedTextManager.getText(name), pReplace: true);
 
             var items = new (string id, string name, string desc)[]
             {
@@ -117,8 +117,8 @@ namespace SuperMech.Code
             };
             foreach (var (id, name, desc) in items)
             {
-                LocalizedTextManager.add(id, name, pReplace: true);
-                LocalizedTextManager.add(id + " Description", desc, pReplace: true);
+                LocalizedTextManager.add(id, LocalizedTextManager.getText(name), pReplace: true);
+                LocalizedTextManager.add(id + " Description", LocalizedTextManager.getText(desc), pReplace: true);
             }
         }
 
