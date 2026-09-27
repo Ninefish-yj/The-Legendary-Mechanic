@@ -86,7 +86,7 @@ namespace SuperMech.Code
                 resources.Sort((a, b) => a.asset.order.CompareTo(b.asset.order));
                 foreach (var r in resources)
                 {
-                    RenderResourceItem(gridGo.transform, r.asset, r.amount);
+                    RenderResourceItem(gridGo.transform, actor, r.asset, r.amount);
                     totalCount++;
                 }
             }
@@ -166,7 +166,7 @@ namespace SuperMech.Code
             }
         }
 
-        private static void RenderResourceItem(Transform parent, ResourceAsset res, int amount)
+        private static void RenderResourceItem(Transform parent, Actor actor, ResourceAsset res, int amount)
         {
             GameObject itemGo = new GameObject("ResourceItem", typeof(RectTransform));
             itemGo.transform.SetParent(parent, false);
@@ -208,12 +208,12 @@ namespace SuperMech.Code
             Button resBtn = itemGo.AddComponent<Button>();
             resBtn.OnHover(() =>
             {
-                if (Config.tooltips_active) ShowResourceTooltip(itemGo, res);
+                if (Config.tooltips_active) ShowResourceTooltip(itemGo, actor, res);
             });
             resBtn.OnHoverOut(() => Tooltip.hideTooltip());
             resBtn.onClick.AddListener(() =>
             {
-                ShowResourceTooltip(itemGo, res);
+                ShowResourceTooltip(itemGo, actor, res);
                 itemGo.transform.DOKill();
                 itemGo.transform.DOScale(0.8f, 0.1f).SetEase(Ease.InBack).OnComplete(() =>
                 {
@@ -222,13 +222,12 @@ namespace SuperMech.Code
             });
         }
 
-        private static void ShowResourceTooltip(GameObject obj, ResourceAsset res)
+        private static void ShowResourceTooltip(GameObject obj, Actor actor, ResourceAsset res)
         {
-            Tooltip.show(obj, "normal", new TooltipData
+            Tooltip.show(obj, "sm_unit_resource", new TooltipData
             {
-                tip_name = res.name,
-                tip_description = res.tooltip,
-                resource = res
+                resource = res,
+                actor = actor
             });
         }
 

@@ -45,6 +45,7 @@ namespace SuperMech
             SuperMechCrafting.Register();
             SuperMechPowers.Register();
             SuperMechUI.Init();
+            SuperMechTooltip.Register();
 
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();
