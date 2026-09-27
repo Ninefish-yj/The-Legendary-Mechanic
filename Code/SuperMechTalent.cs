@@ -27,11 +27,11 @@ namespace SuperMech.Code
 
         // 具体异能类型库（原著+同人补全，按各系核心体系分类）
         private static readonly string[][] SpecificPowers = {
-            new[] { "电磁操控", "能量亲和", "虚拟意识", "机械心灵", "纳米操控", "量子计算" },  // 机械系（神器·机械知识树）
-            new[] { "体魄强化", "气血澎湃", "战斗本能", "气劲外放", "金刚不坏", "血脉觉醒" },  // 武道系（神体·御气技巧树）
-            new[] { "元素异能", "身体变异", "感官强化", "再生能力", "物质干涉", "能量放射" },  // 异能系（神通·基因树，基因变异类）
-            new[] { "元素魔法", "变化术", "造物术", "召唤术", "结界术", "符文魔法" },        // 魔法系（神权·魔法知识树）
-            new[] { "念动力", "灵魂感知", "精神冲击", "记忆操控", "心灵感应", "预知未来" }   // 念力系（神魂·精神修炼树，精神力类）
+            new[] { "sm_talent_1370", "sm_talent_1371", "sm_talent_1372", "sm_talent_1373", "sm_talent_1374", "sm_talent_1375" },  // 机械系（神器·机械知识树）
+            new[] { "sm_talent_1376", "sm_talent_1377", "sm_talent_1378", "sm_talent_1379", "sm_talent_1380", "sm_talent_1381" },  // 武道系（神体·御气技巧树）
+            new[] { "sm_talent_1382", "sm_talent_1383", "sm_talent_1384", "sm_talent_1385", "sm_talent_1386", "sm_talent_1387" },  // 异能系（神通·基因树，基因变异类）
+            new[] { "sm_talent_1388", "sm_talent_1389", "sm_talent_1390", "sm_talent_1391", "sm_talent_1392", "sm_talent_1393" },        // 魔法系（神权·魔法知识树）
+            new[] { "sm_talent_1394", "sm_talent_1395", "sm_talent_1396", "sm_talent_1397", "sm_talent_1398", "sm_talent_1399" }   // 念力系（神魂·精神修炼树，精神力类）
         };
 
         // unit.id -> 天赋倾向列表

@@ -19,7 +19,7 @@ namespace SuperMech.Code
             public string id;
             public string equipId;        // 产物装备ID（融合成功时动态注册）
             public string equipName;      // 产物名称
-            public string productType;    // 产物类型："sm_knowledgefusion_750"(机械系) / "sm_knowledgefusion_759"(武道) / "sm_knowledgefusion_764"(异能) / "sm_knowledgefusion_767"(魔法) / "sm_knowledgefusion_770"(念力)
+            public string productType;    // 产物类型："sm_knowledgefusion_750"sm_knowledgefusion_1331"sm_knowledgefusion_759"sm_knowledgefusion_1332"sm_knowledgefusion_764"sm_knowledgefusion_1333"sm_knowledgefusion_767"sm_knowledgefusion_1334"sm_knowledgefusion_770"(念力)
             public string desc;
             public string[] requiredKnowledge; // 需要的知识ID
             public int xpCost;

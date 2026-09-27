@@ -22,21 +22,21 @@ namespace SuperMech.Code
         // 索引：0=无阶位, 1=F, 2=E, 3=D, 4=D+, 5=C, 6=C+, 7=B, 8=B+, 9=A, 10=A+, 11=S, 12=S+, 13=SS, 14=X
         private static readonly (string title, string desc)[] RankStatus = new (string, string)[]
         {
-            ("sm_cultivationstatus_470", "未踏入超能之路"),                              // 0: 无阶位
-            ("F阶", "初入超能，玩家过渡阶位（星海人无此阶）"),         // 1: F（ch5：玩家lv1-20对应F阶）
-            ("E级超能者", "初步脱离了普通人的范畴，但距离真正的非凡生命，还有很长的路要走"), // 2: E（ch48原文）
-            ("D级超能者", "中级超能者，星际常规战力"),                  // 3: D
-            ("D+级", "中级巅峰，触摸高级门槛"),                          // 4: D+
-            ("C级超能者", "星球探索战士基础标准，基层力量分水岭"),       // 5: C（ch234原文）
-            ("C+级", "高级巅峰，文明级战力"),                            // 6: C+
-            ("B级超能者", "强力超能者，星际战场主力"),                  // 7: B
-            ("B+级", "强力巅峰，距天灾仅一步之遥"),                      // 8: B+
-            ("天灾级", "A级分水岭，星空间高等力量，能在行星地表掀起毁灭性灾难"), // 9: A（ch2/ch371原文）
-            ("天灾巅峰", "天灾级巅峰，基因进化碰上坚不可摧的瓶颈壁垒"),   // 10: A+（ch371原文）
-            ("超A级", "超越常规物种的全新生命形态，拥有专属种族，宇宙顶级存在"), // 11: S（ch760/ch946原文）
-            ("巅峰超A", "巅峰超A级，半步触摸神之领域"),                  // 12: S+
-            ("半步超神", "神性蜕变圆满，半步踏入神之境"),                // 13: SS
-            ("超神级", "抵达神的领域，资讯唯一·概念永生，宇宙首个超神级存在"), // 14: X（ch1388原文）
+            ("sm_cultivationstatus_470", "sm_cultivationstatus_1300"),                              // 0: 无阶位
+            ("sm_cultivationstatus_1301", "sm_cultivationstatus_1302"),         // 1: F（ch5：玩家lv1-20对应F阶）
+            ("sm_cultivationstatus_1303", "sm_cultivationstatus_1304"), // 2: E（ch48原文）
+            ("sm_cultivationstatus_1305", "sm_cultivationstatus_1306"),                  // 3: D
+            ("sm_cultivationstatus_1307", "sm_cultivationstatus_1308"),                          // 4: D+
+            ("sm_cultivationstatus_1309", "sm_cultivationstatus_1310"),       // 5: C（ch234原文）
+            ("sm_cultivationstatus_1311", "sm_cultivationstatus_1312"),                            // 6: C+
+            ("sm_cultivationstatus_1313", "sm_cultivationstatus_1314"),                  // 7: B
+            ("sm_cultivationstatus_1315", "sm_cultivationstatus_1316"),                      // 8: B+
+            ("sm_cultivationstatus_1317", "sm_cultivationstatus_1318"), // 9: A（ch2/ch371原文）
+            ("sm_cultivationstatus_1319", "sm_cultivationstatus_1320"),   // 10: A+（ch371原文）
+            ("sm_cultivationstatus_1321", "sm_cultivationstatus_1322"), // 11: S（ch760/ch946原文）
+            ("sm_cultivationstatus_1323", "sm_cultivationstatus_1324"),                  // 12: S+
+            ("sm_cultivationstatus_1325", "sm_cultivationstatus_1326"),                // 13: SS
+            ("sm_cultivationstatus_1327", "sm_cultivationstatus_1328"), // 14: X（ch1388原文）
         };
 
         // === 气力等级描述（原著原文）===
@@ -46,10 +46,10 @@ namespace SuperMech.Code
         {
             (1, "sm_cultivationstatus_444"),
             (3, "sm_cultivationstatus_445"),
-            (6, "气力质变（lv6解锁气力属性强化）"),  // ch49: 第一次气力质变在Lv6
+            (6, "sm_cultivationstatus_1329"),  // ch49: 第一次气力质变在Lv6
             (11, "sm_cultivationstatus_446"),
             (16, "sm_cultivationstatus_447"),
-            (21, "气力圆满（神性蜕变门槛78000欧纳）"), // ch1039: 神性蜕变触发条件
+            (21, "sm_cultivationstatus_1330"), // ch1039: 神性蜕变触发条件
             (31, "sm_cultivationstatus_448"),
         };
 
