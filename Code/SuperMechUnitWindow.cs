@@ -81,6 +81,7 @@ namespace SuperMech.Code
         {
             try
             {
+                if (SelectedUnit.unit != null && SelectedUnit.unit.isAlive()) return SelectedUnit.unit;
                 var prop = typeof(UnitWindow).GetProperty("actor",
                     BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
                 if (prop != null) return prop.GetValue(window) as Actor;
