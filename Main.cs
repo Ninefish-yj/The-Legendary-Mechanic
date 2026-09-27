@@ -12,8 +12,6 @@ namespace SuperMech
     {
         public new static Main Instance { get; private set; }
         private float _promoTimer;
-        private float _localeTimer;
-        private bool _localeExported;
         private MapBox _lastWorld;
         private bool _worldInitPending;
 
@@ -59,17 +57,6 @@ namespace SuperMech
 
         private void Update()
         {
-            if (!_localeExported)
-            {
-                _localeTimer += Time.unscaledDeltaTime;
-                if (_localeTimer >= 4f)
-                {
-                    _localeExported = true;
-                    try { SuperMechLocaleExport.Export(); }
-                    catch (System.Exception e) { Debug.LogError("[超神机械师] 本地化导出异常: " + e.Message); }
-                }
-            }
-
             if (!SuperMechConfig.ModEnabled) return;
 
             MapBox world = World.world;
