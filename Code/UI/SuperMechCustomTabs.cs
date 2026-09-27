@@ -118,6 +118,11 @@ namespace SuperMech.Code
                     KnowledgeElement keComp = contentObj.GetComponent<KnowledgeElement>();
                     if (keComp != null)
                         UnityEngine.Object.DestroyImmediate(keComp);
+
+                    for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
+                    {
+                        UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
+                    }
                 }
             }
 
@@ -134,6 +139,11 @@ namespace SuperMech.Code
                 UnitGenealogyElement genealogyComp = contentObj.GetComponent<UnitGenealogyElement>();
                 if (genealogyComp != null)
                     UnityEngine.Object.DestroyImmediate(genealogyComp);
+
+                for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
+                {
+                    UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
+                }
             }
 
             foreach (var old in contentObj.GetComponents<LayoutGroup>())
@@ -146,13 +156,6 @@ namespace SuperMech.Code
             contentRt.anchorMax = new Vector2(1, 1);
             contentRt.pivot = new Vector2(0.5f, 1f);
             contentRt.sizeDelta = new Vector2(0, 800f);
-
-            VerticalLayoutGroup vlg = contentObj.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 8f;
-            vlg.padding = new RectOffset(8, 8, 8, 8);
-            vlg.childAlignment = TextAnchor.UpperCenter;
-            ContentSizeFitter csf = contentObj.AddComponent<ContentSizeFitter>();
-            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             SMKnowledgeWindow.Create(contentObj.transform, SuperMechUtils.GetActor(window));
 
