@@ -139,12 +139,12 @@ namespace SuperMech.Code
             le.preferredHeight = GraphHeight;
             le.flexibleHeight = 0f;
 
-            AddBoxFrame(graph, new Color(0.03f, 0.04f, 0.08f, 0.95f), new Color(0.2f, 0.25f, 0.35f, 0.8f));
+            AddBoxFrame(graph, new Color(0.02f, 0.06f, 0.06f, 0.95f), new Color(0.11f, 0.48f, 0.45f, 0.6f));
 
             GameObject titleBar = new GameObject("TitleBar", typeof(RectTransform));
             titleBar.transform.SetParent(graph.transform, false);
             Image titleBg = titleBar.AddComponent<Image>();
-            titleBg.color = new Color(0.12f, 0.15f, 0.22f, 0.95f);
+            titleBg.color = new Color(0.05f, 0.15f, 0.14f, 0.95f);
             titleBg.raycastTarget = false;
             RectTransform titleBarRt = titleBar.GetComponent<RectTransform>();
             titleBarRt.anchorMin = new Vector2(0, 1);
@@ -153,7 +153,7 @@ namespace SuperMech.Code
             titleBarRt.sizeDelta = new Vector2(0, 20f);
 
             Image titleHighlight = titleBar.AddComponent<Image>();
-            titleHighlight.color = new Color(1f, 1f, 1f, 0.08f);
+            titleHighlight.color = new Color(0.23f, 1f, 0.96f, 0.1f);
             titleHighlight.raycastTarget = false;
             RectTransform hlRt = titleHighlight.GetComponent<RectTransform>();
             hlRt.anchorMin = Vector2.zero;
@@ -167,7 +167,7 @@ namespace SuperMech.Code
             titleText.text = LocalizedTextManager.getText("sm_knowledgepanel_788");
             titleText.fontSize = 11;
             titleText.fontStyle = FontStyle.Bold;
-            titleText.color = new Color(0.85f, 0.88f, 0.95f);
+            titleText.color = new Color(0.6f, 0.95f, 0.9f);
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (titleText.font == null) titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");

@@ -190,12 +190,12 @@ namespace SuperMech.Code
         {
             switch (tier)
             {
-                case 0: return new Color(0.5f, 0.7f, 0.9f);
-                case 1: return new Color(0.4f, 0.8f, 0.5f);
-                case 2: return new Color(0.7f, 0.5f, 0.9f);
-                case 3: return new Color(0.9f, 0.6f, 0.3f);
-                case 4: return new Color(0.95f, 0.8f, 0.3f);
-                default: return new Color(0.9f, 0.9f, 0.9f);
+                case 0: return new Color(0.3f, 0.71f, 0.67f);
+                case 1: return new Color(0.15f, 0.65f, 0.6f);
+                case 2: return new Color(0f, 0.54f, 0.48f);
+                case 3: return new Color(0f, 0.47f, 0.42f);
+                case 4: return new Color(0f, 0.3f, 0.25f);
+                default: return new Color(0.11f, 0.48f, 0.45f);
             }
         }
 
@@ -224,7 +224,8 @@ namespace SuperMech.Code
             go.transform.SetParent(_axonsParent.transform, false);
 
             Image img = go.AddComponent<Image>();
-            img.color = new Color(1f, 1f, 1f, 0.1f);
+            bool bothUnlocked = from.unlocked && to.unlocked;
+            img.color = bothUnlocked ? new Color(0.23f, 1f, 0.96f, 0.4f) : new Color(0.11f, 0.48f, 0.45f, 0.15f);
             img.raycastTarget = false;
 
             RectTransform rt = go.GetComponent<RectTransform>();
