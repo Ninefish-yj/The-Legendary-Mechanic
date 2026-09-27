@@ -3846,5 +3846,7 @@
   "sm_ui_knowledge_tab": "知识",
   "sm_ui_knowledge_tab_desc": "查看知识树和职业信息",
   "sm_ui_bag_tab": "背包",
-  "sm_ui_bag_tab_desc": "查看装备和资源"
+  "sm_ui_bag_tab_desc": "查看装备和资源",
+  "sm_ui_knowledge_library": "知识库",
+  "sm_ui_tier": "阶位"
 }

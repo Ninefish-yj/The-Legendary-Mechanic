@@ -106,9 +106,30 @@ namespace SuperMech.Code
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
             contentRt.pivot = new Vector2(0.5f, 1f);
-            contentRt.sizeDelta = new Vector2(0, 600f);
+            contentRt.sizeDelta = new Vector2(0, 800f);
 
-            SuperMechKnowledgePanel.Ensure(contentObj.transform, SuperMechUtils.GetActor(window));
+            VerticalLayoutGroup vlg = contentObj.AddComponent<VerticalLayoutGroup>();
+            vlg.spacing = 8f;
+            vlg.padding = new RectOffset(8, 8, 8, 8);
+            vlg.childAlignment = TextAnchor.UpperCenter;
+            ContentSizeFitter csf = contentObj.AddComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+            GameObject graphObj = new GameObject("KnowledgeGraph", typeof(RectTransform));
+            graphObj.transform.SetParent(contentObj.transform, false);
+            RectTransform graphRt = graphObj.GetComponent<RectTransform>();
+            graphRt.sizeDelta = new Vector2(0, 350f);
+            SMCubeKnowledge graph = graphObj.AddComponent<SMCubeKnowledge>();
+            graph.Init(SuperMechUtils.GetActor(window));
+
+            GameObject libTitle = new GameObject("LibTitle", typeof(RectTransform));
+            libTitle.transform.SetParent(contentObj.transform, false);
+            Text libTxt = SuperMechUtils.CreateText(libTitle.transform, LocalizedTextManager.getText("sm_ui_knowledge_library"), 12, TextAnchor.MiddleLeft, new Color(0.3f, 0.85f, 1f));
+            libTxt.fontStyle = FontStyle.Bold;
+            RectTransform libRt = libTitle.GetComponent<RectTransform>();
+            libRt.sizeDelta = new Vector2(0, 24f);
+
+            SuperMechKnowledgePanel.EnsureLibraryOnly(contentObj.transform, SuperMechUtils.GetActor(window));
 
             window.scroll_window.tabs.addTabContent(customTab, contentObj.transform);
             window.scroll_window.tabs.refillTabsWithContent();
