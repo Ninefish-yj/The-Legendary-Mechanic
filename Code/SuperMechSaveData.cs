@@ -413,7 +413,7 @@ namespace SuperMech.Code
                 typeof(SuperMechTalent).GetField("_talents", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
                     ?.SetValue(null, new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } });
             }
-            catch { }
+            catch { Debug.LogWarning("[超神机械师] 存档恢复失败"); }
         }
     }
 }

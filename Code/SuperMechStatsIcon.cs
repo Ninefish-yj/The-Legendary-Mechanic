@@ -13,7 +13,7 @@ namespace SuperMech.Code
         {
             try
             {
-                Actor actor = GetActor(__instance);
+                Actor actor = SuperMechUtils.GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return;
                 SuperMechStatsIcon.Initialize(__instance);
                 SuperMechStatsIcon.UpdateValues(__instance, actor);
@@ -22,24 +22,6 @@ namespace SuperMech.Code
             {
                 Debug.LogError($"[超神机械师] 自定义属性图标失败: {e.Message}\n{e.StackTrace}");
             }
-        }
-
-        private static Actor GetActor(UnitWindow window)
-        {
-            try
-            {
-                var prop = typeof(UnitWindow).GetProperty("actor",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public);
-                if (prop != null) return prop.GetValue(window) as Actor;
-                var field = typeof(UnitWindow).GetField("actor",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public);
-                return field?.GetValue(window) as Actor;
-            }
-            catch { return null; }
         }
     }
 
