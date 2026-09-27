@@ -152,15 +152,6 @@ namespace SuperMech.Code
             titleBarRt.pivot = new Vector2(0.5f, 1f);
             titleBarRt.sizeDelta = new Vector2(0, 20f);
 
-            Image titleHighlight = titleBar.AddComponent<Image>();
-            titleHighlight.color = new Color(0.23f, 1f, 0.96f, 0.1f);
-            titleHighlight.raycastTarget = false;
-            RectTransform hlRt = titleHighlight.GetComponent<RectTransform>();
-            hlRt.anchorMin = Vector2.zero;
-            hlRt.anchorMax = Vector2.one;
-            hlRt.offsetMin = new Vector2(0, 10f);
-            hlRt.offsetMax = Vector2.zero;
-
             GameObject titleGo = new GameObject("GraphTitle", typeof(RectTransform));
             titleGo.transform.SetParent(titleBar.transform, false);
             Text titleText = titleGo.AddComponent<Text>();
