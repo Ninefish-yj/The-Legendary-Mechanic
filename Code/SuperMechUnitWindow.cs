@@ -27,6 +27,7 @@ namespace SuperMech.Code
                 }
 
                 SuperMechInfoCard.Show(__instance, actor);
+                ShowCustomStats(__instance, actor);
             }
             catch (System.Exception e)
             {
@@ -150,7 +151,7 @@ namespace SuperMech.Code
                 if (pp > 0) ShowRow(window, "sm_unitwindow_1151", pp.ToString("F0"));
 
                 float div = a.stats[SuperMechCustomStats.StatDivinityLayers];
-                if (div > 0) ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + "sm_unitwindow_1153");
+                if (div > 0) ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"));
 
                 int sanctuaryTotal = 0;
                 string[] sanctuaryStats = {
@@ -162,7 +163,7 @@ namespace SuperMech.Code
                     SuperMechCustomStats.StatSanctuary6
                 };
                 foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
-                if (sanctuaryTotal > 0) ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + "sm_unitwindow_1155");
+                if (sanctuaryTotal > 0) ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"));
 
 
                 float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
