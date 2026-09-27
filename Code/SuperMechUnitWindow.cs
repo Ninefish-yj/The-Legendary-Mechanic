@@ -140,7 +140,7 @@ namespace SuperMech.Code
         {
             try
             {
-                window.showStatRow(label, value, null, MetaType.None, -1L, pColorText: false, null, null, null, pLocalize: false);
+                window.showStatRow(label, value, null, MetaType.None, -1L, pColorText: false, null, null, null, pLocalize: true);
             }
             catch (Exception e)
             {
