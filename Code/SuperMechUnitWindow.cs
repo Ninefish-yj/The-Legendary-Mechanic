@@ -20,8 +20,9 @@ namespace SuperMech.Code
                 Actor actor = GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return;
 
+                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
                 ShowMainInfo(__instance, actor);
-                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_custom_stats"), "");
+                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_custom_stats"), "", null, new Color(0.5f, 0.7f, 1f));
                 ShowCustomStats(__instance, actor);
             }
             catch (System.Exception e)
@@ -30,16 +31,19 @@ namespace SuperMech.Code
             }
         }
 
+        private static readonly Color InfoColor = new Color(1f, 0.9f, 0.6f);
+        private static readonly Color StatColor = new Color(0.7f, 0.85f, 1f);
+
         private static void ShowMainInfo(UnitWindow window, Actor a)
         {
             bool hasTalent = SuperMechTalent.HasTalent(a);
             if (!hasTalent)
             {
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"));
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"), null, InfoColor);
                 return;
             }
 
-            ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a));
+            ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a), null, InfoColor);
 
             bool hasProfession = SuperMechProfession.HasProfession(a);
             if (hasProfession)
@@ -47,19 +51,19 @@ namespace SuperMech.Code
                 string cls = SuperMechProfession.GetClass(a);
                 string clsAspect = GetClassAspect(cls);
                 string clsText = cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）");
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), clsText);
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), clsText, null, InfoColor);
 
                 string stage = SuperMechStage.GetStageName(a);
                 if (stage != "—" && stage != "sm_knowledgetab_829")
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stage);
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stage, null, InfoColor);
             }
             else
             {
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"));
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"), null, InfoColor);
             }
 
             float onar = SuperMechAdvancement.CalcOnar(a);
-            ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}");
+            ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}", null, InfoColor);
 
             float qi = SuperMechQi.GetQi(a);
             float qiMax = SuperMechQi.GetQiMax(a);
@@ -67,14 +71,14 @@ namespace SuperMech.Code
             string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
             string qiName = GetQiDisplayName(a);
             string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
-            ShowRow(window, qiName, $"{qiBar}（{qiLvText}）");
+            ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
 
             int pot = SuperMechPotential.GetPotential(a);
             if (pot > 0)
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString());
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), null, InfoColor);
 
             if (SuperMechAwakened.IsAwakened(a))
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"));
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
         }
 
         private static Actor GetActor(UnitWindow window)
@@ -138,11 +142,12 @@ namespace SuperMech.Code
             }
         }
 
-        private static void ShowRow(UnitWindow window, string label, object value, string iconPath = null)
+        private static void ShowRow(UnitWindow window, string label, object value, string iconPath = null, Color? color = null)
         {
             try
             {
-                window.showStatRow(label, value, null, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: true);
+                Color c = color ?? Color.white;
+                window.showStatRow(label, value, c, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: true);
             }
             catch (Exception e)
             {
@@ -155,7 +160,7 @@ namespace SuperMech.Code
             try
             {
                 float div = a.stats[SuperMechCustomStats.StatDivinityLayers];
-                ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"));
+                ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"), null, StatColor);
 
                 int sanctuaryTotal = 0;
                 string[] sanctuaryStats = {
@@ -167,20 +172,20 @@ namespace SuperMech.Code
                     SuperMechCustomStats.StatSanctuary6
                 };
                 foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
-                ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"));
+                ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"), null, StatColor);
 
                 float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
-                ShowRow(window, "sm_unitwindow_1156", mechAff.ToString("F0") + "%");
+                ShowRow(window, "sm_unitwindow_1156", mechAff.ToString("F0") + "%", null, StatColor);
 
                 float mageAff = a.stats[SuperMechCustomStats.StatMageAffinity];
-                ShowRow(window, "sm_unitwindow_1157", mageAff.ToString("F0") + "%");
+                ShowRow(window, "sm_unitwindow_1157", mageAff.ToString("F0") + "%", null, StatColor);
 
                 float mystery = a.stats[SuperMechCustomStats.StatMystery];
-                ShowRow(window, "sm_unitwindow_1158", mystery.ToString("F0"));
+                ShowRow(window, "sm_unitwindow_1158", mystery.ToString("F0"), null, StatColor);
                 float charm = a.stats[SuperMechCustomStats.StatCharm];
-                ShowRow(window, "sm_unitwindow_1159", charm.ToString("F0"));
+                ShowRow(window, "sm_unitwindow_1159", charm.ToString("F0"), null, StatColor);
                 float luck = a.stats[SuperMechCustomStats.StatLuck];
-                ShowRow(window, "sm_unitwindow_1160", luck.ToString("F0"));
+                ShowRow(window, "sm_unitwindow_1160", luck.ToString("F0"), null, StatColor);
             }
             catch (Exception e)
             {
