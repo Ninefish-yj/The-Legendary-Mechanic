@@ -34,7 +34,7 @@ namespace SuperMech.Code
                     Object.Destroy(existed.gameObject);
 
                 card = new GameObject(CardName,
-                    typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
+                    typeof(RectTransform), typeof(Image), typeof(Outline), typeof(VerticalLayoutGroup), typeof(ContentSizeFitter));
                 card.transform.SetParent(bg, false);
                 card.transform.localScale = Vector3.one;
 
@@ -46,12 +46,17 @@ namespace SuperMech.Code
                 rect.anchoredPosition = new Vector2(70f, -24f);
 
                 Image img = card.GetComponent<Image>();
-                img.color = new Color(0.02f, 0.03f, 0.05f, 0.85f);
+                img.color = new Color(0.03f, 0.04f, 0.07f, 0.92f);
                 img.raycastTarget = false;
 
+                Outline outline = card.GetComponent<Outline>();
+                outline.effectColor = new Color(0.25f, 0.35f, 0.55f, 0.7f);
+                outline.effectDistance = new Vector2(1.5f, -1.5f);
+                outline.useGraphicAlpha = true;
+
                 VerticalLayoutGroup vlg = card.GetComponent<VerticalLayoutGroup>();
-                vlg.padding = new RectOffset(6, 6, 6, 6);
-                vlg.spacing = 2f;
+                vlg.padding = new RectOffset(4, 4, 4, 4);
+                vlg.spacing = 0f;
                 vlg.childAlignment = TextAnchor.UpperLeft;
                 vlg.childControlWidth = true;
                 vlg.childControlHeight = true;
@@ -156,21 +161,32 @@ namespace SuperMech.Code
 
         private static void CreateTitle(Transform parent, Font font, string text)
         {
-            GameObject obj = new GameObject("CardTitle", typeof(RectTransform), typeof(Text), typeof(LayoutElement));
+            GameObject obj = new GameObject("CardTitle", typeof(RectTransform), typeof(Image), typeof(Outline), typeof(Text), typeof(LayoutElement));
             obj.transform.SetParent(parent, false);
+
+            Image titleBg = obj.GetComponent<Image>();
+            titleBg.color = new Color(0.12f, 0.14f, 0.2f, 0.95f);
+            titleBg.raycastTarget = false;
+
+            Outline titleOutline = obj.GetComponent<Outline>();
+            titleOutline.effectColor = new Color(0.4f, 0.5f, 0.7f, 0.5f);
+            titleOutline.effectDistance = new Vector2(1f, -1f);
+            titleOutline.useGraphicAlpha = true;
+
             Text t = obj.GetComponent<Text>();
             t.font = font;
             t.fontSize = 10;
             t.fontStyle = FontStyle.Bold;
             t.color = TitleColor;
-            t.alignment = TextAnchor.MiddleLeft;
+            t.alignment = TextAnchor.MiddleCenter;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
             t.verticalOverflow = VerticalWrapMode.Overflow;
             t.raycastTarget = false;
             t.text = text;
+
             LayoutElement le = obj.GetComponent<LayoutElement>();
-            le.minHeight = 14f;
-            le.preferredHeight = 14f;
+            le.minHeight = 18f;
+            le.preferredHeight = 18f;
         }
 
         private static void CreateLine(Transform parent, Font font, string label, string value, Color labelColor, Color valueColor)
@@ -184,7 +200,7 @@ namespace SuperMech.Code
             hlg.childControlHeight = true;
             hlg.childForceExpandWidth = false;
             hlg.childForceExpandHeight = false;
-            hlg.padding = new RectOffset(0, 0, 0, 0);
+            hlg.padding = new RectOffset(6, 6, 2, 2);
 
             GameObject labelObj = new GameObject("Label", typeof(RectTransform), typeof(Text));
             labelObj.transform.SetParent(obj.transform, false);
