@@ -141,21 +141,40 @@ namespace SuperMech.Code
 
             AddBoxFrame(graph, new Color(0.03f, 0.04f, 0.08f, 0.95f), new Color(0.2f, 0.25f, 0.35f, 0.8f));
 
+            GameObject titleBar = new GameObject("TitleBar", typeof(RectTransform));
+            titleBar.transform.SetParent(graph.transform, false);
+            Image titleBg = titleBar.AddComponent<Image>();
+            titleBg.color = new Color(0.12f, 0.15f, 0.22f, 0.95f);
+            titleBg.raycastTarget = false;
+            RectTransform titleBarRt = titleBar.GetComponent<RectTransform>();
+            titleBarRt.anchorMin = new Vector2(0, 1);
+            titleBarRt.anchorMax = new Vector2(1, 1);
+            titleBarRt.pivot = new Vector2(0.5f, 1f);
+            titleBarRt.sizeDelta = new Vector2(0, 20f);
+
+            Image titleHighlight = titleBar.AddComponent<Image>();
+            titleHighlight.color = new Color(1f, 1f, 1f, 0.08f);
+            titleHighlight.raycastTarget = false;
+            RectTransform hlRt = titleHighlight.GetComponent<RectTransform>();
+            hlRt.anchorMin = Vector2.zero;
+            hlRt.anchorMax = Vector2.one;
+            hlRt.offsetMin = new Vector2(0, 10f);
+            hlRt.offsetMax = Vector2.zero;
+
             GameObject titleGo = new GameObject("GraphTitle", typeof(RectTransform));
-            titleGo.transform.SetParent(graph.transform, false);
+            titleGo.transform.SetParent(titleBar.transform, false);
             Text titleText = titleGo.AddComponent<Text>();
             titleText.text = LocalizedTextManager.getText("sm_knowledgepanel_788");
-            titleText.fontSize = 14;
+            titleText.fontSize = 11;
             titleText.fontStyle = FontStyle.Bold;
-            titleText.color = new Color(0.9f, 0.9f, 0.95f);
+            titleText.color = new Color(0.85f, 0.88f, 0.95f);
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (titleText.font == null) titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             RectTransform titleRt = titleGo.GetComponent<RectTransform>();
-            titleRt.anchorMin = new Vector2(0, 1);
-            titleRt.anchorMax = new Vector2(1, 1);
-            titleRt.pivot = new Vector2(0.5f, 1f);
-            titleRt.offsetMin = new Vector2(0, -22);
+            titleRt.anchorMin = Vector2.zero;
+            titleRt.anchorMax = Vector2.one;
+            titleRt.offsetMin = Vector2.zero;
             titleRt.offsetMax = Vector2.zero;
             _graphTitle = titleText;
 
@@ -165,8 +184,8 @@ namespace SuperMech.Code
             gcRt.anchorMin = Vector2.zero;
             gcRt.anchorMax = new Vector2(1, 1);
             gcRt.pivot = new Vector2(0.5f, 0.5f);
-            gcRt.offsetMin = new Vector2(0, 0);
-            gcRt.offsetMax = new Vector2(0, -22);
+            gcRt.offsetMin = new Vector2(2, 2);
+            gcRt.offsetMax = new Vector2(-2, -22);
 
             _graph3D = graphContent.AddComponent<SMKnowledgeGraph3D>();
 
@@ -196,9 +215,17 @@ namespace SuperMech.Code
             Image titleBg = titleGo.AddComponent<Image>();
             titleBg.color = new Color(0.1f, 0.12f, 0.18f, 0.9f);
             titleBg.raycastTarget = false;
+            Image titleHighlight = titleGo.AddComponent<Image>();
+            titleHighlight.color = new Color(1f, 1f, 1f, 0.06f);
+            titleHighlight.raycastTarget = false;
+            RectTransform hlRt = titleHighlight.GetComponent<RectTransform>();
+            hlRt.anchorMin = Vector2.zero;
+            hlRt.anchorMax = Vector2.one;
+            hlRt.offsetMin = new Vector2(0, 11f);
+            hlRt.offsetMax = Vector2.zero;
             Text titleTxt = titleGo.AddComponent<Text>();
             titleTxt.text = LocalizedTextManager.getText("sm_knowledgepanel_789");
-            titleTxt.fontSize = 13;
+            titleTxt.fontSize = 11;
             titleTxt.fontStyle = FontStyle.Bold;
             titleTxt.color = new Color(0.85f, 0.88f, 0.92f);
             titleTxt.alignment = TextAnchor.MiddleCenter;
