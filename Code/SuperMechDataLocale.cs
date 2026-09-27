@@ -79,6 +79,7 @@ namespace SuperMech.Code
             Add("sm_quality_7", "使徒兵器");
             Add("sm_quality_8", "宇宙宝物");
             Add("sm_ui_knowledge", "知识");
+            Add("sm_ui_talent", "天赋");
             Add("sm_sub_gunner", "枪炮师");
             Add("sm_sub_mechmartial", "械武者");
 
@@ -518,7 +519,46 @@ namespace SuperMech.Code
         Add("sm_stage_166", "超能者");
         Add("sm_stage_none", "未入门");
 
-            Debug.Log("[超神机械师] 数据本地化注册完成（基础+知识节点+职业阶段）");
+        // === 阶位名（14个）===
+        Add("sm_rank_name_00", "阶位·F");
+        Add("sm_rank_name_01", "阶位·E");
+        Add("sm_rank_name_02", "阶位·D");
+        Add("sm_rank_name_03", "阶位·D+");
+        Add("sm_rank_name_04", "阶位·C");
+        Add("sm_rank_name_05", "阶位·C+");
+        Add("sm_rank_name_06", "阶位·B");
+        Add("sm_rank_name_07", "阶位·B+");
+        Add("sm_rank_name_08", "阶位·A（天灾级）");
+        Add("sm_rank_name_09", "阶位·A+");
+        Add("sm_rank_name_10", "阶位·S（超A级）");
+        Add("sm_rank_name_11", "阶位·S+");
+        Add("sm_rank_name_12", "阶位·SS（巅峰超A）");
+        Add("sm_rank_name_13", "阶位·X（神化·你即是宇宙）");
+        // === 五系天赋名（5个）===
+        Add("sm_trait_class_psi", "异能潜力（基因树）");
+        Add("sm_trait_class_martial", "体魄天赋（御气技巧树）");
+        Add("sm_trait_class_mech", "械感天赋（机械知识树）");
+        Add("sm_trait_class_mage", "魔法天赋（魔法知识树）");
+        Add("sm_trait_class_mind", "精神天赋（精神修炼树）");
+
+        // === 阶位描述（14个）===
+        Add("sm_rank_desc_00", "刚觉醒的超能者，能级低于100欧纳。");
+        Add("sm_rank_desc_01", "能级标准100欧纳，真正的超能者。");
+        Add("sm_rank_desc_02", "已掌握基础能力，能级800欧纳。");
+        Add("sm_rank_desc_03", "D阶巅峰，触摸C阶门槛。");
+        Add("sm_rank_desc_04", "一方强者，可担任小队队长，能级2000欧纳。");
+        Add("sm_rank_desc_05", "C阶巅峰，触摸B阶门槛。");
+        Add("sm_rank_desc_06", "星球级精英，能级5000欧纳。");
+        Add("sm_rank_desc_07", "B阶巅峰，触摸A阶门槛。");
+        Add("sm_rank_desc_08", "天灾级，可在行星地表掀起毁灭性灾难。");
+        Add("sm_rank_desc_09", "A阶巅峰，触摸超A门槛。");
+        Add("sm_rank_desc_10", "超A级，宇宙顶级存在，能级52000欧纳。");
+        Add("sm_rank_desc_11", "超A巅峰，触摸SS门槛。");
+        Add("sm_rank_desc_12", "巅峰超A级，触摸超神门槛，能级70000欧纳。");
+        Add("sm_rank_desc_13", "超神级，你即是宇宙。");
+        Add("sm_rank_desc_unknown", "高阶超能者。");
+
+            Debug.Log("[超神机械师] 数据本地化注册完成（基础+知识节点+职业阶段+特质+阶位描述）");
         }
 
         private static void Add(string key, string value)

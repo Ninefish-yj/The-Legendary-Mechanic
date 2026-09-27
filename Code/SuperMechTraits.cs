@@ -79,26 +79,26 @@ namespace SuperMech.Code
                 if (rankIdx >= 12) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); } // SS阶+
                 rankIdx++;
                 // 动态添加本地化（ID带数字前缀sm_rank_00_f，cz.json中key不带前缀，这里补全）
-                LocalizedTextManager.add("trait_" + r.id, r.name, pReplace: true);
+                LocalizedTextManager.add("trait_" + r.id, LocalizedTextManager.getText(r.name), pReplace: true);
                 LocalizedTextManager.add("trait_" + r.id + "_info", GetRankDesc(rankIdx - 1), pReplace: true);
                 AssetManager.traits.add(t);
             }
 
             // 2. 五系天赋（原著没有"觉醒"概念，超能者自然觉醒，天赋决定系别）
             //    用原版BaseStats属性模拟原著天赋：械感=智力+经验获取，体魄=战术+耐力+攻速， etc.
-            AddClassTrait(ClassPsi,    "异能潜力（基因树）", 3, 0, 0,
+            AddClassTrait(ClassPsi,    "sm_trait_class_psi", 3, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"damage", 5f}, {"multiplier_damage", 1.05f}, {"mana", 30f} });
-            AddClassTrait(ClassMartial, "体魄天赋（御气技巧树）", 0, 3, 2,
+            AddClassTrait(ClassMartial, "sm_trait_class_martial", 0, 3, 2,
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"damage", 10f}, {"attack_speed", 1.10f}, {"armor", 5f} });
-            AddClassTrait(ClassMech,   "械感天赋（机械知识树）", 2, 0, 0,
+            AddClassTrait(ClassMech,   "sm_trait_class_mech", 2, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"experience", 1.10f}, {"attack_speed", 1.05f} });
-            AddClassTrait(ClassMage,   "魔法天赋（魔法知识树）", 4, 0, 0,
+            AddClassTrait(ClassMage,   "sm_trait_class_mage", 4, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"mana", 50f}, {"multiplier_damage", 1.05f}, {"intelligence", 1f} });
-            AddClassTrait(ClassMind,   "精神天赋（精神修炼树）", 3, 0, 0,
+            AddClassTrait(ClassMind,   "sm_trait_class_mind", 3, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"mana", 40f}, {"multiplier_speed", 1.05f}, {"attack_speed", 1.03f} });
 
@@ -161,6 +161,9 @@ namespace SuperMech.Code
                     t.addCombatAction("combat_random_jump");
                     break;
             }
+            // 注册五系天赋名本地化（name现在是key，用getText转换）
+            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(name) + LocalizedTextManager.getText("sm_ui_talent"), pReplace: true);
             AssetManager.traits.add(t);
         }
 
@@ -168,22 +171,23 @@ namespace SuperMech.Code
         private static string GetRankDesc(int idx)
         {
             string[] descs = {
-                "刚觉醒的超能者，能级低于100欧纳。",      // F
-                "能级标准100欧纳，真正的超能者。",          // E
-                "已掌握基础能力，能级800欧纳。",            // D
-                "D阶巅峰，触摸C阶门槛。",                   // D+
-                "一方强者，可担任小队队长，能级2000欧纳。",  // C
-                "C阶巅峰，触摸B阶门槛。",                   // C+
-                "星球级精英，能级5000欧纳。",               // B
-                "B阶巅峰，触摸A阶门槛。",                   // B+
-                "天灾级，可在行星地表掀起毁灭性灾难。",      // A
-                "A阶巅峰，触摸超A门槛。",                   // A+
-                "超A级，宇宙顶级存在，能级52000欧纳。",      // S
-                "超A巅峰，触摸SS门槛。",                    // S+
-                "巅峰超A级，触摸超神门槛，能级70000欧纳。",  // SS
-                "超神级，你即是宇宙。"                      // X
+                "sm_rank_desc_00",      // F
+                "sm_rank_desc_01",          // E
+                "sm_rank_desc_02",            // D
+                "sm_rank_desc_03",                   // D+
+                "sm_rank_desc_04",  // C
+                "sm_rank_desc_05",                   // C+
+                "sm_rank_desc_06",               // B
+                "sm_rank_desc_07",                   // B+
+                "sm_rank_desc_08",      // A
+                "sm_rank_desc_09",                   // A+
+                "sm_rank_desc_10",      // S
+                "sm_rank_desc_11",                    // S+
+                "sm_rank_desc_12",  // SS
+                "sm_rank_desc_13"                      // X
             };
-            return idx >= 0 && idx < descs.Length ? descs[idx] : "高阶超能者。";
+            string key = idx >= 0 && idx < descs.Length ? descs[idx] : "sm_rank_desc_unknown";
+            return LocalizedTextManager.getText(key);
         }
     }
 }
