@@ -21,12 +21,56 @@ namespace SuperMech.Code
                 ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
                 ShowMainInfo(__instance, actor);
                 ShowCustomStats(__instance, actor);
+                AddInfoButton(__instance, actor);
             }
             catch (System.Exception e)
             {
                 Debug.LogError($"[超神机械师] 单位面板主要信息失败: {e.Message}\n{e.StackTrace}");
             }
             return true;
+        }
+
+        private static void AddInfoButton(UnitWindow window, Actor actor)
+        {
+            try
+            {
+                Transform content = window.transform.Find("Background/Scroll View/Viewport/Content");
+                if (content == null) return;
+
+                string btnName = "SMInfoBtn";
+                Transform existing = content.Find(btnName);
+                if (existing != null)
+                {
+                    UnityEngine.Object.Destroy(existing.gameObject);
+                }
+
+                GameObject btnGo = new GameObject(btnName, typeof(RectTransform));
+                btnGo.transform.SetParent(content, false);
+                RectTransform rt = btnGo.GetComponent<RectTransform>();
+                rt.anchorMin = new Vector2(0.5f, 1f);
+                rt.anchorMax = new Vector2(0.5f, 1f);
+                rt.pivot = new Vector2(0.5f, 1f);
+                rt.sizeDelta = new Vector2(180f, 26f);
+                rt.anchoredPosition = new Vector2(0f, -4f);
+
+                Image bg = btnGo.AddComponent<Image>();
+                bg.color = new Color(0.2f, 0.35f, 0.5f, 0.9f);
+
+                Button btn = btnGo.AddComponent<Button>();
+                btn.onClick.AddListener(() => SMUnitInfoWindow.Show(actor));
+
+                Text txt = SuperMechUtils.CreateText(btnGo.transform, LocalizedTextManager.getText("sm_ui_open_info"), 12, TextAnchor.MiddleCenter, Color.white);
+                txt.fontStyle = FontStyle.Bold;
+                RectTransform txtRt = txt.rectTransform;
+                txtRt.anchorMin = Vector2.zero;
+                txtRt.anchorMax = Vector2.one;
+                txtRt.offsetMin = Vector2.zero;
+                txtRt.offsetMax = Vector2.zero;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 添加信息按钮失败: " + e.Message);
+            }
         }
 
         private static readonly Color InfoColor = new Color(1f, 0.9f, 0.6f);

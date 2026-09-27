@@ -3839,5 +3839,8 @@
   "sm_skills_1117": "精神力二阶，形成精神防护屏障，生命值提升（原著ch50：念力防御）",
   "sm_skills_1118": "法则之眼",
   "sm_skills_1119": "精神力三阶，洞察法则弱点，暴击和伤害提升（原著ch50：念力攻击）",
-  "sm_ui_click_to_eat": "点击食用"
+  "sm_ui_click_to_eat": "点击食用",
+  "sm_ui_unit_info": "超能者信息",
+  "sm_ui_open_info": "查看超能者信息",
+  "sm_ui_resources": "资源"
 }
