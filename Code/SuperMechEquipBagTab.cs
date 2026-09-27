@@ -296,25 +296,26 @@ namespace SuperMech.Code
                 return;
             }
 
-            var byQuality = new Dictionary<int, List<string>>();
+            var byType = new Dictionary<EquipmentType, List<string>>();
             foreach (string equipId in bag)
             {
                 int idx = SuperMechRelic.GetEquipIndex(equipId);
                 if (idx < 0) continue;
-                int q = SuperMechRelic.Equipments[idx].qualityLevel;
-                if (!byQuality.ContainsKey(q)) byQuality[q] = new List<string>();
-                byQuality[q].Add(equipId);
+                EquipmentType t = SuperMechRelic.Equipments[idx].slotType;
+                if (!byType.ContainsKey(t)) byType[t] = new List<string>();
+                byType[t].Add(equipId);
             }
 
-            for (int q = 8; q >= 0; q--)
+            EquipmentType[] typeOrder = { EquipmentType.Weapon, EquipmentType.Helmet, EquipmentType.Armor, EquipmentType.Boots, EquipmentType.Ring, EquipmentType.Amulet };
+            foreach (EquipmentType t in typeOrder)
             {
-                if (!byQuality.ContainsKey(q) || byQuality[q].Count == 0) continue;
+                if (!byType.ContainsKey(t) || byType[t].Count == 0) continue;
 
-                Color qColor = GetQualityColor(q);
-                var qBox = CreateCategoryBox(_container.transform, GetQualityName(q), qColor, byQuality[q].Count);
+                Color typeColor = GetEquipTypeColor(t);
+                var typeBox = CreateCategoryBox(_container.transform, GetEquipTypeName(t), typeColor, byType[t].Count);
 
-                GameObject gridGo = new GameObject("QualityGrid_" + q, typeof(RectTransform));
-                gridGo.transform.SetParent(qBox, false);
+                GameObject gridGo = new GameObject("TypeGrid_" + t, typeof(RectTransform));
+                gridGo.transform.SetParent(typeBox, false);
                 RectTransform gridRt = gridGo.GetComponent<RectTransform>();
                 gridRt.anchorMin = Vector2.zero;
                 gridRt.anchorMax = Vector2.one;
@@ -331,11 +332,22 @@ namespace SuperMech.Code
                 gridFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
                 gridFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-                foreach (string equipId in byQuality[q])
+                var sorted = new List<string>(byType[t]);
+                sorted.Sort((a, b) =>
+                {
+                    int idxA = SuperMechRelic.GetEquipIndex(a);
+                    int idxB = SuperMechRelic.GetEquipIndex(b);
+                    int qA = idxA >= 0 ? SuperMechRelic.Equipments[idxA].qualityLevel : 0;
+                    int qB = idxB >= 0 ? SuperMechRelic.Equipments[idxB].qualityLevel : 0;
+                    return qB.CompareTo(qA);
+                });
+
+                foreach (string equipId in sorted)
                 {
                     int idx = SuperMechRelic.GetEquipIndex(equipId);
                     if (idx < 0) continue;
                     var def = SuperMechRelic.Equipments[idx];
+                    Color qColor = GetQualityColor(def.qualityLevel);
 
                     var iconGo = CreateItemIcon(gridGo.transform, def.icon, qColor, 36, def.name,
                         $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{LocalizedTextManager.getText("sm_ui_equip")}");
@@ -349,6 +361,34 @@ namespace SuperMech.Code
                         });
                     }
                 }
+            }
+        }
+
+        private static string GetEquipTypeName(EquipmentType t)
+        {
+            switch (t)
+            {
+                case EquipmentType.Weapon: return LocalizedTextManager.getText("sm_eq_type_weapon");
+                case EquipmentType.Helmet: return LocalizedTextManager.getText("sm_eq_type_helmet");
+                case EquipmentType.Armor: return LocalizedTextManager.getText("sm_eq_type_armor");
+                case EquipmentType.Boots: return LocalizedTextManager.getText("sm_eq_type_boots");
+                case EquipmentType.Ring: return LocalizedTextManager.getText("sm_eq_type_ring");
+                case EquipmentType.Amulet: return LocalizedTextManager.getText("sm_eq_type_amulet");
+                default: return t.ToString();
+            }
+        }
+
+        private static Color GetEquipTypeColor(EquipmentType t)
+        {
+            switch (t)
+            {
+                case EquipmentType.Weapon: return new Color(1f, 0.4f, 0.3f);
+                case EquipmentType.Helmet: return new Color(0.5f, 0.7f, 1f);
+                case EquipmentType.Armor: return new Color(0.6f, 0.8f, 0.5f);
+                case EquipmentType.Boots: return new Color(0.8f, 0.6f, 0.4f);
+                case EquipmentType.Ring: return new Color(0.9f, 0.7f, 0.9f);
+                case EquipmentType.Amulet: return new Color(1f, 0.85f, 0.4f);
+                default: return new Color(0.6f, 0.6f, 0.65f);
             }
         }
 

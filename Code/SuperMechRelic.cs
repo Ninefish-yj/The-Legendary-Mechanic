@@ -16,19 +16,20 @@ namespace SuperMech.Code
             public string icon;
             public float dmgMul;
             public float hpMul;
+            public EquipmentType slotType;
         }
 
         public static readonly List<EquipDef> Equipments = new List<EquipDef>
         {
-            new EquipDef { id="sm_eq_gray",    name="sm_relic_094",       qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f },
-            new EquipDef { id="sm_eq_green",   name="sm_relic_095",       qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f },
-            new EquipDef { id="sm_eq_blue",    name="sm_relic_096",       qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f },
-            new EquipDef { id="sm_eq_lightpurple", name="sm_relic_097", qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.7f, hpMul=1.5f },
-            new EquipDef { id="sm_eq_purple",  name="sm_relic_098",       qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.2f, hpMul=1.8f },
-            new EquipDef { id="sm_eq_pink",    name="sm_relic_099",  qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=3.0f, hpMul=2.5f },
-            new EquipDef { id="sm_eq_orange",  name="sm_relic_100",  qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f },
-            new EquipDef { id="sm_eq_silverorange", name="sm_relic_101", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f },
-            new EquipDef { id="sm_eq_gold",    name="sm_relic_102", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f },
+            new EquipDef { id="sm_eq_gray_ring",    name="sm_relic_094", qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f, slotType=EquipmentType.Ring },
+            new EquipDef { id="sm_eq_green_boots",  name="sm_relic_095", qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f, slotType=EquipmentType.Boots },
+            new EquipDef { id="sm_eq_blue_helmet",  name="sm_relic_096", qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f, slotType=EquipmentType.Helmet },
+            new EquipDef { id="sm_eq_lp_armor",     name="sm_relic_097", qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.7f, hpMul=1.5f, slotType=EquipmentType.Armor },
+            new EquipDef { id="sm_eq_purple_weapon",name="sm_relic_098", qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.2f, hpMul=1.8f, slotType=EquipmentType.Weapon },
+            new EquipDef { id="sm_eq_pink_amulet",  name="sm_relic_099", qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=3.0f, hpMul=2.5f, slotType=EquipmentType.Amulet },
+            new EquipDef { id="sm_eq_orange_weapon",name="sm_relic_100", qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f, slotType=EquipmentType.Weapon },
+            new EquipDef { id="sm_eq_so_armor",     name="sm_relic_101", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f, slotType=EquipmentType.Armor },
+            new EquipDef { id="sm_eq_gold_amulet",  name="sm_relic_102", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f, slotType=EquipmentType.Amulet },
         };
 
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
@@ -59,7 +60,7 @@ namespace SuperMech.Code
                 if (asset == null) continue;
 
                 ((Asset)asset).id = def.id;
-                ((ItemAsset)asset).equipment_type = EquipmentType.Amulet;
+                ((ItemAsset)asset).equipment_type = def.slotType;
                 ((ItemAsset)asset).material = string.Empty;
                 ((ItemAsset)asset).animated = false;
                 ((ItemAsset)asset).is_pool_weapon = false;

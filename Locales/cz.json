@@ -3800,5 +3800,11 @@
   "sm_know_tier_3": "尖端知识",
   "sm_know_tier_4": "终极知识",
   "sm_ui_super_info": "超能者信息",
-  "sm_ui_custom_stats": "◆ 超能者属性"
+  "sm_ui_custom_stats": "◆ 超能者属性",
+  "sm_eq_type_weapon": "武器",
+  "sm_eq_type_helmet": "头盔",
+  "sm_eq_type_armor": "装甲",
+  "sm_eq_type_boots": "靴子",
+  "sm_eq_type_ring": "戒指",
+  "sm_eq_type_amulet": "护身符"
 }

@@ -323,7 +323,7 @@ namespace SuperMech.Code
                     SuperMechQi.SetQi(actor, 100f);
                     SuperMechQi.SetQiMax(actor, 100f);
                     SuperMechPotential.SetPotential(actor, 5);
-                    string[] starterIds = { "sm_eq_gray", "sm_eq_green" };
+                    string[] starterIds = { "sm_eq_gray_ring", "sm_eq_green_boots" };
                     int count = Random.Range(1, 3);
                     for (int i = 0; i < count; i++)
                         SuperMechEquipBag.AddToBag(actor, starterIds[Random.Range(0, starterIds.Length)]);

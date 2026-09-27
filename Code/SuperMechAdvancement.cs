@@ -96,7 +96,7 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             int count = Random.Range(1, 3);
-            string[] starterIds = { "sm_eq_gray", "sm_eq_green" };
+            string[] starterIds = { "sm_eq_gray_ring", "sm_eq_green_boots" };
             for (int i = 0; i < count; i++)
             {
                 string equipId = starterIds[Random.Range(0, starterIds.Length)];
