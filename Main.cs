@@ -23,6 +23,7 @@ namespace SuperMech
             Instance = this;
             LogInfo("[超神机械师] 模组加载");
             SuperMechConfig.Init();  // 配置系统最先初始化（default_config.json 由 NML 自动加载）
+            SuperMechDataLocale.Init();  // 数据本地化注册（五系/阶位/知识阶等基础数据），必须在UI之前
             SuperMechTraitGroups.Register();  // 必须最先：自定义group_id不注册会导致特质面板KeyNotFound崩溃
             SuperMechCustomStats.Register();  // 自定义属性（气力/能级/械力等），在特质注册前
             SuperMechTraits.Register();
