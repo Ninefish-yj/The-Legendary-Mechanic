@@ -9,7 +9,7 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
-    // 背包Tab：9级品质，按品质排序分组
+
 
     public static class SuperMechEquipBagTab
     {
@@ -558,15 +558,15 @@ namespace SuperMech.Code
         {
             switch (q)
             {
-                case 0: return new Color(0.6f, 0.6f, 0.6f); // 灰
-                case 1: return new Color(0.3f, 0.8f, 0.3f); // 绿
-                case 2: return new Color(0.3f, 0.5f, 1f);   // 蓝
-                case 3: return new Color(0.7f, 0.5f, 1f);   // 淡紫
-                case 4: return new Color(0.6f, 0.2f, 0.9f); // 紫
-                case 5: return new Color(1f, 0.4f, 0.7f);   // 粉(珍稀)
-                case 6: return new Color(1f, 0.6f, 0f);     // 橙(传说)
-                case 7: return new Color(0.8f, 0.8f, 0.9f); // 银橙(使徒兵器)
-                case 8: return new Color(1f, 0.84f, 0f);    // 金(宇宙宝物级)
+                case 0: return new Color(0.6f, 0.6f, 0.6f);
+                case 1: return new Color(0.3f, 0.8f, 0.3f);
+                case 2: return new Color(0.3f, 0.5f, 1f);
+                case 3: return new Color(0.7f, 0.5f, 1f);
+                case 4: return new Color(0.6f, 0.2f, 0.9f);
+                case 5: return new Color(1f, 0.4f, 0.7f);
+                case 6: return new Color(1f, 0.6f, 0f);
+                case 7: return new Color(0.8f, 0.8f, 0.9f);
+                case 8: return new Color(1f, 0.84f, 0f);
                 default: return Color.white;
             }
         }

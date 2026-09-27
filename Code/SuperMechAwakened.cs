@@ -12,37 +12,37 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, float> _xp = new Dictionary<long, float>();
 
         public static readonly int[] StageLevelCaps = {
-            20,   // 1.入门者
-            40,   // 2.学徒
-            15,   // 3.见习
-            60,   // 4.磁环
-            60,   // 5.数据
-            60,   // 6.战争
-            60,   // 7.虚拟
-            60,   // 8.星海
-            60,   // 9.真理
-            60,   // 10.使徒
-            60,   // 11.帝皇
-            60,   // 12.主宰
-            60,   // 13.神座
-            999   // 14.超神（无上限）
+            20,
+            40,
+            15,
+            60,
+            60,
+            60,
+            60,
+            60,
+            60,
+            60,
+            60,
+            60,
+            60,
+            999
         };
 
         public static readonly float[] StageBaseXp = {
-            200f,       // 1.入门者（ch3原文）
-            50000f,     // 2.学徒（ch50原文）
-            200000f,    // 3.见习（推测，学徒2.5倍）
-            800000f,    // 4.磁环（推测）
-            2000000f,   // 5.数据（推测）
-            5000000f,   // 6.战争（推测）
-            10000000f,  // 7.虚拟（推测）
-            20000000f,  // 8.星海（推测）
-            40000000f,  // 9.真理（推测）
-            80000000f,  // 10.使徒（推测）
-            150000000f, // 11.帝皇（推测）
-            300000000f, // 12.主宰（推测）
-            500000000f, // 13.神座（推测）
-            1000000000f // 14.超神（推测）
+            200f,
+            50000f,
+            200000f,
+            800000f,
+            2000000f,
+            5000000f,
+            10000000f,
+            20000000f,
+            40000000f,
+            80000000f,
+            150000000f,
+            300000000f,
+            500000000f,
+            1000000000f
         };
 
         public static float GetXpNeeded(int level, int stage)
@@ -65,7 +65,7 @@ namespace SuperMech.Code
                 needs_to_be_explored = false,
                 base_stats = new BaseStats()
             };
-            t.base_stats["experience"] = 2.0f; // 降临者经验获取×2
+            t.base_stats["experience"] = 2.0f;
             t.base_stats["intelligence"] = 5;
             AssetManager.traits.add(t);
             LocalizedTextManager.add("trait_" + AwakenedTrait, LocalizedTextManager.getText("sm_awakened_505"), pReplace: true);
@@ -82,7 +82,7 @@ namespace SuperMech.Code
         {
             if (a == null || !IsAwakened(a)) return 0;
             if (_level.TryGetValue(a.data.id, out int lv)) return lv;
-            return 1; // 降临者初始1级
+            return 1;
         }
 
         public static int GetTotalLevel(Actor a)
@@ -143,8 +143,8 @@ namespace SuperMech.Code
                 curXp -= needed;
                 lv++;
                 int idx = Mathf.Clamp(stage - 1, 0, SuperMechStage.LevelQiBonus.Length - 1);
-                SuperMechQi.AddQiMax(a, SuperMechStage.LevelQiBonus[idx]); // 升级提升气力上限
-                SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a)); // 升级后气力充盈
+                SuperMechQi.AddQiMax(a, SuperMechStage.LevelQiBonus[idx]);
+                SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a));
                 SuperMechPotential.AddPotential(a, LevelPotentialPoints[idx]);
                 Debug.Log($"[超神机械师] {a.name} 升级到Lv{lv}（阶段{stage}，气力+{SuperMechStage.LevelQiBonus[idx]:F0}）");
             }

@@ -36,13 +36,13 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
+            float tickInterval = SuperMechConfig.TickInterval * 4f;
 
             foreach (Actor a in units)
             {
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
-                if (SuperMechAwakened.IsAwakened(a)) continue; // 降临者不走传承度
+                if (SuperMechAwakened.IsAwakened(a)) continue;
 
                 float growth = 0.5f * tickInterval;
 
@@ -62,7 +62,7 @@ namespace SuperMech.Code
                 float cost = GetCost(unlocked);
                 float h = GetHeritage(a);
 
-                while (h >= cost && unlocked < 50) // 最多自动解锁50个节点
+                while (h >= cost && unlocked < 50)
                 {
                     h -= cost;
                     unlocked++;
@@ -127,19 +127,19 @@ namespace SuperMech.Code
                     stats["stamina"] = (stats["stamina"]) + rate * 1.5f;
                     stats["armor"] = (stats["armor"]) + rate * 0.5f;
                     stats["speed"] = (stats["speed"]) + rate * 0.3f;
-                    if (branch == SuperMechBranch.BranchMartialBody) // 体魄
+                    if (branch == SuperMechBranch.BranchMartialBody)
                     {
                         stats["damage"] = (stats["damage"]) + rate * 1f;
                         stats["health"] = (stats["health"]) + rate * 1f;
                         stats["stamina"] = (stats["stamina"]) + rate * 0.5f;
                     }
-                    else if (branch == SuperMechBranch.BranchMartialTactic) // 战术
+                    else if (branch == SuperMechBranch.BranchMartialTactic)
                     {
                         stats["speed"] = (stats["speed"]) + rate * 1f;
                         stats["attack_speed"] = (stats["attack_speed"]) + rate * 1f;
                         stats["warfare"] = (stats["warfare"]) + rate * 0.8f;
                     }
-                    else if (branch == SuperMechBranch.BranchMartialPower) // 超能
+                    else if (branch == SuperMechBranch.BranchMartialPower)
                     {
                         stats["damage"] = (stats["damage"]) + rate * 0.8f;
                         stats["mana"] = (stats["mana"]) + rate * 1f;
@@ -152,17 +152,17 @@ namespace SuperMech.Code
                     stats["health"] = (stats["health"]) + rate * 1f;
                     stats["stamina"] = (stats["stamina"]) + rate * 0.8f;
                     stats["damage"] = (stats["damage"]) + rate * 0.5f;
-                    if (branch == SuperMechBranch.BranchGunner) // 枪炮师
+                    if (branch == SuperMechBranch.BranchGunner)
                     {
                         stats["damage"] = (stats["damage"]) + rate * 1.5f;
                         stats["range"] = (stats["range"]) + rate * 0.5f;
                     }
-                    else if (branch == SuperMechBranch.BranchMech) // 机械师
+                    else if (branch == SuperMechBranch.BranchMech)
                     {
                         stats["intelligence"] = (stats["intelligence"]) + rate * 1f;
                         stats["health"] = (stats["health"]) + rate * 0.5f;
                     }
-                    else if (branch == SuperMechBranch.BranchMartial) // 械武者
+                    else if (branch == SuperMechBranch.BranchMartial)
                     {
                         stats["damage"] = (stats["damage"]) + rate * 1f;
                         stats["speed"] = (stats["speed"]) + rate * 0.8f;

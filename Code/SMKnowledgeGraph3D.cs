@@ -24,7 +24,7 @@ namespace SuperMech.Code
             public string id;
             public string name;
             public string icon;
-            public int tier; // 0=基础,1=进阶,2=高端,3=尖端,4=终极
+            public int tier;
             public bool unlocked;
             public bool unlockable;
             public int cost;
@@ -32,7 +32,7 @@ namespace SuperMech.Code
             public GameObject gameObject;
             public Image image;
             public Button button;
-            public float spawnTimer; // 自动冲动生成计时器
+            public float spawnTimer;
         }
 
         private class Axon
@@ -51,15 +51,15 @@ namespace SuperMech.Code
             public Image image;
             public float progress;
             public float speed;
-            public int wave; // 剩余分裂次数
-            public KnowledgeNode source; // 来源节点（避免往回传）
+            public int wave;
+            public KnowledgeNode source;
         }
 
         private List<KnowledgeNode> _nodes = new List<KnowledgeNode>();
         private List<Axon> _axons = new List<Axon>();
         private List<NerveImpulse> _impulses = new List<NerveImpulse>();
 
-        private GameObject _graphContainer; // 旋转的容器
+        private GameObject _graphContainer;
         private GameObject _nodesParent;
         private GameObject _axonsParent;
         private GameObject _impulsesParent;
@@ -70,7 +70,7 @@ namespace SuperMech.Code
         private float _rotationX;
         private float _targetRotationY;
         private float _targetRotationX;
-        private float _axonHighlight; // 轴突高亮强度（拖拽时增加）
+        private float _axonHighlight;
 
         private Actor _actor;
         private string _prefix;
@@ -199,11 +199,11 @@ namespace SuperMech.Code
         {
             switch (prefix)
             {
-                case "mech": return new Color(0.4f, 0.7f, 1f);    // 机械系-蓝
-                case "martial": return new Color(1f, 0.5f, 0.3f);  // 武道系-橙
-                case "psi": return new Color(0.8f, 0.4f, 1f);      // 异能系-紫
-                case "mage": return new Color(0.4f, 1f, 0.6f);     // 魔法系-绿
-                case "mind": return new Color(1f, 0.8f, 0.3f);     // 念力系-金
+                case "mech": return new Color(0.4f, 0.7f, 1f);
+                case "martial": return new Color(1f, 0.5f, 0.3f);
+                case "psi": return new Color(0.8f, 0.4f, 1f);
+                case "mage": return new Color(0.4f, 1f, 0.6f);
+                case "mind": return new Color(1f, 0.8f, 0.3f);
                 default: return new Color(0.6f, 0.6f, 0.6f);
             }
         }
@@ -212,11 +212,11 @@ namespace SuperMech.Code
         {
             switch (tier)
             {
-                case 0: return new Color(0.6f, 0.6f, 0.65f);  // 基础-灰
-                case 1: return new Color(0.4f, 0.8f, 0.5f);   // 进阶-绿
-                case 2: return new Color(0.4f, 0.6f, 1f);    // 高端-蓝
-                case 3: return new Color(0.8f, 0.4f, 1f);    // 尖端-紫
-                case 4: return new Color(1f, 0.8f, 0.3f);    // 终极-金
+                case 0: return new Color(0.6f, 0.6f, 0.65f);
+                case 1: return new Color(0.4f, 0.8f, 0.5f);
+                case 2: return new Color(0.4f, 0.6f, 1f);
+                case 3: return new Color(0.8f, 0.4f, 1f);
+                case 4: return new Color(1f, 0.8f, 0.3f);
                 default: return new Color(0.6f, 0.6f, 0.65f);
             }
         }
@@ -508,7 +508,7 @@ namespace SuperMech.Code
 
         private void SpawnImpulse(Axon axon, int wave = 2, KnowledgeNode source = null)
         {
-            if (_impulses.Count > 40) return; // 限制数量
+            if (_impulses.Count > 40) return;
 
             GameObject go = new GameObject("Impulse", typeof(RectTransform));
             go.transform.SetParent(_impulsesParent.transform, false);
@@ -655,7 +655,7 @@ namespace SuperMech.Code
                 node.spawnTimer -= Time.deltaTime;
                 if (node.spawnTimer <= 0f)
                 {
-                    node.spawnTimer = Random.Range(3f, 8f); // 3-8秒生成一次
+                    node.spawnTimer = Random.Range(3f, 8f);
                     FireImpulseFromNode(node, 1);
                 }
             }
@@ -678,7 +678,7 @@ namespace SuperMech.Code
         {
             _isDragging = true;
             _lastDragPos = eventData.position;
-            _axonHighlight = 0.5f; // 拖拽开始时高亮轴突
+            _axonHighlight = 0.5f;
         }
 
         public void OnDrag(PointerEventData eventData)

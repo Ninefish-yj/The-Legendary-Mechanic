@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 神权系统：8个上帝工具，静态图标
+
 
     public static class SuperMechPowers
     {

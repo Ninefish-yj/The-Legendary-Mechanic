@@ -13,16 +13,16 @@ namespace SuperMech.Code
 
         public struct CraftRecipe
         {
-            public string id;           // 神权id
-            public string name;         // 显示名
-            public string desc;         // 描述
-            public string creatureId;   // WorldBox生物id
-            public int minStage;        // 最低机械阶段tier
-            public string requiredKnowledge; // 需要的知识节点id（空=按阶段解锁）
-            public float qiBase;        // 基础气力奖励
-            public float expBase;       // 基础经验奖励
-            public string[] traits;     // 制造出的单位附带特质
-            public Dictionary<string, int> cost; // 材料消耗 {resourceId: amount}
+            public string id;
+            public string name;
+            public string desc;
+            public string creatureId;
+            public int minStage;
+            public string requiredKnowledge;
+            public float qiBase;
+            public float expBase;
+            public string[] traits;
+            public Dictionary<string, int> cost;
         }
 
         public static readonly CraftRecipe[] Recipes =

@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 统一tick：4组错峰调度，死亡清理
+
 
     public static class SuperMechUnifiedTick
     {
@@ -26,7 +26,7 @@ namespace SuperMech.Code
                     SuperMechQiAttribute.TickAutoAssign();
                     SuperMechRefinement.TickRefinement();
                     SuperMechRefinement.TickCultivation();
-                    SuperMechCustomStats.TickSync(); // 同步自定义属性到BaseStats（单位面板显示）
+                    SuperMechCustomStats.TickSync();
                 }
                 else if (group == 1)
                 {
@@ -40,7 +40,7 @@ namespace SuperMech.Code
                     SuperMechHeritage.TickHeritage();
                     SuperMechKnowledgeSynergy.TickSynergy();
                     SuperMechMechFusion.TickFusion();
-                    SuperMechSkills.TickAutoLearnAll(); // 自动学习职业技能
+                    SuperMechSkills.TickAutoLearnAll();
                 }
                 else if (group == 2)
                 {
@@ -51,7 +51,7 @@ namespace SuperMech.Code
                     SuperMechTranscendence.TickAutoAttempt();
                     SuperMechInfoState.TickInfoState();
                 }
-                else // group == 3
+                else
                 {
                     SuperMechSanctuary.TickDivinity();
                     SuperMechSanctuary.TickDeadTracking();

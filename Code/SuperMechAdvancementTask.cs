@@ -15,7 +15,7 @@ namespace SuperMech.Code
             public int intValue;
             public string statKey;
             public float statValue;
-            public int totalLevel;  // 额外总等级要求（0=无）
+            public int totalLevel;
             public string desc;
         }
 

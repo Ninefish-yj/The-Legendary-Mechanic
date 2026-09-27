@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 阶位系统：14级阶位，欧纳公式=气力×阶段×属性×衰减
+
 
     public static class SuperMechAdvancement
     {
@@ -17,7 +17,7 @@ namespace SuperMech.Code
             if (qi <= 0) return 0;
 
             int stage = SuperMechStage.GetStage(a);
-            float stageFactor = 1f + stage * 0.03f;  // 每阶段+3%转化率
+            float stageFactor = 1f + stage * 0.03f;
 
             var s = SuperMechStats.Of(a);
             float dmg = s != null ? s["damage"] : 0;
@@ -41,7 +41,7 @@ namespace SuperMech.Code
             foreach (Actor a in list)
             {
                 if (a == null) continue;
-                if (SuperMechTalent.HasTalent(a)) continue; // 已踏入超能
+                if (SuperMechTalent.HasTalent(a)) continue;
                 if (a.age < SuperMechConfig.AwakeningMinAge) continue;
                 if (Random.value > SuperMechConfig.AwakeningChance) continue;
 
@@ -50,7 +50,7 @@ namespace SuperMech.Code
                     a.addTrait("sm_rank_01_e");
                 SetExactRank(a, 1);
                 SuperMechSpecialty.AssignRandomSpecialty(a);
-                SuperMechPerks.GrantRandomPerks(a);  // 随机赋予1-2个天赋专长
+                SuperMechPerks.GrantRandomPerks(a);
 
                 var talents = SuperMechTalent.GetTalents(a);
                 if (talents != null && talents.Count > 0)
@@ -129,7 +129,7 @@ namespace SuperMech.Code
                 }
 
                 int oldExact = GetExactRankIndex(a);
-                if (oldExact == targetIdx) continue;  // 阶位未变
+                if (oldExact == targetIdx) continue;
                 _exactRank[a.id] = targetIdx;
 
                 if (!SuperMechRanks.IsPlusRank(targetIdx))
@@ -154,16 +154,16 @@ namespace SuperMech.Code
                 {
                     string rankName = SuperMechRanks.All[targetIdx].name;
                     int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(a));
-                    if (targetIdx >= 10) // S阶以上，突破伴随能力质变
+                    if (targetIdx >= 10)
                         Debug.Log($"[超神机械师]【阶位突破】{a.name} 迈入{rankName}，气力Lv{qiLv}，能力产生质变，可掌握更高层次的技能与知识");
-                    else if (targetIdx >= 8) // A阶（天灾级）
+                    else if (targetIdx >= 8)
                         Debug.Log($"[超神机械师]【阶位突破】{a.name} 达到{rankName}（天灾级），气力Lv{qiLv}，破坏力可在行星地表掀起灾难");
                     else
                         Debug.Log($"[超神机械师]【阶位提升】{a.name} 晋升{rankName}，气力Lv{qiLv}，实力层次稳步提升");
                 }
 
                 ApplyRankStats(a, targetIdx);
-                SuperMechRace.AutoEvolve(a, targetIdx);  // 种族进化与阶位挂钩
+                SuperMechRace.AutoEvolve(a, targetIdx);
 
                 CheckDivinityTrigger(a);
 
@@ -200,7 +200,7 @@ namespace SuperMech.Code
                 if (SuperMechRanks.IsPlusRank(oldIdx))
                 {
                     var oldR = SuperMechRanks.All[oldIdx];
-                    var oldMain = SuperMechRanks.All[oldIdx - 1]; // +位的前一个主阶位
+                    var oldMain = SuperMechRanks.All[oldIdx - 1];
                     float dmgInc = oldR.damageMul / oldMain.damageMul;
                     float hpInc = oldR.healthMul / oldMain.healthMul;
                     if (dmgInc > 1f) s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / dmgInc;
@@ -269,7 +269,7 @@ namespace SuperMech.Code
             }
             ApplyRankStats(a, index);
             SuperMechRankSpecialty.OnRankUp(a, index);
-            SuperMechRace.AutoEvolve(a, index);  // 种族进化与阶位挂钩
+            SuperMechRace.AutoEvolve(a, index);
 
             if (!SuperMechAwakened.IsAwakened(a))
             {
@@ -282,15 +282,15 @@ namespace SuperMech.Code
 
         private static int RankToStage(int rankIdx)
         {
-            if (rankIdx <= 0) return 0;   // F
-            if (rankIdx <= 1) return 1;   // E
-            if (rankIdx <= 3) return 2;   // D/D+
-            if (rankIdx <= 5) return 3;   // C/C+
-            if (rankIdx <= 7) return 4;   // B/B+
-            if (rankIdx <= 9) return 6;   // A/A+
-            if (rankIdx <= 11) return 8;  // S/S+
-            if (rankIdx <= 12) return 11; // SS
-            return 13;                    // X
+            if (rankIdx <= 0) return 0;
+            if (rankIdx <= 1) return 1;
+            if (rankIdx <= 3) return 2;
+            if (rankIdx <= 5) return 3;
+            if (rankIdx <= 7) return 4;
+            if (rankIdx <= 9) return 6;
+            if (rankIdx <= 11) return 8;
+            if (rankIdx <= 12) return 11;
+            return 13;
         }
 
         public static void Clear()

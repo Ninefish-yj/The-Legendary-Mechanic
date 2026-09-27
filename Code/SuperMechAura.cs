@@ -20,7 +20,7 @@ namespace SuperMech.Code
             {
                 if (actor == null || !actor.isAlive()) continue;
                 int rank = SuperMechAdvancement.GetExactRankIndex(actor);
-                if (rank >= 8) // A阶（天灾级）以上释放气势
+                if (rank >= 8)
                     auraSources.Add(actor);
             }
 
@@ -58,9 +58,9 @@ namespace SuperMech.Code
                     if (rankDiff >= 4)
                     {
                         float stunChance = Mathf.Min((rankDiff - 3) * 0.15f, 0.60f);
-                        if (Random.value < stunChance * 0.1f) // 每tick 10%概率触发
+                        if (Random.value < stunChance * 0.1f)
                         {
-                            _stunned[target.id] = Time.time + 2f; // 眩晕2秒
+                            _stunned[target.id] = Time.time + 2f;
                             Debug.Log($"[超神机械师]【气势震慑】{source.name}({SuperMechRanks.All[sourceRank].name}) 震慑眩晕 {target.name}(阶位差{rankDiff})");
                         }
                     }

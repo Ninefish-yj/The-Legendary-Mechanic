@@ -65,20 +65,20 @@ namespace SuperMech.Code
         {
             long id = a.id;
             if (!stageDict.TryGetValue(id, out int stage)) stage = 1;
-            if (stage >= 5) return;  // 已满阶
+            if (stage >= 5) return;
 
             int nextStage = stage + 1;
             int qiLvReq = StageQiLevelReq[nextStage];
             float qi = SuperMechQi.GetQi(a);
             int qiLv = SuperMechQi.GetLevel(qi);
-            if (qiLv < qiLvReq) return;  // 气力等级不够，无法突破
+            if (qiLv < qiLvReq) return;
 
             if (!progDict.TryGetValue(id, out int prog)) prog = 0;
             float qiMul = 1f + qiLv * 0.05f;
             prog += (int)(gain * qiMul);
             progDict[id] = prog;
 
-            int req = StageProgressReq[stage];  // stage是1-4，对应下阶阈值
+            int req = StageProgressReq[stage];
             if (prog >= req)
             {
                 progDict[id] = 0;

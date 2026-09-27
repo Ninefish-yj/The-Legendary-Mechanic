@@ -41,11 +41,11 @@ namespace SuperMech.Code
 
         public static int GetTier(int legend)
         {
-            if (legend >= 500) return 5;  // 神话级
-            if (legend >= 200) return 4;  // 宇宙传说
-            if (legend >= 80) return 3;   // 星域传说
-            if (legend >= 30) return 2;   // 星系知名
-            if (legend >= 10) return 1;   // 小有名气
+            if (legend >= 500) return 5;
+            if (legend >= 200) return 4;
+            if (legend >= 80) return 3;
+            if (legend >= 30) return 2;
+            if (legend >= 10) return 1;
             return 0;
         }
 
@@ -64,18 +64,18 @@ namespace SuperMech.Code
         {
             if (killer == null || victim == null) return;
             int victimRank = SuperMechAdvancement.GetExactRankIndex(victim);
-            if (victimRank < 6) return; // B阶以下不值得传说度
+            if (victimRank < 6) return;
 
             int baseLegend = victimRank switch
             {
-                6 => 1,    // B阶
-                7 => 2,    // B+
-                8 => 3,    // A阶（天灾级）
-                9 => 5,    // A+
-                10 => 10,  // S阶（超A级）
-                11 => 15,  // S+
-                12 => 25,  // SS阶（巅峰超A）
-                13 => 50,  // X阶（超神级）
+                6 => 1,
+                7 => 2,
+                8 => 3,
+                9 => 5,
+                10 => 10,
+                11 => 15,
+                12 => 25,
+                13 => 50,
                 _ => 0
             };
 

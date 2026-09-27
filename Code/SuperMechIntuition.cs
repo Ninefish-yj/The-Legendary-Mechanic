@@ -9,13 +9,13 @@ namespace SuperMech.Code
 
         public class Destiny
         {
-            public string name;        // 使命名称
-            public string description; // 使命描述
-            public string type;        // 类型：combat/create/explore/rule/transcend
-            public float progress;     // 进度0-100
-            public float target;       // 目标值
-            public bool completed;     // 是否完成
-            public int rewardDivinity; // 奖励神性蜕变点
+            public string name;
+            public string description;
+            public string type;
+            public float progress;
+            public float target;
+            public bool completed;
+            public int rewardDivinity;
         }
 
         private static readonly string[][] MechDestinies = {
@@ -62,7 +62,7 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
+            float tickInterval = SuperMechConfig.TickInterval * 4f;
 
             foreach (Actor a in units)
             {
@@ -80,7 +80,7 @@ namespace SuperMech.Code
                 var d = _destinies[a.id];
                 if (d.completed) continue;
 
-                float progressRate = 0.5f * tickInterval; // 基础进度
+                float progressRate = 0.5f * tickInterval;
                 progressRate *= (1f + (rankIdx - 10) * 0.3f);
                 if (SuperMechQi.IsInCombat(a)) progressRate *= 2f;
                 if (a.hasTrait("sm_refinement")) progressRate *= 1.3f;
@@ -118,7 +118,7 @@ namespace SuperMech.Code
                 target = float.Parse(t[3]),
                 progress = 0,
                 completed = false,
-                rewardDivinity = 3 + Random.Range(0, 3) // 奖励3-5神性蜕变点
+                rewardDivinity = 3 + Random.Range(0, 3)
             };
             _destinies[a.id] = d;
             Debug.Log($"[超神机械师] {a.name}（{cls}）感应到冥冥中的使命：{d.name}——{d.description}");

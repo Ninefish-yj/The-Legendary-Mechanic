@@ -61,9 +61,9 @@ namespace SuperMech.Code
             }
             else if (a.hasTrait(SuperMechTraits.ClassMartial))
             {
-                if (a.hasTrait(SuperMechBranch.BranchMartialPower)) attr = AttrFire;       // 超能→火
-                else if (a.hasTrait(SuperMechBranch.BranchMartialTactic)) attr = AttrWind; // 战术→风
-                else if (a.hasTrait(SuperMechBranch.BranchMartialBody)) attr = AttrIron;   // 体魄→铁
+                if (a.hasTrait(SuperMechBranch.BranchMartialPower)) attr = AttrFire;
+                else if (a.hasTrait(SuperMechBranch.BranchMartialTactic)) attr = AttrWind;
+                else if (a.hasTrait(SuperMechBranch.BranchMartialBody)) attr = AttrIron;
             }
             else if (a.hasTrait(SuperMechTraits.ClassPsi))
             {
@@ -72,8 +72,8 @@ namespace SuperMech.Code
             }
             else if (a.hasTrait(SuperMechTraits.ClassMage))
             {
-                if (a.hasTrait(SuperMechBranch.BranchMageSpecialist)) attr = AttrFire;  // 专精→火/雷
-                else if (a.hasTrait(SuperMechBranch.BranchMageWeave)) attr = AttrLight;  // 魔网→光
+                if (a.hasTrait(SuperMechBranch.BranchMageSpecialist)) attr = AttrFire;
+                else if (a.hasTrait(SuperMechBranch.BranchMageWeave)) attr = AttrLight;
                 else attr = AttrLight;
             }
 

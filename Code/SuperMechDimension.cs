@@ -10,10 +10,10 @@ namespace SuperMech.Code
             public string id;
             public string name;
             public string desc;
-            public string classTrait;  // 对应系
+            public string classTrait;
             public System.Action<BaseStats> applyBuff;
-            public System.Action<BaseStats> removeBuff;  // 反向移除buff
-            public int minRankIndex = 8;  // A阶（index 8）
+            public System.Action<BaseStats> removeBuff;
+            public int minRankIndex = 8;
         }
 
         public static readonly List<DimensionDef> Dimensions = new List<DimensionDef>
@@ -104,7 +104,7 @@ namespace SuperMech.Code
             new DimensionDef
             {
                 id = "infostate", name = "sm_dimension_374", desc = "sm_dimension_375",
-                classTrait = null, // 信息态维度对所有系开放，但需要第六圣所解锁
+                classTrait = null,
                 applyBuff = s => {
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.1f;
                     s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * 1.1f;
@@ -125,8 +125,8 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, string> _activeDimension = new Dictionary<long, string>();
         private static readonly Dictionary<long, long> _buffEndTime = new Dictionary<long, long>();
         private static readonly Dictionary<long, long> _cooldown = new Dictionary<long, long>();
-        public const float BuffDurationSeconds = 120f;  // buff持续120秒（2分钟）
-        public const float CooldownSeconds = 300f;      // 冷却300秒（5分钟）
+        public const float BuffDurationSeconds = 120f;
+        public const float CooldownSeconds = 300f;
 
         public static DimensionDef GetDef(string id)
         {

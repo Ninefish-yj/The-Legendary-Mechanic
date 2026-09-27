@@ -59,7 +59,7 @@ namespace SuperMech.Code
             foreach (var b in AllBranches)
             {
                 var bs = new BaseStats();
-                b.applyBonus(bs);  // 注册时一次性填充base_stats
+                b.applyBonus(bs);
                 var t = new ActorTrait
                 {
                     id = b.traitId,

@@ -10,44 +10,44 @@ namespace SuperMech.Code
         public static bool ModEnabled = true;
 
         public static bool AutoAwakening = true;
-        public static float AwakeningChance = 0.05f;      // 每tick自然觉醒概率
-        public static int AwakeningMinAge = 16;           // 最小觉醒年龄
+        public static float AwakeningChance = 0.05f;
+        public static int AwakeningMinAge = 16;
 
-        public static float QiGrowthRate = 1.0f;          // 气力增长倍率
-        public static bool QiUnlimited = true;            // 气力无上限（原著设定）
-        public static int QiDisplayDecimals = 0;          // 气力显示小数位
+        public static float QiGrowthRate = 1.0f;
+        public static bool QiUnlimited = true;
+        public static int QiDisplayDecimals = 0;
 
-        public static float PromotionSpeed = 1.0f;        // 晋升速度倍率
-        public static float OnaMultiplier = 1.0f;         // 欧纳计算倍率
-        public static bool AutoPromotion = true;          // 自动晋升
-        public static int AutoPromotionMaxRank = 12;      // 自动晋升上限阶位索引（0=F~13=X，默认12=SS，X阶需通过超神突破系统晋升（满足三条件后自动尝试或手动触发））
-        public static bool ShowRankInPanel = true;        // 单位面板显示阶位
+        public static float PromotionSpeed = 1.0f;
+        public static float OnaMultiplier = 1.0f;
+        public static bool AutoPromotion = true;
+        public static int AutoPromotionMaxRank = 12;
+        public static bool ShowRankInPanel = true;
 
-        public static bool AutoFavoriteEnabled = true;    // 自动收藏总开关
-        public static bool AutoFavoriteF = false;         // F阶自动收藏
-        public static bool AutoFavoriteE = false;         // E阶自动收藏
-        public static bool AutoFavoriteD = false;         // D阶自动收藏
-        public static bool AutoFavoriteC = false;         // C阶自动收藏
-        public static bool AutoFavoriteB = false;         // B阶自动收藏
-        public static bool AutoFavoriteA = true;          // A阶自动收藏
-        public static bool AutoFavoriteS = true;          // S阶（超A）自动收藏
-        public static bool AutoFavoriteSS = true;         // SS阶自动收藏
-        public static bool AutoFavoriteX = true;          // X阶（超神）自动收藏
+        public static bool AutoFavoriteEnabled = true;
+        public static bool AutoFavoriteF = false;
+        public static bool AutoFavoriteE = false;
+        public static bool AutoFavoriteD = false;
+        public static bool AutoFavoriteC = false;
+        public static bool AutoFavoriteB = false;
+        public static bool AutoFavoriteA = true;
+        public static bool AutoFavoriteS = true;
+        public static bool AutoFavoriteSS = true;
+        public static bool AutoFavoriteX = true;
 
-        public static bool SanctuaryEnabled = true;       // 圣所跨存档
-        public static bool SanctuaryAutoSave = true;      // 圣所自动保存
+        public static bool SanctuaryEnabled = true;
+        public static bool SanctuaryAutoSave = true;
 
-        public static bool MechSummonEnabled = true;      // 机械召唤（爆兵流占位）
-        public static int MaxSummonedUnits = 50;          // 最大召唤单位数（性能保护）
+        public static bool MechSummonEnabled = true;
+        public static int MaxSummonedUnits = 50;
 
-        public static float TickInterval = 1.25f;          // 主循环间隔（秒）
-        public static int MaxTrackedActors = 500;         // 最大追踪单位数
-        public static bool LogVerbose = false;            // 详细日志
+        public static float TickInterval = 1.25f;
+        public static int MaxTrackedActors = 500;
+        public static bool LogVerbose = false;
 
-        public static bool RelicDropEnabled = true;       // 宝物掉落
-        public static float RelicDropRate = 0.01f;        // 宝物掉落率
+        public static bool RelicDropEnabled = true;
+        public static float RelicDropRate = 0.01f;
 
-        public static float RefinementBonus = 2.0f;       // 提炼法气力加成
+        public static float RefinementBonus = 2.0f;
 
         public static void Init()
         {
@@ -158,18 +158,18 @@ namespace SuperMech.Code
         {
             if (rankIdx <= 0) return AutoFavoriteF;
             if (rankIdx <= 1) return AutoFavoriteE;
-            if (rankIdx <= 3) return AutoFavoriteD;  // D和D+
-            if (rankIdx <= 5) return AutoFavoriteC;  // C和C+
-            if (rankIdx <= 7) return AutoFavoriteB;  // B和B+
-            if (rankIdx <= 9) return AutoFavoriteA;  // A和A+
-            if (rankIdx <= 11) return AutoFavoriteS; // S和S+
+            if (rankIdx <= 3) return AutoFavoriteD;
+            if (rankIdx <= 5) return AutoFavoriteC;
+            if (rankIdx <= 7) return AutoFavoriteB;
+            if (rankIdx <= 9) return AutoFavoriteA;
+            if (rankIdx <= 11) return AutoFavoriteS;
             if (rankIdx <= 12) return AutoFavoriteSS;
             return AutoFavoriteX;
         }
 
         public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"sm_config_643"); }
         public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"sm_config_644"); }
-        public static void SetSanctuaryCount(int val) { /* 兼容旧配置：圣所数量已固定为6个，此选项已废弃 */ }
+        public static void SetSanctuaryCount(int val) {  }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; LogInfo($"sm_config_645"); }
         public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); LogInfo($"sm_config_646"); }

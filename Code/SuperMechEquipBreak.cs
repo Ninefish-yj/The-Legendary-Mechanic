@@ -15,7 +15,7 @@ namespace SuperMech.Code
             if (!SuperMechAdvancement.IsSuperMechUnit(a)) return;
 
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(a);
-            if (currentIdx < 0) return; // 没装备
+            if (currentIdx < 0) return;
 
             if (_breakCooldown.TryGetValue(a.id, out var cd) && Time.time < cd) return;
 

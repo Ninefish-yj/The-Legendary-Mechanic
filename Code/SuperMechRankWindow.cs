@@ -9,7 +9,7 @@ namespace SuperMech.Code
     public static class SuperMechRankWindow
     {
         private static SMWindowFrame _frame;
-        private static int _sortMode; // 0=欧纳 1=气力 2=阶位
+        private static int _sortMode;
 
         public static void Show()
         {

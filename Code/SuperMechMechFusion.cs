@@ -19,12 +19,12 @@ namespace SuperMech.Code
             if (!SuperMechBranch.GetClass(a).Contains("sm_mechfusion_884")) return false;
 
             int stage = SuperMechStage.GetStage(a);
-            if (stage < MinStageForFusion) return false; // 需磁环阶段以上
+            if (stage < MinStageForFusion) return false;
 
             int eqIdx = SuperMechRelic.GetCurrentEquipIndex(a);
-            if (eqIdx < MinQualityForFusion) return false; // 需蓝色以上装备
+            if (eqIdx < MinQualityForFusion) return false;
 
-            if (_fusionLevel.ContainsKey(a.id) && _fusionLevel[a.id] > 0) return false; // 已融合
+            if (_fusionLevel.ContainsKey(a.id) && _fusionLevel[a.id] > 0) return false;
 
             int level = Mathf.Clamp(eqIdx - 1, 1, 5);
             _fusionLevel[a.id] = level;

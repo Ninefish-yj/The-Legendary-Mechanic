@@ -9,11 +9,11 @@ namespace SuperMech.Code
         {
             public string id;
             public string name;
-            public string statKey;   // 对应BaseStats的key
-            public float minValue;   // 最小值（百分比或固定值）
-            public float maxValue;   // 最大值
-            public bool isMultiplier; // true=倍率, false=固定值
-            public int minQuality;   // 最低品质要求（0-8）
+            public string statKey;
+            public float minValue;
+            public float maxValue;
+            public bool isMultiplier;
+            public int minQuality;
         }
 
         private static readonly List<AffixDef> _affixPool = new List<AffixDef>

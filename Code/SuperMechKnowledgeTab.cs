@@ -8,7 +8,7 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
-    // 知识Tab：三层结构（系别+3D图谱+知识库）
+
 
     public static class SuperMechKnowledgeTab
     {
@@ -153,7 +153,7 @@ namespace SuperMech.Code
                     break;
                 }
             }
-            if (icon == null && allImages.Length > 1) icon = allImages[1]; // 第二个Image通常是图标
+            if (icon == null && allImages.Length > 1) icon = allImages[1];
             if (icon != null)
             {
                 try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconGenius"); } catch { }
@@ -263,7 +263,7 @@ namespace SuperMech.Code
                         actor.addTrait("sm_rank_00_f");
                     SuperMechAdvancement.SetExactRank(actor, 0);
                     SuperMechSpecialty.AssignRandomSpecialty(actor);
-                    SuperMechPerks.GrantRandomPerks(actor);  // 随机赋予1-2个天赋专长
+                    SuperMechPerks.GrantRandomPerks(actor);
                     SuperMechQi.SetQi(actor, 100f);
                     SuperMechQi.SetQiMax(actor, 100f);
                     SuperMechPotential.SetPotential(actor, 5);
@@ -453,11 +453,11 @@ namespace SuperMech.Code
             string[] allClassNames = System.Array.ConvertAll(allClassKeys, k => LocalizedTextManager.getText(k));
             for (int i = 0; i < allPrefixes.Length; i++)
             {
-                if (allPrefixes[i] == prefix) continue; // 跳过主职业
+                if (allPrefixes[i] == prefix) continue;
                 var crossDefs = SuperMechKnowledge.GetAllByPrefix(allPrefixes[i]);
                 int crossUnlocked = 0;
                 foreach (var d in crossDefs) if (SuperMechKnowledge.IsUnlocked(actor, d.id)) crossUnlocked++;
-                if (crossUnlocked > 0) // 只有解锁了跨系知识才显示
+                if (crossUnlocked > 0)
                 {
                     AddSectionHeader(_container.transform, $"sm_knowledgetab_844", new Color(0.5f, 0.5f, 0.7f));
                     GameObject crossRow = null;
@@ -509,7 +509,7 @@ namespace SuperMech.Code
                     AddInfoRow(_container.transform, "sm_knowledgetab_851", "");
                     foreach (var recipe in fusionRecipes)
                     {
-                        if (learnedRecipes.Exists(r => r.id == recipe.id)) continue; // 已学会的不重复显示
+                        if (learnedRecipes.Exists(r => r.id == recipe.id)) continue;
                         string status = $"sm_knowledgetab_852";
                         AddInfoRow(_container.transform, recipe.equipName, $"[{recipe.productType}] {status}");
                     }
@@ -894,11 +894,11 @@ namespace SuperMech.Code
         {
             switch (tier)
             {
-                case 0: return new Color(0.6f, 0.6f, 0.6f); // 基础-灰
-                case 1: return new Color(0.3f, 0.8f, 0.3f); // 进阶-绿
-                case 2: return new Color(0.3f, 0.5f, 1f);   // 高端-蓝
-                case 3: return new Color(0.7f, 0.4f, 1f);   // 尖端-紫
-                case 4: return new Color(1f, 0.84f, 0f);    // 终极-金
+                case 0: return new Color(0.6f, 0.6f, 0.6f);
+                case 1: return new Color(0.3f, 0.8f, 0.3f);
+                case 2: return new Color(0.3f, 0.5f, 1f);
+                case 3: return new Color(0.7f, 0.4f, 1f);
+                case 4: return new Color(1f, 0.84f, 0f);
                 default: return Color.white;
             }
         }

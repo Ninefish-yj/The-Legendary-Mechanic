@@ -34,12 +34,12 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<string, int> RankCap = new Dictionary<string, int>
         {
-            { RatingE, 2 },   // D阶
-            { RatingD, 4 },   // C阶
-            { RatingC, 6 },   // B阶
-            { RatingB, 8 },   // A阶
-            { RatingA, 10 },  // S阶（超A）
-            { RatingS, 12 },  // SS阶
+            { RatingE, 2 },
+            { RatingD, 4 },
+            { RatingC, 6 },
+            { RatingB, 8 },
+            { RatingA, 10 },
+            { RatingS, 12 },
         };
 
         private static readonly (string rating, int weight)[] RatingWeights =
@@ -96,7 +96,7 @@ namespace SuperMech.Code
         public static int GetMaxRank(Actor a)
         {
             string r = GetRating(a);
-            if (string.IsNullOrEmpty(r)) return 8; // 无评级默认A阶上限
+            if (string.IsNullOrEmpty(r)) return 8;
             return RankCap.TryGetValue(r, out int v) ? v : 8;
         }
 

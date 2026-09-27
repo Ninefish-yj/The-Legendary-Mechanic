@@ -9,20 +9,20 @@ namespace SuperMech.Code
     {
         public const string RefinementTrait = "sm_refinement";
         public const string EmRefinementTrait = "sm_em_refinement";
-        public const string PsiResonance  = "sm_pcult_resonance";   // 基因提炼法（异能）
-        public const string ManaMeditation = "sm_pcult_meditation"; // 魔力提炼法（魔法）
-        public const string MindTrain    = "sm_pcult_mind_train";   // 精神提炼法（念力）
+        public const string PsiResonance  = "sm_pcult_resonance";
+        public const string ManaMeditation = "sm_pcult_meditation";
+        public const string MindTrain    = "sm_pcult_mind_train";
 
         private static readonly Dictionary<long, int> _refineCount = new Dictionary<long, int>();
         private static readonly Dictionary<long, int> _emRefineCount = new Dictionary<long, int>();
         private static readonly Dictionary<long, float> _refineQiBonus = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _emRefineQiBonus = new Dictionary<long, float>();
 
-        public const int MaxRefineCount = 80;       // ch50：0/80
-        public const int RefineXpCost = 800;         // ch50：每次消耗800经验
-        public const int RefineStaminaCost = 500;    // ch50：每次消耗500体力
-        public const float RefineBaseQi = 10f;       // ch50：基础总效果气力+10
-        public const int MaxEmRefineCount = 100;     // ch237：限制100次
+        public const int MaxRefineCount = 80;
+        public const int RefineXpCost = 800;
+        public const int RefineStaminaCost = 500;
+        public const float RefineBaseQi = 10f;
+        public const int MaxEmRefineCount = 100;
 
         public static void Register()
         {
@@ -64,7 +64,7 @@ namespace SuperMech.Code
                     if (!a.hasTrait(RefinementTrait))
                     {
                         a.addTrait(RefinementTrait);
-                        _refineQiBonus[a.data.id] = RefineBaseQi; // 获得时基础+10
+                        _refineQiBonus[a.data.id] = RefineBaseQi;
                         SuperMechQi.AddQiMax(a, RefineBaseQi);
                     }
                     if (a.hasTrait(SuperMechTraits.ClassMech) && !a.hasTrait(EmRefinementTrait))

@@ -39,7 +39,7 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
-                if (IsFavorite(a)) continue;  // 已收藏的跳过
+                if (IsFavorite(a)) continue;
 
                 int currentRankIdx = SuperMechAdvancement.GetExactRankIndex(a);
                 if (currentRankIdx >= 0 && SuperMechConfig.ShouldFavoriteRank(currentRankIdx))

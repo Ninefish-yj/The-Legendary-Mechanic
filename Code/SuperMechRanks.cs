@@ -8,10 +8,10 @@ namespace SuperMech.Code
         {
             public string id;
             public string name;
-            public double onarFloor;     // 进入该阶位的欧纳门槛（参考标定）
-            public float damageMul;      // 伤害倍率
-            public float healthMul;     // 生命倍率
-            public string nextRank;     // 下一阶位 id
+            public double onarFloor;
+            public float damageMul;
+            public float healthMul;
+            public string nextRank;
         }
 
         public static readonly List<RankDef> All = new List<RankDef>

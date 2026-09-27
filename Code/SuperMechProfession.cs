@@ -7,12 +7,12 @@ namespace SuperMech.Code
     {
         public enum ProfessionType
         {
-            None,        // 未选定（野生超能者）
-            Mechanical,  // 机械系
-            Martial,     // 武道系
-            Psi,         // 异能系
-            Mage,        // 魔法系
-            Mind         // 念力系
+            None,
+            Mechanical,
+            Martial,
+            Psi,
+            Mage,
+            Mind
         }
 
         private static readonly Dictionary<long, ProfessionType> _profession = new Dictionary<long, ProfessionType>();

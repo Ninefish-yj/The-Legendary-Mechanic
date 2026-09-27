@@ -50,7 +50,7 @@ namespace SuperMech.Code
             var data = SuperMechSanctuary.Data;
             for (int i = 0; i < 6; i++)
             {
-                int sanctuaryIndex = i; // 闭包捕获
+                int sanctuaryIndex = i;
                 bool unlocked = (data.unlocked_sanctuaries & (1 << i)) != 0;
                 int fragments = data.sanctuary_fragments[i];
                 Color bg = unlocked ? new Color(0.15f, 0.25f, 0.15f, 0.8f) : new Color(0.12f, 0.12f, 0.15f, 0.8f);

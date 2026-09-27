@@ -6,7 +6,7 @@ using HarmonyLib;
 
 namespace SuperMech
 {
-    // 模组入口：系统注册顺序和主循环调度
+
 
     public class Main : BasicMod<Main>
     {
@@ -21,11 +21,11 @@ namespace SuperMech
         {
             Instance = this;
             LogInfo("[超神机械师] 模组加载");
-            SuperMechConfig.Init();  // 配置系统最先初始化（default_config.json 由 NML 自动加载）
-            SuperMechTraitGroups.Register();  // 必须最先：自定义group_id不注册会导致特质面板KeyNotFound崩溃
-            SuperMechCustomStats.Register();  // 自定义属性（气力/能级/械力等），在特质注册前
+            SuperMechConfig.Init();
+            SuperMechTraitGroups.Register();
+            SuperMechCustomStats.Register();
             SuperMechTraits.Register();
-            SuperMechSkills.Register();  // 独立技能系统（不注册为特质）
+            SuperMechSkills.Register();
             SuperMechKnowledge.Register();
             SuperMechKnowledgeSynergy.Register();
             SuperMechKnowledgeFusion.Register();
@@ -46,7 +46,7 @@ namespace SuperMech
             SuperMechSanctuary.Register();
             SuperMechCrafting.Register();
             SuperMechPowers.Register();
-            SuperMechUI.Init();  // 必须在 powers 注册之后（PowerButton.OnEnable 按名字查 powers）
+            SuperMechUI.Init();
 
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();

@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 圣所系统：6圣所，权限=碎片不消耗，S阶复活信息丢失
+
 
     public static class SuperMechSanctuary
     {
@@ -20,9 +20,9 @@ namespace SuperMech.Code
         };
 
         public const int TotalSanctuaries = 6;
-        public const float DivinityOnarThreshold = 78000f;  // 神性蜕变欧纳门槛（ch1039）
-        public const int DivinityQiLevel = 21;               // 神性蜕变气力门槛（ch1039）
-        public const int FragmentsToUnlock = 3;              // 集齐3碎片解锁圣所
+        public const float DivinityOnarThreshold = 78000f;
+        public const int DivinityQiLevel = 21;
+        public const int FragmentsToUnlock = 3;
 
         private static readonly string DataPath =
             Path.Combine(Application.dataPath, "sm_sanctuary_970");
@@ -32,27 +32,27 @@ namespace SuperMech.Code
 
         public class SanctuaryData
         {
-            public int unlocked_sanctuaries = 0;       // 已解锁圣所数量（共6个）
-            public int key_fragments = 0;              // 通用圣所钥匙碎片
-            public int[] sanctuary_fragments = new int[6];  // 各圣所碎片数 [0]=第一圣所...
-            public int total_permission = 0;           // 总权限等级
-            public int total_visits = 0;                // 累计进入次数
-            public bool message_board_unlocked = false; // 文明留言板
-            public int total_divinity_ascensions = 0;   // 累计神性蜕变次数
-            public int total_resurrections = 0;         // 累计复活次数
+            public int unlocked_sanctuaries = 0;
+            public int key_fragments = 0;
+            public int[] sanctuary_fragments = new int[6];
+            public int total_permission = 0;
+            public int total_visits = 0;
+            public bool message_board_unlocked = false;
+            public int total_divinity_ascensions = 0;
+            public int total_resurrections = 0;
         }
 
         public class DeadUnitRecord
         {
             public string name;
-            public string classTrait;   // 五系觉醒特质id
-            public string branchTrait;  // 分支特质id
-            public int stage;           // 机械系职业阶段
-            public int rankIndex;       // 阶位索引
-            public float qi;            // 气力值
-            public string qiAttribute;  // 气力属性
-            public long diedAt;         // 死亡时间戳
-            public int reviveCount;     // 累计复活次数（ch1214：次数越多信息丢失越严重）
+            public string classTrait;
+            public string branchTrait;
+            public int stage;
+            public int rankIndex;
+            public float qi;
+            public string qiAttribute;
+            public long diedAt;
+            public int reviveCount;
         }
 
         private static readonly Dictionary<long, int> _reviveCount = new Dictionary<long, int>();
@@ -122,9 +122,9 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, DeadUnitRecord> _aliveSnapshot = new Dictionary<long, DeadUnitRecord>();
         private static readonly Dictionary<long, DeadUnitRecord> _divineSnapshot = new Dictionary<long, DeadUnitRecord>();
         private static readonly HashSet<long> _divineCooldown = new HashSet<long>();
-        public const int MaxDeadRecords = 20;       // 最多保留20个死者
-        public const int ResurrectionCost = 5;      // 复活消耗钥匙碎片
-        public const int DivineRankIndex = 13;      // X阶（超神级）索引
+        public const int MaxDeadRecords = 20;
+        public const int ResurrectionCost = 5;
+        public const int DivineRankIndex = 13;
 
         public static void Load()
         {
@@ -148,7 +148,7 @@ namespace SuperMech.Code
 
         public static void Save()
         {
-            if (!SuperMechConfig.SanctuaryAutoSave) return; // 关闭自动保存时不写盘
+            if (!SuperMechConfig.SanctuaryAutoSave) return;
             try
             {
                 string json = JsonConvert.SerializeObject(Data, Formatting.Indented);
@@ -198,7 +198,7 @@ namespace SuperMech.Code
             {
                 Data.sanctuary_fragments[sanctuaryIndex]++;
                 string sname = SanctuaryNames[sanctuaryIndex];
-                int personalFragments = Random.Range(1, 4); // 神性蜕变获得1-3个个人碎片
+                int personalFragments = Random.Range(1, 4);
                 AddAuthority(a, sanctuaryIndex, personalFragments);
                 Debug.Log($"[超神机械师] {a.name} 神性蜕变！获得{sname}技能碎片（全局{Data.sanctuary_fragments[sanctuaryIndex]}/{FragmentsToUnlock}，个人权限+{personalFragments}）");
 
@@ -266,7 +266,7 @@ namespace SuperMech.Code
             }
 
             int authority = GetAuthority(a, sanctuaryIndex >= 0 ? sanctuaryIndex : 0);
-            int knowledgeGain = Mathf.Clamp(authority + 1, 1, 20); // 权限+1，最多20点（记忆容量上限）
+            int knowledgeGain = Mathf.Clamp(authority + 1, 1, 20);
             SuperMechPotential.AddPotential(a, knowledgeGain);
 
             if (Random.value < 0.3f && sanctuaryIndex >= 0)
@@ -313,12 +313,12 @@ namespace SuperMech.Code
                         break;
                     }
                 }
-                if (sanctuaryIndex < 0) return; // 没有已解锁的圣所
+                if (sanctuaryIndex < 0) return;
             }
 
             switch (sanctuaryIndex)
             {
-                case 0: // 第一圣所：机械技术传承（ch1039：泰尔克斯机械传承）
+                case 0:
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 5f + visits;
@@ -329,7 +329,7 @@ namespace SuperMech.Code
                         SuperMechQi.AddQiMax(a, 200f + visits * 20f);
                     break;
 
-                case 1: // 第二圣所：武道功法传承（气力修炼法）
+                case 1:
                     SuperMechQi.AddQiMax(a, 500f + visits * 50f);
                     if (s != null)
                     {
@@ -338,7 +338,7 @@ namespace SuperMech.Code
                     }
                     break;
 
-                case 2: // 第三圣所：基因技术传承（ch1050：原始异能体是钥匙）
+                case 2:
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 4f + visits;
@@ -348,7 +348,7 @@ namespace SuperMech.Code
                         SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
-                case 3: // 第四圣所：魔法知识传承
+                case 3:
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 4f + visits;
@@ -358,17 +358,17 @@ namespace SuperMech.Code
                         SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
-                case 4: // 第五圣所：灵魂技术传承（精神力修炼）
+                case 4:
                     if (s != null)
                     {
                         s["intelligence"] = (s["intelligence"]) + 5f + visits;
-                        s["mana"] = (s["mana"]) + 30f + visits * 3f; // 意志力用魔力模拟
+                        s["mana"] = (s["mana"]) + 30f + visits * 3f;
                     }
                     if (SuperMechBranch.GetClass(a) == "sm_sanctuary_968")
                         SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
-                case 5: // 第六圣所：信息态技术（ch1309：第六圣所=信息态技术）
+                case 5:
                     SuperMechInfoState.Upgrade(a);
                     if (s != null)
                     {
@@ -540,7 +540,7 @@ namespace SuperMech.Code
             int reviveCount = rec.reviveCount + 1;
             SetReviveCount(a, reviveCount);
 
-            float infoLoss = Mathf.Clamp(0.1f * reviveCount, 0.1f, 0.5f); // 每次多丢10%，最多50%
+            float infoLoss = Mathf.Clamp(0.1f * reviveCount, 0.1f, 0.5f);
 
             int finalRank = rec.rankIndex;
             int finalStage = rec.stage;
@@ -573,7 +573,7 @@ namespace SuperMech.Code
                 s["intelligence"] = Mathf.Max(0f, ((s["intelligence"] == 0f ? 5f : s["intelligence"])) * (1f - infoLoss * 0.5f));
             }
 
-            bool canResurrectAgain = finalRank >= 10; // S阶索引=10
+            bool canResurrectAgain = finalRank >= 10;
             if (!canResurrectAgain)
             {
                 Debug.Log($"[超神机械师] {rec.name} 已降到{SuperMechRanks.GetRankName(finalRank)}，失去圣所复活资格！");

@@ -8,31 +8,31 @@ namespace SuperMech.Code
     {
         private static readonly (string title, string desc)[] RankStatus = new (string, string)[]
         {
-            ("sm_cultivationstatus_470", "sm_cultivationstatus_1300"),                              // 0: 无阶位
-            ("sm_cultivationstatus_1301", "sm_cultivationstatus_1302"),         // 1: F（ch5：玩家lv1-20对应F阶）
-            ("sm_cultivationstatus_1303", "sm_cultivationstatus_1304"), // 2: E（ch48原文）
-            ("sm_cultivationstatus_1305", "sm_cultivationstatus_1306"),                  // 3: D
-            ("sm_cultivationstatus_1307", "sm_cultivationstatus_1308"),                          // 4: D+
-            ("sm_cultivationstatus_1309", "sm_cultivationstatus_1310"),       // 5: C（ch234原文）
-            ("sm_cultivationstatus_1311", "sm_cultivationstatus_1312"),                            // 6: C+
-            ("sm_cultivationstatus_1313", "sm_cultivationstatus_1314"),                  // 7: B
-            ("sm_cultivationstatus_1315", "sm_cultivationstatus_1316"),                      // 8: B+
-            ("sm_cultivationstatus_1317", "sm_cultivationstatus_1318"), // 9: A（ch2/ch371原文）
-            ("sm_cultivationstatus_1319", "sm_cultivationstatus_1320"),   // 10: A+（ch371原文）
-            ("sm_cultivationstatus_1321", "sm_cultivationstatus_1322"), // 11: S（ch760/ch946原文）
-            ("sm_cultivationstatus_1323", "sm_cultivationstatus_1324"),                  // 12: S+
-            ("sm_cultivationstatus_1325", "sm_cultivationstatus_1326"),                // 13: SS
-            ("sm_cultivationstatus_1327", "sm_cultivationstatus_1328"), // 14: X（ch1388原文）
+            ("sm_cultivationstatus_470", "sm_cultivationstatus_1300"),
+            ("sm_cultivationstatus_1301", "sm_cultivationstatus_1302"),
+            ("sm_cultivationstatus_1303", "sm_cultivationstatus_1304"),
+            ("sm_cultivationstatus_1305", "sm_cultivationstatus_1306"),
+            ("sm_cultivationstatus_1307", "sm_cultivationstatus_1308"),
+            ("sm_cultivationstatus_1309", "sm_cultivationstatus_1310"),
+            ("sm_cultivationstatus_1311", "sm_cultivationstatus_1312"),
+            ("sm_cultivationstatus_1313", "sm_cultivationstatus_1314"),
+            ("sm_cultivationstatus_1315", "sm_cultivationstatus_1316"),
+            ("sm_cultivationstatus_1317", "sm_cultivationstatus_1318"),
+            ("sm_cultivationstatus_1319", "sm_cultivationstatus_1320"),
+            ("sm_cultivationstatus_1321", "sm_cultivationstatus_1322"),
+            ("sm_cultivationstatus_1323", "sm_cultivationstatus_1324"),
+            ("sm_cultivationstatus_1325", "sm_cultivationstatus_1326"),
+            ("sm_cultivationstatus_1327", "sm_cultivationstatus_1328"),
         };
 
         private static readonly (int minLv, string desc)[] QiStatus = new (int, string)[]
         {
             (1, "sm_cultivationstatus_444"),
             (3, "sm_cultivationstatus_445"),
-            (6, "sm_cultivationstatus_1329"),  // ch49: 第一次气力质变在Lv6
+            (6, "sm_cultivationstatus_1329"),
             (11, "sm_cultivationstatus_446"),
             (16, "sm_cultivationstatus_447"),
-            (21, "sm_cultivationstatus_1330"), // ch1039: 神性蜕变触发条件
+            (21, "sm_cultivationstatus_1330"),
             (31, "sm_cultivationstatus_448"),
         };
 

@@ -57,36 +57,36 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<string, string[]> PowerClassSynergy = new Dictionary<string, string[]>
         {
-            { "sm_potential_1335", new[] { "mech" } },        // 电磁操控特别适合机械系
-            { "sm_potential_1336", new[] { "mech", "mage" } }, // 能量亲和适合机械/魔法
-            { "sm_potential_1337", new[] { "mech", "mind" } }, // 虚拟意识适合机械/念力
-            { "sm_potential_1338", new[] { "mech" } },        // 机械心灵适合机械系
-            { "sm_potential_1339", new[] { "mech" } },        // 纳米操控适合机械系
-            { "sm_potential_1340", new[] { "mech", "mind" } }, // 量子计算适合机械/念力
-            { "sm_potential_1341", new[] { "martial" } },     // 体魄强化适合武道
-            { "sm_potential_1342", new[] { "martial" } },     // 气血澎湃适合武道
-            { "sm_potential_1343", new[] { "martial" } },     // 战斗本能适合武道
-            { "sm_potential_1344", new[] { "martial", "psi" } }, // 气劲外放适合武道/异能
-            { "sm_potential_1345", new[] { "martial" } },     // 金刚不坏适合武道
-            { "sm_potential_1346", new[] { "martial", "psi" } }, // 血脉觉醒适合武道/异能
-            { "sm_potential_1347", new[] { "mage", "psi" } },  // 元素异能适合魔法/异能
-            { "sm_potential_1348", new[] { "martial", "psi" } }, // 身体变异适合武道/异能
-            { "sm_potential_1349", new[] { "psi", "mind" } },  // 感官强化适合异能/念力
-            { "sm_potential_1350", new[] { "martial", "psi" } }, // 再生能力适合武道/异能
-            { "sm_potential_1351", new[] { "psi", "mech" } },  // 物质干涉适合异能/机械
-            { "sm_potential_1352", new[] { "psi", "mage" } },  // 能量放射适合异能/魔法
-            { "sm_potential_1353", new[] { "mage" } },        // 元素魔法适合魔法
-            { "sm_potential_1354", new[] { "mage", "psi" } },    // 变化术适合魔法/异能
-            { "sm_potential_1355", new[] { "mage", "mech" } },   // 造物术适合魔法/机械
-            { "sm_potential_1356", new[] { "mage" } },          // 召唤术适合魔法
-            { "sm_potential_1357", new[] { "mage", "mind" } },   // 结界术适合魔法/念力
-            { "sm_potential_1358", new[] { "mage", "mech" } }, // 符文魔法适合魔法/机械
-            { "sm_potential_1359", new[] { "mind", "mech" } },   // 念动力适合念力/机械
-            { "sm_potential_1360", new[] { "mind" } },        // 灵魂感知适合念力
-            { "sm_potential_1361", new[] { "mind" } },        // 精神冲击适合念力
-            { "sm_potential_1362", new[] { "mind" } },        // 记忆操控适合念力
-            { "sm_potential_1363", new[] { "mind", "psi" } },  // 心灵感应适合念力/异能
-            { "sm_potential_1364", new[] { "mind", "psi" } },  // 预知未来适合念力/异能
+            { "sm_potential_1335", new[] { "mech" } },
+            { "sm_potential_1336", new[] { "mech", "mage" } },
+            { "sm_potential_1337", new[] { "mech", "mind" } },
+            { "sm_potential_1338", new[] { "mech" } },
+            { "sm_potential_1339", new[] { "mech" } },
+            { "sm_potential_1340", new[] { "mech", "mind" } },
+            { "sm_potential_1341", new[] { "martial" } },
+            { "sm_potential_1342", new[] { "martial" } },
+            { "sm_potential_1343", new[] { "martial" } },
+            { "sm_potential_1344", new[] { "martial", "psi" } },
+            { "sm_potential_1345", new[] { "martial" } },
+            { "sm_potential_1346", new[] { "martial", "psi" } },
+            { "sm_potential_1347", new[] { "mage", "psi" } },
+            { "sm_potential_1348", new[] { "martial", "psi" } },
+            { "sm_potential_1349", new[] { "psi", "mind" } },
+            { "sm_potential_1350", new[] { "martial", "psi" } },
+            { "sm_potential_1351", new[] { "psi", "mech" } },
+            { "sm_potential_1352", new[] { "psi", "mage" } },
+            { "sm_potential_1353", new[] { "mage" } },
+            { "sm_potential_1354", new[] { "mage", "psi" } },
+            { "sm_potential_1355", new[] { "mage", "mech" } },
+            { "sm_potential_1356", new[] { "mage" } },
+            { "sm_potential_1357", new[] { "mage", "mind" } },
+            { "sm_potential_1358", new[] { "mage", "mech" } },
+            { "sm_potential_1359", new[] { "mind", "mech" } },
+            { "sm_potential_1360", new[] { "mind" } },
+            { "sm_potential_1361", new[] { "mind" } },
+            { "sm_potential_1362", new[] { "mind" } },
+            { "sm_potential_1363", new[] { "mind", "psi" } },
+            { "sm_potential_1364", new[] { "mind", "psi" } },
         };
 
         private static List<string> GetSpecificPowers(Actor a)
@@ -119,7 +119,7 @@ namespace SuperMech.Code
 
         public static bool IsCrossClass(Actor a, string nodeId)
         {
-            if (SuperMechTalent.IsFiveSystemGenius(a)) return false;  // 五系天才跨系不惩罚
+            if (SuperMechTalent.IsFiveSystemGenius(a)) return false;
             string prefix = GetKnowledgePrefix(nodeId);
             string mainClass = SuperMechProfession.GetClass(a);
             if (string.IsNullOrEmpty(mainClass)) return false;
@@ -129,7 +129,7 @@ namespace SuperMech.Code
 
         public static int GetActualCost(Actor a, string nodeId, int baseCost)
         {
-            if (SuperMechTalent.IsFiveSystemGenius(a)) return baseCost;  // 五系天才无惩罚
+            if (SuperMechTalent.IsFiveSystemGenius(a)) return baseCost;
 
             string prefix = GetKnowledgePrefix(nodeId);
             string mainClass = SuperMechProfession.GetClass(a);
@@ -138,17 +138,17 @@ namespace SuperMech.Code
 
             if (!isCross)
             {
-                if (HasPowerSynergy(a, prefix)) return Mathf.Max(1, (int)(baseCost * 0.7f));  // 搭配-30%
+                if (HasPowerSynergy(a, prefix)) return Mathf.Max(1, (int)(baseCost * 0.7f));
                 return baseCost;
             }
 
             float intel = a.stats["intelligence"];
-            float multiplier = 3f;  // 默认×3
+            float multiplier = 3f;
 
-            if (intel < 10f) multiplier = 5f;       // 智力<10，×5
-            else if (intel >= 20f) multiplier = 2f;  // 智力>=20，×2
+            if (intel < 10f) multiplier = 5f;
+            else if (intel >= 20f) multiplier = 2f;
 
-            if (HasPowerSynergy(a, prefix)) multiplier *= 0.7f;  // 搭配-30%
+            if (HasPowerSynergy(a, prefix)) multiplier *= 0.7f;
 
             return Mathf.Max(1, (int)(baseCost * multiplier));
         }
@@ -178,7 +178,7 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
-                if (!SuperMechAwakened.IsAwakened(a)) continue; // 星海人不走潜能点，走传承度
+                if (!SuperMechAwakened.IsAwakened(a)) continue;
 
                 float qi = SuperMechQi.GetQi(a);
                 int curLv = SuperMechQi.GetLevel(qi);

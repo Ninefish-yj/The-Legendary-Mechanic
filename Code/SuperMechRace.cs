@@ -9,11 +9,11 @@ namespace SuperMech.Code
 {
     public static class SuperMechRace
     {
-        public const string TraitSuperARace = "sm_race_super_a";    // S阶物种蜕变标记
-        public const string TraitDivineRace = "sm_race_divine";     // X阶物种神化标记
+        public const string TraitSuperARace = "sm_race_super_a";
+        public const string TraitDivineRace = "sm_race_divine";
 
-        public const string SubspeciesDivineGene = "sm_subspecies_divine_gene";  // 【神力基因】
-        public const string SubspeciesBornElite  = "sm_subspecies_born_elite";   // 【天生精英】
+        public const string SubspeciesDivineGene = "sm_subspecies_divine_gene";
+        public const string SubspeciesBornElite  = "sm_subspecies_born_elite";
 
         public class RaceTalentDef
         {
@@ -225,9 +225,9 @@ namespace SuperMech.Code
                 string title = GetTitle(a);
                 string raceName = $"sm_race_355";
                 var talentIds = new List<string>();
-                talentIds.Add(PickClassTalent(a));       // 职业系专属
-                talentIds.Add(PickUniversalTalent());     // 通用虚空系1
-                talentIds.Add(PickUniversalTalent());     // 通用虚空系2
+                talentIds.Add(PickClassTalent(a));
+                talentIds.Add(PickUniversalTalent());
+                talentIds.Add(PickUniversalTalent());
                 DetachSubspecies(a, raceName, talentIds.ToArray());
                 Debug.Log($"[超神机械师] {a.name} 获得名号【{title}】，物种蜕变 → {raceName}（种族天赋：{string.Join(",", talentIds)}）");
             }
@@ -292,7 +292,7 @@ namespace SuperMech.Code
             t.addCombatAction("combat_dash");
             t.addCombatAction("combat_block");
             t.addCombatAction("combat_dodge");
-            if (id == TraitDivineRace) // X阶神化：全部战斗动作
+            if (id == TraitDivineRace)
             {
                 t.addCombatAction("combat_backstep");
                 t.addCombatAction("combat_instincts");

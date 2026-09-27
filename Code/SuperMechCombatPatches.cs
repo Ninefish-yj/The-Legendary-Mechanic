@@ -50,7 +50,7 @@ namespace SuperMech.Code
                     int atkRank = SuperMechAdvancement.GetExactRankIndex(attacker);
                     if (atkRank < 13 && Random.value < 0.3f)
                     {
-                        return false; // 30%概率免疫低阶攻击
+                        return false;
                     }
                 }
 
@@ -67,7 +67,7 @@ namespace SuperMech.Code
                     int profLayers = SuperMechDivinity.GetProfLayers(target);
                     int specLayers = SuperMechDivinity.GetSpeciesLayers(target);
                     int totalLayers = profLayers + specLayers;
-                    float dr = Mathf.Min(totalLayers * 0.02f, 0.4f); // 每层2%，最多40%
+                    float dr = Mathf.Min(totalLayers * 0.02f, 0.4f);
                     if (Random.value < dr)
                     {
                         return false;
@@ -78,7 +78,7 @@ namespace SuperMech.Code
             {
             }
 
-            return true; // 继续原版受击
+            return true;
         }
 
         [HarmonyPostfix]

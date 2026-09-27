@@ -10,13 +10,13 @@ namespace SuperMech.Code
             public string id;
             public string name;
             public string desc;
-            public string prefix;          // 所属系
-            public string[] requiredKnowledge; // 需要的知识ID（全部满足才触发）
-            public float dmgMul;          // 伤害倍率
-            public float hpMul;           // 生命倍率
-            public float speedMul;        // 攻速倍率
-            public float qiBonus;         // 气力加成
-            public int potentialBonus;    // 潜能点加成
+            public string prefix;
+            public string[] requiredKnowledge;
+            public float dmgMul;
+            public float hpMul;
+            public float speedMul;
+            public float qiBonus;
+            public int potentialBonus;
         }
 
         private static readonly List<SynergyDef> _synergies = new List<SynergyDef>();

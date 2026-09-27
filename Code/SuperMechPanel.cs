@@ -241,8 +241,8 @@ namespace SuperMech.Code
         private static bool CanSelectBranch(Actor a)
         {
             if (a.hasTrait(SuperMechTraits.ClassMech))
-                return SuperMechStage.GetStage(a) >= 3;  // 见习机械师
-            return SuperMechAdvancement.GetRankIndex(a) >= 2;  // D阶
+                return SuperMechStage.GetStage(a) >= 3;
+            return SuperMechAdvancement.GetRankIndex(a) >= 2;
         }
 
     }

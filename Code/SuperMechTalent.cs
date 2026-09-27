@@ -7,26 +7,26 @@ namespace SuperMech.Code
     {
         public enum TalentType
         {
-            Mechanical,  // 机械天赋（械感）
-            Martial,     // 武道天赋（体魄）
-            Psi,         // 异能天赋（异能潜力）
-            Mage,        // 魔法天赋（魔感）
-            Mind         // 念力天赋（精神）
+            Mechanical,
+            Martial,
+            Psi,
+            Mage,
+            Mind
         }
 
         public class TalentInfo
         {
             public TalentType type;
-            public int rating;  // 0=F, 1=E, 2=D, 3=C, 4=B, 5=A, 6=S
-            public string specificPower;  // 具体异能类型（电磁/火焰/念动力等）
+            public int rating;
+            public string specificPower;
         }
 
         private static readonly string[][] SpecificPowers = {
-            new[] { "sm_talent_1370", "sm_talent_1371", "sm_talent_1372", "sm_talent_1373", "sm_talent_1374", "sm_talent_1375" },  // 机械系（神器·机械知识树）
-            new[] { "sm_talent_1376", "sm_talent_1377", "sm_talent_1378", "sm_talent_1379", "sm_talent_1380", "sm_talent_1381" },  // 武道系（神体·御气技巧树）
-            new[] { "sm_talent_1382", "sm_talent_1383", "sm_talent_1384", "sm_talent_1385", "sm_talent_1386", "sm_talent_1387" },  // 异能系（神通·基因树，基因变异类）
-            new[] { "sm_talent_1388", "sm_talent_1389", "sm_talent_1390", "sm_talent_1391", "sm_talent_1392", "sm_talent_1393" },        // 魔法系（神权·魔法知识树）
-            new[] { "sm_talent_1394", "sm_talent_1395", "sm_talent_1396", "sm_talent_1397", "sm_talent_1398", "sm_talent_1399" }   // 念力系（神魂·精神修炼树，精神力类）
+            new[] { "sm_talent_1370", "sm_talent_1371", "sm_talent_1372", "sm_talent_1373", "sm_talent_1374", "sm_talent_1375" },
+            new[] { "sm_talent_1376", "sm_talent_1377", "sm_talent_1378", "sm_talent_1379", "sm_talent_1380", "sm_talent_1381" },
+            new[] { "sm_talent_1382", "sm_talent_1383", "sm_talent_1384", "sm_talent_1385", "sm_talent_1386", "sm_talent_1387" },
+            new[] { "sm_talent_1388", "sm_talent_1389", "sm_talent_1390", "sm_talent_1391", "sm_talent_1392", "sm_talent_1393" },
+            new[] { "sm_talent_1394", "sm_talent_1395", "sm_talent_1396", "sm_talent_1397", "sm_talent_1398", "sm_talent_1399" }
         };
 
         private static readonly Dictionary<long, List<TalentInfo>> _talents = new Dictionary<long, List<TalentInfo>>();
@@ -76,7 +76,7 @@ namespace SuperMech.Code
                 var allTypes = new[] { TalentType.Mechanical, TalentType.Martial, TalentType.Psi, TalentType.Mage, TalentType.Mind };
                 foreach (var type in allTypes)
                 {
-                    int rating = Random.Range(4, 7);  // B/A/S
+                    int rating = Random.Range(4, 7);
                     talents.Add(new TalentInfo
                     {
                         type = type,
@@ -87,7 +87,7 @@ namespace SuperMech.Code
                 return talents;
             }
 
-            int count = Random.Range(1, 4);  // 1-3个
+            int count = Random.Range(1, 4);
 
             var allTypesList = new List<TalentType> { TalentType.Mechanical, TalentType.Martial, TalentType.Psi, TalentType.Mage, TalentType.Mind };
             for (int i = 0; i < count; i++)
@@ -99,13 +99,13 @@ namespace SuperMech.Code
 
                 float roll = Random.value;
                 int rating = 0;
-                if (roll < 0.40f) rating = 0;        // F
-                else if (roll < 0.65f) rating = 1;   // E
-                else if (roll < 0.80f) rating = 2;   // D
-                else if (roll < 0.90f) rating = 3;   // C
-                else if (roll < 0.96f) rating = 4;   // B
-                else if (roll < 0.99f) rating = 5;   // A
-                else rating = 6;                      // S
+                if (roll < 0.40f) rating = 0;
+                else if (roll < 0.65f) rating = 1;
+                else if (roll < 0.80f) rating = 2;
+                else if (roll < 0.90f) rating = 3;
+                else if (roll < 0.96f) rating = 4;
+                else if (roll < 0.99f) rating = 5;
+                else rating = 6;
 
                 talents.Add(new TalentInfo
                 {
@@ -120,7 +120,7 @@ namespace SuperMech.Code
         public static void GrantTalents(Actor a)
         {
             if (a == null) return;
-            if (_talents.ContainsKey(a.id)) return;  // 已有天赋
+            if (_talents.ContainsKey(a.id)) return;
             var talents = GenerateTalents();
             _talents[a.id] = talents;
             if (talents.Count >= 5)
@@ -156,8 +156,8 @@ namespace SuperMech.Code
         public static float GetTrainingSpeed(Actor a, TalentType type)
         {
             int rating = GetTalentRating(a, type);
-            if (rating < 0) return 0.5f;  // 无天赋，跨系修炼慢
-            return 1f + rating * 0.15f;   // F=1.0x, E=1.15x, ... S=1.9x
+            if (rating < 0) return 0.5f;
+            return 1f + rating * 0.15f;
         }
 
         public static int GetMaxRank(Actor a)
@@ -168,8 +168,8 @@ namespace SuperMech.Code
             {
                 if (t.rating > maxRating) maxRating = t.rating;
             }
-            if (maxRating < 0) return 1;  // 无天赋，E阶上限
-            return Mathf.Min(maxRating + 1, 12);  // 最高SS阶，X阶需要特殊条件
+            if (maxRating < 0) return 1;
+            return Mathf.Min(maxRating + 1, 12);
         }
 
         public static void CleanupDead(List<long> aliveIds)

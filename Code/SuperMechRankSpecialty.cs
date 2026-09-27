@@ -6,24 +6,24 @@ namespace SuperMech.Code
 {
     public static class SuperMechRankSpecialty
     {
-        public const string TranscendentPower = "sm_rs_transcendent";    // 超凡之力（低阶位）
-        public const string SupremePower     = "sm_rs_supreme";          // 无上威能（中阶位，异能强度）
-        public const string EternalBody      = "sm_rs_eternal";          // 永恒之躯（中阶位，生命）
-        public const string CellReactor      = "sm_rs_cellreactor";      // 细胞反应炉（气力值/续航）
-        public const string DivineMajesty    = "sm_rs_divinemajesty";    // 浩荡神威
-        public const string CosmicBody       = "sm_rs_cosmicbody";       // 宇宙神躯
-        public const string QiFoundation     = "sm_rs_qifoundation";     // 气力之基·万机之神
-        public const string ConceptImmortal  = "sm_rs_conceptimmortal";  // 资讯唯一·概念永生
-        public const string MechGodVirtual   = "sm_rs_mechgod_virtual";  // 机械神灵·至高天尊（虚拟分支）
-        public const string MechGodArmed     = "sm_rs_mechgod_armed";    // 机械神灵·宇宙帝皇（武装分支/枪炮师）
-        public const string MechGodEnergy    = "sm_rs_mechgod_energy";   // 机械神灵·起源神君（能量分支/械武者）
-        public const string VirtualCreation  = "sm_rs_virtualcreation";  // 虚拟创世（伪）
-        public const string LifeVirtual      = "sm_rs_lifevirtual";      // 生命转变·虚拟
-        public const string LifeMech         = "sm_rs_lifemech";         // 生命转变·万机
-        public const string BeyondArtifact   = "sm_rs_beyondartifact";   // 超越神器
-        public const string SpeciesDivine    = "sm_rs_speciesdivine";    // 物种神化
-        public const string DivineGene       = "sm_rs_divinegene";       // 神力基因
-        public const string BornElite        = "sm_rs_bornelite";        // 天生精英
+        public const string TranscendentPower = "sm_rs_transcendent";
+        public const string SupremePower     = "sm_rs_supreme";
+        public const string EternalBody      = "sm_rs_eternal";
+        public const string CellReactor      = "sm_rs_cellreactor";
+        public const string DivineMajesty    = "sm_rs_divinemajesty";
+        public const string CosmicBody       = "sm_rs_cosmicbody";
+        public const string QiFoundation     = "sm_rs_qifoundation";
+        public const string ConceptImmortal  = "sm_rs_conceptimmortal";
+        public const string MechGodVirtual   = "sm_rs_mechgod_virtual";
+        public const string MechGodArmed     = "sm_rs_mechgod_armed";
+        public const string MechGodEnergy    = "sm_rs_mechgod_energy";
+        public const string VirtualCreation  = "sm_rs_virtualcreation";
+        public const string LifeVirtual      = "sm_rs_lifevirtual";
+        public const string LifeMech         = "sm_rs_lifemech";
+        public const string BeyondArtifact   = "sm_rs_beyondartifact";
+        public const string SpeciesDivine    = "sm_rs_speciesdivine";
+        public const string DivineGene       = "sm_rs_divinegene";
+        public const string BornElite        = "sm_rs_bornelite";
 
         public static void Register()
         {
@@ -115,9 +115,9 @@ namespace SuperMech.Code
                     if (!a.hasTrait(spec)) a.addTrait(spec);
                 }
                 string branch = SuperMechBranch.GetBranchTrait(a);
-                string finalForm = MechGodVirtual; // 默认虚拟分支=至高天尊
-                if (branch == SuperMechBranch.BranchGunner) finalForm = MechGodArmed;     // 枪炮师=宇宙帝皇
-                else if (branch == SuperMechBranch.BranchMartial) finalForm = MechGodEnergy; // 械武者=起源神君
+                string finalForm = MechGodVirtual;
+                if (branch == SuperMechBranch.BranchGunner) finalForm = MechGodArmed;
+                else if (branch == SuperMechBranch.BranchMartial) finalForm = MechGodEnergy;
                 if (!a.hasTrait(finalForm)) a.addTrait(finalForm);
                 Debug.Log($"[超神机械师] {a.name} 达到X阶（超神级），最终形态：{finalForm}");
             }

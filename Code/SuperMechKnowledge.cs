@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 知识树：249节点，5系×5阶，跨系兼修3倍惩罚
+
 
     public static class SuperMechKnowledge
     {
@@ -146,11 +146,11 @@ namespace SuperMech.Code
             public string id;
             public string name;
             public string desc;
-            public string prefix;   // mech/martial/mage/mind/psi
-            public int tier;       // 0=基础,1=进阶,2=高端,3=尖端,4=终极
-            public int branch;     // 分支索引
-            public int cost;       // 潜能点消耗
-            public string icon;    // 图标路径（按系别+分支+阶位组合）
+            public string prefix;
+            public int tier;
+            public int branch;
+            public int cost;
+            public string icon;
         }
 
         private static readonly Dictionary<string, KnowledgeDef> _allKnowledge = new Dictionary<string, KnowledgeDef>();
@@ -179,11 +179,11 @@ namespace SuperMech.Code
         }
 
         private static readonly string[] BookIconsByTier = {
-            "ui/Icons/iconBooks",          // 基础：普通书籍
-            "ui/Icons/iconBooksRead",      // 进阶：已读书籍
-            "ui/Icons/iconBooksWritten",   // 高端：已写书籍
-            "ui/Icons/iconBooks",          // 尖端：普通书籍（用颜色区分）
-            "ui/Icons/iconBooksDestroyed"  // 终极：神秘书籍
+            "ui/Icons/iconBooks",
+            "ui/Icons/iconBooksRead",
+            "ui/Icons/iconBooksWritten",
+            "ui/Icons/iconBooks",
+            "ui/Icons/iconBooksDestroyed"
         };
 
         private static readonly string[][] BookIconsByClass = {
@@ -223,7 +223,7 @@ namespace SuperMech.Code
                             prefix = prefix,
                             tier = ti,
                             branch = bi,
-                            cost = (ti + 1) * 2,  // 基础2点，进阶4点，高端6点...
+                            cost = (ti + 1) * 2,
                             icon = GetKnowledgeIcon(prefix, bi, ti, ki)
                         };
                         _allKnowledge[id] = def;

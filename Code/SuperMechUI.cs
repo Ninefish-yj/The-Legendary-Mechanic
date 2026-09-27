@@ -90,7 +90,7 @@ namespace SuperMech.Code
                         GodPower power = AssetManager.powers.get(id);
                         if (power == null) { Debug.LogWarning("[超神机械师] 神权未注册: " + id); continue; }
                         Sprite icon = SpriteTextureLoader.getSprite(iconPath);
-                        if (icon == null) icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight"); // fallback
+                        if (icon == null) icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight");
                         PowerButton btn = PowerButtonCreator.CreateGodPowerButton(id, icon);
                         if (btn == null) continue;
                         btn.godPower = power;
@@ -137,7 +137,7 @@ namespace SuperMech.Code
                 var tipBtn = btn.GetComponent<TipButton>();
                 if (tipBtn == null) tipBtn = btn.gameObject.AddComponent<TipButton>();
                 tipBtn.textOnClick = title + "\n" + desc;
-                tipBtn.textOnClickDescription = string.Empty;  // 清除，避免被本地化查找
+                tipBtn.textOnClickDescription = string.Empty;
                 tipBtn.text_description_2 = string.Empty;
             }
             catch { }

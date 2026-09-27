@@ -7,22 +7,22 @@ namespace SuperMech.Code
 {
     public static class SuperMechMageTower
     {
-        public const string Tower1 = "sm_mage_tower_1"; // 初级法师塔
-        public const string Tower2 = "sm_mage_tower_2"; // 中级法师塔
-        public const string Tower3 = "sm_mage_tower_3"; // 高级法师塔
-        public const string Tower4 = "sm_mage_tower_4"; // 顶级法师塔
-        public const string Tower5 = "sm_mage_tower_5"; // 秘法之殿级（宇宙宝物）
+        public const string Tower1 = "sm_mage_tower_1";
+        public const string Tower2 = "sm_mage_tower_2";
+        public const string Tower3 = "sm_mage_tower_3";
+        public const string Tower4 = "sm_mage_tower_4";
+        public const string Tower5 = "sm_mage_tower_5";
 
         public static readonly string[] TowerIds = { Tower1, Tower2, Tower3, Tower4, Tower5 };
         public static readonly string[] TowerNames = {
             "sm_magetower_357", "sm_magetower_358", "sm_magetower_359", "sm_magetower_360", "sm_magetower_361"
         };
         public static readonly (float dmg, float hp, int intel, float mana)[] TowerBonus = {
-            (0.20f, 0.20f, 10, 50f),   // 初级
-            (0.40f, 0.40f, 20, 100f),  // 中级
-            (0.70f, 0.70f, 35, 200f),  // 高级
-            (1.00f, 1.00f, 50, 400f),  // 顶级
-            (2.00f, 2.00f, 80, 800f),  // 秘法之殿（ch730：48000符文法阵）
+            (0.20f, 0.20f, 10, 50f),
+            (0.40f, 0.40f, 20, 100f),
+            (0.70f, 0.70f, 35, 200f),
+            (1.00f, 1.00f, 50, 400f),
+            (2.00f, 2.00f, 80, 800f),
         };
 
         private static readonly Dictionary<long, int> _towerLevel = new Dictionary<long, int>();
@@ -61,13 +61,13 @@ namespace SuperMech.Code
                 if (!a.hasTrait(SuperMechTraits.ClassMage)) continue;
 
                 int rank = SuperMechAdvancement.GetRankIndex(a);
-                if (rank < 8) continue; // A级以上才能建法师塔
+                if (rank < 8) continue;
 
                 int targetLevel = 1;
-                if (rank >= 9) targetLevel = 2;  // A+
-                if (rank >= 10) targetLevel = 3; // S
-                if (rank >= 11) targetLevel = 4; // S+
-                if (rank >= 12) targetLevel = 5; // SS/X = 秘法之殿级
+                if (rank >= 9) targetLevel = 2;
+                if (rank >= 10) targetLevel = 3;
+                if (rank >= 11) targetLevel = 4;
+                if (rank >= 12) targetLevel = 5;
 
                 int current = GetTowerLevel(a);
                 if (current < targetLevel)

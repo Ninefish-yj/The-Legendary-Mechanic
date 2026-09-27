@@ -67,7 +67,7 @@ namespace SuperMech.Code
         public static bool SpendPoints(Actor a, string route, int layers = 1)
         {
             if (a == null) return false;
-            if (!SuperMechAwakened.IsAwakened(a)) return false; // 只有降临者能直接加点
+            if (!SuperMechAwakened.IsAwakened(a)) return false;
             int cost = layers * PointsPerLayer;
             int cur = GetPoints(a);
             if (cur < cost) return false;
@@ -93,7 +93,7 @@ namespace SuperMech.Code
         public static int AwardAdvancementPoints(Actor a)
         {
             if (a == null) return 0;
-            int points = 1; // 基础1点
+            int points = 1;
             var stats = SuperMechStats.Of(a);
             if (stats == null) { AddPoints(a, points); return points; }
 
@@ -120,7 +120,7 @@ namespace SuperMech.Code
         public static bool AwardCraftingPoints(Actor a)
         {
             if (a == null) return false;
-            if (!SuperMechAwakened.IsAwakened(a)) return false; // 只有降临者能获得
+            if (!SuperMechAwakened.IsAwakened(a)) return false;
             AddPoints(a, 1);
             return true;
         }
@@ -129,20 +129,20 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
+            float tickInterval = SuperMechConfig.TickInterval * 4f;
 
             foreach (Actor a in units)
             {
                 if (a == null) continue;
                 if (!IsDivineAwakened(a)) continue;
-                if (SuperMechAwakened.IsAwakened(a)) continue; // 降临者直接加点，不走感悟转化
+                if (SuperMechAwakened.IsAwakened(a)) continue;
 
                 int pts = GetPoints(a);
                 if (pts <= 0) continue;
 
                 float progress;
                 if (!_insightProgress.TryGetValue(a.id, out progress)) progress = 0;
-                progress += 0.3f * tickInterval; // 基础转化速度
+                progress += 0.3f * tickInterval;
                 if (a.hasTrait("sm_refinement")) progress *= 1.5f;
                 var destiny = SuperMechIntuition.GetDestiny(a);
                 if (destiny != null && destiny.completed) progress *= 2f;

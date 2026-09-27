@@ -62,7 +62,7 @@ namespace SuperMech.Code
             _target.removeTrait(SuperMechTraits.ClassMind);
 
             _target.addTrait(traitId);
-            SuperMechStage.SetStage(_target, 1); // 入门者
+            SuperMechStage.SetStage(_target, 1);
             SuperMechSpecialty.AssignRandomSpecialty(_target);
 
             if (!_target.hasTrait("sm_rank_00_f"))

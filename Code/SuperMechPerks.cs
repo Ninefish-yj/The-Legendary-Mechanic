@@ -7,17 +7,17 @@ namespace SuperMech.Code
 {
     public static class SuperMechPerks
     {
-        public const string PerkGeomind   = "sm_perk_geometric_mind";   // 几何思维（韩萧天赋）
-        public const string PerkIronWill  = "sm_perk_iron_will";         // 钢铁意志
-        public const string PerkBerserk   = "sm_perk_berserk";          // 暴怒
-        public const string PerkQuickThink = "sm_perk_quick_think";     // 极速思维
-        public const string PerkFortune   = "sm_perk_fortune";          // 幸运
+        public const string PerkGeomind   = "sm_perk_geometric_mind";
+        public const string PerkIronWill  = "sm_perk_iron_will";
+        public const string PerkBerserk   = "sm_perk_berserk";
+        public const string PerkQuickThink = "sm_perk_quick_think";
+        public const string PerkFortune   = "sm_perk_fortune";
 
-        public const string PerkSharpEye   = "sm_perk_sharp_eye";       // 锐利目光
-        public const string PerkToughBody  = "sm_perk_tough_body";      // 强健体魄
-        public const string PerkFastRegen = "sm_perk_fast_regen";      // 快速恢复
-        public const string PerkVeteran   = "sm_perk_veteran";         // 老兵本能
-        public const string PerkNightVision = "sm_perk_night_vision";  // 夜视
+        public const string PerkSharpEye   = "sm_perk_sharp_eye";
+        public const string PerkToughBody  = "sm_perk_tough_body";
+        public const string PerkFastRegen = "sm_perk_fast_regen";
+        public const string PerkVeteran   = "sm_perk_veteran";
+        public const string PerkNightVision = "sm_perk_night_vision";
 
         public const string PerkMechAffinity  = "sm_perk_mech_affinity";
         public const string PerkMechSurge     = "sm_perk_magnet_surge";
@@ -36,16 +36,16 @@ namespace SuperMech.Code
         public const string PerkMindShield = "sm_perk_mind_shield";
         public const string PerkMindCrush = "sm_perk_mind_crush";
 
-        public const string PerkMechEmperor  = "sm_perk_mech_emperor";   // 机械帝皇
-        public const string PerkEnergyBody   = "sm_perk_energy_body";    // 完美能量亲和体质
-        public const string PerkVirtLord     = "sm_perk_virt_lord";      // 虚拟主宰
-        public const string PerkMultiResist  = "sm_perk_multi_resist";   // 多元抗性强化
-        public const string PerkChampion     = "sm_perk_champion";       // 万夫莫开
-        public const string PerkMindFortress = "sm_perk_mind_fortress";  // 高级心灵强韧
-        public const string PerkBattleMind   = "sm_perk_battle_mind";    // 战场理智
-        public const string PerkFocus        = "sm_perk_focus";          // 高度专注
-        public const string PerkMaterial     = "sm_perk_material";       // 材料先驱
-        public const string PerkDimAdapt     = "sm_perk_dim_adapt";      // 次级维度适应者
+        public const string PerkMechEmperor  = "sm_perk_mech_emperor";
+        public const string PerkEnergyBody   = "sm_perk_energy_body";
+        public const string PerkVirtLord     = "sm_perk_virt_lord";
+        public const string PerkMultiResist  = "sm_perk_multi_resist";
+        public const string PerkChampion     = "sm_perk_champion";
+        public const string PerkMindFortress = "sm_perk_mind_fortress";
+        public const string PerkBattleMind   = "sm_perk_battle_mind";
+        public const string PerkFocus        = "sm_perk_focus";
+        public const string PerkMaterial     = "sm_perk_material";
+        public const string PerkDimAdapt     = "sm_perk_dim_adapt";
 
         public static void Register()
         {
@@ -115,7 +115,7 @@ namespace SuperMech.Code
         public static void GrantRandomPerks(Actor a)
         {
             if (a == null) return;
-            int count = Random.Range(1, 3);  // 1-2个
+            int count = Random.Range(1, 3);
             var available = new List<string>(TalentPerks);
             for (int i = 0; i < count && available.Count > 0; i++)
             {

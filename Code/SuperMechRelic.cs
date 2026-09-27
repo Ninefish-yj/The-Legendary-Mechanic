@@ -10,9 +10,9 @@ namespace SuperMech.Code
         public class EquipDef
         {
             public string id;
-            public string name;        // 原著品质名
-            public int qualityLevel;   // 9级品质 0-8
-            public Rarity rarity;      // 映射到原版Rarity（兼容原版UI）
+            public string name;
+            public int qualityLevel;
+            public Rarity rarity;
             public string icon;
             public float dmgMul;
             public float hpMul;
@@ -64,7 +64,7 @@ namespace SuperMech.Code
                 ((ItemAsset)asset).animated = false;
                 ((ItemAsset)asset).is_pool_weapon = false;
                 ((ItemAsset)asset).quality = def.rarity;
-                ((ItemAsset)asset).rarity = def.qualityLevel; // 扩展品质等级（int，可超过原版4级）
+                ((ItemAsset)asset).rarity = def.qualityLevel;
                 ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
                 ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = def.dmgMul;
                 ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = def.hpMul;
@@ -96,7 +96,7 @@ namespace SuperMech.Code
                 {
                     if (Random.value < 0.5f)
                     {
-                        EquipItem(a, 8); // index 8 = 金色·宇宙宝物级
+                        EquipItem(a, 8);
                     }
                     else
                     {
@@ -125,7 +125,7 @@ namespace SuperMech.Code
             if (!SuperMechConfig.RelicDropEnabled) return;
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
+            float tickInterval = SuperMechConfig.TickInterval * 4f;
 
             foreach (Actor a in units)
             {
@@ -188,12 +188,12 @@ namespace SuperMech.Code
                 if (current != null)
                 {
                     int currentIdx = GetEquipIndex(current);
-                    if (currentIdx >= qualityIndex) return; // 已有同级或更高级，不替换
+                    if (currentIdx >= qualityIndex) return;
                     if (currentIdx >= 0)
                     {
                         SuperMechEquipBag.AddToBag(a, Equipments[currentIdx].id);
                     }
-                    slot.takeAwayItem(); // 移除旧装备
+                    slot.takeAwayItem();
                 }
             }
 
@@ -276,8 +276,8 @@ namespace SuperMech.Code
             public string id;
             public string name;
             public string desc;
-            public bool isWonder;   // true=宇宙奇观，false=人造宇宙宝物
-            public string wonderType; // 奇观类型：天然/变异/系统级
+            public bool isWonder;
+            public string wonderType;
             public float dmgMul;
             public float hpMul;
         }

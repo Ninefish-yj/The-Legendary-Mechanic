@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 特质系统：只注册必要特质，知识/气力用内部字典
+
 
     public static class SuperMechTraits
     {
@@ -34,11 +34,11 @@ namespace SuperMech.Code
             }
         }
 
-        public const string ClassPsi     = "sm_class_psi";      // 异能系（基因树·神通）
-        public const string ClassMartial = "sm_class_martial";  // 武道系（御气技巧树·神体）
-        public const string ClassMech    = "sm_class_mech";     // 机械系（机械知识树·神器）
-        public const string ClassMage    = "sm_class_mage";     // 魔法系（魔法知识树·神权）
-        public const string ClassMind    = "sm_class_mind";     // 念力系（精神修炼树·神魂）
+        public const string ClassPsi     = "sm_class_psi";
+        public const string ClassMartial = "sm_class_martial";
+        public const string ClassMech    = "sm_class_mech";
+        public const string ClassMage    = "sm_class_mage";
+        public const string ClassMind    = "sm_class_mind";
 
 
         public const string SkillQiMod          = "sm_skill_qimod";
@@ -61,11 +61,11 @@ namespace SuperMech.Code
                 };
                 if (r.damageMul > 1f) t.base_stats["multiplier_damage"] = r.damageMul;
                 if (r.healthMul > 1f) t.base_stats["multiplier_health"] = r.healthMul;
-                if (rankIdx >= 4) t.addCombatAction("combat_dodge");              // C阶+
-                if (rankIdx >= 6) t.addCombatAction("combat_block");              // B阶+
-                if (rankIdx >= 8) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); } // A阶+
-                if (rankIdx >= 10) { t.addCombatAction("combat_instincts"); t.addCombatAction("combat_deflect_projectile"); } // S阶+
-                if (rankIdx >= 12) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); } // SS阶+
+                if (rankIdx >= 4) t.addCombatAction("combat_dodge");
+                if (rankIdx >= 6) t.addCombatAction("combat_block");
+                if (rankIdx >= 8) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); }
+                if (rankIdx >= 10) { t.addCombatAction("combat_instincts"); t.addCombatAction("combat_deflect_projectile"); }
+                if (rankIdx >= 12) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); }
                 rankIdx++;
                 LocalizedTextManager.add("trait_" + r.id, LocalizedTextManager.getText(r.name), pReplace: true);
                 LocalizedTextManager.add("trait_" + r.id + "_info", GetRankDesc(rankIdx - 1), pReplace: true);
@@ -99,8 +99,8 @@ namespace SuperMech.Code
             {
                 id = id, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_classes",
                 needs_to_be_explored = false,
-                rate_inherit = 20,  // 原著：超能者后代更高概率觉醒
-                rate_birth = 3,     // 3%概率出生自带（自然觉醒）
+                rate_inherit = 20,
+                rate_birth = 3,
                 base_stats = new BaseStats()
             };
             t.base_stats["intelligence"] = intell;
@@ -115,28 +115,28 @@ namespace SuperMech.Code
             }
             switch (id)
             {
-                case ClassMartial: // 武道系：近战格斗大师
+                case ClassMartial:
                     t.addCombatAction("combat_dash");
                     t.addCombatAction("combat_block");
                     t.addCombatAction("combat_dodge");
                     t.addCombatAction("combat_backstep");
                     break;
-                case ClassMech:    // 机械系：机甲远程+偏转弹道
+                case ClassMech:
                     t.addCombatAction("combat_deflect_projectile");
                     t.addCombatAction("combat_attack_range");
                     t.addCombatAction("combat_block");
                     break;
-                case ClassPsi:     // 异能系：异能远程+施法
+                case ClassPsi:
                     t.addCombatAction("combat_attack_range");
                     t.addCombatAction("combat_cast_spell");
                     t.addCombatAction("combat_dodge");
                     break;
-                case ClassMage:    // 魔法系：施法为主
+                case ClassMage:
                     t.addCombatAction("combat_cast_spell");
                     t.addCombatAction("combat_attack_range");
                     t.addCombatAction("combat_backstep");
                     break;
-                case ClassMind:    // 念力系：精神感应+闪避
+                case ClassMind:
                     t.addCombatAction("combat_instincts");
                     t.addCombatAction("combat_dodge");
                     t.addCombatAction("combat_random_jump");
@@ -150,20 +150,20 @@ namespace SuperMech.Code
         private static string GetRankDesc(int idx)
         {
             string[] descs = {
-                "sm_rank_desc_00",      // F
-                "sm_rank_desc_01",          // E
-                "sm_rank_desc_02",            // D
-                "sm_rank_desc_03",                   // D+
-                "sm_rank_desc_04",  // C
-                "sm_rank_desc_05",                   // C+
-                "sm_rank_desc_06",               // B
-                "sm_rank_desc_07",                   // B+
-                "sm_rank_desc_08",      // A
-                "sm_rank_desc_09",                   // A+
-                "sm_rank_desc_10",      // S
-                "sm_rank_desc_11",                    // S+
-                "sm_rank_desc_12",  // SS
-                "sm_rank_desc_13"                      // X
+                "sm_rank_desc_00",
+                "sm_rank_desc_01",
+                "sm_rank_desc_02",
+                "sm_rank_desc_03",
+                "sm_rank_desc_04",
+                "sm_rank_desc_05",
+                "sm_rank_desc_06",
+                "sm_rank_desc_07",
+                "sm_rank_desc_08",
+                "sm_rank_desc_09",
+                "sm_rank_desc_10",
+                "sm_rank_desc_11",
+                "sm_rank_desc_12",
+                "sm_rank_desc_13"
             };
             string key = idx >= 0 && idx < descs.Length ? descs[idx] : "sm_rank_desc_unknown";
             return LocalizedTextManager.getText(key);

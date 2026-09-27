@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 超神突破：气力Lv21+78000欧纳+神性蜕变，失败化遗力
+
 
     public static class SuperMechTranscendence
     {
@@ -47,12 +47,12 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
+            float tickInterval = SuperMechConfig.TickInterval * 4f;
 
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (SuperMechAdvancement.GetExactRankIndex(a) < 12) continue; // SS阶以上才开始
+                if (SuperMechAdvancement.GetExactRankIndex(a) < 12) continue;
                 if (!SuperMechDivinity.IsDivineAwakened(a)) continue;
                 if (IsAdvancementTaskDone(a)) continue;
                 if (IsTranscended(a)) continue;
@@ -93,12 +93,12 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 if (!CanAttempt(a)) continue;
-                if (!AllConditionsMet(a)) continue; // 三条件全满足才自动尝试
+                if (!AllConditionsMet(a)) continue;
 
                 Debug.Log($"[超神机械师] {a.name} 满足超神突破三条件，自动尝试突破！");
                 AttemptTranscend(a);
 
-                _cooldown[a.id] = Time.time + 3600f; // 1游戏小时冷却
+                _cooldown[a.id] = Time.time + 3600f;
             }
         }
 
@@ -151,9 +151,9 @@ namespace SuperMech.Code
             if (a == null) return false;
             if (IsTranscended(a)) return false;
             int rank = SuperMechAdvancement.GetExactRankIndex(a);
-            if (rank < 12) return false; // 需要SS阶以上
+            if (rank < 12) return false;
             if (!SuperMechDivinity.IsDivineAwakened(a)) return false;
-            if (!IsAdvancementTaskDone(a)) return false; // 必须完成进阶任务
+            if (!IsAdvancementTaskDone(a)) return false;
             float cd;
             if (_cooldown.TryGetValue(a.id, out cd) && Time.time < cd) return false;
             return true;
@@ -172,10 +172,10 @@ namespace SuperMech.Code
         {
             if (a == null || !a.isAlive()) return false;
             int rank = SuperMechAdvancement.GetExactRankIndex(a);
-            if (rank < 12) return false; // 只有SS阶以上才能催化
+            if (rank < 12) return false;
 
             if (!_divineCatalyst.TryGetValue(a.id, out int layers)) layers = 0;
-            if (layers >= 5) return false; // 最多5层
+            if (layers >= 5) return false;
 
             _divineCatalyst[a.id] = layers + 1;
             Debug.Log($"[超神机械师] 神之催化：{a.name} 获得第{layers + 1}层催化（成功率+{(layers + 1) * 10}%）");
@@ -193,7 +193,7 @@ namespace SuperMech.Code
         {
             if (!CanAttempt(a)) return false;
 
-            float successRate = Random.Range(0.04f, 0.10f); // 基础4%~10%
+            float successRate = Random.Range(0.04f, 0.10f);
 
             bool cond1 = a.hasTrait("sm_cosmic_relic_owner");
             if (cond1) successRate += 0.333f;
@@ -244,7 +244,7 @@ namespace SuperMech.Code
                 {
                     Debug.Log($"[超神机械师] {a.name} 进阶成功但条件未全满足，阶位不变（需三条件全满足才能神化进阶）");
                     SuperMechQi.AddQiMax(a, 20000f);
-                    return false; // 不算突破成功
+                    return false;
                 }
             }
             else
@@ -260,7 +260,7 @@ namespace SuperMech.Code
                 if (Random.value < 0.1f && a.isAlive())
                 {
                     SuperMechSanctuary.MarkTranscendenceFailed(a);
-                    a.dieSimpleNone(); // 触发原版死亡流程，而非直接设health=0
+                    a.dieSimpleNone();
                     Debug.Log($"[超神机械师] {a.name} 突破失败，恶性变异致死！化为超神遗力，无法圣所复苏");
                 }
                 else
@@ -285,7 +285,7 @@ namespace SuperMech.Code
                     t.doUnits(u =>
                     {
                         if (u == null || u == a) return;
-                        if (SuperMechAdvancement.GetExactRankIndex(u) < 10) return; // S阶以上
+                        if (SuperMechAdvancement.GetExactRankIndex(u) < 10) return;
                         string cls = SuperMechBranch.GetClass(u);
                         if (!string.IsNullOrEmpty(cls) && cls != myClass)
                             classes.Add(cls);
@@ -303,13 +303,13 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (SuperMechAdvancement.GetExactRankIndex(a) < 12) continue; // SS阶以上
-                if (!SuperMechDivinity.IsDivineAwakened(a)) continue; // 已触发神性蜕变
-                if (!IsAdvancementTaskDone(a)) continue; // 必须完成进阶任务
+                if (SuperMechAdvancement.GetExactRankIndex(a) < 12) continue;
+                if (!SuperMechDivinity.IsDivineAwakened(a)) continue;
+                if (!IsAdvancementTaskDone(a)) continue;
                 if (IsTranscended(a)) continue;
-                if (GetLegacyPower(a) >= 3) continue; // 最多存3份
+                if (GetLegacyPower(a) >= 3) continue;
 
-                if (Random.value < 0.015f) // 1.5%概率
+                if (Random.value < 0.015f)
                 {
                     AddLegacyPower(a, 1);
                 }

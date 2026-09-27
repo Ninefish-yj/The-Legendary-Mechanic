@@ -7,55 +7,55 @@ namespace SuperMech.Code
 {
     public static class SuperMechSpecialty
     {
-        public const string PsiFire      = "sm_spec_psi_fire";     // 火焰操控
-        public const string PsiIce       = "sm_spec_psi_ice";      // 冰霜操控
-        public const string PsiElectric  = "sm_spec_psi_electric"; // 雷电操控
-        public const string PsiTransform = "sm_spec_psi_transform";// 变身
-        public const string PsiControl   = "sm_spec_psi_control";  // 物体操控
-        public const string PsiLuck      = "sm_spec_psi_luck";     // 幸运
-        public const string PsiDeath     = "sm_spec_psi_death";     // 亡灵之力/掌控死亡（海拉）
-        public const string PsiCarbon    = "sm_spec_psi_carbon";    // 碳元素掌控（灰烬）
-        public const string PsiHeal      = "sm_spec_psi_heal";      // 治愈系（欧若拉）
-        public const string PsiMagnet    = "sm_spec_psi_magnet";    // 磁场操控（万磁王）
-        public const string PsiSoulFire  = "sm_spec_psi_soulfire";  // 灵魂之炎（起誓人）
+        public const string PsiFire      = "sm_spec_psi_fire";
+        public const string PsiIce       = "sm_spec_psi_ice";
+        public const string PsiElectric  = "sm_spec_psi_electric";
+        public const string PsiTransform = "sm_spec_psi_transform";
+        public const string PsiControl   = "sm_spec_psi_control";
+        public const string PsiLuck      = "sm_spec_psi_luck";
+        public const string PsiDeath     = "sm_spec_psi_death";
+        public const string PsiCarbon    = "sm_spec_psi_carbon";
+        public const string PsiHeal      = "sm_spec_psi_heal";
+        public const string PsiMagnet    = "sm_spec_psi_magnet";
+        public const string PsiSoulFire  = "sm_spec_psi_soulfire";
 
-        public const string MartialWave    = "sm_spec_martial_wave";    // 离体波动（气功波）
-        public const string MartialFlash   = "sm_spec_martial_flash";   // 闪气（爆气闪躲）
-        public const string MartialShield  = "sm_spec_martial_shield";  // 护体气罩
-        public const string MartialBurst   = "sm_spec_martial_burst";   // 气力爆发
-        public const string MartialReserve = "sm_spec_martial_reserve"; // 潜在存储（压榨细胞回气）
-        public const string MartialSky     = "sm_spec_martial_sky";     // 天穹气幕（大师级）
-        public const string MartialSync    = "sm_spec_martial_sync";    // 气脉同调（大师级）
-        public const string MartialAbyss   = "sm_spec_martial_abyss";   // 蚀气渊流（大师级）
-        public const string MartialCompress = "sm_spec_martial_compress"; // 气力压缩
-        public const string MartialForm     = "sm_spec_martial_form";     // 实体化气焰
-        public const string MartialExplode  = "sm_spec_martial_explode";  // 爆气
-        public const string MartialShock    = "sm_spec_martial_shock";    // 震气
-        public const string MartialSurge    = "sm_spec_martial_surge";    // 气力翻涌
-        public const string MartialSword   = "sm_spec_martial_sword";   // 剑术流派
-        public const string MartialBlade   = "sm_spec_martial_blade";   // 刀术流派
-        public const string MartialFist    = "sm_spec_martial_fist";    // 武技流派
+        public const string MartialWave    = "sm_spec_martial_wave";
+        public const string MartialFlash   = "sm_spec_martial_flash";
+        public const string MartialShield  = "sm_spec_martial_shield";
+        public const string MartialBurst   = "sm_spec_martial_burst";
+        public const string MartialReserve = "sm_spec_martial_reserve";
+        public const string MartialSky     = "sm_spec_martial_sky";
+        public const string MartialSync    = "sm_spec_martial_sync";
+        public const string MartialAbyss   = "sm_spec_martial_abyss";
+        public const string MartialCompress = "sm_spec_martial_compress";
+        public const string MartialForm     = "sm_spec_martial_form";
+        public const string MartialExplode  = "sm_spec_martial_explode";
+        public const string MartialShock    = "sm_spec_martial_shock";
+        public const string MartialSurge    = "sm_spec_martial_surge";
+        public const string MartialSword   = "sm_spec_martial_sword";
+        public const string MartialBlade   = "sm_spec_martial_blade";
+        public const string MartialFist    = "sm_spec_martial_fist";
 
-        public const string MageFire     = "sm_spec_mage_fire";    // 火焰专精
-        public const string MageWater    = "sm_spec_mage_water";   // 水流专精
-        public const string MageWind     = "sm_spec_mage_wind";    // 风暴专精
-        public const string MageEarth    = "sm_spec_mage_earth";   // 大地专精
-        public const string MageLight    = "sm_spec_mage_light";   // 光辉专精
-        public const string MageDark     = "sm_spec_mage_dark";    // 暗影专精
+        public const string MageFire     = "sm_spec_mage_fire";
+        public const string MageWater    = "sm_spec_mage_water";
+        public const string MageWind     = "sm_spec_mage_wind";
+        public const string MageEarth    = "sm_spec_mage_earth";
+        public const string MageLight    = "sm_spec_mage_light";
+        public const string MageDark     = "sm_spec_mage_dark";
 
-        public const string MindControl  = "sm_spec_mind_control";  // 精神控制
-        public const string MindDetect   = "sm_spec_mind_detect";   // 心灵探测
-        public const string MindTelekinesis = "sm_spec_mind_tele"; // 念动
-        public const string MindTelepathy = "sm_spec_mind_telepathy"; // 心灵感应
-        public const string MindShield   = "sm_spec_mind_shield";   // 念气护盾
-        public const string MindCurrent  = "sm_spec_mind_current";  // 人造心灵潜流（克苏耶）
+        public const string MindControl  = "sm_spec_mind_control";
+        public const string MindDetect   = "sm_spec_mind_detect";
+        public const string MindTelekinesis = "sm_spec_mind_tele";
+        public const string MindTelepathy = "sm_spec_mind_telepathy";
+        public const string MindShield   = "sm_spec_mind_shield";
+        public const string MindCurrent  = "sm_spec_mind_current";
 
-        public const string MechMech     = "sm_spec_mech_mech";     // 机甲专精
-        public const string MechDrone    = "sm_spec_mech_drone";    // 无人机专精
-        public const string MechTurret   = "sm_spec_mech_turret";  // 炮塔专精
-        public const string MechOverload = "sm_spec_mech_overload"; // 超负荷
-        public const string MechSurge    = "sm_spec_mech_surge";    // 械力涌动
-        public const string MechWill     = "sm_spec_mech_will";     // 意志燃烧
+        public const string MechMech     = "sm_spec_mech_mech";
+        public const string MechDrone    = "sm_spec_mech_drone";
+        public const string MechTurret   = "sm_spec_mech_turret";
+        public const string MechOverload = "sm_spec_mech_overload";
+        public const string MechSurge    = "sm_spec_mech_surge";
+        public const string MechWill     = "sm_spec_mech_will";
 
         public static void Register()
         {
@@ -142,24 +142,24 @@ namespace SuperMech.Code
             if (a == null) return;
             string specId = null;
 
-            if (branchTraitId == SuperMechBranch.BranchGunner) specId = MechTurret;      // 枪炮师 → 炮塔专精
-            else if (branchTraitId == SuperMechBranch.BranchMech) specId = MechMech;      // 机械师 → 机甲专精
-            else if (branchTraitId == SuperMechBranch.BranchMartial) specId = MechDrone;  // 械武者 → 无人机专精
+            if (branchTraitId == SuperMechBranch.BranchGunner) specId = MechTurret;
+            else if (branchTraitId == SuperMechBranch.BranchMech) specId = MechMech;
+            else if (branchTraitId == SuperMechBranch.BranchMartial) specId = MechDrone;
 
-            else if (branchTraitId == SuperMechBranch.BranchMartialBody) specId = MartialShield;    // 体魄 → 护体气罩
-            else if (branchTraitId == SuperMechBranch.BranchMartialTactic) specId = MartialFlash;   // 战术 → 闪气
-            else if (branchTraitId == SuperMechBranch.BranchMartialPower) specId = MartialExplode;  // 超能 → 爆气
+            else if (branchTraitId == SuperMechBranch.BranchMartialBody) specId = MartialShield;
+            else if (branchTraitId == SuperMechBranch.BranchMartialTactic) specId = MartialFlash;
+            else if (branchTraitId == SuperMechBranch.BranchMartialPower) specId = MartialExplode;
 
             else if (branchTraitId == SuperMechBranch.BranchMageSpecialist)
             {
                 string[] elements = { MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark };
                 specId = elements[Random.Range(0, elements.Length)];
             }
-            else if (branchTraitId == SuperMechBranch.BranchMageWeave) specId = MageLight;  // 魔网法师 → 光辉专精
+            else if (branchTraitId == SuperMechBranch.BranchMageWeave) specId = MageLight;
 
-            else if (branchTraitId == SuperMechBranch.BranchMindSoul) specId = MindControl;      // 灵魂 → 精神控制
-            else if (branchTraitId == SuperMechBranch.BranchMindLaw) specId = MindDetect;        // 法则 → 心灵探测
-            else if (branchTraitId == SuperMechBranch.BranchMindReality) specId = MindTelekinesis; // 现实 → 念动
+            else if (branchTraitId == SuperMechBranch.BranchMindSoul) specId = MindControl;
+            else if (branchTraitId == SuperMechBranch.BranchMindLaw) specId = MindDetect;
+            else if (branchTraitId == SuperMechBranch.BranchMindReality) specId = MindTelekinesis;
 
             if (specId != null && !a.hasTrait(specId))
             {

@@ -8,18 +8,18 @@ namespace SuperMech.Code
         public class FusionRecipe
         {
             public string id;
-            public string equipId;        // 产物装备ID（融合成功时动态注册）
-            public string equipName;      // 产物名称
-            public string productType;    // 产物类型："sm_knowledgefusion_750"sm_knowledgefusion_1331"sm_knowledgefusion_759"sm_knowledgefusion_1332"sm_knowledgefusion_764"sm_knowledgefusion_1333"sm_knowledgefusion_767"sm_knowledgefusion_1334"sm_knowledgefusion_770"(念力)
+            public string equipId;
+            public string equipName;
+            public string productType;
             public string desc;
-            public string[] requiredKnowledge; // 需要的知识ID
+            public string[] requiredKnowledge;
             public int xpCost;
             public float successRate;
-            public float dmgMul;          // 产物伤害倍率
-            public float hpMul;           // 产物生命倍率
-            public float speedMul;        // 产物攻速倍率
-            public int qiBonus;           // 产物气力加成
-            public string icon;           // 产物图标
+            public float dmgMul;
+            public float hpMul;
+            public float speedMul;
+            public int qiBonus;
+            public string icon;
         }
 
         private static readonly List<FusionRecipe> _recipes = new List<FusionRecipe>();
@@ -314,7 +314,7 @@ namespace SuperMech.Code
                 if (item == null) return;
                 item.calculateValues();
                 slot.setItem(item, a);
-                SuperMechEquipAffix.OnEquip(a, 5); // 制造装备按粉色品质roll词条
+                SuperMechEquipAffix.OnEquip(a, 5);
             }
             catch (System.Exception e)
             {

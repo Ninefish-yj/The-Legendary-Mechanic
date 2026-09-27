@@ -5,30 +5,30 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 自定义属性：18个BaseStatAsset，0值不显示
+
 
     public static class SuperMechCustomStats
     {
-        public const string StatQi = "sm_qi";                    // 气力（当前值）
-        public const string StatQiMax = "sm_qi_max";             // 气力上限
-        public const string StatMana = "sm_mana";                // 魔力（魔法系能量，当前值）
-        public const string StatManaMax = "sm_mana_max";         // 魔力上限
-        public const string StatMindPower = "sm_mind_power";     // 精神力（念力系能量，当前值）
-        public const string StatMindPowerMax = "sm_mind_power_max"; // 精神力上限
-        public const string StatMechAffinity = "sm_mech_affinity"; // 械感（机械亲和度，百分比）
-        public const string StatMageAffinity = "sm_mage_affinity"; // 魔感（魔法亲和度，百分比）
-        public const string StatMystery = "sm_mystery";          // 神秘（原著7项基础属性之一）
-        public const string StatCharm = "sm_charm";              // 魅力（原著7项基础属性之一）
-        public const string StatLuck = "sm_luck";                // 幸运（原著7项基础属性之一）
-        public const string StatProfessionLevel = "sm_profession_level"; // 职业等级（降临者）
+        public const string StatQi = "sm_qi";
+        public const string StatQiMax = "sm_qi_max";
+        public const string StatMana = "sm_mana";
+        public const string StatManaMax = "sm_mana_max";
+        public const string StatMindPower = "sm_mind_power";
+        public const string StatMindPowerMax = "sm_mind_power_max";
+        public const string StatMechAffinity = "sm_mech_affinity";
+        public const string StatMageAffinity = "sm_mage_affinity";
+        public const string StatMystery = "sm_mystery";
+        public const string StatCharm = "sm_charm";
+        public const string StatLuck = "sm_luck";
+        public const string StatProfessionLevel = "sm_profession_level";
         public const string StatPotentialPoints = "sm_potential_points";
         public const string StatDivinityLayers = "sm_divinity_layers";
-        public const string StatSanctuary1 = "sm_sanctuary_1";   // 第一圣所（机械系）
-        public const string StatSanctuary2 = "sm_sanctuary_2";   // 第二圣所（武道系）
-        public const string StatSanctuary3 = "sm_sanctuary_3";   // 第三圣所（异能系）
-        public const string StatSanctuary4 = "sm_sanctuary_4";   // 第四圣所（魔法系）
-        public const string StatSanctuary5 = "sm_sanctuary_5";   // 第五圣所（念力系）
-        public const string StatSanctuary6 = "sm_sanctuary_6";   // 第六圣所（信息态技术）
+        public const string StatSanctuary1 = "sm_sanctuary_1";
+        public const string StatSanctuary2 = "sm_sanctuary_2";
+        public const string StatSanctuary3 = "sm_sanctuary_3";
+        public const string StatSanctuary4 = "sm_sanctuary_4";
+        public const string StatSanctuary5 = "sm_sanctuary_5";
+        public const string StatSanctuary6 = "sm_sanctuary_6";
 
         private static bool _registered = false;
 
@@ -111,7 +111,7 @@ namespace SuperMech.Code
                 catch (System.Exception e)
                 {
                     errors++;
-                    if (errors <= 3)  // 只打印前3个错误，避免日志刷屏
+                    if (errors <= 3)
                         Debug.LogError($"[超神机械师] SyncStats异常({a.name}): {e.Message}\n{e.StackTrace}");
                 }
             }

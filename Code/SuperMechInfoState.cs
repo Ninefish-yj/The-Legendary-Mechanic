@@ -60,7 +60,7 @@ namespace SuperMech.Code
             if (asset.Contains("plant") || asset.Contains("tree") || asset.Contains("ent") ||
                 target.hasTrait("plant") || target.hasTrait("tree_ent"))
             {
-                return 1f + lv * 0.10f; // 每级+10%对植物伤害
+                return 1f + lv * 0.10f;
             }
             return 1f;
         }
@@ -76,10 +76,10 @@ namespace SuperMech.Code
             if (lv <= 0) return false;
             float cd;
             if (_shieldCooldown.TryGetValue(a.id, out cd) && Time.time < cd) return false;
-            float chance = lv * 0.10f; // 每级10%
+            float chance = lv * 0.10f;
             if (Random.value < chance)
             {
-                _shieldCooldown[a.id] = Time.time + 3f; // 3秒冷却
+                _shieldCooldown[a.id] = Time.time + 3f;
                 return true;
             }
             return false;
@@ -126,7 +126,7 @@ namespace SuperMech.Code
                         SuperMechTranscendence.IsAdvancementTaskDone(a) &&
                         !SuperMechTranscendence.IsTranscended(a))
                     {
-                        if (Random.value < 0.01f) // 额外1%概率
+                        if (Random.value < 0.01f)
                         {
                             SuperMechTranscendence.AddLegacyPower(a, 1);
                         }

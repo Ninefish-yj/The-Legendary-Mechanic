@@ -7,16 +7,16 @@ namespace SuperMech.Code
 {
     public static class SuperMechSubClass
     {
-        public const string SubAgent       = "sm_sub_agent";       // 特工
-        public const string SubNinja      = "sm_sub_ninja";       // 黑夜潜行者
-        public const string SubHacker     = "sm_sub_hacker";      // 黑客
-        public const string SubMerchant  = "sm_sub_merchant";    // 商人
-        public const string SubDoctor     = "sm_sub_doctor";      // 医生
-        public const string SubEngineer  = "sm_sub_engineer";    // 工程师
-        public const string SubScribe     = "sm_sub_scribe";      // 学者
-        public const string SubScout      = "sm_sub_scout";       // 侦察兵
+        public const string SubAgent       = "sm_sub_agent";
+        public const string SubNinja      = "sm_sub_ninja";
+        public const string SubHacker     = "sm_sub_hacker";
+        public const string SubMerchant  = "sm_sub_merchant";
+        public const string SubDoctor     = "sm_sub_doctor";
+        public const string SubEngineer  = "sm_sub_engineer";
+        public const string SubScribe     = "sm_sub_scribe";
+        public const string SubScout      = "sm_sub_scout";
 
-        public const int MaxSubLevel = 10;  // 副职业最高10级
+        public const int MaxSubLevel = 10;
 
         private static readonly Dictionary<long, Dictionary<string, float>> _subXp = new Dictionary<long, Dictionary<string, float>>();
         private static readonly Dictionary<long, Dictionary<string, int>> _subLevel = new Dictionary<long, Dictionary<string, int>>();
@@ -47,7 +47,7 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
+            float tickInterval = SuperMechConfig.TickInterval * 4f;
 
             foreach (Actor a in units)
             {

@@ -16,23 +16,23 @@ namespace SuperMech.Code
         private const float LibraryHeight = 184f;
 
         private static GameObject _container;
-        private static Transform _headerLayer;   // 系别切换层
-        private static Transform _graphLayer;    // 知识图谱层
-        private static RectTransform _graphContent;  // 图谱内容容器
-        private static Text _graphTitle;         // 图谱标题
-        private static SMKnowledgeGraph3D _graph3D; // 3D知识图谱组件
-        private static Transform _libraryLayer;  // 知识库内容层
-        private static Text _libraryTitle;       // 知识库标题
-        private static Text _libraryProgress;    // 知识库进度（右下角）
+        private static Transform _headerLayer;
+        private static Transform _graphLayer;
+        private static RectTransform _graphContent;
+        private static Text _graphTitle;
+        private static SMKnowledgeGraph3D _graph3D;
+        private static Transform _libraryLayer;
+        private static Text _libraryTitle;
+        private static Text _libraryProgress;
         private static Actor _currentActor;
         private static string _currentPrefix = "mech";
         private static readonly Color[] TierColors =
         {
-            new Color(0.5f, 0.5f, 0.5f),  // 基础 - 灰
-            new Color(0.3f, 0.7f, 0.3f),  // 进阶 - 绿
-            new Color(0.3f, 0.5f, 0.9f),  // 高端 - 蓝
-            new Color(0.7f, 0.3f, 0.8f),  // 尖端 - 紫
-            new Color(0.95f, 0.7f, 0.2f)  // 终极 - 金
+            new Color(0.5f, 0.5f, 0.5f),
+            new Color(0.3f, 0.7f, 0.3f),
+            new Color(0.3f, 0.5f, 0.9f),
+            new Color(0.7f, 0.3f, 0.8f),
+            new Color(0.95f, 0.7f, 0.2f)
         };
 
         internal static void Ensure(Transform parent, Actor actor)
@@ -302,7 +302,7 @@ namespace SuperMech.Code
             vpRt.anchorMin = Vector2.zero;
             vpRt.anchorMax = Vector2.one;
             vpRt.offsetMin = new Vector2(2, 2);
-            vpRt.offsetMax = new Vector2(-2, 22); // 顶部留出标题栏空间
+            vpRt.offsetMax = new Vector2(-2, 22);
             viewport.AddComponent<Mask>().showMaskGraphic = false;
             Image vpImg = viewport.AddComponent<Image>();
             vpImg.color = new Color(0, 0, 0, 0.2f);

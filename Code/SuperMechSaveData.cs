@@ -50,20 +50,20 @@ namespace SuperMech.Code
             public string destinyName;
             public float destinyProgress;
             public bool destinyCompleted;
-            public string branch; // 职业分支（枪炮师/机械师/械武者等）
-            public string subclass; // 副职业ID
-            public int subclassLevel; // 副职业等级
-            public List<string> knowledge; // 已解锁知识节点ID列表
-            public List<string> equipBag; // 装备背包装备ID列表
-            public string currentEquip; // 当前装备ID
-            public List<string> fusionRecipes; // 已学会的知识融合配方ID列表
-            public int mechFusionLevel; // 械力融合等级（0=未融合）
-            public string fusedEquip; // 械力融合的装备ID
-            public int[] sanctuaryAuthority; // 圣所权限（6个圣所的碎片数，原著ch1266：碎片=权限）
-            public string talents; // 天赋倾向（JSON序列化）
-            public int profession; // 主职业方向（0=无,1=机械,2=武道,3=异能,4=魔法,5=念力）
-            public int switchCount; // 更换职业次数
-            public bool fiveSystemGenius; // 五系天才标记
+            public string branch;
+            public string subclass;
+            public int subclassLevel;
+            public List<string> knowledge;
+            public List<string> equipBag;
+            public string currentEquip;
+            public List<string> fusionRecipes;
+            public int mechFusionLevel;
+            public string fusedEquip;
+            public int[] sanctuaryAuthority;
+            public string talents;
+            public int profession;
+            public int switchCount;
+            public bool fiveSystemGenius;
         }
 
         [Serializable]
@@ -279,7 +279,7 @@ namespace SuperMech.Code
                     if (!string.IsNullOrEmpty(ad.subclass) && !a.hasTrait(ad.subclass))
                     {
                         a.addTrait(ad.subclass);
-                        SuperMechSubClass.AddSubXp(a, ad.subclass, 0); // 初始化字典
+                        SuperMechSubClass.AddSubXp(a, ad.subclass, 0);
                     }
                     if (ad.knowledge != null)
                     {

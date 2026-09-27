@@ -10,8 +10,8 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<string, string[]> CounterTable = new Dictionary<string, string[]>
         {
-            { SuperMechTraits.ClassMech, new[] { SuperMechTraits.ClassMind } },   // 机械克念力
-            { SuperMechTraits.ClassMind, new[] { SuperMechTraits.ClassMech } },   // 念力克机械
+            { SuperMechTraits.ClassMech, new[] { SuperMechTraits.ClassMind } },
+            { SuperMechTraits.ClassMind, new[] { SuperMechTraits.ClassMech } },
         };
 
         public static float GetDamageMultiplier(Actor attacker, Actor target)

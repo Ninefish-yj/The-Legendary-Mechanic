@@ -8,7 +8,7 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
-    // 单位面板注入：5行核心信息，Harmony补丁
+
 
     public static class SuperMechUnitWindow
     {
@@ -165,7 +165,7 @@ namespace SuperMech.Code
                 {
                     Type pt = parms[i].ParameterType;
                     string pname = parms[i].Name;
-                    if (pname == "pLocalize") { args[i] = false; continue; }  // 中文标签不本地化
+                    if (pname == "pLocalize") { args[i] = false; continue; }
                     if (pt == typeof(string)) args[i] = null;
                     else if (pt == typeof(bool)) args[i] = false;
                     else if (pt == typeof(long)) args[i] = -1L;

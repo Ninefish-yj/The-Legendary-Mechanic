@@ -5,51 +5,51 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    // 气力系统：40级阈值，气力空→体力×3→生命×2
+
 
     public static class SuperMechQi
     {
         public static readonly float[] Thresholds = {
-            10f,       // Lv1  (ch2)
-            50f,       // Lv2  (ch2)
-            100f,      // Lv3  (ch2/ch5: 120)
-            200f,      // Lv4  (ch2/ch54: 200)
-            400f,      // Lv5  (ch2)
-            1000f,     // Lv6  (ch2/ch146: 1230, 分水岭)
-            2000f,     // Lv7  (插值)
-            2500f,     // Lv8  (ch262: 3070)
-            5000f,     // Lv9  (ch356: 5210)
-            8000f,     // Lv10 (ch531: 9770)
-            15000f,    // Lv11 (ch630: 17580)
-            22000f,    // Lv12 (ch676: 25530)
-            30000f,    // Lv13 (ch735: 35530)
-            42000f,    // Lv14 (插值)
-            50000f,    // Lv15 (ch760: 52270)
-            65000f,    // Lv16 (插值)
-            75000f,    // Lv17 (ch854: 82120)
-            100000f,   // Lv18 (插值)
-            120000f,   // Lv19 (ch945/ch948: 128452)
-            150000f,   // Lv20 (插值)
-            170000f,   // Lv21 (ch1028: 182075)
-            194000f,   // Lv22 (插值)
-            221000f,   // Lv23 (插值)
-            252000f,   // Lv24 (插值)
-            287000f,   // Lv25 (插值)
-            327000f,   // Lv26 (插值)
-            373000f,   // Lv27 (插值)
-            425000f,   // Lv28 (插值)
-            450000f,   // Lv29 (最终面板: 481200)
-            553000f,   // Lv30 (外推)
-            636000f,   // Lv31 (外推)
-            731000f,   // Lv32 (外推)
-            841000f,   // Lv33 (外推)
-            967000f,   // Lv34 (外推)
-            1112000f,  // Lv35 (外推)
-            1279000f,  // Lv36 (外推)
-            1471000f,  // Lv37 (外推)
-            1692000f,  // Lv38 (外推)
-            1946000f,  // Lv39 (外推)
-            2238000f,  // Lv40 (外推, 等效封顶)
+            10f,
+            50f,
+            100f,
+            200f,
+            400f,
+            1000f,
+            2000f,
+            2500f,
+            5000f,
+            8000f,
+            15000f,
+            22000f,
+            30000f,
+            42000f,
+            50000f,
+            65000f,
+            75000f,
+            100000f,
+            120000f,
+            150000f,
+            170000f,
+            194000f,
+            221000f,
+            252000f,
+            287000f,
+            327000f,
+            373000f,
+            425000f,
+            450000f,
+            553000f,
+            636000f,
+            731000f,
+            841000f,
+            967000f,
+            1112000f,
+            1279000f,
+            1471000f,
+            1692000f,
+            1946000f,
+            2238000f,
         };
 
         public static readonly string[] LevelNames = {
@@ -113,7 +113,7 @@ namespace SuperMech.Code
             stats["stamina"] = level * level * 0.3f * stageMul;
             stats["intelligence"] = level * 0.3f * stageMul + skillBonus.intelligence;
 
-            if (level >= 6)  // Lv6分水岭（原著ch146），额外暴击
+            if (level >= 6)
             {
                 stats["critical_chance"] = (level - 5) * 0.005f * stageMul;
             }
@@ -149,10 +149,10 @@ namespace SuperMech.Code
         public static float GetGrowthDecay(int level)
         {
             if (level <= 5) return 1.0f;
-            if (level <= 10) return 0.7f;    // Lv6分水岭后变慢
+            if (level <= 10) return 0.7f;
             if (level <= 15) return 0.4f;
             if (level <= 20) return 0.2f;
-            return 0.1f;                      // Lv21+神性蜕变门槛后极难
+            return 0.1f;
         }
 
         public static void AddQi(Actor a, float amount)
@@ -160,7 +160,7 @@ namespace SuperMech.Code
             if (a == null) return;
             float cur = GetQi(a);
             float max = GetQiMax(a);
-            if (max <= 0) max = cur + amount; // 首次设置时同步上限
+            if (max <= 0) max = cur + amount;
             _qiMap[a.id] = Mathf.Min(cur + amount, max);
         }
 
@@ -207,7 +207,7 @@ namespace SuperMech.Code
                 float remaining = amount - cur;
 
                 float stamina = a.getStamina();
-                float staminaCost = remaining * 3f; // 超比例
+                float staminaCost = remaining * 3f;
                 if (stamina >= staminaCost)
                 {
                     a.data.stamina = Mathf.Max(0, (int)(stamina - staminaCost));
@@ -217,7 +217,7 @@ namespace SuperMech.Code
                 {
                     spent += stamina / 3f;
                     a.data.stamina = 0;
-                    float healthCost = (remaining - stamina / 3f) * 2f; // 体力空后扣生命更狠
+                    float healthCost = (remaining - stamina / 3f) * 2f;
                     a.data.health = (int)Mathf.Max(1f, a.data.health - healthCost);
                     spent += (stamina / 3f);
                     if (SuperMechConfig.LogVerbose)
@@ -248,7 +248,7 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            float tickInterval = SuperMechConfig.TickInterval * 4f; // 分组4：每4次UnifiedTick调用才跑一次本系统
+            float tickInterval = SuperMechConfig.TickInterval * 4f;
             int maxTracked = SuperMechConfig.MaxTrackedActors;
             int processed = 0;
 
@@ -259,7 +259,7 @@ namespace SuperMech.Code
 
                 if (processed >= maxTracked)
                 {
-                    if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue; // B阶以下跳过
+                    if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue;
                 }
                 processed++;
 
@@ -268,7 +268,7 @@ namespace SuperMech.Code
                 _lastHealth.TryGetValue(a.id, out lastH);
                 if (curHealth < lastH - 0.5f)
                 {
-                    _combatTimer[a.id] = 5f;  // 5秒战斗状态
+                    _combatTimer[a.id] = 5f;
                 }
                 _lastHealth[a.id] = curHealth;
 
@@ -297,7 +297,7 @@ namespace SuperMech.Code
                 else
                 {
                     float max = GetQiMax(a);
-                    if (max <= 0) max = qi; // 首次初始化
+                    if (max <= 0) max = qi;
                     float intel = 1f;
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
@@ -316,7 +316,7 @@ namespace SuperMech.Code
                     {
                         float staminaCost = Mathf.Min(stam * 0.1f, (max - qi) / 2f);
                         a.data.stamina = Mathf.Max(0, (int)(stam - staminaCost));
-                        recovery += staminaCost * 2f; // 1体力=2气力
+                        recovery += staminaCost * 2f;
                     }
 
                     float newCur = Mathf.Min(qi + recovery, max);
@@ -326,9 +326,9 @@ namespace SuperMech.Code
                     int curLv = GetLevel(max);
                     float growthDecay = GetGrowthDecay(curLv);
                     float maxGrowth = 0.05f * tickInterval * SuperMechConfig.QiGrowthRate * growthDecay;
-                    if (a.hasTrait("sm_refinement")) maxGrowth *= SuperMechConfig.RefinementBonus; // 提炼法加成
+                    if (a.hasTrait("sm_refinement")) maxGrowth *= SuperMechConfig.RefinementBonus;
                     if (a.hasTrait("sm_em_refinement") && a.hasTrait(SuperMechTraits.ClassMech))
-                        maxGrowth *= 1.5f; // 电磁因子提炼法再×1.5
+                        maxGrowth *= 1.5f;
                     if (a.hasTrait("sm_divinity_ascended")) maxGrowth *= 1.5f;
                     AddQiMax(a, maxGrowth);
                 }
