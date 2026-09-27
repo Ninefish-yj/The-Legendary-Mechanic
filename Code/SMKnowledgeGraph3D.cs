@@ -7,17 +7,11 @@ namespace SuperMech.Code
 {
     public class SMKnowledgeGraph3D : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        private const float Radius = 90f;
-        private const float NodeScaleMin = 0.7f;
-        private const float NodeScaleMax = 1.3f;
-        private const float DragSpeed = 0.3f;
-
-        private static readonly Color ColorLocked = new Color(0.3f, 0.3f, 0.35f, 0.6f);
-        private static readonly Color ColorUnlockable = new Color(0.3f, 0.5f, 0.9f, 0.9f);
-        private static readonly Color ColorUnlocked = new Color(0.9f, 0.75f, 0.2f, 1f);
-        private static readonly Color ColorAxonDefault = new Color(1f, 1f, 1f, 0.08f);
-        private static readonly Color ColorAxonActive = new Color(0.3f, 0.8f, 1f, 0.4f);
-        private static readonly Color ColorImpulse = new Color(0.5f, 0.9f, 1f, 1f);
+        private const float Radius = 70f;
+        private const float NodeSize = 28f;
+        private const float DragSpeed = 0.46f;
+        private const float DragRotateSpeed = 0.005f;
+        private const float RotationBounds = 0.7f;
 
         public class KnowledgeNode
         {
@@ -26,13 +20,10 @@ namespace SuperMech.Code
             public string icon;
             public int tier;
             public bool unlocked;
-            public bool unlockable;
-            public int cost;
             public Vector3 spherePos;
             public GameObject gameObject;
             public Image image;
-            public Button button;
-            public float spawnTimer;
+            public float renderDepth;
         }
 
         private class Axon
@@ -41,36 +32,19 @@ namespace SuperMech.Code
             public KnowledgeNode to;
             public GameObject lineObj;
             public Image lineImage;
-            public bool active;
-        }
-
-        private class NerveImpulse
-        {
-            public Axon axon;
-            public GameObject obj;
-            public Image image;
-            public float progress;
-            public float speed;
-            public int wave;
-            public KnowledgeNode source;
         }
 
         private List<KnowledgeNode> _nodes = new List<KnowledgeNode>();
         private List<Axon> _axons = new List<Axon>();
-        private List<NerveImpulse> _impulses = new List<NerveImpulse>();
 
-        private GameObject _graphContainer;
         private GameObject _nodesParent;
         private GameObject _axonsParent;
-        private GameObject _impulsesParent;
 
         private bool _isDragging;
-        private Vector2 _lastDragPos;
-        private float _rotationY;
-        private float _rotationX;
-        private float _targetRotationY;
-        private float _targetRotationX;
-        private float _axonHighlight;
+        private float _offsetX;
+        private float _offsetY;
+        private float _targetOffsetX = -0.015f;
+        private float _targetOffsetY = 0.07f;
 
         private Actor _actor;
         private string _prefix;
@@ -82,263 +56,73 @@ namespace SuperMech.Code
 
             Clear();
 
-            _graphContainer = new GameObject("Graph3D", typeof(RectTransform));
-            _graphContainer.transform.SetParent(parent, false);
-            RectTransform grt = _graphContainer.GetComponent<RectTransform>();
-            grt.anchorMin = Vector2.zero;
-            grt.anchorMax = Vector2.one;
-            grt.pivot = new Vector2(0.5f, 0.5f);
-            grt.offsetMin = Vector2.zero;
-            grt.offsetMax = Vector2.zero;
-            float w = parent.GetComponent<RectTransform>().rect.width;
-            float h = parent.GetComponent<RectTransform>().rect.height;
-            if (w <= 10f) w = 340f;
-            if (h <= 10f) h = 220f;
-            Debug.Log($"[超神机械师] 3D知识图谱初始化: prefix={_prefix}, 父容器大小={w}x{h}, 知识数={SuperMechKnowledge.GetAllByPrefix(_prefix)?.Count ?? 0}");
-
-            CreateBackground(_graphContainer.transform);
+            _nodesParent = new GameObject("Nodes", typeof(RectTransform));
+            _nodesParent.transform.SetParent(parent, false);
+            RectTransform nrt = _nodesParent.GetComponent<RectTransform>();
+            nrt.anchorMin = Vector2.zero;
+            nrt.anchorMax = Vector2.one;
+            nrt.offsetMin = Vector2.zero;
+            nrt.offsetMax = Vector2.zero;
 
             _axonsParent = new GameObject("Axons", typeof(RectTransform));
-            _axonsParent.transform.SetParent(_graphContainer.transform, false);
-            _nodesParent = new GameObject("Nodes", typeof(RectTransform));
-            _nodesParent.transform.SetParent(_graphContainer.transform, false);
-            _impulsesParent = new GameObject("Impulses", typeof(RectTransform));
-            _impulsesParent.transform.SetParent(_graphContainer.transform, false);
-
-            foreach (Transform t in new[] { _axonsParent.transform, _nodesParent.transform, _impulsesParent.transform })
-            {
-                RectTransform rt = t.GetComponent<RectTransform>();
-                rt.anchorMin = Vector2.zero;
-                rt.anchorMax = Vector2.one;
-                rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.offsetMin = Vector2.zero;
-                rt.offsetMax = Vector2.zero;
-            }
+            _axonsParent.transform.SetParent(parent, false);
+            RectTransform art = _axonsParent.GetComponent<RectTransform>();
+            art.anchorMin = Vector2.zero;
+            art.anchorMax = Vector2.one;
+            art.offsetMin = Vector2.zero;
+            art.offsetMax = Vector2.zero;
+            _axonsParent.transform.SetAsFirstSibling();
 
             GenerateNodes();
             GenerateAxons();
-            _rotationY = 30f;
-            _rotationX = 15f;
-            _targetRotationY = _rotationY;
-            _targetRotationX = _rotationX;
-            UpdateNodes();
-            UpdateAxons();
-            UpdateGraphTransform();
+            UpdateVisual();
 
-            this.enabled = true;
-
+            Debug.Log($"[超神机械师] 3D图谱初始化: prefix={_prefix}, 节点数={_nodes.Count}, 轴突数={_axons.Count}");
             if (_nodes.Count > 0)
             {
-                Debug.Log($"[超神机械师] 3D图谱初始化完成: 节点数={_nodes.Count}, 轴突数={_axons.Count}, 首节点位置={_nodes[0].gameObject?.transform.localPosition}, 首节点大小={_nodes[0].gameObject?.GetComponent<RectTransform>().sizeDelta}");
-            }
-            else
-            {
-                Debug.Log($"[超神机械师] 3D图谱初始化完成: 无节点（单位未解锁任何知识）");
-            }
-        }
-
-        private void CreateBackground(Transform parent)
-        {
-            Color themeColor = GetThemeColor(_prefix);
-            System.Random rng = new System.Random(_prefix.GetHashCode() + 42);
-
-            GameObject bgGo = new GameObject("Background", typeof(RectTransform));
-            bgGo.transform.SetParent(parent, false);
-            bgGo.transform.SetAsFirstSibling();
-            Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0.03f, 0.04f, 0.07f, 0.95f);
-            bgImg.raycastTarget = false;
-            RectTransform bgRt = bgGo.GetComponent<RectTransform>();
-            bgRt.anchorMin = Vector2.zero;
-            bgRt.anchorMax = Vector2.one;
-            bgRt.offsetMin = Vector2.zero;
-            bgRt.offsetMax = Vector2.zero;
-
-            GameObject glowGo = new GameObject("CenterGlow", typeof(RectTransform));
-            glowGo.transform.SetParent(bgGo.transform, false);
-            Image glowImg = glowGo.AddComponent<Image>();
-            Color glowColor = themeColor;
-            glowColor.a = 0.06f;
-            glowImg.color = glowColor;
-            glowImg.raycastTarget = false;
-            RectTransform glowRt = glowGo.GetComponent<RectTransform>();
-            glowRt.anchorMin = new Vector2(0.5f, 0.5f);
-            glowRt.anchorMax = new Vector2(0.5f, 0.5f);
-            glowRt.pivot = new Vector2(0.5f, 0.5f);
-            glowRt.sizeDelta = new Vector2(200f, 200f);
-
-            int starCount = 30;
-            for (int i = 0; i < starCount; i++)
-            {
-                GameObject star = new GameObject("Star_" + i, typeof(RectTransform));
-                star.transform.SetParent(bgGo.transform, false);
-                Image starImg = star.AddComponent<Image>();
-                Color starColor = (rng.Next(0, 3) == 0) ? themeColor : Color.white;
-                starColor.a = 0.1f + (float)rng.NextDouble() * 0.3f;
-                starImg.color = starColor;
-                starImg.raycastTarget = false;
-                RectTransform starRt = star.GetComponent<RectTransform>();
-                starRt.anchorMin = new Vector2(0f, 0f);
-                starRt.anchorMax = new Vector2(0f, 0f);
-                starRt.pivot = new Vector2(0.5f, 0.5f);
-                float x = (float)rng.NextDouble() * 400f - 200f;
-                float y = (float)rng.NextDouble() * 200f - 100f;
-                starRt.anchoredPosition = new Vector2(x, y);
-                float size = 0.8f + (float)rng.NextDouble() * 1.5f;
-                starRt.sizeDelta = new Vector2(size, size);
-            }
-
-            GameObject labelGo = new GameObject("ThemeLabel", typeof(RectTransform));
-            labelGo.transform.SetParent(bgGo.transform, false);
-            Text labelText = labelGo.AddComponent<Text>();
-            labelText.text = GetThemeName(_prefix);
-            labelText.fontSize = 11;
-            labelText.color = themeColor;
-            labelText.alignment = TextAnchor.MiddleLeft;
-            labelText.fontStyle = FontStyle.Bold;
-            labelText.horizontalOverflow = HorizontalWrapMode.Overflow;
-            if (labelText.font == null) labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            RectTransform labelRt = labelGo.GetComponent<RectTransform>();
-            labelRt.anchorMin = new Vector2(0f, 1f);
-            labelRt.anchorMax = new Vector2(0f, 1f);
-            labelRt.pivot = new Vector2(0f, 1f);
-            labelRt.anchoredPosition = new Vector2(6f, -4f);
-            labelRt.sizeDelta = new Vector2(100f, 16f);
-        }
-
-        private Color GetThemeColor(string prefix)
-        {
-            switch (prefix)
-            {
-                case "mech": return new Color(0.4f, 0.7f, 1f);
-                case "martial": return new Color(1f, 0.5f, 0.3f);
-                case "psi": return new Color(0.8f, 0.4f, 1f);
-                case "mage": return new Color(0.4f, 1f, 0.6f);
-                case "mind": return new Color(1f, 0.8f, 0.3f);
-                default: return new Color(0.6f, 0.6f, 0.6f);
-            }
-        }
-
-        private Color GetTierColor(int tier)
-        {
-            switch (tier)
-            {
-                case 0: return new Color(0.6f, 0.6f, 0.65f);
-                case 1: return new Color(0.4f, 0.8f, 0.5f);
-                case 2: return new Color(0.4f, 0.6f, 1f);
-                case 3: return new Color(0.8f, 0.4f, 1f);
-                case 4: return new Color(1f, 0.8f, 0.3f);
-                default: return new Color(0.6f, 0.6f, 0.65f);
-            }
-        }
-
-        private string GetThemeName(string prefix)
-        {
-            switch (prefix)
-            {
-                case "mech": return LocalizedTextManager.getText("sm_tree_mech");
-                case "martial": return LocalizedTextManager.getText("sm_tree_martial");                case "psi": return LocalizedTextManager.getText("sm_tree_psi");
-                case "mage": return LocalizedTextManager.getText("sm_tree_mage");
-                case "mind": return LocalizedTextManager.getText("sm_tree_mind");
-                default: return LocalizedTextManager.getText("sm_tree_generic");
+                Debug.Log($"[超神机械师] 首节点: id={_nodes[0].id}, pos={_nodes[0].spherePos}, go={_nodes[0].gameObject != null}");
             }
         }
 
         private void GenerateNodes()
         {
-            List<SuperMechKnowledge.KnowledgeDef> allKnowledge = SuperMechKnowledge.GetAllByPrefix(_prefix);
-            if (allKnowledge == null || allKnowledge.Count == 0)
-            {
-                Debug.Log($"[超神机械师] 3D图谱: prefix={_prefix} 没有知识定义");
-                return;
-            }
+            var allDefs = SuperMechKnowledge.GetAllByPrefix(_prefix);
+            if (allDefs == null) return;
 
-            int unlockedCount = 0;
-            foreach (var def in allKnowledge)
+            List<SuperMechKnowledge.KnowledgeDef> unlockedDefs = new List<SuperMechKnowledge.KnowledgeDef>();
+            foreach (var def in allDefs)
             {
-                if (!SuperMechKnowledge.IsUnlocked(_actor, def.id)) continue;
-
-                KnowledgeNode node = new KnowledgeNode
+                if (SuperMechKnowledge.IsUnlocked(_actor, def.id))
                 {
-                    id = def.id,
-                    name = LocalizedTextManager.getText(def.name),
-                    icon = def.icon,
-                    tier = def.tier,
-                    unlocked = true,
-                    cost = def.cost,
-                    unlockable = false
-                };
-
-                _nodes.Add(node);
-                unlockedCount++;
+                    unlockedDefs.Add(def);
+                }
             }
 
-            Debug.Log($"[超神机械师] 3D图谱: prefix={_prefix}, 总知识={allKnowledge.Count}, 已解锁={unlockedCount}");
-
-            if (unlockedCount == 0) return;
-
-            RecalculateNodePositions();
-
-            foreach (var node in _nodes)
-            {
-                CreateNodeGameObject(node);
-            }
-        }
-
-        private void RecalculateNodePositions()
-        {
-            int total = _nodes.Count;
-            if (total == 0) return;
-
+            int total = unlockedDefs.Count;
             for (int i = 0; i < total; i++)
             {
-                var node = _nodes[i];
-                float tierRadius = Radius * (0.7f + node.tier * 0.08f);
-                node.spherePos = GetPositionOnSphere(i, total, tierRadius);
-            }
-        }
-
-        private void CheckAndAddNewNodes()
-        {
-            List<SuperMechKnowledge.KnowledgeDef> allKnowledge = SuperMechKnowledge.GetAllByPrefix(_prefix);
-            if (allKnowledge == null) return;
-
-            bool added = false;
-            foreach (var def in allKnowledge)
-            {
-                if (!SuperMechKnowledge.IsUnlocked(_actor, def.id)) continue;
-                if (_nodes.Exists(n => n.id == def.id)) continue;
-
+                var def = unlockedDefs[i];
                 KnowledgeNode node = new KnowledgeNode
                 {
                     id = def.id,
-                    name = LocalizedTextManager.getText(def.name),
+                    name = def.name,
                     icon = def.icon,
                     tier = def.tier,
                     unlocked = true,
-                    cost = def.cost,
-                    unlockable = false
+                    spherePos = GetPositionOnSphere(i, total)
                 };
-
-                _nodes.Add(node);
                 CreateNodeGameObject(node);
-                added = true;
-            }
-
-            if (added)
-            {
-                RecalculateNodePositions();
-                GenerateAxons();
+                _nodes.Add(node);
             }
         }
 
-        private Vector3 GetPositionOnSphere(int index, int total, float radius)
+        private Vector3 GetPositionOnSphere(int index, int total)
         {
-            float phi = Mathf.Acos(1f - (float)(2 * (index + 1)) / (float)total);
-            float theta = Mathf.PI * (1f + Mathf.Sqrt(5f)) * (float)index;
-            float x = radius * Mathf.Cos(theta) * Mathf.Sin(phi);
-            float y = radius * Mathf.Sin(theta) * Mathf.Sin(phi);
-            float z = radius * Mathf.Cos(phi);
+            float f = Mathf.Acos(1f - (float)(2 * (index + 1)) / (float)total);
+            float f2 = Mathf.PI * (1f + Mathf.Sqrt(5f)) * (float)index;
+            float x = Radius * Mathf.Cos(f2) * Mathf.Sin(f);
+            float y = Radius * Mathf.Sin(f2) * Mathf.Sin(f);
+            float z = Radius * Mathf.Cos(f);
             return new Vector3(x, y, z);
         }
 
@@ -347,458 +131,186 @@ namespace SuperMech.Code
             GameObject go = new GameObject("Node_" + node.id, typeof(RectTransform));
             go.transform.SetParent(_nodesParent.transform, false);
 
-            float nodeSize = 32f + node.tier * 4f;
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
+            rt.sizeDelta = new Vector2(NodeSize, NodeSize);
+            rt.localPosition = node.spherePos;
 
-            if (node.unlocked)
-            {
-                GameObject glowGo = new GameObject("Glow", typeof(RectTransform));
-                glowGo.transform.SetParent(go.transform, false);
-                Image glowImg = glowGo.AddComponent<Image>();
-                Color glowColor = GetTierColor(node.tier);
-                glowColor.a = 0.25f;
-                glowImg.color = glowColor;
-                glowImg.raycastTarget = false;
-                RectTransform glowRt = glowGo.GetComponent<RectTransform>();
-                glowRt.anchorMin = new Vector2(0.5f, 0.5f);
-                glowRt.anchorMax = new Vector2(0.5f, 0.5f);
-                glowRt.pivot = new Vector2(0.5f, 0.5f);
-                glowRt.sizeDelta = new Vector2(nodeSize * 1.8f, nodeSize * 1.8f);
-            }
+            Image bg = go.AddComponent<Image>();
+            bg.sprite = SpriteTextureLoader.getSprite("ui/special/special_circle");
+            Color tierColor = GetTierColor(node.tier);
+            bg.color = new Color(tierColor.r, tierColor.g, tierColor.b, 0.9f);
+            bg.raycastTarget = true;
 
-            GameObject borderGo = new GameObject("Border", typeof(RectTransform));
-            borderGo.transform.SetParent(go.transform, false);
-            Image borderImg = borderGo.AddComponent<Image>();
-            Color borderColor;
-            if (node.unlocked) borderColor = GetTierColor(node.tier);
-            else if (node.unlockable) borderColor = new Color(0.4f, 0.7f, 1f);
-            else borderColor = new Color(0.3f, 0.3f, 0.35f);
-            borderImg.color = borderColor;
-            borderImg.raycastTarget = false;
-            RectTransform borderRt = borderGo.GetComponent<RectTransform>();
-            borderRt.anchorMin = new Vector2(0.5f, 0.5f);
-            borderRt.anchorMax = new Vector2(0.5f, 0.5f);
-            borderRt.pivot = new Vector2(0.5f, 0.5f);
-            borderRt.sizeDelta = new Vector2(nodeSize + 4, nodeSize + 4);
-
-            GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
-            bgGo.transform.SetParent(go.transform, false);
-            Image bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0.05f, 0.06f, 0.1f, 0.9f);
-            bgImg.raycastTarget = false;
-            RectTransform bgRt = bgGo.GetComponent<RectTransform>();
-            bgRt.anchorMin = new Vector2(0.5f, 0.5f);
-            bgRt.anchorMax = new Vector2(0.5f, 0.5f);
-            bgRt.pivot = new Vector2(0.5f, 0.5f);
-            bgRt.sizeDelta = new Vector2(nodeSize, nodeSize);
-
-            GameObject iconGo = new GameObject("Icon", typeof(RectTransform));
-            iconGo.transform.SetParent(go.transform, false);
-            Image iconImg = iconGo.AddComponent<Image>();
             if (!string.IsNullOrEmpty(node.icon))
             {
+                GameObject iconGo = new GameObject("Icon", typeof(RectTransform));
+                iconGo.transform.SetParent(go.transform, false);
+                RectTransform iconRt = iconGo.GetComponent<RectTransform>();
+                iconRt.anchorMin = Vector2.zero;
+                iconRt.anchorMax = Vector2.one;
+                iconRt.offsetMin = new Vector2(4, 4);
+                iconRt.offsetMax = new Vector2(-4, -4);
+                Image iconImg = iconGo.AddComponent<Image>();
                 try { iconImg.sprite = SpriteTextureLoader.getSprite(node.icon); } catch { }
+                iconImg.color = Color.white;
+                iconImg.raycastTarget = false;
             }
-            if (iconImg.sprite == null)
-            {
-                iconImg.sprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconStrong");
-            }
-            iconImg.color = node.unlocked ? Color.white : new Color(1f, 1f, 1f, node.unlockable ? 0.85f : 0.35f);
-            iconImg.raycastTarget = false;
-            RectTransform iconRt = iconGo.GetComponent<RectTransform>();
-            iconRt.anchorMin = new Vector2(0.5f, 0.5f);
-            iconRt.anchorMax = new Vector2(0.5f, 0.5f);
-            iconRt.pivot = new Vector2(0.5f, 0.5f);
-            iconRt.sizeDelta = new Vector2(nodeSize * 0.65f, nodeSize * 0.65f);
 
             Button btn = go.AddComponent<Button>();
-            ColorBlock cb = btn.colors;
-            cb.normalColor = new Color(1f, 1f, 1f, 0f);
-            cb.highlightedColor = new Color(1f, 1f, 1f, 0.15f);
-            cb.pressedColor = new Color(0.8f, 0.8f, 0.8f, 0.2f);
-            btn.colors = cb;
-            btn.targetGraphic = bgImg;
-
-            string nodeId = node.id;
+            var def = SuperMechKnowledge.GetDef(node.id);
+            int cost = def != null ? def.cost : 1;
             btn.onClick.AddListener(() =>
             {
-                if (SuperMechKnowledge.Unlock(_actor, nodeId))
-                {
-                    foreach (var n in _nodes)
-                    {
-                        if (n.id == nodeId)
-                        {
-                            n.unlocked = true;
-                            n.unlockable = false;
-                            UpdateNodeVisual(n);
-                        }
-                        else
-                        {
-                            n.unlocked = SuperMechKnowledge.IsUnlocked(_actor, n.id);
-                            int aCost = SuperMechPotential.GetActualCost(_actor, n.id, n.cost);
-                            n.unlockable = !n.unlocked && SuperMechPotential.GetPotential(_actor) >= aCost;
-                            UpdateNodeVisual(n);
-                        }
-                    }
-                    UpdateAxonsVisual();
-                }
+                SuperMechPotential.UnlockNode(_actor, node.id, cost);
             });
 
             TipButton tip = go.AddComponent<TipButton>();
-            tip.textOnClick = $"{LocalizedTextManager.getText(node.name)}\n{LocalizedTextManager.getText("sm_graph_tier")}: {GetTierName(node.tier)}\n{LocalizedTextManager.getText("sm_graph_cost")}: {node.cost}{LocalizedTextManager.getText("sm_graph_potential")}\n{(node.unlocked ? LocalizedTextManager.getText("sm_graph_unlocked") : (node.unlockable ? LocalizedTextManager.getText("sm_graph_click_unlock") : LocalizedTextManager.getText("sm_graph_locked")))}";
+            tip.textOnClick = LocalizedTextManager.getText(node.name);
+            tip.textOnClickDescription = SuperMechKnowledge.GetDef(node.id)?.desc ?? "";
 
             node.gameObject = go;
-            node.image = iconImg;
-            node.button = btn;
-
-            RectTransform nodeRt = go.GetComponent<RectTransform>();
-            nodeRt.sizeDelta = new Vector2(nodeSize, nodeSize);
-            nodeRt.anchorMin = new Vector2(0.5f, 0.5f);
-            nodeRt.anchorMax = new Vector2(0.5f, 0.5f);
-            nodeRt.pivot = new Vector2(0.5f, 0.5f);
+            node.image = bg;
         }
 
-        private void UpdateNodeVisual(KnowledgeNode node)
+        private Color GetTierColor(int tier)
         {
-            if (node.gameObject == null) return;
-
-            float depth = 0.5f;
-            if (node.gameObject != null)
+            switch (tier)
             {
-                depth = Mathf.InverseLerp(-Radius, Radius, node.gameObject.transform.localPosition.z);
-            }
-
-            Image border = node.gameObject.transform.Find("Border")?.GetComponent<Image>();
-            if (border != null)
-            {
-                Color baseColor;
-                if (node.unlocked) baseColor = GetTierColor(node.tier);
-                else if (node.unlockable) baseColor = new Color(0.4f, 0.7f, 1f);
-                else baseColor = new Color(0.25f, 0.25f, 0.3f);
-
-                float brightness = 0.4f + depth * 0.6f;
-                border.color = new Color(baseColor.r * brightness, baseColor.g * brightness, baseColor.b * brightness, baseColor.a);
-            }
-
-            if (node.image != null)
-            {
-                float baseAlpha = node.unlocked ? 1f : (node.unlockable ? 0.85f : 0.35f);
-                float depthAlpha = 0.5f + depth * 0.5f;
-                node.image.color = new Color(1f, 1f, 1f, baseAlpha * depthAlpha);
-            }
-
-            Transform glow = node.gameObject.transform.Find("Glow");
-            if (glow != null)
-            {
-                glow.gameObject.SetActive(node.unlocked);
-                Image glowImg = glow.GetComponent<Image>();
-                if (glowImg != null)
-                {
-                    Color gc = glowImg.color;
-                    gc.a = node.unlocked ? (0.3f + depth * 0.5f) : 0f;
-                    glowImg.color = gc;
-                }
+                case 0: return new Color(0.5f, 0.7f, 0.9f);
+                case 1: return new Color(0.4f, 0.8f, 0.5f);
+                case 2: return new Color(0.7f, 0.5f, 0.9f);
+                case 3: return new Color(0.9f, 0.6f, 0.3f);
+                case 4: return new Color(0.95f, 0.8f, 0.3f);
+                default: return new Color(0.9f, 0.9f, 0.9f);
             }
         }
 
         private void GenerateAxons()
         {
-            if (_nodes.Count < 2) return;
+            int count = _nodes.Count;
+            if (count < 2) return;
 
-            float maxDist = 250f / Mathf.Sqrt(_nodes.Count) * 1.5f;
-            for (int i = 0; i < _nodes.Count - 1; i++)
+            float maxDist = 250f / Mathf.Sqrt(count) * 1.5f;
+            for (int i = 0; i < count - 1; i++)
             {
-                for (int j = i + 1; j < _nodes.Count; j++)
+                for (int j = i + 1; j < count; j++)
                 {
-                    float d = Vector3.Distance(_nodes[i].spherePos, _nodes[j].spherePos);
-                    if (d <= maxDist)
+                    float dist = Vector3.Distance(_nodes[i].spherePos, _nodes[j].spherePos);
+                    if (dist <= maxDist)
                     {
-                        if (_axons.Exists(a =>
-                            (a.from == _nodes[i] && a.to == _nodes[j]) ||
-                            (a.from == _nodes[j] && a.to == _nodes[i])))
-                            continue;
-
-                        Axon axon = new Axon
-                        {
-                            from = _nodes[i],
-                            to = _nodes[j],
-                            active = _nodes[i].unlocked && _nodes[j].unlocked
-                        };
-                        CreateAxonGameObject(axon);
-                        _axons.Add(axon);
+                        CreateAxon(_nodes[i], _nodes[j]);
                     }
                 }
             }
         }
 
-        private void CreateAxonGameObject(Axon axon)
+        private void CreateAxon(KnowledgeNode from, KnowledgeNode to)
         {
             GameObject go = new GameObject("Axon", typeof(RectTransform));
             go.transform.SetParent(_axonsParent.transform, false);
+
             Image img = go.AddComponent<Image>();
-            img.color = axon.active ? ColorAxonActive : ColorAxonDefault;
+            img.color = new Color(1f, 1f, 1f, 0.1f);
             img.raycastTarget = false;
-            axon.lineObj = go;
-            axon.lineImage = img;
-        }
 
-        private void UpdateAxons()
-        {
-            foreach (var axon in _axons)
-            {
-                if (axon.lineObj == null || axon.from.gameObject == null || axon.to.gameObject == null) continue;
-
-                Vector3 fromPos = axon.from.gameObject.transform.localPosition;
-                Vector3 toPos = axon.to.gameObject.transform.localPosition;
-                Vector3 mid = (fromPos + toPos) / 2f;
-                float dist = Vector3.Distance(fromPos, toPos);
-                float angle = Mathf.Atan2(toPos.y - fromPos.y, toPos.x - fromPos.x) * Mathf.Rad2Deg;
-
-                RectTransform rt = axon.lineObj.GetComponent<RectTransform>();
-                rt.localPosition = mid;
-                rt.sizeDelta = new Vector2(dist, 2f);
-                rt.localRotation = Quaternion.Euler(0, 0, angle);
-
-                float avgZ = (fromPos.z + toPos.z) / 2f;
-                float alpha = Mathf.InverseLerp(-Radius, Radius, avgZ);
-                Color baseColor = axon.active ? ColorAxonActive : ColorAxonDefault;
-                if (_axonHighlight > 0.01f)
-                {
-                    baseColor = Color.Lerp(baseColor, new Color(0.3f, 1f, 1f, 0.6f), _axonHighlight);
-                }
-                baseColor.a *= 0.3f + alpha * 0.7f;
-                axon.lineImage.color = baseColor;
-            }
-        }
-
-        private void UpdateAxonsVisual()
-        {
-            foreach (var axon in _axons)
-            {
-                axon.active = axon.from.unlocked && axon.to.unlocked;
-                if (axon.active && Random.value < 0.3f)
-                {
-                    SpawnImpulse(axon);
-                }
-            }
-        }
-
-        private void SpawnImpulse(Axon axon, int wave = 2, KnowledgeNode source = null)
-        {
-            if (_impulses.Count > 40) return;
-
-            GameObject go = new GameObject("Impulse", typeof(RectTransform));
-            go.transform.SetParent(_impulsesParent.transform, false);
-            Image img = go.AddComponent<Image>();
-            img.color = ColorImpulse;
-            img.raycastTarget = false;
             RectTransform rt = go.GetComponent<RectTransform>();
-            rt.sizeDelta = new Vector2(6, 6);
+            rt.anchorMin = new Vector2(0.5f, 0.5f);
+            rt.anchorMax = new Vector2(0.5f, 0.5f);
+            rt.pivot = new Vector2(0.5f, 0.5f);
 
-            NerveImpulse impulse = new NerveImpulse
-            {
-                axon = axon,
-                obj = go,
-                image = img,
-                progress = 0f,
-                speed = Random.Range(0.8f, 1.8f),
-                wave = wave,
-                source = source
-            };
-            _impulses.Add(impulse);
+            Axon axon = new Axon { from = from, to = to, lineObj = go, lineImage = img };
+            _axons.Add(axon);
         }
 
-        private void UpdateImpulses()
+        private void UpdateVisual()
         {
-            for (int i = _impulses.Count - 1; i >= 0; i--)
-            {
-                var imp = _impulses[i];
-                if (imp.axon.lineObj == null || imp.axon.from.gameObject == null || imp.axon.to.gameObject == null)
-                {
-                    Destroy(imp.obj);
-                    _impulses.RemoveAt(i);
-                    continue;
-                }
+            Quaternion rot = Quaternion.Euler(_offsetX, _offsetY, 0f);
 
-                imp.progress += Time.deltaTime * imp.speed;
-                if (imp.progress >= 1f)
-                {
-                    KnowledgeNode target = (imp.source == imp.axon.from) ? imp.axon.to : imp.axon.from;
-                    Destroy(imp.obj);
-                    _impulses.RemoveAt(i);
-
-                    if (imp.wave > 0 && target != null && target.unlocked)
-                    {
-                        FireImpulseFromNode(target, imp.wave - 1, imp.source);
-                    }
-                    continue;
-                }
-
-                Vector3 fromPos = imp.axon.from.gameObject.transform.localPosition;
-                Vector3 toPos = imp.axon.to.gameObject.transform.localPosition;
-                Vector3 pos = Vector3.Lerp(fromPos, toPos, imp.progress);
-                imp.obj.transform.localPosition = pos;
-
-                float pulse = 0.5f + Mathf.Sin(Time.time * 10f) * 0.5f;
-                Color c = ColorImpulse;
-                c.a *= pulse;
-                imp.image.color = c;
-            }
-        }
-
-        private void FireImpulseFromNode(KnowledgeNode node, int wave, KnowledgeNode ignore = null)
-        {
-            List<Axon> connected = new List<Axon>();
-            foreach (var axon in _axons)
-            {
-                if ((axon.from == node || axon.to == node) && axon.active)
-                {
-                    KnowledgeNode other = (axon.from == node) ? axon.to : axon.from;
-                    if (other != ignore && other.unlocked)
-                        connected.Add(axon);
-                }
-            }
-            if (connected.Count == 0) return;
-
-            int count = Mathf.Min(connected.Count, Random.Range(1, 3));
-            for (int i = 0; i < count; i++)
-            {
-                Axon axon = connected[Random.Range(0, connected.Count)];
-                SpawnImpulse(axon, wave, node);
-            }
-        }
-
-        private void UpdateNodes()
-        {
             foreach (var node in _nodes)
             {
                 if (node.gameObject == null) continue;
 
-                Vector3 rotated = ApplyRotation(node.spherePos);
+                Vector3 rotated = rot * node.spherePos;
                 node.gameObject.transform.localPosition = rotated;
 
                 float depth = Mathf.InverseLerp(-Radius, Radius, rotated.z);
-                float scale = NodeScaleMin + depth * (NodeScaleMax - NodeScaleMin);
-                node.gameObject.transform.localScale = Vector3.one * scale;
+                node.renderDepth = depth;
 
-                node.gameObject.transform.SetSiblingIndex(Mathf.RoundToInt(depth * 100));
+                float scale = Mathf.Lerp(0.7f, 1.3f, depth);
+                node.gameObject.transform.localScale = new Vector3(scale, scale, 1f);
 
-                UpdateNodeVisual(node);
-            }
-        }
-
-        private Vector3 ApplyRotation(Vector3 pos)
-        {
-            float cosY = Mathf.Cos(_rotationY * Mathf.Deg2Rad);
-            float sinY = Mathf.Sin(_rotationY * Mathf.Deg2Rad);
-            float x1 = pos.x * cosY - pos.z * sinY;
-            float z1 = pos.x * sinY + pos.z * cosY;
-
-            float cosX = Mathf.Cos(_rotationX * Mathf.Deg2Rad);
-            float sinX = Mathf.Sin(_rotationX * Mathf.Deg2Rad);
-            float y2 = pos.y * cosX - z1 * sinX;
-            float z2 = pos.y * sinX + z1 * cosX;
-
-            return new Vector3(x1, y2, z2);
-        }
-
-        private void UpdateGraphTransform()
-        {
-        }
-
-        private int _checkFrameCounter;
-
-        void Update()
-        {
-            if (!_isDragging)
-            {
-                _rotationY = Mathf.Lerp(_rotationY, _targetRotationY, Time.deltaTime * 5f);
-                _rotationX = Mathf.Lerp(_rotationX, _targetRotationX, Time.deltaTime * 5f);
-                _targetRotationY += Time.deltaTime * 2f;
+                Color baseColor = GetTierColor(node.tier);
+                Color c = Color.Lerp(new Color(baseColor.r, baseColor.g, baseColor.b, 0.3f), baseColor, depth);
+                node.image.color = c;
             }
 
-            _axonHighlight = Mathf.Lerp(_axonHighlight, 0f, Time.deltaTime * 2f);
-
-            _checkFrameCounter++;
-            if (_checkFrameCounter >= 30)
-            {
-                _checkFrameCounter = 0;
-                CheckAndAddNewNodes();
-            }
-
-            UpdateAutoImpulseSpawn();
-
-            UpdateNodes();
-            UpdateAxons();
-            UpdateImpulses();
-        }
-
-        private void UpdateAutoImpulseSpawn()
-        {
+            _nodes.Sort((a, b) => a.renderDepth.CompareTo(b.renderDepth));
             foreach (var node in _nodes)
             {
-                if (!node.unlocked) continue;
-                node.spawnTimer -= Time.deltaTime;
-                if (node.spawnTimer <= 0f)
-                {
-                    node.spawnTimer = Random.Range(3f, 8f);
-                    FireImpulseFromNode(node, 1);
-                }
+                if (node.gameObject != null) node.gameObject.transform.SetAsLastSibling();
             }
-        }
 
-        private void FireImpulseBurst()
-        {
-            int count = 0;
-            foreach (var node in _nodes)
+            foreach (var axon in _axons)
             {
-                if (node.unlocked && count < 5)
-                {
-                    FireImpulseFromNode(node, 2);
-                    count++;
-                }
+                if (axon.lineObj == null || axon.from.gameObject == null || axon.to.gameObject == null) continue;
+
+                Vector2 p1 = axon.from.gameObject.transform.localPosition;
+                Vector2 p2 = axon.to.gameObject.transform.localPosition;
+                Vector2 mid = (p1 + p2) / 2f;
+                axon.lineObj.transform.localPosition = mid;
+
+                float dist = Vector3.Distance(p1, p2);
+                axon.lineObj.transform.localScale = new Vector3(dist, 1f, 1f);
+
+                Vector3 diff = p2 - p1;
+                float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
+                axon.lineObj.transform.rotation = Quaternion.Euler(0f, 0f, angle);
             }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
             _isDragging = true;
-            _lastDragPos = eventData.position;
-            _axonHighlight = 0.5f;
+            _offsetX = 0f;
+            _offsetY = 0f;
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!_isDragging) return;
-            Vector2 delta = eventData.position - _lastDragPos;
-            _targetRotationY += delta.x * DragSpeed;
-            _targetRotationX -= delta.y * DragSpeed;
-            _targetRotationX = Mathf.Clamp(_targetRotationX, -60f, 60f);
-            _lastDragPos = eventData.position;
-            _axonHighlight = Mathf.Max(_axonHighlight, 0.4f);
+            _offsetX = (0f - eventData.delta.y) * DragSpeed * 0.01f;
+            _offsetY = eventData.delta.x * DragSpeed * 0.01f;
+            UpdateVisual();
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             _isDragging = false;
-            FireImpulseBurst();
+            _targetOffsetX += (0f - eventData.delta.y) * DragRotateSpeed;
+            _targetOffsetY += eventData.delta.x * DragRotateSpeed;
+            _targetOffsetX = Mathf.Clamp(_targetOffsetX, -RotationBounds, RotationBounds);
+            _targetOffsetY = Mathf.Clamp(_targetOffsetY, -RotationBounds, RotationBounds);
         }
 
-        private string GetTierName(int tier)
+        void Update()
         {
-            string[] names = { LocalizedTextManager.getText("sm_tier_basic"), LocalizedTextManager.getText("sm_tier_advanced"), LocalizedTextManager.getText("sm_tier_high"), LocalizedTextManager.getText("sm_tier_cutting"), LocalizedTextManager.getText("sm_tier_ultimate") };
-            return tier >= 0 && tier < names.Length ? names[tier] : LocalizedTextManager.getText("sm_tier_unknown");
-        }
-
-        public void Clear()
-        {
-            if (_graphContainer != null)
+            if (!_isDragging)
             {
-                Destroy(_graphContainer);
-                _graphContainer = null;
+                _offsetX = Mathf.Lerp(_offsetX, _targetOffsetX, 0.1f);
+                _offsetY = Mathf.Lerp(_offsetY, _targetOffsetY, 0.1f);
+                _targetOffsetY += Time.deltaTime * 0.1f;
             }
+            UpdateVisual();
+        }
+
+        private void Clear()
+        {
+            if (_nodesParent != null) Destroy(_nodesParent);
+            if (_axonsParent != null) Destroy(_axonsParent);
             _nodes.Clear();
             _axons.Clear();
-            _impulses.Clear();
         }
     }
 }
