@@ -85,7 +85,7 @@ namespace SuperMech.Code
             foreach (int f in data.sanctuary_fragments) total += f;
             int unlockedCount = 0;
             for (int i = 0; i < 6; i++) if ((data.unlocked_sanctuaries & (1 << i)) != 0) unlockedCount++;
-            _frame.AddLabel($"{LocalizedTextManager.getText(\"sm_sanctuary_fragments\")}:{total}  {LocalizedTextManager.getText(\"sm_sanctuary_unlocked\")}:{unlockedCount}/6  {LocalizedTextManager.getText(\"sm_sanctuary_keys\")}:{data.key_fragments}  {LocalizedTextManager.getText(\"sm_sanctuary_visits\")}:{data.total_visits}  {LocalizedTextManager.getText(\"sm_sanctuary_resurrect\")}:{data.total_resurrections}", x, y, 540f, 18f, 12);
+            _frame.AddLabel($"{LocalizedTextManager.getText("sm_sanctuary_fragments")}:{total}  {LocalizedTextManager.getText("sm_sanctuary_unlocked")}:{unlockedCount}/6  {LocalizedTextManager.getText("sm_sanctuary_keys")}:{data.key_fragments}  {LocalizedTextManager.getText("sm_sanctuary_visits")}:{data.total_visits}  {LocalizedTextManager.getText("sm_sanctuary_resurrect")}:{data.total_resurrections}", x, y, 540f, 18f, 12);
             y -= 24f;
 
             _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_resurrect_title"), x, y, 540f, 20f, 13);

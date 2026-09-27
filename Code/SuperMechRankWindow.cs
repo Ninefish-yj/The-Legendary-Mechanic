@@ -87,7 +87,7 @@ namespace SuperMech.Code
             else
             {
                 y -= 8f;
-                _frame.AddLabel($"{LocalizedTextManager.getText(\"sm_rank_total\")} {list.Count} {LocalizedTextManager.getText(\"sm_rank_showing\")} {count}", x, y, 600f, 18f, 11);
+                _frame.AddLabel($"{LocalizedTextManager.getText("sm_rank_total")} {list.Count} {LocalizedTextManager.getText("sm_rank_showing")} {count}", x, y, 600f, 18f, 11);
             }
         }
 

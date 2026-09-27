@@ -261,7 +261,7 @@ namespace SuperMech.Code
                 Color qColor = GetQualityColor(cur.qualityLevel);
 
                 var equipSlot = CreateItemIcon(equippedBox, cur.icon, qColor, 48, cur.name,
-                    $"{LocalizedTextManager.getText(\"sm_ui_quality\")}: {GetQualityName(cur.qualityLevel)}\n{LocalizedTextManager.getText(\"sm_ui_damage\")}×{cur.dmgMul}  {LocalizedTextManager.getText(\"sm_ui_health\")}×{cur.hpMul}\n{LocalizedTextManager.getText(\"sm_ui_unequip\")}");
+                    $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(cur.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{cur.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{cur.hpMul}\n{LocalizedTextManager.getText("sm_ui_unequip")}");
                 var btn = equipSlot.GetComponent<Button>();
                 if (btn != null)
                 {
@@ -325,7 +325,7 @@ namespace SuperMech.Code
                         var def = SuperMechRelic.Equipments[idx];
 
                         var iconGo = CreateItemIcon(currentRow.transform, def.icon, qColor, 34, def.name,
-                            $"{LocalizedTextManager.getText(\"sm_ui_quality\")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText(\"sm_ui_damage\")}×{def.dmgMul}  {LocalizedTextManager.getText(\"sm_ui_health\")}×{def.hpMul}\n{LocalizedTextManager.getText(\"sm_ui_equip\")}");
+                            $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{LocalizedTextManager.getText("sm_ui_equip")}");
                         var btn = iconGo.GetComponent<Button>();
                         if (btn != null)
                         {

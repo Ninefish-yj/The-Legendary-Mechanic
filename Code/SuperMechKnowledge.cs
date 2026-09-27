@@ -214,12 +214,12 @@ namespace SuperMech.Code
                         if (string.IsNullOrEmpty(kn)) continue;
                         string id = $"sm_know_{prefix}_{ti}_{bi}_{ki}";
                         LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(kn), pReplace: true);
-                        LocalizedTextManager.add("trait_" + id + "_info", $"{LocalizedTextManager.getText(treeName)}·{branchNames[bi]}·{LocalizedTextManager.getText(Tiers[ti])}{LocalizedTextManager.getText(\"sm_ui_knowledge\")}", pReplace: true);
+                        LocalizedTextManager.add("trait_" + id + "_info", $"{LocalizedTextManager.getText(treeName)}·{branchNames[bi]}·{LocalizedTextManager.getText(Tiers[ti])}{LocalizedTextManager.getText("sm_ui_knowledge")}", pReplace: true);
                         var def = new KnowledgeDef
                         {
                             id = id,
                             name = kn,
-                            desc = $"{LocalizedTextManager.getText(treeName)}·{branchNames[bi]}·{LocalizedTextManager.getText(Tiers[ti])}{LocalizedTextManager.getText(\"sm_ui_knowledge\")}",
+                            desc = $"{LocalizedTextManager.getText(treeName)}·{branchNames[bi]}·{LocalizedTextManager.getText(Tiers[ti])}{LocalizedTextManager.getText("sm_ui_knowledge")}",
                             prefix = prefix,
                             tier = ti,
                             branch = bi,

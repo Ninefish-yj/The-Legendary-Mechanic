@@ -481,11 +481,11 @@ namespace SuperMech.Code
                 foreach (var syn in synergies)
                 {
                     string bonusText = "";
-                    if (syn.dmgMul > 1f) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_damage\")}+{((syn.dmgMul - 1f) * 100):0}% ";
-                    if (syn.hpMul > 1f) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_health\")}+{((syn.hpMul - 1f) * 100):0}% ";
-                    if (syn.speedMul > 1f) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_attack_speed\")}+{((syn.speedMul - 1f) * 100):0}% ";
-                    if (syn.qiBonus > 0) bonusText += $"{LocalizedTextManager.getText(\"sm_qi_qi\")}+{syn.qiBonus:0} ";
-                    if (syn.potentialBonus > 0) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_potential\")}+{syn.potentialBonus}";
+                    if (syn.dmgMul > 1f) bonusText += $"{LocalizedTextManager.getText("sm_ui_damage")}+{((syn.dmgMul - 1f) * 100):0}% ";
+                    if (syn.hpMul > 1f) bonusText += $"{LocalizedTextManager.getText("sm_ui_health")}+{((syn.hpMul - 1f) * 100):0}% ";
+                    if (syn.speedMul > 1f) bonusText += $"{LocalizedTextManager.getText("sm_ui_attack_speed")}+{((syn.speedMul - 1f) * 100):0}% ";
+                    if (syn.qiBonus > 0) bonusText += $"{LocalizedTextManager.getText("sm_qi_qi")}+{syn.qiBonus:0} ";
+                    if (syn.potentialBonus > 0) bonusText += $"{LocalizedTextManager.getText("sm_ui_potential")}+{syn.potentialBonus}";
                     AddInfoRow(_container.transform, syn.name, bonusText.Trim());
                 }
             }
