@@ -206,14 +206,6 @@ namespace SuperMech.Code
             Image titleBg = titleGo.AddComponent<Image>();
             titleBg.color = new Color(0.1f, 0.12f, 0.18f, 0.9f);
             titleBg.raycastTarget = false;
-            Image titleHighlight = titleGo.AddComponent<Image>();
-            titleHighlight.color = new Color(1f, 1f, 1f, 0.06f);
-            titleHighlight.raycastTarget = false;
-            RectTransform hlRt = titleHighlight.GetComponent<RectTransform>();
-            hlRt.anchorMin = Vector2.zero;
-            hlRt.anchorMax = Vector2.one;
-            hlRt.offsetMin = new Vector2(0, 11f);
-            hlRt.offsetMax = Vector2.zero;
             Text titleTxt = titleGo.AddComponent<Text>();
             titleTxt.text = LocalizedTextManager.getText("sm_knowledgepanel_789");
             titleTxt.fontSize = 11;

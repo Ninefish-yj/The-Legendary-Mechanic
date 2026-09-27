@@ -69,7 +69,7 @@ namespace SuperMech.Code
 
                 Image bg = rootGo.AddComponent<Image>();
                 bg.color = new Color(0.08f, 0.1f, 0.12f, 0.97f);
-                bg.raycastTarget = true;
+                bg.raycastTarget = false;
 
                 AddBorder(_root, new Color(0.3f, 0.35f, 0.4f, 0.8f));
 
