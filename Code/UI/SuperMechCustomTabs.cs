@@ -132,21 +132,7 @@ namespace SuperMech.Code
             ContentSizeFitter csf = contentObj.AddComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            GameObject graphObj = new GameObject("KnowledgeGraph", typeof(RectTransform));
-            graphObj.transform.SetParent(contentObj.transform, false);
-            RectTransform graphRt = graphObj.GetComponent<RectTransform>();
-            graphRt.sizeDelta = new Vector2(0, 350f);
-            SMCubeKnowledge graph = graphObj.AddComponent<SMCubeKnowledge>();
-            graph.Init(SuperMechUtils.GetActor(window));
-
-            GameObject libTitle = new GameObject("LibTitle", typeof(RectTransform));
-            libTitle.transform.SetParent(contentObj.transform, false);
-            Text libTxt = SuperMechUtils.CreateText(libTitle.transform, LocalizedTextManager.getText("sm_ui_knowledge_library"), 12, TextAnchor.MiddleLeft, new Color(0.3f, 0.85f, 1f));
-            libTxt.fontStyle = FontStyle.Bold;
-            RectTransform libRt = libTitle.GetComponent<RectTransform>();
-            libRt.sizeDelta = new Vector2(0, 24f);
-
-            SuperMechKnowledgePanel.EnsureLibraryOnly(contentObj.transform, SuperMechUtils.GetActor(window));
+            SMKnowledgeWindow.Create(contentObj.transform, SuperMechUtils.GetActor(window));
 
             window.scroll_window.tabs.addTabContent(customTab, contentObj.transform);
             window.scroll_window.tabs.refillTabsWithContent();
