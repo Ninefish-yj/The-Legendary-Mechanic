@@ -146,7 +146,7 @@ namespace SuperMech.Code
             }
         }
 
-        private static void RenderEquipItem(Transform parent, Actor actor, EquipDef def, bool equipped)
+        private static void RenderEquipItem(Transform parent, Actor actor, SuperMechRelic.EquipDef def, bool equipped)
         {
             Color qColor = GetQualityColor(def.qualityLevel);
             string actionText = equipped
@@ -167,7 +167,7 @@ namespace SuperMech.Code
                 markRt.anchorMax = Vector2.one;
                 markRt.offsetMin = Vector2.zero;
                 markRt.offsetMax = Vector2.zero;
-                markRt.raycastTarget = false;
+                markImg.raycastTarget = false;
             }
 
             var btn = iconGo.GetComponent<Button>();
