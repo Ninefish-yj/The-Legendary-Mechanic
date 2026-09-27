@@ -294,6 +294,8 @@ namespace SuperMech.Code
             _targetOffsetY = Mathf.Clamp(_targetOffsetY, -RotationBounds, RotationBounds);
         }
 
+        private int _checkFrameCounter;
+
         void Update()
         {
             if (!_isDragging)
@@ -302,7 +304,51 @@ namespace SuperMech.Code
                 _offsetY = Mathf.Lerp(_offsetY, _targetOffsetY, 0.1f);
                 _targetOffsetY += Time.deltaTime * 0.1f;
             }
+
+            _checkFrameCounter++;
+            if (_checkFrameCounter >= 30)
+            {
+                _checkFrameCounter = 0;
+                CheckAndAddNewNodes();
+            }
+
             UpdateVisual();
+        }
+
+        private void CheckAndAddNewNodes()
+        {
+            if (_actor == null || string.IsNullOrEmpty(_prefix)) return;
+
+            var allDefs = SuperMechKnowledge.GetAllByPrefix(_prefix);
+            if (allDefs == null) return;
+
+            int unlockedCount = 0;
+            foreach (var def in allDefs)
+            {
+                if (SuperMechKnowledge.IsUnlocked(_actor, def.id)) unlockedCount++;
+            }
+
+            if (unlockedCount != _nodes.Count)
+            {
+                Debug.Log($"[超神机械师] 3D图谱检测到新解锁知识: {_nodes.Count}→{unlockedCount}，重新生成节点");
+                ClearNodesOnly();
+                GenerateNodes();
+                GenerateAxons();
+            }
+        }
+
+        private void ClearNodesOnly()
+        {
+            foreach (var node in _nodes)
+            {
+                if (node.gameObject != null) Destroy(node.gameObject);
+            }
+            foreach (var axon in _axons)
+            {
+                if (axon.lineObj != null) Destroy(axon.lineObj);
+            }
+            _nodes.Clear();
+            _axons.Clear();
         }
 
         private void Clear()
