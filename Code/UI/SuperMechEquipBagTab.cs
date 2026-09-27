@@ -10,7 +10,7 @@ namespace SuperMech.Code
     [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
 
 
-    public static class SuperMechEquipBagTab
+    public static partial class SuperMechEquipBagTab
     {
         private const string TabName = "SuperMechEquipBagTab";
         private const string ContainerName = "SuperMechEquipBagContent";
