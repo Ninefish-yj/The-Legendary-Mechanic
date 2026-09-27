@@ -54,9 +54,12 @@ namespace SuperMech.Code
                 bool unlocked = (data.unlocked_sanctuaries & (1 << i)) != 0;
                 int fragments = data.sanctuary_fragments[i];
                 Color bg = unlocked ? new Color(0.15f, 0.25f, 0.15f, 0.8f) : new Color(0.12f, 0.12f, 0.15f, 0.8f);
-                string btnText = unlocked
-                    ? $"sm_sanctuarywindow_978"
-                    : $"sm_sanctuarywindow_979";
+                string btnTemplate = unlocked
+                    ? LocalizedTextManager.getText("sm_sanctuarywindow_978")
+                    : LocalizedTextManager.getText("sm_sanctuarywindow_979");
+                string btnText = btnTemplate
+                    .Replace("{names[i]}", names[i])
+                    .Replace("{fragments}", fragments.ToString());
                 _frame.AddButton(btnText, x, y, 540f, 36f, () =>
                 {
                     if (!unlocked)
@@ -108,8 +111,14 @@ namespace SuperMech.Code
                         ? SuperMechRanks.All[rec.rankIndex].name : "?";
                     int nextRevive = rec.reviveCount + 1;
                     float infoLoss = Mathf.Clamp(0.1f * nextRevive, 0.1f, 0.5f);
-                    string riskText = nextRevive >= 4 ? "sm_sanctuarywindow_980" : nextRevive >= 2 ? "sm_sanctuarywindow_981" : "sm_sanctuarywindow_982";
-                    string btnText = $"sm_sanctuarywindow_983";
+                    string riskText = LocalizedTextManager.getText(nextRevive >= 4 ? "sm_sanctuarywindow_980" : nextRevive >= 2 ? "sm_sanctuarywindow_981" : "sm_sanctuarywindow_982");
+                    string btnTemplate = LocalizedTextManager.getText("sm_sanctuarywindow_983");
+                    string btnText = btnTemplate
+                        .Replace("{rec.name}", rec.name)
+                        .Replace("{rankName}", rankName)
+                        .Replace("{rec.reviveCount}", rec.reviveCount.ToString())
+                        .Replace("{infoLoss:P0}", $"{infoLoss * 100:F0}%")
+                        .Replace("{riskText}", riskText);
                     Color btnBg = canRes ? new Color(0.2f, 0.15f, 0.1f, 0.9f) : new Color(0.15f, 0.15f, 0.15f, 0.8f);
                     int idx = i;
                     _frame.AddButton(btnText, x, y, 540f, 30f, () =>
@@ -125,7 +134,9 @@ namespace SuperMech.Code
                 }
                 if (deadList.Count > 5)
                 {
-                    _frame.AddLabel($"sm_sanctuarywindow_984", x, y, 540f, 16f, 10);
+                    string moreTemplate = LocalizedTextManager.getText("sm_sanctuarywindow_984");
+                    string moreText = moreTemplate.Replace("{deadList.Count - 5}", (deadList.Count - 5).ToString());
+                    _frame.AddLabel(moreText, x, y, 540f, 16f, 10);
                     y -= 20f;
                 }
             }
