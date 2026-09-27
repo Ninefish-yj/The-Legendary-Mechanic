@@ -229,6 +229,11 @@ namespace SuperMech.Code
                 UnityEngine.Object.DestroyImmediate(genealogyComp2);
             }
 
+            for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
+            {
+                UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
+            }
+
             foreach (var old in contentObj.GetComponents<LayoutGroup>())
                 UnityEngine.Object.DestroyImmediate(old);
             foreach (var old in contentObj.GetComponents<ContentSizeFitter>())
