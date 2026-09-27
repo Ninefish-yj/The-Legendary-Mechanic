@@ -21,6 +21,7 @@ namespace SuperMech.Code
                 if (actor == null || !actor.isAlive()) return;
 
                 ShowMainInfo(__instance, actor);
+                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_custom_stats"), "");
                 ShowCustomStats(__instance, actor);
             }
             catch (System.Exception e)
@@ -136,11 +137,11 @@ namespace SuperMech.Code
             }
         }
 
-        private static void ShowRow(UnitWindow window, string label, object value)
+        private static void ShowRow(UnitWindow window, string label, object value, string iconPath = null)
         {
             try
             {
-                window.showStatRow(label, value, null, MetaType.None, -1L, pColorText: false, null, null, null, pLocalize: true);
+                window.showStatRow(label, value, null, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: true);
             }
             catch (Exception e)
             {
