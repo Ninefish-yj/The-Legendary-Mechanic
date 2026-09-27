@@ -12,8 +12,8 @@ namespace SuperMech.Code
         private const string ContainerName = "SMKnowledgePanel";
         private const float PanelHeight = 480f;
         private const float HeaderHeight = 36f;
-        private const float GraphHeight = 260f;
-        private const float LibraryHeight = 184f;
+        private const float GraphHeight = 160f;
+        private const float LibraryHeight = 280f;
 
         private static GameObject _container;
         private static Transform _headerLayer;
@@ -314,7 +314,11 @@ namespace SuperMech.Code
             cRt.anchorMin = new Vector2(0, 1);
             cRt.anchorMax = new Vector2(1, 1);
             cRt.pivot = new Vector2(0.5f, 1f);
-            cRt.sizeDelta = new Vector2(0, LibraryHeight - 24f);
+            cRt.sizeDelta = new Vector2(0, 100f);
+
+            ContentSizeFitter csf = content.AddComponent<ContentSizeFitter>();
+            csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             VerticalLayoutGroup vlg = content.AddComponent<VerticalLayoutGroup>();
             vlg.childAlignment = TextAnchor.UpperLeft;
