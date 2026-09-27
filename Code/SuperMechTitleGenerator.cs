@@ -12,115 +12,115 @@ namespace SuperMech.Code
     {
         // 机械系词库
         private static readonly string[] MechPrefix = {
-            "黑","械","铸","星","铁","钢","钛","钴","钨","铀","钚","镭","核","熔","灼",
-            "暗","虚","空","零","壹","贰","叁","肆","伍","陆","柒","捌","玖","拾",
-            "千","万","亿","兆","无限","永恒","终极","至高","深渊","苍穹","雷霆","烈焰",
-            "寒冰","暗影","光明","混沌","虚空","星陨","日耀","月蚀","风刃","山崩","海裂",
-            "龙","虎","鹰","狼","熊","狮","凤","麒","麟","饕","餮","穷","奇","梼","杌",
-            "天","地","玄","黄","宇","宙","洪","荒","日","月","星","辰","风","云","雷","电"
+            "sm_title_mech_pre_000","sm_title_mech_pre_001","sm_title_mech_pre_002","sm_title_mech_pre_077","sm_title_mech_pre_004","sm_title_mech_pre_005","sm_title_mech_pre_006","sm_title_mech_pre_007","sm_title_mech_pre_008","sm_title_mech_pre_009","sm_title_mech_pre_010","sm_title_mech_pre_011","sm_title_mech_pre_012","sm_title_mech_pre_013","sm_title_mech_pre_014",
+            "sm_title_mech_pre_015","sm_title_mech_pre_016","sm_title_mech_pre_017","sm_title_mech_pre_018","sm_title_mech_pre_019","sm_title_mech_pre_020","sm_title_mech_pre_021","sm_title_mech_pre_022","sm_title_mech_pre_023","sm_title_mech_pre_024","sm_title_mech_pre_025","sm_title_mech_pre_026","sm_title_mech_pre_027","sm_title_mech_pre_028",
+            "sm_title_mech_pre_029","sm_title_mech_pre_030","sm_title_mech_pre_031","sm_title_mech_pre_032","sm_title_mech_pre_033","sm_title_mech_pre_034","sm_title_mech_pre_035","sm_title_mech_pre_036","sm_title_mech_pre_037","sm_title_mech_pre_038","sm_title_mech_pre_039","sm_title_mech_pre_040",
+            "sm_title_mech_pre_041","sm_title_mech_pre_042","sm_title_mech_pre_043","sm_title_mech_pre_044","sm_title_mech_pre_045","sm_title_mech_pre_046","sm_title_mech_pre_047","sm_title_mech_pre_048","sm_title_mech_pre_049","sm_title_mech_pre_050","sm_title_mech_pre_051",
+            "sm_title_mech_pre_052","sm_title_mech_pre_053","sm_title_mech_pre_054","sm_title_mech_pre_055","sm_title_mech_pre_056","sm_title_mech_pre_057","sm_title_mech_pre_058","sm_title_mech_pre_059","sm_title_mech_pre_060","sm_title_mech_pre_061","sm_title_mech_pre_062","sm_title_mech_pre_063","sm_title_mech_pre_064","sm_title_mech_pre_065","sm_title_mech_pre_066",
+            "sm_title_mech_pre_067","sm_title_mech_pre_068","sm_title_mech_pre_069","sm_title_mech_pre_070","sm_title_mech_pre_071","sm_title_mech_pre_072","sm_title_mech_pre_073","sm_title_mech_pre_074","sm_title_mech_pre_075","sm_title_mech_pre_076","sm_title_mech_pre_077","sm_title_mech_pre_078","sm_title_mech_pre_079","sm_title_mech_pre_080","sm_title_mech_pre_081","sm_title_mech_pre_082"
         };
         private static readonly string[] MechSuffix = {
-            "星","械","机","甲","核","炉","心","脑","眼","手","爪","翼","盾","剑","炮",
-            "锤","锯","钻","钳","刃","锋","芒","辉","光","影","雾","潮","焰","冰","雷",
-            "帝","王","皇","尊","圣","神","灵","者","师","匠","客","侠","隐","狂","枭",
-            "星","陨","灭","裂","破","碎","焚","冻","封","锁","链","网","域","界","维",
-            "铸造者","编织者","解构者","重组者","跃迁者","超频者","过载者","熔断者",
-            "黑星","械帝","铸星","铁皇","钢心","钴蓝","钨光","铀灭","熔核","灼星",
-            "虚空机","混沌械","星陨甲","日耀炉","月蚀核","雷霆机","烈焰铸","寒冰械",
-            "暗影机","光明铸","苍穹炮","深渊核","无限械","永恒机","终极甲","至高核"
+            "sm_title_mech_suf_045","sm_title_mech_suf_001","sm_title_mech_suf_002","sm_title_mech_suf_003","sm_title_mech_suf_004","sm_title_mech_suf_005","sm_title_mech_suf_006","sm_title_mech_suf_007","sm_title_mech_suf_008","sm_title_mech_suf_009","sm_title_mech_suf_010","sm_title_mech_suf_011","sm_title_mech_suf_012","sm_title_mech_suf_013","sm_title_mech_suf_014",
+            "sm_title_mech_suf_015","sm_title_mech_suf_016","sm_title_mech_suf_017","sm_title_mech_suf_018","sm_title_mech_suf_019","sm_title_mech_suf_020","sm_title_mech_suf_021","sm_title_mech_suf_022","sm_title_mech_suf_023","sm_title_mech_suf_024","sm_title_mech_suf_025","sm_title_mech_suf_026","sm_title_mech_suf_027","sm_title_mech_suf_028","sm_title_mech_suf_029",
+            "sm_title_mech_suf_030","sm_title_mech_suf_031","sm_title_mech_suf_032","sm_title_mech_suf_033","sm_title_mech_suf_034","sm_title_mech_suf_035","sm_title_mech_suf_036","sm_title_mech_suf_037","sm_title_mech_suf_038","sm_title_mech_suf_039","sm_title_mech_suf_040","sm_title_mech_suf_041","sm_title_mech_suf_042","sm_title_mech_suf_043","sm_title_mech_suf_044",
+            "sm_title_mech_suf_045","sm_title_mech_suf_046","sm_title_mech_suf_047","sm_title_mech_suf_048","sm_title_mech_suf_049","sm_title_mech_suf_050","sm_title_mech_suf_051","sm_title_mech_suf_052","sm_title_mech_suf_053","sm_title_mech_suf_054","sm_title_mech_suf_055","sm_title_mech_suf_056","sm_title_mech_suf_057","sm_title_mech_suf_058","sm_title_mech_suf_059",
+            "sm_title_mech_suf_060","sm_title_mech_suf_061","sm_title_mech_suf_062","sm_title_mech_suf_063","sm_title_mech_suf_064","sm_title_mech_suf_065","sm_title_mech_suf_066","sm_title_mech_suf_067",
+            "sm_title_mech_suf_068","sm_title_mech_suf_069","sm_title_mech_suf_070","sm_title_mech_suf_071","sm_title_mech_suf_072","sm_title_mech_suf_073","sm_title_mech_suf_074","sm_title_mech_suf_075","sm_title_mech_suf_076","sm_title_mech_suf_077",
+            "sm_title_mech_suf_078","sm_title_mech_suf_079","sm_title_mech_suf_080","sm_title_mech_suf_081","sm_title_mech_suf_082","sm_title_mech_suf_083","sm_title_mech_suf_084","sm_title_mech_suf_085",
+            "sm_title_mech_suf_086","sm_title_mech_suf_087","sm_title_mech_suf_088","sm_title_mech_suf_089","sm_title_mech_suf_090","sm_title_mech_suf_091","sm_title_mech_suf_092","sm_title_mech_suf_093"
         };
 
         // 武道系词库（科幻风格：基因/躯体/战斗/能级）
         private static readonly string[] MartialPrefix = {
-            "霸","武","战","斗","拳","脚","掌","指","腿","身","心","意","气","力",
-            "刚","柔","猛","烈","疾","迅","稳","沉","雄","豪","壮","健","骏","焱",
-            "不","无","大","天","破","碎","裂","灭","绝","终","极","至","超","越","逆",
-            "龙","虎","豹","狮","熊","狼","鹰","凤","麒","麟","牛","象","犀","鲨","鲸",
-            "赤","橙","黄","绿","青","蓝","紫","黑","白","金","银","铜","铁","血","骨",
-            "千","万","亿","三","六","九","百","十","一","二","四","五","七","八","零",
-            "高","超","重","轻","快","慢","强","弱","深","浅","浓","淡","厚","薄","宽"
+            "sm_title_martial_pre_000","sm_title_martial_pre_001","sm_title_martial_pre_002","sm_title_martial_pre_003","sm_title_martial_pre_004","sm_title_martial_pre_005","sm_title_martial_pre_006","sm_title_martial_pre_007","sm_title_martial_pre_008","sm_title_martial_pre_009","sm_title_martial_pre_010","sm_title_martial_pre_011","sm_title_martial_pre_012","sm_title_martial_pre_013",
+            "sm_title_martial_pre_014","sm_title_martial_pre_015","sm_title_martial_pre_016","sm_title_martial_pre_017","sm_title_martial_pre_018","sm_title_martial_pre_019","sm_title_martial_pre_020","sm_title_martial_pre_021","sm_title_martial_pre_022","sm_title_martial_pre_023","sm_title_martial_pre_024","sm_title_martial_pre_025","sm_title_martial_pre_026","sm_title_martial_pre_027",
+            "sm_title_martial_pre_028","sm_title_martial_pre_029","sm_title_martial_pre_030","sm_title_martial_pre_031","sm_title_martial_pre_032","sm_title_martial_pre_033","sm_title_martial_pre_034","sm_title_martial_pre_035","sm_title_martial_pre_036","sm_title_martial_pre_037","sm_title_martial_pre_038","sm_title_martial_pre_039","sm_title_martial_pre_089","sm_title_martial_pre_041","sm_title_martial_pre_042",
+            "sm_title_martial_pre_043","sm_title_martial_pre_044","sm_title_martial_pre_045","sm_title_martial_pre_046","sm_title_martial_pre_047","sm_title_martial_pre_048","sm_title_martial_pre_049","sm_title_martial_pre_050","sm_title_martial_pre_051","sm_title_martial_pre_052","sm_title_martial_pre_053","sm_title_martial_pre_054","sm_title_martial_pre_055","sm_title_martial_pre_056","sm_title_martial_pre_057",
+            "sm_title_martial_pre_058","sm_title_martial_pre_059","sm_title_martial_pre_060","sm_title_martial_pre_061","sm_title_martial_pre_062","sm_title_martial_pre_063","sm_title_martial_pre_064","sm_title_martial_pre_065","sm_title_martial_pre_066","sm_title_martial_pre_067","sm_title_martial_pre_068","sm_title_martial_pre_069","sm_title_martial_pre_070","sm_title_martial_pre_071","sm_title_martial_pre_072",
+            "sm_title_martial_pre_073","sm_title_martial_pre_074","sm_title_martial_pre_075","sm_title_martial_pre_076","sm_title_martial_pre_077","sm_title_martial_pre_078","sm_title_martial_pre_079","sm_title_martial_pre_080","sm_title_martial_pre_081","sm_title_martial_pre_082","sm_title_martial_pre_083","sm_title_martial_pre_084","sm_title_martial_pre_085","sm_title_martial_pre_086","sm_title_martial_pre_087",
+            "sm_title_martial_pre_088","sm_title_martial_pre_089","sm_title_martial_pre_090","sm_title_martial_pre_091","sm_title_martial_pre_092","sm_title_martial_pre_093","sm_title_martial_pre_094","sm_title_martial_pre_095","sm_title_martial_pre_096","sm_title_martial_pre_097","sm_title_martial_pre_098","sm_title_martial_pre_099","sm_title_martial_pre_100","sm_title_martial_pre_101","sm_title_martial_pre_102"
         };
         private static readonly string[] MartialSuffix = {
-            "者","师","王","皇","帝","尊","圣","神","灵","客","侠","隐","狂","枭","手",
-            "拳","脚","掌","指","腿","身","心","意","气","力","道","法","术","技","招",
-            "不灭","不朽","不死","无敌","无双","无量","无尽","无穷","无上","无比",
-            "霸者","武尊","战皇","斗帝","拳王","脚圣","掌神","指尊","腿皇","身圣",
-            "刚王","柔皇","猛帝","烈尊","疾圣","迅神","稳皇","沉帝","雄尊","豪圣",
-            "龙拳","虎掌","豹腿","狮心","熊力","狼意","鹰爪","凤舞","麒威","麟力",
-            "破天","碎地","裂山","灭海","绝空","终焉","极光","至强","超神","逆天",
-            "赤焰","橙风","黄山","青海","青雷","蓝冰","紫电","黑炎","白霜","金罡",
-            "千钧","万钧","亿兆","三叠","六和","九转","百炼","十绝","一力","二气",
-            "基因锁","肌体强化","战斗算法","战术核心","高能躯体","纳米修复","超密度"
+            "sm_title_martial_suf_000","sm_title_martial_suf_001","sm_title_martial_suf_002","sm_title_martial_suf_003","sm_title_martial_suf_004","sm_title_martial_suf_005","sm_title_martial_suf_006","sm_title_martial_suf_007","sm_title_martial_suf_008","sm_title_martial_suf_009","sm_title_martial_suf_010","sm_title_martial_suf_011","sm_title_martial_suf_012","sm_title_martial_suf_013","sm_title_martial_suf_014",
+            "sm_title_martial_suf_015","sm_title_martial_suf_016","sm_title_martial_suf_017","sm_title_martial_suf_018","sm_title_martial_suf_019","sm_title_martial_suf_020","sm_title_martial_suf_021","sm_title_martial_suf_022","sm_title_martial_suf_023","sm_title_martial_suf_024","sm_title_martial_suf_025","sm_title_martial_suf_026","sm_title_martial_suf_027","sm_title_martial_suf_028","sm_title_martial_suf_029",
+            "sm_title_martial_suf_030","sm_title_martial_suf_031","sm_title_martial_suf_032","sm_title_martial_suf_033","sm_title_martial_suf_034","sm_title_martial_suf_035","sm_title_martial_suf_036","sm_title_martial_suf_037","sm_title_martial_suf_038","sm_title_martial_suf_039",
+            "sm_title_martial_suf_040","sm_title_martial_suf_041","sm_title_martial_suf_042","sm_title_martial_suf_043","sm_title_martial_suf_044","sm_title_martial_suf_045","sm_title_martial_suf_046","sm_title_martial_suf_047","sm_title_martial_suf_048","sm_title_martial_suf_049",
+            "sm_title_martial_suf_050","sm_title_martial_suf_051","sm_title_martial_suf_052","sm_title_martial_suf_053","sm_title_martial_suf_054","sm_title_martial_suf_055","sm_title_martial_suf_056","sm_title_martial_suf_057","sm_title_martial_suf_058","sm_title_martial_suf_059",
+            "sm_title_martial_suf_060","sm_title_martial_suf_061","sm_title_martial_suf_062","sm_title_martial_suf_063","sm_title_martial_suf_064","sm_title_martial_suf_065","sm_title_martial_suf_066","sm_title_martial_suf_067","sm_title_martial_suf_068","sm_title_martial_suf_069",
+            "sm_title_martial_suf_070","sm_title_martial_suf_071","sm_title_martial_suf_072","sm_title_martial_suf_073","sm_title_martial_suf_074","sm_title_martial_suf_075","sm_title_martial_suf_076","sm_title_martial_suf_077","sm_title_martial_suf_078","sm_title_martial_suf_079",
+            "sm_title_martial_suf_080","sm_title_martial_suf_081","sm_title_martial_suf_082","sm_title_martial_suf_083","sm_title_martial_suf_084","sm_title_martial_suf_085","sm_title_martial_suf_086","sm_title_martial_suf_087","sm_title_martial_suf_088","sm_title_martial_suf_089",
+            "sm_title_martial_suf_090","sm_title_martial_suf_091","sm_title_martial_suf_092","sm_title_martial_suf_093","sm_title_martial_suf_094","sm_title_martial_suf_095","sm_title_martial_suf_096","sm_title_martial_suf_097","sm_title_martial_suf_098","sm_title_martial_suf_099",
+            "sm_title_martial_suf_100","sm_title_martial_suf_101","sm_title_martial_suf_102","sm_title_martial_suf_103","sm_title_martial_suf_104","sm_title_martial_suf_105","sm_title_martial_suf_106"
         };
 
         // 异能系词库
         private static readonly string[] PsiPrefix = {
-            "异","能","基","因","突","变","进","化","源","质","核","心","种","子","粒",
-            "光","暗","火","冰","雷","风","土","水","木","金","星","月","日","空","时",
-            "万","千","百","无","不","超","极","至","终","太","元","初","始","原","本",
-            "血","骨","肉","筋","脉","髓","脑","心","肝","脾","肺","肾","眼","耳","鼻",
-            "灵","魂","魄","精","气","神","意","念","想","梦","幻","影","虚","空","无",
-            "星","辰","宇","宙","穹","苍","茫","浩","渺","微","宏","巨","细","纤","纳"
+            "sm_title_psi_pre_000","sm_title_psi_pre_001","sm_title_psi_pre_002","sm_title_psi_pre_003","sm_title_psi_pre_004","sm_title_psi_pre_005","sm_title_psi_pre_006","sm_title_psi_pre_007","sm_title_psi_pre_008","sm_title_psi_pre_009","sm_title_psi_pre_010","sm_title_psi_pre_052","sm_title_psi_pre_012","sm_title_psi_pre_013","sm_title_psi_pre_014",
+            "sm_title_psi_pre_015","sm_title_psi_pre_016","sm_title_psi_pre_017","sm_title_psi_pre_018","sm_title_psi_pre_019","sm_title_psi_pre_020","sm_title_psi_pre_021","sm_title_psi_pre_022","sm_title_psi_pre_023","sm_title_psi_pre_024","sm_title_psi_pre_075","sm_title_psi_pre_026","sm_title_psi_pre_027","sm_title_psi_pre_073","sm_title_psi_pre_029",
+            "sm_title_psi_pre_030","sm_title_psi_pre_031","sm_title_psi_pre_032","sm_title_psi_pre_074","sm_title_psi_pre_034","sm_title_psi_pre_035","sm_title_psi_pre_036","sm_title_psi_pre_037","sm_title_psi_pre_038","sm_title_psi_pre_039","sm_title_psi_pre_040","sm_title_psi_pre_041","sm_title_psi_pre_042","sm_title_psi_pre_043","sm_title_psi_pre_044",
+            "sm_title_psi_pre_045","sm_title_psi_pre_046","sm_title_psi_pre_047","sm_title_psi_pre_048","sm_title_psi_pre_049","sm_title_psi_pre_050","sm_title_psi_pre_051","sm_title_psi_pre_052","sm_title_psi_pre_053","sm_title_psi_pre_054","sm_title_psi_pre_055","sm_title_psi_pre_056","sm_title_psi_pre_057","sm_title_psi_pre_058","sm_title_psi_pre_059",
+            "sm_title_psi_pre_060","sm_title_psi_pre_061","sm_title_psi_pre_062","sm_title_psi_pre_063","sm_title_psi_pre_064","sm_title_psi_pre_065","sm_title_psi_pre_066","sm_title_psi_pre_067","sm_title_psi_pre_068","sm_title_psi_pre_069","sm_title_psi_pre_070","sm_title_psi_pre_071","sm_title_psi_pre_072","sm_title_psi_pre_073","sm_title_psi_pre_074",
+            "sm_title_psi_pre_075","sm_title_psi_pre_076","sm_title_psi_pre_077","sm_title_psi_pre_078","sm_title_psi_pre_079","sm_title_psi_pre_080","sm_title_psi_pre_081","sm_title_psi_pre_082","sm_title_psi_pre_083","sm_title_psi_pre_084","sm_title_psi_pre_085","sm_title_psi_pre_086","sm_title_psi_pre_087","sm_title_psi_pre_088","sm_title_psi_pre_089"
         };
         private static readonly string[] PsiSuffix = {
-            "者","师","王","皇","帝","尊","圣","神","灵","仙","魔","妖","精","怪","客",
-            "能","力","源","质","核","心","种","子","粒","波","场","域","界","维","度",
-            "突变者","进化者","基因锁","源质体","核心者","种子皇","粒子帝","波形尊",
-            "异能王","超能皇","变异帝","进化尊","基因圣","源质神","核心灵","种子仙",
-            "光之使者","暗之宿主","火之行者","冰之君王","雷之帝皇","风之圣者",
-            "土之守护","水之灵体","木之化身","金之锋锐","星之传承","月之眷顾",
-            "日之炽焰","空之行者","时之穿梭","万象","千相","百变","无方","不器",
-            "超体","极能","至强","终焉","太初","元始","初始","本源","本质","真髓",
-            "血继","骨相","肉身","筋变","脉通","髓炼","脑域","心灵","肝魂","脾意",
-            "灵能","魂火","魄力","精元","气海","神庭","意界","念域","想乡","梦境"
+            "sm_title_psi_suf_000","sm_title_psi_suf_001","sm_title_psi_suf_002","sm_title_psi_suf_003","sm_title_psi_suf_004","sm_title_psi_suf_005","sm_title_psi_suf_006","sm_title_psi_suf_007","sm_title_psi_suf_008","sm_title_psi_suf_009","sm_title_psi_suf_010","sm_title_psi_suf_011","sm_title_psi_suf_012","sm_title_psi_suf_013","sm_title_psi_suf_014",
+            "sm_title_psi_suf_015","sm_title_psi_suf_016","sm_title_psi_suf_017","sm_title_psi_suf_018","sm_title_psi_suf_019","sm_title_psi_suf_020","sm_title_psi_suf_021","sm_title_psi_suf_022","sm_title_psi_suf_023","sm_title_psi_suf_024","sm_title_psi_suf_025","sm_title_psi_suf_026","sm_title_psi_suf_027","sm_title_psi_suf_028","sm_title_psi_suf_029",
+            "sm_title_psi_suf_030","sm_title_psi_suf_031","sm_title_psi_suf_032","sm_title_psi_suf_033","sm_title_psi_suf_034","sm_title_psi_suf_035","sm_title_psi_suf_036","sm_title_psi_suf_037",
+            "sm_title_psi_suf_038","sm_title_psi_suf_039","sm_title_psi_suf_040","sm_title_psi_suf_041","sm_title_psi_suf_042","sm_title_psi_suf_043","sm_title_psi_suf_044","sm_title_psi_suf_045",
+            "sm_title_psi_suf_046","sm_title_psi_suf_047","sm_title_psi_suf_048","sm_title_psi_suf_049","sm_title_psi_suf_050","sm_title_psi_suf_051",
+            "sm_title_psi_suf_052","sm_title_psi_suf_053","sm_title_psi_suf_054","sm_title_psi_suf_055","sm_title_psi_suf_056","sm_title_psi_suf_057",
+            "sm_title_psi_suf_058","sm_title_psi_suf_059","sm_title_psi_suf_060","sm_title_psi_suf_061","sm_title_psi_suf_062","sm_title_psi_suf_063","sm_title_psi_suf_064","sm_title_psi_suf_065",
+            "sm_title_psi_suf_066","sm_title_psi_suf_067","sm_title_psi_suf_068","sm_title_psi_suf_069","sm_title_psi_suf_070","sm_title_psi_suf_071","sm_title_psi_suf_072","sm_title_psi_suf_073","sm_title_psi_suf_074","sm_title_psi_suf_075",
+            "sm_title_psi_suf_076","sm_title_psi_suf_077","sm_title_psi_suf_078","sm_title_psi_suf_079","sm_title_psi_suf_080","sm_title_psi_suf_081","sm_title_psi_suf_082","sm_title_psi_suf_083","sm_title_psi_suf_084","sm_title_psi_suf_085",
+            "sm_title_psi_suf_086","sm_title_psi_suf_087","sm_title_psi_suf_088","sm_title_psi_suf_089","sm_title_psi_suf_090","sm_title_psi_suf_091","sm_title_psi_suf_092","sm_title_psi_suf_093","sm_title_psi_suf_094","sm_title_psi_suf_095"
         };
 
         // 魔法系词库（科幻风格：魔网/符文/能级/编码）
         private static readonly string[] MagePrefix = {
-            "魔","法","术","咒","符","阵","塔","院","会","社","团","盟","宗","门","派",
-            "元","素","精","灵","魂","魄","神","圣","邪","恶","善","正","奇","诡","秘",
-            "星","月","日","晨","暮","夜","昼","春","夏","秋","冬","风","雨","雷","电",
-            "红","橙","黄","绿","青","蓝","紫","黑","白","金","银","灰","粉","棕","褐",
-            "千","万","无","不","太","元","初","始","原","本","真","假","虚","实","空",
-            "龙","凤","麒","麟","狮","虎","鹰","狼","熊","蛇","龟","鹤","鹿","马","牛",
-            "高","超","重","深","浓","厚","宽","广","远","长","久","恒","永","无","终"
+            "sm_title_mage_pre_000","sm_title_mage_pre_001","sm_title_mage_pre_002","sm_title_mage_pre_003","sm_title_mage_pre_004","sm_title_mage_pre_005","sm_title_mage_pre_006","sm_title_mage_pre_007","sm_title_mage_pre_008","sm_title_mage_pre_009","sm_title_mage_pre_010","sm_title_mage_pre_011","sm_title_mage_pre_012","sm_title_mage_pre_013","sm_title_mage_pre_014",
+            "sm_title_mage_pre_065","sm_title_mage_pre_016","sm_title_mage_pre_017","sm_title_mage_pre_018","sm_title_mage_pre_019","sm_title_mage_pre_020","sm_title_mage_pre_021","sm_title_mage_pre_022","sm_title_mage_pre_023","sm_title_mage_pre_024","sm_title_mage_pre_025","sm_title_mage_pre_026","sm_title_mage_pre_027","sm_title_mage_pre_028","sm_title_mage_pre_029",
+            "sm_title_mage_pre_030","sm_title_mage_pre_031","sm_title_mage_pre_032","sm_title_mage_pre_033","sm_title_mage_pre_034","sm_title_mage_pre_035","sm_title_mage_pre_036","sm_title_mage_pre_037","sm_title_mage_pre_038","sm_title_mage_pre_039","sm_title_mage_pre_040","sm_title_mage_pre_041","sm_title_mage_pre_042","sm_title_mage_pre_043","sm_title_mage_pre_044",
+            "sm_title_mage_pre_045","sm_title_mage_pre_046","sm_title_mage_pre_047","sm_title_mage_pre_048","sm_title_mage_pre_049","sm_title_mage_pre_050","sm_title_mage_pre_051","sm_title_mage_pre_052","sm_title_mage_pre_053","sm_title_mage_pre_054","sm_title_mage_pre_055","sm_title_mage_pre_056","sm_title_mage_pre_057","sm_title_mage_pre_058","sm_title_mage_pre_059",
+            "sm_title_mage_pre_060","sm_title_mage_pre_061","sm_title_mage_pre_103","sm_title_mage_pre_063","sm_title_mage_pre_064","sm_title_mage_pre_065","sm_title_mage_pre_066","sm_title_mage_pre_067","sm_title_mage_pre_068","sm_title_mage_pre_069","sm_title_mage_pre_070","sm_title_mage_pre_071","sm_title_mage_pre_072","sm_title_mage_pre_073","sm_title_mage_pre_074",
+            "sm_title_mage_pre_075","sm_title_mage_pre_076","sm_title_mage_pre_077","sm_title_mage_pre_078","sm_title_mage_pre_079","sm_title_mage_pre_080","sm_title_mage_pre_081","sm_title_mage_pre_082","sm_title_mage_pre_083","sm_title_mage_pre_084","sm_title_mage_pre_085","sm_title_mage_pre_086","sm_title_mage_pre_087","sm_title_mage_pre_088","sm_title_mage_pre_089",
+            "sm_title_mage_pre_090","sm_title_mage_pre_091","sm_title_mage_pre_092","sm_title_mage_pre_093","sm_title_mage_pre_094","sm_title_mage_pre_095","sm_title_mage_pre_096","sm_title_mage_pre_097","sm_title_mage_pre_098","sm_title_mage_pre_099","sm_title_mage_pre_100","sm_title_mage_pre_101","sm_title_mage_pre_102","sm_title_mage_pre_103","sm_title_mage_pre_104"
         };
         private static readonly string[] MageSuffix = {
-            "师","士","者","王","皇","帝","尊","圣","神","灵","客","隐","狂","枭","手",
-            "法","术","咒","符","阵","塔","院","会","社","团","盟","宗","门","派","系",
-            "法师","术士","咒师","符师","阵师","塔主","院长","会长","社长","团长",
-            "盟主","宗主","门主","派主","法王","术皇","咒帝","符尊","阵圣","塔神",
-            "元素使","精灵语","魂术师","魄法师","神术者","圣徒","邪术师","恶魔术",
-            "星法师","月术士","日咒师","晨符师","暮阵师","夜塔主","昼院长","春之法",
-            "红袍","橙袍","黄袍","绿袍","青袍","蓝袍","紫袍","黑袍","白袍","金袍",
-            "千法","万术","无咒","不阵","太初","元始","初法","始术","原咒","本符",
-            "龙语","凤咒","麒符","麟阵","狮吼","虎啸","鹰视","狼顾","熊力","蛇蜕",
-            "秘法","奥术","秘术","奇术","诡术","禁术","邪术","圣术","神术","魔术",
-            "魔网","符文","能级","编码","模型","解析","编织","构造","生成","召唤"
+            "sm_title_mage_suf_000","sm_title_mage_suf_001","sm_title_mage_suf_002","sm_title_mage_suf_003","sm_title_mage_suf_004","sm_title_mage_suf_005","sm_title_mage_suf_006","sm_title_mage_suf_007","sm_title_mage_suf_008","sm_title_mage_suf_009","sm_title_mage_suf_010","sm_title_mage_suf_011","sm_title_mage_suf_012","sm_title_mage_suf_013","sm_title_mage_suf_014",
+            "sm_title_mage_suf_015","sm_title_mage_suf_016","sm_title_mage_suf_017","sm_title_mage_suf_018","sm_title_mage_suf_019","sm_title_mage_suf_020","sm_title_mage_suf_021","sm_title_mage_suf_022","sm_title_mage_suf_023","sm_title_mage_suf_024","sm_title_mage_suf_025","sm_title_mage_suf_026","sm_title_mage_suf_027","sm_title_mage_suf_028","sm_title_mage_suf_029",
+            "sm_title_mage_suf_030","sm_title_mage_suf_031","sm_title_mage_suf_032","sm_title_mage_suf_033","sm_title_mage_suf_034","sm_title_mage_suf_035","sm_title_mage_suf_036","sm_title_mage_suf_037","sm_title_mage_suf_038","sm_title_mage_suf_039",
+            "sm_title_mage_suf_040","sm_title_mage_suf_041","sm_title_mage_suf_042","sm_title_mage_suf_043","sm_title_mage_suf_044","sm_title_mage_suf_045","sm_title_mage_suf_046","sm_title_mage_suf_047","sm_title_mage_suf_048","sm_title_mage_suf_049",
+            "sm_title_mage_suf_050","sm_title_mage_suf_051","sm_title_mage_suf_052","sm_title_mage_suf_053","sm_title_mage_suf_054","sm_title_mage_suf_055","sm_title_mage_suf_056","sm_title_mage_suf_057",
+            "sm_title_mage_suf_058","sm_title_mage_suf_059","sm_title_mage_suf_060","sm_title_mage_suf_061","sm_title_mage_suf_062","sm_title_mage_suf_063","sm_title_mage_suf_064","sm_title_mage_suf_065",
+            "sm_title_mage_suf_066","sm_title_mage_suf_067","sm_title_mage_suf_068","sm_title_mage_suf_069","sm_title_mage_suf_070","sm_title_mage_suf_071","sm_title_mage_suf_072","sm_title_mage_suf_073","sm_title_mage_suf_074","sm_title_mage_suf_075",
+            "sm_title_mage_suf_076","sm_title_mage_suf_077","sm_title_mage_suf_078","sm_title_mage_suf_079","sm_title_mage_suf_080","sm_title_mage_suf_081","sm_title_mage_suf_082","sm_title_mage_suf_083","sm_title_mage_suf_084","sm_title_mage_suf_085",
+            "sm_title_mage_suf_086","sm_title_mage_suf_087","sm_title_mage_suf_088","sm_title_mage_suf_089","sm_title_mage_suf_090","sm_title_mage_suf_091","sm_title_mage_suf_092","sm_title_mage_suf_093","sm_title_mage_suf_094","sm_title_mage_suf_095",
+            "sm_title_mage_suf_096","sm_title_mage_suf_097","sm_title_mage_suf_098","sm_title_mage_suf_099","sm_title_mage_suf_100","sm_title_mage_suf_101","sm_title_mage_suf_102","sm_title_mage_suf_103","sm_title_mage_suf_104","sm_title_mage_suf_105",
+            "sm_title_mage_suf_106","sm_title_mage_suf_107","sm_title_mage_suf_108","sm_title_mage_suf_109","sm_title_mage_suf_110","sm_title_mage_suf_111","sm_title_mage_suf_112","sm_title_mage_suf_113","sm_title_mage_suf_114","sm_title_mage_suf_115"
         };
 
         // 念力系词库（科幻风格：精神/意识/脑域/信息态/量子）
         private static readonly string[] MindPrefix = {
-            "念","心","灵","魂","魄","精","神","意","识","智","慧","悟","觉","醒","彻",
-            "虚","空","无","幻","梦","影","冥","幽","玄","妙","微","茫","渺","浩","瀚",
-            "星","辰","宇","宙","时","空","维","度","层","界","域","场","波","粒","弦",
-            "太","元","初","始","原","本","真","如","若","似","是","非","无","空","无",
-            "千","万","亿","无","不","超","越","脱","然","自","在","圆","满","具","足",
-            "龙","凤","麒","麟","鹤","龟","蛇","狐","黄","白","柳","灰","黑","紫","金",
-            "量","子","量","纠","缠","叠","加","态","信","息","数","据","算","法","逻"
+            "sm_title_mind_pre_000","sm_title_mind_pre_001","sm_title_mind_pre_002","sm_title_mind_pre_003","sm_title_mind_pre_004","sm_title_mind_pre_005","sm_title_mind_pre_006","sm_title_mind_pre_007","sm_title_mind_pre_008","sm_title_mind_pre_009","sm_title_mind_pre_010","sm_title_mind_pre_011","sm_title_mind_pre_012","sm_title_mind_pre_013","sm_title_mind_pre_014",
+            "sm_title_mind_pre_015","sm_title_mind_pre_058","sm_title_mind_pre_063","sm_title_mind_pre_018","sm_title_mind_pre_019","sm_title_mind_pre_020","sm_title_mind_pre_021","sm_title_mind_pre_022","sm_title_mind_pre_023","sm_title_mind_pre_024","sm_title_mind_pre_025","sm_title_mind_pre_026","sm_title_mind_pre_027","sm_title_mind_pre_028","sm_title_mind_pre_029",
+            "sm_title_mind_pre_030","sm_title_mind_pre_031","sm_title_mind_pre_032","sm_title_mind_pre_033","sm_title_mind_pre_034","sm_title_mind_pre_058","sm_title_mind_pre_036","sm_title_mind_pre_037","sm_title_mind_pre_038","sm_title_mind_pre_039","sm_title_mind_pre_040","sm_title_mind_pre_041","sm_title_mind_pre_042","sm_title_mind_pre_043","sm_title_mind_pre_044",
+            "sm_title_mind_pre_045","sm_title_mind_pre_046","sm_title_mind_pre_047","sm_title_mind_pre_048","sm_title_mind_pre_049","sm_title_mind_pre_050","sm_title_mind_pre_051","sm_title_mind_pre_052","sm_title_mind_pre_053","sm_title_mind_pre_054","sm_title_mind_pre_055","sm_title_mind_pre_056","sm_title_mind_pre_063","sm_title_mind_pre_058","sm_title_mind_pre_063",
+            "sm_title_mind_pre_060","sm_title_mind_pre_061","sm_title_mind_pre_062","sm_title_mind_pre_063","sm_title_mind_pre_064","sm_title_mind_pre_065","sm_title_mind_pre_066","sm_title_mind_pre_067","sm_title_mind_pre_068","sm_title_mind_pre_069","sm_title_mind_pre_070","sm_title_mind_pre_071","sm_title_mind_pre_072","sm_title_mind_pre_073","sm_title_mind_pre_074",
+            "sm_title_mind_pre_075","sm_title_mind_pre_076","sm_title_mind_pre_077","sm_title_mind_pre_078","sm_title_mind_pre_079","sm_title_mind_pre_080","sm_title_mind_pre_081","sm_title_mind_pre_082","sm_title_mind_pre_083","sm_title_mind_pre_084","sm_title_mind_pre_085","sm_title_mind_pre_086","sm_title_mind_pre_087","sm_title_mind_pre_088","sm_title_mind_pre_089",
+            "sm_title_mind_pre_092","sm_title_mind_pre_091","sm_title_mind_pre_092","sm_title_mind_pre_093","sm_title_mind_pre_094","sm_title_mind_pre_095","sm_title_mind_pre_096","sm_title_mind_pre_097","sm_title_mind_pre_098","sm_title_mind_pre_099","sm_title_mind_pre_100","sm_title_mind_pre_101","sm_title_mind_pre_102","sm_title_mind_pre_103","sm_title_mind_pre_104"
         };
         private static readonly string[] MindSuffix = {
-            "者","师","王","皇","帝","尊","圣","神","灵","客","隐","狂","枭","手","客",
-            "念","心","灵","魂","魄","精","神","意","识","智","慧","悟","觉","醒","彻",
-            "念师","心灵","灵能","魂术","魄力","精神","意识","智慧","悟道","觉者",
-            "虚空","空无","幻境","梦境","影术","冥思","幽玄","玄妙","微视","茫然",
-            "星念","辰心","宇灵","宙魂","时意","空识","维智","度慧","层悟","界觉",
-            "太初","元始","初心","始念","原灵","本魂","真意","如识","若智","似慧",
-            "千念","万心","无灵","不魂","超神","脱圣","自然","在佛","圆满","具足",
-            "龙念","凤心","麒灵","麟魂","鹤意","龟识","蛇智","狐慧","黄悟","白觉",
-            "主宰","掌控","操纵","支配","统御","驾驭","驱使","命令","指挥","引导",
-            "大师","宗师","泰斗","巨擘","权威","专家","行者","修士","炼者","修者",
-            "脑域","量子","纠缠","叠加","信息态","数据","算法","逻辑","矩阵","网络"
+            "sm_title_mind_suf_000","sm_title_mind_suf_001","sm_title_mind_suf_002","sm_title_mind_suf_003","sm_title_mind_suf_004","sm_title_mind_suf_005","sm_title_mind_suf_006","sm_title_mind_suf_021","sm_title_mind_suf_017","sm_title_mind_suf_014","sm_title_mind_suf_010","sm_title_mind_suf_011","sm_title_mind_suf_012","sm_title_mind_suf_013","sm_title_mind_suf_014",
+            "sm_title_mind_suf_015","sm_title_mind_suf_016","sm_title_mind_suf_017","sm_title_mind_suf_018","sm_title_mind_suf_019","sm_title_mind_suf_020","sm_title_mind_suf_021","sm_title_mind_suf_022","sm_title_mind_suf_023","sm_title_mind_suf_024","sm_title_mind_suf_025","sm_title_mind_suf_026","sm_title_mind_suf_027","sm_title_mind_suf_028","sm_title_mind_suf_029",
+            "sm_title_mind_suf_030","sm_title_mind_suf_031","sm_title_mind_suf_032","sm_title_mind_suf_033","sm_title_mind_suf_034","sm_title_mind_suf_035","sm_title_mind_suf_036","sm_title_mind_suf_037","sm_title_mind_suf_038","sm_title_mind_suf_039",
+            "sm_title_mind_suf_040","sm_title_mind_suf_041","sm_title_mind_suf_042","sm_title_mind_suf_043","sm_title_mind_suf_044","sm_title_mind_suf_045","sm_title_mind_suf_046","sm_title_mind_suf_047","sm_title_mind_suf_048","sm_title_mind_suf_049",
+            "sm_title_mind_suf_050","sm_title_mind_suf_051","sm_title_mind_suf_052","sm_title_mind_suf_053","sm_title_mind_suf_054","sm_title_mind_suf_055","sm_title_mind_suf_056","sm_title_mind_suf_057","sm_title_mind_suf_058","sm_title_mind_suf_059",
+            "sm_title_mind_suf_060","sm_title_mind_suf_061","sm_title_mind_suf_062","sm_title_mind_suf_063","sm_title_mind_suf_064","sm_title_mind_suf_065","sm_title_mind_suf_066","sm_title_mind_suf_067","sm_title_mind_suf_068","sm_title_mind_suf_069",
+            "sm_title_mind_suf_070","sm_title_mind_suf_071","sm_title_mind_suf_072","sm_title_mind_suf_073","sm_title_mind_suf_074","sm_title_mind_suf_075","sm_title_mind_suf_076","sm_title_mind_suf_077","sm_title_mind_suf_078","sm_title_mind_suf_079",
+            "sm_title_mind_suf_080","sm_title_mind_suf_081","sm_title_mind_suf_082","sm_title_mind_suf_083","sm_title_mind_suf_084","sm_title_mind_suf_085","sm_title_mind_suf_086","sm_title_mind_suf_087","sm_title_mind_suf_088","sm_title_mind_suf_089",
+            "sm_title_mind_suf_090","sm_title_mind_suf_091","sm_title_mind_suf_092","sm_title_mind_suf_093","sm_title_mind_suf_094","sm_title_mind_suf_095","sm_title_mind_suf_096","sm_title_mind_suf_097","sm_title_mind_suf_098","sm_title_mind_suf_099",
+            "sm_title_mind_suf_100","sm_title_mind_suf_101","sm_title_mind_suf_102","sm_title_mind_suf_103","sm_title_mind_suf_104","sm_title_mind_suf_105","sm_title_mind_suf_106","sm_title_mind_suf_107","sm_title_mind_suf_108","sm_title_mind_suf_109",
+            "sm_title_mind_suf_110","sm_title_mind_suf_111","sm_title_mind_suf_112","sm_title_mind_suf_113","sm_title_mind_suf_114","sm_title_mind_suf_115","sm_title_mind_suf_116","sm_title_mind_suf_117","sm_title_mind_suf_118","sm_title_mind_suf_119"
         };
 
         private static readonly System.Random _rng = new System.Random();
@@ -141,14 +141,14 @@ namespace SuperMech.Code
 
             // 10%概率直接用后缀里的完整名号（含原著词）
             if (_rng.Next(10) == 0)
-                return suffix[_rng.Next(suffix.Length)];
+                return LocalizedTextManager.getText(suffix[_rng.Next(suffix.Length)]);
 
-            // 正常组合：前缀+后缀
+            // 正常组合：前缀+后缀（key比较，避免同一个key）
             string p = prefix[_rng.Next(prefix.Length)];
             string s = suffix[_rng.Next(suffix.Length)];
-            // 避免前缀和后缀相同
             if (p == s) s = suffix[(_rng.Next(suffix.Length) + 1) % suffix.Length];
-            return p + s;
+            // 转换key为中文后组合
+            return LocalizedTextManager.getText(p) + LocalizedTextManager.getText(s);
         }
     }
 }
