@@ -231,6 +231,12 @@ namespace SuperMech.Code
             resBtn.OnHoverOut(() => Tooltip.hideTooltip());
             resBtn.onClick.AddListener(() =>
             {
+                if (res.type == ResType.Food && amount > 0)
+                {
+                    actor.consumeFoodResource(res);
+                    actor.inventory.remove(res.id, 1);
+                    Refresh(_boundWindow);
+                }
                 ShowResourceTooltip(itemGo, actor, res);
                 itemGo.transform.DOKill();
                 itemGo.transform.DOScale(0.8f, 0.1f).SetEase(Ease.InBack).OnComplete(() =>

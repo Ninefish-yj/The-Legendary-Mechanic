@@ -60,6 +60,12 @@ namespace SuperMech.Code
             {
                 pTooltip.description.text = res.tooltip;
             }
+
+            if (res.type == ResType.Food && actor != null && actor.inventory != null && actor.inventory.getResource(res.id) > 0)
+            {
+                pTooltip.addLineBreak();
+                pTooltip.addLineText(LocalizedTextManager.getText("sm_ui_click_to_eat"), "");
+            }
         }
     }
 }
