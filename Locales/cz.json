@@ -1013,5 +1013,6 @@
   "sm_task_craft_5": "制造5个机械单位",
   "sm_task_advanced": "总等级80+智力>400+学会5项进阶知识",
   "sm_task_divinity_10": "神性蜕变达到第10层",
-  "sm_ui_potential": "潜能"
+  "sm_ui_potential": "潜能",
+  "sm_ui_knowledge": "知识"
 }

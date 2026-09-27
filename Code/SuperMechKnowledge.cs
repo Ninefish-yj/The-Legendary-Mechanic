@@ -13,141 +13,141 @@ namespace SuperMech.Code
     public static class SuperMechKnowledge
     {
         // 知识阶名
-        private static readonly string[] Tiers = { "基础", "进阶", "高端", "尖端", "终极" };
+        private static readonly string[] Tiers = { "sm_tier_basic", "sm_tier_advanced", "sm_tier_high", "sm_tier_cutting", "sm_tier_ultimate" };
 
         // 机械系：武装 / 虚拟(操控) / 能量
         private static readonly string[][] Mech = {
-            new[] { "基础组装","基础机械工程学","基础仿生学","基础武器学","基础材料大全" },
-            new[] { "基础电磁原理","基础声学","基础虚拟电子技术","基础力学原理","基础广域感应" },
-            new[] { "基础生化","基础能源理论","基础光学","基础热力学","基础能量转化" },
+            new[] { "sm_know_000","sm_know_001","sm_know_002","sm_know_003","sm_know_004" },
+            new[] { "sm_know_005","sm_know_006","sm_know_007","sm_know_008","sm_know_009" },
+            new[] { "sm_know_010","sm_know_011","sm_know_012","sm_know_013","sm_know_014" },
         };
         private static readonly string[][] MechAdv = {
-            new[] { "高密物质压缩技术","进阶材料合成","重装机械改造","微型机械改装","进阶机械动力学" },
-            new[] { "神经链接","初级空间技术","进阶电磁学","进阶探测技术","进阶智能技术" },
-            new[] { "秒级拆分重组","进阶能量理论","","","" },
+            new[] { "sm_know_015","sm_know_016","sm_know_017","sm_know_018","sm_know_019" },
+            new[] { "sm_know_020","sm_know_021","sm_know_022","sm_know_023","sm_know_024" },
+            new[] { "sm_know_025","sm_know_026","","","" },
         };
         private static readonly string[][] MechHigh = {
-            new[] { "巨型复式机械技术","高端材料科技","","","" },
-            new[] { "高级虚拟智能科技","星际航行技术","量子纠缠高级应用","高端电磁力场","" },
-            new[] { "纳米动力","高能掌握","高能武器化应用","","" },
+            new[] { "sm_know_027","sm_know_028","","","" },
+            new[] { "sm_know_029","sm_know_030","sm_know_031","sm_know_032","" },
+            new[] { "sm_know_033","sm_know_034","sm_know_035","","" },
         };
         private static readonly string[][] MechTop = {
-            new[] { "可控湮灭武器","尖端材料学","超复合型机械架构技术","","" },
-            new[] { "高阶空间应用","量子矩阵思维场","时空维度勘探","","" },
-            new[] { "异态能量","超视距能量传输","活性化理论","","" },
+            new[] { "sm_know_036","sm_know_037","sm_know_038","","" },
+            new[] { "sm_know_039","sm_know_040","sm_know_041","","" },
+            new[] { "sm_know_042","sm_know_043","sm_know_044","","" },
         };
         private static readonly string[][] MechUlt = {
-            new[] { "无尽材料学","终极机械工程学","","","" },
-            new[] { "虚拟造物主","超时空理论","","","" },
-            new[] { "机械生命火种","永恒能源","","","" },
+            new[] { "sm_know_045","sm_know_046","","","" },
+            new[] { "sm_know_047","sm_know_048","","","" },
+            new[] { "sm_know_049","sm_know_050","","","" },
         };
 
         // 武道系：体魄 / 战术 / 超能
         private static readonly string[][] Martial = {
-            new[] { "骨密度增生","肌肉组织缔合","初级自愈","活性分裂","神经反射优化" },
-            new[] { "体术入门","型态许可战术","行动循环","兵器武学大全","" },
-            new[] { "气力聚能","气力冲动","气力循环","气力翻涌","气力跳跃" },
+            new[] { "sm_know_051","sm_know_052","sm_know_053","sm_know_054","sm_know_055" },
+            new[] { "sm_know_056","sm_know_057","sm_know_058","sm_know_059","" },
+            new[] { "sm_know_060","sm_know_061","sm_know_062","sm_know_063","sm_know_064" },
         };
         private static readonly string[][] MartialAdv = {
-            new[] { "细胞脱分化愈合","特种骨骼发育","肌能膨胀压缩","机体自洁调控","结缔循环回构" },
-            new[] { "进阶体术","形态优势武学","隔山打牛","功能创伤武学","" },
-            new[] { "离体波动","气力压缩","实体化气焰","爆气","闪气" },
+            new[] { "sm_know_065","sm_know_066","sm_know_067","sm_know_068","sm_know_069" },
+            new[] { "sm_know_070","sm_know_071","sm_know_072","sm_know_073","" },
+            new[] { "sm_know_074","sm_know_075","sm_know_076","sm_know_077","sm_know_078" },
         };
         private static readonly string[][] MartialHigh = {
-            new[] { "代谢系统格式优化","细胞供能物质更新","肌能纤维马达","","" },
-            new[] { "高阶武学","高等形态综合","特异性弱点突击战术","","" },
-            new[] { "高频气能坍缩","毁灭性震荡","高密气能压缩突进","","" },
+            new[] { "sm_know_079","sm_know_080","sm_know_081","","" },
+            new[] { "sm_know_082","sm_know_083","sm_know_084","","" },
+            new[] { "sm_know_085","sm_know_086","sm_know_087","","" },
         };
         private static readonly string[][] MartialTop = {
-            new[] { "细胞基元革命","肌动系统递归重组","复合型超抵抗细胞","","" },
-            new[] { "诸般武道全综","特种形态突破","微观战争艺术","","" },
-            new[] { "湮灭性气能因子","结构基石暴力解离","不可逆性瓦解回归","","" },
+            new[] { "sm_know_088","sm_know_089","sm_know_090","","" },
+            new[] { "sm_know_091","sm_know_092","sm_know_093","","" },
+            new[] { "sm_know_094","sm_know_095","sm_know_096","","" },
         };
         private static readonly string[][] MartialUlt = {
-            new[] { "血肉神化","神化生命蓝图","","","" },
-            new[] { "武道穷举法","无尽形态模型","","","" },
-            new[] { "混沌演化","究极终焉回归","","","" },
+            new[] { "sm_know_097","sm_know_098","","","" },
+            new[] { "sm_know_099","sm_know_100","","","" },
+            new[] { "sm_know_101","sm_know_102","","","" },
         };
 
         // 魔法系：元素 / 变化 / 造物
         private static readonly string[][] Mage = {
-            new[] { "初级元素理论","元素合成入门","自然元素沟通","常见元素塑形术","初级元素附着" },
-            new[] { "基础奥术魔法","魔导回路入门","咒术入门","占卜入门","" },
-            new[] { "初级炼金术","初级法阵","初级铭文镌刻","初级药剂合成","" },
+            new[] { "sm_know_103","sm_know_104","sm_know_105","sm_know_106","sm_know_107" },
+            new[] { "sm_know_108","sm_know_109","sm_know_110","sm_know_111","" },
+            new[] { "sm_know_112","sm_know_113","sm_know_114","sm_know_115","" },
         };
         private static readonly string[][] MageAdv = {
-            new[] { "中等元素课程","进阶元素合成","进阶元素塑能","进阶元素附魔","" },
-            new[] { "进阶奥术魔法","进阶魔导回路优化","进阶咒术","相位魔法","" },
-            new[] { "中等炼金术","中等阵法课","中等铭文学","中等药剂学课程","" },
+            new[] { "sm_know_116","sm_know_117","sm_know_118","sm_know_119","" },
+            new[] { "sm_know_120","sm_know_121","sm_know_122","sm_know_123","" },
+            new[] { "sm_know_124","sm_know_125","sm_know_126","sm_know_127","" },
         };
         private static readonly string[][] MageHigh = {
-            new[] { "高等元素论","高密元素实体提纯压缩","活体元素附魔","","" },
-            new[] { "高阶奥术魔法","高阶魔导回路重塑","高阶咒法","生死界限突破","" },
-            new[] { "高等炼金术","高等魔法造物综合","古典生命炼金学","","" },
+            new[] { "sm_know_128","sm_know_129","sm_know_130","","" },
+            new[] { "sm_know_131","sm_know_132","sm_know_133","sm_know_134","" },
+            new[] { "sm_know_135","sm_know_136","sm_know_137","","" },
         };
         private static readonly string[][] MageTop = {
-            new[] { "元素解剖示意模型","高等元素生命学","超复合元素合成转换","","" },
-            new[] { "奥术理论突破","魔导回路格式革新","预言术","","" },
-            new[] { "神话炼金术","创生魔法","超能显圣奇观筑造","","" },
+            new[] { "sm_know_138","sm_know_139","sm_know_140","","" },
+            new[] { "sm_know_141","sm_know_142","sm_know_143","","" },
+            new[] { "sm_know_144","sm_know_145","sm_know_146","","" },
         };
         private static readonly string[][] MageUlt = {
-            new[] { "寰宇基石单元","元素恒星反应堆","","","" },
-            new[] { "奇迹显化","既定命运","","","" },
-            new[] { "创世法则","神话起源图腾","","","" },
+            new[] { "sm_know_147","sm_know_148","","","" },
+            new[] { "sm_know_149","sm_know_150","","","" },
+            new[] { "sm_know_151","sm_know_152","","","" },
         };
 
         // 念力系：灵魂 / 法则 / 现实
         private static readonly string[][] Mind = {
-            new[] { "基础心灵单元","基础心灵感应","基础催眠","基础幻觉","基础通灵" },
-            new[] { "低级唯心干涉","低级信息模拟","低级主观空间感应","低级时间观扭曲","" },
-            new[] { "低阶意念动能","低阶虚空作用力","低阶虚构实体","小型相互作用取消","" },
+            new[] { "sm_know_153","sm_know_154","sm_know_155","sm_know_156","sm_know_157" },
+            new[] { "sm_know_158","sm_know_159","sm_know_160","sm_know_161","" },
+            new[] { "sm_know_162","sm_know_163","sm_know_164","sm_know_165","" },
         };
         private static readonly string[][] MindAdv = {
-            new[] { "进阶心灵单元","进阶心灵创伤打击","进阶幻术","纯灵生物感应沟通","人格修改" },
-            new[] { "中级唯心干涉","中级拟似信息","中级主观时空扭曲","","" },
-            new[] { "进阶意念动能","进阶虚空作用力","进阶虚构实体","波性频率异常","" },
+            new[] { "sm_know_166","sm_know_167","sm_know_168","sm_know_169","sm_know_170" },
+            new[] { "sm_know_171","sm_know_172","sm_know_173","","" },
+            new[] { "sm_know_174","sm_know_175","sm_know_176","sm_know_177","" },
         };
         private static readonly string[][] MindHigh = {
-            new[] { "高阶心灵单元","高阶心灵侵略","高阶幻境制造","灵魂解剖学","" },
-            new[] { "高级唯心干涉","高级拟造信息","高级主观时空伤害化应用","","" },
-            new[] { "高等意念动能","高等虚空作用力","高等虚构实体","大型相互作用力修改","" },
+            new[] { "sm_know_178","sm_know_179","sm_know_180","sm_know_181","" },
+            new[] { "sm_know_182","sm_know_183","sm_know_184","","" },
+            new[] { "sm_know_185","sm_know_186","sm_know_187","sm_know_188","" },
         };
         private static readonly string[][] MindTop = {
-            new[] { "万维心灵网络","混沌精神回响","灵魂思维能量场","","" },
-            new[] { "规律传递介质","混沌概率云","因果修改","","" },
-            new[] { "现实扭曲","物理规律打击","人造异常维度","","" },
+            new[] { "sm_know_189","sm_know_190","sm_know_191","","" },
+            new[] { "sm_know_192","sm_know_193","sm_know_194","","" },
+            new[] { "sm_know_195","sm_know_196","sm_know_197","","" },
         };
         private static readonly string[][] MindUlt = {
-            new[] { "终极灵魂生命","无尽幻想维度神宫","","","" },
-            new[] { "芝诺的乌龟·无穷微分","薛定谔的猫·混沌因果","","","" },
-            new[] { "拉普拉斯轨道纠缠方程组","麦克斯韦隧洞更迭不等式","","","" },
+            new[] { "sm_know_198","sm_know_199","","","" },
+            new[] { "sm_know_200","sm_know_201","","","" },
+            new[] { "sm_know_202","sm_know_203","","","" },
         };
 
         // 异能系：攻效 / 循环 / 功能（一~五阶基因链）
         private static readonly string[][] Psi = {
-            new[] { "一阶基因链·能级强化","一阶基因链·效率提升","一阶基因链·潜力发掘","","" },
-            new[] { "一阶基因链·持久力强化","一阶基因链·高速冷却","一阶基因链·损耗缩减","","" },
-            new[] { "一阶基因链·范围扩展","一阶基因链·新功能分化","一阶基因链·操控强化","","" },
+            new[] { "sm_know_204","sm_know_205","sm_know_206","","" },
+            new[] { "sm_know_207","sm_know_208","sm_know_209","","" },
+            new[] { "sm_know_210","sm_know_211","sm_know_212","","" },
         };
         private static readonly string[][] PsiAdv = {
-            new[] { "二阶基因链·能级强化","二阶基因链·效率提升","二阶基因链·潜力发掘","","" },
-            new[] { "二阶基因链·持久力强化","二阶基因链·高速冷却","二阶基因链·损耗缩减","","" },
-            new[] { "二阶基因链·范围扩展","二阶基因链·新功能分化","二阶基因链·操控强化","","" },
+            new[] { "sm_know_213","sm_know_214","sm_know_215","","" },
+            new[] { "sm_know_216","sm_know_217","sm_know_218","","" },
+            new[] { "sm_know_219","sm_know_220","sm_know_221","","" },
         };
         private static readonly string[][] PsiHigh = {
-            new[] { "三阶基因链·能级强化","三阶基因链·效率提升","三阶基因链·潜力发掘","","" },
-            new[] { "三阶基因链·持久力强化","三阶基因链·高速冷却","三阶基因链·损耗缩减","","" },
-            new[] { "三阶基因链·范围扩展","三阶基因链·新功能分化","三阶基因链·操控强化","","" },
+            new[] { "sm_know_222","sm_know_223","sm_know_224","","" },
+            new[] { "sm_know_225","sm_know_226","sm_know_227","","" },
+            new[] { "sm_know_228","sm_know_229","sm_know_230","","" },
         };
         private static readonly string[][] PsiTop = {
-            new[] { "四阶基因链·能级强化","四阶基因链·效率提升","四阶基因链·潜力发掘","","" },
-            new[] { "四阶基因链·持久力强化","四阶基因链·高速冷却","四阶基因链·损耗缩减","","" },
-            new[] { "四阶基因链·范围扩展","四阶基因链·新功能分化","四阶基因链·操控强化","","" },
+            new[] { "sm_know_231","sm_know_232","sm_know_233","","" },
+            new[] { "sm_know_234","sm_know_235","sm_know_236","","" },
+            new[] { "sm_know_237","sm_know_238","sm_know_239","","" },
         };
         private static readonly string[][] PsiUlt = {
-            new[] { "五阶基因链·能级强化","五阶基因链·效率提升","五阶基因链·潜力发掘","","" },
-            new[] { "五阶基因链·持久力强化","五阶基因链·高速冷却","五阶基因链·损耗缩减","","" },
-            new[] { "五阶基因链·范围扩展","五阶基因链·新功能分化","五阶基因链·操控强化","","" },
+            new[] { "sm_know_240","sm_know_241","sm_know_242","","" },
+            new[] { "sm_know_243","sm_know_244","sm_know_245","","" },
+            new[] { "sm_know_246","sm_know_247","sm_know_248","","" },
         };
 
         /// <summary>知识节点定义（不再注册为特质，改用内部字典+独立面板）。</summary>
@@ -171,20 +171,20 @@ namespace SuperMech.Code
         public static void Register()
         {
             int count = 0;
-            count += RegisterTree("mech", "机械知识树",
-                new[] { "枪炮师", "机械师", "械武者" },
+            count += RegisterTree("mech", "sm_tree_mech",
+                new[] { "sm_know_249", "sm_know_250", "sm_know_251" },
                 new[] { Mech, MechAdv, MechHigh, MechTop, MechUlt });
-            count += RegisterTree("martial", "御气技巧树",
-                new[] { "敏捷", "力量", "防御" },
+            count += RegisterTree("martial", "sm_tree_martial",
+                new[] { "sm_know_252", "sm_know_253", "sm_know_254" },
                 new[] { Martial, MartialAdv, MartialHigh, MartialTop, MartialUlt });
-            count += RegisterTree("mage", "魔法知识树",
-                new[] { "专精法师", "魔网法师", "元素" },
+            count += RegisterTree("mage", "sm_tree_mage",
+                new[] { "sm_know_255", "sm_know_256", "sm_know_257" },
                 new[] { Mage, MageAdv, MageHigh, MageTop, MageUlt });
-            count += RegisterTree("mind", "精神修炼树",
-                new[] { "灵魂", "法则", "现实" },
+            count += RegisterTree("mind", "sm_tree_mind",
+                new[] { "sm_know_258", "sm_know_259", "sm_know_260" },
                 new[] { Mind, MindAdv, MindHigh, MindTop, MindUlt });
-            count += RegisterTree("psi", "基因树",
-                new[] { "能级", "操控", "持久力" },
+            count += RegisterTree("psi", "sm_tree_psi",
+                new[] { "sm_know_261", "sm_know_262", "sm_know_263" },
                 new[] { Psi, PsiAdv, PsiHigh, PsiTop, PsiUlt });
 
             Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识节点（内部字典，不注册为特质）");
@@ -233,13 +233,13 @@ namespace SuperMech.Code
                         if (string.IsNullOrEmpty(kn)) continue;
                         string id = $"sm_know_{prefix}_{ti}_{bi}_{ki}";
                         // 只注册本地化（面板显示用），不注册为特质
-                        LocalizedTextManager.add("trait_" + id, kn, pReplace: true);
-                        LocalizedTextManager.add("trait_" + id + "_info", $"{treeName}·{branchNames[bi]}·{Tiers[ti]}知识", pReplace: true);
+                        LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(kn), pReplace: true);
+                        LocalizedTextManager.add("trait_" + id + "_info", $"{LocalizedTextManager.getText(treeName)}·{branchNames[bi]}·{LocalizedTextManager.getText(Tiers[ti])}{LocalizedTextManager.getText(\"sm_ui_knowledge\")}", pReplace: true);
                         var def = new KnowledgeDef
                         {
                             id = id,
                             name = kn,
-                            desc = $"{treeName}·{branchNames[bi]}·{Tiers[ti]}知识",
+                            desc = $"{LocalizedTextManager.getText(treeName)}·{branchNames[bi]}·{LocalizedTextManager.getText(Tiers[ti])}{LocalizedTextManager.getText(\"sm_ui_knowledge\")}",
                             prefix = prefix,
                             tier = ti,
                             branch = bi,
@@ -374,10 +374,10 @@ namespace SuperMech.Code
         {
             switch (cls)
             {
-                case "武道系": return "martial";
-                case "异能系": return "psi";
-                case "魔法系": return "mage";
-                case "念力系": return "mind";
+                case "sm_class_martial": return "martial";
+                case "sm_class_psi": return "psi";
+                case "sm_class_mage": return "mage";
+                case "sm_class_mind": return "mind";
                 default: return "mech";
             }
         }

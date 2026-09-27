@@ -961,7 +961,7 @@ namespace SuperMech.Code
             {
                 costText = $"{actualCost}潜能点（异能搭配-30%）";
             }
-            tip.textOnClick = $"{def.name}\n{def.desc}\n分支: {branch} | 消耗: {costText}";
+            tip.textOnClick = $"{LocalizedTextManager.getText(def.name)}\n{def.desc}\n分支: {branch} | 消耗: {costText}";
         }
 
         /// <summary>按阶位获取品质颜色（基础=灰，进阶=绿，高端=蓝，尖端=紫，终极=金）</summary>

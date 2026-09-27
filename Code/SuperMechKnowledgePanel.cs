@@ -620,7 +620,7 @@ namespace SuperMech.Code
             });
 
             TipButton tip = iconObj.AddComponent<TipButton>();
-            tip.textOnClick = def.name;
+            tip.textOnClick = LocalizedTextManager.getText(def.name);
             tip.textOnClickDescription = def.desc + $"\n消耗: {actualCost}潜能点";
             tip.text_description_2 = string.Empty;
         }
