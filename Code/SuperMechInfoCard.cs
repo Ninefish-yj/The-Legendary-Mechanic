@@ -8,12 +8,9 @@ namespace SuperMech.Code
     internal static class SuperMechInfoCard
     {
         private const string CardName = "SuperMechInfoCard";
-        private const float CardWidth = 180f;
+        private const float CardWidth = 200f;
 
-        private static readonly Color TitleColor = new Color(1f, 0.85f, 0.4f);
-        private static readonly Color LabelColor = new Color(0.78f, 0.84f, 0.9f);
-        private static readonly Color ValueColor = new Color(0.95f, 0.95f, 0.95f);
-        private static readonly Color HighlightColor = new Color(0.4f, 0.85f, 0.5f);
+        private static KeyValueField _rowPrefab;
 
         private static readonly Dictionary<UnitWindow, GameObject> Cards = new Dictionary<UnitWindow, GameObject>();
 
@@ -24,8 +21,8 @@ namespace SuperMech.Code
             Transform bg = window.transform.Find("Background");
             if (bg == null) return;
 
-            Font font = LocalizedTextManager.current_font;
-            if (font == null) font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (_rowPrefab == null)
+                _rowPrefab = Resources.Load<KeyValueField>("ui/KeyValueFieldStats");
 
             if (!Cards.TryGetValue(window, out GameObject card) || card == null)
             {
@@ -55,7 +52,7 @@ namespace SuperMech.Code
                 outline.useGraphicAlpha = true;
 
                 VerticalLayoutGroup vlg = card.GetComponent<VerticalLayoutGroup>();
-                vlg.padding = new RectOffset(4, 4, 4, 4);
+                vlg.padding = new RectOffset(2, 2, 2, 2);
                 vlg.spacing = 0f;
                 vlg.childAlignment = TextAnchor.UpperLeft;
                 vlg.childControlWidth = true;
@@ -73,20 +70,20 @@ namespace SuperMech.Code
             for (int i = card.transform.childCount - 1; i >= 0; i--)
                 Object.Destroy(card.transform.GetChild(i).gameObject);
 
+            CreateTitle(card.transform, LocalizedTextManager.getText("sm_ui_super_info"));
+
             bool hasTalent = SuperMechTalent.HasTalent(actor);
             if (!hasTalent)
             {
-                CreateTitle(card.transform, font, LocalizedTextManager.getText("sm_ui_mortal_title"));
-                CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_hint"), LocalizedTextManager.getText("sm_ui_hint_awaken"), LabelColor, ValueColor);
+                AddRow(card.transform, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"), 0);
+                AddRow(card.transform, LocalizedTextManager.getText("sm_ui_hint"), LocalizedTextManager.getText("sm_ui_hint_awaken"), 1);
                 card.SetActive(true);
                 RefreshLayout(card);
                 return;
             }
 
-            CreateTitle(card.transform, font, LocalizedTextManager.getText("sm_ui_super_info"));
-
-            string rank = SuperMechUnitWindow.GetRank(actor);
-            CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_rank"), rank, LabelColor, HighlightColor);
+            int rowIdx = 0;
+            AddRow(card.transform, LocalizedTextManager.getText("sm_ui_rank"), SuperMechUnitWindow.GetRank(actor), rowIdx++);
 
             bool hasProfession = SuperMechProfession.HasProfession(actor);
             if (hasProfession)
@@ -94,19 +91,19 @@ namespace SuperMech.Code
                 string cls = SuperMechProfession.GetClass(actor);
                 string clsAspect = SuperMechUnitWindow.GetClassAspect(cls);
                 string clsText = cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）");
-                CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_class"), clsText, LabelColor, ValueColor);
+                AddRow(card.transform, LocalizedTextManager.getText("sm_ui_class"), clsText, rowIdx++);
 
                 string stage = SuperMechStage.GetStageName(actor);
                 if (stage != "—" && stage != "sm_knowledgetab_829")
-                    CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_class_stage"), stage, LabelColor, ValueColor);
+                    AddRow(card.transform, LocalizedTextManager.getText("sm_ui_class_stage"), stage, rowIdx++);
             }
             else
             {
-                CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"), LabelColor, ValueColor);
+                AddRow(card.transform, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"), rowIdx++);
             }
 
             float onar = SuperMechAdvancement.CalcOnar(actor);
-            CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}", LabelColor, ValueColor);
+            AddRow(card.transform, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}", rowIdx++);
 
             float qi = SuperMechQi.GetQi(actor);
             float qiMax = SuperMechQi.GetQiMax(actor);
@@ -114,14 +111,14 @@ namespace SuperMech.Code
             string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
             string qiName = SuperMechUnitWindow.GetQiDisplayName(actor);
             string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
-            CreateLine(card.transform, font, qiName, $"{qiBar}（{qiLvText}）", LabelColor, ValueColor);
+            AddRow(card.transform, qiName, $"{qiBar}（{qiLvText}）", rowIdx++);
 
             int pot = SuperMechPotential.GetPotential(actor);
             if (pot > 0)
-                CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), LabelColor, new Color(0.8f, 0.7f, 1f));
+                AddRow(card.transform, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), rowIdx++);
 
             if (SuperMechAwakened.IsAwakened(actor))
-                CreateLine(card.transform, font, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), LabelColor, HighlightColor);
+                AddRow(card.transform, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), rowIdx++);
 
             card.SetActive(true);
             RefreshLayout(card);
@@ -159,7 +156,33 @@ namespace SuperMech.Code
             Cards.Clear();
         }
 
-        private static void CreateTitle(Transform parent, Font font, string text)
+        private static void AddRow(Transform parent, string name, string value, int index)
+        {
+            if (_rowPrefab == null) return;
+
+            KeyValueField row = Object.Instantiate(_rowPrefab, parent);
+            row.gameObject.name = "InfoRow_" + index;
+            row.auto_odd_even_coloring = true;
+
+            if (row.name_text != null)
+            {
+                row.name_text.text = name;
+                row.name_text.fontSize = 9;
+            }
+            if (row.value != null)
+            {
+                row.value.text = value;
+                row.value.fontSize = 9;
+            }
+
+            LayoutElement le = row.GetComponent<LayoutElement>();
+            if (le == null) le = row.gameObject.AddComponent<LayoutElement>();
+            le.minHeight = 16f;
+            le.preferredHeight = 16f;
+            le.flexibleHeight = 0f;
+        }
+
+        private static void CreateTitle(Transform parent, string text)
         {
             GameObject obj = new GameObject("CardTitle", typeof(RectTransform), typeof(Image), typeof(Outline), typeof(Text), typeof(LayoutElement));
             obj.transform.SetParent(parent, false);
@@ -174,10 +197,11 @@ namespace SuperMech.Code
             titleOutline.useGraphicAlpha = true;
 
             Text t = obj.GetComponent<Text>();
-            t.font = font;
+            t.font = LocalizedTextManager.current_font;
+            if (t.font == null) t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             t.fontSize = 10;
             t.fontStyle = FontStyle.Bold;
-            t.color = TitleColor;
+            t.color = new Color(1f, 0.85f, 0.4f);
             t.alignment = TextAnchor.MiddleCenter;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
             t.verticalOverflow = VerticalWrapMode.Overflow;
@@ -187,52 +211,6 @@ namespace SuperMech.Code
             LayoutElement le = obj.GetComponent<LayoutElement>();
             le.minHeight = 18f;
             le.preferredHeight = 18f;
-        }
-
-        private static void CreateLine(Transform parent, Font font, string label, string value, Color labelColor, Color valueColor)
-        {
-            GameObject obj = new GameObject("CardLine", typeof(RectTransform), typeof(HorizontalLayoutGroup), typeof(LayoutElement));
-            obj.transform.SetParent(parent, false);
-            HorizontalLayoutGroup hlg = obj.GetComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 4f;
-            hlg.childAlignment = TextAnchor.MiddleLeft;
-            hlg.childControlWidth = false;
-            hlg.childControlHeight = true;
-            hlg.childForceExpandWidth = false;
-            hlg.childForceExpandHeight = false;
-            hlg.padding = new RectOffset(6, 6, 2, 2);
-
-            GameObject labelObj = new GameObject("Label", typeof(RectTransform), typeof(Text));
-            labelObj.transform.SetParent(obj.transform, false);
-            Text labelTxt = labelObj.GetComponent<Text>();
-            labelTxt.font = font;
-            labelTxt.fontSize = 9;
-            labelTxt.color = labelColor;
-            labelTxt.alignment = TextAnchor.MiddleLeft;
-            labelTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            labelTxt.verticalOverflow = VerticalWrapMode.Overflow;
-            labelTxt.raycastTarget = false;
-            labelTxt.text = label;
-            RectTransform labelRt = labelObj.GetComponent<RectTransform>();
-            labelRt.sizeDelta = new Vector2(50f, 12f);
-
-            GameObject valueObj = new GameObject("Value", typeof(RectTransform), typeof(Text));
-            valueObj.transform.SetParent(obj.transform, false);
-            Text valueTxt = valueObj.GetComponent<Text>();
-            valueTxt.font = font;
-            valueTxt.fontSize = 9;
-            valueTxt.color = valueColor;
-            valueTxt.alignment = TextAnchor.MiddleLeft;
-            valueTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            valueTxt.verticalOverflow = VerticalWrapMode.Overflow;
-            valueTxt.raycastTarget = false;
-            valueTxt.text = value;
-            RectTransform valueRt = valueObj.GetComponent<RectTransform>();
-            valueRt.sizeDelta = new Vector2(120f, 12f);
-
-            LayoutElement le = obj.GetComponent<LayoutElement>();
-            le.minHeight = 12f;
-            le.preferredHeight = 12f;
         }
 
         private static void RefreshLayout(GameObject card)
