@@ -29,7 +29,7 @@ namespace SuperMech.Code
         {
             new DimensionDef
             {
-                id = "void", name = "虚空维度", desc = "混沌迷蒙的虚空能量空间，精神攻击+30%，闪避+20%",
+                id = "void", name = "sm_dimension_364", desc = "sm_dimension_365",
                 classTrait = SuperMechTraits.ClassMind,
                 applyBuff = s => {
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.3f;
@@ -45,7 +45,7 @@ namespace SuperMech.Code
             },
             new DimensionDef
             {
-                id = "underworld", name = "冥土维度", desc = "生死能量交织的维度，生命+40%，伤害+25%",
+                id = "underworld", name = "sm_dimension_366", desc = "sm_dimension_367",
                 classTrait = SuperMechTraits.ClassPsi,
                 applyBuff = s => {
                     s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * 1.4f;
@@ -62,7 +62,7 @@ namespace SuperMech.Code
             },
             new DimensionDef
             {
-                id = "arcane", name = "秘法维度", desc = "魔力充盈的法师塔维度，智力+20，法力+50，全属性+5",
+                id = "arcane", name = "sm_dimension_368", desc = "sm_dimension_369",
                 classTrait = SuperMechTraits.ClassMage,
                 applyBuff = s => {
                     s["intelligence"] = (s["intelligence"]) + 20f;
@@ -79,7 +79,7 @@ namespace SuperMech.Code
             },
             new DimensionDef
             {
-                id = "hangar", name = "机库维度", desc = "机械师的虚拟机库空间，制造速度+50%，机械威力+30%",
+                id = "hangar", name = "sm_dimension_370", desc = "sm_dimension_371",
                 classTrait = SuperMechTraits.ClassMech,
                 applyBuff = s => {
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.3f;
@@ -96,7 +96,7 @@ namespace SuperMech.Code
             },
             new DimensionDef
             {
-                id = "battle", name = "战界维度", desc = "武道系的战斗空间，攻速+30%，暴击+15%，伤害+20%",
+                id = "battle", name = "sm_dimension_372", desc = "sm_dimension_373",
                 classTrait = SuperMechTraits.ClassMartial,
                 applyBuff = s => {
                     s["attack_speed"] = (s["attack_speed"]) + 0.3f;
@@ -112,7 +112,7 @@ namespace SuperMech.Code
             },
             new DimensionDef
             {
-                id = "infostate", name = "信息态维度", desc = "高维信息态空间（ch1211），全属性+10%，穿甲+15%，免疫控制",
+                id = "infostate", name = "sm_dimension_374", desc = "sm_dimension_375",
                 classTrait = null, // 信息态维度对所有系开放，但需要第六圣所解锁
                 applyBuff = s => {
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.1f;

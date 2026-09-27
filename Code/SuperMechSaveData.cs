@@ -119,7 +119,7 @@ namespace SuperMech.Code
             }
             catch
             {
-                return Path.Combine(Application.dataPath, "Mods", "超神机械师");
+                return Path.Combine(Application.dataPath, "Mods", "sm_savedata_985");
             }
         }
 

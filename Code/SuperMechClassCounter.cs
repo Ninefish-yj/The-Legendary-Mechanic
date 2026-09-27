@@ -69,8 +69,8 @@ namespace SuperMech.Code
         public static string GetCounterDesc(Actor attacker, Actor target)
         {
             float mult = GetDamageMultiplier(attacker, target);
-            if (mult > 1f) return $"克制（伤害+{CounterDamageBonus * 100:F0}%）";
-            if (mult < 1f) return $"被克制（伤害{CounterDamagePenalty * 100:F0}%）";
+            if (mult > 1f) return $"sm_classcounter_545";
+            if (mult < 1f) return $"sm_classcounter_546";
             return "";
         }
     }

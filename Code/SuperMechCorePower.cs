@@ -20,15 +20,15 @@ namespace SuperMech.Code
     {
         // 异能系：基因链5阶（原著：一阶→二阶→...，通过基因树知识提升）
         public static readonly string[] GeneChainNames = {
-            "一阶基因链", "二阶基因链", "三阶基因链", "四阶基因链", "五阶基因链"
+            "sm_corepower_653", "sm_corepower_654", "sm_corepower_655", "sm_corepower_656", "sm_corepower_657"
         };
         // 魔法系：魔力池5层
         public static readonly string[] ManaTierNames = {
-            "魔力初涌", "魔力流转", "魔力浩瀚", "魔力深渊", "魔力神域"
+            "sm_corepower_658", "sm_corepower_659", "sm_corepower_660", "sm_corepower_661", "sm_corepower_662"
         };
         // 念力系：精神力5阶
         public static readonly string[] MindTierNames = {
-            "精神觉醒", "精神凝练", "精神外放", "精神造物", "精神神域"
+            "sm_corepower_663", "sm_corepower_664", "sm_corepower_665", "sm_corepower_666", "sm_corepower_667"
         };
         // 每阶需要的修炼进度（突破阈值）
         public static readonly int[] StageProgressReq = { 0, 100, 300, 600, 1000 };
@@ -65,19 +65,19 @@ namespace SuperMech.Code
                 // 异能系：基因链修炼
                 if (a.hasTrait(SuperMechTraits.ClassPsi))
                 {
-                    TickCultivation(a, _geneStage, _geneProgress, "基因链", inCombat ? 3 : 1);
+                    TickCultivation(a, _geneStage, _geneProgress, "sm_corepower_668", inCombat ? 3 : 1);
                 }
 
                 // 魔法系：魔力池修炼
                 if (a.hasTrait(SuperMechTraits.ClassMage))
                 {
-                    TickCultivation(a, _manaStage, _manaProgress, "魔力池", inCombat ? 3 : 1);
+                    TickCultivation(a, _manaStage, _manaProgress, "sm_corepower_669", inCombat ? 3 : 1);
                 }
 
                 // 念力系：精神力修炼
                 if (a.hasTrait(SuperMechTraits.ClassMind))
                 {
-                    TickCultivation(a, _mindStage, _mindProgress, "精神力", inCombat ? 3 : 1);
+                    TickCultivation(a, _mindStage, _mindProgress, "sm_corepower_670", inCombat ? 3 : 1);
                 }
             }
         }
@@ -120,9 +120,9 @@ namespace SuperMech.Code
         /// <summary>获取阶段名称。</summary>
         private static string GetStageName(string type, int stage)
         {
-            if (type == "基因链") return GeneChainNames[stage - 1];
-            if (type == "魔力池") return ManaTierNames[stage - 1];
-            if (type == "精神力") return MindTierNames[stage - 1];
+            if (type == "sm_corepower_668") return GeneChainNames[stage - 1];
+            if (type == "sm_corepower_669") return ManaTierNames[stage - 1];
+            if (type == "sm_corepower_670") return MindTierNames[stage - 1];
             return "";
         }
 
@@ -164,28 +164,28 @@ namespace SuperMech.Code
         /// <summary>获取异能系当前基因链阶段名。</summary>
         public static string GetGeneStageName(Actor a)
         {
-            if (a == null) return "基因未觉醒";
+            if (a == null) return LocalizedTextManager.getText("sm_corepower_671");
             if (_geneStage.TryGetValue(a.id, out int lv) && lv >= 1 && lv <= GeneChainNames.Length)
                 return GeneChainNames[lv - 1];
-            return "一阶基因链";
+            return LocalizedTextManager.getText("sm_corepower_653");
         }
 
         /// <summary>获取魔法系当前魔力池阶段名。</summary>
         public static string GetManaStageName(Actor a)
         {
-            if (a == null) return "魔力未觉醒";
+            if (a == null) return LocalizedTextManager.getText("sm_corepower_672");
             if (_manaStage.TryGetValue(a.id, out int lv) && lv >= 1 && lv <= ManaTierNames.Length)
                 return ManaTierNames[lv - 1];
-            return "魔力初涌";
+            return LocalizedTextManager.getText("sm_corepower_658");
         }
 
         /// <summary>获取念力系当前精神力阶段名。</summary>
         public static string GetMindStageName(Actor a)
         {
-            if (a == null) return "精神未觉醒";
+            if (a == null) return LocalizedTextManager.getText("sm_corepower_673");
             if (_mindStage.TryGetValue(a.id, out int lv) && lv >= 1 && lv <= MindTierNames.Length)
                 return MindTierNames[lv - 1];
-            return "精神觉醒";
+            return LocalizedTextManager.getText("sm_corepower_663");
         }
 
         /// <summary>获取异能系基因链阶段索引（1-5）。</summary>
@@ -247,17 +247,17 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             string cls = SuperMechBranch.GetClass(a);
-            if (cls == "异能系")
+            if (cls == "sm_corepower_674")
             {
                 int cur = GetGeneStage(a);
                 _geneStage[a.id] = Mathf.Min(cur + amount, GeneChainNames.Length);
             }
-            else if (cls == "魔法系")
+            else if (cls == "sm_corepower_675")
             {
                 int cur = GetManaStage(a);
                 _manaStage[a.id] = Mathf.Min(cur + amount, ManaTierNames.Length);
             }
-            else if (cls == "念力系")
+            else if (cls == "sm_corepower_676")
             {
                 int cur = GetMindStage(a);
                 _mindStage[a.id] = Mathf.Min(cur + amount, MindTierNames.Length);

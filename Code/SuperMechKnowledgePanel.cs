@@ -115,7 +115,7 @@ namespace SuperMech.Code
 
             // 5个系别切换按钮
             string[] prefixes = { "mech", "martial", "psi", "mage", "mind" };
-            string[] names = { "机械系", "武道系", "异能系", "魔法系", "念力系" };
+            string[] names = { "sm_knowledgepanel_778", "sm_knowledgepanel_779", "sm_knowledgepanel_780", "sm_knowledgepanel_781", "sm_knowledgepanel_782" };
             string[] icons = {
                 "ui/Icons/actor_traits/iconStrong",
                 "ui/Icons/actor_traits/iconAgile",
@@ -188,8 +188,8 @@ namespace SuperMech.Code
             if (_currentActor == null) return;
 
             string[] prefixes = { "mech", "martial", "psi", "mage", "mind" };
-            string[] names = { "机械系", "武道系", "异能系", "魔法系", "念力系" };
-            string[] treeNames = { "机械知识树", "御气技巧树", "基因树", "魔法知识树", "精神修炼树" };
+            string[] names = { "sm_knowledgepanel_778", "sm_knowledgepanel_779", "sm_knowledgepanel_780", "sm_knowledgepanel_781", "sm_knowledgepanel_782" };
+            string[] treeNames = { "sm_knowledgepanel_783", "sm_knowledgepanel_784", "sm_knowledgepanel_785", "sm_knowledgepanel_786", "sm_knowledgepanel_787" };
             string[] icons = {
                 "ui/Icons/actor_traits/iconStrong",
                 "ui/Icons/actor_traits/iconAgile",
@@ -223,11 +223,11 @@ namespace SuperMech.Code
             // 背景+边框
             AddBoxFrame(graph, new Color(0.03f, 0.04f, 0.08f, 0.95f), new Color(0.2f, 0.25f, 0.35f, 0.8f));
 
-            // 标题栏（"知识图谱"，居中大字，类似天人武道的"隐窍"）
+            // 标题栏（"sm_knowledgepanel_788"，居中大字，类似天人武道的"隐窍"）
             GameObject titleGo = new GameObject("GraphTitle", typeof(RectTransform));
             titleGo.transform.SetParent(graph.transform, false);
             Text titleText = titleGo.AddComponent<Text>();
-            titleText.text = "知识图谱";
+            titleText.text = "sm_knowledgepanel_788";
             titleText.fontSize = 14;
             titleText.fontStyle = FontStyle.Bold;
             titleText.color = new Color(0.9f, 0.9f, 0.95f);
@@ -283,7 +283,7 @@ namespace SuperMech.Code
             titleBg.color = new Color(0.1f, 0.12f, 0.18f, 0.9f);
             titleBg.raycastTarget = false;
             Text titleTxt = titleGo.AddComponent<Text>();
-            titleTxt.text = "知识库";
+            titleTxt.text = "sm_knowledgepanel_789";
             titleTxt.fontSize = 13;
             titleTxt.fontStyle = FontStyle.Bold;
             titleTxt.color = new Color(0.85f, 0.88f, 0.92f);
@@ -384,7 +384,7 @@ namespace SuperMech.Code
             // 更新标题和进度
             if (_libraryTitle != null && _currentActor != null)
             {
-                _libraryTitle.text = "知识库";
+                _libraryTitle.text = "sm_knowledgepanel_789";
             }
             if (_libraryProgress != null && _currentActor != null)
             {
@@ -621,7 +621,7 @@ namespace SuperMech.Code
 
             TipButton tip = iconObj.AddComponent<TipButton>();
             tip.textOnClick = LocalizedTextManager.getText(def.name);
-            tip.textOnClickDescription = def.desc + $"\n消耗: {actualCost}潜能点";
+            tip.textOnClickDescription = def.desc + $"sm_knowledgepanel_790";
             tip.text_description_2 = string.Empty;
         }
 
@@ -717,12 +717,12 @@ namespace SuperMech.Code
         {
             return tier switch
             {
-                0 => "基础知识",
-                1 => "进阶知识",
-                2 => "高端知识",
-                3 => "尖端知识",
-                4 => "终极知识",
-                _ => "未知"
+                0 => "sm_knowledgepanel_791",
+                1 => "sm_knowledgepanel_792",
+                2 => "sm_knowledgepanel_793",
+                3 => "sm_knowledgepanel_794",
+                4 => "sm_knowledgepanel_795",
+                _ => "sm_knowledgepanel_796"
             };
         }
 

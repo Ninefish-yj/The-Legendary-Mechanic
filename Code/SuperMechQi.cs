@@ -61,7 +61,7 @@ namespace SuperMech.Code
 
         public static readonly string[] LevelNames = {
             "Lv1", "Lv2", "Lv3", "Lv4", "Lv5",
-            "Lv6（分水岭）", "Lv7", "Lv8", "Lv9", "Lv10",
+            "sm_qi_937", "Lv7", "Lv8", "Lv9", "Lv10",
             "Lv11", "Lv12", "Lv13", "Lv14", "Lv15",
             "Lv16", "Lv17", "Lv18", "Lv19", "Lv20",
             "Lv21", "Lv22", "Lv23", "Lv24", "Lv25",

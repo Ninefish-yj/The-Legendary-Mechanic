@@ -39,43 +39,43 @@ namespace SuperMech.Code
 
         // 各系使命模板（按系+分支生成，每个人随机选一个）
         private static readonly string[][] MechDestinies = {
-            new[] { "机械神王", "建立覆盖星海的机械神教，成为信徒心中的主神", "rule", "100" },
-            new[] { "万机之主", "创造一件使徒兵器级的宇宙宝物", "create", "100" },
-            new[] { "军团统帅", "组建一支横扫星域的机械军团", "rule", "100" },
-            new[] { "维度行者", "探索并征服一个次级维度", "explore", "100" },
-            new[] { "械源觉醒", "将械力提升到宇宙本源层次", "transcend", "100" },
+            new[] { "sm_intuition_381", "sm_intuition_382", "rule", "100" },
+            new[] { "sm_intuition_383", "sm_intuition_384", "create", "100" },
+            new[] { "sm_intuition_385", "sm_intuition_386", "rule", "100" },
+            new[] { "sm_intuition_387", "sm_intuition_388", "explore", "100" },
+            new[] { "sm_intuition_389", "sm_intuition_390", "transcend", "100" },
         };
 
         private static readonly string[][] MartialDestinies = {
-            new[] { "武道神话", "开创一个流传万古的武道流派", "create", "100" },
-            new[] { "不败战神", "在决斗中击败一百名同阶强者", "combat", "100" },
-            new[] { "肉身成圣", "将体魄锤炼到超越种族极限", "transcend", "100" },
-            new[] { "极道霸主", "成为某一星域的武道霸主", "rule", "100" },
-            new[] { "气吞星海", "将气力修炼到前无古人的层次", "transcend", "100" },
+            new[] { "sm_intuition_391", "sm_intuition_392", "create", "100" },
+            new[] { "sm_intuition_393", "sm_intuition_394", "combat", "100" },
+            new[] { "sm_intuition_395", "sm_intuition_396", "transcend", "100" },
+            new[] { "sm_intuition_397", "sm_intuition_398", "rule", "100" },
+            new[] { "sm_intuition_399", "sm_intuition_400", "transcend", "100" },
         };
 
         private static readonly string[][] PsiDestinies = {
-            new[] { "异能之源", "将异能进化到操控法则的层次", "transcend", "100" },
-            new[] { "基因之主", "破解生命基因密码，创造新物种", "create", "100" },
-            new[] { "天灾化身", "以异能之力毁灭一个文明", "combat", "100" },
-            new[] { "维度感应", "感应并沟通一个未知维度", "explore", "100" },
-            new[] { "精神霸主", "以精神力统治一个星域", "rule", "100" },
+            new[] { "sm_intuition_401", "sm_intuition_402", "transcend", "100" },
+            new[] { "sm_intuition_403", "sm_intuition_404", "create", "100" },
+            new[] { "sm_intuition_405", "sm_intuition_406", "combat", "100" },
+            new[] { "sm_intuition_407", "sm_intuition_408", "explore", "100" },
+            new[] { "sm_intuition_409", "sm_intuition_410", "rule", "100" },
         };
 
         private static readonly string[][] MageDestinies = {
-            new[] { "秘法之主", "建造一座秘法之殿级的法师塔", "create", "100" },
-            new[] { "元素神王", "掌握一种元素的本源力量", "transcend", "100" },
-            new[] { "魔网编织者", "构建覆盖星域的魔网系统", "create", "100" },
-            new[] { "虚空法师", "探索虚空维度的魔法奥秘", "explore", "100" },
-            new[] { "奥术皇帝", "建立以魔法为根基的帝国", "rule", "100" },
+            new[] { "sm_intuition_411", "sm_intuition_412", "create", "100" },
+            new[] { "sm_intuition_413", "sm_intuition_414", "transcend", "100" },
+            new[] { "sm_intuition_415", "sm_intuition_416", "create", "100" },
+            new[] { "sm_intuition_417", "sm_intuition_418", "explore", "100" },
+            new[] { "sm_intuition_419", "sm_intuition_420", "rule", "100" },
         };
 
         private static readonly string[][] MindDestinies = {
-            new[] { "灵魂之主", "将灵魂修炼到不生不灭的层次", "transcend", "100" },
-            new[] { "念动乾坤", "以念力扭曲现实法则", "transcend", "100" },
-            new[] { "心灵霸主", "以心灵力量统治一个文明", "rule", "100" },
-            new[] { "维度沟通者", "与高维存在建立沟通", "explore", "100" },
-            new[] { "法则编织者", "掌握一条宇宙法则的权柄", "transcend", "100" },
+            new[] { "sm_intuition_421", "sm_intuition_422", "transcend", "100" },
+            new[] { "sm_intuition_423", "sm_intuition_424", "transcend", "100" },
+            new[] { "sm_intuition_425", "sm_intuition_426", "rule", "100" },
+            new[] { "sm_intuition_427", "sm_intuition_428", "explore", "100" },
+            new[] { "sm_intuition_429", "sm_intuition_430", "transcend", "100" },
         };
 
         /// <summary>Tick：S阶以上单位自动获得使命，推进使命进度。</summary>
@@ -129,10 +129,10 @@ namespace SuperMech.Code
             string[][] pool = MechDestinies;
             switch (cls)
             {
-                case "武道系": pool = MartialDestinies; break;
-                case "异能系": pool = PsiDestinies; break;
-                case "魔法系": pool = MageDestinies; break;
-                case "念力系": pool = MindDestinies; break;
+                case "sm_intuition_431": pool = MartialDestinies; break;
+                case "sm_intuition_432": pool = PsiDestinies; break;
+                case "sm_intuition_433": pool = MageDestinies; break;
+                case "sm_intuition_434": pool = MindDestinies; break;
                 default: pool = MechDestinies; break;
             }
 

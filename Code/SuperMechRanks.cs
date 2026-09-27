@@ -83,14 +83,14 @@ namespace SuperMech.Code
         {
             int exact = SuperMechAdvancement.GetExactRankIndex(a);
             if (exact >= 0 && exact < All.Count) return All[exact].name;
-            return "凡人";
+            return LocalizedTextManager.getText("sm_ranks_957");
         }
 
         /// <summary>按阶位索引获取阶位名称。</summary>
         public static string GetRankName(int index)
         {
             if (index >= 0 && index < All.Count) return All[index].name;
-            return "凡人";
+            return LocalizedTextManager.getText("sm_ranks_957");
         }
     }
 }

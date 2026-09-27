@@ -73,12 +73,12 @@ namespace SuperMech.Code
             string cls = SuperMechBranch.GetClass(a);
             switch (cls)
             {
-                case "机械系": return "弑神之炼+神工者";
-                case "武道系": return "武道尽头·以武证道";
-                case "异能系": return "基因源始·异能归一";
-                case "魔法系": return "秘法之巅·元素王座";
-                case "念力系": return "灵魂彼岸·念动乾坤";
-                default: return "超神试炼";
+                case "sm_transcendence_1226": return "sm_transcendence_1227";
+                case "sm_transcendence_1228": return "sm_transcendence_1229";
+                case "sm_transcendence_1230": return "sm_transcendence_1231";
+                case "sm_transcendence_1232": return "sm_transcendence_1233";
+                case "sm_transcendence_1234": return "sm_transcendence_1235";
+                default: return "sm_transcendence_1236";
             }
         }
 
@@ -436,16 +436,16 @@ namespace SuperMech.Code
         public static string GetStatusText(Actor a)
         {
             if (a == null) return "";
-            if (IsTranscended(a)) return "已突破超神级！";
+            if (IsTranscended(a)) return "sm_transcendence_1237";
             int rank = SuperMechAdvancement.GetExactRankIndex(a);
-            if (rank < 12) return $"需SS阶（当前{SuperMechRanks.GetRankName(a)}）";
-            if (!SuperMechDivinity.IsDivineAwakened(a)) return "需触发神性蜕变（气力Lv21+78000欧纳）";
+            if (rank < 12) return $"{LocalizedTextManager.getText("sm_transcendence_need_ss")}（{LocalizedTextManager.getText("sm_transcendence_current")}{SuperMechRanks.GetRankName(a)}）";
+            if (!SuperMechDivinity.IsDivineAwakened(a)) return "sm_transcendence_1238";
 
             // 进阶任务
             if (!IsAdvancementTaskDone(a))
             {
                 float prog = GetAdvancementProgress(a);
-                return $"进阶任务【{GetAdvancementTaskName(a)}】{prog:F0}%（完成后才能感知超神遗力）";
+                return $"{LocalizedTextManager.getText("sm_transcendence_adv_task")}【{GetAdvancementTaskName(a)}】{prog:F0}%（{LocalizedTextManager.getText("sm_transcendence_need_legacy")}）";
             }
 
             // 显示三个条件
@@ -455,16 +455,16 @@ namespace SuperMech.Code
             int legacy = GetLegacyPower(a);
             bool cond3 = legacy >= 1;
 
-            string text = $"条件1稳定{(cond1 ? "✓" : "✗")} 条件2助手{assistants}/4{(cond2 ? "✓" : "✗")} 条件3遗力{legacy}{(cond3 ? "✓" : "✗")}";
+            string text = $"{LocalizedTextManager.getText("sm_transcendence_cond1")}{(cond1 ? "✓" : "✗")} {LocalizedTextManager.getText("sm_transcendence_cond2")}{assistants}/4{(cond2 ? "✓" : "✗")} {LocalizedTextManager.getText("sm_transcendence_cond3")}{legacy}{(cond3 ? "✓" : "✗")}";
 
             if (cond1 && cond2 && cond3)
             {
                 float cd;
                 if (_cooldown.TryGetValue(a.id, out cd) && Time.time < cd)
-                    return text + $" 冷却{cd - Time.time:F0}s";
-                return text + " 可神化进阶！";
+                    return text + $" {LocalizedTextManager.getText("sm_transcendence_cooldown")}{cd - Time.time:F0}s";
+                return text + "sm_transcendence_1239";
             }
-            return text + "（未全满足即使成功也不升阶）";
+            return text + "sm_transcendence_1240";
         }
 
         /// <summary>清除数据。</summary>

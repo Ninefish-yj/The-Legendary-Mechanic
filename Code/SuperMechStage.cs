@@ -239,11 +239,11 @@ namespace SuperMech.Code
         /// <summary>获取其他四系的通用职业名（原著称呼）。</summary>
         private static string GetGenericClassName(Actor a)
         {
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "sm_stage_162";
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "sm_stage_163";
-            if (a.hasTrait(SuperMechTraits.ClassMage)) return "sm_stage_164";
-            if (a.hasTrait(SuperMechTraits.ClassMind)) return "sm_stage_165";
-            return "sm_stage_166";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return LocalizedTextManager.getText("sm_stage_162");
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return LocalizedTextManager.getText("sm_stage_163");
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return LocalizedTextManager.getText("sm_stage_164");
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return LocalizedTextManager.getText("sm_stage_165");
+            return LocalizedTextManager.getText("sm_stage_166");
         }
 
         /// <summary>设置单位职业阶段（转职时调用）。</summary>

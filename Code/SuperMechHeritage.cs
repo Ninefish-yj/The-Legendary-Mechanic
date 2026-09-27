@@ -161,7 +161,7 @@ namespace SuperMech.Code
             // 各系基础属性偏向（原著：五系属性成长方向不同）
             switch (cls)
             {
-                case "武道系":
+                case "sm_heritage_376":
                     // 武道：力量+耐力为主，速度为辅
                     stats["damage"] = (stats["damage"]) + rate * 1.5f;
                     stats["warfare"] = (stats["warfare"]) + rate * 1.2f;
@@ -190,7 +190,7 @@ namespace SuperMech.Code
                     }
                     break;
 
-                case "机械系":
+                case "sm_heritage_377":
                     // 机械：智力为主，耐力为辅
                     stats["intelligence"] = (stats["intelligence"]) + rate * 2f;
                     stats["health"] = (stats["health"]) + rate * 1f;
@@ -215,21 +215,21 @@ namespace SuperMech.Code
                     }
                     break;
 
-                case "异能系":
+                case "sm_heritage_378":
                     // 异能：智力+精神为主
                     stats["intelligence"] = (stats["intelligence"]) + rate * 1.8f;
                     stats["mana"] = (stats["mana"]) + rate * 1.5f;
                     stats["damage"] = (stats["damage"]) + rate * 0.8f;
                     break;
 
-                case "魔法系":
+                case "sm_heritage_379":
                     // 魔法：智力+精神+耐力
                     stats["intelligence"] = (stats["intelligence"]) + rate * 1.5f;
                     stats["mana"] = (stats["mana"]) + rate * 2f;
                     stats["health"] = (stats["health"]) + rate * 0.8f;
                     break;
 
-                case "念力系":
+                case "sm_heritage_380":
                     // 念力：智力+精神+速度
                     stats["intelligence"] = (stats["intelligence"]) + rate * 1.5f;
                     stats["mana"] = (stats["mana"]) + rate * 1.5f;

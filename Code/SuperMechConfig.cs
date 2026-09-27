@@ -72,9 +72,9 @@ namespace SuperMech.Code
         {
             try
             {
-                LogInfo("[超神机械师] 配置系统初始化");
+                LogInfo("sm_config_547");
                 RegisterLocalization();
-                LogInfo($"[超神机械师] 配置: 模组启用={ModEnabled}, 自动觉醒={AutoAwakening}, 气力倍率={QiGrowthRate}");
+                LogInfo($"sm_config_548");
             }
             catch (Exception e)
             {
@@ -88,16 +88,16 @@ namespace SuperMech.Code
             // 分类名（default_config.json中用英文key，这里注册中文显示）
             var categories = new (string key, string name)[]
             {
-                ("General", "总控"),
-                ("Awakening", "觉醒系统"),
-                ("Qi", "气力系统"),
-                ("Promotion", "晋升系统"),
-                ("AutoFavorite", "自动收藏"),
-                ("Sanctuary", "圣所系统"),
-                ("Mech", "机械系"),
-                ("Refinement", "提炼法与宝物"),
-                ("Relic", "宇宙宝物"),
-                ("Performance", "性能与调试"),
+                ("General", "sm_config_549"),
+                ("Awakening", "sm_config_550"),
+                ("Qi", "sm_config_551"),
+                ("Promotion", "sm_config_552"),
+                ("AutoFavorite", "sm_config_553"),
+                ("Sanctuary", "sm_config_554"),
+                ("Mech", "sm_config_555"),
+                ("Refinement", "sm_config_556"),
+                ("Relic", "sm_config_557"),
+                ("Performance", "sm_config_558"),
             };
             foreach (var (key, name) in categories)
                 LocalizedTextManager.add(key, name, pReplace: true);
@@ -105,37 +105,37 @@ namespace SuperMech.Code
             // 配置项名称 + 描述（key格式：Id 和 Id+" Description"）
             var items = new (string id, string name, string desc)[]
             {
-                ("mod_enabled", "模组总开关", "关闭后所有超神机械师系统停止运行（已赋予的特质保留）"),
-                ("auto_awakening", "自然觉醒", "单位是否会随时间自然觉醒为超能者（五系随机）"),
-                ("awakening_chance", "觉醒概率", "每个主循环周期内单位自然觉醒的概率（默认5%）"),
-                ("awakening_min_age", "最小觉醒年龄", "单位达到多少岁后才可能自然觉醒（默认16岁）"),
-                ("qi_growth_rate", "气力增长倍率", "气力值增长速度倍率，越高升级越快（默认1.0x）"),
-                ("qi_unlimited", "气力无上限", "原著设定：气力等级无固定上限，越往后越难提升"),
-                ("auto_promotion", "自动晋升", "单位欧纳达到阶位门槛后自动晋升"),
-                ("auto_promotion_max_rank", "自动晋升上限", "自动晋升最高到哪个阶位，X阶需通过超神突破系统晋升"),
-                ("promotion_speed", "晋升速度", "欧纳积累速度倍率，影响整体晋升节奏"),
-                ("ona_multiplier", "欧纳计算倍率", "欧纳（战斗力函数）最终结果倍率"),
-                ("show_rank_in_panel", "面板显示阶位", "在单位属性面板注入阶位/职业/气力/欧纳数据行"),
-                ("auto_favorite_enabled", "自动收藏总开关", "开启后达到指定阶位的单位自动加星标收藏"),
-                ("auto_favorite_f", "F阶自动收藏", "F阶单位自动收藏"),
-                ("auto_favorite_e", "E阶自动收藏", "E阶单位自动收藏"),
-                ("auto_favorite_d", "D阶自动收藏", "D阶（含D+）单位自动收藏"),
-                ("auto_favorite_c", "C阶自动收藏", "C阶（含C+）单位自动收藏"),
-                ("auto_favorite_b", "B阶自动收藏", "B阶（含B+）单位自动收藏"),
-                ("auto_favorite_a", "A阶自动收藏", "A阶（含A+）单位自动收藏"),
-                ("auto_favorite_s", "S阶(超A)自动收藏", "S阶（含S+）单位自动收藏"),
-                ("auto_favorite_ss", "SS阶自动收藏", "SS阶单位自动收藏"),
-                ("auto_favorite_x", "X阶(超神)自动收藏", "X阶单位自动收藏"),
-                ("sanctuary_enabled", "圣所跨存档", "圣所数据写入模组目录JSON，不随世界存档消失"),
-                ("sanctuary_autosave", "圣所自动保存", "圣所数据变更时自动写入JSON文件"),
-                ("mech_summon_enabled", "机械召唤", "机械师召唤无人机/机甲/机器人（爆兵流）"),
-                ("max_summoned_units", "最大召唤单位", "全场机械召唤物上限，防止爆兵流拖垮性能"),
-                ("refinement_bonus", "提炼法气力加成", "修炼提炼法的单位气力增长额外倍率"),
-                ("relic_drop_enabled", "宇宙宝物掉落", "高阶单位死亡时有概率掉落宇宙宝物"),
-                ("relic_drop_rate", "宝物掉落率", "高阶单位死亡掉落宇宙宝物的概率"),
-                ("tick_interval", "主循环间隔", "晋升/气力/能量计算的执行间隔（秒）"),
-                ("max_tracked_actors", "最大追踪单位", "同时参与气力/晋升计算的单位数上限"),
-                ("log_verbose", "详细日志", "在Player.log中输出所有配置变更和系统运行细节"),
+                ("mod_enabled", "sm_config_559", "sm_config_560"),
+                ("auto_awakening", "sm_config_561", "sm_config_562"),
+                ("awakening_chance", "sm_config_563", "sm_config_564"),
+                ("awakening_min_age", "sm_config_565", "sm_config_566"),
+                ("qi_growth_rate", "sm_config_567", "sm_config_568"),
+                ("qi_unlimited", "sm_config_569", "sm_config_570"),
+                ("auto_promotion", "sm_config_571", "sm_config_572"),
+                ("auto_promotion_max_rank", "sm_config_573", "sm_config_574"),
+                ("promotion_speed", "sm_config_575", "sm_config_576"),
+                ("ona_multiplier", "sm_config_577", "sm_config_578"),
+                ("show_rank_in_panel", "sm_config_579", "sm_config_580"),
+                ("auto_favorite_enabled", "sm_config_581", "sm_config_582"),
+                ("auto_favorite_f", "sm_config_583", "sm_config_584"),
+                ("auto_favorite_e", "sm_config_585", "sm_config_586"),
+                ("auto_favorite_d", "sm_config_587", "sm_config_588"),
+                ("auto_favorite_c", "sm_config_589", "sm_config_590"),
+                ("auto_favorite_b", "sm_config_591", "sm_config_592"),
+                ("auto_favorite_a", "sm_config_593", "sm_config_594"),
+                ("auto_favorite_s", "sm_config_595", "sm_config_596"),
+                ("auto_favorite_ss", "sm_config_597", "sm_config_598"),
+                ("auto_favorite_x", "sm_config_599", "sm_config_600"),
+                ("sanctuary_enabled", "sm_config_601", "sm_config_602"),
+                ("sanctuary_autosave", "sm_config_603", "sm_config_604"),
+                ("mech_summon_enabled", "sm_config_605", "sm_config_606"),
+                ("max_summoned_units", "sm_config_607", "sm_config_608"),
+                ("refinement_bonus", "sm_config_609", "sm_config_610"),
+                ("relic_drop_enabled", "sm_config_611", "sm_config_612"),
+                ("relic_drop_rate", "sm_config_613", "sm_config_614"),
+                ("tick_interval", "sm_config_615", "sm_config_616"),
+                ("max_tracked_actors", "sm_config_617", "sm_config_618"),
+                ("log_verbose", "sm_config_619", "sm_config_620"),
             };
             foreach (var (id, name, desc) in items)
             {
@@ -147,40 +147,40 @@ namespace SuperMech.Code
         // ========== Callback 方法（NML 反射调用，签名：静态方法，参数为配置值） ==========
 
         // --- 总开关 ---
-        public static void SetModEnabled(bool val) { ModEnabled = val; LogInfo($"[配置] 模组启用: {val}"); }
+        public static void SetModEnabled(bool val) { ModEnabled = val; LogInfo($"sm_config_621"); }
 
         // --- 觉醒系统 ---
-        public static void SetAutoAwakening(bool val) { AutoAwakening = val; LogInfo($"[配置] 自动觉醒: {val}"); }
-        public static void SetAwakeningChance(float val) { AwakeningChance = Mathf.Clamp01(val); LogInfo($"[配置] 觉醒概率: {val:P0}"); }
-        public static void SetAwakeningMinAge(int val) { AwakeningMinAge = Mathf.Max(0, val); LogInfo($"[配置] 最小觉醒年龄: {val}"); }
+        public static void SetAutoAwakening(bool val) { AutoAwakening = val; LogInfo($"sm_config_622"); }
+        public static void SetAwakeningChance(float val) { AwakeningChance = Mathf.Clamp01(val); LogInfo($"sm_config_623"); }
+        public static void SetAwakeningMinAge(int val) { AwakeningMinAge = Mathf.Max(0, val); LogInfo($"sm_config_624"); }
 
         // --- 气力系统 ---
-        public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); LogInfo($"[配置] 气力增长倍率: {val}x"); }
-        public static void SetQiUnlimited(bool val) { QiUnlimited = val; LogInfo($"[配置] 气力无上限: {val}"); }
+        public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); LogInfo($"sm_config_625"); }
+        public static void SetQiUnlimited(bool val) { QiUnlimited = val; LogInfo($"sm_config_626"); }
 
         // --- 晋升系统 ---
-        public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); LogInfo($"[配置] 晋升速度: {val}x"); }
-        public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); LogInfo($"[配置] 欧纳倍率: {val}x"); }
-        public static void SetAutoPromotion(bool val) { AutoPromotion = val; LogInfo($"[配置] 自动晋升: {val}"); }
+        public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); LogInfo($"sm_config_627"); }
+        public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); LogInfo($"sm_config_628"); }
+        public static void SetAutoPromotion(bool val) { AutoPromotion = val; LogInfo($"sm_config_629"); }
         public static void SetAutoPromotionMaxRank(int val)
         {
             AutoPromotionMaxRank = Mathf.Clamp(val, 0, 12);
-            string[] rankNames = { "F", "E", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S", "S+", "SS", "X(无上限)" };
-            LogInfo($"[配置] 自动晋升上限: {rankNames[AutoPromotionMaxRank]}");
+            string[] rankNames = { "F", "E", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S", "S+", "SS", "sm_config_630" };
+            LogInfo($"sm_config_631");
         }
-        public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; LogInfo($"[配置] 面板显示阶位: {val}"); }
+        public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; LogInfo($"sm_config_632"); }
 
         // --- 自动收藏（每个主阶位独立开关）---
-        public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; LogInfo($"[配置] 自动收藏总开关: {val}"); }
-        public static void SetAutoFavoriteF(bool val) { AutoFavoriteF = val; LogInfo($"[配置] F阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteE(bool val) { AutoFavoriteE = val; LogInfo($"[配置] E阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteD(bool val) { AutoFavoriteD = val; LogInfo($"[配置] D阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteC(bool val) { AutoFavoriteC = val; LogInfo($"[配置] C阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteB(bool val) { AutoFavoriteB = val; LogInfo($"[配置] B阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteA(bool val) { AutoFavoriteA = val; LogInfo($"[配置] A阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; LogInfo($"[配置] S阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; LogInfo($"[配置] SS阶自动收藏: {val}"); }
-        public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; LogInfo($"[配置] X阶自动收藏: {val}"); }
+        public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; LogInfo($"sm_config_633"); }
+        public static void SetAutoFavoriteF(bool val) { AutoFavoriteF = val; LogInfo($"sm_config_634"); }
+        public static void SetAutoFavoriteE(bool val) { AutoFavoriteE = val; LogInfo($"sm_config_635"); }
+        public static void SetAutoFavoriteD(bool val) { AutoFavoriteD = val; LogInfo($"sm_config_636"); }
+        public static void SetAutoFavoriteC(bool val) { AutoFavoriteC = val; LogInfo($"sm_config_637"); }
+        public static void SetAutoFavoriteB(bool val) { AutoFavoriteB = val; LogInfo($"sm_config_638"); }
+        public static void SetAutoFavoriteA(bool val) { AutoFavoriteA = val; LogInfo($"sm_config_639"); }
+        public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; LogInfo($"sm_config_640"); }
+        public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; LogInfo($"sm_config_641"); }
+        public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; LogInfo($"sm_config_642"); }
 
         /// <summary>检查指定阶位索引是否应自动收藏（+位跟随主阶位）。</summary>
         public static bool ShouldFavoriteRank(int rankIdx)
@@ -198,25 +198,25 @@ namespace SuperMech.Code
         }
 
         // --- 圣所系统 ---
-        public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"[配置] 圣所跨存档: {val}"); }
-        public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"[配置] 圣所自动保存: {val}"); }
+        public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"sm_config_643"); }
+        public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"sm_config_644"); }
         public static void SetSanctuaryCount(int val) { /* 兼容旧配置：圣所数量已固定为6个，此选项已废弃 */ }
 
         // --- 机械系 ---
-        public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; LogInfo($"[配置] 机械召唤: {val}"); }
-        public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); LogInfo($"[配置] 最大召唤单位: {val}"); }
+        public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; LogInfo($"sm_config_645"); }
+        public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); LogInfo($"sm_config_646"); }
 
         // --- 性能优化 ---
-        public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); LogInfo($"[配置] 主循环间隔: {val}s"); }
-        public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); LogInfo($"[配置] 最大追踪单位: {val}"); }
-        public static void SetLogVerbose(bool val) { LogVerbose = val; LogInfo($"[配置] 详细日志: {val}"); }
+        public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); LogInfo($"sm_config_647"); }
+        public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); LogInfo($"sm_config_648"); }
+        public static void SetLogVerbose(bool val) { LogVerbose = val; LogInfo($"sm_config_649"); }
 
         // --- 宇宙宝物 ---
-        public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; LogInfo($"[配置] 宝物掉落: {val}"); }
-        public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); LogInfo($"[配置] 宝物掉落率: {val:P2}"); }
+        public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; LogInfo($"sm_config_650"); }
+        public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); LogInfo($"sm_config_651"); }
 
         // --- 提炼法 ---
-        public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); LogInfo($"[配置] 提炼法加成: {val}x"); }
+        public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); LogInfo($"sm_config_652"); }
 
         private static void LogInfo(string msg)
         {

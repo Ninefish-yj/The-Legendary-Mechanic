@@ -45,12 +45,12 @@ namespace SuperMech.Code
         {
             switch (type)
             {
-                case TalentType.Mechanical: return "械感";
-                case TalentType.Martial: return "体魄";
-                case TalentType.Psi: return "异能潜力";
-                case TalentType.Mage: return "魔感";
-                case TalentType.Mind: return "精神";
-                default: return "未知";
+                case TalentType.Mechanical: return LocalizedTextManager.getText("sm_talent_1005");
+                case TalentType.Martial: return LocalizedTextManager.getText("sm_talent_1006");
+                case TalentType.Psi: return LocalizedTextManager.getText("sm_talent_1007");
+                case TalentType.Mage: return LocalizedTextManager.getText("sm_talent_1008");
+                case TalentType.Mind: return LocalizedTextManager.getText("sm_talent_1009");
+                default: return LocalizedTextManager.getText("sm_talent_1010");
             }
         }
 
@@ -59,12 +59,12 @@ namespace SuperMech.Code
         {
             switch (type)
             {
-                case TalentType.Mechanical: return "机械系";
-                case TalentType.Martial: return "武道系";
-                case TalentType.Psi: return "异能系";
-                case TalentType.Mage: return "魔法系";
-                case TalentType.Mind: return "念力系";
-                default: return "未知";
+                case TalentType.Mechanical: return LocalizedTextManager.getText("sm_talent_1011");
+                case TalentType.Martial: return LocalizedTextManager.getText("sm_talent_1012");
+                case TalentType.Psi: return LocalizedTextManager.getText("sm_talent_1013");
+                case TalentType.Mage: return LocalizedTextManager.getText("sm_talent_1014");
+                case TalentType.Mind: return LocalizedTextManager.getText("sm_talent_1015");
+                default: return LocalizedTextManager.getText("sm_talent_1010");
             }
         }
 

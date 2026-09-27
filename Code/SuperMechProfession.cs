@@ -31,12 +31,12 @@ namespace SuperMech.Code
         {
             switch (type)
             {
-                case ProfessionType.Mechanical: return "机械系";
-                case ProfessionType.Martial: return "武道系";
-                case ProfessionType.Psi: return "异能系";
-                case ProfessionType.Mage: return "魔法系";
-                case ProfessionType.Mind: return "念力系";
-                default: return "野生超能者";
+                case ProfessionType.Mechanical: return LocalizedTextManager.getText("sm_profession_931");
+                case ProfessionType.Martial: return LocalizedTextManager.getText("sm_profession_932");
+                case ProfessionType.Psi: return LocalizedTextManager.getText("sm_profession_933");
+                case ProfessionType.Mage: return LocalizedTextManager.getText("sm_profession_934");
+                case ProfessionType.Mind: return LocalizedTextManager.getText("sm_profession_935");
+                default: return LocalizedTextManager.getText("sm_profession_936");
             }
         }
 

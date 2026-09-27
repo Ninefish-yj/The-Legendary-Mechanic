@@ -53,35 +53,35 @@ namespace SuperMech.Code
             var stats = new (string id, string name, string desc, bool normalize, float min, float max, bool percent)[]
             {
                 // 气力（原著核心能量，消耗条）
-                (StatQi, "气力", "超能者基础能量，决定能级与位阶（原著ch3/ch50）", true, 0f, 3000000f, false),
-                (StatQiMax, "气力上限", "气力最大值，随修炼/转职提升（原著ch3）", true, 0f, 3000000f, false),
+                (StatQi, "sm_customstats_695", "sm_customstats_696", true, 0f, 3000000f, false),
+                (StatQiMax, "sm_customstats_697", "sm_customstats_698", true, 0f, 3000000f, false),
                 // 魔力（魔法系能量，消耗条）
-                (StatMana, "魔力", "魔法系能量池，施放法术消耗（原著ch50）", true, 0f, 100000f, false),
-                (StatManaMax, "魔力上限", "魔力最大值（原著ch50）", true, 0f, 100000f, false),
+                (StatMana, "sm_customstats_699", "sm_customstats_700", true, 0f, 100000f, false),
+                (StatManaMax, "sm_customstats_701", "sm_customstats_702", true, 0f, 100000f, false),
                 // 精神力（念力系能量，消耗条）
-                (StatMindPower, "精神力", "念力系能量，驱动念动力（原著ch50）", true, 0f, 100000f, false),
-                (StatMindPowerMax, "精神力上限", "精神力最大值（原著ch50）", true, 0f, 100000f, false),
+                (StatMindPower, "sm_customstats_703", "sm_customstats_704", true, 0f, 100000f, false),
+                (StatMindPowerMax, "sm_customstats_705", "sm_customstats_706", true, 0f, 100000f, false),
                 // 械感（机械亲和度，百分比，原著ch626 Lv21+4282%）
-                (StatMechAffinity, "械感", "机械亲和度，机械师操控机械的核心天赋（原著ch50/ch626，气力属性【磁】增加机械亲和度）", true, 0f, 50000f, true),
+                (StatMechAffinity, "sm_customstats_707", "sm_customstats_708", true, 0f, 50000f, true),
                 // 魔感（魔法亲和度，百分比，原著领袖之证"职业特色气力属性：魔法亲和"）
-                (StatMageAffinity, "魔感", "魔法亲和度，魔法师操控元素的核心天赋（原著领袖之证，职业特色气力属性：魔法亲和）", true, 0f, 50000f, true),
+                (StatMageAffinity, "sm_customstats_709", "sm_customstats_710", true, 0f, 50000f, true),
                 // 原著7项基础属性中的3项（原版没有的）
-                (StatMystery, "神秘", "原著7项基础属性之一，影响异能/魔法强度（ch3）", true, 0f, 50000f, false),
-                (StatCharm, "魅力", "原著7项基础属性之一，影响社交/声望（ch3）", true, 0f, 50000f, false),
-                (StatLuck, "幸运", "原著7项基础属性之一，影响暴击/掉落/突破概率（ch3）", true, 0f, 50000f, false),
+                (StatMystery, "sm_customstats_711", "sm_customstats_712", true, 0f, 50000f, false),
+                (StatCharm, "sm_customstats_713", "sm_customstats_714", true, 0f, 50000f, false),
+                (StatLuck, "sm_customstats_715", "sm_customstats_716", true, 0f, 50000f, false),
                 // 职业等级（降临者面板属性）
-                (StatProfessionLevel, "职业等级", "降临者职业总等级（原著ch48，20级进阶转职）", false, 0f, 600f, false),
+                (StatProfessionLevel, "sm_customstats_717", "sm_customstats_718", false, 0f, 600f, false),
                 // 潜能点（解锁知识消耗，原著ch48：潜能点用于学习技能/知识）
-                (StatPotentialPoints, "潜能点", "用于解锁知识节点的点数（原著ch48：升级获得潜能点，学习技能消耗）", false, 0f, 10000f, false),
+                (StatPotentialPoints, "sm_customstats_719", "sm_customstats_720", false, 0f, 10000f, false),
                 // 神性蜕变总层数（职业+种族，原著ch1039：气力Lv21+78000欧纳触发神性蜕变）
-                (StatDivinityLayers, "神性蜕变", "神性蜕变总层数（职业蜕变+种族蜕变，原著ch1039：突破超神的前置条件）", false, 0f, 20f, false),
+                (StatDivinityLayers, "sm_customstats_721", "sm_customstats_722", false, 0f, 20f, false),
                 // 6个圣所权限（原著ch1266：圣所碎片=权限，每个圣所独立权限，影响进入能带出的知识量）
-                (StatSanctuary1, "第一圣所权限", "第一圣所（机械系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
-                (StatSanctuary2, "第二圣所权限", "第二圣所（武道系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
-                (StatSanctuary3, "第三圣所权限", "第三圣所（异能系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
-                (StatSanctuary4, "第四圣所权限", "第四圣所（魔法系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
-                (StatSanctuary5, "第五圣所权限", "第五圣所（念力系）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
-                (StatSanctuary6, "第六圣所权限", "第六圣所（信息态技术）碎片代表的权限等级（原著ch1266）", false, 0f, 100f, false),
+                (StatSanctuary1, "sm_customstats_723", "sm_customstats_724", false, 0f, 100f, false),
+                (StatSanctuary2, "sm_customstats_725", "sm_customstats_726", false, 0f, 100f, false),
+                (StatSanctuary3, "sm_customstats_727", "sm_customstats_728", false, 0f, 100f, false),
+                (StatSanctuary4, "sm_customstats_729", "sm_customstats_730", false, 0f, 100f, false),
+                (StatSanctuary5, "sm_customstats_731", "sm_customstats_732", false, 0f, 100f, false),
+                (StatSanctuary6, "sm_customstats_733", "sm_customstats_734", false, 0f, 100f, false),
             };
 
             int registered = 0;

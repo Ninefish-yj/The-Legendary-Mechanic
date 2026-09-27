@@ -362,14 +362,14 @@ namespace SuperMech.Code
             int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
             string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
             string qiLabel = LocalizedTextManager.getText("sm_qi_qi");
-            if (cls == "机械系" && SuperMechStage.GetStage(actor) >= 4) qiLabel = LocalizedTextManager.getText("sm_qi_mech");
+            if (cls == "sm_knowledgetab_823" && SuperMechStage.GetStage(actor) >= 4) qiLabel = LocalizedTextManager.getText("sm_qi_mech");
             AddInfoRow(detail1, qiLabel, $"{qi:F0}/{qiMax:F0}【{qiLvText}】");
             // 分系核心能量
-            if (cls == "异能系")
+            if (cls == "sm_knowledgetab_824")
                 AddInfoRow(detail1, LocalizedTextManager.getText("sm_core_gene"), $"{SuperMechCorePower.GetGeneStageName(actor)}（{SuperMechCorePower.GetGeneProgress(actor):F0}%）");
-            else if (cls == "魔法系")
+            else if (cls == "sm_knowledgetab_825")
                 AddInfoRow(detail1, LocalizedTextManager.getText("sm_core_mana"), $"{SuperMechCorePower.GetManaStageName(actor)}（{SuperMechCorePower.GetManaProgress(actor):F0}%）");
-            else if (cls == "念力系")
+            else if (cls == "sm_knowledgetab_826")
                 AddInfoRow(detail1, LocalizedTextManager.getText("sm_core_mind"), $"{SuperMechCorePower.GetMindStageName(actor)}（{SuperMechCorePower.GetMindProgress(actor):F0}%）");
             // 气力属性
             string qiAttr = SuperMechQiAttribute.GetAttribute(actor);
@@ -402,7 +402,7 @@ namespace SuperMech.Code
             {
                 string rating = SuperMechPotentialRating.GetRating(actor);
                 if (!string.IsNullOrEmpty(rating))
-                    AddInfoRow(detail2, LocalizedTextManager.getText("sm_ui_potential_rating"), $"{rating}级（气力增长×{SuperMechPotentialRating.GetQiGrowthMult(actor):F1}）");
+                    AddInfoRow(detail2, LocalizedTextManager.getText("sm_ui_potential_rating"), $"sm_knowledgetab_827");
             }
 
             // 框3：职业信息
@@ -413,18 +413,18 @@ namespace SuperMech.Code
                 AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_level"), SuperMechAwakened.GetLevelText(actor));
                 if (SuperMechAwakened.CanAdvanceStage(actor))
                 {
-                    AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_promotion"), "可转职！");
+                    AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_promotion"), "sm_knowledgetab_828");
                     string reqText = SuperMechAdvancementTask.GetReqText(actor);
                     if (reqText != null) AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_promotion_condition"), reqText);
                 }
             }
             string stage = SuperMechStage.GetStageName(actor);
-            if (stage != "—" && stage != "未入门") AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_stage"), stage);
+            if (stage != "—" && stage != "sm_knowledgetab_829") AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_stage"), stage);
             string branch = SuperMechBranch.GetBranchName(actor);
-            if (branch != "未选择") AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_branch"), branch);
+            if (branch != "sm_knowledgetab_830") AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_branch"), branch);
             string treeName = SuperMechUnitWindow.GetKnowledgeTreeName(cls);
             int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
-            AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_tree"), $"{treeName}（{unlocked}节点）");
+            AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_tree"), $"sm_knowledgetab_831");
             var skills = SuperMechSkills.GetLearned(actor);
             if (skills.Count > 0)
                 AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_skill"), string.Join("、", skills.ConvertAll(s => s.name)));
@@ -443,8 +443,8 @@ namespace SuperMech.Code
             if (legend > 0)
             {
                 string legendText = isAwakened ?
-                    $"{SuperMechLegend.GetTierName(actor)}（{legend}点，突破+{SuperMechLegend.GetBreakthroughBonus(actor):P0}）" :
-                    $"{SuperMechLegend.GetTierName(actor)}（隐约感到突破契机）";
+                    $"sm_knowledgetab_832" :
+                    $"sm_knowledgetab_833";
                 AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_legend"), legendText);
             }
             // 信息态
@@ -453,23 +453,23 @@ namespace SuperMech.Code
             // 冥冥感应
             var destiny = SuperMechIntuition.GetDestiny(actor);
             if (destiny != null)
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_destiny"), destiny.completed ? $"【{destiny.name}】已证道！" : $"【{destiny.name}】{destiny.progress:F0}/{destiny.target:F0}");
+                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_destiny"), destiny.completed ? $"sm_knowledgetab_834" : $"【{destiny.name}】{destiny.progress:F0}/{destiny.target:F0}");
             else if (SuperMechAdvancement.GetExactRankIndex(actor) >= 10)
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_destiny"), "正在感应中...");
+                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_destiny"), "sm_knowledgetab_835");
             // 超神突破
             if (SuperMechAdvancement.GetExactRankIndex(actor) >= 12 || SuperMechTranscendence.IsTranscended(actor))
             {
                 AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_transcendence"), SuperMechTranscendence.GetStatusText(actor));
                 int catalyst = SuperMechTranscendence.GetCatalystLayers(actor);
-                if (catalyst > 0) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_catalyst"), $"{catalyst}层（成功率+{catalyst * 10}%）");
+                if (catalyst > 0) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_catalyst"), $"sm_knowledgetab_836");
             }
             // 装备
             string relic = SuperMechRelic.GetCurrentEquipName(actor);
-            if (relic != "无")
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_equipment"), $"{relic}（耐久{SuperMechEquipBreak.GetDurability(actor):0}%）");
+            if (relic != "sm_knowledgetab_837")
+                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_equipment"), $"sm_knowledgetab_838");
             // 械力融合
             if (SuperMechMechFusion.IsFused(actor))
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_mech_fusion"), $"Lv{SuperMechMechFusion.GetFusionLevel(actor)}（属性×{SuperMechMechFusion.GetFusionMultiplier(actor):0.0}）");
+                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_mech_fusion"), $"sm_knowledgetab_839");
             // 宇宙宝物
             string cosmic = SuperMechCosmicRelic.GetEquippedName(actor);
             if (!string.IsNullOrEmpty(cosmic)) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_relic"), cosmic);
@@ -477,16 +477,16 @@ namespace SuperMech.Code
             if (actor.hasTrait(SuperMechTraits.ClassMage))
             {
                 string tower = SuperMechMageTower.GetTowerName(actor);
-                if (tower != "无") AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_mage_tower"), tower + "（完全状态）");
+                if (tower != "sm_knowledgetab_837") AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_mage_tower"), tower + "sm_knowledgetab_840");
             }
             // 次级维度
             string dim = SuperMechDimension.GetActiveDimension(actor);
-            if (!string.IsNullOrEmpty(dim)) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_dimension"), dim + " 强化中");
+            if (!string.IsNullOrEmpty(dim)) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_dimension"), dim + "sm_knowledgetab_841");
             // 气势震慑状态
             if (SuperMechAura.IsStunned(actor))
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "【震慑眩晕】被高阶气势压制，无法行动");
+                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "sm_knowledgetab_842");
             else if (SuperMechAura.IsSuppressed(actor))
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "【被气势震慑】速度/攻击降低");
+                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "sm_knowledgetab_843");
 
             // 三层知识面板（信息栏+图谱层+知识库层）
             GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
@@ -509,7 +509,7 @@ namespace SuperMech.Code
                 foreach (var d in crossDefs) if (SuperMechKnowledge.IsUnlocked(actor, d.id)) crossUnlocked++;
                 if (crossUnlocked > 0) // 只有解锁了跨系知识才显示
                 {
-                    AddSectionHeader(_container.transform, $"跨系兼修·{allClassNames[i]}（{crossUnlocked}/{crossDefs.Count}，消耗×3）", new Color(0.5f, 0.5f, 0.7f));
+                    AddSectionHeader(_container.transform, $"sm_knowledgetab_844", new Color(0.5f, 0.5f, 0.7f));
                     GameObject crossRow = null;
                     int crossIdx = 0;
                     foreach (var def in crossDefs)
@@ -528,7 +528,7 @@ namespace SuperMech.Code
             var synergies = SuperMechKnowledgeSynergy.GetActiveSynergies(actor);
             if (synergies.Count > 0)
             {
-                AddSectionHeader(_container.transform, $"知识协同（{synergies.Count}个已激活）");
+                AddSectionHeader(_container.transform, $"sm_knowledgetab_845");
                 foreach (var syn in synergies)
                 {
                     string bonusText = "";
@@ -546,28 +546,28 @@ namespace SuperMech.Code
             var learnedRecipes = SuperMechKnowledgeFusion.GetLearnedRecipes(actor);
             if (SuperMechAwakened.IsAwakened(actor))
             {
-                AddSectionHeader(_container.transform, $"知识融合（已学会{learnedRecipes.Count}个）");
+                AddSectionHeader(_container.transform, $"sm_knowledgetab_846");
 
                 // 已学会的融合知识（永久属性加成）
-                bool isMech = SuperMechBranch.GetClass(actor).Contains("机械");
+                bool isMech = SuperMechBranch.GetClass(actor).Contains("sm_knowledgetab_847");
                 foreach (var recipe in learnedRecipes)
                 {
-                    string bonusText = $"伤害×{recipe.dmgMul} 生命×{recipe.hpMul} 攻速×{recipe.speedMul}";
-                    string craftHint = (isMech && recipe.productType == "图纸") ? " [可制造]" : "";
+                    string bonusText = $"sm_knowledgetab_848";
+                    string craftHint = (isMech && recipe.productType == "sm_knowledgetab_849") ? "sm_knowledgetab_850" : "";
                     AddInfoRow(_container.transform, $"✓ {recipe.equipName}{craftHint}", $"[{recipe.productType}] {bonusText}");
                 }
 
                 // 可融合的配方
                 if (fusionRecipes.Count > 0)
                 {
-                    AddInfoRow(_container.transform, "—— 可融合 ——", "");
+                    AddInfoRow(_container.transform, "sm_knowledgetab_851", "");
                     foreach (var recipe in fusionRecipes)
                     {
                         if (learnedRecipes.Exists(r => r.id == recipe.id)) continue; // 已学会的不重复显示
-                        string status = $"经验{recipe.xpCost} 成功率{(recipe.successRate * 100):0}%";
+                        string status = $"sm_knowledgetab_852";
                         AddInfoRow(_container.transform, recipe.equipName, $"[{recipe.productType}] {status}");
                     }
-                    AddInfoRow(_container.transform, "提示", "用神权「知识融合」随机融合一个配方");
+                    AddInfoRow(_container.transform, "sm_knowledgetab_853", "sm_knowledgetab_854");
                 }
             }
 
@@ -577,8 +577,8 @@ namespace SuperMech.Code
             // 械力融合（所有超能者可用，融合装备提升属性）
             bool isFused = SuperMechMechFusion.IsFused(actor);
             string fuseBtnText = isFused ?
-                $"解除械力融合（Lv{SuperMechMechFusion.GetFusionLevel(actor)} 属性×{SuperMechMechFusion.GetFusionMultiplier(actor):0.0}）" :
-                "械力融合（融合装备提升属性）";
+                $"sm_knowledgetab_855" :
+                "sm_knowledgetab_856";
             AddActionButton(_container.transform, fuseBtnText, () =>
             {
                 if (isFused) SuperMechMechFusion.Unfuse(actor);
@@ -590,7 +590,7 @@ namespace SuperMech.Code
             if (SuperMechAwakened.IsAwakened(actor))
             {
                 bool fusionCD = SuperMechKnowledgeFusion.IsOnCooldown(actor);
-                string fusionBtnText = fusionCD ? "知识融合（冷却中...）" : $"知识融合（可融合{fusionRecipes.Count}个配方）";
+                string fusionBtnText = fusionCD ? "sm_knowledgetab_857" : $"sm_knowledgetab_858";
                 AddActionButton(_container.transform, fusionBtnText, () =>
                 {
                     if (fusionCD) return;
@@ -609,14 +609,14 @@ namespace SuperMech.Code
             bool craftCD = SuperMechKnowledgeFusion.IsCraftOnCooldown(actor);
             if (learned.Count > 0 && SuperMechAwakened.IsAwakened(actor))
             {
-                string craftBtnText = craftCD ? "制造装备（冷却中...）" : $"制造装备（{learned.Count}张图纸）";
+                string craftBtnText = craftCD ? "sm_knowledgetab_859" : $"sm_knowledgetab_860";
                 AddActionButton(_container.transform, craftBtnText, () =>
                 {
                     if (craftCD) return;
                     // 制造第一个可制造的图纸
                     foreach (var recipe in learned)
                     {
-                        if (recipe.productType == "图纸" || recipe.productType == "秘法" || recipe.productType == "配方")
+                        if (recipe.productType == "sm_knowledgetab_849" || recipe.productType == "sm_knowledgetab_861" || recipe.productType == "sm_knowledgetab_862")
                         {
                             if (SuperMechKnowledgeFusion.CraftEquip(actor, recipe.id)) break;
                         }
@@ -631,8 +631,8 @@ namespace SuperMech.Code
                 var craftRecipes = SuperMechCrafting.GetAvailableRecipes(actor);
                 float craftCD2 = SuperMechCrafting.GetCraftCooldown(actor);
                 string craftBtnText = craftCD2 > 0 ?
-                    $"机械造兵（冷却{craftCD2:F1}s，已造{SuperMechCrafting.GetMinionCount(actor)}个）" :
-                    $"机械造兵（{craftRecipes.Count}种可造，已造{SuperMechCrafting.GetMinionCount(actor)}个）";
+                    $"sm_knowledgetab_863" :
+                    $"sm_knowledgetab_864";
                 AddActionButton(_container.transform, craftBtnText, () =>
                 {
                     if (craftCD2 > 0) return;
@@ -661,8 +661,8 @@ namespace SuperMech.Code
             if (subLearned < subTotal)
             {
                 string subBtnText = pot >= 2 ?
-                    $"学习副职业（{subLearned}/{subTotal}，消耗2潜能点）" :
-                    $"学习副职业（{subLearned}/{subTotal}，潜能点不足）";
+                    $"sm_knowledgetab_865" :
+                    $"sm_knowledgetab_866";
                 AddActionButton(_container.transform, subBtnText, () =>
                 {
                     if (SuperMechPotential.GetPotential(actor) < 2) return;
@@ -684,7 +684,7 @@ namespace SuperMech.Code
             }
             if (subLearned > 0)
             {
-                AddInfoRow(_container.transform, "已学副职业", subList.Trim());
+                AddInfoRow(_container.transform, "sm_knowledgetab_867", subList.Trim());
             }
         }
 
@@ -950,18 +950,18 @@ namespace SuperMech.Code
             bool crossClass = SuperMechPotential.IsCrossClass(actor, def.id);
             bool hasSynergy = SuperMechPotential.HasPowerSynergy(actor, SuperMechPotential.GetKnowledgePrefix(def.id));
             float intel = actor.stats["intelligence"];
-            string costText = $"{actualCost}潜能点";
+            string costText = $"sm_knowledgetab_868";
             if (crossClass)
             {
-                string intelText = intel < 10f ? "（智力不足，×5）" : intel >= 20f ? "（高智力，×2）" : "（跨系×3）";
-                string synergyText = hasSynergy ? " 异能搭配-30%" : "";
-                costText = $"{actualCost}潜能点 {intelText}{synergyText}";
+                string intelText = intel < 10f ? "sm_knowledgetab_869" : intel >= 20f ? "sm_knowledgetab_870" : "sm_knowledgetab_871";
+                string synergyText = hasSynergy ? "sm_knowledgetab_872" : "";
+                costText = $"sm_knowledgetab_873";
             }
             else if (hasSynergy)
             {
-                costText = $"{actualCost}潜能点（异能搭配-30%）";
+                costText = $"sm_knowledgetab_874";
             }
-            tip.textOnClick = $"{LocalizedTextManager.getText(def.name)}\n{def.desc}\n分支: {branch} | 消耗: {costText}";
+            tip.textOnClick = $"sm_knowledgetab_875";
         }
 
         /// <summary>按阶位获取品质颜色（基础=灰，进阶=绿，高端=蓝，尖端=紫，终极=金）</summary>

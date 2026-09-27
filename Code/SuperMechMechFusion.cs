@@ -27,7 +27,7 @@ namespace SuperMech.Code
         public static bool TryFuse(Actor a)
         {
             if (a == null) return false;
-            if (!SuperMechBranch.GetClass(a).Contains("机械")) return false;
+            if (!SuperMechBranch.GetClass(a).Contains("sm_mechfusion_884")) return false;
 
             int stage = SuperMechStage.GetStage(a);
             if (stage < MinStageForFusion) return false; // 需磁环阶段以上

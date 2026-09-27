@@ -50,29 +50,29 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 机械系
-            AllBranches.Add(new BranchDef { traitId = BranchGunner, name = "枪炮师", classTrait = SuperMechTraits.ClassMech, desc = "远程重型枪械，伤害+30%攻速+20%射程+2", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.3f; s["attack_speed"]=(s["attack_speed"])+0.2f; s["range"]=(s["range"])+2f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMech, name = "机械师", classTrait = SuperMechTraits.ClassMech, desc = "制造路线，制造+50%智力+10", applyBonus = s => { s["experience"]=((s["experience"] == 0f ? 1f : s["experience"]))*1.5f; s["intelligence"]=(s["intelligence"])+10f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMartial, name = "械武者", classTrait = SuperMechTraits.ClassMech, desc = "近战机械武器+纳米殖装，生命+40%护甲+5伤害+10", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.4f; s["armor"]=(s["armor"])+5f; s["damage"]=(s["damage"])+10f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchGunner, name = "sm_branch_511", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_512", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.3f; s["attack_speed"]=(s["attack_speed"])+0.2f; s["range"]=(s["range"])+2f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMech, name = "sm_branch_513", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_514", applyBonus = s => { s["experience"]=((s["experience"] == 0f ? 1f : s["experience"]))*1.5f; s["intelligence"]=(s["intelligence"])+10f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMartial, name = "sm_branch_515", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_516", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.4f; s["armor"]=(s["armor"])+5f; s["damage"]=(s["damage"])+10f; } });
 
             // 武道系（原著ch48：分为敏捷、力量、防御等各种路线）
-            AllBranches.Add(new BranchDef { traitId = BranchMartialBody, name = "敏捷", classTrait = SuperMechTraits.ClassMartial, desc = "敏捷路线（原著ch48），攻速+25%暴击+10%伤害+15%", applyBonus = s => { s["attack_speed"]=(s["attack_speed"])+0.25f; s["critical_chance"]=(s["critical_chance"])+0.1f; s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.15f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMartialTactic, name = "力量", classTrait = SuperMechTraits.ClassMartial, desc = "力量路线（原著ch48），伤害+40%射程+3", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.4f; s["range"]=(s["range"])+3f; s["damage"]=(s["damage"])+8f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMartialPower, name = "防御", classTrait = SuperMechTraits.ClassMartial, desc = "防御路线（原著ch48），生命+50%耐力+10护甲+3", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.5f; s["stamina"]=(s["stamina"])+20f; s["armor"]=(s["armor"])+3f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMartialBody, name = "sm_branch_517", classTrait = SuperMechTraits.ClassMartial, desc = "sm_branch_518", applyBonus = s => { s["attack_speed"]=(s["attack_speed"])+0.25f; s["critical_chance"]=(s["critical_chance"])+0.1f; s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.15f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMartialTactic, name = "sm_branch_519", classTrait = SuperMechTraits.ClassMartial, desc = "sm_branch_520", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.4f; s["range"]=(s["range"])+3f; s["damage"]=(s["damage"])+8f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMartialPower, name = "sm_branch_521", classTrait = SuperMechTraits.ClassMartial, desc = "sm_branch_522", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.5f; s["stamina"]=(s["stamina"])+20f; s["armor"]=(s["armor"])+3f; } });
 
             // 异能系
-            AllBranches.Add(new BranchDef { traitId = BranchPsiAttack, name = "威力", classTrait = SuperMechTraits.ClassPsi, desc = "威力强化（原著ch48基因树三维度），伤害+50%暴击+5%", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.5f; s["critical_chance"]=(s["critical_chance"])+0.05f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchPsiCycle, name = "持久", classTrait = SuperMechTraits.ClassPsi, desc = "持久力强化（原著ch48基因树三维度），生命+30%耐力+10", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.3f; s["stamina"]=(s["stamina"])+25f; s["multiplier_stamina"]=((s["multiplier_stamina"] == 0f ? 1f : s["multiplier_stamina"]))*1.2f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchPsiFunc, name = "操控", classTrait = SuperMechTraits.ClassPsi, desc = "操控力强化（原著ch48基因树三维度），智力+15攻速+15%范围+2", applyBonus = s => { s["intelligence"]=(s["intelligence"])+15f; s["attack_speed"]=(s["attack_speed"])+0.15f; s["range"]=(s["range"])+2f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchPsiAttack, name = "sm_branch_523", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_524", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.5f; s["critical_chance"]=(s["critical_chance"])+0.05f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchPsiCycle, name = "sm_branch_525", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_526", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.3f; s["stamina"]=(s["stamina"])+25f; s["multiplier_stamina"]=((s["multiplier_stamina"] == 0f ? 1f : s["multiplier_stamina"]))*1.2f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchPsiFunc, name = "sm_branch_527", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_528", applyBonus = s => { s["intelligence"]=(s["intelligence"])+15f; s["attack_speed"]=(s["attack_speed"])+0.15f; s["range"]=(s["range"])+2f; } });
 
             // 魔法系
             // 魔法系：专精法师（专注一种魔法+魔法回路，高威力）/魔网法师（契约借法，无消耗但有次数上限）
-            AllBranches.Add(new BranchDef { traitId = BranchMageSpecialist, name = "专精法师", classTrait = SuperMechTraits.ClassMage, desc = "专注一种类型魔法，可植入魔法回路，伤害+50%智力+15", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.5f; s["intelligence"]=(s["intelligence"])+15f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMageWeave, name = "魔网法师", classTrait = SuperMechTraits.ClassMage, desc = "与魔法实体契约借法，法力充沛，生命+30%经验+20%", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.3f; s["experience"]=((s["experience"] == 0f ? 1f : s["experience"]))*1.2f; s["mana"]=(s["mana"])+50f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMageSpecialist, name = "sm_branch_529", classTrait = SuperMechTraits.ClassMage, desc = "sm_branch_530", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.5f; s["intelligence"]=(s["intelligence"])+15f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMageWeave, name = "sm_branch_531", classTrait = SuperMechTraits.ClassMage, desc = "sm_branch_532", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.3f; s["experience"]=((s["experience"] == 0f ? 1f : s["experience"]))*1.2f; s["mana"]=(s["mana"])+50f; } });
 
             // 念力系
-            AllBranches.Add(new BranchDef { traitId = BranchMindSoul, name = "心智", classTrait = SuperMechTraits.ClassMind, desc = "心智系（原著ch1384），智力+20暴击+12%", applyBonus = s => { s["intelligence"]=(s["intelligence"])+20f; s["critical_chance"]=(s["critical_chance"])+0.12f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMindLaw, name = "念动", classTrait = SuperMechTraits.ClassMind, desc = "念动系（原著ch1384），伤害+35%全属性+5", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.35f; s["damage"]=(s["damage"])+5f; s["health"]=(s["health"])+15f; s["intelligence"]=(s["intelligence"])+5f; } });
-            AllBranches.Add(new BranchDef { traitId = BranchMindReality, name = "感应", classTrait = SuperMechTraits.ClassMind, desc = "感应系（原著ch1384），生命+45%护甲+8伤害+12", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.45f; s["armor"]=(s["armor"])+8f; s["damage"]=(s["damage"])+12f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMindSoul, name = "sm_branch_533", classTrait = SuperMechTraits.ClassMind, desc = "sm_branch_534", applyBonus = s => { s["intelligence"]=(s["intelligence"])+20f; s["critical_chance"]=(s["critical_chance"])+0.12f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMindLaw, name = "sm_branch_535", classTrait = SuperMechTraits.ClassMind, desc = "sm_branch_536", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.35f; s["damage"]=(s["damage"])+5f; s["health"]=(s["health"])+15f; s["intelligence"]=(s["intelligence"])+5f; } });
+            AllBranches.Add(new BranchDef { traitId = BranchMindReality, name = "sm_branch_537", classTrait = SuperMechTraits.ClassMind, desc = "sm_branch_538", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.45f; s["armor"]=(s["armor"])+8f; s["damage"]=(s["damage"])+12f; } });
 
             // 注册特质，属性加成直接写进base_stats（原著：转职后获得职业专属加成）
             foreach (var b in AllBranches)
@@ -99,11 +99,11 @@ namespace SuperMech.Code
         public static string GetClass(Actor a)
         {
             if (a == null) return null;
-            if (a.hasTrait(SuperMechTraits.ClassMech)) return "机械系";
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道系";
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "异能系";
-            if (a.hasTrait(SuperMechTraits.ClassMage)) return "魔法系";
-            if (a.hasTrait(SuperMechTraits.ClassMind)) return "念力系";
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return LocalizedTextManager.getText("sm_branch_539");
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return LocalizedTextManager.getText("sm_branch_540");
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return LocalizedTextManager.getText("sm_branch_541");
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return LocalizedTextManager.getText("sm_branch_542");
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return LocalizedTextManager.getText("sm_branch_543");
             return null;
         }
 
@@ -136,7 +136,7 @@ namespace SuperMech.Code
             {
                 if (a.hasTrait(b.traitId)) return b.name;
             }
-            return "未选择";
+            return LocalizedTextManager.getText("sm_branch_544");
         }
 
         /// <summary>获取单位分支特质id（复活用）。</summary>

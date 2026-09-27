@@ -21,11 +21,11 @@ namespace SuperMech.Code
         // 五系定义
         private static readonly (string trait, string name, Color color)[] Classes =
         {
-            (SuperMechTraits.ClassMech, "机械系", new Color(0.3f, 0.5f, 0.9f)),
-            (SuperMechTraits.ClassMartial, "武道系", new Color(0.9f, 0.3f, 0.3f)),
-            (SuperMechTraits.ClassPsi, "异能系", new Color(0.3f, 0.9f, 0.5f)),
-            (SuperMechTraits.ClassMage, "魔法系", new Color(0.7f, 0.3f, 0.9f)),
-            (SuperMechTraits.ClassMind, "念力系", new Color(0.9f, 0.7f, 0.3f)),
+            (SuperMechTraits.ClassMech, "sm_panel_1200", new Color(0.3f, 0.5f, 0.9f)),
+            (SuperMechTraits.ClassMartial, "sm_panel_1201", new Color(0.9f, 0.3f, 0.3f)),
+            (SuperMechTraits.ClassPsi, "sm_panel_1202", new Color(0.3f, 0.9f, 0.5f)),
+            (SuperMechTraits.ClassMage, "sm_panel_1203", new Color(0.7f, 0.3f, 0.9f)),
+            (SuperMechTraits.ClassMind, "sm_panel_1204", new Color(0.9f, 0.7f, 0.3f)),
         };
 
         public static void Show()
@@ -40,7 +40,7 @@ namespace SuperMech.Code
         {
             try
             {
-                _frame = SMWindowFrame.Create("超神机械师·超能者面板", 720f, 640f);
+                _frame = SMWindowFrame.Create("sm_panel_1205", 720f, 640f);
                 if (_frame == null) return;
                 Debug.Log("[超神机械师] 超能者面板窗口创建成功");
             }
@@ -79,7 +79,7 @@ namespace SuperMech.Code
 
             if (a == null || !a.isAlive())
             {
-                _frame.AddLabel("请在地图上点击选中一个单位", leftX, y, 680f, 30f, 16, TextAnchor.MiddleCenter);
+                _frame.AddLabel("sm_panel_1206", leftX, y, 680f, 30f, 16, TextAnchor.MiddleCenter);
                 return;
             }
 
@@ -96,22 +96,22 @@ namespace SuperMech.Code
             float onar = SuperMechAdvancement.CalcOnar(a);
             string branch = SuperMechBranch.GetBranchName(a);
 
-            _frame.AddLabel($"阶位: {rank}    职业阶段: {stage}", leftX, y, colW, 22f, 13);
+            _frame.AddLabel($"{LocalizedTextManager.getText("sm_panel_rank")}: {rank}    {LocalizedTextManager.getText("sm_panel_stage")}: {stage}", leftX, y, colW, 22f, 13);
             y -= 24f;
             string qiAttr = SuperMechQiAttribute.GetAttribute(a);
             if (qiAttr != SuperMechQiAttribute.AttrNone)
-                _frame.AddLabel($"气力属性: {qiAttr}", leftX, y, colW, 22f, 13);
-            _frame.AddLabel($"气力: Lv{qiLv} ({qiVal:F0})    欧纳: {onar:F0}", leftX + colW, y, colW, 22f, 13);
+                _frame.AddLabel($"{LocalizedTextManager.getText("sm_panel_qi_attr")}: {qiAttr}", leftX, y, colW, 22f, 13);
+            _frame.AddLabel($"{LocalizedTextManager.getText("sm_panel_qi")}: Lv{qiLv} ({qiVal:F0})    {LocalizedTextManager.getText("sm_panel_onar")}: {onar:F0}", leftX + colW, y, colW, 22f, 13);
             y -= 26f;
 
-            _frame.AddLabel($"分支: {branch}    潜能点: {SuperMechPotential.GetPotential(a)}", leftX, y, colW, 22f, 13);
+            _frame.AddLabel($"{LocalizedTextManager.getText("sm_panel_branch")}: {branch}    {LocalizedTextManager.getText("sm_panel_potential")}: {SuperMechPotential.GetPotential(a)}", leftX, y, colW, 22f, 13);
             string subText = SuperMechSubClass.GetSubLevelText(a);
-            _frame.AddLabel($"副职业: {(string.IsNullOrEmpty(subText)?"无":subText)}", leftX + colW, y, colW, 22f, 13);
+            _frame.AddLabel($"{LocalizedTextManager.getText("sm_panel_subclass")}: {(string.IsNullOrEmpty(subText)?LocalizedTextManager.getText("sm_panel_none"):subText)}", leftX + colW, y, colW, 22f, 13);
             y -= 26f;
 
             string relic = SuperMechRelic.GetCurrentEquipName(a);
             bool divine = SuperMechDivinity.IsDivineAwakened(a);
-            _frame.AddLabel($"宝物: {relic}    神性蜕变: {(divine?"已蜕变":"未蜕变")}", leftX, y, 680f, 22f, 13);
+            _frame.AddLabel($"{LocalizedTextManager.getText("sm_panel_relic")}: {relic}    {LocalizedTextManager.getText("sm_panel_divinity")}: {(divine?LocalizedTextManager.getText("sm_panel_divine_yes"):LocalizedTextManager.getText("sm_panel_divine_no"))}", leftX, y, 680f, 22f, 13);
             y -= 34f;
 
             // —— 分割线 ——
@@ -121,7 +121,7 @@ namespace SuperMech.Code
             // —— 觉醒区（未觉醒时显示5系按钮）——
             if (!SuperMechAdvancement.IsSuperMechUnit(a))
             {
-                _frame.AddLabel("◆ 觉醒（选择一系）", leftX, y, 200f, 22f, 14);
+                _frame.AddLabel("sm_panel_1207", leftX, y, 200f, 22f, 14);
                 y -= 28f;
                 for (int i = 0; i < Classes.Length; i++)
                 {
@@ -147,9 +147,9 @@ namespace SuperMech.Code
             else
             {
                 // —— 分支选择（已觉醒未选分支时）——
-                if (branch == "未选择" && CanSelectBranch(a))
+                if (branch == "sm_panel_1208" && CanSelectBranch(a))
                 {
-                    _frame.AddLabel("◆ 转职·选择分支", leftX, y, 200f, 22f, 14);
+                    _frame.AddLabel("sm_panel_1209", leftX, y, 200f, 22f, 14);
                     y -= 28f;
                     var branches = SuperMechBranch.GetBranchesForClass(GetClassTrait(a));
                     for (int i = 0; i < branches.Count; i++)
@@ -177,9 +177,9 @@ namespace SuperMech.Code
                 // —— 机械系制造 ——
                 if (a.hasTrait(SuperMechTraits.ClassMech))
                 {
-                    _frame.AddLabel("◆ 制造（机械系）", leftX, y, 200f, 22f, 14);
+                    _frame.AddLabel("sm_panel_1210", leftX, y, 200f, 22f, 14);
                     y -= 28f;
-                    string[] crafts = { "游骑兵", "侦察无人机", "战斗机甲", "战争堡垒", "虚拟生命体" };
+                    string[] crafts = { "sm_panel_1211", "sm_panel_1212", "sm_panel_1213", "sm_panel_1214", "sm_panel_1215" };
                     string[] craftIds = { "sm_craft_ranger", "sm_craft_drone", "sm_craft_mech", "sm_craft_fortress", "sm_craft_virtual" };
                     for (int i = 0; i < crafts.Length; i++)
                     {
@@ -196,9 +196,9 @@ namespace SuperMech.Code
                 }
 
                 // —— 知识解锁 ——
-                _frame.AddLabel("◆ 知识树解锁（消耗潜能点）", leftX, y, 280f, 22f, 14);
+                _frame.AddLabel("sm_panel_1216", leftX, y, 280f, 22f, 14);
                 y -= 28f;
-                string[] knowNames = { "武装系", "能量系", "虚拟系" };
+                string[] knowNames = { "sm_panel_1217", "sm_panel_1218", "sm_panel_1219" };
                 string[] knowIds = { SuperMechPowers.UnlockArmed, SuperMechPowers.UnlockEnergy, SuperMechPowers.UnlockVirtual };
                 for (int i = 0; i < knowNames.Length; i++)
                 {
@@ -213,9 +213,9 @@ namespace SuperMech.Code
                 y -= 38f;
 
                 // —— 提炼法（统一入口，按系别自动传授对应变种）——
-                _frame.AddLabel("◆ 传授提炼法", leftX, y, 200f, 22f, 14);
+                _frame.AddLabel("sm_panel_1220", leftX, y, 200f, 22f, 14);
                 y -= 28f;
-                _frame.AddButton("传授提炼法", leftX, y, 200f, 28f, () =>
+                _frame.AddButton("sm_panel_1221", leftX, y, 200f, 28f, () =>
                 {
                     var p = AssetManager.powers.get("sm_give_refinement");
                     if (p != null) p.click_action?.Invoke(a.current_tile, "sm_give_refinement");
@@ -224,14 +224,14 @@ namespace SuperMech.Code
                 y -= 38f;
 
                 // —— 其他操作 ——
-                _frame.AddLabel("◆ 其他", leftX, y, 200f, 22f, 14);
+                _frame.AddLabel("sm_panel_1222", leftX, y, 200f, 22f, 14);
                 y -= 28f;
-                _frame.AddButton("查看潜能/知识", leftX, y, 145f, 28f, () =>
+                _frame.AddButton("sm_panel_1223", leftX, y, 145f, 28f, () =>
                 {
                     var p = AssetManager.powers.get(SuperMechPowers.CheckPotential);
                     if (p != null) p.click_action?.Invoke(a.current_tile, SuperMechPowers.CheckPotential);
                 });
-                _frame.AddButton("进入圣所", leftX + 155f, y, 105f, 28f, () =>
+                _frame.AddButton("sm_panel_1224", leftX + 155f, y, 105f, 28f, () =>
                 {
                     var p = AssetManager.powers.get("sm_enter_sanctuary");
                     if (p != null) p.click_action?.Invoke(a.current_tile, "sm_enter_sanctuary");
@@ -246,7 +246,7 @@ namespace SuperMech.Code
             {
                 if (a.hasTrait(c.trait)) return c.name;
             }
-            return "未觉醒";
+            return "sm_panel_1225";
         }
 
         private static string GetClassTrait(Actor a)

@@ -63,52 +63,52 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 天赋专长
-            AddPerk(PerkGeomind,    "几何思维（天赋）", 10, 0, 0.10f, "天赋专长，智力大幅提升。");
-            AddPerk(PerkIronWill,   "钢铁意志（天赋）", 0, 0, 0.05f, "意志坚定，不易被控。");
-            AddPerk(PerkBerserk,    "暴怒（天赋）",     0, 0, 0.15f, "血量越低伤害越高。");
-            AddPerk(PerkQuickThink, "极速思维（天赋）", 8, 0, 0.05f, "反应速度提升。");
-            AddPerk(PerkFortune,    "幸运（天赋）",     3, 0, 0.0f, "命运眷顾。");
+            AddPerk(PerkGeomind,    "sm_perks_000", 10, 0, 0.10f, "sm_perks_001");
+            AddPerk(PerkIronWill,   "sm_perks_002", 0, 0, 0.05f, "sm_perks_003");
+            AddPerk(PerkBerserk,    "sm_perks_004",     0, 0, 0.15f, "sm_perks_005");
+            AddPerk(PerkQuickThink, "sm_perks_006", 8, 0, 0.05f, "sm_perks_007");
+            AddPerk(PerkFortune,    "sm_perks_008",     3, 0, 0.0f, "sm_perks_009");
 
             // 通用专长
-            AddPerk(PerkSharpEye,   "锐利目光",     0, 2, 0f, "命中率提升。");
-            AddPerk(PerkToughBody,  "强健体魄",     0, 0, 0f, "生命倍率+15%。");
-            AddPerk(PerkFastRegen,  "快速恢复",     0, 0, 0f, "恢复速度提升。");
-            AddPerk(PerkVeteran,    "老兵本能",     0, 3, 0.05f, "战斗经验丰富。");
-            AddPerk(PerkNightVision, "夜视",        0, 0, 0f, "夜间视野提升。");
+            AddPerk(PerkSharpEye,   "sm_perks_010",     0, 2, 0f, "sm_perks_011");
+            AddPerk(PerkToughBody,  "sm_perks_012",     0, 0, 0f, "sm_perks_013");
+            AddPerk(PerkFastRegen,  "sm_perks_014",     0, 0, 0f, "sm_perks_015");
+            AddPerk(PerkVeteran,    "sm_perks_016",     0, 3, 0.05f, "sm_perks_017");
+            AddPerk(PerkNightVision, "sm_perks_018",        0, 0, 0f, "sm_perks_019");
 
             // 机械系专长
-            AddPerk(PerkMechAffinity,  "机械亲和",   0, 0, 0.15f, "制造速度与质量提升。");
-            AddPerk(PerkMechSurge,     "械力涌动",   0, 5, 0.20f, "械力爆发，伤害提升。");
-            AddPerk(PerkMechCraft,     "大师工匠",   5, 0, 0.10f, "制造品质提升。");
-            AddPerk(PerkMechTactical,  "战术大师",   4, 0, 0.05f, "机械单位效率提升。");
+            AddPerk(PerkMechAffinity,  "sm_perks_020",   0, 0, 0.15f, "sm_perks_021");
+            AddPerk(PerkMechSurge,     "sm_perks_022",   0, 5, 0.20f, "sm_perks_023");
+            AddPerk(PerkMechCraft,     "sm_perks_024",   5, 0, 0.10f, "sm_perks_025");
+            AddPerk(PerkMechTactical,  "sm_perks_026",   4, 0, 0.05f, "sm_perks_027");
 
             // 异能系专长
-            AddPerk(PerkPsiControl, "异能操控",   3, 0, 0.10f, "异能精度提升。");
-            AddPerk(PerkPsiRange,    "异能范围",   2, 0, 0.05f, "异能范围扩大。");
+            AddPerk(PerkPsiControl, "sm_perks_028",   3, 0, 0.10f, "sm_perks_029");
+            AddPerk(PerkPsiRange,    "sm_perks_030",   2, 0, 0.05f, "sm_perks_031");
 
             // 武道系专长
-            AddPerk(PerkMartialBreath, "吐纳法",    2, 0, 0.08f, "气力恢复加速。");
-            AddPerk(PerkMartialFlurry, "连击",      0, 4, 0.10f, "攻击速度提升。");
+            AddPerk(PerkMartialBreath, "sm_perks_032",    2, 0, 0.08f, "sm_perks_033");
+            AddPerk(PerkMartialFlurry, "sm_perks_034",      0, 4, 0.10f, "sm_perks_035");
 
             // 魔法系专长
-            AddPerk(PerkManaEff,     "魔力增效",   3, 0, 0.10f, "魔力利用效率提升。");
-            AddPerk(PerkSpellMaster, "法术大师",   6, 0, 0.15f, "法术威力提升。");
+            AddPerk(PerkManaEff,     "sm_perks_036",   3, 0, 0.10f, "sm_perks_037");
+            AddPerk(PerkSpellMaster, "sm_perks_038",   6, 0, 0.15f, "sm_perks_039");
 
             // 念力系专长
-            AddPerk(PerkMindShield, "精神屏障",   0, 0, 0f,   "精神防御提升。");
-            AddPerk(PerkMindCrush,  "念动冲击",   4, 3, 0.12f, "念力伤害提升。");
+            AddPerk(PerkMindShield, "sm_perks_040",   0, 0, 0f,   "sm_perks_041");
+            AddPerk(PerkMindCrush,  "sm_perks_042",   4, 3, 0.12f, "sm_perks_043");
 
             // 高阶专长（原著后期）
-            AddPerk(PerkMechEmperor,  "机械帝皇",   15, 10, 2.00f, "机械亲和+200%，机械技能+1级。");
-            AddPerk(PerkEnergyBody,   "完美能量亲和体质", 10, 5, 0.30f, "能量感知+120%，能量攻击+30%。");
-            AddPerk(PerkVirtLord,     "虚拟主宰",   20, 0, 1.50f, "虚拟技术效果2.5倍。");
-            AddPerk(PerkMultiResist,  "多元抗性强化", 5, 0, 0f,   "各项抗性提升。");
-            AddPerk(PerkChampion,     "万夫莫开",   10, 8, 0.50f, "百分比提高全属性。");
-            AddPerk(PerkMindFortress, "高级心灵强韧", 8, 0, 0f,   "精神抗性大幅提升。");
-            AddPerk(PerkBattleMind,   "战场理智",   12, 0, 0.15f, "最高提升15%智力。");
-            AddPerk(PerkFocus,        "高度专注",   8, 0, 0.10f, "学习/制造速度+10%。");
-            AddPerk(PerkMaterial,     "材料先驱",   6, 0, 0.10f, "合成材料几率提升。");
-            AddPerk(PerkDimAdapt,     "次级维度适应者", 5, 0, 0.06f, "次级维度全属性加成。");
+            AddPerk(PerkMechEmperor,  "sm_perks_044",   15, 10, 2.00f, "sm_perks_045");
+            AddPerk(PerkEnergyBody,   "sm_perks_046", 10, 5, 0.30f, "sm_perks_047");
+            AddPerk(PerkVirtLord,     "sm_perks_048",   20, 0, 1.50f, "sm_perks_049");
+            AddPerk(PerkMultiResist,  "sm_perks_050", 5, 0, 0f,   "sm_perks_051");
+            AddPerk(PerkChampion,     "sm_perks_052",   10, 8, 0.50f, "sm_perks_053");
+            AddPerk(PerkMindFortress, "sm_perks_054", 8, 0, 0f,   "sm_perks_055");
+            AddPerk(PerkBattleMind,   "sm_perks_056",   12, 0, 0.15f, "sm_perks_057");
+            AddPerk(PerkFocus,        "sm_perks_058",   8, 0, 0.10f, "sm_perks_059");
+            AddPerk(PerkMaterial,     "sm_perks_060",   6, 0, 0.10f, "sm_perks_061");
+            AddPerk(PerkDimAdapt,     "sm_perks_062", 5, 0, 0.06f, "sm_perks_063");
 
             Debug.Log("[超神机械师] 专长注册完成：32个");
         }

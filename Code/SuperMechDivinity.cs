@@ -256,12 +256,12 @@ namespace SuperMech.Code
             // 职业路线加强职业能力
             switch (cls)
             {
-                case "机械系":
+                case "sm_divinity_735":
                     stats["intelligence"] = (stats["intelligence"]) + 50f * layers;
                     stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) + 0.05f * layers;
                     stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) + 0.1f * layers;
                     break;
-                case "武道系":
+                case "sm_divinity_736":
                     stats["damage"] = (stats["damage"]) + 80f * layers;
                     stats["warfare"] = (stats["warfare"]) + 30f * layers;
                     stats["attack_speed"] = (stats["attack_speed"]) + 0.05f * layers;

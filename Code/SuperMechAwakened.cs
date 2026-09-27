@@ -91,9 +91,8 @@ namespace SuperMech.Code
             t.base_stats["experience"] = 2.0f; // 降临者经验获取×2
             t.base_stats["intelligence"] = 5;
             AssetManager.traits.add(t);
-            LocalizedTextManager.add("trait_" + AwakenedTrait, "降临者", pReplace: true);
-            LocalizedTextManager.add("trait_" + AwakenedTrait + "_info",
-                "携带玩家面板的降临者，拥有职业等级与经验值体系，需完成进阶任务转职。星海人则只有阶位体系。", pReplace: true);
+            LocalizedTextManager.add("trait_" + AwakenedTrait, LocalizedTextManager.getText("sm_awakened_505"), pReplace: true);
+            LocalizedTextManager.add("trait_" + AwakenedTrait + "_info", LocalizedTextManager.getText("sm_awakened_506"), pReplace: true);
             Debug.Log("[超神机械师] 降临者体系注册完成");
         }
 
@@ -332,10 +331,10 @@ namespace SuperMech.Code
         {
             string cls = SuperMechBranch.GetClass(a);
             var branches = SuperMechBranch.GetBranchesForClass(
-                cls == "机械系" ? SuperMechTraits.ClassMech :
-                cls == "武道系" ? SuperMechTraits.ClassMartial :
-                cls == "异能系" ? SuperMechTraits.ClassPsi :
-                cls == "魔法系" ? SuperMechTraits.ClassMage :
+                cls == "sm_awakened_507" ? SuperMechTraits.ClassMech :
+                cls == "sm_awakened_508" ? SuperMechTraits.ClassMartial :
+                cls == "sm_awakened_509" ? SuperMechTraits.ClassPsi :
+                cls == "sm_awakened_510" ? SuperMechTraits.ClassMage :
                 SuperMechTraits.ClassMind);
             if (branches == null || branches.Count == 0) return;
             // 随机选一个分支（AI随机，玩家可用神权覆盖）

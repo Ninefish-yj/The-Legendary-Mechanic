@@ -26,19 +26,19 @@ namespace SuperMech.Code
         private static readonly List<AffixDef> _affixPool = new List<AffixDef>
         {
             // 基础词条（所有品质可出）
-            new AffixDef { id="affix_dmg", name="攻击", statKey="multiplier_damage", minValue=0.05f, maxValue=0.25f, isMultiplier=true, minQuality=0 },
-            new AffixDef { id="affix_hp", name="生命", statKey="multiplier_health", minValue=0.05f, maxValue=0.30f, isMultiplier=true, minQuality=0 },
-            new AffixDef { id="affix_speed", name="攻速", statKey="multiplier_speed", minValue=0.03f, maxValue=0.15f, isMultiplier=true, minQuality=1 },
-            new AffixDef { id="affix_armor", name="护甲", statKey="armor", minValue=5f, maxValue=20f, isMultiplier=false, minQuality=1 },
-            new AffixDef { id="affix_crit", name="暴击", statKey="multiplier_crit", minValue=0.03f, maxValue=0.12f, isMultiplier=true, minQuality=2 },
-            new AffixDef { id="affix_stamina", name="耐力", statKey="multiplier_stamina", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=2 },
-            new AffixDef { id="affix_dmg_fixed", name="攻击强化", statKey="damage", minValue=1f, maxValue=10f, isMultiplier=false, minQuality=0 },
-            new AffixDef { id="affix_hp_fixed", name="生命强化", statKey="health", minValue=5f, maxValue=50f, isMultiplier=false, minQuality=0 },
+            new AffixDef { id="affix_dmg", name="sm_equipaffix_737", statKey="multiplier_damage", minValue=0.05f, maxValue=0.25f, isMultiplier=true, minQuality=0 },
+            new AffixDef { id="affix_hp", name="sm_equipaffix_738", statKey="multiplier_health", minValue=0.05f, maxValue=0.30f, isMultiplier=true, minQuality=0 },
+            new AffixDef { id="affix_speed", name="sm_equipaffix_739", statKey="multiplier_speed", minValue=0.03f, maxValue=0.15f, isMultiplier=true, minQuality=1 },
+            new AffixDef { id="affix_armor", name="sm_equipaffix_740", statKey="armor", minValue=5f, maxValue=20f, isMultiplier=false, minQuality=1 },
+            new AffixDef { id="affix_crit", name="sm_equipaffix_741", statKey="multiplier_crit", minValue=0.03f, maxValue=0.12f, isMultiplier=true, minQuality=2 },
+            new AffixDef { id="affix_stamina", name="sm_equipaffix_742", statKey="multiplier_stamina", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=2 },
+            new AffixDef { id="affix_dmg_fixed", name="sm_equipaffix_743", statKey="damage", minValue=1f, maxValue=10f, isMultiplier=false, minQuality=0 },
+            new AffixDef { id="affix_hp_fixed", name="sm_equipaffix_744", statKey="health", minValue=5f, maxValue=50f, isMultiplier=false, minQuality=0 },
             // 高级词条（高品质专属）
-            new AffixDef { id="affix_qi", name="气力增幅", statKey="sm_qi_max", minValue=100f, maxValue=1000f, isMultiplier=false, minQuality=4 },
-            new AffixDef { id="affix_int", name="智力", statKey="intelligence", minValue=1f, maxValue=5f, isMultiplier=false, minQuality=3 },
-            new AffixDef { id="affix_exp", name="经验获取", statKey="experience", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=3 },
-            new AffixDef { id="affix_all", name="全属性", statKey="multiplier_damage", minValue=0.03f, maxValue=0.10f, isMultiplier=true, minQuality=5 },
+            new AffixDef { id="affix_qi", name="sm_equipaffix_745", statKey="sm_qi_max", minValue=100f, maxValue=1000f, isMultiplier=false, minQuality=4 },
+            new AffixDef { id="affix_int", name="sm_equipaffix_746", statKey="intelligence", minValue=1f, maxValue=5f, isMultiplier=false, minQuality=3 },
+            new AffixDef { id="affix_exp", name="sm_equipaffix_747", statKey="experience", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=3 },
+            new AffixDef { id="affix_all", name="sm_equipaffix_748", statKey="multiplier_damage", minValue=0.03f, maxValue=0.10f, isMultiplier=true, minQuality=5 },
         };
 
         /// <summary>装备实例词条（key = actorId, value = 词条列表）。</summary>

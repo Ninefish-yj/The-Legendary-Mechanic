@@ -79,64 +79,64 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 异能系特色
-            AddSpec(PsiFire,      "火焰操控（异能）", 10, 0.20f, 0f, "火焰系异能，伤害大幅提升。");
-            AddSpec(PsiIce,       "冰霜操控（异能）", 5, 0.10f, 0.15f, "冰霜系异能，生命提升。");
-            AddSpec(PsiElectric,  "雷电操控（异能）", 8, 0.18f, 0f, "雷电系异能，伤害提升。");
-            AddSpec(PsiTransform, "变身（异能）",     5, 0.10f, 0.20f, "变身系异能，生存提升。");
-            AddSpec(PsiControl,  "物体操控（异能）",  7, 0.15f, 0f, "操控系异能，伤害提升。");
-            AddSpec(PsiLuck,      "幸运（异能）",     3, 0f, 0f,    "幸运系异能，命运眷顾。");
+            AddSpec(PsiFire,      "sm_specialty_136", 10, 0.20f, 0f, "sm_specialty_137");
+            AddSpec(PsiIce,       "sm_specialty_138", 5, 0.10f, 0.15f, "sm_specialty_139");
+            AddSpec(PsiElectric,  "sm_specialty_140", 8, 0.18f, 0f, "sm_specialty_141");
+            AddSpec(PsiTransform, "sm_specialty_142",     5, 0.10f, 0.20f, "sm_specialty_143");
+            AddSpec(PsiControl,  "sm_specialty_144",  7, 0.15f, 0f, "sm_specialty_145");
+            AddSpec(PsiLuck,      "sm_specialty_146",     3, 0f, 0f,    "sm_specialty_147");
             // 原著出现过的异能
-            AddSpec(PsiDeath,    "亡灵之力（异能）",  12, 0.30f, 0f,   "海拉的异能，死亡能量侵蚀敌人。");
-            AddSpec(PsiCarbon,   "碳元素掌控（异能）", 10, 0.22f, 0f,   "灰烬的异能，操控碳元素。");
-            AddSpec(PsiHeal,     "治愈系异能",       8, 0f, 0.20f,      "欧若拉的异能，生命恢复。");
-            AddSpec(PsiMagnet,   "磁场操控（异能）",  9, 0.18f, 0f,   "万磁王的异能，操控磁场。");
-            AddSpec(PsiSoulFire, "灵魂之炎（异能）",  15, 0.35f, 0f,   "起誓人的异能，超高危。");
+            AddSpec(PsiDeath,    "sm_specialty_148",  12, 0.30f, 0f,   "sm_specialty_149");
+            AddSpec(PsiCarbon,   "sm_specialty_150", 10, 0.22f, 0f,   "sm_specialty_151");
+            AddSpec(PsiHeal,     "sm_specialty_152",       8, 0f, 0.20f,      "sm_specialty_153");
+            AddSpec(PsiMagnet,   "sm_specialty_154",  9, 0.18f, 0f,   "sm_specialty_155");
+            AddSpec(PsiSoulFire, "sm_specialty_156",  15, 0.35f, 0f,   "sm_specialty_157");
 
             // 武道系特色：御气技巧
-            AddSpec(MartialWave,    "离体波动（御气）",  5, 0.15f, 0f,   "气功波，中距离攻击手段。");
-            AddSpec(MartialFlash,   "闪气（御气）",     8, 0.05f, 0.10f, "爆气闪躲，生存提升。");
-            AddSpec(MartialShield,  "护体气罩（御气）", 3, 0f, 0.20f,    "气罩护体，生命提升。");
-            AddSpec(MartialBurst,   "气力爆发（御气）", 5, 0.20f, 0f,   "气力爆发，伤害提升。");
-            AddSpec(MartialReserve, "潜在存储（御气）", 2, 0.05f, 0.15f, "压榨细胞快速回气。");
-            AddSpec(MartialSky,     "天穹气幕（大师级）", 6, 0f, 0.30f, "大师级御气，气幕防御。");
-            AddSpec(MartialSync,    "气脉同调（大师级）", 8, 0.10f, 0.10f, "大师级御气，吸纳他人气力。");
-            AddSpec(MartialAbyss,   "蚀气渊流（大师级）", 10, 0.25f, 0f, "大师级御气，伤害极高。");
+            AddSpec(MartialWave,    "sm_specialty_158",  5, 0.15f, 0f,   "sm_specialty_159");
+            AddSpec(MartialFlash,   "sm_specialty_160",     8, 0.05f, 0.10f, "sm_specialty_161");
+            AddSpec(MartialShield,  "sm_specialty_162", 3, 0f, 0.20f,    "sm_specialty_163");
+            AddSpec(MartialBurst,   "sm_specialty_164", 5, 0.20f, 0f,   "sm_specialty_165");
+            AddSpec(MartialReserve, "sm_specialty_166", 2, 0.05f, 0.15f, "sm_specialty_167");
+            AddSpec(MartialSky,     "sm_specialty_168", 6, 0f, 0.30f, "sm_specialty_169");
+            AddSpec(MartialSync,    "sm_specialty_170", 8, 0.10f, 0.10f, "sm_specialty_171");
+            AddSpec(MartialAbyss,   "sm_specialty_172", 10, 0.25f, 0f, "sm_specialty_173");
             // 更多御气技巧
-            AddSpec(MartialCompress, "气力压缩（御气）", 4, 0.12f, 0.05f, "压缩气力，提升威力。");
-            AddSpec(MartialForm,     "实体化气焰（御气）", 6, 0.15f, 0.10f, "气焰实体化，攻防兼备。");
-            AddSpec(MartialExplode,  "爆气（御气）",     5, 0.22f, 0f,   "爆气爆发，伤害提升。");
-            AddSpec(MartialShock,    "震气（御气）",     7, 0.18f, 0f,   "震气攻击，伤害提升。");
-            AddSpec(MartialSurge,    "气力翻涌（御气）", 3, 0.10f, 0.10f, "气力翻涌，均衡提升。");
+            AddSpec(MartialCompress, "sm_specialty_174", 4, 0.12f, 0.05f, "sm_specialty_175");
+            AddSpec(MartialForm,     "sm_specialty_176", 6, 0.15f, 0.10f, "sm_specialty_177");
+            AddSpec(MartialExplode,  "sm_specialty_178",     5, 0.22f, 0f,   "sm_specialty_179");
+            AddSpec(MartialShock,    "sm_specialty_180",     7, 0.18f, 0f,   "sm_specialty_181");
+            AddSpec(MartialSurge,    "sm_specialty_182", 3, 0.10f, 0.10f, "sm_specialty_183");
             // 武道流派大类
-            AddSpec(MartialSword,  "剑术流派",  5, 0.18f, 0f,   "剑术专精，伤害提升。");
-            AddSpec(MartialBlade,  "刀术流派",  4, 0.15f, 0.05f, "刀术专精，均衡提升。");
-            AddSpec(MartialFist,   "武技流派",  3, 0.10f, 0.10f, "武技专精，均衡提升。");
+            AddSpec(MartialSword,  "sm_specialty_184",  5, 0.18f, 0f,   "sm_specialty_185");
+            AddSpec(MartialBlade,  "sm_specialty_186",  4, 0.15f, 0.05f, "sm_specialty_187");
+            AddSpec(MartialFist,   "sm_specialty_188",  3, 0.10f, 0.10f, "sm_specialty_189");
 
             // 魔法系特色
-            AddSpec(MageFire,     "火焰专精（魔法）",  8, 0.20f, 0f,  "火焰法术，伤害提升。");
-            AddSpec(MageWater,    "水流专精（魔法）",  5, 0.05f, 0.15f, "水流法术，生存提升。");
-            AddSpec(MageWind,     "风暴专精（魔法）",  6, 0.12f, 0f,  "风暴法术，伤害提升。");
-            AddSpec(MageEarth,    "大地专精（魔法）",  3, 0f, 0.25f,    "大地法术，生命提升。");
-            AddSpec(MageLight,    "光辉专精（魔法）",  7, 0.10f, 0.10f, "光辉法术，均衡提升。");
-            AddSpec(MageDark,     "暗影专精（魔法）",  9, 0.25f, 0f,  "暗影法术，伤害极高。");
+            AddSpec(MageFire,     "sm_specialty_190",  8, 0.20f, 0f,  "sm_specialty_191");
+            AddSpec(MageWater,    "sm_specialty_192",  5, 0.05f, 0.15f, "sm_specialty_193");
+            AddSpec(MageWind,     "sm_specialty_194",  6, 0.12f, 0f,  "sm_specialty_195");
+            AddSpec(MageEarth,    "sm_specialty_196",  3, 0f, 0.25f,    "sm_specialty_197");
+            AddSpec(MageLight,    "sm_specialty_198",  7, 0.10f, 0.10f, "sm_specialty_199");
+            AddSpec(MageDark,     "sm_specialty_200",  9, 0.25f, 0f,  "sm_specialty_201");
 
             // 念力系特色
-            AddSpec(MindControl, "精神控制（念力）",  8, 0.15f, 0f,   "控制系，伤害提升。");
-            AddSpec(MindDetect,  "心灵探测（念力）",  5, 0.05f, 0.10f, "探测系，均衡提升。");
-            AddSpec(MindTelekinesis, "念动（念力）", 10, 0.20f, 0f,   "念动系，伤害提升。");
-            AddSpec(MindTelepathy, "心灵感应（念力）", 6, 0.08f, 0.08f, "感应系，均衡提升。");
+            AddSpec(MindControl, "sm_specialty_202",  8, 0.15f, 0f,   "sm_specialty_203");
+            AddSpec(MindDetect,  "sm_specialty_204",  5, 0.05f, 0.10f, "sm_specialty_205");
+            AddSpec(MindTelekinesis, "sm_specialty_206", 10, 0.20f, 0f,   "sm_specialty_207");
+            AddSpec(MindTelepathy, "sm_specialty_208", 6, 0.08f, 0.08f, "sm_specialty_209");
             // 原著念力技能
-            AddSpec(MindShield,   "念气护盾（念力）", 4, 0f, 0.25f,    "念气护盾，生命提升。");
-            AddSpec(MindCurrent,  "人造心灵潜流（念力）", 12, 0.30f, 0f, "克苏耶技能，大范围精神攻击。");
+            AddSpec(MindShield,   "sm_specialty_210", 4, 0f, 0.25f,    "sm_specialty_211");
+            AddSpec(MindCurrent,  "sm_specialty_212", 12, 0.30f, 0f, "sm_specialty_213");
 
             // 机械系特色
-            AddSpec(MechMech,    "机甲专精（机械）",  5, 0.10f, 0.20f, "机甲系，生存提升。");
-            AddSpec(MechDrone,   "无人机专精（机械）", 8, 0.15f, 0f,   "无人机系，伤害提升。");
-            AddSpec(MechTurret,  "炮塔专精（机械）",  6, 0.12f, 0.05f, "炮塔系，均衡提升。");
+            AddSpec(MechMech,    "sm_specialty_214",  5, 0.10f, 0.20f, "sm_specialty_215");
+            AddSpec(MechDrone,   "sm_specialty_216", 8, 0.15f, 0f,   "sm_specialty_217");
+            AddSpec(MechTurret,  "sm_specialty_218",  6, 0.12f, 0.05f, "sm_specialty_219");
             // 原著机械技能
-            AddSpec(MechOverload, "超负荷（机械）",  5, 0.30f, 0f,   "消耗气力，机械威力+30~50%。");
-            AddSpec(MechSurge,    "械力涌动（机械）", 6, 0.15f, 0.05f, "械力涌动，均衡提升。");
-            AddSpec(MechWill,     "意志燃烧（机械）", 8, 0.25f, 0f,   "意志燃烧，伤害提升。");
+            AddSpec(MechOverload, "sm_specialty_220",  5, 0.30f, 0f,   "sm_specialty_221");
+            AddSpec(MechSurge,    "sm_specialty_222", 6, 0.15f, 0.05f, "sm_specialty_223");
+            AddSpec(MechWill,     "sm_specialty_224", 8, 0.25f, 0f,   "sm_specialty_225");
 
             Debug.Log("[超神机械师] 五系特色专精注册完成：23个特色");
         }

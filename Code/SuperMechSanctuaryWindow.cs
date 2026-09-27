@@ -58,8 +58,8 @@ namespace SuperMech.Code
                 int fragments = data.sanctuary_fragments[i];
                 Color bg = unlocked ? new Color(0.15f, 0.25f, 0.15f, 0.8f) : new Color(0.12f, 0.12f, 0.15f, 0.8f);
                 string btnText = unlocked
-                    ? $"✓ {names[i]}  [碎片:{fragments}]  [点击进入]"
-                    : $"✗ {names[i]}  [碎片:{fragments}/3]";
+                    ? $"sm_sanctuarywindow_978"
+                    : $"sm_sanctuarywindow_979";
                 _frame.AddButton(btnText, x, y, 540f, 36f, () =>
                 {
                     if (!unlocked)
@@ -114,8 +114,8 @@ namespace SuperMech.Code
                     // 显示复活次数和降阶风险
                     int nextRevive = rec.reviveCount + 1;
                     float infoLoss = Mathf.Clamp(0.1f * nextRevive, 0.1f, 0.5f);
-                    string riskText = nextRevive >= 4 ? "⚠高风险" : nextRevive >= 2 ? "有风险" : "低风险";
-                    string btnText = $"{rec.name} [{rankName}]  已复活{rec.reviveCount}次  下次信息丢失{infoLoss:P0}({riskText})  [5钥匙]";
+                    string riskText = nextRevive >= 4 ? "sm_sanctuarywindow_980" : nextRevive >= 2 ? "sm_sanctuarywindow_981" : "sm_sanctuarywindow_982";
+                    string btnText = $"sm_sanctuarywindow_983";
                     Color btnBg = canRes ? new Color(0.2f, 0.15f, 0.1f, 0.9f) : new Color(0.15f, 0.15f, 0.15f, 0.8f);
                     int idx = i;
                     _frame.AddButton(btnText, x, y, 540f, 30f, () =>
@@ -132,7 +132,7 @@ namespace SuperMech.Code
                 }
                 if (deadList.Count > 5)
                 {
-                    _frame.AddLabel($"...还有{deadList.Count - 5}个死者记录", x, y, 540f, 16f, 10);
+                    _frame.AddLabel($"sm_sanctuarywindow_984", x, y, 540f, 16f, 10);
                     y -= 20f;
                 }
             }

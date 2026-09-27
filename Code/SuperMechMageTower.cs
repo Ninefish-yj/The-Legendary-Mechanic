@@ -23,7 +23,7 @@ namespace SuperMech.Code
 
         public static readonly string[] TowerIds = { Tower1, Tower2, Tower3, Tower4, Tower5 };
         public static readonly string[] TowerNames = {
-            "初级法师塔", "中级法师塔", "高级法师塔", "顶级法师塔", "秘法之殿"
+            "sm_magetower_357", "sm_magetower_358", "sm_magetower_359", "sm_magetower_360", "sm_magetower_361"
         };
         // 每级加成（完全状态）
         public static readonly (float dmg, float hp, int intel, float mana)[] TowerBonus = {
@@ -43,7 +43,7 @@ namespace SuperMech.Code
                 var b = TowerBonus[i];
                 LocalizedTextManager.add("trait_" + TowerIds[i], TowerNames[i], pReplace: true);
                 LocalizedTextManager.add("trait_" + TowerIds[i] + "_info",
-                    $"法师塔（完全状态）。伤害+{b.dmg * 100:F0}%，生命+{b.hp * 100:F0}%，智力+{b.intel}，魔力+{b.mana}。塔内有炼金人偶与符文阵列辅助。", pReplace: true);
+                    $"sm_magetower_362", pReplace: true);
                 var t = new ActorTrait
                 {
                     id = TowerIds[i],
@@ -122,7 +122,7 @@ namespace SuperMech.Code
         public static string GetTowerName(Actor a)
         {
             int lv = GetTowerLevel(a);
-            return lv > 0 ? TowerNames[lv - 1] : "无";
+            return lv > 0 ? TowerNames[lv - 1] : "sm_magetower_363";
         }
 
         /// <summary>清空法师塔数据（世界切换用）。</summary>

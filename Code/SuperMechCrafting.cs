@@ -41,7 +41,7 @@ namespace SuperMech.Code
         {
             // tier1: 入门者即可造
             new CraftRecipe {
-                id = "sm_craft_ranger", name = "制造·游骑兵", desc = "消耗金属制造游骑兵步兵（tier1）",
+                id = "sm_craft_ranger", name = "sm_crafting_677", desc = "sm_crafting_678",
                 creatureId = "bandit", minStage = 1, requiredKnowledge = "",
                 qiBase = 5f, expBase = 10f,
                 traits = new[] { "strong", "tough" },
@@ -49,7 +49,7 @@ namespace SuperMech.Code
             },
             // tier2: 学徒
             new CraftRecipe {
-                id = "sm_craft_drone", name = "制造·侦察无人机", desc = "消耗金属+宝石制造侦察无人机（tier2）",
+                id = "sm_craft_drone", name = "sm_crafting_679", desc = "sm_crafting_680",
                 creatureId = "alien", minStage = 2, requiredKnowledge = "",
                 qiBase = 8f, expBase = 15f,
                 traits = new[] { "fast", "genius" },
@@ -57,7 +57,7 @@ namespace SuperMech.Code
             },
             // tier3: 见习
             new CraftRecipe {
-                id = "sm_craft_sentry", name = "制造·哨戒炮", desc = "消耗金属+石头制造固定哨戒炮（tier3）",
+                id = "sm_craft_sentry", name = "sm_crafting_681", desc = "sm_crafting_682",
                 creatureId = "civ_crystal_golem", minStage = 3, requiredKnowledge = "",
                 qiBase = 12f, expBase = 25f,
                 traits = new[] { "tough", "immortal" },
@@ -65,7 +65,7 @@ namespace SuperMech.Code
             },
             // tier4: 磁环
             new CraftRecipe {
-                id = "sm_craft_mech", name = "制造·战斗机甲", desc = "消耗金属+宝石制造战斗机甲（tier4）",
+                id = "sm_craft_mech", name = "sm_crafting_683", desc = "sm_crafting_684",
                 creatureId = "crabzilla", minStage = 4, requiredKnowledge = "",
                 qiBase = 20f, expBase = 40f,
                 traits = new[] { "strong", "tough" },
@@ -73,7 +73,7 @@ namespace SuperMech.Code
             },
             // tier5: 数据
             new CraftRecipe {
-                id = "sm_craft_carrier", name = "制造·运载机", desc = "消耗金属+木材制造运载机（tier5）",
+                id = "sm_craft_carrier", name = "sm_crafting_685", desc = "sm_crafting_686",
                 creatureId = "dragon", minStage = 5, requiredKnowledge = "",
                 qiBase = 30f, expBase = 60f,
                 traits = new[] { "fast", "strong" },
@@ -81,7 +81,7 @@ namespace SuperMech.Code
             },
             // tier6: 战争
             new CraftRecipe {
-                id = "sm_craft_fortress", name = "制造·战争堡垒", desc = "消耗精金+宝石制造战争堡垒（tier6）",
+                id = "sm_craft_fortress", name = "sm_crafting_687", desc = "sm_crafting_688",
                 creatureId = "civ_crystal_golem", minStage = 6, requiredKnowledge = "",
                 qiBase = 50f, expBase = 100f,
                 traits = new[] { "strong", "tough", "regeneration" },
@@ -89,7 +89,7 @@ namespace SuperMech.Code
             },
             // tier7: 虚拟
             new CraftRecipe {
-                id = "sm_craft_virtual", name = "制造·虚拟生命体", desc = "消耗金+宝石制造虚拟生命体（tier7）",
+                id = "sm_craft_virtual", name = "sm_crafting_689", desc = "sm_crafting_690",
                 creatureId = "human", minStage = 7, requiredKnowledge = "",
                 qiBase = 80f, expBase = 150f,
                 traits = new[] { "immortal", "genius", "fast" },
@@ -97,7 +97,7 @@ namespace SuperMech.Code
             },
             // tier8: 星海
             new CraftRecipe {
-                id = "sm_craft_cruiser", name = "制造·星际巡洋舰", desc = "消耗精金+龙鳞制造星际巡洋舰（tier8）",
+                id = "sm_craft_cruiser", name = "sm_crafting_691", desc = "sm_crafting_692",
                 creatureId = "dragon", minStage = 8, requiredKnowledge = "",
                 qiBase = 120f, expBase = 250f,
                 traits = new[] { "strong", "tough", "fast" },
@@ -105,7 +105,7 @@ namespace SuperMech.Code
             },
             // tier10: 使徒
             new CraftRecipe {
-                id = "sm_craft_apostle", name = "制造·使徒兵器", desc = "消耗精金+金+宝石制造使徒兵器（tier10）",
+                id = "sm_craft_apostle", name = "sm_crafting_693", desc = "sm_crafting_694",
                 creatureId = "crabzilla", minStage = 10, requiredKnowledge = "",
                 qiBase = 200f, expBase = 500f,
                 traits = new[] { "strong", "tough", "immortal", "regeneration" },

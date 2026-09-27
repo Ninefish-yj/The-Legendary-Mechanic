@@ -30,15 +30,15 @@ namespace SuperMech.Code
         // 原著9级品质（从原文提取）
         public static readonly List<EquipDef> Equipments = new List<EquipDef>
         {
-            new EquipDef { id="sm_eq_gray",    name="灰色",       qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f },
-            new EquipDef { id="sm_eq_green",   name="绿色",       qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f },
-            new EquipDef { id="sm_eq_blue",    name="蓝色",       qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f },
-            new EquipDef { id="sm_eq_lightpurple", name="淡紫色", qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.7f, hpMul=1.5f },
-            new EquipDef { id="sm_eq_purple",  name="紫色",       qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.2f, hpMul=1.8f },
-            new EquipDef { id="sm_eq_pink",    name="粉色·珍稀",  qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=3.0f, hpMul=2.5f },
-            new EquipDef { id="sm_eq_orange",  name="橙色·传说",  qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f },
-            new EquipDef { id="sm_eq_silverorange", name="银橙色·使徒兵器", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f },
-            new EquipDef { id="sm_eq_gold",    name="金色·宇宙宝物级", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f },
+            new EquipDef { id="sm_eq_gray",    name="sm_relic_094",       qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f },
+            new EquipDef { id="sm_eq_green",   name="sm_relic_095",       qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f },
+            new EquipDef { id="sm_eq_blue",    name="sm_relic_096",       qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f },
+            new EquipDef { id="sm_eq_lightpurple", name="sm_relic_097", qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.7f, hpMul=1.5f },
+            new EquipDef { id="sm_eq_purple",  name="sm_relic_098",       qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.2f, hpMul=1.8f },
+            new EquipDef { id="sm_eq_pink",    name="sm_relic_099",  qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=3.0f, hpMul=2.5f },
+            new EquipDef { id="sm_eq_orange",  name="sm_relic_100",  qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f },
+            new EquipDef { id="sm_eq_silverorange", name="sm_relic_101", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f },
+            new EquipDef { id="sm_eq_gold",    name="sm_relic_102", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f },
         };
 
         // 上次生命值（检测战斗结束）
@@ -86,15 +86,15 @@ namespace SuperMech.Code
 
                 LocalizedTextManager.add("item_" + def.id, def.name, pReplace: true);
                 LocalizedTextManager.add("item_" + def.id + "_desc",
-                    $"{def.name}。伤害×{def.dmgMul}，生命×{def.hpMul}。", pReplace: true);
+                    $"sm_relic_103", pReplace: true);
                 registered++;
             }
 
-            // 注册"赐予装备"神权（随机赐予金色装备或宇宙宝物）
+            // 注册"sm_relic_104"神权（随机赐予金色装备或宇宙宝物）
             var givePower = new GodPower
             {
                 id = "sm_give_equip",
-                name = "赐予装备",
+                name = "sm_relic_104",
                 path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
@@ -130,7 +130,7 @@ namespace SuperMech.Code
                 return true;
             };
             AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_equip", "赐予装备", pReplace: true);
+            LocalizedTextManager.add("power_sm_give_equip", LocalizedTextManager.getText("sm_relic_104"), pReplace: true);
 
             Debug.Log($"[超神机械师] 装备系统注册完成：{registered}件装备（普通→金色，原版EquipmentAsset）");
         }
@@ -274,7 +274,7 @@ namespace SuperMech.Code
         public static string GetCurrentEquipName(Actor a)
         {
             int idx = GetCurrentEquipIndex(a);
-            return idx >= 0 ? Equipments[idx].name : "无";
+            return idx >= 0 ? Equipments[idx].name : "sm_relic_105";
         }
 
         /// <summary>获取当前装备ID。</summary>
@@ -323,20 +323,20 @@ namespace SuperMech.Code
         public static readonly List<CosmicRelicDef> Relics = new List<CosmicRelicDef>
         {
             // ===== 人造宇宙宝物 =====
-            new CosmicRelicDef { id="sm_cr_secret_hall", name="秘法之殿", desc="ch1008奥斯汀的人造宇宙宝物，法师圣地。", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
-            new CosmicRelicDef { id="sm_cr_fire_core", name="火核之地", desc="ch1008贝奥尼的人造宇宙宝物。", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
-            new CosmicRelicDef { id="sm_cr_teleporter", name="高维天启传送器", desc="ch1008光辉联邦的战略级人造宇宙宝物。", isWonder=false, wonderType="", dmgMul=15f, hpMul=20f },
-            new CosmicRelicDef { id="sm_cr_wand", name="万神权杖", desc="ch1008虚灵教派的人造宇宙宝物。", isWonder=false, wonderType="", dmgMul=22f, hpMul=12f },
-            new CosmicRelicDef { id="sm_cr_shadow_lamp", name="暗影提灯", desc="ch1008灯芯是暗影维度源能碎片，可打开维度门户。", isWonder=false, wonderType="", dmgMul=18f, hpMul=18f },
-            new CosmicRelicDef { id="sm_cr_evolution_cube", name="进化方块", desc="ch740激发物种潜力，西斯科用它完成超A物种蜕变。", isWonder=false, wonderType="", dmgMul=15f, hpMul=25f },
+            new CosmicRelicDef { id="sm_cr_secret_hall", name="sm_relic_106", desc="sm_relic_107", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
+            new CosmicRelicDef { id="sm_cr_fire_core", name="sm_relic_108", desc="sm_relic_109", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
+            new CosmicRelicDef { id="sm_cr_teleporter", name="sm_relic_110", desc="sm_relic_111", isWonder=false, wonderType="", dmgMul=15f, hpMul=20f },
+            new CosmicRelicDef { id="sm_cr_wand", name="sm_relic_112", desc="sm_relic_113", isWonder=false, wonderType="", dmgMul=22f, hpMul=12f },
+            new CosmicRelicDef { id="sm_cr_shadow_lamp", name="sm_relic_114", desc="sm_relic_115", isWonder=false, wonderType="", dmgMul=18f, hpMul=18f },
+            new CosmicRelicDef { id="sm_cr_evolution_cube", name="sm_relic_116", desc="sm_relic_117", isWonder=false, wonderType="", dmgMul=15f, hpMul=25f },
 
             // ===== 宇宙奇观（具有"绝对性"，ch1172）=====
-            new CosmicRelicDef { id="sm_cr_amber", name="时空琥珀", desc="ch1008最经典的无解宇宙奇观，可封印时空。十个巅峰超A合力也损伤不了分毫。", isWonder=true, wonderType="天然", dmgMul=50f, hpMul=50f },
-            new CosmicRelicDef { id="sm_cr_loop_spacetime", name="循环时空", desc="ch1217独一份的次级维度宇宙奇观，源能碎片培育出的循环时空，无法复制。", isWonder=true, wonderType="天然", dmgMul=30f, hpMul=40f },
-            new CosmicRelicDef { id="sm_cr_soul_transfer", name="转魂仪", desc="ch1181摩多文明的宇宙奇观，可随意转移灵魂并无视排异。原为人工产物，变异后与次级维度产生联系。", isWonder=true, wonderType="变异", dmgMul=35f, hpMul=35f },
-            new CosmicRelicDef { id="sm_cr_world_tree", name="世界树", desc="ch1333性质独特的宇宙奇观，拥有意志同时具备工具属性，有信息态能力。", isWonder=true, wonderType="系统级", dmgMul=60f, hpMul=60f },
-            new CosmicRelicDef { id="sm_cr_sanctuary", name="圣所", desc="ch1225推测为信息态方面的宇宙奇观，具有记录超A级信息的功能，可复活超A级。", isWonder=true, wonderType="系统级", dmgMul=40f, hpMul=45f },
-            new CosmicRelicDef { id="sm_cr_underworld", name="冥土", desc="ch1258经两姐妹完善后近似宇宙奇观级的宝物，灵魂维度。", isWonder=true, wonderType="系统级", dmgMul=35f, hpMul=45f },
+            new CosmicRelicDef { id="sm_cr_amber", name="sm_relic_118", desc="sm_relic_119", isWonder=true, wonderType="sm_relic_120", dmgMul=50f, hpMul=50f },
+            new CosmicRelicDef { id="sm_cr_loop_spacetime", name="sm_relic_121", desc="sm_relic_122", isWonder=true, wonderType="sm_relic_120", dmgMul=30f, hpMul=40f },
+            new CosmicRelicDef { id="sm_cr_soul_transfer", name="sm_relic_123", desc="sm_relic_124", isWonder=true, wonderType="sm_relic_125", dmgMul=35f, hpMul=35f },
+            new CosmicRelicDef { id="sm_cr_world_tree", name="sm_relic_126", desc="sm_relic_127", isWonder=true, wonderType="sm_relic_128", dmgMul=60f, hpMul=60f },
+            new CosmicRelicDef { id="sm_cr_sanctuary", name="sm_relic_129", desc="sm_relic_130", isWonder=true, wonderType="sm_relic_128", dmgMul=40f, hpMul=45f },
+            new CosmicRelicDef { id="sm_cr_underworld", name="sm_relic_131", desc="sm_relic_132", isWonder=true, wonderType="sm_relic_128", dmgMul=35f, hpMul=45f },
         };
 
         private static readonly Dictionary<long, string> _equipped = new Dictionary<long, string>();
@@ -345,10 +345,10 @@ namespace SuperMech.Code
         {
             foreach (var r in Relics)
             {
-                string typeName = r.isWonder ? $"宇宙奇观（{r.wonderType}）" : "宇宙宝物";
+                string typeName = r.isWonder ? $"sm_relic_133" : "sm_relic_134";
                 LocalizedTextManager.add("trait_" + r.id, r.name, pReplace: true);
                 LocalizedTextManager.add("trait_" + r.id + "_info",
-                    $"{typeName}（原著）。{r.desc}", pReplace: true);
+                    $"sm_relic_135", pReplace: true);
                 var t = new ActorTrait
                 {
                     id = r.id, path_icon = "ui/Icons/actor_traits/iconChosenOne", group_id = "sm_cosmic_relic",
@@ -359,7 +359,7 @@ namespace SuperMech.Code
                 AssetManager.traits.add(t);
             }
 
-            // "赐予宇宙宝物"神权已合并到"赐予装备"神权（上方），不再单独注册
+            // "赐予宇宙宝物"神权已合并到"sm_relic_104"神权（上方），不再单独注册
 
             int wonderCount = Relics.FindAll(r => r.isWonder).Count;
             Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（人造{Relics.Count - wonderCount}件 + 宇宙奇观{wonderCount}件）");

@@ -415,7 +415,7 @@ namespace SuperMech.Code
 
             // Tooltip
             TipButton tip = go.AddComponent<TipButton>();
-            tip.textOnClick = $"{LocalizedTextManager.getText(node.name)}\n阶位: {GetTierName(node.tier)}\n消耗: {node.cost}潜能点\n{(node.unlocked ? "已解锁" : (node.unlockable ? LocalizedTextManager.getText("sm_graph_click_unlock") : LocalizedTextManager.getText("sm_graph_locked")))}";
+            tip.textOnClick = $"{LocalizedTextManager.getText(node.name)}\n{LocalizedTextManager.getText("sm_graph_tier")}: {GetTierName(node.tier)}\n{LocalizedTextManager.getText("sm_graph_cost")}: {node.cost}{LocalizedTextManager.getText("sm_graph_potential")}\n{(node.unlocked ? LocalizedTextManager.getText("sm_graph_unlocked") : (node.unlockable ? LocalizedTextManager.getText("sm_graph_click_unlock") : LocalizedTextManager.getText("sm_graph_locked")))}";
 
             node.gameObject = go;
             node.image = iconImg;

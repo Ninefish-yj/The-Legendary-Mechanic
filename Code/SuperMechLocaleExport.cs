@@ -15,7 +15,7 @@ namespace SuperMech.Code
     public static class SuperMechLocaleExport
     {
         private static readonly string FilePath =
-            Path.Combine(Application.dataPath, "../Mods/超神机械师/Locales/cz.json");
+            Path.Combine(Application.dataPath, "sm_localeexport_883");
 
         // 仅收录本模组自己的前缀，避免把游戏原版上千条文本混进来
         private static readonly string[] Prefixes =

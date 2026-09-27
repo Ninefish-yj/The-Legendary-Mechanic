@@ -40,46 +40,46 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 低阶位专长
-            AddRankSpec(TranscendentPower, "超凡之力", "全属性+15%，阶位基础专长（ch586）。",
+            AddRankSpec(TranscendentPower, "sm_rankspecialty_226", "sm_rankspecialty_227",
                 dmg: 0.15f, hp: 0.15f, intel: 5);
             // 中阶位专长
-            AddRankSpec(SupremePower, "无上威能", "大幅提升异能/能力强度，伤害+30%（ch770/ch1017）。",
+            AddRankSpec(SupremePower, "sm_rankspecialty_228", "sm_rankspecialty_229",
                 dmg: 0.30f, intel: 10);
-            AddRankSpec(EternalBody, "永恒之躯", "身躯强韧，生命+40%，耐力+10（ch770）。",
+            AddRankSpec(EternalBody, "sm_rankspecialty_230", "sm_rankspecialty_231",
                 hp: 0.40f, stamina: 20f);
-            AddRankSpec(CellReactor, "细胞反应炉", "大幅提升气力值与续航，气力恢复+50%（ch1017）。",
+            AddRankSpec(CellReactor, "sm_rankspecialty_232", "sm_rankspecialty_233",
                 stamina: 30f, hp: 0.10f);
             // X阶（超神级）阶位专长
-            AddRankSpec(DivineMajesty, "浩荡神威", "X阶专长：任何能力巨幅增强，总等级每10级+8~12%（ch1402）。",
+            AddRankSpec(DivineMajesty, "sm_rankspecialty_234", "sm_rankspecialty_235",
                 dmg: 0.50f, intel: 20);
-            AddRankSpec(CosmicBody, "宇宙神躯", "X阶专长：寿命延续到宇宙尽头，总等级每级耐力+1（ch1402）。",
+            AddRankSpec(CosmicBody, "sm_rankspecialty_236", "sm_rankspecialty_237",
                 hp: 0.60f, stamina: 50f, lifespan: 99999f);
             // 超神级专属能力
-            AddRankSpec(QiFoundation, "气力之基·万机之神", "超神机械师专属：气力本质升华，气力上限+200%，全机械威力+50%（ch1402）。",
+            AddRankSpec(QiFoundation, "sm_rankspecialty_238", "sm_rankspecialty_239",
                 dmg: 0.50f, stamina: 100f, intel: 30);
-            AddRankSpec(ConceptImmortal, "资讯唯一·概念永生", "信息态存在形式巨变，拥有自动复生力量（ch1402/ch1403）。",
+            AddRankSpec(ConceptImmortal, "sm_rankspecialty_240", "sm_rankspecialty_241",
                 hp: 0.30f, intel: 15);
             // 三种超神机械师最终形态（百度百科：转职超神机械师后，根据分支不同得到不同最终形态）
-            AddRankSpec(MechGodVirtual, "机械神灵·至高天尊", "虚拟分支最终形态：机械粒子构成神躯，虚拟创世，伤害+80%智力+50（ch1402）。",
+            AddRankSpec(MechGodVirtual, "sm_rankspecialty_242", "sm_rankspecialty_243",
                 dmg: 0.80f, hp: 0.50f, intel: 50);
-            AddRankSpec(MechGodArmed, "机械神灵·宇宙帝皇", "武装分支（枪炮师）最终形态：火力全开，万炮齐发，伤害+100%攻速+30%射程+5（百度百科）。",
+            AddRankSpec(MechGodArmed, "sm_rankspecialty_244", "sm_rankspecialty_245",
                 dmg: 1.00f, hp: 0.40f, armor: 15f);
-            AddRankSpec(MechGodEnergy, "机械神灵·起源神君", "能量分支（械武者）最终形态：纳米殖装与能量融合，近战无敌，伤害+70%生命+60%护甲+20（百度百科）。",
+            AddRankSpec(MechGodEnergy, "sm_rankspecialty_246", "sm_rankspecialty_247",
                 dmg: 0.70f, hp: 0.60f, armor: 20f);
-            AddRankSpec(VirtualCreation, "虚拟创世（伪）", "在虚拟空间中创世，智力+40，经验获取+100%（ch1402/ch1411）。",
+            AddRankSpec(VirtualCreation, "sm_rankspecialty_248", "sm_rankspecialty_249",
                 intel: 40, exp: 2.0f);
-            AddRankSpec(LifeVirtual, "生命转变·虚拟", "生命形态虚拟化，可在信息态与物质态间转换（ch1402）。",
+            AddRankSpec(LifeVirtual, "sm_rankspecialty_250", "sm_rankspecialty_251",
                 hp: 0.20f, intel: 10);
-            AddRankSpec(LifeMech, "生命转变·万机", "生命形态机械化，与机械融为一体，全属性+20%（ch1402）。",
+            AddRankSpec(LifeMech, "sm_rankspecialty_252", "sm_rankspecialty_253",
                 dmg: 0.20f, hp: 0.20f, intel: 10);
-            AddRankSpec(BeyondArtifact, "超越神器", "装备品质超越神器，装备效果+50%（ch1402）。",
+            AddRankSpec(BeyondArtifact, "sm_rankspecialty_254", "sm_rankspecialty_255",
                 dmg: 0.25f, armor: 10f);
             // 物种神化天赋
-            AddRankSpec(SpeciesDivine, "物种神化", "种族神化，获得专属遗传性天赋槽位（ch1402）。",
+            AddRankSpec(SpeciesDivine, "sm_rankspecialty_256", "sm_rankspecialty_257",
                 dmg: 0.15f, hp: 0.15f, intel: 10);
-            AddRankSpec(DivineGene, "神力基因", "能力强度+10%，每次进阶额外+2%（ch1402）。",
+            AddRankSpec(DivineGene, "sm_rankspecialty_258", "sm_rankspecialty_259",
                 dmg: 0.10f, intel: 5);
-            AddRankSpec(BornElite, "天生精英", "全属性+10%，升级额外获得自由属性点（ch1402）。",
+            AddRankSpec(BornElite, "sm_rankspecialty_260", "sm_rankspecialty_261",
                 dmg: 0.10f, hp: 0.10f, intel: 10, exp: 1.5f);
 
             Debug.Log("[超神机械师] 阶位专长注册完成：16个专长（含X阶超神级7个）");

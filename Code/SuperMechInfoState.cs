@@ -206,15 +206,15 @@ namespace SuperMech.Code
         {
             int lv = GetLevel(a);
             if (lv <= 0) return "";
-            string text = $"信息态Lv{lv}：";
-            text += $"穿甲{lv * 5}% ";
-            text += $"护盾{lv * 10}% ";
-            text += $"扰动-{lv * 3}% ";
-            text += $"克树{lv * 10}% ";
-            if (lv >= 2) text += "感知 ";
-            if (lv >= 3) text += "遗力感知 ";
-            if (lv >= 4) text += "转化 ";
-            if (lv >= 5) text += "高维形态 ";
+            string text = $"sm_infostate_435";
+            text += $"sm_infostate_436";
+            text += $"sm_infostate_437";
+            text += $"sm_infostate_438";
+            text += $"sm_infostate_439";
+            if (lv >= 2) text += "sm_infostate_440";
+            if (lv >= 3) text += "sm_infostate_441";
+            if (lv >= 4) text += "sm_infostate_442";
+            if (lv >= 5) text += "sm_infostate_443";
             return text.Trim();
         }
 

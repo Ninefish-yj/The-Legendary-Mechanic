@@ -22,11 +22,11 @@ namespace SuperMech.Code
         // 第一圣所=机械系(机械技术) 第二圣所=武道系 第三圣所=异能系(基因技术)
         // 第四圣所=魔法系 第五圣所=念力系 第六圣所=信息态技术(克制世界树，最难获取)
         public static readonly string[] SanctuaryNames = {
-            "第一圣所·机械", "第二圣所·武道", "第三圣所·异能",
-            "第四圣所·魔法", "第五圣所·念力", "第六圣所·信息态"
+            "sm_sanctuary_958", "sm_sanctuary_959", "sm_sanctuary_960",
+            "sm_sanctuary_961", "sm_sanctuary_962", "sm_sanctuary_963"
         };
         public static readonly string[] SanctuaryClasses = {
-            "机械系", "武道系", "异能系", "魔法系", "念力系", "信息态"
+            "sm_sanctuary_964", "sm_sanctuary_965", "sm_sanctuary_966", "sm_sanctuary_967", "sm_sanctuary_968", "sm_sanctuary_969"
         };
 
         public const int TotalSanctuaries = 6;
@@ -35,7 +35,7 @@ namespace SuperMech.Code
         public const int FragmentsToUnlock = 3;              // 集齐3碎片解锁圣所
 
         private static readonly string DataPath =
-            Path.Combine(Application.dataPath, "../Mods/超神机械师/sanctuary_data.json");
+            Path.Combine(Application.dataPath, "sm_sanctuary_970");
 
         public static SanctuaryData Data = new SanctuaryData();
         // 已触发神性蜕变的单位（避免重复触发）
@@ -342,8 +342,8 @@ namespace SuperMech.Code
 
             Save();
 
-            string className = GetClassTrait(a) ?? "未知";
-            string sanctuaryName = sanctuaryIndex >= 0 ? $"圣所{sanctuaryIndex + 1}" : "随机圣所";
+            string className = GetClassTrait(a) ?? "sm_sanctuary_971";
+            string sanctuaryName = sanctuaryIndex >= 0 ? $"sm_sanctuary_972" : "sm_sanctuary_973";
             Debug.Log($"[超神机械师] {a.name} 进入{sanctuaryName}！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
             return true;
         }
@@ -381,7 +381,7 @@ namespace SuperMech.Code
                         s["attack_speed"] = ((s["attack_speed"] == 0f ? 1f : s["attack_speed"])) * 1.05f;
                     }
                     // 机械系单位额外加成（同源知识吸收更快）
-                    if (SuperMechBranch.GetClass(a) == "机械系")
+                    if (SuperMechBranch.GetClass(a) == "sm_sanctuary_964")
                         SuperMechQi.AddQiMax(a, 200f + visits * 20f);
                     break;
 
@@ -401,7 +401,7 @@ namespace SuperMech.Code
                         s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.02f;
                     }
                     // 异能系单位额外解锁基因链阶段
-                    if (SuperMechBranch.GetClass(a) == "异能系")
+                    if (SuperMechBranch.GetClass(a) == "sm_sanctuary_966")
                         SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
@@ -412,7 +412,7 @@ namespace SuperMech.Code
                         s["mana"] = (s["mana"]) + 50f + visits * 5f;
                     }
                     // 魔法系单位额外提升魔力池
-                    if (SuperMechBranch.GetClass(a) == "魔法系")
+                    if (SuperMechBranch.GetClass(a) == "sm_sanctuary_967")
                         SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
@@ -423,7 +423,7 @@ namespace SuperMech.Code
                         s["mana"] = (s["mana"]) + 30f + visits * 3f; // 意志力用魔力模拟
                     }
                     // 念力系单位额外提升精神力
-                    if (SuperMechBranch.GetClass(a) == "念力系")
+                    if (SuperMechBranch.GetClass(a) == "sm_sanctuary_968")
                         SuperMechCorePower.AdvanceStage(a, 1);
                     break;
 
@@ -472,7 +472,7 @@ namespace SuperMech.Code
 
                 var rec = new DeadUnitRecord
                 {
-                    name = a.name ?? "未知",
+                    name = a.name ?? "sm_sanctuary_971",
                     classTrait = GetClassTrait(a),
                     branchTrait = SuperMechBranch.GetBranchTrait(a),
                     stage = SuperMechStage.GetStage(a),
@@ -506,7 +506,7 @@ namespace SuperMech.Code
                 {
                     _aliveSnapshot.Remove(id);
                     _transcendenceFailed.Remove(id);
-                    Debug.Log($"[超神机械师] {(_aliveSnapshot.ContainsKey(id) ? _aliveSnapshot[id].name : "未知")}（突破失败）化为超神遗力，无法圣所复苏");
+                    Debug.Log($"[超神机械师] {(_aliveSnapshot.ContainsKey(id) ? _aliveSnapshot[id].name : "sm_sanctuary_971")}（突破失败）化为超神遗力，无法圣所复苏");
                     continue;
                 }
                 var rec = _aliveSnapshot[id];
@@ -687,7 +687,7 @@ namespace SuperMech.Code
             var enterPower = new GodPower
             {
                 id = "sm_enter_sanctuary",
-                name = "进入圣所",
+                name = "sm_sanctuary_974",
                 path_icon = "ui/Icons/actor_traits/iconBlessing",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
@@ -718,11 +718,11 @@ namespace SuperMech.Code
             divinityTrait.base_stats["critical_chance"] = 0.05f;
             AssetManager.traits.add(divinityTrait);
 
-            LocalizedTextManager.add("power_sm_enter_sanctuary", "进入圣所", pReplace: true);
+            LocalizedTextManager.add("power_sm_enter_sanctuary", LocalizedTextManager.getText("sm_sanctuary_974"), pReplace: true);
             LocalizedTextManager.add("power_sm_enter_sanctuary_desc",
-                $"消耗3块圣所钥匙碎片，进入圣所获得知识（潜能点），数量=权限等级。共{TotalSanctuaries}个圣所，神性蜕变（78000欧纳+Lv21气力）获得圣所碎片。", pReplace: true);
-            LocalizedTextManager.add("trait_sm_divinity_ascended", "神性蜕变", pReplace: true);
-            LocalizedTextManager.add("trait_sm_divinity_ascended_info", "超越超A级的质变，伤害+20%生命+20%暴击+5%", pReplace: true);
+                $"sm_sanctuary_975", pReplace: true);
+            LocalizedTextManager.add("trait_sm_divinity_ascended", LocalizedTextManager.getText("sm_sanctuary_976"), pReplace: true);
+            LocalizedTextManager.add("trait_sm_divinity_ascended_info", LocalizedTextManager.getText("sm_sanctuary_977"), pReplace: true);
 
             Debug.Log("[超神机械师] 圣所系统注册完成（6圣所+神性蜕变检测）");
         }

@@ -46,59 +46,59 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 机械系协同
-            Add("syn_mech_assembly", "机械精通", "基础组装+武器改造，机械制造效率提升", "mech",
+            Add("syn_mech_assembly", "sm_knowledgesynergy_797", "sm_knowledgesynergy_798", "mech",
                 new[] { "sm_know_mech_0_0_0", "sm_know_mech_0_0_1" },
                 dmgMul: 1.1f, speedMul: 1.1f);
 
-            Add("syn_mech_energy", "能量工程", "能量护盾+能量核心，能量类装备效果提升", "mech",
+            Add("syn_mech_energy", "sm_knowledgesynergy_799", "sm_knowledgesynergy_800", "mech",
                 new[] { "sm_know_mech_1_1_0", "sm_know_mech_1_1_1" },
                 hpMul: 1.15f, qiBonus: 500f);
 
-            Add("syn_mech_virtual", "虚拟网络", "虚拟入侵+数据解析，虚拟系能力联动", "mech",
+            Add("syn_mech_virtual", "sm_knowledgesynergy_801", "sm_knowledgesynergy_802", "mech",
                 new[] { "sm_know_mech_2_2_0", "sm_know_mech_2_2_1" },
                 dmgMul: 1.2f, speedMul: 1.15f);
 
-            Add("syn_mech_god", "神级机械", "星海工程+真理造物，接近古神机械师水平", "mech",
+            Add("syn_mech_god", "sm_knowledgesynergy_803", "sm_knowledgesynergy_804", "mech",
                 new[] { "sm_know_mech_3_1_0", "sm_know_mech_4_1_0" },
                 dmgMul: 1.5f, hpMul: 1.3f, potentialBonus: 5);
 
             // 武道系协同
-            Add("syn_martial_body", "炼体大成", "基础炼体+力量训练，体魄强度提升", "martial",
+            Add("syn_martial_body", "sm_knowledgesynergy_805", "sm_knowledgesynergy_806", "martial",
                 new[] { "sm_know_martial_0_1_0", "sm_know_martial_0_1_1" },
                 hpMul: 1.15f, dmgMul: 1.05f);
 
-            Add("syn_martial_speed", "疾风步", "敏捷训练+步法精通，移动和攻速提升", "martial",
+            Add("syn_martial_speed", "sm_knowledgesynergy_807", "sm_knowledgesynergy_808", "martial",
                 new[] { "sm_know_martial_0_0_0", "sm_know_martial_1_0_0" },
                 speedMul: 1.2f);
 
-            Add("syn_martial_qi", "气劲外放", "气劲掌握+暴气技巧，气力转化效率提升", "martial",
+            Add("syn_martial_qi", "sm_knowledgesynergy_809", "sm_knowledgesynergy_810", "martial",
                 new[] { "sm_know_martial_1_2_0", "sm_know_martial_2_2_0" },
                 dmgMul: 1.15f, qiBonus: 800f);
 
             // 异能系协同
-            Add("syn_psi_gene", "基因觉醒", "一阶基因链+二阶基因链，基因能力联动", "psi",
+            Add("syn_psi_gene", "sm_knowledgesynergy_811", "sm_knowledgesynergy_812", "psi",
                 new[] { "sm_know_psi_0_0_0", "sm_know_psi_1_0_0" },
                 dmgMul: 1.15f);
 
-            Add("syn_psi_control", "精细操控", "操控强化+能级强化，异能精度提升", "psi",
+            Add("syn_psi_control", "sm_knowledgesynergy_813", "sm_knowledgesynergy_814", "psi",
                 new[] { "sm_know_psi_1_1_0", "sm_know_psi_2_1_0" },
                 dmgMul: 1.1f, speedMul: 1.1f);
 
             // 魔法系协同
-            Add("syn_mage_element", "元素共鸣", "元素掌握+元素精通，元素魔法效果提升", "mage",
+            Add("syn_mage_element", "sm_knowledgesynergy_815", "sm_knowledgesynergy_816", "mage",
                 new[] { "sm_know_mage_0_2_0", "sm_know_mage_1_2_0" },
                 dmgMul: 1.2f);
 
-            Add("syn_mage_arcane", "奥术精通", "专精魔法+魔网链接，魔力效率提升", "mage",
+            Add("syn_mage_arcane", "sm_knowledgesynergy_817", "sm_knowledgesynergy_818", "mage",
                 new[] { "sm_know_mage_1_0_0", "sm_know_mage_2_0_0" },
                 hpMul: 1.1f, qiBonus: 600f);
 
             // 念力系协同
-            Add("syn_mind_soul", "灵魂链接", "灵魂感知+灵魂操控，精神力联动", "mind",
+            Add("syn_mind_soul", "sm_knowledgesynergy_819", "sm_knowledgesynergy_820", "mind",
                 new[] { "sm_know_mind_0_0_0", "sm_know_mind_1_0_0" },
                 dmgMul: 1.15f, speedMul: 1.05f);
 
-            Add("syn_mind_reality", "现实扭曲", "法则掌握+现实干涉，接近规则级能力", "mind",
+            Add("syn_mind_reality", "sm_knowledgesynergy_821", "sm_knowledgesynergy_822", "mind",
                 new[] { "sm_know_mind_2_1_0", "sm_know_mind_3_1_0" },
                 dmgMul: 1.3f, hpMul: 1.2f, potentialBonus: 3);
 

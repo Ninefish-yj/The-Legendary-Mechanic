@@ -22,7 +22,7 @@ namespace SuperMech.Code
         // 索引：0=无阶位, 1=F, 2=E, 3=D, 4=D+, 5=C, 6=C+, 7=B, 8=B+, 9=A, 10=A+, 11=S, 12=S+, 13=SS, 14=X
         private static readonly (string title, string desc)[] RankStatus = new (string, string)[]
         {
-            ("普通人", "未踏入超能之路"),                              // 0: 无阶位
+            ("sm_cultivationstatus_470", "未踏入超能之路"),                              // 0: 无阶位
             ("F阶", "初入超能，玩家过渡阶位（星海人无此阶）"),         // 1: F（ch5：玩家lv1-20对应F阶）
             ("E级超能者", "初步脱离了普通人的范畴，但距离真正的非凡生命，还有很长的路要走"), // 2: E（ch48原文）
             ("D级超能者", "中级超能者，星际常规战力"),                  // 3: D
@@ -44,51 +44,51 @@ namespace SuperMech.Code
         // ch49: 达到标准，便晋升下一个气力等级，获得新的属性加成
         private static readonly (int minLv, string desc)[] QiStatus = new (int, string)[]
         {
-            (1, "气力初生（lv1标准10点）"),
-            (3, "气力渐丰（lv3标准100点）"),
+            (1, "sm_cultivationstatus_444"),
+            (3, "sm_cultivationstatus_445"),
             (6, "气力质变（lv6解锁气力属性强化）"),  // ch49: 第一次气力质变在Lv6
-            (11, "气力深厚（高阶超能者标准）"),
-            (16, "气力如海（天灾级标准）"),
+            (11, "sm_cultivationstatus_446"),
+            (16, "sm_cultivationstatus_447"),
             (21, "气力圆满（神性蜕变门槛78000欧纳）"), // ch1039: 神性蜕变触发条件
-            (31, "气力通天（超神级标准）"),
+            (31, "sm_cultivationstatus_448"),
         };
 
         // === 神性蜕变描述（原著ch1039/ch1043）===
         // 双路线：职业蜕变+种族蜕变，各10层
         private static readonly string[] ProfLayerStatus = new string[]
         {
-            "未开启",
-            "职业神性1层",
-            "职业神性2层",
-            "职业神性3层",
-            "职业神性4层",
-            "职业神性5层",
-            "职业神性6层",
-            "职业神性7层",
-            "职业神性8层",
-            "职业神性9层",
-            "职业神性圆满",
+            "sm_cultivationstatus_449",
+            "sm_cultivationstatus_450",
+            "sm_cultivationstatus_451",
+            "sm_cultivationstatus_452",
+            "sm_cultivationstatus_453",
+            "sm_cultivationstatus_454",
+            "sm_cultivationstatus_455",
+            "sm_cultivationstatus_456",
+            "sm_cultivationstatus_457",
+            "sm_cultivationstatus_458",
+            "sm_cultivationstatus_459",
         };
 
         private static readonly string[] SpeciesLayerStatus = new string[]
         {
             "",
-            "种族神性1层",
-            "种族神性2层",
-            "种族神性3层",
-            "种族神性4层",
-            "种族神性5层",
-            "种族神性6层",
-            "种族神性7层",
-            "种族神性8层",
-            "种族神性9层",
-            "种族神性圆满",
+            "sm_cultivationstatus_460",
+            "sm_cultivationstatus_461",
+            "sm_cultivationstatus_462",
+            "sm_cultivationstatus_463",
+            "sm_cultivationstatus_464",
+            "sm_cultivationstatus_465",
+            "sm_cultivationstatus_466",
+            "sm_cultivationstatus_467",
+            "sm_cultivationstatus_468",
+            "sm_cultivationstatus_469",
         };
 
         /// <summary>获取阶位称号。</summary>
         public static string GetRankTitle(int rankIndex)
         {
-            if (rankIndex < 0 || rankIndex >= RankStatus.Length) return "普通人";
+            if (rankIndex < 0 || rankIndex >= RankStatus.Length) return LocalizedTextManager.getText("sm_cultivationstatus_470");
             return RankStatus[rankIndex].title;
         }
 
@@ -118,20 +118,20 @@ namespace SuperMech.Code
             if (profLayer > 0 && speciesLayer > 0) return $"{prof}·{species}";
             if (profLayer > 0) return prof;
             if (speciesLayer > 0) return species;
-            return "未开启神性蜕变";
+            return LocalizedTextManager.getText("sm_cultivationstatus_471");
         }
 
         /// <summary>获取当前修炼状态。</summary>
         public static string GetCultivationState(Actor a, int rankIndex, int qiLevel)
         {
             // X阶超神级
-            if (rankIndex >= 14) return "已证超神，概念永生";
+            if (rankIndex >= 14) return LocalizedTextManager.getText("sm_cultivationstatus_472");
             // SS阶半步超神
-            if (rankIndex >= 13) return "半步超神，等待契机";
+            if (rankIndex >= 13) return LocalizedTextManager.getText("sm_cultivationstatus_473");
             // A阶瓶颈（ch371: 基因进化到一定高度会碰上坚不可摧的瓶颈壁垒）
-            if (rankIndex >= 9 && rankIndex <= 10 && qiLevel >= 21) return "瓶颈期（前面看不到路了）";
+            if (rankIndex >= 9 && rankIndex <= 10 && qiLevel >= 21) return LocalizedTextManager.getText("sm_cultivationstatus_474");
             // 修炼中
-            return "修炼中";
+            return LocalizedTextManager.getText("sm_cultivationstatus_475");
         }
 
         /// <summary>生成完整的修炼状态文本（用于单位面板顶部展示）。</summary>
@@ -157,11 +157,11 @@ namespace SuperMech.Code
             string state = GetCultivationState(a, rankIndex, qiLevel);
 
             // 简化：阶位+描述一行，气力一行，神性/状态只在有内容时显示
-            string result = $"【{title}】{desc}\n气力：{qiDesc}";
+            string result = $"sm_cultivationstatus_476";
             if (profLayer > 0 || speciesLayer > 0)
-                result += $"\n神性：{divinity}";
-            if (!string.IsNullOrEmpty(state) && state != "修炼中")
-                result += $"\n状态：{state}";
+                result += $"sm_cultivationstatus_477";
+            if (!string.IsNullOrEmpty(state) && state != "sm_cultivationstatus_475")
+                result += $"sm_cultivationstatus_478";
             return result;
         }
 

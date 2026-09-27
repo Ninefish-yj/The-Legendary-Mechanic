@@ -29,50 +29,50 @@ namespace SuperMech.Code
         public static readonly List<SkillDef> AllSkills = new List<SkillDef>
         {
             new SkillDef {
-                id = "sm_skill_qimod", name = "气力改装·LVMAX",
-                desc = "气力数值按比例增加制造机械的效率与品质（原著ch237：电磁因子提炼法）",
+                id = "sm_skill_qimod", name = "sm_skills_986",
+                desc = "sm_skills_987",
                 icon = "ui/Icons/actor_traits/iconBattleReflexes",
                 requiredClass = "机械", requiredStage = 3, requiredKnowledge = "sm_know_mech_1_0_0", // 电磁理论进阶知识
                 intelligence = 5, dmgMul = 1.1f, hpMul = 1f, speedMul = 1f
             },
             new SkillDef {
-                id = "sm_skill_virtual_purify", name = "虚拟净化复原·LVMAX",
-                desc = "净化病毒感染的智能目标（原著ch539：虚拟生命净化技术）",
+                id = "sm_skill_virtual_purify", name = "sm_skills_988",
+                desc = "sm_skills_989",
                 icon = "ui/Icons/actor_traits/iconChosenOne",
                 requiredClass = "机械", requiredStage = 6, requiredKnowledge = "sm_know_mech_2_0_0", // 虚拟技术高端知识
                 intelligence = 3, dmgMul = 1.05f, hpMul = 1.05f, speedMul = 1f
             },
             new SkillDef {
-                id = "sm_skill_dimension_march", name = "次级维度行军·LVMAX",
-                desc = "打开黑色传送门进行维度行军（原著ch626：星海阶段维度技术）",
+                id = "sm_skill_dimension_march", name = "sm_skills_990",
+                desc = "sm_skills_991",
                 icon = "ui/Icons/actor_traits/iconBlessing",
                 requiredClass = "机械", requiredStage = 7, requiredKnowledge = "sm_know_mech_3_0_0", // 维度技术尖端知识
                 intelligence = 8, dmgMul = 1.2f, hpMul = 1.1f, speedMul = 1.1f
             },
             new SkillDef {
-                id = "sm_skill_qi_burst", name = "暴气·LVMAX",
-                desc = "气劲外放，短时间内大幅提升攻击力（原著ch50：武道超能离体波动）",
+                id = "sm_skill_qi_burst", name = "sm_skills_992",
+                desc = "sm_skills_993",
                 icon = "ui/Icons/actor_traits/iconRage",
                 requiredClass = "武道", requiredStage = 4, requiredKnowledge = "sm_know_martial_1_2_0", // 超能分支进阶知识（气劲外放）
                 intelligence = 0, dmgMul = 1.3f, hpMul = 1f, speedMul = 1.2f
             },
             new SkillDef {
-                id = "sm_skill_gene_awaken", name = "基因觉醒·LVMAX",
-                desc = "激发基因链潜力，临时提升异能强度（原著ch50：二阶基因链）",
+                id = "sm_skill_gene_awaken", name = "sm_skills_994",
+                desc = "sm_skills_995",
                 icon = "ui/Icons/actor_traits/iconGenius",
                 requiredClass = "异能", requiredStage = 4, requiredKnowledge = "sm_know_psi_1_0_0", // 攻效分支进阶知识（基因链理论）
                 intelligence = 3, dmgMul = 1.25f, hpMul = 1f, speedMul = 1f
             },
             new SkillDef {
-                id = "sm_skill_element_mastery", name = "元素掌控·LVMAX",
-                desc = "掌控元素能量，提升魔法伤害与范围（原著ch50：魔法元素亲和）",
+                id = "sm_skill_element_mastery", name = "sm_skills_996",
+                desc = "sm_skills_997",
                 icon = "ui/Icons/actor_traits/iconFire",
                 requiredClass = "魔法", requiredStage = 4, requiredKnowledge = "sm_know_mage_1_0_0", // 元素魔法进阶知识
                 intelligence = 4, dmgMul = 1.3f, hpMul = 1f, speedMul = 1f
             },
             new SkillDef {
-                id = "sm_skill_soul_shock", name = "灵魂冲击·LVMAX",
-                desc = "精神力直接攻击对方灵魂，造成精神伤害（原著ch50：念力灵魂攻击）",
+                id = "sm_skill_soul_shock", name = "sm_skills_998",
+                desc = "sm_skills_999",
                 icon = "ui/Icons/actor_traits/iconMind",
                 requiredClass = "念力", requiredStage = 4, requiredKnowledge = "sm_know_mind_1_0_0", // 灵魂分支进阶知识
                 intelligence = 5, dmgMul = 1.35f, hpMul = 1f, speedMul = 1.1f
@@ -186,11 +186,11 @@ namespace SuperMech.Code
             if (a == null || !_learned.TryGetValue(a.id, out var set)) return bonus;
             string cls = SuperMechBranch.GetClass(a);
             string prefix = "";
-            if (cls == "机械系") prefix = "mech";
-            else if (cls == "武道系") prefix = "martial";
-            else if (cls == "异能系") prefix = "psi";
-            else if (cls == "魔法系") prefix = "mage";
-            else if (cls == "念力系") prefix = "mind";
+            if (cls == "sm_skills_1000") prefix = "mech";
+            else if (cls == "sm_skills_1001") prefix = "martial";
+            else if (cls == "sm_skills_1002") prefix = "psi";
+            else if (cls == "sm_skills_1003") prefix = "mage";
+            else if (cls == "sm_skills_1004") prefix = "mind";
             int knowCount = !string.IsNullOrEmpty(prefix) ? SuperMechKnowledge.GetUnlockedCount(a, prefix) : 0;
             float knowMul = 1f + knowCount * 0.02f; // 每学会1个同系知识，技能伤害+2%
             foreach (var def in AllSkills)

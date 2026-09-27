@@ -48,9 +48,8 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            LocalizedTextManager.add("trait_" + RefinementTrait, "气力提炼法", pReplace: true);
-            LocalizedTextManager.add("trait_" + RefinementTrait + "_info",
-                "ch50/ch51原著。超能者自行领悟的基础气力修行法，全系通用。基础气力+10，锻炼0/80次，每次按完美度加1~3气力（完美度取决于职业主属性），每次消耗800经验、500体力。", pReplace: true);
+            LocalizedTextManager.add("trait_" + RefinementTrait, LocalizedTextManager.getText("sm_refinement_080"), pReplace: true);
+            LocalizedTextManager.add("trait_" + RefinementTrait + "_info", LocalizedTextManager.getText("sm_refinement_081"), pReplace: true);
             var t = new ActorTrait
             {
                 id = RefinementTrait, path_icon = "ui/Icons/actor_traits/iconFireBlood", group_id = "sm_refinement",
@@ -58,9 +57,8 @@ namespace SuperMech.Code
             };
             AssetManager.traits.add(t);
 
-            LocalizedTextManager.add("trait_" + EmRefinementTrait, "电磁因子提炼法", pReplace: true);
-            LocalizedTextManager.add("trait_" + EmRefinementTrait + "_info",
-                "ch237/ch277原著。机械师专属成长型技能，限制100次提炼，效果取决于智力属性。", pReplace: true);
+            LocalizedTextManager.add("trait_" + EmRefinementTrait, LocalizedTextManager.getText("sm_refinement_082"), pReplace: true);
+            LocalizedTextManager.add("trait_" + EmRefinementTrait + "_info", LocalizedTextManager.getText("sm_refinement_083"), pReplace: true);
             var t2 = new ActorTrait
             {
                 id = EmRefinementTrait, path_icon = "ui/Icons/actor_traits/iconFireBlood", group_id = "sm_refinement",
@@ -71,7 +69,7 @@ namespace SuperMech.Code
             var givePower = new GodPower
             {
                 id = "sm_give_refinement",
-                name = "传授提炼法",
+                name = "sm_refinement_084",
                 path_icon = "iconDivineLight",
                 rank = PowerRank.Rank0_free,
                 force_map_mode = MetaType.None,
@@ -99,12 +97,12 @@ namespace SuperMech.Code
                 return true;
             };
             AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_refinement", "传授提炼法", pReplace: true);
+            LocalizedTextManager.add("power_sm_give_refinement", LocalizedTextManager.getText("sm_refinement_084"), pReplace: true);
 
             // 三系提炼法变种（原著ch172：就连异能系也屁颠颠来学）
-            AddVariantTrait(PsiResonance, "基因提炼法（异能系）", "战斗中基因链共鸣，异能系单位智力额外增长。");
-            AddVariantTrait(ManaMeditation, "魔力提炼法（魔法系）", "持续冥想提炼魔力，魔法系单位智力与魔力池额外增长。");
-            AddVariantTrait(MindTrain, "精神提炼法（念力系）", "精神力日常锻炼提炼，念力系单位智力与精神力额外增长。");
+            AddVariantTrait(PsiResonance, "sm_refinement_085", "sm_refinement_086");
+            AddVariantTrait(ManaMeditation, "sm_refinement_087", "sm_refinement_088");
+            AddVariantTrait(MindTrain, "sm_refinement_089", "sm_refinement_090");
 
             Debug.Log("[超神机械师] 提炼法系统注册完成（气力提炼法全系通用+电磁因子提炼法机械专属+三系变种）");
         }
@@ -299,15 +297,15 @@ namespace SuperMech.Code
             {
                 int c = GetRefineCount(a);
                 float bonus = GetRefineQiBonus(a);
-                text += $"提炼法 {c}/{MaxRefineCount}（气力+{bonus:F0}）";
-                if (c >= MaxRefineCount) text += " 圆满";
+                text += $"sm_refinement_091";
+                if (c >= MaxRefineCount) text += "sm_refinement_092";
             }
             if (hasEm)
             {
                 int c = GetEmRefineCount(a);
                 if (text.Length > 0) text += " | ";
-                text += $"电磁因子 {c}/{MaxEmRefineCount}";
-                if (c >= MaxEmRefineCount) text += " 圆满";
+                text += $"sm_refinement_093";
+                if (c >= MaxEmRefineCount) text += "sm_refinement_092";
             }
             return text;
         }

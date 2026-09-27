@@ -19,7 +19,7 @@ namespace SuperMech.Code
             public string id;
             public string equipId;        // 产物装备ID（融合成功时动态注册）
             public string equipName;      // 产物名称
-            public string productType;    // 产物类型："图纸"(机械系) / "秘法"(武道) / "配方"(异能) / "卷轴"(魔法) / "秘典"(念力)
+            public string productType;    // 产物类型："sm_knowledgefusion_750"(机械系) / "sm_knowledgefusion_759"(武道) / "sm_knowledgefusion_764"(异能) / "sm_knowledgefusion_767"(魔法) / "sm_knowledgefusion_770"(念力)
             public string desc;
             public string[] requiredKnowledge; // 需要的知识ID
             public int xpCost;
@@ -46,63 +46,63 @@ namespace SuperMech.Code
         public static void Register()
         {
             // ===== 机械系融合（原著图纸名，productType=图纸）=====
-            Add("fusion_foldable_turret", "sm_fusion_foldable_turret", "折叠式小型炮台", "图纸",
-                "ch136：知识融合出的固定炮台，加入折叠技术，非常实用",
+            Add("fusion_foldable_turret", "sm_fusion_foldable_turret", "sm_knowledgefusion_749", "sm_knowledgefusion_750",
+                "sm_knowledgefusion_751",
                 new[] { "sm_know_mech_0_0_0", "sm_know_mech_0_0_1" },
                 5000, 0.8f, 1.5f, 1.3f, 1.1f, 200, "ui/Icons/actor_traits/iconBlessing");
 
-            Add("fusion_emp_regulator", "sm_fusion_emp_regulator", "电磁脉冲调理器", "图纸",
-                "ch141：用电磁波调理生物体的特殊装备，提升状态",
+            Add("fusion_emp_regulator", "sm_fusion_emp_regulator", "sm_knowledgefusion_752", "sm_knowledgefusion_750",
+                "sm_knowledgefusion_753",
                 new[] { "sm_know_mech_1_1_0", "sm_know_mech_1_1_1" },
                 15000, 0.7f, 1.8f, 1.5f, 1.2f, 500, "ui/Icons/actor_traits/iconChosenOne");
 
-            Add("fusion_viper_mech", "sm_fusion_viper_mech", "蝰蛇轻装机甲", "图纸",
-                "ch168：四个进阶知识组合的知识融合，进阶标准稀有装备",
+            Add("fusion_viper_mech", "sm_fusion_viper_mech", "sm_knowledgefusion_754", "sm_knowledgefusion_750",
+                "sm_knowledgefusion_755",
                 new[] { "sm_know_mech_2_0_0", "sm_know_mech_2_1_0", "sm_know_mech_2_2_0" },
                 40000, 0.5f, 3.0f, 2.5f, 1.3f, 1000, "ui/Icons/actor_traits/iconChosenOne");
 
-            Add("fusion_god_mech", "sm_fusion_god_mech", "神级机械核心", "图纸",
-                "尖端+终极知识融合，接近古神机械师水平的造物",
+            Add("fusion_god_mech", "sm_fusion_god_mech", "sm_knowledgefusion_756", "sm_knowledgefusion_750",
+                "sm_knowledgefusion_757",
                 new[] { "sm_know_mech_3_1_0", "sm_know_mech_4_1_0" },
                 100000, 0.35f, 6.0f, 4.5f, 1.5f, 3000, "ui/Icons/actor_traits/iconChosenOne");
 
             // ===== 武道系融合（productType=秘法）=====
-            Add("fusion_body_armor", "sm_fusion_body_armor", "炼体秘法·金刚护体", "秘法",
-                "体魄类知识融合，将炼体技巧化为护体秘法",
+            Add("fusion_body_armor", "sm_fusion_body_armor", "sm_knowledgefusion_758", "sm_knowledgefusion_759",
+                "sm_knowledgefusion_760",
                 new[] { "sm_know_martial_0_1_0", "sm_know_martial_0_1_1" },
                 8000, 0.75f, 1.3f, 2.0f, 1.0f, 300, "ui/Icons/actor_traits/iconBlessing");
 
-            Add("fusion_qi_burst_device", "sm_fusion_qi_burst_device", "暴气秘法·气劲爆发", "秘法",
-                "气劲类知识融合，掌握暴气技巧的战斗秘法",
+            Add("fusion_qi_burst_device", "sm_fusion_qi_burst_device", "sm_knowledgefusion_761", "sm_knowledgefusion_759",
+                "sm_knowledgefusion_762",
                 new[] { "sm_know_martial_1_2_0", "sm_know_martial_2_2_0" },
                 20000, 0.65f, 2.0f, 1.5f, 1.4f, 600, "ui/Icons/actor_traits/iconChosenOne");
 
             // ===== 异能系融合（productType=配方）=====
-            Add("fusion_gene_catalyst", "sm_fusion_gene_catalyst", "基因觉醒配方", "配方",
-                "基因类知识融合，加速基因链觉醒的特殊配方",
+            Add("fusion_gene_catalyst", "sm_fusion_gene_catalyst", "sm_knowledgefusion_763", "sm_knowledgefusion_764",
+                "sm_knowledgefusion_765",
                 new[] { "sm_know_psi_0_0_0", "sm_know_psi_1_0_0" },
                 10000, 0.7f, 1.6f, 1.4f, 1.1f, 400, "ui/Icons/actor_traits/iconBlessing");
 
             // ===== 魔法系融合（productType=卷轴）=====
-            Add("fusion_element_crystal", "sm_fusion_element_crystal", "元素共鸣卷轴", "卷轴",
-                "元素类知识融合，储存元素能量的魔法卷轴",
+            Add("fusion_element_crystal", "sm_fusion_element_crystal", "sm_knowledgefusion_766", "sm_knowledgefusion_767",
+                "sm_knowledgefusion_768",
                 new[] { "sm_know_mage_0_2_0", "sm_know_mage_1_2_0" },
                 12000, 0.7f, 1.7f, 1.6f, 1.2f, 500, "ui/Icons/actor_traits/iconBlessing");
 
             // ===== 念力系融合（productType=秘典）=====
-            Add("fusion_soul_amplifier", "sm_fusion_soul_amplifier", "灵魂增幅秘典", "秘典",
-                "灵魂类知识融合，放大精神力的精神秘典",
+            Add("fusion_soul_amplifier", "sm_fusion_soul_amplifier", "sm_knowledgefusion_769", "sm_knowledgefusion_770",
+                "sm_knowledgefusion_771",
                 new[] { "sm_know_mind_0_0_0", "sm_know_mind_1_0_0" },
                 15000, 0.65f, 1.8f, 1.5f, 1.3f, 700, "ui/Icons/actor_traits/iconChosenOne");
 
             // ===== 跨系融合（productType=融合造物）=====
-            Add("fusion_mech_martial", "sm_fusion_mech_martial", "械武者外骨骼", "融合造物",
-                "机械+武道知识融合，械武者专属外骨骼装甲",
+            Add("fusion_mech_martial", "sm_fusion_mech_martial", "sm_knowledgefusion_772", "sm_knowledgefusion_773",
+                "sm_knowledgefusion_774",
                 new[] { "sm_know_mech_0_0_0", "sm_know_martial_0_1_0" },
                 25000, 0.5f, 2.5f, 2.0f, 1.3f, 800, "ui/Icons/actor_traits/iconChosenOne");
 
-            Add("fusion_psi_mind", "sm_fusion_psi_mind", "精神异能核心", "融合造物",
-                "异能+念力知识融合，将基因异能与精神力结合",
+            Add("fusion_psi_mind", "sm_fusion_psi_mind", "sm_knowledgefusion_775", "sm_knowledgefusion_773",
+                "sm_knowledgefusion_776",
                 new[] { "sm_know_psi_0_0_0", "sm_know_mind_0_0_0" },
                 30000, 0.45f, 2.2f, 1.8f, 1.4f, 1000, "ui/Icons/actor_traits/iconChosenOne");
 
@@ -261,7 +261,7 @@ namespace SuperMech.Code
         {
             if (a == null) return false;
             // 只有机械系能制造装备
-            if (!SuperMechBranch.GetClass(a).Contains("机械")) return false;
+            if (!SuperMechBranch.GetClass(a).Contains("sm_knowledgefusion_777")) return false;
             // 检查是否学会了图纸
             if (!_unlockedRecipes.TryGetValue(a.id, out var set) || !set.Contains(recipeId)) return false;
             // 检查制造冷却

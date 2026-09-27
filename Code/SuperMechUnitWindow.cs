@@ -107,11 +107,11 @@ namespace SuperMech.Code
         {
             switch (cls)
             {
-                case "武道系": return LocalizedTextManager.getText("sm_aspect_martial");
-                case "念力系": return LocalizedTextManager.getText("sm_aspect_mind");
-                case "魔法系": return LocalizedTextManager.getText("sm_aspect_mage");
-                case "异能系": return LocalizedTextManager.getText("sm_aspect_psi");
-                case "机械系": return LocalizedTextManager.getText("sm_aspect_mech");
+                case "sm_unitwindow_1146": return LocalizedTextManager.getText("sm_aspect_martial");
+                case "sm_unitwindow_1147": return LocalizedTextManager.getText("sm_aspect_mind");
+                case "sm_unitwindow_1148": return LocalizedTextManager.getText("sm_aspect_mage");
+                case "sm_unitwindow_1149": return LocalizedTextManager.getText("sm_aspect_psi");
+                case "sm_unitwindow_1150": return LocalizedTextManager.getText("sm_aspect_mech");
                 default: return "";
             }
         }
@@ -132,12 +132,12 @@ namespace SuperMech.Code
             string cls = SuperMechProfession.GetClass(a);
             switch (cls)
             {
-                case "机械系":
+                case "sm_unitwindow_1150":
                     // ch237：磁环阶段后气力改称械力（阶段索引3=磁环）
                     int stage = SuperMechStage.GetStage(a);
                     return stage >= 3 ? LocalizedTextManager.getText("sm_qi_mech") : LocalizedTextManager.getText("sm_qi_qi");
-                case "魔法系": return LocalizedTextManager.getText("sm_qi_mage");
-                case "念力系": return LocalizedTextManager.getText("sm_qi_mind");
+                case "sm_unitwindow_1148": return LocalizedTextManager.getText("sm_qi_mage");
+                case "sm_unitwindow_1147": return LocalizedTextManager.getText("sm_qi_mind");
                 default: return LocalizedTextManager.getText("sm_qi_qi");
             }
         }
@@ -147,10 +147,10 @@ namespace SuperMech.Code
         {
             switch (cls)
             {
-                case "武道系": return LocalizedTextManager.getText("sm_tree_martial");
-                case "异能系": return LocalizedTextManager.getText("sm_tree_psi");
-                case "魔法系": return LocalizedTextManager.getText("sm_tree_mage");
-                case "念力系": return LocalizedTextManager.getText("sm_tree_mind");
+                case "sm_unitwindow_1146": return LocalizedTextManager.getText("sm_tree_martial");
+                case "sm_unitwindow_1149": return LocalizedTextManager.getText("sm_tree_psi");
+                case "sm_unitwindow_1148": return LocalizedTextManager.getText("sm_tree_mage");
+                case "sm_unitwindow_1147": return LocalizedTextManager.getText("sm_tree_mind");
                 default: return LocalizedTextManager.getText("sm_tree_mech");
             }
         }
@@ -215,11 +215,11 @@ namespace SuperMech.Code
             {
                 // 潜能点（所有超能者都有，初始5点）
                 float pp = a.stats[SuperMechCustomStats.StatPotentialPoints];
-                if (pp > 0) ShowRow(window, "潜能点", pp.ToString("F0"));
+                if (pp > 0) ShowRow(window, "sm_unitwindow_1151", pp.ToString("F0"));
 
                 // 神性蜕变层数（职业+种族各10层，ch1039）
                 float div = a.stats[SuperMechCustomStats.StatDivinityLayers];
-                if (div > 0) ShowRow(window, "神性蜕变", div.ToString("F0") + "层");
+                if (div > 0) ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + "sm_unitwindow_1153");
 
                 // 圣所权限（6个圣所独立权限，ch1266：碎片=权限）
                 int sanctuaryTotal = 0;
@@ -232,26 +232,26 @@ namespace SuperMech.Code
                     SuperMechCustomStats.StatSanctuary6
                 };
                 foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
-                if (sanctuaryTotal > 0) ShowRow(window, "圣所权限", sanctuaryTotal + "碎片");
+                if (sanctuaryTotal > 0) ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + "sm_unitwindow_1155");
 
                 // 注：魔力/精神力不单独显示——它们就是气力在魔法系/念力系的表现形式，
                 // 已在主面板"气力/魔力/精神力"消耗条中显示（原著ch3/ch50：气力是五系统一基础）
 
                 // 械感（机械亲和度，ch50：气力属性【磁】增加机械亲和度）
                 float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
-                if (mechAff > 0) ShowRow(window, "械感", mechAff.ToString("F0") + "%");
+                if (mechAff > 0) ShowRow(window, "sm_unitwindow_1156", mechAff.ToString("F0") + "%");
 
                 // 魔感（魔法亲和度）
                 float mageAff = a.stats[SuperMechCustomStats.StatMageAffinity];
-                if (mageAff > 0) ShowRow(window, "魔感", mageAff.ToString("F0") + "%");
+                if (mageAff > 0) ShowRow(window, "sm_unitwindow_1157", mageAff.ToString("F0") + "%");
 
                 // 原著7属性补充：神秘/魅力/幸运（ch3）
                 float mystery = a.stats[SuperMechCustomStats.StatMystery];
-                if (mystery > 0) ShowRow(window, "神秘", mystery.ToString("F0"));
+                if (mystery > 0) ShowRow(window, "sm_unitwindow_1158", mystery.ToString("F0"));
                 float charm = a.stats[SuperMechCustomStats.StatCharm];
-                if (charm > 0) ShowRow(window, "魅力", charm.ToString("F0"));
+                if (charm > 0) ShowRow(window, "sm_unitwindow_1159", charm.ToString("F0"));
                 float luck = a.stats[SuperMechCustomStats.StatLuck];
-                if (luck > 0) ShowRow(window, "幸运", luck.ToString("F0"));
+                if (luck > 0) ShowRow(window, "sm_unitwindow_1160", luck.ToString("F0"));
             }
             catch (Exception e)
             {

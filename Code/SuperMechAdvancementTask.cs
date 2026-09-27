@@ -71,9 +71,9 @@ namespace SuperMech.Code
             float r = Random.value;
             if (stage >= 8)
             {
-                if (r < 0.5f) return new AdvanceReq { type = ReqType.Attribute, statKey = "intelligence", statValue = IntThresholds[stage], desc = $"智力>{IntThresholds[stage]}" };
-                if (r < 0.75f) return new AdvanceReq { type = ReqType.TotalLevel, intValue = TotalLevelThresholds[stage], desc = $"总等级>{TotalLevelThresholds[stage]}" };
-                return new AdvanceReq { type = ReqType.Knowledge, intValue = KnowledgeThresholds[stage], desc = $"学会{KnowledgeThresholds[stage]}项进阶知识" };
+                if (r < 0.5f) return new AdvanceReq { type = ReqType.Attribute, statKey = "intelligence", statValue = IntThresholds[stage], desc = $"sm_advancementtask_501" };
+                if (r < 0.75f) return new AdvanceReq { type = ReqType.TotalLevel, intValue = TotalLevelThresholds[stage], desc = $"sm_advancementtask_502" };
+                return new AdvanceReq { type = ReqType.Knowledge, intValue = KnowledgeThresholds[stage], desc = $"sm_advancementtask_503" };
             }
             else
             {
@@ -81,16 +81,16 @@ namespace SuperMech.Code
                 // 其他系：知识/属性/总等级（没有制造任务）
                 if (isMech)
                 {
-                    if (r < 0.4f) return new AdvanceReq { type = ReqType.Knowledge, intValue = KnowledgeThresholds[stage], desc = $"学会{KnowledgeThresholds[stage]}项进阶知识" };
-                    if (r < 0.7f) return new AdvanceReq { type = ReqType.Craft, intValue = CraftThresholds[stage], desc = $"制造{CraftThresholds[stage]}个机械单位" };
-                    if (r < 0.9f) return new AdvanceReq { type = ReqType.Attribute, statKey = "intelligence", statValue = IntThresholds[stage], desc = $"智力>{IntThresholds[stage]}" };
-                    return new AdvanceReq { type = ReqType.TotalLevel, intValue = TotalLevelThresholds[stage], desc = $"总等级>{TotalLevelThresholds[stage]}" };
+                    if (r < 0.4f) return new AdvanceReq { type = ReqType.Knowledge, intValue = KnowledgeThresholds[stage], desc = $"sm_advancementtask_503" };
+                    if (r < 0.7f) return new AdvanceReq { type = ReqType.Craft, intValue = CraftThresholds[stage], desc = $"sm_advancementtask_504" };
+                    if (r < 0.9f) return new AdvanceReq { type = ReqType.Attribute, statKey = "intelligence", statValue = IntThresholds[stage], desc = $"sm_advancementtask_501" };
+                    return new AdvanceReq { type = ReqType.TotalLevel, intValue = TotalLevelThresholds[stage], desc = $"sm_advancementtask_502" };
                 }
                 else
                 {
-                    if (r < 0.45f) return new AdvanceReq { type = ReqType.Knowledge, intValue = KnowledgeThresholds[stage], desc = $"学会{KnowledgeThresholds[stage]}项进阶知识" };
-                    if (r < 0.75f) return new AdvanceReq { type = ReqType.Attribute, statKey = "intelligence", statValue = IntThresholds[stage], desc = $"智力>{IntThresholds[stage]}" };
-                    return new AdvanceReq { type = ReqType.TotalLevel, intValue = TotalLevelThresholds[stage], desc = $"总等级>{TotalLevelThresholds[stage]}" };
+                    if (r < 0.45f) return new AdvanceReq { type = ReqType.Knowledge, intValue = KnowledgeThresholds[stage], desc = $"sm_advancementtask_503" };
+                    if (r < 0.75f) return new AdvanceReq { type = ReqType.Attribute, statKey = "intelligence", statValue = IntThresholds[stage], desc = $"sm_advancementtask_501" };
+                    return new AdvanceReq { type = ReqType.TotalLevel, intValue = TotalLevelThresholds[stage], desc = $"sm_advancementtask_502" };
                 }
             }
         }

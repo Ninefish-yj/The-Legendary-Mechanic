@@ -21,16 +21,16 @@ namespace SuperMech.Code
         private static readonly (string id, string icon, string tipTitle, string tipDesc)[] CorePowers =
         {
             // 召唤类
-            (SuperMechPowers.SummonAwakened,  "ui/Icons/actor_traits/iconChosenOne",      "召唤降临者", "在点击位置生成一个有面板的降临者单位（走等级职业体系）"),
+            (SuperMechPowers.SummonAwakened,  "ui/Icons/actor_traits/iconChosenOne",      "sm_ui_1055", "sm_ui_1056"),
             // 天灾类
-            (SuperMechPowers.DisasterAlien,   "iconDiscord",     "异化之灾",     "在点击位置生成异化体（天灾）"),
+            (SuperMechPowers.DisasterAlien,   "iconDiscord",     "sm_ui_1057",     "sm_ui_1058"),
         };
 
         // 开窗按钮（不进入神力模式，直接开窗）
         private static readonly (string name, string tip, System.Action action)[] WindowButtons =
         {
-            ("六圣所",     "查看六圣所解锁进度与碎片（跨存档）", () => SuperMechSanctuaryWindow.Show()),
-            ("排行榜",     "超能者欧纳/气力/阶位排行榜（前20名）", () => SuperMechRankWindow.Show()),
+            ("sm_ui_1059",     "sm_ui_1060", () => SuperMechSanctuaryWindow.Show()),
+            ("sm_ui_1061",     "sm_ui_1062", () => SuperMechRankWindow.Show()),
         };
 
         public static void Init()
@@ -40,47 +40,47 @@ namespace SuperMech.Code
             {
                 _inited = true;
 
-                LocalizedTextManager.add("supermech.tab", "超神机械师", pReplace: true);
-                LocalizedTextManager.add("supermech.tab_desc", "五系觉醒·机械军团·圣所轮回", pReplace: true);
+                LocalizedTextManager.add("supermech.tab", LocalizedTextManager.getText("sm_ui_1063"), pReplace: true);
+                LocalizedTextManager.add("supermech.tab_desc", LocalizedTextManager.getText("sm_ui_1064"), pReplace: true);
 
                 // 注册缺失的本地化key（单位面板行标签+五系觉醒描述）
-                LocalizedTextManager.add("体系", "体系", pReplace: true);
-                LocalizedTextManager.add("提示", "提示", pReplace: true);
-                LocalizedTextManager.add("觉醒_机械系", "觉醒·机械系", pReplace: true);
-                LocalizedTextManager.add("觉醒_机械系_description", "点击单位赋予机械系觉醒（械感天赋·机械知识树）", pReplace: true);
-                LocalizedTextManager.add("觉醒_武道系", "觉醒·武道系", pReplace: true);
-                LocalizedTextManager.add("觉醒_武道系_description", "点击单位赋予武道系觉醒（体魄天赋·御气技巧树）", pReplace: true);
-                LocalizedTextManager.add("觉醒_异能系", "觉醒·异能系", pReplace: true);
-                LocalizedTextManager.add("觉醒_异能系_description", "点击单位赋予异能系觉醒（异能潜力·基因树）", pReplace: true);
-                LocalizedTextManager.add("觉醒_魔法系", "觉醒·魔法系", pReplace: true);
-                LocalizedTextManager.add("觉醒_魔法系_description", "点击单位赋予魔法系觉醒（魔法天赋·魔法知识树）", pReplace: true);
-                LocalizedTextManager.add("觉醒_念力系", "觉醒·念力系", pReplace: true);
-                LocalizedTextManager.add("觉醒_念力系_description", "点击单位赋予念力系觉醒（精神天赋·精神修炼树）", pReplace: true);
+                LocalizedTextManager.add("sm_ui_1065", LocalizedTextManager.getText("sm_ui_1065"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1066", LocalizedTextManager.getText("sm_ui_1066"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1067", LocalizedTextManager.getText("sm_ui_1068"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1069", LocalizedTextManager.getText("sm_ui_1070"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1071", LocalizedTextManager.getText("sm_ui_1072"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1073", LocalizedTextManager.getText("sm_ui_1074"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1075", LocalizedTextManager.getText("sm_ui_1076"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1077", LocalizedTextManager.getText("sm_ui_1078"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1079", LocalizedTextManager.getText("sm_ui_1080"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1081", LocalizedTextManager.getText("sm_ui_1082"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1083", LocalizedTextManager.getText("sm_ui_1084"), pReplace: true);
+                LocalizedTextManager.add("sm_ui_1085", LocalizedTextManager.getText("sm_ui_1086"), pReplace: true);
 
                 // 批量注册单位面板所有行标签（ShowRow的第一个参数会被当作本地化key查找）
                 string[] panelLabels = {
-                    "阶位", "种族", "名号", "职业", "职业等级", "职业阶段", "职业树", "职业技能",
-                    "体系", "转职", "转职条件", "气力", "气力属性", "气力上限", "欧纳",
-                    "械感", "魔感", "神秘", "魅力", "幸运", "精神力", "魔力池", "基因链",
-                    "传承度", "冥冥感应", "神性蜕变", "超神遗力", "信息态", "潜力评级",
-                    "副职业", "专长", "械力融合", "知识融合", "装备", "宇宙宝物", "圣所",
-                    "法师塔", "次级维度", "提炼法", "传说度", "超神突破", "状态", "潜能点",
-                    "分支", "提示", "制造", "操作"
+                    "sm_ui_1087", "sm_ui_1088", "sm_ui_1089", "sm_ui_1090", "sm_ui_1091", "sm_ui_1092", "sm_ui_1093", "sm_ui_1094",
+                    "sm_ui_1065", "sm_ui_1095", "sm_ui_1096", "sm_ui_1097", "sm_ui_1098", "sm_ui_1099", "sm_ui_1100",
+                    "sm_ui_1101", "sm_ui_1102", "sm_ui_1103", "sm_ui_1104", "sm_ui_1105", "sm_ui_1106", "sm_ui_1107", "sm_ui_1108",
+                    "sm_ui_1109", "sm_ui_1110", "sm_ui_1111", "sm_ui_1112", "sm_ui_1113", "sm_ui_1114",
+                    "sm_ui_1115", "sm_ui_1116", "sm_ui_1117", "sm_ui_1118", "sm_ui_1119", "sm_ui_1120", "sm_ui_1121",
+                    "sm_ui_1122", "sm_ui_1123", "sm_ui_1124", "sm_ui_1125", "sm_ui_1126", "sm_ui_1127", "sm_ui_1128",
+                    "sm_ui_1129", "sm_ui_1066", "sm_ui_1130", "sm_ui_1131"
                 };
                 foreach (var label in panelLabels)
                     LocalizedTextManager.add(label, label, pReplace: true);
 
                 // 注册神权和Tab的tooltip文本（TipButton会把textOnClickDescription当本地化key查找）
                 string[] tooltipTexts = {
-                    "召唤降临者", "召唤降临者_description", "在点击位置生成一个有面板的降临者单位（走等级职业体系）",
-                    "异化之灾", "异化之灾_天灾_description", "在点击位置生成异化体（天灾）",
-                    "神之催化", "神之催化_description", "点击SS阶以上单位施加催化效果，降低突破门槛、提升成功率（每层+10%，最多5层）",
-                    "冲击超神级", "冲击超神级_description",
-                    "五系觉醒", "五系觉醒_description", "点击单位后选择觉醒系别（机械/武道/异能/魔法/念力）",
-                    "六圣所", "查看六圣所解锁进度与碎片（跨存档）",
-                    "排行榜", "超能者欧纳/气力/阶位排行榜（前20名）",
-                    "装备背包", "查看与管理单位的装备背包",
-                    "知识", "查看已解锁的知识节点与职业树"
+                    "sm_ui_1055", "sm_ui_1132", "sm_ui_1056",
+                    "sm_ui_1057", "sm_ui_1133", "sm_ui_1058",
+                    "sm_ui_1134", "sm_ui_1135", "sm_ui_1136",
+                    "sm_ui_1137", "sm_ui_1138",
+                    "sm_ui_1139", "sm_ui_1140", "sm_ui_1141",
+                    "sm_ui_1059", "sm_ui_1060",
+                    "sm_ui_1061", "sm_ui_1062",
+                    "sm_ui_1142", "sm_ui_1143",
+                    "sm_ui_1144", "sm_ui_1145"
                 };
                 foreach (var text in tooltipTexts)
                     LocalizedTextManager.add(text, text, pReplace: true);

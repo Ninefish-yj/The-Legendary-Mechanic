@@ -26,15 +26,15 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 注册神权名称本地化（GodPower.name会被当作本地化key查找）
-            string[] powerNames = { "召唤机械游骑兵", "召唤机甲单位", "召唤降临者", "冲击超神级", "异化之灾（天灾）", "异化之灾_天灾", "查看潜能点", "解锁知识·武装系", "解锁知识·能量系", "解锁知识·虚拟系" };
+            string[] powerNames = { "sm_powers_920", "sm_powers_921", "sm_powers_922", "sm_powers_923", "sm_powers_924", "sm_powers_925", "sm_powers_926", "sm_powers_927", "sm_powers_928", "sm_powers_929" };
             foreach (var n in powerNames) LocalizedTextManager.add(n, n, pReplace: true);
 
-            AddSpawnPower(SummonRanger, "召唤机械游骑兵", "actor_traits/iconStrong", "soldier", 1);
-            AddSpawnPower(SummonMech, "召唤机甲单位", "actor_traits/iconGiant", "titan", 3);
-            AddAwakenedPower(SummonAwakened, "召唤降临者", "actor_traits/iconChosenOne");
-            AddTranscendPower(AttemptTranscend, "神之催化", "iconDivineLight");
+            AddSpawnPower(SummonRanger, "sm_powers_920", "actor_traits/iconStrong", "soldier", 1);
+            AddSpawnPower(SummonMech, "sm_powers_921", "actor_traits/iconGiant", "titan", 3);
+            AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");
+            AddTranscendPower(AttemptTranscend, "sm_powers_930", "iconDivineLight");
 
-            AddDisaster(DisasterAlien, "异化之灾（天灾）");
+            AddDisaster(DisasterAlien, "sm_powers_924");
 
             // 以下功能已移到知识Tab「◆ 操作」区域，不再注册神权：
             // - 查看潜能点（知识Tab顶部显示）

@@ -16,7 +16,7 @@ namespace SuperMech.Code
 
         // 传说度等级（参考原著宇宙传说度/星域传说度/星系传说度）
         public static readonly string[] TierNames = {
-            "无名之辈", "小有名气", "星系知名", "星域传说", "宇宙传说", "神话级"
+            "sm_legend_876", "sm_legend_877", "sm_legend_878", "sm_legend_879", "sm_legend_880", "sm_legend_881"
         };
 
         public static int GetLegend(Actor a)
@@ -90,7 +90,7 @@ namespace SuperMech.Code
             if (baseLegend > 0)
             {
                 string victimName = SuperMechRanks.All[victimRank].name;
-                AddLegend(killer, baseLegend, $"击杀{victimName}");
+                AddLegend(killer, baseLegend, $"sm_legend_882");
             }
         }
 

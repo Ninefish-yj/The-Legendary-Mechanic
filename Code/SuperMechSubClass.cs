@@ -41,14 +41,14 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            AddSubClass(SubAgent,     "特工",     0, 0, 0.05f,  "情报与暗杀专精，近战伤害提升。");
-            AddSubClass(SubNinja,    "黑夜潜行者", 0, 0, 0.08f,  "夜间作战，隐蔽与暴击。");
-            AddSubClass(SubHacker,   "黑客",     5, 0, 0f,       "电子战专精，智力提升。");
-            AddSubClass(SubMerchant, "商人",     2, 0, 0f,       "交易与资源经营。");
-            AddSubClass(SubDoctor,   "医生",     3, 0, 0f,       "治疗与急救。");
-            AddSubClass(SubEngineer, "工程师",   4, 0, 0.05f,    "制造与维护。");
-            AddSubClass(SubScribe,   "学者",     6, 0, 0f,       "知识研究，智力提升。");
-            AddSubClass(SubScout,    "侦察兵",   0, 2, 0.03f,    "侦察与追踪。");
+            AddSubClass(SubAgent,     "sm_subclass_064",     0, 0, 0.05f,  "sm_subclass_065");
+            AddSubClass(SubNinja,    "sm_subclass_066", 0, 0, 0.08f,  "sm_subclass_067");
+            AddSubClass(SubHacker,   "sm_subclass_068",     5, 0, 0f,       "sm_subclass_069");
+            AddSubClass(SubMerchant, "sm_subclass_070",     2, 0, 0f,       "sm_subclass_071");
+            AddSubClass(SubDoctor,   "sm_subclass_072",     3, 0, 0f,       "sm_subclass_073");
+            AddSubClass(SubEngineer, "sm_subclass_074",   4, 0, 0.05f,    "sm_subclass_075");
+            AddSubClass(SubScribe,   "sm_subclass_076",     6, 0, 0f,       "sm_subclass_077");
+            AddSubClass(SubScout,    "sm_subclass_078",   0, 2, 0.03f,    "sm_subclass_079");
 
             // 副职业学习已移到知识Tab「◆ 操作」区域，不再注册神权
             // AddGivePower 方法保留供未来使用

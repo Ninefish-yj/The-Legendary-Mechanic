@@ -15,29 +15,29 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechQiAttribute
     {
-        public const string AttrMagnetic = "磁";
-        public const string AttrSpirit   = "精神";
-        public const string AttrFire     = "火";
-        public const string AttrWind     = "风";
-        public const string AttrIron     = "铁";
-        public const string AttrWater    = "水";
-        public const string AttrLightning = "雷";
-        public const string AttrDark     = "暗";
-        public const string AttrLight    = "光";
-        public const string AttrNone     = "无";
+        public const string AttrMagnetic = "sm_qiattribute_938";
+        public const string AttrSpirit   = "sm_qiattribute_939";
+        public const string AttrFire     = "sm_qiattribute_940";
+        public const string AttrWind     = "sm_qiattribute_941";
+        public const string AttrIron     = "sm_qiattribute_942";
+        public const string AttrWater    = "sm_qiattribute_943";
+        public const string AttrLightning = "sm_qiattribute_944";
+        public const string AttrDark     = "sm_qiattribute_945";
+        public const string AttrLight    = "sm_qiattribute_946";
+        public const string AttrNone     = "sm_qiattribute_947";
 
         // 属性→描述
         public static readonly Dictionary<string, string> AttrDesc = new Dictionary<string, string>
         {
-            { AttrMagnetic, "电磁属性气力，增加机械亲和度与制造效率" },
-            { AttrSpirit,   "精神属性气力，强化精神攻击与幻术" },
-            { AttrFire,     "火属性气力，爆裂伤害，攻速+暴击" },
-            { AttrWind,     "风属性气力，速度与闪避，灵动作战" },
-            { AttrIron,     "铁属性气力，坚韧防御，护甲+生命" },
-            { AttrWater,    "水属性气力，持续恢复，持久战" },
-            { AttrLightning, "雷属性气力，高速暴击，瞬时爆发" },
-            { AttrDark,     "暗属性气力，潜行与暴击伤害" },
-            { AttrLight,    "光属性气力，治疗与祝福效果" },
+            { AttrMagnetic, "sm_qiattribute_948" },
+            { AttrSpirit,   "sm_qiattribute_949" },
+            { AttrFire,     "sm_qiattribute_950" },
+            { AttrWind,     "sm_qiattribute_951" },
+            { AttrIron,     "sm_qiattribute_952" },
+            { AttrWater,    "sm_qiattribute_953" },
+            { AttrLightning, "sm_qiattribute_954" },
+            { AttrDark,     "sm_qiattribute_955" },
+            { AttrLight,    "sm_qiattribute_956" },
         };
 
         private static readonly Dictionary<long, string> _attr = new Dictionary<long, string>();
