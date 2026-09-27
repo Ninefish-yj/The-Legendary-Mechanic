@@ -391,151 +391,26 @@ namespace SuperMech.Code
                 talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
             }
 
-            Transform detail1 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_cultivation"),
-                new Color(0.05f, 0.08f, 0.12f, 0.9f), new Color(0.25f, 0.35f, 0.5f, 0.8f));
-            string cultStatus = SuperMechCultivationStatus.GetStatusSummary(actor);
-            AddInfoRow(detail1, LocalizedTextManager.getText("sm_ui_cultivation_stage"), cultStatus);
-            float qi = SuperMechQi.GetQi(actor);
-            float qiMax = SuperMechQi.GetQiMax(actor);
-            int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
-            string qiLabel = LocalizedTextManager.getText("sm_qi_qi");
-            if (cls == "sm_knowledgetab_823" && SuperMechStage.GetStage(actor) >= 4) qiLabel = LocalizedTextManager.getText("sm_qi_mech");
-            AddInfoRow(detail1, qiLabel, $"{qi:F0}/{qiMax:F0}【{qiLvText}】");
-            if (cls == "sm_knowledgetab_824")
-                AddInfoRow(detail1, LocalizedTextManager.getText("sm_core_gene"), $"{SuperMechCorePower.GetGeneStageName(actor)}（{SuperMechCorePower.GetGeneProgress(actor):F0}%）");
-            else if (cls == "sm_knowledgetab_825")
-                AddInfoRow(detail1, LocalizedTextManager.getText("sm_core_mana"), $"{SuperMechCorePower.GetManaStageName(actor)}（{SuperMechCorePower.GetManaProgress(actor):F0}%）");
-            else if (cls == "sm_knowledgetab_826")
-                AddInfoRow(detail1, LocalizedTextManager.getText("sm_core_mind"), $"{SuperMechCorePower.GetMindStageName(actor)}（{SuperMechCorePower.GetMindProgress(actor):F0}%）");
-            string qiAttr = SuperMechQiAttribute.GetAttribute(actor);
-            if (qiAttr != SuperMechQiAttribute.AttrNone)
-                AddInfoRow(detail1, LocalizedTextManager.getText("sm_ui_qi_attribute"), qiAttr);
-
-            Transform detail2 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_talent"),
-                new Color(0.06f, 0.05f, 0.1f, 0.9f), new Color(0.4f, 0.3f, 0.5f, 0.8f));
-            AddInfoRow(detail2, LocalizedTextManager.getText("sm_ui_talent_tendency"), talentText.Trim());
-            if (actor.hasTrait(SuperMechTraits.ClassPsi))
-            {
-                var specs = SuperMechSpecialty.GetSpecialties(actor);
-                if (specs.Count > 0)
-                {
-                    string specText = "";
-                    foreach (var s in specs) specText += LocalizedTextManager.getText("trait_" + s) + " ";
-                    AddInfoRow(detail2, LocalizedTextManager.getText("sm_ui_specific_power"), specText.Trim());
-                }
-            }
-            var perks = SuperMechPerks.GetPerks(actor);
-            if (perks.Count > 0)
-            {
-                string perkText = "";
-                foreach (var p in perks) perkText += LocalizedTextManager.getText("trait_" + p) + " ";
-                AddInfoRow(detail2, LocalizedTextManager.getText("sm_ui_specialty"), perkText.Trim());
-            }
-            if (actor.hasTrait(SuperMechTraits.ClassPsi))
-            {
-                string rating = SuperMechPotentialRating.GetRating(actor);
-                if (!string.IsNullOrEmpty(rating))
-                    AddInfoRow(detail2, LocalizedTextManager.getText("sm_ui_potential_rating"), $"sm_knowledgetab_827");
-            }
-
-            Transform detail3 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_profession"),
-                new Color(0.05f, 0.1f, 0.08f, 0.9f), new Color(0.3f, 0.5f, 0.35f, 0.8f));
-            if (isAwakened)
-            {
-                AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_level"), SuperMechAwakened.GetLevelText(actor));
-                if (SuperMechAwakened.CanAdvanceStage(actor))
-                {
-                    AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_promotion"), "sm_knowledgetab_828");
-                    string reqText = SuperMechAdvancementTask.GetReqText(actor);
-                    if (reqText != null) AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_promotion_condition"), reqText);
-                }
-            }
-            string stage = SuperMechStage.GetStageName(actor);
-            if (stage != "—" && stage != "sm_knowledgetab_829") AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_stage"), stage);
-            string branch = SuperMechBranch.GetBranchName(actor);
-            if (branch != "sm_knowledgetab_830") AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_branch"), branch);
-            string treeName = SuperMechUnitWindow.GetKnowledgeTreeName(cls);
-            int unlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
-            AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_tree"), $"sm_knowledgetab_831");
-            var skills = SuperMechSkills.GetLearned(actor);
-            if (skills.Count > 0)
-                AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_class_skill"), string.Join("、", skills.ConvertAll(s => s.name)));
-            string subText = SuperMechSubClass.GetSubLevelText(actor);
-            if (!string.IsNullOrEmpty(subText)) AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_subclass"), subText);
-            string refineText = SuperMechRefinement.GetStatusText(actor);
-            if (!string.IsNullOrEmpty(refineText)) AddInfoRow(detail3, LocalizedTextManager.getText("sm_ui_refinement"), refineText);
-
-            Transform detail4 = CreateDetailBox(_container.transform, LocalizedTextManager.getText("sm_ui_special"),
-                new Color(0.08f, 0.06f, 0.05f, 0.9f), new Color(0.5f, 0.4f, 0.25f, 0.8f));
-            int legend = SuperMechLegend.GetLegend(actor);
-            if (legend > 0)
-            {
-                string legendText = isAwakened ?
-                    $"sm_knowledgetab_832" :
-                    $"sm_knowledgetab_833";
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_legend"), legendText);
-            }
-            string infoText = SuperMechInfoState.GetStatusText(actor);
-            if (!string.IsNullOrEmpty(infoText)) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_infostate"), infoText);
-            var destiny = SuperMechIntuition.GetDestiny(actor);
-            if (destiny != null)
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_destiny"), destiny.completed ? $"sm_knowledgetab_834" : $"【{destiny.name}】{destiny.progress:F0}/{destiny.target:F0}");
-            else if (SuperMechAdvancement.GetExactRankIndex(actor) >= 10)
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_destiny"), "sm_knowledgetab_835");
-            if (SuperMechAdvancement.GetExactRankIndex(actor) >= 12 || SuperMechTranscendence.IsTranscended(actor))
-            {
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_transcendence"), SuperMechTranscendence.GetStatusText(actor));
-                int catalyst = SuperMechTranscendence.GetCatalystLayers(actor);
-                if (catalyst > 0) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_catalyst"), $"sm_knowledgetab_836");
-            }
-            string relic = SuperMechRelic.GetCurrentEquipName(actor);
-            if (relic != "sm_knowledgetab_837")
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_equipment"), $"sm_knowledgetab_838");
-            if (SuperMechMechFusion.IsFused(actor))
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_mech_fusion"), $"sm_knowledgetab_839");
-            string cosmic = SuperMechCosmicRelic.GetEquippedName(actor);
-            if (!string.IsNullOrEmpty(cosmic)) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_relic"), cosmic);
-            if (actor.hasTrait(SuperMechTraits.ClassMage))
-            {
-                string tower = SuperMechMageTower.GetTowerName(actor);
-                if (tower != "sm_knowledgetab_837") AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_mage_tower"), tower + "sm_knowledgetab_840");
-            }
-            string dim = SuperMechDimension.GetActiveDimension(actor);
-            if (!string.IsNullOrEmpty(dim)) AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_dimension"), dim + "sm_knowledgetab_841");
-            if (SuperMechAura.IsStunned(actor))
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "sm_knowledgetab_842");
-            else if (SuperMechAura.IsSuppressed(actor))
-                AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "sm_knowledgetab_843");
-
-            AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_knowledge_tree"), new Color(0.4f, 0.6f, 0.9f));
-            var allMainDefs = SuperMechKnowledge.GetAllByPrefix(prefix);
-            int mainTotal = allMainDefs.Count;
+            GameObject hintObj = new GameObject("KnowledgeHint", typeof(RectTransform));
+            hintObj.transform.SetParent(_container.transform, false);
+            LayoutElement hintLE = hintObj.AddComponent<LayoutElement>();
+            hintLE.minHeight = 20f;
+            hintLE.preferredHeight = 20f;
+            Text hintTxt = hintObj.AddComponent<Text>();
+            hintTxt.font = LocalizedTextManager.current_font;
+            if (hintTxt.font == null) hintTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            hintTxt.fontSize = 10;
+            hintTxt.color = new Color(0.92f, 0.86f, 0.55f);
+            hintTxt.alignment = TextAnchor.MiddleCenter;
+            hintTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            hintTxt.raycastTarget = false;
+            string stageName = SuperMechStage.GetStageName(actor);
+            string branchName = SuperMechBranch.GetBranchName(actor);
             int mainUnlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
-            Color[] tierColors = {
-                new Color(0.5f, 0.5f, 0.55f),
-                new Color(0.3f, 0.6f, 0.4f),
-                new Color(0.3f, 0.5f, 0.7f),
-                new Color(0.6f, 0.4f, 0.7f),
-                new Color(0.8f, 0.6f, 0.3f)
-            };
-            string[] tierIcons = {
-                "ui/Icons/actor_traits/iconWeak",
-                "ui/Icons/actor_traits/iconStrong",
-                "ui/Icons/actor_traits/iconGenius",
-                "ui/Icons/actor_traits/iconImmortal",
-                "ui/Icons/actor_traits/iconChosenOne"
-            };
-            for (int tier = 0; tier <= 4; tier++)
-            {
-                var tierDefs = allMainDefs.FindAll(d => d.tier == tier);
-                if (tierDefs.Count == 0) continue;
-                int tierUnlocked = 0;
-                foreach (var d in tierDefs) if (SuperMechKnowledge.IsUnlocked(actor, d.id)) tierUnlocked++;
-                string tierTitle = $"sm_know_tier_{tier}";
-                CreateKnowledgeCard(_container.transform, tierTitle, tierIcons[tier], tierColors[tier],
-                    tierUnlocked, tierDefs.Count, tierDefs, actor, cls);
-            }
+            int mainTotal = SuperMechKnowledge.GetAllByPrefix(prefix).Count;
+            hintTxt.text = $"{LocalizedTextManager.getText("sm_ui_knowledge_tree")} · {stageName}" + 
+                (branchName != "sm_knowledgetab_830" ? $" · {branchName}" : "") +
+                $" · {LocalizedTextManager.getText("sm_ui_potential")}:{pot} · {mainUnlocked}/{mainTotal}";
 
             GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
             panelHost.transform.SetParent(_container.transform, false);

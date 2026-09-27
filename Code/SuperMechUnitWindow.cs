@@ -19,57 +19,18 @@ namespace SuperMech.Code
         {
             try
             {
-                if (!SuperMechConfig.ShowRankInPanel) return;
                 Actor actor = GetActor(__instance);
-                if (actor == null || !actor.isAlive()) return;
-
-                bool hasTalent = SuperMechTalent.HasTalent(actor);
-                if (!hasTalent)
+                if (actor == null || !actor.isAlive())
                 {
-                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"));
-                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_hint"), LocalizedTextManager.getText("sm_ui_hint_awaken"));
+                    SuperMechInfoCard.Hide(__instance);
                     return;
                 }
 
-
-                string rank = GetRank(actor);
-                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_rank"), rank);
-
-                bool hasProfession = SuperMechProfession.HasProfession(actor);
-                if (hasProfession)
-                {
-                    string cls = SuperMechProfession.GetClass(actor);
-                    string clsAspect = GetClassAspect(cls);
-                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_class"), cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）"));
-                }
-                else
-                {
-                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"));
-                }
-
-                float onar = SuperMechAdvancement.CalcOnar(actor);
-                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}");
-
-                float qi = SuperMechQi.GetQi(actor);
-                float qiMax = SuperMechQi.GetQiMax(actor);
-                int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-                string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
-                string qiName = GetQiDisplayName(actor);
-                string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
-                ShowRow(__instance, qiName, $"{qiBar}（{qiLvText}）");
-
-                if (SuperMechAwakened.IsAwakened(actor))
-                {
-                    ShowRow(__instance, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"));
-                }
-
-                ShowCustomStats(__instance, actor);
-
-                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_hint"), LocalizedTextManager.getText("sm_ui_hint_detail"));
+                SuperMechInfoCard.Show(__instance, actor);
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[超神机械师] 单位面板注入失败: {e.Message}");
+                Debug.LogError($"[超神机械师] 单位面板浮动卡片失败: {e.Message}");
             }
         }
 
@@ -101,12 +62,12 @@ namespace SuperMech.Code
             }
         }
 
-        private static string GetRank(Actor a)
+        public static string GetRank(Actor a)
         {
             return SuperMechRanks.GetRankName(a);
         }
 
-        private static string GetQiDisplayName(Actor a)
+        public static string GetQiDisplayName(Actor a)
         {
             if (!SuperMechProfession.HasProfession(a)) return LocalizedTextManager.getText("sm_qi_qi");
             string cls = SuperMechProfession.GetClass(a);
