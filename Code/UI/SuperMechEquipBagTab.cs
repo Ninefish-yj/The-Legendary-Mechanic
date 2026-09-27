@@ -61,7 +61,7 @@ namespace SuperMech.Code
             {
                 tab.tab_elements.Add(_container.transform);
                 try { scroll.tabs.GetType().GetMethod("refillTabsWithContent",
-                    BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(scroll.tabs, null); } catch { }
+                    BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(scroll.tabs, null); } catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 背包Tab反射刷新失败: {e.Message}"); }
             }
 
             bool onBag = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
