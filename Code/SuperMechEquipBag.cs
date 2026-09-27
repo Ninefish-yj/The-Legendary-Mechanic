@@ -1,7 +1,5 @@
 using NeoModLoader.api;
-using NeoModLoader.services;
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace SuperMech.Code
 {
