@@ -100,8 +100,25 @@ namespace SuperMech.Code
                 tabsList.Add(customTab);
             }
 
-            GameObject contentObj = new GameObject(KnowledgeContentName, typeof(RectTransform));
-            contentObj.transform.SetParent(window.transform.Find("Background/Scroll View/Viewport/Content"), false);
+            UnitGenealogyElement genealogyElement = window.transform.GetComponentInChildren<UnitGenealogyElement>(true);
+            if (genealogyElement == null) return;
+
+            GameObject contentObj = UnityEngine.Object.Instantiate(
+                genealogyElement.gameObject,
+                window.transform.Find("Background/Scroll View/Viewport/Content"));
+            contentObj.name = KnowledgeContentName;
+
+            UnitGenealogyElement genealogyComp = contentObj.GetComponent<UnitGenealogyElement>();
+            if (genealogyComp != null)
+            {
+                UnityEngine.Object.DestroyImmediate(genealogyComp);
+            }
+
+            foreach (var old in contentObj.GetComponents<LayoutGroup>())
+                UnityEngine.Object.DestroyImmediate(old);
+            foreach (var old in contentObj.GetComponents<ContentSizeFitter>())
+                UnityEngine.Object.DestroyImmediate(old);
+
             RectTransform contentRt = contentObj.GetComponent<RectTransform>();
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
@@ -187,8 +204,25 @@ namespace SuperMech.Code
                 tabsList.Add(customTab);
             }
 
-            GameObject contentObj = new GameObject(BagContentName, typeof(RectTransform));
-            contentObj.transform.SetParent(window.transform.Find("Background/Scroll View/Viewport/Content"), false);
+            UnitGenealogyElement genealogyElement2 = window.transform.GetComponentInChildren<UnitGenealogyElement>(true);
+            if (genealogyElement2 == null) return;
+
+            GameObject contentObj = UnityEngine.Object.Instantiate(
+                genealogyElement2.gameObject,
+                window.transform.Find("Background/Scroll View/Viewport/Content"));
+            contentObj.name = BagContentName;
+
+            UnitGenealogyElement genealogyComp2 = contentObj.GetComponent<UnitGenealogyElement>();
+            if (genealogyComp2 != null)
+            {
+                UnityEngine.Object.DestroyImmediate(genealogyComp2);
+            }
+
+            foreach (var old in contentObj.GetComponents<LayoutGroup>())
+                UnityEngine.Object.DestroyImmediate(old);
+            foreach (var old in contentObj.GetComponents<ContentSizeFitter>())
+                UnityEngine.Object.DestroyImmediate(old);
+
             RectTransform contentRt = contentObj.GetComponent<RectTransform>();
             contentRt.anchorMin = new Vector2(0, 1);
             contentRt.anchorMax = new Vector2(1, 1);
