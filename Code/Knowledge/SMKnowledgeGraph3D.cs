@@ -87,28 +87,20 @@ namespace SuperMech.Code
         private void GenerateNodes()
         {
             var allDefs = SuperMechKnowledge.GetAllByPrefix(_prefix);
-            if (allDefs == null) return;
+            if (allDefs == null || allDefs.Count == 0) return;
 
-            List<SuperMechKnowledge.KnowledgeDef> unlockedDefs = new List<SuperMechKnowledge.KnowledgeDef>();
-            foreach (var def in allDefs)
-            {
-                if (SuperMechKnowledge.IsUnlocked(_actor, def.id))
-                {
-                    unlockedDefs.Add(def);
-                }
-            }
-
-            int total = unlockedDefs.Count;
+            int total = allDefs.Count;
             for (int i = 0; i < total; i++)
             {
-                var def = unlockedDefs[i];
+                var def = allDefs[i];
+                bool unlocked = SuperMechKnowledge.IsUnlocked(_actor, def.id);
                 KnowledgeNode node = new KnowledgeNode
                 {
                     id = def.id,
                     name = def.name,
                     icon = def.icon,
                     tier = def.tier,
-                    unlocked = true,
+                    unlocked = unlocked,
                     spherePos = GetPositionOnSphere(i, total)
                 };
                 CreateNodeGameObject(node);
@@ -141,7 +133,25 @@ namespace SuperMech.Code
             Image bg = go.AddComponent<Image>();
             bg.sprite = SpriteTextureLoader.getSprite("ui/special/special_circle");
             Color tierColor = GetTierColor(node.tier);
-            bg.color = new Color(tierColor.r, tierColor.g, tierColor.b, 0.9f);
+
+            var def = SuperMechKnowledge.GetDef(node.id);
+            int cost = def != null ? def.cost : 1;
+            int pot = SuperMechPotential.GetPotential(_actor);
+            bool tierUnlocked = node.tier == 0 || SuperMechKnowledge.GetTierKnowledgeCount(_actor, _prefix, node.tier - 1) > 0;
+            bool canUnlock = !node.unlocked && tierUnlocked && pot >= cost;
+
+            if (node.unlocked)
+            {
+                bg.color = new Color(tierColor.r, tierColor.g, tierColor.b, 0.95f);
+            }
+            else if (canUnlock)
+            {
+                bg.color = new Color(tierColor.r * 0.7f, tierColor.g * 0.7f, tierColor.b * 0.7f, 0.6f);
+            }
+            else
+            {
+                bg.color = new Color(0.2f, 0.2f, 0.25f, 0.4f);
+            }
             bg.raycastTarget = true;
 
             if (!string.IsNullOrEmpty(node.icon))
@@ -155,17 +165,18 @@ namespace SuperMech.Code
                 iconRt.offsetMax = new Vector2(-4, -4);
                 Image iconImg = iconGo.AddComponent<Image>();
                 try { iconImg.sprite = SpriteTextureLoader.getSprite(node.icon); } catch { }
-                iconImg.color = Color.white;
+                iconImg.color = node.unlocked ? Color.white : new Color(0.6f, 0.6f, 0.6f, 0.7f);
                 iconImg.raycastTarget = false;
             }
 
             Button btn = go.AddComponent<Button>();
-            var def = SuperMechKnowledge.GetDef(node.id);
-            int cost = def != null ? def.cost : 1;
-            btn.onClick.AddListener(() =>
+            if (canUnlock)
             {
-                SuperMechPotential.UnlockNode(_actor, node.id, cost);
-            });
+                btn.onClick.AddListener(() =>
+                {
+                    SuperMechPotential.UnlockNode(_actor, node.id, cost);
+                });
+            }
 
             TipButton tip = go.AddComponent<TipButton>();
             tip.textOnClick = LocalizedTextManager.getText(node.name);
@@ -242,8 +253,8 @@ namespace SuperMech.Code
                 float scale = Mathf.Lerp(0.7f, 1.3f, depth);
                 node.gameObject.transform.localScale = new Vector3(scale, scale, 1f);
 
-                Color baseColor = GetTierColor(node.tier);
-                Color c = Color.Lerp(new Color(baseColor.r, baseColor.g, baseColor.b, 0.3f), baseColor, depth);
+                Color c = node.image.color;
+                c.a = Mathf.Lerp(0.25f, node.unlocked ? 0.95f : 0.6f, depth);
                 node.image.color = c;
             }
 
