@@ -5,28 +5,18 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 「超神机械师」专属神权Tab（参考蛊真人简洁风格）。
-    /// 只保留核心地图交互神权+开窗按钮，其他功能放到单位面板/超能者面板。
-    /// </summary>
     public static class SuperMechUI
     {
         private const string Layout = "tools";
         private static bool _inited;
         private static PowersTab _tab;
 
-        // 核心地图交互神权（精简版，参考蛊真人）
-        // 图标使用原版确认存在的路径，避免sprite为null导致光标图标崩溃
-        // 五系觉醒和神之催化已移到单位面板知识Tab的操作区域
         private static readonly (string id, string icon, string tipTitle, string tipDesc)[] CorePowers =
         {
-            // 召唤类
             (SuperMechPowers.SummonAwakened,  "ui/Icons/actor_traits/iconChosenOne",      "sm_ui_1055", "sm_ui_1056"),
-            // 天灾类
             (SuperMechPowers.DisasterAlien,   "iconDiscord",     "sm_ui_1057",     "sm_ui_1058"),
         };
 
-        // 开窗按钮（不进入神力模式，直接开窗）
         private static readonly (string name, string tip, System.Action action)[] WindowButtons =
         {
             ("sm_ui_1059",     "sm_ui_1060", () => SuperMechSanctuaryWindow.Show()),
@@ -43,7 +33,6 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("supermech.tab", LocalizedTextManager.getText("sm_ui_1063"), pReplace: true);
                 LocalizedTextManager.add("supermech.tab_desc", LocalizedTextManager.getText("sm_ui_1064"), pReplace: true);
 
-                // 注册缺失的本地化key（单位面板行标签+五系觉醒描述）
                 LocalizedTextManager.add("sm_ui_1065", LocalizedTextManager.getText("sm_ui_1065"), pReplace: true);
                 LocalizedTextManager.add("sm_ui_1066", LocalizedTextManager.getText("sm_ui_1066"), pReplace: true);
                 LocalizedTextManager.add("sm_ui_1067", LocalizedTextManager.getText("sm_ui_1068"), pReplace: true);
@@ -57,7 +46,6 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("sm_ui_1083", LocalizedTextManager.getText("sm_ui_1084"), pReplace: true);
                 LocalizedTextManager.add("sm_ui_1085", LocalizedTextManager.getText("sm_ui_1086"), pReplace: true);
 
-                // 批量注册单位面板所有行标签（ShowRow的第一个参数会被当作本地化key查找）
                 string[] panelLabels = {
                     "sm_ui_1087", "sm_ui_1088", "sm_ui_1089", "sm_ui_1090", "sm_ui_1091", "sm_ui_1092", "sm_ui_1093", "sm_ui_1094",
                     "sm_ui_1065", "sm_ui_1095", "sm_ui_1096", "sm_ui_1097", "sm_ui_1098", "sm_ui_1099", "sm_ui_1100",
@@ -70,7 +58,6 @@ namespace SuperMech.Code
                 foreach (var label in panelLabels)
                     LocalizedTextManager.add(label, label, pReplace: true);
 
-                // 注册神权和Tab的tooltip文本（TipButton会把textOnClickDescription当本地化key查找）
                 string[] tooltipTexts = {
                     "sm_ui_1055", "sm_ui_1132", "sm_ui_1056",
                     "sm_ui_1057", "sm_ui_1133", "sm_ui_1058",
@@ -96,7 +83,6 @@ namespace SuperMech.Code
 
                 _tab.SetLayout(new List<string> { Layout });
 
-                // 核心神权按钮
                 foreach (var (id, iconPath, tipTitle, tipDesc) in CorePowers)
                 {
                     try
@@ -108,7 +94,6 @@ namespace SuperMech.Code
                         PowerButton btn = PowerButtonCreator.CreateGodPowerButton(id, icon);
                         if (btn == null) continue;
                         btn.godPower = power;
-                        // 防御：确保icon.sprite不为null，避免drawCursorSprite崩溃
                         if (btn.icon != null && btn.icon.sprite == null && icon != null)
                             btn.icon.sprite = icon;
                         SetupTooltip(btn, tipTitle, tipDesc);
@@ -117,9 +102,7 @@ namespace SuperMech.Code
                     catch (System.Exception e) { Debug.LogError("[超神机械师] 神权按钮失败 " + id + ": " + e.Message); }
                 }
 
-                // 五系觉醒和神之催化已移到单位面板知识Tab的操作区域
 
-                // 开窗按钮
                 foreach (var (name, tip, action) in WindowButtons)
                 {
                     try
@@ -151,8 +134,6 @@ namespace SuperMech.Code
             try
             {
                 if (btn == null) return;
-                // 参考蛊真人：title和description合并成一个字符串，设置到textOnClick
-                // 不要分别设置textOnClickDescription（会被当作本地化key查找导致缺失）
                 var tipBtn = btn.GetComponent<TipButton>();
                 if (tipBtn == null) tipBtn = btn.gameObject.AddComponent<TipButton>();
                 tipBtn.textOnClick = title + "\n" + desc;

@@ -3,14 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 装备掉落系统：击杀单位概率掉落装备。
-    /// 原著：超能者战斗后掉落装备/材料，高阶超能者掉落更好的装备。
-    /// 掉落品质根据被击杀者阶位决定，掉落到击杀者背包。
-    /// </summary>
     public static class SuperMechEquipDrop
     {
-        /// <summary>阶位→掉落概率映射（原著：高阶超能者更可能携带好装备）。</summary>
         private static readonly float[] _dropChanceByRank = new float[]
         {
             0.02f,  // F阶 2%
@@ -29,7 +23,6 @@ namespace SuperMech.Code
             0.90f,  // X阶 90%
         };
 
-        /// <summary>阶位→掉落品质范围（minQuality, maxQuality）。</summary>
         private static readonly (int min, int max)[] _qualityRangeByRank = new (int, int)[]
         {
             (0, 0),  // F阶 灰色
@@ -48,7 +41,6 @@ namespace SuperMech.Code
             (6, 8),  // X阶 橙-金
         };
 
-        /// <summary>尝试掉落装备。</summary>
         public static void TryDrop(Actor killer, Actor target)
         {
             if (killer == null || target == null) return;
@@ -58,17 +50,14 @@ namespace SuperMech.Code
             if (rankIdx < 0 || rankIdx >= _dropChanceByRank.Length) return;
 
             float dropChance = _dropChanceByRank[rankIdx];
-            // 击杀者有"幸运"属性时提升掉落率
             float luck = SuperMechCustomStats.GetStat(killer, "sm_luck");
             dropChance *= 1f + luck * 0.01f;
 
             if (UnityEngine.Random.value > dropChance) return;
 
-            // 决定品质
             var (minQ, maxQ) = _qualityRangeByRank[rankIdx];
             int quality = UnityEngine.Random.Range(minQ, maxQ + 1);
 
-            // 掉落到击杀者背包
             string equipId = SuperMechRelic.Equipments[quality].id;
             if (SuperMechEquipBag.AddToBag(killer, equipId))
             {
@@ -76,7 +65,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取阶位掉落信息（用于面板显示）。</summary>
         public static string GetDropInfo(int rankIdx)
         {
             if (rankIdx < 0 || rankIdx >= _dropChanceByRank.Length) return "—";

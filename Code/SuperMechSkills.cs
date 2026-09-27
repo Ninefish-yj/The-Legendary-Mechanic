@@ -3,13 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 职业技能系统（独立系统，参考西幻世界SkillMeta设计，不注册为特质）。
-    /// 原著：机械师职业技能（气力改装/虚拟净化/维度行军等），学会后永久掌握，有独立技能栏。
-    /// </summary>
     public static class SuperMechSkills
     {
-        /// <summary>技能定义。</summary>
         public class SkillDef
         {
             public string id;
@@ -25,7 +20,6 @@ namespace SuperMech.Code
             public float speedMul;        // 攻速倍率
         }
 
-        /// <summary>所有技能定义。</summary>
         public static readonly List<SkillDef> AllSkills = new List<SkillDef>
         {
             new SkillDef {
@@ -79,33 +73,27 @@ namespace SuperMech.Code
             }
         };
 
-        /// <summary>单位已学会的技能（actorId → HashSet<skillId>）。</summary>
         private static readonly Dictionary<long, HashSet<string>> _learned = new Dictionary<long, HashSet<string>>();
 
-        /// <summary>技能冷却（actorId → skillId → 下次可用时间）。</summary>
         private static readonly Dictionary<long, Dictionary<string, float>> _cooldown = new Dictionary<long, Dictionary<string, float>>();
 
-        /// <summary>注册（初始化技能列表，无实际操作，保留接口）。</summary>
         public static void Register()
         {
             Debug.Log($"[超神机械师] 独立技能系统注册：{AllSkills.Count}个职业技能");
         }
 
-        /// <summary>单位是否学会了某技能。</summary>
         public static bool HasSkill(Actor a, string skillId)
         {
             if (a == null) return false;
             return _learned.TryGetValue(a.id, out var set) && set.Contains(skillId);
         }
 
-        /// <summary>学会技能（满足条件时自动学会，或通过神权赋予）。</summary>
         public static bool LearnSkill(Actor a, string skillId)
         {
             if (a == null) return false;
             var def = GetDef(skillId);
             if (def == null) return false;
 
-            // 知识前置检查（原著：学会知识才能掌握对应技能）
             if (!string.IsNullOrEmpty(def.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(a, def.requiredKnowledge))
                 return false;
 
@@ -120,7 +108,6 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>获取技能定义。</summary>
         public static SkillDef GetDef(string skillId)
         {
             foreach (var def in AllSkills)
@@ -128,7 +115,6 @@ namespace SuperMech.Code
             return null;
         }
 
-        /// <summary>获取单位已学会的所有技能。</summary>
         public static List<SkillDef> GetLearned(Actor a)
         {
             var list = new List<SkillDef>();
@@ -138,7 +124,6 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>获取单位可学习的技能（满足职业/阶段条件但还没学会的）。</summary>
         public static List<SkillDef> GetAvailable(Actor a)
         {
             var list = new List<SkillDef>();
@@ -150,14 +135,12 @@ namespace SuperMech.Code
                 if (HasSkill(a, def.id)) continue;
                 if (!string.IsNullOrEmpty(def.requiredClass) && (cls == null || !cls.Contains(def.requiredClass))) continue;
                 if (stage < def.requiredStage) continue;
-                // 知识前置：学会对应知识才能学习技能（原著：知识→技能）
                 if (!string.IsNullOrEmpty(def.requiredKnowledge) && !SuperMechKnowledge.IsUnlocked(a, def.requiredKnowledge)) continue;
                 list.Add(def);
             }
             return list;
         }
 
-        /// <summary>自动学习：单位达到阶段时自动学会对应技能。</summary>
         public static void TickAutoLearn(Actor a)
         {
             if (a == null) return;
@@ -168,7 +151,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>遍历所有单位自动学习。</summary>
         public static void TickAutoLearnAll()
         {
             if (World.world == null || World.world.units == null) return;
@@ -179,7 +161,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取所有已学会技能的总属性加成（知识提升技能威力：同系知识每+1个，技能伤害+2%）。</summary>
         public static SkillBonus GetBonus(Actor a)
         {
             var bonus = new SkillBonus();
@@ -212,7 +193,6 @@ namespace SuperMech.Code
             public float speedMul = 1f;
         }
 
-        /// <summary>清理死亡单位。</summary>
         public static int CleanupDead(HashSet<long> alive)
         {
             int removed = SuperMechCleanup.CleanDict(_learned, alive);
@@ -220,7 +200,6 @@ namespace SuperMech.Code
             return removed;
         }
 
-        /// <summary>清空。</summary>
         public static void Clear() { _learned.Clear(); _cooldown.Clear(); }
     }
 }

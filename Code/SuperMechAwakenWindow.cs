@@ -3,10 +3,6 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 五系觉醒选择窗口：点击单位后弹出，选择觉醒系别。
-    /// 参考蛊真人的简洁弹窗设计。
-    /// </summary>
     public static class SuperMechAwakenWindow
     {
         private static SMWindowFrame _window;
@@ -38,11 +34,9 @@ namespace SuperMech.Code
         {
             if (_window == null) return;
 
-            // 说明文字
             _window.AddLabel(LocalizedTextManager.getText("sm_awaken_desc"),
                 10f, -55f, 260f, 30f, 12, TextAnchor.MiddleCenter);
 
-            // 五个系别按钮
             float y = -95f;
             foreach (var (traitId, nameKey, descKey, aspectKey) in Classes)
             {
@@ -53,7 +47,6 @@ namespace SuperMech.Code
                 y -= 40f;
             }
 
-            // 取消按钮
             _window.AddButton(LocalizedTextManager.getText("sm_ui_cancel"), 20f, y, 240f, 32f, () => _window.Hide(),
                 new Color(0.3f, 0.15f, 0.15f));
         }
@@ -62,7 +55,6 @@ namespace SuperMech.Code
         {
             if (_target == null) return;
 
-            // 移除已有觉醒（替换系别）
             _target.removeTrait(SuperMechTraits.ClassMech);
             _target.removeTrait(SuperMechTraits.ClassMartial);
             _target.removeTrait(SuperMechTraits.ClassPsi);
@@ -73,7 +65,6 @@ namespace SuperMech.Code
             SuperMechStage.SetStage(_target, 1); // 入门者
             SuperMechSpecialty.AssignRandomSpecialty(_target);
 
-            // 觉醒即获得F阶（原著：只要有阶位都是超能者，F阶是最低级超能者，没有阶位才是凡人）
             if (!_target.hasTrait("sm_rank_00_f"))
                 _target.addTrait("sm_rank_00_f");
             SuperMechAdvancement.SetExactRank(_target, 0);

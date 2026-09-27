@@ -3,14 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 装备词条系统：装备生成时随机roll词条，影响属性。
-    /// 原著：装备有随机属性（如"攻击力+15%""暴击率+5%"），高品质装备词条更多。
-    /// 参考天人武道神藏系统的"基因位点"设计。
-    /// </summary>
     public static class SuperMechEquipAffix
     {
-        /// <summary>词条定义。</summary>
         public class AffixDef
         {
             public string id;
@@ -22,10 +16,8 @@ namespace SuperMech.Code
             public int minQuality;   // 最低品质要求（0-8）
         }
 
-        /// <summary>词条池。</summary>
         private static readonly List<AffixDef> _affixPool = new List<AffixDef>
         {
-            // 基础词条（所有品质可出）
             new AffixDef { id="affix_dmg", name="sm_equipaffix_737", statKey="multiplier_damage", minValue=0.05f, maxValue=0.25f, isMultiplier=true, minQuality=0 },
             new AffixDef { id="affix_hp", name="sm_equipaffix_738", statKey="multiplier_health", minValue=0.05f, maxValue=0.30f, isMultiplier=true, minQuality=0 },
             new AffixDef { id="affix_speed", name="sm_equipaffix_739", statKey="multiplier_speed", minValue=0.03f, maxValue=0.15f, isMultiplier=true, minQuality=1 },
@@ -34,14 +26,12 @@ namespace SuperMech.Code
             new AffixDef { id="affix_stamina", name="sm_equipaffix_742", statKey="multiplier_stamina", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=2 },
             new AffixDef { id="affix_dmg_fixed", name="sm_equipaffix_743", statKey="damage", minValue=1f, maxValue=10f, isMultiplier=false, minQuality=0 },
             new AffixDef { id="affix_hp_fixed", name="sm_equipaffix_744", statKey="health", minValue=5f, maxValue=50f, isMultiplier=false, minQuality=0 },
-            // 高级词条（高品质专属）
             new AffixDef { id="affix_qi", name="sm_equipaffix_745", statKey="sm_qi_max", minValue=100f, maxValue=1000f, isMultiplier=false, minQuality=4 },
             new AffixDef { id="affix_int", name="sm_equipaffix_746", statKey="intelligence", minValue=1f, maxValue=5f, isMultiplier=false, minQuality=3 },
             new AffixDef { id="affix_exp", name="sm_equipaffix_747", statKey="experience", minValue=0.05f, maxValue=0.20f, isMultiplier=true, minQuality=3 },
             new AffixDef { id="affix_all", name="sm_equipaffix_748", statKey="multiplier_damage", minValue=0.03f, maxValue=0.10f, isMultiplier=true, minQuality=5 },
         };
 
-        /// <summary>装备实例词条（key = actorId, value = 词条列表）。</summary>
         private static readonly Dictionary<long, List<EquipAffixInstance>> _equippedAffixes = new Dictionary<long, List<EquipAffixInstance>>();
 
         public class EquipAffixInstance
@@ -53,11 +43,9 @@ namespace SuperMech.Code
             public bool isMultiplier;
         }
 
-        /// <summary>根据品质roll词条。</summary>
         public static List<EquipAffixInstance> RollAffixes(int qualityLevel)
         {
             var result = new List<EquipAffixInstance>();
-            // 品质决定词条数量：0-1级=1条, 2-3级=2条, 4-5级=3条, 6-7级=4条, 8级=5条
             int affixCount = qualityLevel switch
             {
                 0 or 1 => 1,
@@ -74,7 +62,6 @@ namespace SuperMech.Code
                 if (affix.minQuality <= qualityLevel) available.Add(affix);
             }
 
-            // 随机选取不重复的词条
             var selected = new HashSet<string>();
             for (int i = 0; i < affixCount && available.Count > 0; i++)
             {
@@ -84,7 +71,6 @@ namespace SuperMech.Code
                 selected.Add(def.id);
 
                 float value = UnityEngine.Random.Range(def.minValue, def.maxValue);
-                // 高品质词条数值更高
                 value *= 1f + qualityLevel * 0.1f;
 
                 result.Add(new EquipAffixInstance
@@ -99,7 +85,6 @@ namespace SuperMech.Code
             return result;
         }
 
-        /// <summary>单位装备时roll词条并存储。</summary>
         public static void OnEquip(Actor a, int qualityLevel)
         {
             if (a == null) return;
@@ -108,14 +93,12 @@ namespace SuperMech.Code
             ApplyAffixes(a);
         }
 
-        /// <summary>单位卸下装备时清除词条。</summary>
         public static void OnUnequip(Actor a)
         {
             if (a == null) return;
             _equippedAffixes.Remove(a.id);
         }
 
-        /// <summary>应用词条属性到单位。</summary>
         public static void ApplyAffixes(Actor a)
         {
             if (a == null || !_equippedAffixes.TryGetValue(a.id, out var affixes)) return;
@@ -126,7 +109,6 @@ namespace SuperMech.Code
             {
                 if (affix.isMultiplier)
                 {
-                    // BaseStats索引器对不存在的key返回0，倍率类默认1
                     float cur = stats[affix.statKey];
                     if (cur <= 0f) cur = 1f;
                     stats[affix.statKey] = cur * (1f + affix.value);
@@ -138,7 +120,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取单位当前装备的词条。</summary>
         public static List<EquipAffixInstance> GetAffixes(Actor a)
         {
             if (a != null && _equippedAffixes.TryGetValue(a.id, out var affixes))
@@ -146,13 +127,11 @@ namespace SuperMech.Code
             return new List<EquipAffixInstance>();
         }
 
-        /// <summary>清理死亡单位。</summary>
         public static int CleanupDead(HashSet<long> alive)
         {
             return SuperMechCleanup.CleanDict(_equippedAffixes, alive);
         }
 
-        /// <summary>清空。</summary>
         public static void Clear() { _equippedAffixes.Clear(); }
     }
 }

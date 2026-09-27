@@ -4,17 +4,11 @@ using NeoModLoader.services;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 传说度系统（原著ch1196/ch1135）
-    /// 传奇事迹改变个体在信息态层面的权重，影响S阶以上突破成功率。
-    /// 降临者（有面板）显示精确数值；星海人（无面板）只显示"隐约感到突破契机"。
-    /// </summary>
     public static class SuperMechLegend
     {
         private static readonly Dictionary<long, int> _legend = new Dictionary<long, int>();
         private static readonly Dictionary<long, string> _lastDeed = new Dictionary<long, string>();
 
-        // 传说度等级（参考原著宇宙传说度/星域传说度/星系传说度）
         public static readonly string[] TierNames = {
             "sm_legend_876", "sm_legend_877", "sm_legend_878", "sm_legend_879", "sm_legend_880", "sm_legend_881"
         };
@@ -60,14 +54,12 @@ namespace SuperMech.Code
             return TierNames[Mathf.Clamp(GetTier(GetLegend(a)), 0, 5)];
         }
 
-        /// <summary>传说度对S阶以上突破成功率的加成（每10点+1%，上限+30%）</summary>
         public static float GetBreakthroughBonus(Actor a)
         {
             int legend = GetLegend(a);
             return Mathf.Min(legend * 0.001f, 0.30f);
         }
 
-        /// <summary>击杀单位时判定是否获得传说度（击杀阶位越高获得越多）</summary>
         public static void OnKill(Actor killer, Actor victim)
         {
             if (killer == null || victim == null) return;
@@ -107,7 +99,6 @@ namespace SuperMech.Code
             _lastDeed.Clear();
         }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;

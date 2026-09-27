@@ -7,18 +7,12 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 超能者面板窗口：整合所有单位操作（觉醒/分支/制造/知识/修炼/查看）。
-    /// 整合所有单位操作的窗口界面。
-    /// 自动读取 MoveCamera.getFocusUnit() 当前选中单位。
-    /// </summary>
     public static class SuperMechPanel
     {
         private static SMWindowFrame _frame;
         private static Actor _currentUnit;
         private static float _refreshTimer;
 
-        // 五系定义
         private static readonly (string trait, string name, Color color)[] Classes =
         {
             (SuperMechTraits.ClassMech, "sm_panel_1200", new Color(0.3f, 0.5f, 0.9f)),
@@ -50,7 +44,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>每帧检测单位变化，自动刷新。</summary>
         public static void Tick()
         {
             if (_frame == null || !_frame.IsVisible) return;
@@ -83,12 +76,10 @@ namespace SuperMech.Code
                 return;
             }
 
-            // —— 单位基本信息 ——
             string className = GetClassName(a);
             _frame.AddLabel($"【{a.name}】 {className}", leftX, y, 680f, 28f, 18, TextAnchor.MiddleLeft);
             y -= 32f;
 
-            // 阶位/职业阶段/气力/欧纳
             string rank = SuperMechRanks.GetRankName(a);
             string stage = SuperMechStage.GetStageName(a);
             int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQi(a));
@@ -114,11 +105,9 @@ namespace SuperMech.Code
             _frame.AddLabel($"{LocalizedTextManager.getText("sm_panel_relic")}: {relic}    {LocalizedTextManager.getText("sm_panel_divinity")}: {(divine?LocalizedTextManager.getText("sm_panel_divine_yes"):LocalizedTextManager.getText("sm_panel_divine_no"))}", leftX, y, 680f, 22f, 13);
             y -= 34f;
 
-            // —— 分割线 ——
             _frame.AddLabel("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━", leftX, y, 680f, 16f, 10);
             y -= 22f;
 
-            // —— 觉醒区（未觉醒时显示5系按钮）——
             if (!SuperMechAdvancement.IsSuperMechUnit(a))
             {
                 _frame.AddLabel("sm_panel_1207", leftX, y, 200f, 22f, 14);
@@ -133,7 +122,6 @@ namespace SuperMech.Code
                         a.addTrait(Classes[idx].trait);
                         SuperMechSpecialty.AssignRandomSpecialty(a);
                         SuperMechQiAttribute.AutoAssign(a);
-                        // 异能系觉醒时随机潜力评级（原著ch48：EDCBAS）
                         if (Classes[idx].trait == SuperMechTraits.ClassPsi)
                         {
                             SuperMechPotentialRating.RollRating(a);
@@ -146,7 +134,6 @@ namespace SuperMech.Code
             }
             else
             {
-                // —— 分支选择（已觉醒未选分支时）——
                 if (branch == "sm_panel_1208" && CanSelectBranch(a))
                 {
                     _frame.AddLabel("sm_panel_1209", leftX, y, 200f, 22f, 14);
@@ -158,14 +145,11 @@ namespace SuperMech.Code
                         _frame.AddButton(branches[idx].name, leftX + i * 115f, y, 105f, 30f, () =>
                         {
                             a.addTrait(branches[idx].traitId);
-                            // 属性加成已在特质base_stats中，addTrait时自动生效
-                            // 机械系：选完分支自动晋升磁环
                             if (a.hasTrait(SuperMechTraits.ClassMech) && SuperMechStage.GetStage(a) == 3)
                             {
                                 SuperMechStage.SetStage(a, 4);
                             }
                             SuperMechQiAttribute.AutoAssign(a);
-                            // 选择分支后获得对应的特色能力（原著：其他四系的特色是后天学习的职业技能）
                             SuperMechSpecialty.GrantBranchSpecialty(a, branches[idx].traitId);
                             Debug.Log($"[超神机械师] {a.name} 转职 {branches[idx].name}");
                             Refresh();
@@ -174,7 +158,6 @@ namespace SuperMech.Code
                     y -= 40f;
                 }
 
-                // —— 机械系制造 ——
                 if (a.hasTrait(SuperMechTraits.ClassMech))
                 {
                     _frame.AddLabel("sm_panel_1210", leftX, y, 200f, 22f, 14);
@@ -195,7 +178,6 @@ namespace SuperMech.Code
                     y -= 10f;
                 }
 
-                // —— 知识解锁 ——
                 _frame.AddLabel("sm_panel_1216", leftX, y, 280f, 22f, 14);
                 y -= 28f;
                 string[] knowNames = { "sm_panel_1217", "sm_panel_1218", "sm_panel_1219" };
@@ -212,7 +194,6 @@ namespace SuperMech.Code
                 }
                 y -= 38f;
 
-                // —— 提炼法（统一入口，按系别自动传授对应变种）——
                 _frame.AddLabel("sm_panel_1220", leftX, y, 200f, 22f, 14);
                 y -= 28f;
                 _frame.AddButton("sm_panel_1221", leftX, y, 200f, 28f, () =>
@@ -223,7 +204,6 @@ namespace SuperMech.Code
                 });
                 y -= 38f;
 
-                // —— 其他操作 ——
                 _frame.AddLabel("sm_panel_1222", leftX, y, 200f, 22f, 14);
                 y -= 28f;
                 _frame.AddButton("sm_panel_1223", leftX, y, 145f, 28f, () =>

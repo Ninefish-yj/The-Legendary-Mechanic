@@ -5,19 +5,13 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 3D知识图谱：参考原版NeuronsOverview实现
-    /// 球面分布知识节点 + 轴突连接线 + 神经冲动流动 + 拖拽旋转 + 节点发光
-    /// </summary>
     public class SMKnowledgeGraph3D : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
-        // 球面分布参数
         private const float Radius = 90f;
         private const float NodeScaleMin = 0.7f;
         private const float NodeScaleMax = 1.3f;
         private const float DragSpeed = 0.3f;
 
-        // 颜色
         private static readonly Color ColorLocked = new Color(0.3f, 0.3f, 0.35f, 0.6f);
         private static readonly Color ColorUnlockable = new Color(0.3f, 0.5f, 0.9f, 0.9f);
         private static readonly Color ColorUnlocked = new Color(0.9f, 0.75f, 0.2f, 1f);
@@ -25,7 +19,6 @@ namespace SuperMech.Code
         private static readonly Color ColorAxonActive = new Color(0.3f, 0.8f, 1f, 0.4f);
         private static readonly Color ColorImpulse = new Color(0.5f, 0.9f, 1f, 1f);
 
-        // 节点数据
         public class KnowledgeNode
         {
             public string id;
@@ -42,7 +35,6 @@ namespace SuperMech.Code
             public float spawnTimer; // 自动冲动生成计时器
         }
 
-        // 轴突数据
         private class Axon
         {
             public KnowledgeNode from;
@@ -52,7 +44,6 @@ namespace SuperMech.Code
             public bool active;
         }
 
-        // 神经冲动
         private class NerveImpulse
         {
             public Axon axon;
@@ -84,16 +75,13 @@ namespace SuperMech.Code
         private Actor _actor;
         private string _prefix;
 
-        /// <summary>初始化3D图谱。</summary>
         public void Init(Actor actor, string prefix, Transform parent)
         {
             _actor = actor;
             _prefix = prefix;
 
-            // 清理旧的
             Clear();
 
-            // 创建容器
             _graphContainer = new GameObject("Graph3D", typeof(RectTransform));
             _graphContainer.transform.SetParent(parent, false);
             RectTransform grt = _graphContainer.GetComponent<RectTransform>();
@@ -101,7 +89,6 @@ namespace SuperMech.Code
             grt.anchorMax = new Vector2(0.5f, 0.5f);
             grt.pivot = new Vector2(0.5f, 0.5f);
             grt.localPosition = Vector3.zero;
-            // 固定大小（不用parent.rect，同一帧UI未布局时rect为0导致节点不可见）
             float w = parent.GetComponent<RectTransform>().rect.width;
             float h = parent.GetComponent<RectTransform>().rect.height;
             if (w <= 10f) w = 340f;
@@ -109,10 +96,8 @@ namespace SuperMech.Code
             grt.sizeDelta = new Vector2(w, h);
             Debug.Log($"[超神机械师] 3D知识图谱初始化: prefix={_prefix}, 容器大小={w}x{h}, 知识数={SuperMechKnowledge.GetAllByPrefix(_prefix)?.Count ?? 0}");
 
-            // 背景层（按系别主题色渐变+光点装饰）
             CreateBackground(_graphContainer.transform);
 
-            // 三层父对象：轴突在最底层，节点在中间，冲动在最上层
             _axonsParent = new GameObject("Axons", typeof(RectTransform));
             _axonsParent.transform.SetParent(_graphContainer.transform, false);
             _nodesParent = new GameObject("Nodes", typeof(RectTransform));
@@ -130,28 +115,22 @@ namespace SuperMech.Code
                 rt.sizeDelta = _graphContainer.GetComponent<RectTransform>().sizeDelta;
             }
 
-            // 生成节点
             GenerateNodes();
-            // 生成轴突
             GenerateAxons();
-            // 初始旋转
             _rotationY = 30f;
             _rotationX = 15f;
             _targetRotationY = _rotationY;
             _targetRotationX = _rotationX;
-            // 立即更新节点位置（否则所有节点重叠在中心看不见）
             UpdateNodes();
             UpdateAxons();
             UpdateGraphTransform();
         }
 
-        /// <summary>创建背景层（参考原版知识窗口：简洁深空+少量光点+系别标识）。</summary>
         private void CreateBackground(Transform parent)
         {
             Color themeColor = GetThemeColor(_prefix);
             System.Random rng = new System.Random(_prefix.GetHashCode() + 42);
 
-            // 深空背景（简洁深色，参考原版窗口背景）
             GameObject bgGo = new GameObject("Background", typeof(RectTransform));
             bgGo.transform.SetParent(parent, false);
             bgGo.transform.SetAsFirstSibling();
@@ -164,7 +143,6 @@ namespace SuperMech.Code
             bgRt.offsetMin = Vector2.zero;
             bgRt.offsetMax = Vector2.zero;
 
-            // 中心微光（主题色，非常淡）
             GameObject glowGo = new GameObject("CenterGlow", typeof(RectTransform));
             glowGo.transform.SetParent(bgGo.transform, false);
             Image glowImg = glowGo.AddComponent<Image>();
@@ -178,7 +156,6 @@ namespace SuperMech.Code
             glowRt.pivot = new Vector2(0.5f, 0.5f);
             glowRt.sizeDelta = new Vector2(200f, 200f);
 
-            // 少量光点（模拟星空，30个，比之前少）
             int starCount = 30;
             for (int i = 0; i < starCount; i++)
             {
@@ -200,7 +177,6 @@ namespace SuperMech.Code
                 starRt.sizeDelta = new Vector2(size, size);
             }
 
-            // 系别标识（左上角，简洁）
             GameObject labelGo = new GameObject("ThemeLabel", typeof(RectTransform));
             labelGo.transform.SetParent(bgGo.transform, false);
             Text labelText = labelGo.AddComponent<Text>();
@@ -219,7 +195,6 @@ namespace SuperMech.Code
             labelRt.sizeDelta = new Vector2(100f, 16f);
         }
 
-        /// <summary>获取系别主题色。</summary>
         private Color GetThemeColor(string prefix)
         {
             switch (prefix)
@@ -233,7 +208,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取阶位颜色。</summary>
         private Color GetTierColor(int tier)
         {
             switch (tier)
@@ -247,7 +221,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取系别中文名。</summary>
         private string GetThemeName(string prefix)
         {
             switch (prefix)
@@ -260,7 +233,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>生成知识节点（球面分布）。</summary>
         private void GenerateNodes()
         {
             List<SuperMechKnowledge.KnowledgeDef> allKnowledge = SuperMechKnowledge.GetAllByPrefix(_prefix);
@@ -282,17 +254,14 @@ namespace SuperMech.Code
                 int actualCost = SuperMechPotential.GetActualCost(_actor, def.id, def.cost);
                 node.unlockable = !node.unlocked && SuperMechPotential.GetPotential(_actor) >= actualCost;
 
-                // 斐波那契球面分布（按阶位调整半径）
                 float tierRadius = Radius * (0.7f + node.tier * 0.08f);
                 node.spherePos = GetPositionOnSphere(i, total, tierRadius);
 
-                // 创建节点GameObject
                 CreateNodeGameObject(node);
                 _nodes.Add(node);
             }
         }
 
-        /// <summary>斐波那契球面分布。</summary>
         private Vector3 GetPositionOnSphere(int index, int total, float radius)
         {
             float phi = Mathf.Acos(1f - (float)(2 * (index + 1)) / (float)total);
@@ -303,16 +272,13 @@ namespace SuperMech.Code
             return new Vector3(x, y, z);
         }
 
-        /// <summary>创建节点GameObject。</summary>
         private void CreateNodeGameObject(KnowledgeNode node)
         {
             GameObject go = new GameObject("Node_" + node.id, typeof(RectTransform));
             go.transform.SetParent(_nodesParent.transform, false);
 
-            // 节点大小按阶位区分（高阶位更大）
             float nodeSize = 32f + node.tier * 4f;
 
-            // 外层光晕（已解锁节点有发光效果）
             if (node.unlocked)
             {
                 GameObject glowGo = new GameObject("Glow", typeof(RectTransform));
@@ -329,7 +295,6 @@ namespace SuperMech.Code
                 glowRt.sizeDelta = new Vector2(nodeSize * 1.8f, nodeSize * 1.8f);
             }
 
-            // 外边框（按状态着色）
             GameObject borderGo = new GameObject("Border", typeof(RectTransform));
             borderGo.transform.SetParent(go.transform, false);
             Image borderImg = borderGo.AddComponent<Image>();
@@ -345,7 +310,6 @@ namespace SuperMech.Code
             borderRt.pivot = new Vector2(0.5f, 0.5f);
             borderRt.sizeDelta = new Vector2(nodeSize + 4, nodeSize + 4);
 
-            // 背景（深色底）
             GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
             bgGo.transform.SetParent(go.transform, false);
             Image bgImg = bgGo.AddComponent<Image>();
@@ -357,7 +321,6 @@ namespace SuperMech.Code
             bgRt.pivot = new Vector2(0.5f, 0.5f);
             bgRt.sizeDelta = new Vector2(nodeSize, nodeSize);
 
-            // 图标
             GameObject iconGo = new GameObject("Icon", typeof(RectTransform));
             iconGo.transform.SetParent(go.transform, false);
             Image iconImg = iconGo.AddComponent<Image>();
@@ -377,7 +340,6 @@ namespace SuperMech.Code
             iconRt.pivot = new Vector2(0.5f, 0.5f);
             iconRt.sizeDelta = new Vector2(nodeSize * 0.65f, nodeSize * 0.65f);
 
-            // 按钮（透明，覆盖整个节点）
             Button btn = go.AddComponent<Button>();
             ColorBlock cb = btn.colors;
             cb.normalColor = new Color(1f, 1f, 1f, 0f);
@@ -391,7 +353,6 @@ namespace SuperMech.Code
             {
                 if (SuperMechKnowledge.Unlock(_actor, nodeId))
                 {
-                    // 刷新节点状态
                     foreach (var n in _nodes)
                     {
                         if (n.id == nodeId)
@@ -408,12 +369,10 @@ namespace SuperMech.Code
                             UpdateNodeVisual(n);
                         }
                     }
-                    // 刷新轴突
                     UpdateAxonsVisual();
                 }
             });
 
-            // Tooltip
             TipButton tip = go.AddComponent<TipButton>();
             tip.textOnClick = $"{LocalizedTextManager.getText(node.name)}\n{LocalizedTextManager.getText("sm_graph_tier")}: {GetTierName(node.tier)}\n{LocalizedTextManager.getText("sm_graph_cost")}: {node.cost}{LocalizedTextManager.getText("sm_graph_potential")}\n{(node.unlocked ? LocalizedTextManager.getText("sm_graph_unlocked") : (node.unlockable ? LocalizedTextManager.getText("sm_graph_click_unlock") : LocalizedTextManager.getText("sm_graph_locked")))}";
 
@@ -422,19 +381,16 @@ namespace SuperMech.Code
             node.button = btn;
         }
 
-        /// <summary>更新节点视觉。</summary>
         private void UpdateNodeVisual(KnowledgeNode node)
         {
             if (node.gameObject == null) return;
 
-            // 计算深度（0=后面, 1=前面）
             float depth = 0.5f;
             if (node.gameObject != null)
             {
                 depth = Mathf.InverseLerp(-Radius, Radius, node.gameObject.transform.localPosition.z);
             }
 
-            // 更新边框颜色（基础色 + 深度渐变）
             Image border = node.gameObject.transform.Find("Border")?.GetComponent<Image>();
             if (border != null)
             {
@@ -443,12 +399,10 @@ namespace SuperMech.Code
                 else if (node.unlockable) baseColor = new Color(0.4f, 0.7f, 1f);
                 else baseColor = new Color(0.25f, 0.25f, 0.3f);
 
-                // 深度渐变：前面亮，后面暗（参考原版）
                 float brightness = 0.4f + depth * 0.6f;
                 border.color = new Color(baseColor.r * brightness, baseColor.g * brightness, baseColor.b * brightness, baseColor.a);
             }
 
-            // 更新图标透明度（深度影响）
             if (node.image != null)
             {
                 float baseAlpha = node.unlocked ? 1f : (node.unlockable ? 0.85f : 0.35f);
@@ -456,12 +410,10 @@ namespace SuperMech.Code
                 node.image.color = new Color(1f, 1f, 1f, baseAlpha * depthAlpha);
             }
 
-            // 已解锁节点显示光晕，未解锁隐藏
             Transform glow = node.gameObject.transform.Find("Glow");
             if (glow != null)
             {
                 glow.gameObject.SetActive(node.unlocked);
-                // 光晕强度随深度变化
                 Image glowImg = glow.GetComponent<Image>();
                 if (glowImg != null)
                 {
@@ -472,12 +424,10 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>生成轴突连接线（参考原版prepareAxons：基于空间距离全局连接）。</summary>
         private void GenerateAxons()
         {
             if (_nodes.Count < 2) return;
 
-            // 原版算法：距离阈值 = 250 / sqrt(节点数) * 1.5
             float maxDist = 250f / Mathf.Sqrt(_nodes.Count) * 1.5f;
             for (int i = 0; i < _nodes.Count - 1; i++)
             {
@@ -486,7 +436,6 @@ namespace SuperMech.Code
                     float d = Vector3.Distance(_nodes[i].spherePos, _nodes[j].spherePos);
                     if (d <= maxDist)
                     {
-                        // 避免重复连接
                         if (_axons.Exists(a =>
                             (a.from == _nodes[i] && a.to == _nodes[j]) ||
                             (a.from == _nodes[j] && a.to == _nodes[i])))
@@ -505,7 +454,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>创建轴突GameObject（用Image拉伸模拟线）。</summary>
         private void CreateAxonGameObject(Axon axon)
         {
             GameObject go = new GameObject("Axon", typeof(RectTransform));
@@ -517,7 +465,6 @@ namespace SuperMech.Code
             axon.lineImage = img;
         }
 
-        /// <summary>更新轴突位置（每帧根据节点位置）。</summary>
         private void UpdateAxons()
         {
             foreach (var axon in _axons)
@@ -535,11 +482,9 @@ namespace SuperMech.Code
                 rt.sizeDelta = new Vector2(dist, 2f);
                 rt.localRotation = Quaternion.Euler(0, 0, angle);
 
-                // 根据深度调整透明度 + 拖拽高亮
                 float avgZ = (fromPos.z + toPos.z) / 2f;
                 float alpha = Mathf.InverseLerp(-Radius, Radius, avgZ);
                 Color baseColor = axon.active ? ColorAxonActive : ColorAxonDefault;
-                // 拖拽时轴突变亮变青（参考原版highlightAllAxons）
                 if (_axonHighlight > 0.01f)
                 {
                     baseColor = Color.Lerp(baseColor, new Color(0.3f, 1f, 1f, 0.6f), _axonHighlight);
@@ -549,13 +494,11 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>更新轴突视觉状态。</summary>
         private void UpdateAxonsVisual()
         {
             foreach (var axon in _axons)
             {
                 axon.active = axon.from.unlocked && axon.to.unlocked;
-                // 已解锁的轴突上生成神经冲动
                 if (axon.active && Random.value < 0.3f)
                 {
                     SpawnImpulse(axon);
@@ -563,7 +506,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>生成神经冲动。</summary>
         private void SpawnImpulse(Axon axon, int wave = 2, KnowledgeNode source = null)
         {
             if (_impulses.Count > 40) return; // 限制数量
@@ -589,7 +531,6 @@ namespace SuperMech.Code
             _impulses.Add(impulse);
         }
 
-        /// <summary>更新神经冲动（到达后分裂传播，参考原版NeuronsOverview）。</summary>
         private void UpdateImpulses()
         {
             for (int i = _impulses.Count - 1; i >= 0; i--)
@@ -605,12 +546,10 @@ namespace SuperMech.Code
                 imp.progress += Time.deltaTime * imp.speed;
                 if (imp.progress >= 1f)
                 {
-                    // 到达目标节点
                     KnowledgeNode target = (imp.source == imp.axon.from) ? imp.axon.to : imp.axon.from;
                     Destroy(imp.obj);
                     _impulses.RemoveAt(i);
 
-                    // 分裂传播（参考原版fireImpulseFrom）
                     if (imp.wave > 0 && target != null && target.unlocked)
                     {
                         FireImpulseFromNode(target, imp.wave - 1, imp.source);
@@ -623,7 +562,6 @@ namespace SuperMech.Code
                 Vector3 pos = Vector3.Lerp(fromPos, toPos, imp.progress);
                 imp.obj.transform.localPosition = pos;
 
-                // 闪烁效果
                 float pulse = 0.5f + Mathf.Sin(Time.time * 10f) * 0.5f;
                 Color c = ColorImpulse;
                 c.a *= pulse;
@@ -631,10 +569,8 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>从指定节点发射冲动到随机连接节点（参考原版fireImpulseFrom）。</summary>
         private void FireImpulseFromNode(KnowledgeNode node, int wave, KnowledgeNode ignore = null)
         {
-            // 找所有连接的轴突
             List<Axon> connected = new List<Axon>();
             foreach (var axon in _axons)
             {
@@ -647,7 +583,6 @@ namespace SuperMech.Code
             }
             if (connected.Count == 0) return;
 
-            // 随机选择1-2个连接节点发射
             int count = Mathf.Min(connected.Count, Random.Range(1, 3));
             for (int i = 0; i < count; i++)
             {
@@ -656,40 +591,32 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>每帧更新节点位置（根据旋转）和深度效果。</summary>
         private void UpdateNodes()
         {
             foreach (var node in _nodes)
             {
                 if (node.gameObject == null) continue;
 
-                // 应用旋转到球面坐标
                 Vector3 rotated = ApplyRotation(node.spherePos);
                 node.gameObject.transform.localPosition = rotated;
 
-                // 根据z深度调整大小（模拟3D）
                 float depth = Mathf.InverseLerp(-Radius, Radius, rotated.z);
                 float scale = NodeScaleMin + depth * (NodeScaleMax - NodeScaleMin);
                 node.gameObject.transform.localScale = Vector3.one * scale;
 
-                // 排序：z大的在前面
                 node.gameObject.transform.SetSiblingIndex(Mathf.RoundToInt(depth * 100));
 
-                // 更新节点视觉（深度颜色渐变）
                 UpdateNodeVisual(node);
             }
         }
 
-        /// <summary>应用旋转到球面坐标。</summary>
         private Vector3 ApplyRotation(Vector3 pos)
         {
-            // Y轴旋转
             float cosY = Mathf.Cos(_rotationY * Mathf.Deg2Rad);
             float sinY = Mathf.Sin(_rotationY * Mathf.Deg2Rad);
             float x1 = pos.x * cosY - pos.z * sinY;
             float z1 = pos.x * sinY + pos.z * cosY;
 
-            // X轴旋转
             float cosX = Mathf.Cos(_rotationX * Mathf.Deg2Rad);
             float sinX = Mathf.Sin(_rotationX * Mathf.Deg2Rad);
             float y2 = pos.y * cosX - z1 * sinX;
@@ -698,27 +625,21 @@ namespace SuperMech.Code
             return new Vector3(x1, y2, z2);
         }
 
-        /// <summary>更新图谱容器旋转。</summary>
         private void UpdateGraphTransform()
         {
-            // 不旋转容器，只通过UpdateNodes旋转节点位置，避免双重旋转
         }
 
         void Update()
         {
-            // 平滑旋转
             if (!_isDragging)
             {
                 _rotationY = Mathf.Lerp(_rotationY, _targetRotationY, Time.deltaTime * 5f);
                 _rotationX = Mathf.Lerp(_rotationX, _targetRotationX, Time.deltaTime * 5f);
-                // 自动缓慢旋转
                 _targetRotationY += Time.deltaTime * 2f;
             }
 
-            // 轴突高亮衰减
             _axonHighlight = Mathf.Lerp(_axonHighlight, 0f, Time.deltaTime * 2f);
 
-            // 自动冲动生成（参考原版updateNeuronImpulseAutoSpawn）
             UpdateAutoImpulseSpawn();
 
             UpdateNodes();
@@ -726,7 +647,6 @@ namespace SuperMech.Code
             UpdateImpulses();
         }
 
-        /// <summary>自动冲动生成（每个已解锁节点定期发射冲动，参考原版）。</summary>
         private void UpdateAutoImpulseSpawn()
         {
             foreach (var node in _nodes)
@@ -741,7 +661,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>全图冲动爆发（参考原版fireImpulsesEverywhere，拖拽结束时触发）。</summary>
         private void FireImpulseBurst()
         {
             int count = 0;
@@ -755,7 +674,6 @@ namespace SuperMech.Code
             }
         }
 
-        // 拖拽接口
         public void OnBeginDrag(PointerEventData eventData)
         {
             _isDragging = true;
@@ -771,25 +689,21 @@ namespace SuperMech.Code
             _targetRotationX -= delta.y * DragSpeed;
             _targetRotationX = Mathf.Clamp(_targetRotationX, -60f, 60f);
             _lastDragPos = eventData.position;
-            // 拖拽时保持高亮
             _axonHighlight = Mathf.Max(_axonHighlight, 0.4f);
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
             _isDragging = false;
-            // 结束拖拽后触发全图冲动爆发（参考原版fireImpulsesEverywhere）
             FireImpulseBurst();
         }
 
-        /// <summary>获取阶位名称。</summary>
         private string GetTierName(int tier)
         {
             string[] names = { LocalizedTextManager.getText("sm_tier_basic"), LocalizedTextManager.getText("sm_tier_advanced"), LocalizedTextManager.getText("sm_tier_high"), LocalizedTextManager.getText("sm_tier_cutting"), LocalizedTextManager.getText("sm_tier_ultimate") };
             return tier >= 0 && tier < names.Length ? names[tier] : LocalizedTextManager.getText("sm_tier_unknown");
         }
 
-        /// <summary>清理。</summary>
         public void Clear()
         {
             if (_graphContainer != null)

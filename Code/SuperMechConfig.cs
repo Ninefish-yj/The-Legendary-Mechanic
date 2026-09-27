@@ -5,34 +5,24 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 超神机械师模组配置系统
-    /// 对应 default_config.json，NML 通过反射调用 Callback 方法
-    /// 所有配置项运行时可在模组管理器配置面板中修改
-    /// </summary>
     public static class SuperMechConfig
     {
-        // ========== 总开关 ==========
         public static bool ModEnabled = true;
 
-        // ========== 觉醒系统 ==========
         public static bool AutoAwakening = true;
         public static float AwakeningChance = 0.05f;      // 每tick自然觉醒概率
         public static int AwakeningMinAge = 16;           // 最小觉醒年龄
 
-        // ========== 气力系统 ==========
         public static float QiGrowthRate = 1.0f;          // 气力增长倍率
         public static bool QiUnlimited = true;            // 气力无上限（原著设定）
         public static int QiDisplayDecimals = 0;          // 气力显示小数位
 
-        // ========== 晋升系统 ==========
         public static float PromotionSpeed = 1.0f;        // 晋升速度倍率
         public static float OnaMultiplier = 1.0f;         // 欧纳计算倍率
         public static bool AutoPromotion = true;          // 自动晋升
         public static int AutoPromotionMaxRank = 12;      // 自动晋升上限阶位索引（0=F~13=X，默认12=SS，X阶需通过超神突破系统晋升（满足三条件后自动尝试或手动触发））
         public static bool ShowRankInPanel = true;        // 单位面板显示阶位
 
-        // ========== 自动收藏（每个主阶位独立开关，参考凡人修仙传）==========
         public static bool AutoFavoriteEnabled = true;    // 自动收藏总开关
         public static bool AutoFavoriteF = false;         // F阶自动收藏
         public static bool AutoFavoriteE = false;         // E阶自动收藏
@@ -44,30 +34,21 @@ namespace SuperMech.Code
         public static bool AutoFavoriteSS = true;         // SS阶自动收藏
         public static bool AutoFavoriteX = true;          // X阶（超神）自动收藏
 
-        // ========== 圣所系统 ==========
         public static bool SanctuaryEnabled = true;       // 圣所跨存档
         public static bool SanctuaryAutoSave = true;      // 圣所自动保存
 
-        // ========== 机械系 ==========
         public static bool MechSummonEnabled = true;      // 机械召唤（爆兵流占位）
         public static int MaxSummonedUnits = 50;          // 最大召唤单位数（性能保护）
 
-        // ========== 性能优化 ==========
         public static float TickInterval = 1.25f;          // 主循环间隔（秒）
         public static int MaxTrackedActors = 500;         // 最大追踪单位数
         public static bool LogVerbose = false;            // 详细日志
 
-        // ========== 宇宙宝物 ==========
         public static bool RelicDropEnabled = true;       // 宝物掉落
         public static float RelicDropRate = 0.01f;        // 宝物掉落率
 
-        // ========== 提炼法 ==========
         public static float RefinementBonus = 2.0f;       // 提炼法气力加成
 
-        /// <summary>
-        /// 配置初始化：从 NML 配置系统读取当前值
-        /// 在 OnModLoad 中调用
-        /// </summary>
         public static void Init()
         {
             try
@@ -82,10 +63,8 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>注册配置项与分类的本地化文本（NML配置面板用Id查文本）。</summary>
         private static void RegisterLocalization()
         {
-            // 分类名（default_config.json中用英文key，这里注册中文显示）
             var categories = new (string key, string name)[]
             {
                 ("General", "sm_config_549"),
@@ -102,7 +81,6 @@ namespace SuperMech.Code
             foreach (var (key, name) in categories)
                 LocalizedTextManager.add(key, name, pReplace: true);
 
-            // 配置项名称 + 描述（key格式：Id 和 Id+" Description"）
             var items = new (string id, string name, string desc)[]
             {
                 ("mod_enabled", "sm_config_559", "sm_config_560"),
@@ -144,21 +122,16 @@ namespace SuperMech.Code
             }
         }
 
-        // ========== Callback 方法（NML 反射调用，签名：静态方法，参数为配置值） ==========
 
-        // --- 总开关 ---
         public static void SetModEnabled(bool val) { ModEnabled = val; LogInfo($"sm_config_621"); }
 
-        // --- 觉醒系统 ---
         public static void SetAutoAwakening(bool val) { AutoAwakening = val; LogInfo($"sm_config_622"); }
         public static void SetAwakeningChance(float val) { AwakeningChance = Mathf.Clamp01(val); LogInfo($"sm_config_623"); }
         public static void SetAwakeningMinAge(int val) { AwakeningMinAge = Mathf.Max(0, val); LogInfo($"sm_config_624"); }
 
-        // --- 气力系统 ---
         public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); LogInfo($"sm_config_625"); }
         public static void SetQiUnlimited(bool val) { QiUnlimited = val; LogInfo($"sm_config_626"); }
 
-        // --- 晋升系统 ---
         public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); LogInfo($"sm_config_627"); }
         public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); LogInfo($"sm_config_628"); }
         public static void SetAutoPromotion(bool val) { AutoPromotion = val; LogInfo($"sm_config_629"); }
@@ -170,7 +143,6 @@ namespace SuperMech.Code
         }
         public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; LogInfo($"sm_config_632"); }
 
-        // --- 自动收藏（每个主阶位独立开关）---
         public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; LogInfo($"sm_config_633"); }
         public static void SetAutoFavoriteF(bool val) { AutoFavoriteF = val; LogInfo($"sm_config_634"); }
         public static void SetAutoFavoriteE(bool val) { AutoFavoriteE = val; LogInfo($"sm_config_635"); }
@@ -182,10 +154,8 @@ namespace SuperMech.Code
         public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; LogInfo($"sm_config_641"); }
         public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; LogInfo($"sm_config_642"); }
 
-        /// <summary>检查指定阶位索引是否应自动收藏（+位跟随主阶位）。</summary>
         public static bool ShouldFavoriteRank(int rankIdx)
         {
-            // 主阶位索引：F=0,E=1,D=2,C=4,B=6,A=8,S=10,SS=12,X=13
             if (rankIdx <= 0) return AutoFavoriteF;
             if (rankIdx <= 1) return AutoFavoriteE;
             if (rankIdx <= 3) return AutoFavoriteD;  // D和D+
@@ -197,25 +167,20 @@ namespace SuperMech.Code
             return AutoFavoriteX;
         }
 
-        // --- 圣所系统 ---
         public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"sm_config_643"); }
         public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"sm_config_644"); }
         public static void SetSanctuaryCount(int val) { /* 兼容旧配置：圣所数量已固定为6个，此选项已废弃 */ }
 
-        // --- 机械系 ---
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; LogInfo($"sm_config_645"); }
         public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); LogInfo($"sm_config_646"); }
 
-        // --- 性能优化 ---
         public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); LogInfo($"sm_config_647"); }
         public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); LogInfo($"sm_config_648"); }
         public static void SetLogVerbose(bool val) { LogVerbose = val; LogInfo($"sm_config_649"); }
 
-        // --- 宇宙宝物 ---
         public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; LogInfo($"sm_config_650"); }
         public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); LogInfo($"sm_config_651"); }
 
-        // --- 提炼法 ---
         public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); LogInfo($"sm_config_652"); }
 
         private static void LogInfo(string msg)

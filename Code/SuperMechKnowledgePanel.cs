@@ -7,10 +7,6 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 三层知识面板：系别层 + 知识图谱层 + 知识库层
-    /// 参考天人武道神藏系统的三栏结构，中间层用2D知识图谱（后续可升级为3D神经网络）
-    /// </summary>
     internal static class SuperMechKnowledgePanel
     {
         private const string ContainerName = "SMKnowledgePanel";
@@ -63,7 +59,6 @@ namespace SuperMech.Code
             _container = new GameObject(ContainerName, typeof(RectTransform));
             _container.transform.SetParent(parent, false);
             RectTransform rt = _container.GetComponent<RectTransform>();
-            // 填满父元素（panelHost高度固定480），不用ContentSizeFitter避免布局冲突
             rt.anchorMin = Vector2.zero;
             rt.anchorMax = Vector2.one;
             rt.pivot = new Vector2(0.5f, 1f);
@@ -78,7 +73,6 @@ namespace SuperMech.Code
             vlg.childForceExpandHeight = false;
             vlg.spacing = 2f;
             vlg.padding = new RectOffset(2, 2, 2, 2);
-            // 不添加ContentSizeFitter——容器已填满父元素，再加ContentSizeFitter会与anchorMax=1冲突导致高度为0
         }
 
         private static void CreateHeaderLayer()
@@ -90,12 +84,10 @@ namespace SuperMech.Code
             le.preferredHeight = HeaderHeight;
             le.flexibleHeight = 0f;
 
-            // 背景+边框
             AddBoxFrame(header, new Color(0.06f, 0.08f, 0.12f, 0.9f), new Color(0.25f, 0.3f, 0.4f, 0.8f));
 
             _headerLayer = header.transform;
 
-            // 系别切换小图标（居中）
             GameObject switcherGo = new GameObject("ClassSwitcher", typeof(RectTransform));
             switcherGo.transform.SetParent(header.transform, false);
             HorizontalLayoutGroup swHlg = switcherGo.AddComponent<HorizontalLayoutGroup>();
@@ -113,7 +105,6 @@ namespace SuperMech.Code
             swRt.offsetMax = Vector2.zero;
             _classSwitcher = switcherGo.transform;
 
-            // 5个系别切换按钮
             string[] prefixes = { "mech", "martial", "psi", "mage", "mind" };
             string[] names = { "sm_knowledgepanel_778", "sm_knowledgepanel_779", "sm_knowledgepanel_780", "sm_knowledgepanel_781", "sm_knowledgepanel_782" };
             string[] icons = {
@@ -182,7 +173,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>刷新头部信息栏。</summary>
         private static void RefreshHeader()
         {
             if (_currentActor == null) return;
@@ -201,7 +191,6 @@ namespace SuperMech.Code
             int idx = System.Array.IndexOf(prefixes, _currentPrefix);
             if (idx < 0) idx = 0;
 
-            // 更新图谱标题（显示系别+职业阶段）
             if (_graphTitle != null && _currentActor != null)
             {
                 string stage = SuperMechStage.GetStageName(_currentActor);
@@ -220,10 +209,8 @@ namespace SuperMech.Code
             le.preferredHeight = GraphHeight;
             le.flexibleHeight = 0f;
 
-            // 背景+边框
             AddBoxFrame(graph, new Color(0.03f, 0.04f, 0.08f, 0.95f), new Color(0.2f, 0.25f, 0.35f, 0.8f));
 
-            // 标题栏（"sm_knowledgepanel_788"，居中大字，类似天人武道的"隐窍"）
             GameObject titleGo = new GameObject("GraphTitle", typeof(RectTransform));
             titleGo.transform.SetParent(graph.transform, false);
             Text titleText = titleGo.AddComponent<Text>();
@@ -242,7 +229,6 @@ namespace SuperMech.Code
             titleRt.offsetMax = Vector2.zero;
             _graphTitle = titleText;
 
-            // 图谱内容容器（标题下方）
             GameObject graphContent = new GameObject("GraphContent", typeof(RectTransform));
             graphContent.transform.SetParent(graph.transform, false);
             RectTransform gcRt = graphContent.GetComponent<RectTransform>();
@@ -252,7 +238,6 @@ namespace SuperMech.Code
             gcRt.offsetMin = new Vector2(0, 0);
             gcRt.offsetMax = new Vector2(0, -22);
 
-            // 3D知识图谱组件（球面分布+轴突+神经冲动+拖拽旋转）
             _graph3D = graphContent.AddComponent<SMKnowledgeGraph3D>();
 
             _graphLayer = graph.transform;
@@ -268,10 +253,8 @@ namespace SuperMech.Code
             le.preferredHeight = LibraryHeight;
             le.flexibleHeight = 0f;
 
-            // 背景+边框
             AddBoxFrame(lib, new Color(0.06f, 0.07f, 0.1f, 0.9f), new Color(0.25f, 0.27f, 0.32f, 0.8f));
 
-            // 标题栏（居中大字，类似天人武道的"隐窍库"）
             GameObject titleGo = new GameObject("LibTitle", typeof(RectTransform));
             titleGo.transform.SetParent(lib.transform, false);
             RectTransform titleRt = titleGo.GetComponent<RectTransform>();
@@ -292,7 +275,6 @@ namespace SuperMech.Code
             if (titleTxt.font == null) titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _libraryTitle = titleTxt;
 
-            // 右下角进度（类似天人武道的"41/41"）
             GameObject progressGo = new GameObject("LibProgress", typeof(RectTransform));
             progressGo.transform.SetParent(titleGo.transform, false);
             Text progressTxt = progressGo.AddComponent<Text>();
@@ -309,7 +291,6 @@ namespace SuperMech.Code
             progRt.offsetMax = new Vector2(-6, 0);
             _libraryProgress = progressTxt;
 
-            // 滚动区域
             ScrollRect scroll = lib.AddComponent<ScrollRect>();
             scroll.horizontal = false;
             scroll.vertical = true;
@@ -368,7 +349,6 @@ namespace SuperMech.Code
 
             try
             {
-                // 使用3D知识图谱（球面分布+轴突+神经冲动+拖拽旋转）
                 _graph3D.Init(_currentActor, _currentPrefix, _graphContent);
             }
             catch (System.Exception e)
@@ -381,7 +361,6 @@ namespace SuperMech.Code
         {
             if (_libraryLayer == null) return;
 
-            // 更新标题和进度
             if (_libraryTitle != null && _currentActor != null)
             {
                 _libraryTitle.text = "sm_knowledgepanel_789";
@@ -394,7 +373,6 @@ namespace SuperMech.Code
                 _libraryProgress.text = $"{unlocked}/{total}";
             }
 
-            // 清除旧内容
             for (int i = _libraryLayer.childCount - 1; i >= 0; i--)
                 UnityEngine.Object.Destroy(_libraryLayer.GetChild(i).gameObject);
 
@@ -403,7 +381,6 @@ namespace SuperMech.Code
             List<SuperMechKnowledge.KnowledgeDef> defs = SuperMechKnowledge.GetAllByPrefix(_currentPrefix);
             if (defs == null) return;
 
-            // 按阶位分组，每个阶位一个卡片（参考原版知识窗口KnowledgeElement）
             for (int tier = 0; tier <= 4; tier++)
             {
                 var tierDefs = defs.FindAll(d => d.tier == tier);
@@ -414,12 +391,10 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>创建阶位卡片（参考原版知识窗口KnowledgeElement：图标+名称+进度条+展开网格）。</summary>
         private static void CreateTierCard(Transform parent, int tier, List<SuperMechKnowledge.KnowledgeDef> defs, int unlocked)
         {
             Color tierColor = TierColors[tier];
 
-            // 卡片容器
             GameObject card = new GameObject($"TierCard_{tier}", typeof(RectTransform));
             card.transform.SetParent(parent, false);
             LayoutElement cardLe = card.AddComponent<LayoutElement>();
@@ -427,15 +402,12 @@ namespace SuperMech.Code
             cardLe.preferredHeight = 36f;
             cardLe.flexibleWidth = 1f;
 
-            // 卡片背景+边框（阶位颜色）
             Image cardBg = card.AddComponent<Image>();
             cardBg.color = new Color(0.06f, 0.07f, 0.1f, 0.9f);
             cardBg.raycastTarget = false;
 
-            // 边框（用4个Image模拟1px边框）
             AddCardBorder(card.transform, tierColor);
 
-            // 卡片头部（图标+名称+进度条+展开按钮）
             GameObject header = new GameObject("Header", typeof(RectTransform));
             header.transform.SetParent(card.transform, false);
             RectTransform headerRt = header.GetComponent<RectTransform>();
@@ -444,7 +416,6 @@ namespace SuperMech.Code
             headerRt.pivot = new Vector2(0.5f, 1f);
             headerRt.sizeDelta = new Vector2(0, 28f);
 
-            // 阶位图标（左侧）
             GameObject iconGo = new GameObject("TierIcon", typeof(RectTransform));
             iconGo.transform.SetParent(header.transform, false);
             Image iconImg = iconGo.AddComponent<Image>();
@@ -457,7 +428,6 @@ namespace SuperMech.Code
             iconRt.anchoredPosition = new Vector2(16f, 0f);
             iconRt.sizeDelta = new Vector2(14f, 14f);
 
-            // 阶位名称
             Text nameTxt = CreateText(header.transform, GetTierName(tier), 11, TextAnchor.MiddleLeft);
             nameTxt.color = tierColor;
             nameTxt.fontStyle = FontStyle.Bold;
@@ -468,7 +438,6 @@ namespace SuperMech.Code
             nameRt.offsetMin = new Vector2(28f, 0);
             nameRt.offsetMax = new Vector2(100f, 0);
 
-            // 进度条背景
             GameObject barBgGo = new GameObject("ProgressBarBg", typeof(RectTransform));
             barBgGo.transform.SetParent(header.transform, false);
             Image barBg = barBgGo.AddComponent<Image>();
@@ -481,7 +450,6 @@ namespace SuperMech.Code
             barBgRt.offsetMin = new Vector2(100f, -4f);
             barBgRt.offsetMax = new Vector2(-50f, 4f);
 
-            // 进度条填充
             GameObject barFillGo = new GameObject("ProgressBarFill", typeof(RectTransform));
             barFillGo.transform.SetParent(barBgGo.transform, false);
             Image barFill = barFillGo.AddComponent<Image>();
@@ -495,7 +463,6 @@ namespace SuperMech.Code
             barFillRt.offsetMin = Vector2.zero;
             barFillRt.offsetMax = new Vector2(barBgRt.rect.width * progress, 0);
 
-            // 进度文字（右侧）
             Text progressTxt = CreateText(header.transform, $"{unlocked}/{defs.Count}", 9, TextAnchor.MiddleRight);
             progressTxt.color = new Color(0.7f, 0.75f, 0.8f);
             RectTransform progRt = progressTxt.GetComponent<RectTransform>();
@@ -505,7 +472,6 @@ namespace SuperMech.Code
             progRt.offsetMin = new Vector2(-46f, 0);
             progRt.offsetMax = new Vector2(-6f, 0);
 
-            // 知识网格（默认展开）
             GameObject gridObj = new GameObject("KnowledgeGrid", typeof(RectTransform));
             gridObj.transform.SetParent(card.transform, false);
             RectTransform gridRt = gridObj.GetComponent<RectTransform>();
@@ -525,14 +491,11 @@ namespace SuperMech.Code
                 CreateLibraryIcon(gridObj.transform, def);
             }
 
-            // 更新卡片高度（头部+网格）
             cardLe.preferredHeight = 28f + gridRt.sizeDelta.y;
         }
 
-        /// <summary>给卡片添加1px边框（4个Image模拟）。</summary>
         private static void AddCardBorder(Transform parent, Color color)
         {
-            // 上
             GameObject top = new GameObject("BorderTop", typeof(RectTransform));
             top.transform.SetParent(parent, false);
             Image topImg = top.AddComponent<Image>();
@@ -544,7 +507,6 @@ namespace SuperMech.Code
             topRt.pivot = new Vector2(0.5f, 1f);
             topRt.sizeDelta = new Vector2(0, 1f);
 
-            // 下
             GameObject bottom = new GameObject("BorderBottom", typeof(RectTransform));
             bottom.transform.SetParent(parent, false);
             Image bottomImg = bottom.AddComponent<Image>();
@@ -556,7 +518,6 @@ namespace SuperMech.Code
             bottomRt.pivot = new Vector2(0.5f, 0f);
             bottomRt.sizeDelta = new Vector2(0, 1f);
 
-            // 左
             GameObject left = new GameObject("BorderLeft", typeof(RectTransform));
             left.transform.SetParent(parent, false);
             Image leftImg = left.AddComponent<Image>();
@@ -568,7 +529,6 @@ namespace SuperMech.Code
             leftRt.pivot = new Vector2(0f, 0.5f);
             leftRt.sizeDelta = new Vector2(1f, 0);
 
-            // 右
             GameObject right = new GameObject("BorderRight", typeof(RectTransform));
             right.transform.SetParent(parent, false);
             Image rightImg = right.AddComponent<Image>();
@@ -625,16 +585,12 @@ namespace SuperMech.Code
             tip.text_description_2 = string.Empty;
         }
 
-        /// <summary>给GameObject添加背景+1px边框（参考原版物品栏分类框样式）。</summary>
         private static void AddBoxFrame(GameObject go, Color bgColor, Color borderColor)
         {
-            // 背景
             Image bg = go.AddComponent<Image>();
             bg.color = bgColor;
             bg.raycastTarget = false;
 
-            // 边框（用4个1px的Image模拟）
-            // 上边框
             GameObject top = new GameObject("BorderTop", typeof(RectTransform));
             top.transform.SetParent(go.transform, false);
             Image topImg = top.AddComponent<Image>();
@@ -648,7 +604,6 @@ namespace SuperMech.Code
             topRt.offsetMin = Vector2.zero;
             topRt.offsetMax = Vector2.zero;
 
-            // 下边框
             GameObject bottom = new GameObject("BorderBottom", typeof(RectTransform));
             bottom.transform.SetParent(go.transform, false);
             Image bottomImg = bottom.AddComponent<Image>();
@@ -662,7 +617,6 @@ namespace SuperMech.Code
             bottomRt.offsetMin = Vector2.zero;
             bottomRt.offsetMax = Vector2.zero;
 
-            // 左边框
             GameObject left = new GameObject("BorderLeft", typeof(RectTransform));
             left.transform.SetParent(go.transform, false);
             Image leftImg = left.AddComponent<Image>();
@@ -676,7 +630,6 @@ namespace SuperMech.Code
             leftRt.offsetMin = Vector2.zero;
             leftRt.offsetMax = Vector2.zero;
 
-            // 右边框
             GameObject right = new GameObject("BorderRight", typeof(RectTransform));
             right.transform.SetParent(go.transform, false);
             Image rightImg = right.AddComponent<Image>();
@@ -726,7 +679,6 @@ namespace SuperMech.Code
             };
         }
 
-        /// <summary>图谱拖拽处理组件</summary>
         private class GraphDragHandler : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
         {
             public Action<Vector2> OnDragDelta;

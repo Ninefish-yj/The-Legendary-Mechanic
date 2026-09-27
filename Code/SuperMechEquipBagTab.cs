@@ -8,11 +8,9 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 装备背包Tab：参考天人武道神藏Tab的实现方式，在单位面板添加自定义Tab。
-    /// 显示单位背包中的装备，点击可装备/卸下。
-    /// </summary>
     [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
+    // 背包Tab：9级品质，按品质排序分组
+
     public static class SuperMechEquipBagTab
     {
         private const string TabName = "SuperMechEquipBagTab";
@@ -59,7 +57,6 @@ namespace SuperMech.Code
             if (_container != null && !tab.tab_elements.Contains(_container.transform))
             {
                 tab.tab_elements.Add(_container.transform);
-                // 更新_tabs_with_content列表
                 try { scroll.tabs.GetType().GetMethod("refillTabsWithContent",
                     BindingFlags.NonPublic | BindingFlags.Instance)?.Invoke(scroll.tabs, null); } catch { }
             }
@@ -102,7 +99,6 @@ namespace SuperMech.Code
             if (all == null || all.Length == 0) return null;
             WindowMetaTab source = all[0];
 
-            // 参考天人武道：克隆到source的父对象，放在最后面（不影响原版Tab的拖拽排序索引）
             GameObject tabObj = Object.Instantiate(source.gameObject, source.transform.parent);
             tabObj.name = TabName;
             tabObj.transform.SetAsLastSibling();
@@ -110,15 +106,12 @@ namespace SuperMech.Code
             WindowMetaTab newTab = tabObj.GetComponent<WindowMetaTab>();
             if (newTab == null) return null;
 
-            // 立即移除拖拽排序组件（用DestroyImmediate，避免延迟销毁期间被DragOrderContainer扫描到）
             DragOrderElement dragElem = newTab.GetComponent<DragOrderElement>();
             if (dragElem != null) Object.DestroyImmediate(dragElem);
 
-            // 清空而不是new（参考天人武道）
             if (newTab.tab_elements != null) newTab.tab_elements.Clear();
             else newTab.tab_elements = new List<Transform>();
 
-            // 关键：把克隆的Tab注册到_tabs列表，否则isActiveTab/showTab都不认识它
             try
             {
                 var tabsField = typeof(WindowMetaTabButtonsContainer).GetField("_tabs",
@@ -138,13 +131,11 @@ namespace SuperMech.Code
                 Debug.LogWarning("[超神机械师] 注册背包Tab到_tabs失败: " + e.Message);
             }
 
-            // 重置tab_action
             if (newTab.tab_action == null) newTab.tab_action = new WindowMetaTabEvent();
             else newTab.tab_action.RemoveAllListeners();
             newTab.tab_action.AddListener(_ =>
             {
                 scroll.tabs.showTab(newTab);
-                // Tab切换时触发内容刷新
                 if (_boundWindow != null)
                 {
                     try { Refresh(_boundWindow); } catch { }
@@ -153,7 +144,6 @@ namespace SuperMech.Code
 
             newTab.gameObject.SetActive(true);
 
-            // 用TipButton设置文本（参考蛊真人：title+description合并到textOnClick）
             TipButton tip = newTab.GetComponent<TipButton>();
             if (tip != null)
             {
@@ -162,7 +152,6 @@ namespace SuperMech.Code
                 tip.text_description_2 = string.Empty;
             }
 
-            // 设置图标（精确找到图标Image，跳过背景Image）
             Image[] allImages = tabObj.GetComponentsInChildren<Image>(true);
             Image icon = null;
             foreach (Image img in allImages)
@@ -180,7 +169,6 @@ namespace SuperMech.Code
                 try { icon.sprite = SpriteTextureLoader.getSprite("ui/Icons/iconArmor"); } catch { }
             }
 
-            // CanvasGroup控制可见性
             CanvasGroup cg = newTab.GetComponent<CanvasGroup>();
             if (cg == null) cg = newTab.gameObject.AddComponent<CanvasGroup>();
             cg.alpha = 1f;
@@ -254,21 +242,17 @@ namespace SuperMech.Code
 
         private static void OnTabHide()
         {
-            // tab_elements机制会自动隐藏内容，不需要手动SetActive
         }
 
-        /// <summary>渲染背包内容（纯图标网格，参考原版城市资源仓库ButtonResource）。</summary>
         private static void RenderBag(Actor actor)
         {
             if (_container == null || actor == null) return;
 
-            // 清空旧内容
             foreach (Transform child in _container.transform)
             {
                 if (child.name != "LayoutGroup") Object.Destroy(child.gameObject);
             }
 
-            // === 已装备区域（带框，参考原版装备槽）===
             var equippedBox = CreateCategoryBox(_container.transform, LocalizedTextManager.getText("sm_ui_equipped"), null);
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
             if (currentIdx >= 0)
@@ -291,19 +275,15 @@ namespace SuperMech.Code
             }
             else
             {
-                // 空槽位（参考原版空装备槽）
                 CreateEmptySlot(equippedBox, 48, LocalizedTextManager.getText("sm_ui_unequipped"));
             }
 
-            // 分隔
             var spacer = new GameObject("Spacer", typeof(RectTransform));
             spacer.transform.SetParent(_container.transform, false);
             spacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 8);
 
-            // === 背包物品：按品质分组（带框，参考原版物品栏分类）===
             var bag = SuperMechEquipBag.GetBag(actor);
 
-            // 按品质分组
             var byQuality = new Dictionary<int, List<string>>();
             for (int q = 0; q <= 8; q++) byQuality[q] = new List<string>();
             foreach (string equipId in bag)
@@ -316,19 +296,16 @@ namespace SuperMech.Code
                 }
             }
 
-            // 从高到低显示每个品质组
             for (int q = 8; q >= 0; q--)
             {
                 var items = byQuality[q];
                 string catName = GetQualityName(q);
                 Color qColor = GetQualityColor(q);
 
-                // 创建带框的分类容器（带计数，参考原版特质分组框）
                 var catBox = CreateCategoryBox(_container.transform, catName, qColor, items.Count);
 
                 if (items.Count > 0)
                 {
-                    // 图标网格（每行5个）
                     GameObject currentRow = null;
                     int iconIndex = 0;
                     foreach (string equipId in items)
@@ -363,7 +340,6 @@ namespace SuperMech.Code
                 }
                 else
                 {
-                    // 空槽位（参考原版空分类显示）
                     var emptyRow = new GameObject("EmptyRow", typeof(RectTransform));
                     emptyRow.transform.SetParent(catBox, false);
                     emptyRow.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 36);
@@ -375,24 +351,20 @@ namespace SuperMech.Code
                     emptyRt.offsetMax = Vector2.zero;
                 }
 
-                // 分类间距
                 var catSpacer = new GameObject("CatSpacer", typeof(RectTransform));
                 catSpacer.transform.SetParent(_container.transform, false);
                 catSpacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 6);
             }
         }
 
-        /// <summary>创建带背景框的分类容器（参考原版物品栏分类框）。</summary>
         private static Transform CreateCategoryBox(Transform parent, string title, Color? titleColor, int count = -1)
         {
-            // 外框容器
             GameObject box = new GameObject("CategoryBox", typeof(RectTransform));
             box.transform.SetParent(parent, false);
             LayoutElement boxLe = box.AddComponent<LayoutElement>();
             boxLe.minHeight = 60f;
             boxLe.flexibleHeight = 0f;
 
-            // 背景（深色半透明，参考原版特质分组框）
             GameObject bgGo = new GameObject("Bg", typeof(RectTransform));
             bgGo.transform.SetParent(box.transform, false);
             Image bgImg = bgGo.AddComponent<Image>();
@@ -404,11 +376,9 @@ namespace SuperMech.Code
             bgRt.offsetMin = Vector2.zero;
             bgRt.offsetMax = Vector2.zero;
 
-            // 边框（用品品质颜色，2px，参考知识库卡片）
             Color borderColor = titleColor ?? new Color(0.4f, 0.45f, 0.5f);
             AddBoxBorder(box.transform, borderColor);
 
-            // 标题栏（左对齐，参考原版特质分组框的title字段）
             GameObject titleGo = new GameObject("Title", typeof(RectTransform));
             titleGo.transform.SetParent(box.transform, false);
             RectTransform titleRt = titleGo.GetComponent<RectTransform>();
@@ -428,7 +398,6 @@ namespace SuperMech.Code
             titleTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (titleTxt.font == null) titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-            // 计数（右上角，参考原版特质分组框的counter字段）
             if (count >= 0)
             {
                 GameObject counterGo = new GameObject("Counter", typeof(RectTransform));
@@ -450,7 +419,6 @@ namespace SuperMech.Code
                 if (counterTxt.font == null) counterTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             }
 
-            // 内容容器（标题下方）
             GameObject contentGo = new GameObject("Content", typeof(RectTransform));
             contentGo.transform.SetParent(box.transform, false);
             RectTransform contentRt = contentGo.GetComponent<RectTransform>();
@@ -476,10 +444,8 @@ namespace SuperMech.Code
             return contentGo.transform;
         }
 
-        /// <summary>给容器添加2px边框（4个Image模拟，参考知识库卡片）。</summary>
         private static void AddBoxBorder(Transform parent, Color color)
         {
-            // 上
             GameObject top = new GameObject("BorderTop", typeof(RectTransform));
             top.transform.SetParent(parent, false);
             Image topImg = top.AddComponent<Image>();
@@ -491,7 +457,6 @@ namespace SuperMech.Code
             topRt.pivot = new Vector2(0.5f, 1f);
             topRt.sizeDelta = new Vector2(0, 2f);
 
-            // 下
             GameObject bottom = new GameObject("BorderBottom", typeof(RectTransform));
             bottom.transform.SetParent(parent, false);
             Image bottomImg = bottom.AddComponent<Image>();
@@ -503,7 +468,6 @@ namespace SuperMech.Code
             bottomRt.pivot = new Vector2(0.5f, 0f);
             bottomRt.sizeDelta = new Vector2(0, 2f);
 
-            // 左
             GameObject left = new GameObject("BorderLeft", typeof(RectTransform));
             left.transform.SetParent(parent, false);
             Image leftImg = left.AddComponent<Image>();
@@ -515,7 +479,6 @@ namespace SuperMech.Code
             leftRt.pivot = new Vector2(0f, 0.5f);
             leftRt.sizeDelta = new Vector2(2f, 0);
 
-            // 右
             GameObject right = new GameObject("BorderRight", typeof(RectTransform));
             right.transform.SetParent(parent, false);
             Image rightImg = right.AddComponent<Image>();
@@ -528,18 +491,15 @@ namespace SuperMech.Code
             rightRt.sizeDelta = new Vector2(2f, 0);
         }
 
-        /// <summary>创建空槽位（参考原版空装备槽）。</summary>
         private static GameObject CreateEmptySlot(Transform parent, int size, string label)
         {
             var slot = new GameObject("EmptySlot", typeof(RectTransform));
             slot.transform.SetParent(parent, false);
             slot.GetComponent<RectTransform>().sizeDelta = new Vector2(size, size);
 
-            // 边框
             var border = slot.AddComponent<UnityEngine.UI.Image>();
             border.color = new Color(0.3f, 0.3f, 0.35f, 0.5f);
 
-            // 文字
             var txt = CreateText(slot.transform, label, 10, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.7f));
             var txtRt = txt.GetComponent<RectTransform>();
             txtRt.anchorMin = Vector2.zero;
@@ -550,17 +510,14 @@ namespace SuperMech.Code
             return slot;
         }
 
-        /// <summary>创建物品图标（参考原版ButtonResource：品质边框+内部图标+tooltip）。</summary>
         private static GameObject CreateItemIcon(Transform parent, string iconPath, Color qColor, int size, string name, string tooltip)
         {
             var iconGo = new GameObject("ItemIcon", typeof(RectTransform));
             iconGo.transform.SetParent(parent, false);
 
-            // 品质边框（背景）
             var borderImg = iconGo.AddComponent<Image>();
             borderImg.color = qColor;
 
-            // 内部图标区域（深色背景）
             var innerGo = new GameObject("Inner", typeof(RectTransform));
             innerGo.transform.SetParent(iconGo.transform, false);
             var innerImg = innerGo.AddComponent<Image>();
@@ -571,7 +528,6 @@ namespace SuperMech.Code
             innerRt.offsetMin = Vector2.zero;
             innerRt.offsetMax = Vector2.zero;
 
-            // 物品图标
             var itemIcon = new GameObject("Icon", typeof(RectTransform));
             itemIcon.transform.SetParent(innerGo.transform, false);
             var itemImg = itemIcon.AddComponent<Image>();
@@ -587,11 +543,9 @@ namespace SuperMech.Code
             RectTransform irt = iconGo.GetComponent<RectTransform>();
             irt.sizeDelta = new Vector2(size, size);
 
-            // 点击按钮
             var btn = iconGo.AddComponent<Button>();
             btn.targetGraphic = borderImg;
 
-            // Tooltip
             var tip = iconGo.AddComponent<TipButton>();
             tip.textOnClick = tooltip;
             tip.textOnClickDescription = string.Empty;
@@ -600,7 +554,6 @@ namespace SuperMech.Code
             return iconGo;
         }
 
-        /// <summary>原著9级品质颜色。</summary>
         private static Color GetQualityColor(int q)
         {
             switch (q)
@@ -618,7 +571,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>原著9级品质名（本地化）。</summary>
         private static string GetQualityName(int q)
         {
             string[] keys = { "sm_quality_0", "sm_quality_1", "sm_quality_2", "sm_quality_3", "sm_quality_4",

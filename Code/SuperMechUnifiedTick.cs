@@ -3,27 +3,15 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 统一tick调度器（性能优化：40系统分4组错峰）。
-    ///
-    /// 之前的问题：40+个系统每个tick都独立 foreach 遍历所有单位，
-    /// 单位多时一帧内40次全量遍历，严重卡顿。
-    ///
-    /// 现在：把系统分成4组，每组在不同tick运行，每tick只跑1/4的系统。
-    /// 同时加全局单位数上限保护，超过阈值时降低tick频率。
-    /// </summary>
+    // 统一tick：4组错峰调度，死亡清理
+
     public static class SuperMechUnifiedTick
     {
         private static int _tickCounter = 0;
         private static float _lastSaveTime = 0f;
 
-        /// <summary>
-        /// 统一tick入口：在Main.Update中调用，替代原来40+个独立Tick。
-        /// 系统分4组错峰执行，每tick只跑一组。
-        /// </summary>
         public static void Tick()
         {
-            // 全局保护：世界未加载时不执行任何tick
             if (World.world == null) return;
 
             _tickCounter++;
@@ -31,7 +19,6 @@ namespace SuperMech.Code
 
             try
             {
-                // 第0组：核心修炼（气力/核心能量/属性/提炼法/修炼）
                 if (group == 0)
                 {
                     SuperMechQi.TickQiLevels();
@@ -41,7 +28,6 @@ namespace SuperMech.Code
                     SuperMechRefinement.TickCultivation();
                     SuperMechCustomStats.TickSync(); // 同步自定义属性到BaseStats（单位面板显示）
                 }
-                // 第1组：晋升与成长（阶位/潜能/副职业/降临者/星海人）
                 else if (group == 1)
                 {
                     SuperMechAdvancement.TickAutoAwakening();
@@ -56,7 +42,6 @@ namespace SuperMech.Code
                     SuperMechMechFusion.TickFusion();
                     SuperMechSkills.TickAutoLearnAll(); // 自动学习职业技能
                 }
-                // 第2组：高阶系统（冥冥感应/神性蜕变/超神遗力/进阶任务/信息态）
                 else if (group == 2)
                 {
                     SuperMechIntuition.TickIntuition();
@@ -66,7 +51,6 @@ namespace SuperMech.Code
                     SuperMechTranscendence.TickAutoAttempt();
                     SuperMechInfoState.TickInfoState();
                 }
-                // 第3组：辅助系统（圣所/法师塔/宝物/自动收藏/气势震慑/维度buff过期）
                 else // group == 3
                 {
                     SuperMechSanctuary.TickDivinity();
@@ -83,7 +67,6 @@ namespace SuperMech.Code
                 Debug.LogError($"[超神机械师] 统一tick异常(group={group}): {e.Message}\n{e.StackTrace}");
             }
 
-            // 自动存档+死单位清理：每60秒
             float now = Time.time;
             if (now - _lastSaveTime >= 60f)
             {
@@ -95,7 +78,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>清理已死亡/移除单位的字典数据（防止内存泄漏）。</summary>
         private static void CleanupDeadActors()
         {
             if (World.world == null || World.world.units == null) return;
@@ -139,10 +121,6 @@ namespace SuperMech.Code
                 Debug.Log($"[超神机械师] 清理{removed}条死亡单位数据");
         }
 
-        /// <summary>
-        /// 世界切换时清空所有系统的静态字典数据。
-        /// 世界切换时一次性清空所有静态字典。
-        /// </summary>
         public static void ClearAll()
         {
             try { SuperMechQi.Clear(); } catch { }

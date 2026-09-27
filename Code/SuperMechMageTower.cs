@@ -5,16 +5,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 法师塔系统（百度百科/原著ch730）：
-    /// 超A级法师都有自己的法师塔，在塔中获得大量加成，有炼金人偶、符文阵列等辅助道具。
-    /// 在法师塔中的超A级法师被称为"完全状态"。
-    /// 秘法之殿是法师塔的极致（固化48000个符文法阵，投影遍及数百个次级维度）。
-    /// 实现：A级以上法师自动建造法师塔，塔等级随阶位提升，提供伤害/生命/智力加成。
-    /// </summary>
     public static class SuperMechMageTower
     {
-        // 法师塔等级特质（1-5级）
         public const string Tower1 = "sm_mage_tower_1"; // 初级法师塔
         public const string Tower2 = "sm_mage_tower_2"; // 中级法师塔
         public const string Tower3 = "sm_mage_tower_3"; // 高级法师塔
@@ -25,7 +17,6 @@ namespace SuperMech.Code
         public static readonly string[] TowerNames = {
             "sm_magetower_357", "sm_magetower_358", "sm_magetower_359", "sm_magetower_360", "sm_magetower_361"
         };
-        // 每级加成（完全状态）
         public static readonly (float dmg, float hp, int intel, float mana)[] TowerBonus = {
             (0.20f, 0.20f, 10, 50f),   // 初级
             (0.40f, 0.40f, 20, 100f),  // 中级
@@ -62,7 +53,6 @@ namespace SuperMech.Code
             Debug.Log("[超神机械师] 法师塔系统注册完成：5级（初级→秘法之殿）");
         }
 
-        /// <summary>Tick：A级以上法师自动建造/升级法师塔。</summary>
         public static void TickMageTowers()
         {
             foreach (Actor a in World.world.units.units_only_alive)
@@ -73,7 +63,6 @@ namespace SuperMech.Code
                 int rank = SuperMechAdvancement.GetRankIndex(a);
                 if (rank < 8) continue; // A级以上才能建法师塔
 
-                // 法师塔等级：A=1, A+=2, S=3, S+=4, SS/X=5
                 int targetLevel = 1;
                 if (rank >= 9) targetLevel = 2;  // A+
                 if (rank >= 10) targetLevel = 3; // S
@@ -89,12 +78,10 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取法师塔等级（0=无）。</summary>
         public static int GetTowerLevel(Actor a)
         {
             if (a == null) return 0;
             if (_towerLevel.TryGetValue(a.data.id, out int lv)) return lv;
-            // 从特质反查
             for (int i = TowerIds.Length - 1; i >= 0; i--)
             {
                 if (a.hasTrait(TowerIds[i])) { _towerLevel[a.data.id] = i + 1; return i + 1; }
@@ -102,11 +89,9 @@ namespace SuperMech.Code
             return 0;
         }
 
-        /// <summary>设置法师塔等级。</summary>
         public static void SetTowerLevel(Actor a, int level)
         {
             if (a == null || level < 0 || level > TowerIds.Length) return;
-            // 移除旧塔
             for (int i = 0; i < TowerIds.Length; i++)
             {
                 if (a.hasTrait(TowerIds[i])) a.removeTrait(TowerIds[i]);
@@ -118,20 +103,17 @@ namespace SuperMech.Code
             _towerLevel[a.data.id] = level;
         }
 
-        /// <summary>获取法师塔名。</summary>
         public static string GetTowerName(Actor a)
         {
             int lv = GetTowerLevel(a);
             return lv > 0 ? TowerNames[lv - 1] : "sm_magetower_363";
         }
 
-        /// <summary>清空法师塔数据（世界切换用）。</summary>
         public static void Clear()
         {
             _towerLevel.Clear();
         }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;

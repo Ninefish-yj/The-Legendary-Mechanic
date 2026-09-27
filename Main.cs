@@ -6,9 +6,8 @@ using HarmonyLib;
 
 namespace SuperMech
 {
-    /// <summary>
-    /// 《超神机械师》WorldBox 模组入口（作者：阿鱼要吃书 · 原著：齐佩甲）
-    /// </summary>
+    // 模组入口：系统注册顺序和主循环调度
+
     public class Main : BasicMod<Main>
     {
         public new static Main Instance { get; private set; }
@@ -49,12 +48,10 @@ namespace SuperMech
             SuperMechPowers.Register();
             SuperMechUI.Init();  // 必须在 powers 注册之后（PowerButton.OnEnable 按名字查 powers）
 
-            // Harmony Patch：单位面板注入阶位/职业/气力/欧纳数据行 + 战斗挂钩
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();
             LogInfo("[超神机械师] Harmony Patch 完成（单位面板注入+战斗挂钩）");
 
-            // 加载存档数据（气力/职业/神性蜕变等）
             SuperMechSaveData.Load();
 
             LogInfo("[超神机械师] Phase 1 系统注册完成");
@@ -62,7 +59,6 @@ namespace SuperMech
 
         private void Update()
         {
-            // 启动约4秒后，等语言加载与全部中文注册完成，导出一次完整 cz.json
             if (!_localeExported)
             {
                 _localeTimer += Time.unscaledDeltaTime;
@@ -76,7 +72,6 @@ namespace SuperMech
 
             if (!SuperMechConfig.ModEnabled) return;
 
-            // 世界切换检测：切换世界时重置所有静态字典数据，加载新世界存档
             MapBox world = World.world;
             if (world != _lastWorld)
             {
@@ -90,14 +85,11 @@ namespace SuperMech
                 }
             }
 
-            // 游戏暂停时停止模拟（Time.timeScale <= 0.01）
             bool paused = Time.timeScale <= 0.01f;
             if (paused) return;
 
-            // 面板窗口每帧检测单位变化
             try { SuperMechPanel.Tick(); } catch { }
 
-            // 存档恢复：世界加载后单位逐步生成，每次tick尝试匹配恢复
             if (_worldInitPending)
             {
                 try { SuperMechSaveData.TryRestoreActors(); } catch { }
@@ -108,7 +100,6 @@ namespace SuperMech
             if (_promoTimer >= SuperMechConfig.TickInterval)
             {
                 _promoTimer = 0f;
-                // 统一tick调度：40+系统分4组错峰执行，避免一帧内40次全量遍历
                 try { SuperMechUnifiedTick.Tick(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 统一tick异常: " + e.Message); }
             }

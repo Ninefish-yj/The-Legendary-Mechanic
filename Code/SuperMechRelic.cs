@@ -5,17 +5,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 装备系统（原著9级品质 + 原版EquipmentAsset兼容）：
-    /// 原著品质（从原文提取）：灰→绿→蓝→淡紫→紫→粉(珍稀)→橙(传说)→银橙(使徒兵器)→金(宇宙宝物级)
-    /// 用原版EquipmentAsset注册装备物品，走原版装备系统（装备槽/属性merge）。
-    /// 兼容方案：ItemAsset.rarity(int)存9级品质0-8，quality(Rarity枚举)映射到原版4级（0→R0,1→R1,2→R2,3+→R3）。
-    /// 单位装备后原版自动merge属性（Actor.cs:1829 stats.mergeStats(equipmentAsset.base_stats)）。
-    /// 不直接加单位身上——单位不是装备。
-    /// </summary>
     public static class SuperMechRelic
     {
-        // 装备品质定义（原著9级）
         public class EquipDef
         {
             public string id;
@@ -27,7 +18,6 @@ namespace SuperMech.Code
             public float hpMul;
         }
 
-        // 原著9级品质（从原文提取）
         public static readonly List<EquipDef> Equipments = new List<EquipDef>
         {
             new EquipDef { id="sm_eq_gray",    name="sm_relic_094",       qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f },
@@ -41,14 +31,11 @@ namespace SuperMech.Code
             new EquipDef { id="sm_eq_gold",    name="sm_relic_102", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f },
         };
 
-        // 上次生命值（检测战斗结束）
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
-        // 战斗中累计时间（用于掉落判定）
         private static readonly Dictionary<long, float> _combatTime = new Dictionary<long, float>();
 
         public static void Register()
         {
-            // 注册装备物品到原版物品库（clone自amulet模板）
             var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
             if (library == null)
             {
@@ -90,7 +77,6 @@ namespace SuperMech.Code
                 registered++;
             }
 
-            // 注册"sm_relic_104"神权（随机赐予金色装备或宇宙宝物）
             var givePower = new GodPower
             {
                 id = "sm_give_equip",
@@ -108,7 +94,6 @@ namespace SuperMech.Code
                 if (tile == null) return true;
                 tile.doUnits(delegate (Actor a)
                 {
-                    // 50%概率赐予金色装备，50%概率赐予宇宙宝物
                     if (Random.value < 0.5f)
                     {
                         EquipItem(a, 8); // index 8 = 金色·宇宙宝物级
@@ -135,7 +120,6 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 装备系统注册完成：{registered}件装备（普通→金色，原版EquipmentAsset）");
         }
 
-        /// <summary>每tick：战斗中概率掉落装备。</summary>
         public static void TickRelicDrops()
         {
             if (!SuperMechConfig.RelicDropEnabled) return;
@@ -176,16 +160,12 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>尝试掉落装备。品质随阶位提升。</summary>
         private static void TryDropEquip(Actor a)
         {
             int rank = SuperMechAdvancement.GetRankIndex(a);
             float dropChance = SuperMechConfig.RelicDropRate + rank * 0.01f;
             if (Random.value > dropChance) return;
 
-            // 品质roll：阶位越高roll上限越高（原著9级）
-            // F-D(0-3):最高绿色(1), C-B(4-7):最高蓝色(2), A-S(8-10):最高紫色(4)
-            // S+-SS(11-12):最高橙色(6), X(13):最高银橙色(7), 金色(8)不掉落只能造
             int maxQuality = rank <= 3 ? 1 : rank <= 7 ? 2 : rank <= 10 ? 4 : rank <= 12 ? 6 : 7;
             int quality = Random.Range(0, maxQuality + 1);
 
@@ -194,7 +174,6 @@ namespace SuperMech.Code
                 Debug.Log($"[超神机械师] {a.name} 战斗掉落装备：{Equipments[quality].name}（掉落率{dropChance:F0%}）");
         }
 
-        /// <summary>装备物品到amulet槽（高级替换低级，旧装备自动回背包）。用原版装备系统，不直接加单位属性。</summary>
         public static void EquipItem(Actor a, int qualityIndex)
         {
             if (a == null || qualityIndex < 0 || qualityIndex >= Equipments.Count) return;
@@ -202,7 +181,6 @@ namespace SuperMech.Code
 
             var def = Equipments[qualityIndex];
 
-            // 检查当前amulet槽是否已有更高级装备
             ActorEquipmentSlot slot = a.equipment.getSlot(EquipmentType.Amulet);
             if (slot != null && !slot.isEmpty())
             {
@@ -211,7 +189,6 @@ namespace SuperMech.Code
                 {
                     int currentIdx = GetEquipIndex(current);
                     if (currentIdx >= qualityIndex) return; // 已有同级或更高级，不替换
-                    // 旧装备放回背包
                     if (currentIdx >= 0)
                     {
                         SuperMechEquipBag.AddToBag(a, Equipments[currentIdx].id);
@@ -220,7 +197,6 @@ namespace SuperMech.Code
                 }
             }
 
-            // 创建物品并装备
             var library = (AssetLibrary<EquipmentAsset>)(object)AssetManager.items;
             EquipmentAsset asset = library.get(def.id);
             if (asset == null) return;
@@ -231,7 +207,6 @@ namespace SuperMech.Code
                 if (item == null) return;
                 item.calculateValues();
                 slot.setItem(item, a);
-                // 装备词条：根据品质roll随机属性
                 SuperMechEquipAffix.OnEquip(a, qualityIndex);
             }
             catch (System.Exception e)
@@ -240,7 +215,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取当前装备的品质索引。</summary>
         public static int GetCurrentEquipIndex(Actor a)
         {
             if (a == null || a.equipment == null) return -1;
@@ -251,7 +225,6 @@ namespace SuperMech.Code
             return GetEquipIndex(item);
         }
 
-        /// <summary>从物品获取品质索引。</summary>
         public static int GetEquipIndex(Item item)
         {
             if (item == null || item.asset == null) return -1;
@@ -259,7 +232,6 @@ namespace SuperMech.Code
             return GetEquipIndex(id);
         }
 
-        /// <summary>从装备ID获取品质索引（public，供装备背包调用）。</summary>
         public static int GetEquipIndex(string equipId)
         {
             if (string.IsNullOrEmpty(equipId)) return -1;
@@ -270,28 +242,24 @@ namespace SuperMech.Code
             return -1;
         }
 
-        /// <summary>获取当前装备名。</summary>
         public static string GetCurrentEquipName(Actor a)
         {
             int idx = GetCurrentEquipIndex(a);
             return idx >= 0 ? Equipments[idx].name : "sm_relic_105";
         }
 
-        /// <summary>获取当前装备ID。</summary>
         public static string GetCurrentEquipId(Actor a)
         {
             int idx = GetCurrentEquipIndex(a);
             return idx >= 0 ? Equipments[idx].id : null;
         }
 
-        /// <summary>清空装备数据（世界切换用）。</summary>
         public static void Clear()
         {
             _lastHealth.Clear();
             _combatTime.Clear();
         }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
@@ -301,11 +269,6 @@ namespace SuperMech.Code
         }
     }
 
-    /// <summary>
-    /// 宇宙宝物系统（原著ch1008/ch1040）：
-    /// 宇宙宝物是独立于普通装备的特殊物品类别，不是装备品质链的一级。
-    /// 分两类：人造宇宙宝物、天然宇宙奇观。
-    /// </summary>
     public static class SuperMechCosmicRelic
     {
         public class CosmicRelicDef
@@ -319,10 +282,8 @@ namespace SuperMech.Code
             public float hpMul;
         }
 
-        // 原著出现的宇宙宝物与宇宙奇观
         public static readonly List<CosmicRelicDef> Relics = new List<CosmicRelicDef>
         {
-            // ===== 人造宇宙宝物 =====
             new CosmicRelicDef { id="sm_cr_secret_hall", name="sm_relic_106", desc="sm_relic_107", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
             new CosmicRelicDef { id="sm_cr_fire_core", name="sm_relic_108", desc="sm_relic_109", isWonder=false, wonderType="", dmgMul=20f, hpMul=15f },
             new CosmicRelicDef { id="sm_cr_teleporter", name="sm_relic_110", desc="sm_relic_111", isWonder=false, wonderType="", dmgMul=15f, hpMul=20f },
@@ -330,7 +291,6 @@ namespace SuperMech.Code
             new CosmicRelicDef { id="sm_cr_shadow_lamp", name="sm_relic_114", desc="sm_relic_115", isWonder=false, wonderType="", dmgMul=18f, hpMul=18f },
             new CosmicRelicDef { id="sm_cr_evolution_cube", name="sm_relic_116", desc="sm_relic_117", isWonder=false, wonderType="", dmgMul=15f, hpMul=25f },
 
-            // ===== 宇宙奇观（具有"绝对性"，ch1172）=====
             new CosmicRelicDef { id="sm_cr_amber", name="sm_relic_118", desc="sm_relic_119", isWonder=true, wonderType="sm_relic_120", dmgMul=50f, hpMul=50f },
             new CosmicRelicDef { id="sm_cr_loop_spacetime", name="sm_relic_121", desc="sm_relic_122", isWonder=true, wonderType="sm_relic_120", dmgMul=30f, hpMul=40f },
             new CosmicRelicDef { id="sm_cr_soul_transfer", name="sm_relic_123", desc="sm_relic_124", isWonder=true, wonderType="sm_relic_125", dmgMul=35f, hpMul=35f },
@@ -359,13 +319,11 @@ namespace SuperMech.Code
                 AssetManager.traits.add(t);
             }
 
-            // "赐予宇宙宝物"神权已合并到"sm_relic_104"神权（上方），不再单独注册
 
             int wonderCount = Relics.FindAll(r => r.isWonder).Count;
             Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（人造{Relics.Count - wonderCount}件 + 宇宙奇观{wonderCount}件）");
         }
 
-        /// <summary>装备宇宙宝物（同时只能有一件，高级替换低级）。</summary>
         public static void EquipCosmicRelic(Actor a, string relicId)
         {
             if (a == null) return;
@@ -377,7 +335,6 @@ namespace SuperMech.Code
             _equipped[a.data.id] = relicId;
         }
 
-        /// <summary>获取当前装备的宇宙宝物名。</summary>
         public static string GetEquippedName(Actor a)
         {
             if (a == null) return "";
@@ -389,13 +346,11 @@ namespace SuperMech.Code
             return "";
         }
 
-        /// <summary>清空宝物数据（世界切换用）。</summary>
         public static void Clear()
         {
             _equipped.Clear();
         }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             return SuperMechCleanup.CleanDict(_equipped, alive);

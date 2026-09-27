@@ -6,9 +6,6 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 圣所状态窗口：6圣所进度 + 复活列表 + 次级维度入口。
-    /// </summary>
     public static class SuperMechSanctuaryWindow
     {
         private static SMWindowFrame _frame;
@@ -67,7 +64,6 @@ namespace SuperMech.Code
                         Debug.Log($"[超神机械师] {names[sanctuaryIndex]}未解锁，需集齐3碎片");
                         return;
                     }
-                    // 获取当前光标附近的单位
                     Actor selected = World.world.getActorNearCursor();
                     if (selected == null)
                     {
@@ -92,7 +88,6 @@ namespace SuperMech.Code
             _frame.AddLabel($"{LocalizedTextManager.getText(\"sm_sanctuary_fragments\")}:{total}  {LocalizedTextManager.getText(\"sm_sanctuary_unlocked\")}:{unlockedCount}/6  {LocalizedTextManager.getText(\"sm_sanctuary_keys\")}:{data.key_fragments}  {LocalizedTextManager.getText(\"sm_sanctuary_visits\")}:{data.total_visits}  {LocalizedTextManager.getText(\"sm_sanctuary_resurrect\")}:{data.total_resurrections}", x, y, 540f, 18f, 12);
             y -= 24f;
 
-            // ===== 圣所复活（ch1134/ch1214：仅超A级可复活，超神级靠信息态重生）=====
             _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_resurrect_title"), x, y, 540f, 20f, 13);
             y -= 26f;
 
@@ -111,7 +106,6 @@ namespace SuperMech.Code
                     var rec = deadList[i];
                     string rankName = rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count
                         ? SuperMechRanks.All[rec.rankIndex].name : "?";
-                    // 显示复活次数和降阶风险
                     int nextRevive = rec.reviveCount + 1;
                     float infoLoss = Mathf.Clamp(0.1f * nextRevive, 0.1f, 0.5f);
                     string riskText = nextRevive >= 4 ? "sm_sanctuarywindow_980" : nextRevive >= 2 ? "sm_sanctuarywindow_981" : "sm_sanctuarywindow_982";
@@ -120,7 +114,6 @@ namespace SuperMech.Code
                     int idx = i;
                     _frame.AddButton(btnText, x, y, 540f, 30f, () =>
                     {
-                        // 在当前选中单位位置或地图中心复活
                         WorldTile tile = GetSpawnTile();
                         if (tile != null)
                         {
@@ -138,7 +131,6 @@ namespace SuperMech.Code
             }
 
             y -= 6f;
-            // ===== 次级维度（ch1071）=====
             _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_dimension_title"), x, y, 540f, 20f, 13);
             y -= 26f;
 
@@ -173,7 +165,6 @@ namespace SuperMech.Code
                 if (focus != null && focus.current_tile != null) return focus.current_tile;
             }
             catch { }
-            // 回退：地图中心附近找一个可走地块
             try
             {
                 int cx = MapBox.width / 2;

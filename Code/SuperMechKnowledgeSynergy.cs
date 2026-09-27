@@ -3,14 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 知识协同效应：特定知识组合触发额外加成。
-    /// 原著：知识树不是孤立的，不同知识之间有联动效果（如机械系的"基础组装+能量护盾"联动）。
-    /// 参考天人武道神藏系统的"先天协同"设计。
-    /// </summary>
     public static class SuperMechKnowledgeSynergy
     {
-        /// <summary>协同组合定义。</summary>
         public class SynergyDef
         {
             public string id;
@@ -25,13 +19,10 @@ namespace SuperMech.Code
             public int potentialBonus;    // 潜能点加成
         }
 
-        /// <summary>所有协同组合。</summary>
         private static readonly List<SynergyDef> _synergies = new List<SynergyDef>();
 
-        /// <summary>单位已激活的协同（actorId → HashSet<synergyId>）。</summary>
         private static readonly Dictionary<long, HashSet<string>> _active = new Dictionary<long, HashSet<string>>();
 
-        /// <summary>协同加成缓存（actorId → 总加成）。</summary>
         private static readonly Dictionary<long, SynergyBonus> _bonusCache = new Dictionary<long, SynergyBonus>();
 
         public class SynergyBonus
@@ -45,7 +36,6 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            // 机械系协同
             Add("syn_mech_assembly", "sm_knowledgesynergy_797", "sm_knowledgesynergy_798", "mech",
                 new[] { "sm_know_mech_0_0_0", "sm_know_mech_0_0_1" },
                 dmgMul: 1.1f, speedMul: 1.1f);
@@ -62,7 +52,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_mech_3_1_0", "sm_know_mech_4_1_0" },
                 dmgMul: 1.5f, hpMul: 1.3f, potentialBonus: 5);
 
-            // 武道系协同
             Add("syn_martial_body", "sm_knowledgesynergy_805", "sm_knowledgesynergy_806", "martial",
                 new[] { "sm_know_martial_0_1_0", "sm_know_martial_0_1_1" },
                 hpMul: 1.15f, dmgMul: 1.05f);
@@ -75,7 +64,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_martial_1_2_0", "sm_know_martial_2_2_0" },
                 dmgMul: 1.15f, qiBonus: 800f);
 
-            // 异能系协同
             Add("syn_psi_gene", "sm_knowledgesynergy_811", "sm_knowledgesynergy_812", "psi",
                 new[] { "sm_know_psi_0_0_0", "sm_know_psi_1_0_0" },
                 dmgMul: 1.15f);
@@ -84,7 +72,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_psi_1_1_0", "sm_know_psi_2_1_0" },
                 dmgMul: 1.1f, speedMul: 1.1f);
 
-            // 魔法系协同
             Add("syn_mage_element", "sm_knowledgesynergy_815", "sm_knowledgesynergy_816", "mage",
                 new[] { "sm_know_mage_0_2_0", "sm_know_mage_1_2_0" },
                 dmgMul: 1.2f);
@@ -93,7 +80,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_mage_1_0_0", "sm_know_mage_2_0_0" },
                 hpMul: 1.1f, qiBonus: 600f);
 
-            // 念力系协同
             Add("syn_mind_soul", "sm_knowledgesynergy_819", "sm_knowledgesynergy_820", "mind",
                 new[] { "sm_know_mind_0_0_0", "sm_know_mind_1_0_0" },
                 dmgMul: 1.15f, speedMul: 1.05f);
@@ -118,7 +104,6 @@ namespace SuperMech.Code
             });
         }
 
-        /// <summary>检查单位已解锁知识，更新激活的协同。</summary>
         public static void TickSynergy()
         {
             var units = World.world.units.units_only_alive;
@@ -164,7 +149,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取单位已激活的协同列表。</summary>
         public static List<SynergyDef> GetActiveSynergies(Actor a)
         {
             var list = new List<SynergyDef>();
@@ -176,14 +160,12 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>获取单位协同总加成。</summary>
         public static SynergyBonus GetBonus(Actor a)
         {
             if (a != null && _bonusCache.TryGetValue(a.id, out var bonus)) return bonus;
             return new SynergyBonus();
         }
 
-        /// <summary>清理死亡单位。</summary>
         public static int CleanupDead(HashSet<long> alive)
         {
             int removed = SuperMechCleanup.CleanDict(_active, alive);
@@ -191,7 +173,6 @@ namespace SuperMech.Code
             return removed;
         }
 
-        /// <summary>清空。</summary>
         public static void Clear() { _active.Clear(); _bonusCache.Clear(); }
     }
 }

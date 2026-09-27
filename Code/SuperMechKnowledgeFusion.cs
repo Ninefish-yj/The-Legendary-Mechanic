@@ -3,17 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 知识融合系统：消耗经验将多个知识融合，创造独特的新装备/图纸。
-    /// 原著ch107："[是否进行知识融合（基础电磁原理lv4、基础能源理论lv3...），本次消耗2万经验]"
-    /// ch136：折叠式小型炮台，本体是知识融合出的固定炮台
-    /// ch141：电磁脉冲调理器，在一次知识融合中意外得到
-    /// ch168：蝰蛇轻装机甲，四个进阶知识组合的知识融合
-    /// 融合产物是独特的新装备，不是已有的9级品质装备。
-    /// </summary>
     public static class SuperMechKnowledgeFusion
     {
-        /// <summary>融合配方定义——每个配方产出一个独特的新装备/秘法。</summary>
         public class FusionRecipe
         {
             public string id;
@@ -31,21 +22,16 @@ namespace SuperMech.Code
             public string icon;           // 产物图标
         }
 
-        /// <summary>所有融合配方。</summary>
         private static readonly List<FusionRecipe> _recipes = new List<FusionRecipe>();
 
-        /// <summary>已注册的融合产物（用于名称查找，不注册装备）。</summary>
         private static readonly Dictionary<string, FusionRecipe> _registeredEquips = new Dictionary<string, FusionRecipe>();
 
-        /// <summary>单位已融合出的图纸（actorId → HashSet<recipeId>）。</summary>
         private static readonly Dictionary<long, HashSet<string>> _unlockedRecipes = new Dictionary<long, HashSet<string>>();
 
-        /// <summary>融合冷却（actorId → 下次可融合时间）。</summary>
         private static readonly Dictionary<long, float> _cooldown = new Dictionary<long, float>();
 
         public static void Register()
         {
-            // ===== 机械系融合（原著图纸名，productType=图纸）=====
             Add("fusion_foldable_turret", "sm_fusion_foldable_turret", "sm_knowledgefusion_749", "sm_knowledgefusion_750",
                 "sm_knowledgefusion_751",
                 new[] { "sm_know_mech_0_0_0", "sm_know_mech_0_0_1" },
@@ -66,7 +52,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_mech_3_1_0", "sm_know_mech_4_1_0" },
                 100000, 0.35f, 6.0f, 4.5f, 1.5f, 3000, "ui/Icons/actor_traits/iconChosenOne");
 
-            // ===== 武道系融合（productType=秘法）=====
             Add("fusion_body_armor", "sm_fusion_body_armor", "sm_knowledgefusion_758", "sm_knowledgefusion_759",
                 "sm_knowledgefusion_760",
                 new[] { "sm_know_martial_0_1_0", "sm_know_martial_0_1_1" },
@@ -77,25 +62,21 @@ namespace SuperMech.Code
                 new[] { "sm_know_martial_1_2_0", "sm_know_martial_2_2_0" },
                 20000, 0.65f, 2.0f, 1.5f, 1.4f, 600, "ui/Icons/actor_traits/iconChosenOne");
 
-            // ===== 异能系融合（productType=配方）=====
             Add("fusion_gene_catalyst", "sm_fusion_gene_catalyst", "sm_knowledgefusion_763", "sm_knowledgefusion_764",
                 "sm_knowledgefusion_765",
                 new[] { "sm_know_psi_0_0_0", "sm_know_psi_1_0_0" },
                 10000, 0.7f, 1.6f, 1.4f, 1.1f, 400, "ui/Icons/actor_traits/iconBlessing");
 
-            // ===== 魔法系融合（productType=卷轴）=====
             Add("fusion_element_crystal", "sm_fusion_element_crystal", "sm_knowledgefusion_766", "sm_knowledgefusion_767",
                 "sm_knowledgefusion_768",
                 new[] { "sm_know_mage_0_2_0", "sm_know_mage_1_2_0" },
                 12000, 0.7f, 1.7f, 1.6f, 1.2f, 500, "ui/Icons/actor_traits/iconBlessing");
 
-            // ===== 念力系融合（productType=秘典）=====
             Add("fusion_soul_amplifier", "sm_fusion_soul_amplifier", "sm_knowledgefusion_769", "sm_knowledgefusion_770",
                 "sm_knowledgefusion_771",
                 new[] { "sm_know_mind_0_0_0", "sm_know_mind_1_0_0" },
                 15000, 0.65f, 1.8f, 1.5f, 1.3f, 700, "ui/Icons/actor_traits/iconChosenOne");
 
-            // ===== 跨系融合（productType=融合造物）=====
             Add("fusion_mech_martial", "sm_fusion_mech_martial", "sm_knowledgefusion_772", "sm_knowledgefusion_773",
                 "sm_knowledgefusion_774",
                 new[] { "sm_know_mech_0_0_0", "sm_know_martial_0_1_0" },
@@ -122,7 +103,6 @@ namespace SuperMech.Code
             });
         }
 
-        /// <summary>注册融合产物名称（本地化，不注册装备物品）。</summary>
         private static void RegisterFusionName(FusionRecipe recipe)
         {
             if (_registeredEquips.ContainsKey(recipe.equipId)) return;
@@ -130,7 +110,6 @@ namespace SuperMech.Code
             _registeredEquips[recipe.equipId] = recipe;
         }
 
-        /// <summary>获取单位可融合的配方列表。</summary>
         public static List<FusionRecipe> GetAvailableRecipes(Actor a)
         {
             var list = new List<FusionRecipe>();
@@ -154,7 +133,6 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>尝试知识融合。成功则学会永久知识（存脑子里，不占装备槽）。</summary>
         public static bool TryFuse(Actor a, string recipeId)
         {
             if (a == null) return false;
@@ -172,7 +150,6 @@ namespace SuperMech.Code
 
             _cooldown[a.id] = Time.time + 10f;
 
-            // 成功率：基础 + 知识数量加成（最多+20%）
             float rate = recipe.successRate;
             int knowledgeCount = SuperMechKnowledge.GetUnlockedCount(a,
                 SuperMechKnowledge.GetPrefixForClass(SuperMechBranch.GetClass(a)));
@@ -182,14 +159,12 @@ namespace SuperMech.Code
 
             if (success)
             {
-                // 记录已学会（永久知识，存脑子里）
                 if (!_unlockedRecipes.TryGetValue(a.id, out var set))
                 {
                     set = new HashSet<string>();
                     _unlockedRecipes[a.id] = set;
                 }
 
-                // 已经学会过就不重复学（但经验还是扣了，融合失败的一种）
                 if (set.Contains(recipeId))
                 {
                     Debug.Log($"[超神机械师] {a.name} 已学会{recipe.equipName}，融合无新收获");
@@ -199,7 +174,6 @@ namespace SuperMech.Code
                 set.Add(recipeId);
                 RegisterFusionName(recipe);
 
-                // 气力加成（一次性奖励）
                 if (recipe.qiBonus > 0) SuperMechQi.AddQi(a, recipe.qiBonus);
 
                 Debug.Log($"[超神机械师] {a.name} 知识融合成功！学会：{recipe.productType}·{recipe.equipName}");
@@ -212,7 +186,6 @@ namespace SuperMech.Code
             return success;
         }
 
-        /// <summary>获取单位所有已学会融合知识的总加成（永久属性，不占装备槽）。</summary>
         public static FusionBonus GetFusionBonus(Actor a)
         {
             var bonus = new FusionBonus();
@@ -241,7 +214,6 @@ namespace SuperMech.Code
             public float speedMul = 1f;
         }
 
-        /// <summary>获取单位已学会的融合知识列表。</summary>
         public static List<FusionRecipe> GetLearnedRecipes(Actor a)
         {
             var list = new List<FusionRecipe>();
@@ -253,18 +225,13 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>制造冷却（actorId → 下次可制造时间）。</summary>
         private static readonly Dictionary<long, float> _craftCooldown = new Dictionary<long, float>();
 
-        /// <summary>机械系专属：用学会的图纸制造装备（原著：图纸→制造→装备）。</summary>
         public static bool CraftEquip(Actor a, string recipeId)
         {
             if (a == null) return false;
-            // 只有机械系能制造装备
             if (!SuperMechBranch.GetClass(a).Contains("sm_knowledgefusion_777")) return false;
-            // 检查是否学会了图纸
             if (!_unlockedRecipes.TryGetValue(a.id, out var set) || !set.Contains(recipeId)) return false;
-            // 检查制造冷却
             if (_craftCooldown.TryGetValue(a.id, out var cd) && Time.time < cd) return false;
 
             FusionRecipe recipe = null;
@@ -274,25 +241,20 @@ namespace SuperMech.Code
             }
             if (recipe == null) return false;
 
-            // 制造消耗：气力（原著：制造消耗精力）
             float craftCost = recipe.xpCost * 0.1f;
             if (SuperMechQi.GetQi(a) < craftCost) return false;
             SuperMechQi.SpendQi(a, craftCost);
 
-            // 设置制造冷却（15秒）
             _craftCooldown[a.id] = Time.time + 15f;
 
-            // 动态注册装备物品（如果是首次制造这个图纸）
             RegisterCraftedEquip(recipe);
 
-            // 给单位装备制造出的装备
             EquipCraftedItem(a, recipe.equipId);
 
             Debug.Log($"[超神机械师] {a.name} 用图纸制造出：{recipe.equipName}（消耗{craftCost:0}气力）");
             return true;
         }
 
-        /// <summary>动态注册制造出的装备到物品库。</summary>
         private static void RegisterCraftedEquip(FusionRecipe recipe)
         {
             string craftedId = recipe.equipId + "_crafted";
@@ -323,7 +285,6 @@ namespace SuperMech.Code
             _registeredEquips[craftedId] = recipe;
         }
 
-        /// <summary>给单位装备制造出的物品。</summary>
         private static void EquipCraftedItem(Actor a, string equipId)
         {
             if (a == null || a.equipment == null) return;
@@ -332,7 +293,6 @@ namespace SuperMech.Code
             var slot = a.equipment.getSlot(EquipmentType.Amulet);
             if (slot == null) return;
 
-            // 旧装备放回背包
             if (!slot.isEmpty())
             {
                 Item current = slot.getItem();
@@ -362,7 +322,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>是否在制造冷却中。</summary>
         public static bool IsCraftOnCooldown(Actor a)
         {
             if (a != null && _craftCooldown.TryGetValue(a.id, out var cd))
@@ -370,7 +329,6 @@ namespace SuperMech.Code
             return false;
         }
 
-        /// <summary>存档恢复：直接标记配方为已学会（不消耗经验，不触发融合逻辑）。</summary>
         public static void RestoreLearnedRecipe(Actor a, string recipeId)
         {
             if (a == null || string.IsNullOrEmpty(recipeId)) return;
@@ -380,7 +338,6 @@ namespace SuperMech.Code
                 _unlockedRecipes[a.id] = set;
             }
             set.Add(recipeId);
-            // 注册名称（如果是首次）
             foreach (var recipe in _recipes)
             {
                 if (recipe.id == recipeId)
@@ -391,7 +348,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取单位已融合的图纸数量。</summary>
         public static int GetUnlockedCount(Actor a)
         {
             if (a != null && _unlockedRecipes.TryGetValue(a.id, out var set))
@@ -399,7 +355,6 @@ namespace SuperMech.Code
             return 0;
         }
 
-        /// <summary>是否在融合冷却中。</summary>
         public static bool IsOnCooldown(Actor a)
         {
             if (a != null && _cooldown.TryGetValue(a.id, out var cd))
@@ -407,7 +362,6 @@ namespace SuperMech.Code
             return false;
         }
 
-        /// <summary>清理死亡单位。</summary>
         public static int CleanupDead(HashSet<long> alive)
         {
             int removed = SuperMechCleanup.CleanDict(_unlockedRecipes, alive);
@@ -415,7 +369,6 @@ namespace SuperMech.Code
             return removed;
         }
 
-        /// <summary>清空。</summary>
         public static void Clear() { _unlockedRecipes.Clear(); _cooldown.Clear(); _craftCooldown.Clear(); }
     }
 }

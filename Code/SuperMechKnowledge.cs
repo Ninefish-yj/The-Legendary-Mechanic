@@ -5,17 +5,12 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 五系职业知识树（原著知识节点 + 同人二创整理）。
-    /// 每系三分支 × 五阶（基础/进阶/高端/尖端/终极）。
-    /// 对应设定全录：潜能点点知识树（ch5）。
-    /// </summary>
+    // 知识树：249节点，5系×5阶，跨系兼修3倍惩罚
+
     public static class SuperMechKnowledge
     {
-        // 知识阶名
         private static readonly string[] Tiers = { "sm_tier_basic", "sm_tier_advanced", "sm_tier_high", "sm_tier_cutting", "sm_tier_ultimate" };
 
-        // 机械系：武装 / 虚拟(操控) / 能量
         private static readonly string[][] Mech = {
             new[] { "sm_know_000","sm_know_001","sm_know_002","sm_know_003","sm_know_004" },
             new[] { "sm_know_005","sm_know_006","sm_know_007","sm_know_008","sm_know_009" },
@@ -42,7 +37,6 @@ namespace SuperMech.Code
             new[] { "sm_know_049","sm_know_050","","","" },
         };
 
-        // 武道系：体魄 / 战术 / 超能
         private static readonly string[][] Martial = {
             new[] { "sm_know_051","sm_know_052","sm_know_053","sm_know_054","sm_know_055" },
             new[] { "sm_know_056","sm_know_057","sm_know_058","sm_know_059","" },
@@ -69,7 +63,6 @@ namespace SuperMech.Code
             new[] { "sm_know_101","sm_know_102","","","" },
         };
 
-        // 魔法系：元素 / 变化 / 造物
         private static readonly string[][] Mage = {
             new[] { "sm_know_103","sm_know_104","sm_know_105","sm_know_106","sm_know_107" },
             new[] { "sm_know_108","sm_know_109","sm_know_110","sm_know_111","" },
@@ -96,7 +89,6 @@ namespace SuperMech.Code
             new[] { "sm_know_151","sm_know_152","","","" },
         };
 
-        // 念力系：灵魂 / 法则 / 现实
         private static readonly string[][] Mind = {
             new[] { "sm_know_153","sm_know_154","sm_know_155","sm_know_156","sm_know_157" },
             new[] { "sm_know_158","sm_know_159","sm_know_160","sm_know_161","" },
@@ -123,7 +115,6 @@ namespace SuperMech.Code
             new[] { "sm_know_202","sm_know_203","","","" },
         };
 
-        // 异能系：攻效 / 循环 / 功能（一~五阶基因链）
         private static readonly string[][] Psi = {
             new[] { "sm_know_204","sm_know_205","sm_know_206","","" },
             new[] { "sm_know_207","sm_know_208","sm_know_209","","" },
@@ -150,7 +141,6 @@ namespace SuperMech.Code
             new[] { "sm_know_246","sm_know_247","sm_know_248","","" },
         };
 
-        /// <summary>知识节点定义（不再注册为特质，改用内部字典+独立面板）。</summary>
         public class KnowledgeDef
         {
             public string id;
@@ -163,9 +153,7 @@ namespace SuperMech.Code
             public string icon;    // 图标路径（按系别+分支+阶位组合）
         }
 
-        /// <summary>所有知识定义（id→def）。</summary>
         private static readonly Dictionary<string, KnowledgeDef> _allKnowledge = new Dictionary<string, KnowledgeDef>();
-        /// <summary>单位已解锁的知识（actorId→HashSet<knowledgeId>）。</summary>
         private static readonly Dictionary<long, HashSet<string>> _unlocked = new Dictionary<long, HashSet<string>>();
 
         public static void Register()
@@ -190,7 +178,6 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识节点（内部字典，不注册为特质）");
         }
 
-        /// <summary>按系别+阶位选择书籍图标（参考原版书籍系统）。</summary>
         private static readonly string[] BookIconsByTier = {
             "ui/Icons/iconBooks",          // 基础：普通书籍
             "ui/Icons/iconBooksRead",      // 进阶：已读书籍
@@ -200,21 +187,15 @@ namespace SuperMech.Code
         };
 
         private static readonly string[][] BookIconsByClass = {
-            // 机械系：数学/战争/经济手册
             new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
-            // 武道系：战争手册/寓言
             new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
-            // 异能系：生物书/寓言
             new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
-            // 魔法系：寓言/故事书
             new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" },
-            // 念力系：历史书/外交手册
             new[] { "ui/Icons/iconBooks", "ui/Icons/iconBooksRead", "ui/Icons/iconBooksWritten" }
         };
 
         private static string GetKnowledgeIcon(string prefix, int branch, int tier, int knowledgeIdx)
         {
-            // 用书籍图标，按阶位选择不同类型
             if (tier >= 0 && tier < BookIconsByTier.Length)
                 return BookIconsByTier[tier];
             return "ui/Icons/iconBooks";
@@ -232,7 +213,6 @@ namespace SuperMech.Code
                         string kn = tiers[ti][bi][ki];
                         if (string.IsNullOrEmpty(kn)) continue;
                         string id = $"sm_know_{prefix}_{ti}_{bi}_{ki}";
-                        // 只注册本地化（面板显示用），不注册为特质
                         LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(kn), pReplace: true);
                         LocalizedTextManager.add("trait_" + id + "_info", $"{LocalizedTextManager.getText(treeName)}·{branchNames[bi]}·{LocalizedTextManager.getText(Tiers[ti])}{LocalizedTextManager.getText(\"sm_ui_knowledge\")}", pReplace: true);
                         var def = new KnowledgeDef
@@ -254,7 +234,6 @@ namespace SuperMech.Code
             return n;
         }
 
-        /// <summary>单位是否已解锁某知识。</summary>
         public static bool IsUnlocked(Actor a, string knowledgeId)
         {
             if (a == null) return false;
@@ -262,7 +241,6 @@ namespace SuperMech.Code
             return false;
         }
 
-        /// <summary>解锁知识节点（返回是否成功）。</summary>
         public static bool Unlock(Actor a, string knowledgeId)
         {
             if (a == null || !_allKnowledge.ContainsKey(knowledgeId)) return false;
@@ -274,7 +252,6 @@ namespace SuperMech.Code
             return set.Add(knowledgeId);
         }
 
-        /// <summary>统计单位已解锁的知识节点数（按系前缀）。</summary>
         public static int GetUnlockedCount(Actor a, string prefix)
         {
             if (a == null) return 0;
@@ -285,8 +262,6 @@ namespace SuperMech.Code
             return count;
         }
 
-        /// <summary>统计单位已解锁的特定阶知识数（原著ch269：学会5项进阶知识）。
-        /// tier: 0=基础, 1=进阶, 2=高端, 3=尖端, 4=终极</summary>
         public static int GetTierKnowledgeCount(Actor a, string prefix, int tier)
         {
             if (a == null) return 0;
@@ -297,7 +272,6 @@ namespace SuperMech.Code
             return count;
         }
 
-        /// <summary>获取单位某系所有已解锁知识。</summary>
         public static List<KnowledgeDef> GetUnlockedList(Actor a, string prefix)
         {
             var list = new List<KnowledgeDef>();
@@ -310,7 +284,6 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>获取某系某阶所有知识定义（不管是否解锁）。</summary>
         public static List<KnowledgeDef> GetAllByTier(string prefix, int tier)
         {
             var list = new List<KnowledgeDef>();
@@ -323,7 +296,6 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>获取某系所有知识定义（不管是否解锁）。</summary>
         public static List<KnowledgeDef> GetAllByPrefix(string prefix)
         {
             var list = new List<KnowledgeDef>();
@@ -341,14 +313,12 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>获取知识定义。</summary>
         public static KnowledgeDef GetDef(string id)
         {
             _allKnowledge.TryGetValue(id, out var def);
             return def;
         }
 
-        /// <summary>获取某系某分支某阶的所有知识定义。</summary>
         public static List<KnowledgeDef> GetTierBranchList(string prefix, int tier, int branch)
         {
             var list = new List<KnowledgeDef>();
@@ -360,16 +330,13 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>清理死亡单位数据。</summary>
         public static int CleanupDead(HashSet<long> alive)
         {
             return SuperMechCleanup.CleanDict(_unlocked, alive);
         }
 
-        /// <summary>清空所有数据。</summary>
         public static void Clear() { _unlocked.Clear(); }
 
-        /// <summary>获取系对应的知识树前缀。</summary>
         public static string GetPrefixForClass(string cls)
         {
             switch (cls)

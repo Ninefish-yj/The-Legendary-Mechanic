@@ -4,12 +4,6 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 注册模组自定义特质组。原版 ActorTraitGroupLibrary 只有15个固定组，
-    /// 我们用的 sm_ranks/sm_classes 等自定义组必须先注册，否则特质面板找不到组、
-    /// 导致我们的特质不显示、原版特质面板异常全选。
-    /// 必须在所有特质注册之前调用。
-    /// </summary>
     public static class SuperMechTraitGroups
     {
         private static readonly (string id, string name, string color)[] Groups =
@@ -48,7 +42,6 @@ namespace SuperMech.Code
                 };
                 AssetManager.trait_groups.add(group);
 
-                // 组名本地化
                 LocalizedTextManager.add("trait_group_" + id, name, pReplace: true);
             }
 

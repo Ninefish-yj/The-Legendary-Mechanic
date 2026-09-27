@@ -3,11 +3,6 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 主职业方向系统（原著：职业方向是后天选择的，天赋不决定职业）。
-    /// 单位踏入超能后获得天赋倾向，可以随时选定主职业方向（五系之一）。
-    /// 没选定方向 = 野生超能者。可以更换方向，但有惩罚。
-    /// </summary>
     public static class SuperMechProfession
     {
         public enum ProfessionType
@@ -20,13 +15,10 @@ namespace SuperMech.Code
             Mind         // 念力系
         }
 
-        // unit.id -> 主职业方向
         private static readonly Dictionary<long, ProfessionType> _profession = new Dictionary<long, ProfessionType>();
 
-        // unit.id -> 更换职业次数（用于惩罚计算）
         private static readonly Dictionary<long, int> _switchCount = new Dictionary<long, int>();
 
-        /// <summary>获取主职业方向名称。</summary>
         public static string GetProfessionName(ProfessionType type)
         {
             switch (type)
@@ -40,7 +32,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取单位主职业方向。</summary>
         public static ProfessionType GetProfession(Actor a)
         {
             if (a == null) return ProfessionType.None;
@@ -48,7 +39,6 @@ namespace SuperMech.Code
             return ProfessionType.None;
         }
 
-        /// <summary>获取单位主职业方向名称（兼容旧代码的GetClass）。</summary>
         public static string GetClass(Actor a)
         {
             var p = GetProfession(a);
@@ -56,24 +46,20 @@ namespace SuperMech.Code
             return GetProfessionName(p);
         }
 
-        /// <summary>单位是否已选定主职业方向。</summary>
         public static bool HasProfession(Actor a)
         {
             return GetProfession(a) != ProfessionType.None;
         }
 
-        /// <summary>是否是野生超能者（有天赋但没选定方向）。</summary>
         public static bool IsWild(Actor a)
         {
             return SuperMechTalent.HasTalent(a) && !HasProfession(a);
         }
 
-        /// <summary>选定主职业方向。</summary>
         public static void SetProfession(Actor a, ProfessionType type)
         {
             if (a == null || type == ProfessionType.None) return;
 
-            // 如果已有方向，记录更换次数
             if (HasProfession(a) && GetProfession(a) != type)
             {
                 if (!_switchCount.ContainsKey(a.id)) _switchCount[a.id] = 0;
@@ -82,21 +68,17 @@ namespace SuperMech.Code
 
             _profession[a.id] = type;
 
-            // 同步旧的系别特质（兼容现有系统）
             SyncClassTrait(a, type);
         }
 
-        /// <summary>同步旧的系别特质（兼容现有知识树/职业阶段系统）。</summary>
         private static void SyncClassTrait(Actor a, ProfessionType type)
         {
-            // 移除所有旧系别特质
             a.removeTrait(SuperMechTraits.ClassMech);
             a.removeTrait(SuperMechTraits.ClassMartial);
             a.removeTrait(SuperMechTraits.ClassPsi);
             a.removeTrait(SuperMechTraits.ClassMage);
             a.removeTrait(SuperMechTraits.ClassMind);
 
-            // 添加新系别特质
             switch (type)
             {
                 case ProfessionType.Mechanical:
@@ -122,7 +104,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取更换职业次数。</summary>
         public static int GetSwitchCount(Actor a)
         {
             if (a == null) return 0;
@@ -130,14 +111,12 @@ namespace SuperMech.Code
             return 0;
         }
 
-        /// <summary>更换职业惩罚：知识学习速度降低（每换一次-10%，最多-50%）。</summary>
         public static float GetSwitchPenalty(Actor a)
         {
             int count = GetSwitchCount(a);
             return Mathf.Max(1f - count * 0.1f, 0.5f);
         }
 
-        /// <summary>清理死亡单位数据。</summary>
         public static void CleanupDead(List<long> aliveIds)
         {
             var toRemove = new List<long>();
@@ -152,7 +131,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取存档数据。</summary>
         public static Dictionary<string, object> GetSaveData()
         {
             var data = new Dictionary<string, object>();
@@ -165,7 +143,6 @@ namespace SuperMech.Code
             return data;
         }
 
-        /// <summary>加载存档数据。</summary>
         public static void LoadSaveData(Dictionary<string, object> data)
         {
             _profession.Clear();

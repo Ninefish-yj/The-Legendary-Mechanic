@@ -5,22 +5,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 转职条件系统（原著ch50/ch107/ch269/ch626/ch1201）。
-    ///
-    /// 原著转职条件不是统一的，而是多种类型混合：
-    /// - ch50：入门者→学徒，学习进阶知识（2潜能点）
-    /// - ch107：学徒→见习，制造20张图纸
-    /// - ch269：磁环→数据，总等级80级+智力>400+学会5项进阶知识（固定）
-    /// - ch626：虚拟→星海，智力>1300+机械亲和度>580%（随机）
-    /// - ch1201：主宰→神座，340级进阶任务：神性蜕变达到第10层
-    ///
-    /// 关键：需要进阶知识的阶段必须固定知识要求（用户确认）。
-    /// 其他阶段随机属性要求/等级要求/制造要求。
-    /// </summary>
     public static class SuperMechAdvancementTask
     {
-        // 转职条件类型
         private enum ReqType { Knowledge, Attribute, TotalLevel, Craft, Divinity }
 
         private struct AdvanceReq
@@ -33,12 +19,10 @@ namespace SuperMech.Code
             public string desc;
         }
 
-        // 固定转职条件（原著明确的阶段，需要知识的必须固定）
         private static readonly Dictionary<int, AdvanceReq> FixedReqs = new Dictionary<int, AdvanceReq>
         {
             { 1, new AdvanceReq { type = ReqType.Knowledge, intValue = 1, desc = LocalizedTextManager.getText("sm_task_knowledge_1") } },
             { 2, new AdvanceReq { type = ReqType.Craft, intValue = 5, desc = LocalizedTextManager.getText("sm_task_craft_5") } },
-            // ch269：总等级80级+智力超过400点+学会5项机械系进阶知识
             { 4, new AdvanceReq { type = ReqType.Knowledge, intValue = 5, statKey = "intelligence", statValue = 400f, totalLevel = 80, desc = LocalizedTextManager.getText("sm_task_advanced") } },
             { 12, new AdvanceReq { type = ReqType.Divinity, intValue = 10, desc = LocalizedTextManager.getText("sm_task_divinity_10") } },
         };
@@ -77,8 +61,6 @@ namespace SuperMech.Code
             }
             else
             {
-                // 机械系：知识/制造/属性/总等级
-                // 其他系：知识/属性/总等级（没有制造任务）
                 if (isMech)
                 {
                     if (r < 0.4f) return new AdvanceReq { type = ReqType.Knowledge, intValue = KnowledgeThresholds[stage], desc = $"sm_advancementtask_503" };
@@ -95,7 +77,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取单位的知识树前缀。</summary>
         private static string GetKnowledgePrefix(Actor a)
         {
             if (a.hasTrait(SuperMechTraits.ClassMech)) return "mech";
@@ -113,7 +94,6 @@ namespace SuperMech.Code
             switch (req.type)
             {
                 case ReqType.Knowledge:
-                    // 原著ch269：学会5项机械系进阶知识——特指进阶阶（tier=1）的知识
                     string prefix = GetKnowledgePrefix(a);
                     bool knowledgeOk = SuperMechKnowledge.GetTierKnowledgeCount(a, prefix, 1) >= req.intValue;
                     if (!string.IsNullOrEmpty(req.statKey))
@@ -121,7 +101,6 @@ namespace SuperMech.Code
                         var stats = SuperMechStats.Of(a);
                         if (stats == null || stats[req.statKey] < req.statValue) return false;
                     }
-                    // 额外总等级要求（ch269：总等级80级）
                     if (req.totalLevel > 0 && SuperMechAwakened.GetTotalLevel(a) < req.totalLevel) return false;
                     return knowledgeOk;
                 case ReqType.Attribute:
@@ -196,7 +175,6 @@ namespace SuperMech.Code
             _craftCount.Clear();
         }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;

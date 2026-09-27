@@ -6,9 +6,6 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 超能者排行榜：按欧纳/气力/阶位排序，显示前20名。
-    /// </summary>
     public static class SuperMechRankWindow
     {
         private static SMWindowFrame _frame;
@@ -43,7 +40,6 @@ namespace SuperMech.Code
             float y = -8f;
             const float x = 12f;
 
-            // 排序切换
             _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_onar"), x, y, 90f, 26f, () => { _sortMode = 0; Refresh(); }, _sortMode == 0 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
             _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_qi"), x + 95f, y, 90f, 26f, () => { _sortMode = 1; Refresh(); }, _sortMode == 1 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
             _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_rank"), x + 190f, y, 90f, 26f, () => { _sortMode = 2; Refresh(); }, _sortMode == 2 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
@@ -52,7 +48,6 @@ namespace SuperMech.Code
             _frame.AddLabel(LocalizedTextManager.getText("sm_rank_header"), x, y, 600f, 20f, 12);
             y -= 24f;
 
-            // 收集所有觉醒单位
             var list = new List<(Actor a, float onar, float qi, int rank)>();
             if (World.world != null && World.world.units != null)
             {
@@ -64,7 +59,6 @@ namespace SuperMech.Code
                 }
             }
 
-            // 排序
             switch (_sortMode)
             {
                 case 0: list.Sort((a, b) => b.onar.CompareTo(a.onar)); break;

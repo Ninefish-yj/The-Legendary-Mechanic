@@ -3,15 +3,6 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 次级维度系统（原著 ch1071/ch1072）。
-    /// 次级维度空间由多种位面组成，物理规则与主宇宙不同。
-    /// - 虚空维度：念力系，虚空能量，精神攻击强化
-    /// - 冥土维度：异能系，生死能量，生命/死亡强化
-    /// - 秘法维度：魔法系，魔力充盈，法术强化
-    /// - 机库维度：机械系，机械空间，制造/机械强化
-    /// A阶以上单位可进入，获得限时buff，过期自动移除。
-    /// </summary>
     public static class SuperMechDimension
     {
         public class DimensionDef
@@ -131,23 +122,18 @@ namespace SuperMech.Code
             },
         };
 
-        // 单位当前所在维度（null=不在维度中）
         private static readonly Dictionary<long, string> _activeDimension = new Dictionary<long, string>();
-        // buff结束时间戳（单位id → DateTime.Ticks）
         private static readonly Dictionary<long, long> _buffEndTime = new Dictionary<long, long>();
-        // 维度进入冷却（单位id → 结束时间戳）
         private static readonly Dictionary<long, long> _cooldown = new Dictionary<long, long>();
         public const float BuffDurationSeconds = 120f;  // buff持续120秒（2分钟）
         public const float CooldownSeconds = 300f;      // 冷却300秒（5分钟）
 
-        /// <summary>获取维度定义。</summary>
         public static DimensionDef GetDef(string id)
         {
             foreach (var d in Dimensions) if (d.id == id) return d;
             return null;
         }
 
-        /// <summary>获取单位当前所在维度名。</summary>
         public static string GetActiveDimension(Actor a)
         {
             if (a == null) return null;
@@ -155,11 +141,9 @@ namespace SuperMech.Code
             return null;
         }
 
-        /// <summary>单位是否可以进入指定维度。</summary>
         public static bool CanEnter(Actor a, DimensionDef dim)
         {
             if (a == null || dim == null) return false;
-            // 已经在维度中，不能重复进入（防止buff叠加）
             if (_activeDimension.ContainsKey(a.id)) return false;
             if (dim.classTrait != null && !a.hasTrait(dim.classTrait)) return false;
             if (SuperMechAdvancement.GetRankIndex(a) < dim.minRankIndex) return false;
@@ -171,7 +155,6 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>进入维度，获得限时buff。</summary>
         public static bool Enter(Actor a, DimensionDef dim)
         {
             if (!CanEnter(a, dim)) return false;
@@ -186,7 +169,6 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>获取单位可进入的维度列表。</summary>
         public static List<DimensionDef> GetAvailableDimensions(Actor a)
         {
             var list = new List<DimensionDef>();
@@ -198,7 +180,6 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>定期检查buff过期，过期后自动移除。</summary>
         public static void TickDimensionBuffs()
         {
             if (World.world == null || World.world.units == null) return;
@@ -225,7 +206,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>清空数据。</summary>
         public static void Clear()
         {
             _activeDimension.Clear();
@@ -233,7 +213,6 @@ namespace SuperMech.Code
             _cooldown.Clear();
         }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;

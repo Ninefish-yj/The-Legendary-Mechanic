@@ -2,12 +2,6 @@ using System.Collections.Generic;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 阶位数据（原文 ch3/ch377/ch1040/ch1402）。
-    /// 14阶：F→E→D→D+→C→C+→B→B+→A→A+→S→S+→SS→X。
-    /// E阶无E+（原著设定）。
-    /// 欧纳=战斗力函数评价值（非加减），此处为门槛参考值。
-    /// </summary>
     public static class SuperMechRanks
     {
         public class RankDef
@@ -22,12 +16,6 @@ namespace SuperMech.Code
 
         public static readonly List<RankDef> All = new List<RankDef>
         {
-            // 原著确认门槛：E=100(ch3), D=800(ch116), D+=1600(ch116), C=2000(ch116),
-            // B=5000(ch368), A=10000(ch368), 普通超A上限=52000(ch1087/ch1206),
-            // 巅峰超A=70000(ch1209), 神性蜕变=78000(ch1039), X≈148800(ch1402)
-            // C+/B+/A+/S+门槛为插值推断（原著未明确给出具体数值）
-            // F阶仅降临者（玩家）lv1-20专属（ch476），星海人刚觉醒直接E级（ch1051）
-            // F阶门槛=10（避免0能级被算成F阶，普通人能级不适用）
             new RankDef { id="sm_rank_00_f",       name="sm_rank_name_00",            onarFloor=10,        damageMul=1.00f, healthMul=1.00f },
             new RankDef { id="sm_rank_01_e",       name="sm_rank_name_01",            onarFloor=100,       damageMul=1.50f, healthMul=1.20f },
             new RankDef { id="sm_rank_02_d",       name="sm_rank_name_02",            onarFloor=800,       damageMul=3.00f, healthMul=1.80f },
@@ -55,22 +43,18 @@ namespace SuperMech.Code
             return null;
         }
 
-        /// <summary>判断索引是否是+位（D+/C+/B+/A+/S+）。</summary>
         public static bool IsPlusRank(int index)
         {
             if (index < 0 || index >= All.Count) return false;
             return All[index].id.Contains("_plus");
         }
 
-        /// <summary>获取+位对应的主阶位索引（D+→D, C+→C, etc.）。</summary>
         public static int GetMainRankIndex(int index)
         {
             if (!IsPlusRank(index)) return index;
-            // +位的前一个就是主阶位
             return index - 1;
         }
 
-        /// <summary>获取主阶位特质ID（+位返回对应主阶位的ID）。</summary>
         public static string GetMainRankTraitId(int index)
         {
             int mainIdx = GetMainRankIndex(index);
@@ -78,7 +62,6 @@ namespace SuperMech.Code
             return null;
         }
 
-        /// <summary>获取单位当前阶位名称（含+位，从精确阶位字典读取）。</summary>
         public static string GetRankName(Actor a)
         {
             int exact = SuperMechAdvancement.GetExactRankIndex(a);
@@ -86,7 +69,6 @@ namespace SuperMech.Code
             return LocalizedTextManager.getText("sm_ranks_957");
         }
 
-        /// <summary>按阶位索引获取阶位名称。</summary>
         public static string GetRankName(int index)
         {
             if (index >= 0 && index < All.Count) return All[index].name;

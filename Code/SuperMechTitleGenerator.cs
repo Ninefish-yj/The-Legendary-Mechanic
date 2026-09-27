@@ -3,14 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 超A名号生成器。原著ch770：种族名用超A自己的名号。
-    /// 名号 = 前缀 + 后缀，按职业系有不同风格词库。
-    /// 包含原著出现过的名号（黑星/霸者/起誓人等）和大量自创词。
-    /// </summary>
     public static class SuperMechTitleGenerator
     {
-        // 机械系词库
         private static readonly string[] MechPrefix = {
             "sm_title_mech_pre_000","sm_title_mech_pre_001","sm_title_mech_pre_002","sm_title_mech_pre_077","sm_title_mech_pre_004","sm_title_mech_pre_005","sm_title_mech_pre_006","sm_title_mech_pre_007","sm_title_mech_pre_008","sm_title_mech_pre_009","sm_title_mech_pre_010","sm_title_mech_pre_011","sm_title_mech_pre_012","sm_title_mech_pre_013","sm_title_mech_pre_014",
             "sm_title_mech_pre_015","sm_title_mech_pre_016","sm_title_mech_pre_017","sm_title_mech_pre_018","sm_title_mech_pre_019","sm_title_mech_pre_020","sm_title_mech_pre_021","sm_title_mech_pre_022","sm_title_mech_pre_023","sm_title_mech_pre_024","sm_title_mech_pre_025","sm_title_mech_pre_026","sm_title_mech_pre_027","sm_title_mech_pre_028",
@@ -30,7 +24,6 @@ namespace SuperMech.Code
             "sm_title_mech_suf_086","sm_title_mech_suf_087","sm_title_mech_suf_088","sm_title_mech_suf_089","sm_title_mech_suf_090","sm_title_mech_suf_091","sm_title_mech_suf_092","sm_title_mech_suf_093"
         };
 
-        // 武道系词库（科幻风格：基因/躯体/战斗/能级）
         private static readonly string[] MartialPrefix = {
             "sm_title_martial_pre_000","sm_title_martial_pre_001","sm_title_martial_pre_002","sm_title_martial_pre_003","sm_title_martial_pre_004","sm_title_martial_pre_005","sm_title_martial_pre_006","sm_title_martial_pre_007","sm_title_martial_pre_008","sm_title_martial_pre_009","sm_title_martial_pre_010","sm_title_martial_pre_011","sm_title_martial_pre_012","sm_title_martial_pre_013",
             "sm_title_martial_pre_014","sm_title_martial_pre_015","sm_title_martial_pre_016","sm_title_martial_pre_017","sm_title_martial_pre_018","sm_title_martial_pre_019","sm_title_martial_pre_020","sm_title_martial_pre_021","sm_title_martial_pre_022","sm_title_martial_pre_023","sm_title_martial_pre_024","sm_title_martial_pre_025","sm_title_martial_pre_026","sm_title_martial_pre_027",
@@ -53,7 +46,6 @@ namespace SuperMech.Code
             "sm_title_martial_suf_100","sm_title_martial_suf_101","sm_title_martial_suf_102","sm_title_martial_suf_103","sm_title_martial_suf_104","sm_title_martial_suf_105","sm_title_martial_suf_106"
         };
 
-        // 异能系词库
         private static readonly string[] PsiPrefix = {
             "sm_title_psi_pre_000","sm_title_psi_pre_001","sm_title_psi_pre_002","sm_title_psi_pre_003","sm_title_psi_pre_004","sm_title_psi_pre_005","sm_title_psi_pre_006","sm_title_psi_pre_007","sm_title_psi_pre_008","sm_title_psi_pre_009","sm_title_psi_pre_010","sm_title_psi_pre_052","sm_title_psi_pre_012","sm_title_psi_pre_013","sm_title_psi_pre_014",
             "sm_title_psi_pre_015","sm_title_psi_pre_016","sm_title_psi_pre_017","sm_title_psi_pre_018","sm_title_psi_pre_019","sm_title_psi_pre_020","sm_title_psi_pre_021","sm_title_psi_pre_022","sm_title_psi_pre_023","sm_title_psi_pre_024","sm_title_psi_pre_075","sm_title_psi_pre_026","sm_title_psi_pre_027","sm_title_psi_pre_073","sm_title_psi_pre_029",
@@ -75,7 +67,6 @@ namespace SuperMech.Code
             "sm_title_psi_suf_086","sm_title_psi_suf_087","sm_title_psi_suf_088","sm_title_psi_suf_089","sm_title_psi_suf_090","sm_title_psi_suf_091","sm_title_psi_suf_092","sm_title_psi_suf_093","sm_title_psi_suf_094","sm_title_psi_suf_095"
         };
 
-        // 魔法系词库（科幻风格：魔网/符文/能级/编码）
         private static readonly string[] MagePrefix = {
             "sm_title_mage_pre_000","sm_title_mage_pre_001","sm_title_mage_pre_002","sm_title_mage_pre_003","sm_title_mage_pre_004","sm_title_mage_pre_005","sm_title_mage_pre_006","sm_title_mage_pre_007","sm_title_mage_pre_008","sm_title_mage_pre_009","sm_title_mage_pre_010","sm_title_mage_pre_011","sm_title_mage_pre_012","sm_title_mage_pre_013","sm_title_mage_pre_014",
             "sm_title_mage_pre_065","sm_title_mage_pre_016","sm_title_mage_pre_017","sm_title_mage_pre_018","sm_title_mage_pre_019","sm_title_mage_pre_020","sm_title_mage_pre_021","sm_title_mage_pre_022","sm_title_mage_pre_023","sm_title_mage_pre_024","sm_title_mage_pre_025","sm_title_mage_pre_026","sm_title_mage_pre_027","sm_title_mage_pre_028","sm_title_mage_pre_029",
@@ -99,7 +90,6 @@ namespace SuperMech.Code
             "sm_title_mage_suf_106","sm_title_mage_suf_107","sm_title_mage_suf_108","sm_title_mage_suf_109","sm_title_mage_suf_110","sm_title_mage_suf_111","sm_title_mage_suf_112","sm_title_mage_suf_113","sm_title_mage_suf_114","sm_title_mage_suf_115"
         };
 
-        // 念力系词库（科幻风格：精神/意识/脑域/信息态/量子）
         private static readonly string[] MindPrefix = {
             "sm_title_mind_pre_000","sm_title_mind_pre_001","sm_title_mind_pre_002","sm_title_mind_pre_003","sm_title_mind_pre_004","sm_title_mind_pre_005","sm_title_mind_pre_006","sm_title_mind_pre_007","sm_title_mind_pre_008","sm_title_mind_pre_009","sm_title_mind_pre_010","sm_title_mind_pre_011","sm_title_mind_pre_012","sm_title_mind_pre_013","sm_title_mind_pre_014",
             "sm_title_mind_pre_015","sm_title_mind_pre_058","sm_title_mind_pre_063","sm_title_mind_pre_018","sm_title_mind_pre_019","sm_title_mind_pre_020","sm_title_mind_pre_021","sm_title_mind_pre_022","sm_title_mind_pre_023","sm_title_mind_pre_024","sm_title_mind_pre_025","sm_title_mind_pre_026","sm_title_mind_pre_027","sm_title_mind_pre_028","sm_title_mind_pre_029",
@@ -125,7 +115,6 @@ namespace SuperMech.Code
 
         private static readonly System.Random _rng = new System.Random();
 
-        /// <summary>按职业系生成名号。有概率直接出原著名号。</summary>
         public static string Generate(string classId)
         {
             string[] prefix, suffix;
@@ -139,15 +128,12 @@ namespace SuperMech.Code
                 default:                           prefix = MechPrefix;    suffix = MechSuffix;    break;
             }
 
-            // 10%概率直接用后缀里的完整名号（含原著词）
             if (_rng.Next(10) == 0)
                 return LocalizedTextManager.getText(suffix[_rng.Next(suffix.Length)]);
 
-            // 正常组合：前缀+后缀（key比较，避免同一个key）
             string p = prefix[_rng.Next(prefix.Length)];
             string s = suffix[_rng.Next(suffix.Length)];
             if (p == s) s = suffix[(_rng.Next(suffix.Length) + 1) % suffix.Length];
-            // 转换key为中文后组合
             return LocalizedTextManager.getText(p) + LocalizedTextManager.getText(s);
         }
     }

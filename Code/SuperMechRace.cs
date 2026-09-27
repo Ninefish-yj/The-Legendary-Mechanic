@@ -7,24 +7,14 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 种族进化系统（原著 ch770/ch1402）。
-    /// ch770原文："成为超A级相当于进化成了独一无二的新物种"。
-    /// 每个S阶（超A）单位物种蜕变后创建以自己名字命名的独立亚种，并获得专属种族天赋。
-    /// X阶（超神级）物种神化，亚种升级为"{名}神系·王族血脉"，再获得两个遗传性天赋。
-    /// 参考 DivineAscension 登神长阶的 TranscendentSpeciesSystem 独立亚种实现。
-    /// </summary>
     public static class SuperMechRace
     {
-        // 单位标记特质
         public const string TraitSuperARace = "sm_race_super_a";    // S阶物种蜕变标记
         public const string TraitDivineRace = "sm_race_divine";     // X阶物种神化标记
 
-        // X阶两个遗传性天赋（ch1402韩萧选的，作为神化标配）
         public const string SubspeciesDivineGene = "sm_subspecies_divine_gene";  // 【神力基因】
         public const string SubspeciesBornElite  = "sm_subspecies_born_elite";   // 【天生精英】
 
-        // S阶专属种族天赋池（按职业系，模拟原著ch770"捏天赋"随机roll）
         public class RaceTalentDef
         {
             public string id;
@@ -37,7 +27,6 @@ namespace SuperMech.Code
 
         public static readonly List<RaceTalentDef> TalentPool = new List<RaceTalentDef>
         {
-            // ===== 机械系（原著【机械天才】为首，其余为同倾向自创）=====
             new RaceTalentDef { id="sm_rt_mech_genius", name="sm_race_262", classId=SuperMechTraits.ClassMech,
                 desc="sm_race_263",
                 intel=10, dmgMul=0.25f, hpMul=0f, spdMul=0.10f },
@@ -57,7 +46,6 @@ namespace SuperMech.Code
                 desc="sm_race_273",
                 intel=15, dmgMul=0.15f, hpMul=0.10f, spdMul=0f },
 
-            // ===== 武道系（对应"神体"，原著ch675不灭之躯/ch268刚韧之躯/蛇辫岩石皮肤/哈达威防御强化）=====
             new RaceTalentDef { id="sm_rt_indestructible", name="sm_race_274", classId=SuperMechTraits.ClassMartial,
                 desc="sm_race_275",
                 intel=5, dmgMul=0.15f, hpMul=0.30f, spdMul=0f, armor=20 },
@@ -77,7 +65,6 @@ namespace SuperMech.Code
                 desc="sm_race_285",
                 intel=6, dmgMul=0.30f, hpMul=0f, spdMul=0.15f },
 
-            // ===== 异能系（对应"神通"，原著ch919纯净血脉/基因链核心/西斯科进化方块返祖血脉）=====
             new RaceTalentDef { id="sm_rt_pure_blood", name="sm_race_286", classId=SuperMechTraits.ClassPsi,
                 desc="sm_race_287",
                 intel=12, dmgMul=0.25f, hpMul=0.10f, spdMul=0f },
@@ -94,7 +81,6 @@ namespace SuperMech.Code
                 desc="sm_race_295",
                 intel=12, dmgMul=0.20f, hpMul=0.15f, spdMul=0.10f },
 
-            // ===== 魔法系（对应"神权"，原著法神白格尔/魔网/符文体系）=====
             new RaceTalentDef { id="sm_rt_mana_source", name="sm_race_296", classId=SuperMechTraits.ClassMage,
                 desc="sm_race_297",
                 intel=12, dmgMul=0.25f, hpMul=0f, spdMul=0f },
@@ -111,7 +97,6 @@ namespace SuperMech.Code
                 desc="sm_race_305",
                 intel=10, dmgMul=0.15f, hpMul=0.15f, spdMul=0.10f },
 
-            // ===== 念力系（对应"神魂"，原著克苏耶虚空种族天赋/精神力核心）=====
             new RaceTalentDef { id="sm_rt_spirit_field", name="sm_race_306", classId=SuperMechTraits.ClassMind,
                 desc="sm_race_307",
                 intel=15, dmgMul=0.25f, hpMul=0.10f, spdMul=0f },
@@ -131,7 +116,6 @@ namespace SuperMech.Code
                 desc="sm_race_317",
                 intel=16, dmgMul=0.20f, hpMul=0.10f, spdMul=0.20f },
 
-            // ===== 原著虚空进化路线种族天赋（韩萧ch586/ch684/ch770，通用系，任何职业走虚空进化可获得）=====
             new RaceTalentDef { id="sm_rt_void_echo", name="sm_race_318", classId="sm_race_319",
                 desc="sm_race_320",
                 intel=15, dmgMul=0.25f, hpMul=0.15f, spdMul=0f },
@@ -163,7 +147,6 @@ namespace SuperMech.Code
                 desc="sm_race_338",
                 intel=12, dmgMul=0.10f, hpMul=0.10f, spdMul=0.30f },
 
-            // ===== 原著其他种族天赋 =====
             new RaceTalentDef { id="sm_rt_mech_god_body", name="sm_race_339", classId=SuperMechTraits.ClassMech,
                 desc="sm_race_340",
                 intel=15, dmgMul=0.20f, hpMul=0.20f, spdMul=0.10f },
@@ -183,7 +166,6 @@ namespace SuperMech.Code
             if (_registered) return;
             _registered = true;
 
-            // 注册亚种特质组（亚种编辑器按组显示所有已注册特质，不设group_id则不显示）
             if (AssetManager.subspecies_trait_groups.get("sm_race_talents") == null)
             {
                 var group = new SubspeciesTraitGroupAsset
@@ -196,15 +178,12 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("trait_group_sm_race_talents", LocalizedTextManager.getText("sm_race_345"), pReplace: true);
             }
 
-            // 单位标记特质
             AddMarkerTrait(TraitSuperARace, "sm_race_346", "sm_race_347", 0.40f, 0.40f, 15);
             AddMarkerTrait(TraitDivineRace, "sm_race_348", "sm_race_349", 1.00f, 1.00f, 30);
 
-            // S阶专属种族天赋池
             foreach (var t in TalentPool)
                 AddSubspeciesTrait(t.id, t.name, t.desc, t.intel, t.dmgMul, t.hpMul, t.spdMul, t.armor);
 
-            // X阶两个遗传性天赋
             AddSubspeciesTrait(SubspeciesDivineGene, "sm_race_350",
                 "sm_race_351", 0, 0.46f, 0f, 0f);
             AddSubspeciesTrait(SubspeciesBornElite, "sm_race_352",
@@ -213,12 +192,10 @@ namespace SuperMech.Code
             Debug.Log("[超神机械师] 种族系统注册完成：2标记特质 + 5专属种族天赋 + 2神化遗传天赋");
         }
 
-        /// <summary>根据阶位自动进化种族。S阶→以单位名创建独立亚种+专属天赋；X阶→神化升级。</summary>
         public static void AutoEvolve(Actor a, int rankIndex)
         {
             if (a == null) return;
 
-            // X阶：物种神化
             if (rankIndex >= 13)
             {
                 if (!a.hasTrait(TraitDivineRace))
@@ -242,13 +219,11 @@ namespace SuperMech.Code
                 return;
             }
 
-            // S阶：物种蜕变，创建以名号命名的独立亚种
             if (rankIndex >= 10 && !a.hasTrait(TraitSuperARace))
             {
                 a.addTrait(TraitSuperARace);
                 string title = GetTitle(a);
                 string raceName = $"sm_race_355";
-                // 原著ch770有13个种族天赋（10过去+2下一阶段+1自创），这里简化给3个：1职业系+2通用虚空系
                 var talentIds = new List<string>();
                 talentIds.Add(PickClassTalent(a));       // 职业系专属
                 talentIds.Add(PickUniversalTalent());     // 通用虚空系1
@@ -258,7 +233,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>从职业系天赋池roll（模拟3次更换选最好）。</summary>
         private static string PickClassTalent(Actor a)
         {
             string cls = SuperMechBranch.GetClass(a);
@@ -267,7 +241,6 @@ namespace SuperMech.Code
             return RollBest(candidates);
         }
 
-        /// <summary>从通用虚空系天赋池roll（模拟3次更换选最好）。</summary>
         private static string PickUniversalTalent()
         {
             var candidates = TalentPool.FindAll(t => t.classId == "sm_race_319");
@@ -288,10 +261,8 @@ namespace SuperMech.Code
             return best != null ? best.id : candidates[0].id;
         }
 
-        /// <summary>名号字典：actorID → 名号（S阶物种蜕变时生成）。</summary>
         private static readonly Dictionary<string, string> _titles = new Dictionary<string, string>();
 
-        /// <summary>获取或生成单位的超A名号。</summary>
         public static string GetTitle(Actor a)
         {
             if (a == null) return "";
@@ -318,7 +289,6 @@ namespace SuperMech.Code
             t.base_stats["intelligence"] = intel;
             t.base_stats["multiplier_damage"] = 1f + dmg;
             t.base_stats["multiplier_health"] = 1f + hp;
-            // 种族进化绑定战斗动作（物种蜕变→基础，物种神化→全部）
             t.addCombatAction("combat_dash");
             t.addCombatAction("combat_block");
             t.addCombatAction("combat_dodge");
@@ -339,11 +309,9 @@ namespace SuperMech.Code
             LocalizedTextManager.add("subspecies_trait_" + id, name, pReplace: true);
             LocalizedTextManager.add("subspecies_trait_" + id + "_info", desc, pReplace: true);
 
-            // 用clone从模板创建（原版方式），避免直接new缺少初始化
             SubspeciesTrait st = AssetManager.subspecies_traits.clone(id, "$adaptation$");
             if (st == null)
             {
-                // 模板不存在时直接new
                 st = new SubspeciesTrait
                 {
                     id = id, group_id = "sm_race_talents",
@@ -373,7 +341,6 @@ namespace SuperMech.Code
             if (trait != null) species.addTrait(trait);
         }
 
-        /// <summary>脱离原亚种，创建独立亚种并改名。参考 DivineAscension。</summary>
         private static void DetachSubspecies(Actor actor, string subspeciesName, string[] traitIds)
         {
             try
@@ -443,7 +410,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>获取单位当前种族名。</summary>
         public static string GetRaceName(Actor a)
         {
             if (a == null) return LocalizedTextManager.getText("sm_race_356");
@@ -455,7 +421,6 @@ namespace SuperMech.Code
             return LocalizedTextManager.getText("sm_race_356");
         }
 
-        /// <summary>清空种族数据（世界切换用）。</summary>
         public static void Clear()
         {
             _titles.Clear();

@@ -5,41 +5,19 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 提炼法系统（原著ch50/ch51/ch172/ch237/ch277）：
-    ///
-    /// 【气力提炼法】ch50/ch51原文：
-    /// - 刚获得时：总效果气力+10，锻炼次数0/80，每次消耗800经验、500体力
-    /// - 每次锻炼按完美度获得额外气力：
-    ///   完美度40%以下：气力+1
-    ///   完美度40%~80%：气力+2
-    ///   完美度80%以上：气力+3
-    /// - 完美度取决于该职业的主要属性（机械系=智力，ch51原文）
-    /// - 满80次最多+240，总计+250气力
-    /// - 全系通用（ch172："就连异能系也屁颠颠来学"）
-    ///
-    /// 【电磁因子提炼法】ch237/ch277：
-    /// - 机械师专属成长型技能
-    /// - 限制100次提炼
-    /// - 效果取决于智力属性
-    /// </summary>
     public static class SuperMechRefinement
     {
         public const string RefinementTrait = "sm_refinement";
         public const string EmRefinementTrait = "sm_em_refinement";
-        // 三系提炼法变种（原著：所有修炼气力的方法都叫提炼法）
         public const string PsiResonance  = "sm_pcult_resonance";   // 基因提炼法（异能）
         public const string ManaMeditation = "sm_pcult_meditation"; // 魔力提炼法（魔法）
         public const string MindTrain    = "sm_pcult_mind_train";   // 精神提炼法（念力）
 
-        // 锻炼次数追踪
         private static readonly Dictionary<long, int> _refineCount = new Dictionary<long, int>();
         private static readonly Dictionary<long, int> _emRefineCount = new Dictionary<long, int>();
-        // 累计获得的气力（基础+10 + 每次锻炼加成）
         private static readonly Dictionary<long, float> _refineQiBonus = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _emRefineQiBonus = new Dictionary<long, float>();
 
-        // 原著常量
         public const int MaxRefineCount = 80;       // ch50：0/80
         public const int RefineXpCost = 800;         // ch50：每次消耗800经验
         public const int RefineStaminaCost = 500;    // ch50：每次消耗500体力
@@ -99,7 +77,6 @@ namespace SuperMech.Code
             AssetManager.powers.add(givePower);
             LocalizedTextManager.add("power_sm_give_refinement", LocalizedTextManager.getText("sm_refinement_084"), pReplace: true);
 
-            // 三系提炼法变种（原著ch172：就连异能系也屁颠颠来学）
             AddVariantTrait(PsiResonance, "sm_refinement_085", "sm_refinement_086");
             AddVariantTrait(ManaMeditation, "sm_refinement_087", "sm_refinement_088");
             AddVariantTrait(MindTrain, "sm_refinement_089", "sm_refinement_090");
@@ -119,7 +96,6 @@ namespace SuperMech.Code
             AssetManager.traits.add(t);
         }
 
-        /// <summary>三系提炼法变种tick效果（持续增长属性）。</summary>
         public static void TickCultivation()
         {
             foreach (Actor a in World.world.units.units_only_alive)
@@ -148,26 +124,22 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>计算完美度（取决于职业主属性，ch51原文）。</summary>
         private static float CalcPerfection(Actor a)
         {
             float mainStat = 5f;
             var stats = SuperMechStats.Of(a);
             if (stats != null)
             {
-                // 各职业主属性（ch51：机械系=智力）
                 if (a.hasTrait(SuperMechTraits.ClassMech)) mainStat = stats["intelligence"];
                 else if (a.hasTrait(SuperMechTraits.ClassMartial)) mainStat = (stats["warfare"] + stats["stamina"]) / 2f;
                 else if (a.hasTrait(SuperMechTraits.ClassPsi)) mainStat = stats["intelligence"];
                 else if (a.hasTrait(SuperMechTraits.ClassMage)) mainStat = stats["intelligence"];
                 else if (a.hasTrait(SuperMechTraits.ClassMind)) mainStat = stats["intelligence"];
             }
-            // 完美度 = 基础50% + 主属性×2%，上限95%
             float perfection = 50f + mainStat * 2f;
             return Mathf.Clamp(perfection, 10f, 95f);
         }
 
-        /// <summary>根据完美度计算气力加成（ch51：40%以下+1，40~80%+2，80%以上+3）。</summary>
         private static int CalcQiGain(float perfection)
         {
             if (perfection >= 80f) return 3;
@@ -175,7 +147,6 @@ namespace SuperMech.Code
             return 1;
         }
 
-        /// <summary>主动锻炼一次提炼法。</summary>
         public static bool TryRefine(Actor a)
         {
             if (a == null || !a.hasTrait(RefinementTrait)) return false;
@@ -183,7 +154,6 @@ namespace SuperMech.Code
             int count = GetRefineCount(a);
             if (count >= MaxRefineCount) return false;
 
-            // 降临者消耗经验
             if (SuperMechAwakened.IsAwakened(a))
             {
                 float xp = SuperMechAwakened.GetXp(a);
@@ -191,7 +161,6 @@ namespace SuperMech.Code
                 SuperMechAwakened.AddXp(a, -RefineXpCost);
             }
 
-            // 计算完美度和气力加成
             float perfection = CalcPerfection(a);
             int qiGain = CalcQiGain(perfection);
 
@@ -199,7 +168,6 @@ namespace SuperMech.Code
             if (!_refineQiBonus.ContainsKey(id)) _refineQiBonus[id] = RefineBaseQi;
             _refineQiBonus[id] += qiGain;
 
-            // 增加气力上限
             SuperMechQi.AddQiMax(a, qiGain);
             SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a));
 
@@ -209,7 +177,6 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>电磁因子提炼（机械师专属）。</summary>
         public static bool TryEmRefine(Actor a)
         {
             if (a == null || !a.hasTrait(EmRefinementTrait)) return false;
@@ -220,7 +187,6 @@ namespace SuperMech.Code
 
             _emRefineCount[id] = count + 1;
 
-            // 效果取决于智力（ch237）
             float intel = 5f;
             var stats = SuperMechStats.Of(a);
             if (stats != null) intel = stats["intelligence"];
@@ -235,7 +201,6 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>Tick：自动锻炼。</summary>
         public static void TickRefinement()
         {
             var units = World.world.units.units_only_alive;
@@ -248,13 +213,11 @@ namespace SuperMech.Code
                 bool hasEmRefine = a.hasTrait(EmRefinementTrait);
                 if (!hasRefine && !hasEmRefine) continue;
 
-                // 星海人自动锻炼（每tick10%概率）
                 if (!SuperMechAwakened.IsAwakened(a))
                 {
                     if (hasRefine && Random.value < 0.1f) TryRefine(a);
                     if (hasEmRefine && Random.value < 0.05f) TryEmRefine(a);
                 }
-                // 降临者小概率自动锻炼（2%，模拟挂机）
                 else
                 {
                     if (hasRefine && Random.value < 0.02f) TryRefine(a);
@@ -284,7 +247,6 @@ namespace SuperMech.Code
             return v;
         }
 
-        /// <summary>获取提炼法状态文本（用于单位面板）。</summary>
         public static string GetStatusText(Actor a)
         {
             if (a == null) return null;
@@ -312,7 +274,6 @@ namespace SuperMech.Code
 
         public static void Clear() { _refineCount.Clear(); _emRefineCount.Clear(); _refineQiBonus.Clear(); _emRefineQiBonus.Clear(); }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;

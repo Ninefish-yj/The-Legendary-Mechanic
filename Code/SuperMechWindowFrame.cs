@@ -6,10 +6,6 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 简化版自绘窗口框架。
-    /// 标题栏 + 关闭按钮 + 内容区，可拖拽。
-    /// </summary>
     public class SMWindowFrame
     {
         private static readonly List<SMWindowFrame> AllFrames = new List<SMWindowFrame>(8);
@@ -39,7 +35,6 @@ namespace SuperMech.Code
             Image bg = root.GetComponent<Image>();
             bg.color = new Color(0.04f, 0.06f, 0.10f, 0.96f);
 
-            // 标题栏
             var titleBar = new GameObject("TitleBar", typeof(RectTransform), typeof(Image));
             titleBar.transform.SetParent(frame.RootRt, false);
             RectTransform tbRt = titleBar.GetComponent<RectTransform>();
@@ -50,11 +45,9 @@ namespace SuperMech.Code
             tbRt.offsetMax = Vector2.zero;
             titleBar.GetComponent<Image>().color = new Color(0.02f, 0.04f, 0.07f, 1f);
 
-            // 拖拽
             var drag = titleBar.AddComponent<SMWindowDrag>();
             drag.WindowRect = frame.RootRt;
 
-            // 标题文字
             var titleGo = new GameObject("Title", typeof(RectTransform), typeof(Text));
             titleGo.transform.SetParent(tbRt, false);
             RectTransform titleRt = titleGo.GetComponent<RectTransform>();
@@ -71,7 +64,6 @@ namespace SuperMech.Code
             tt.color = new Color(0.9f, 0.85f, 0.6f, 1f);
             tt.text = title;
 
-            // 关闭按钮
             var closeGo = new GameObject("Close", typeof(RectTransform), typeof(Image), typeof(Button));
             closeGo.transform.SetParent(tbRt, false);
             RectTransform closeRt = closeGo.GetComponent<RectTransform>();
@@ -99,7 +91,6 @@ namespace SuperMech.Code
             cl.text = "×";
             closeBtn.onClick.AddListener(() => { if (frame.Root != null) frame.Root.SetActive(false); });
 
-            // 内容区
             var contentGo = new GameObject("Content", typeof(RectTransform));
             contentGo.transform.SetParent(frame.RootRt, false);
             frame.ContentParent = contentGo.GetComponent<RectTransform>();
@@ -125,7 +116,6 @@ namespace SuperMech.Code
 
         public bool IsVisible => Root != null && Root.activeSelf;
 
-        /// <summary>在内容区创建一个文字标签。</summary>
         public Text AddLabel(string text, float x, float y, float w, float h, int fontSize = 14, TextAnchor align = TextAnchor.UpperLeft)
         {
             var go = new GameObject("Label", typeof(RectTransform), typeof(Text));
@@ -147,7 +137,6 @@ namespace SuperMech.Code
             return t;
         }
 
-        /// <summary>在内容区创建一个按钮。</summary>
         public Button AddButton(string text, float x, float y, float w, float h, Action onClick, Color? bgColor = null)
         {
             var go = new GameObject("Btn_" + text, typeof(RectTransform), typeof(Image), typeof(Button));
@@ -180,7 +169,6 @@ namespace SuperMech.Code
             return btn;
         }
 
-        /// <summary>获取安全字体（current_font可能为null时fallback到内置字体）。</summary>
         private static Font SafeFont()
         {
             Font f = LocalizedTextManager.current_font;
@@ -188,7 +176,6 @@ namespace SuperMech.Code
             return f;
         }
 
-        /// <summary>清空内容区所有子对象（用DestroyImmediate避免一帧抖动）。</summary>
         public void ClearContent()
         {
             if (ContentParent == null) return;
@@ -198,7 +185,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>销毁所有窗口和Canvas（世界切换时调用，避免跨世界残留）。</summary>
         public static void ClearAll()
         {
             foreach (var frame in AllFrames)
@@ -229,7 +215,6 @@ namespace SuperMech.Code
         }
     }
 
-    /// <summary>窗口拖拽组件。</summary>
     public class SMWindowDrag : MonoBehaviour, UnityEngine.EventSystems.IBeginDragHandler, UnityEngine.EventSystems.IDragHandler
     {
         public RectTransform WindowRect;

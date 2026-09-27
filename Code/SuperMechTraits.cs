@@ -4,15 +4,10 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 特质注册：只注册真正的"特质"——阶位、五系觉醒、种族进化、职业技能。
-    /// 职业阶段（机械14阶段）改为内部数据（SuperMechStage），不做特质。
-    /// 分支选择由 SuperMechBranch 注册。
-    /// 专长/副职业/宝物/提炼法各自文件注册。
-    /// </summary>
+    // 特质系统：只注册必要特质，知识/气力用内部字典
+
     public static class SuperMechTraits
     {
-        /// <summary>按特质组返回对应图标（避免全用默认iconHardSkin）。</summary>
         public static string GroupIcon(string groupId)
         {
             switch (groupId)
@@ -39,23 +34,19 @@ namespace SuperMech.Code
             }
         }
 
-        // —— 五系觉醒（真正的特质，决定单位属于哪一系）——
         public const string ClassPsi     = "sm_class_psi";      // 异能系（基因树·神通）
         public const string ClassMartial = "sm_class_martial";  // 武道系（御气技巧树·神体）
         public const string ClassMech    = "sm_class_mech";     // 机械系（机械知识树·神器）
         public const string ClassMage    = "sm_class_mage";     // 魔法系（魔法知识树·神权）
         public const string ClassMind    = "sm_class_mind";     // 念力系（精神修炼树·神魂）
 
-        // —— 种族进化链移至 SuperMechRace.cs（原著6阶段，与阶位挂钩）——
 
-        // —— 职业技能（原著最终面板）——
         public const string SkillQiMod          = "sm_skill_qimod";
         public const string SkillVirtualPurify  = "sm_skill_virtual_purify";
         public const string SkillDimensionMarch = "sm_skill_dimension_march";
 
         public static void Register()
         {
-            // 1. 阶位链（只注册主阶位，+位不挂特质只在面板显示；属性加成直接写进base_stats）
             int rankIdx = 0;
             foreach (var r in SuperMechRanks.All)
             {
@@ -68,24 +59,19 @@ namespace SuperMech.Code
                     needs_to_be_explored = false,
                     base_stats = new BaseStats()
                 };
-                // 属性加成直接写进特质base_stats（原著：阶位越高战力越强）
                 if (r.damageMul > 1f) t.base_stats["multiplier_damage"] = r.damageMul;
                 if (r.healthMul > 1f) t.base_stats["multiplier_health"] = r.healthMul;
-                // 阶位越高战斗动作越多（原著：高阶超能者战斗技巧更丰富）
                 if (rankIdx >= 4) t.addCombatAction("combat_dodge");              // C阶+
                 if (rankIdx >= 6) t.addCombatAction("combat_block");              // B阶+
                 if (rankIdx >= 8) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); } // A阶+
                 if (rankIdx >= 10) { t.addCombatAction("combat_instincts"); t.addCombatAction("combat_deflect_projectile"); } // S阶+
                 if (rankIdx >= 12) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); } // SS阶+
                 rankIdx++;
-                // 动态添加本地化（ID带数字前缀sm_rank_00_f，cz.json中key不带前缀，这里补全）
                 LocalizedTextManager.add("trait_" + r.id, LocalizedTextManager.getText(r.name), pReplace: true);
                 LocalizedTextManager.add("trait_" + r.id + "_info", GetRankDesc(rankIdx - 1), pReplace: true);
                 AssetManager.traits.add(t);
             }
 
-            // 2. 五系天赋（原著没有"觉醒"概念，超能者自然觉醒，天赋决定系别）
-            //    用原版BaseStats属性模拟原著天赋：械感=智力+经验获取，体魄=战术+耐力+攻速， etc.
             AddClassTrait(ClassPsi,    "sm_trait_class_psi", 3, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"damage", 5f}, {"multiplier_damage", 1.05f}, {"mana", 30f} });
@@ -102,9 +88,6 @@ namespace SuperMech.Code
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"mana", 40f}, {"multiplier_speed", 1.05f}, {"attack_speed", 1.03f} });
 
-            // 3. 种族进化移至 SuperMechRace.cs（原著6阶段，与阶位挂钩自动进化）
-
-            // 4. 职业技能移至 SuperMechSkills.cs（独立技能系统，参考西幻世界，不注册为特质）
 
             Debug.Log("[超神机械师] 特质注册完成：阶位9(主阶位) + 五系觉醒5");
         }
@@ -123,7 +106,6 @@ namespace SuperMech.Code
             t.base_stats["intelligence"] = intell;
             t.base_stats["warfare"] = str;
             t.base_stats["stamina"] = stam;
-            // 追加专属属性（原著天赋效果，用原版BaseStats key模拟）
             if (extraStats != null)
             {
                 foreach (var kv in extraStats)
@@ -131,7 +113,6 @@ namespace SuperMech.Code
                     t.base_stats[kv.Key] = kv.Value;
                 }
             }
-            // 五系各有不同战斗风格（绑定原版ActionLibrary战斗动作）
             switch (id)
             {
                 case ClassMartial: // 武道系：近战格斗大师
@@ -161,13 +142,11 @@ namespace SuperMech.Code
                     t.addCombatAction("combat_random_jump");
                     break;
             }
-            // 注册五系天赋名本地化（name现在是key，用getText转换）
             LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
             LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(name) + LocalizedTextManager.getText("sm_ui_talent"), pReplace: true);
             AssetManager.traits.add(t);
         }
 
-        /// <summary>阶位描述（原著设定）。</summary>
         private static string GetRankDesc(int idx)
         {
             string[] descs = {

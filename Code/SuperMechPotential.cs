@@ -3,36 +3,24 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>
-    /// 潜能点系统（原著 ch3/ch50/ch611/ch1201）。
-    /// 每次升级+1潜能点，用于学习知识树节点。
-    /// 转职后其他分支尖端知识费用×3（ch611）。
-    /// 高阶位给"觉醒点"替代潜能点（ch1201）。
-    /// </summary>
     public static class SuperMechPotential
     {
-        // 潜能点追踪（unit.id -> 潜能点数）
         private static readonly Dictionary<long, int> _potentialMap = new Dictionary<long, int>();
-        // 觉醒点追踪（高阶位替代潜能点）
         private static readonly Dictionary<long, int> _awakeningMap = new Dictionary<long, int>();
-        // 上次气力等级（用于检测升级给潜能点）
         private static readonly Dictionary<long, int> _lastQiLevel = new Dictionary<long, int>();
 
-        /// <summary>获取单位潜能点。</summary>
         public static int GetPotential(Actor a)
         {
             if (a == null) return 0;
             int v; _potentialMap.TryGetValue(a.id, out v); return v;
         }
 
-        /// <summary>获取单位觉醒点。</summary>
         public static int GetAwakening(Actor a)
         {
             if (a == null) return 0;
             int v; _awakeningMap.TryGetValue(a.id, out v); return v;
         }
 
-        /// <summary>增加潜能点。</summary>
         public static void AddPotential(Actor a, int amount)
         {
             if (a == null) return;
@@ -40,14 +28,12 @@ namespace SuperMech.Code
             _potentialMap[a.id] = cur + amount;
         }
 
-        /// <summary>直接设置潜能点（存档恢复用）。</summary>
         public static void SetPotential(Actor a, int amount)
         {
             if (a == null) return;
             _potentialMap[a.id] = Mathf.Max(0, amount);
         }
 
-        /// <summary>消耗潜能点。返回是否成功。</summary>
         public static bool SpendPotential(Actor a, int amount)
         {
             if (a == null) return false;
@@ -57,22 +43,18 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>检查知识节点是否已解锁。</summary>
         public static bool IsNodeUnlocked(Actor a, string nodeId)
         {
             return SuperMechKnowledge.IsUnlocked(a, nodeId);
         }
 
-        /// <summary>获取知识节点的系别前缀。</summary>
         public static string GetKnowledgePrefix(string nodeId)
         {
-            // 格式：sm_know_{前缀}_{阶}_{分支}_{序号}
             string[] parts = nodeId.Split('_');
             if (parts.Length >= 3) return parts[2];
             return "";
         }
 
-        // 异能-职业搭配表（具体异能 -> 适合的职业前缀，搭配时学习消耗降低）
         private static readonly Dictionary<string, string[]> PowerClassSynergy = new Dictionary<string, string[]>
         {
             { "sm_potential_1335", new[] { "mech" } },        // 电磁操控特别适合机械系
@@ -107,7 +89,6 @@ namespace SuperMech.Code
             { "sm_potential_1364", new[] { "mind", "psi" } },  // 预知未来适合念力/异能
         };
 
-        /// <summary>获取单位的具体异能类型列表。</summary>
         private static List<string> GetSpecificPowers(Actor a)
         {
             var list = new List<string>();
@@ -120,7 +101,6 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>判断具体异能是否和目标职业搭配。</summary>
         public static bool HasPowerSynergy(Actor a, string classPrefix)
         {
             var powers = GetSpecificPowers(a);
@@ -137,7 +117,6 @@ namespace SuperMech.Code
             return false;
         }
 
-        /// <summary>判断知识节点是否是跨系兼修（和主职业方向不同）。五系天才不惩罚。</summary>
         public static bool IsCrossClass(Actor a, string nodeId)
         {
             if (SuperMechTalent.IsFiveSystemGenius(a)) return false;  // 五系天才跨系不惩罚
@@ -148,7 +127,6 @@ namespace SuperMech.Code
             return prefix != mainPrefix;
         }
 
-        /// <summary>获取知识节点的实际消耗（跨系兼修受智力和异能搭配影响，原著ch611）。</summary>
         public static int GetActualCost(Actor a, string nodeId, int baseCost)
         {
             if (SuperMechTalent.IsFiveSystemGenius(a)) return baseCost;  // 五系天才无惩罚
@@ -160,26 +138,21 @@ namespace SuperMech.Code
 
             if (!isCross)
             {
-                // 本系：异能搭配有加成
                 if (HasPowerSynergy(a, prefix)) return Mathf.Max(1, (int)(baseCost * 0.7f));  // 搭配-30%
                 return baseCost;
             }
 
-            // 跨系兼修：智力门槛+异能搭配
             float intel = a.stats["intelligence"];
             float multiplier = 3f;  // 默认×3
 
-            // 智力门槛（原著：双修需要高智力，智力不够效率极低）
             if (intel < 10f) multiplier = 5f;       // 智力<10，×5
             else if (intel >= 20f) multiplier = 2f;  // 智力>=20，×2
 
-            // 异能搭配加成（如果具体异能和兼修职业搭配，消耗降低）
             if (HasPowerSynergy(a, prefix)) multiplier *= 0.7f;  // 搭配-30%
 
             return Mathf.Max(1, (int)(baseCost * multiplier));
         }
 
-        /// <summary>解锁知识节点（消耗潜能点，跨系兼修×3）。返回是否成功。</summary>
         public static bool UnlockNode(Actor a, string nodeId, int cost)
         {
             if (a == null) return false;
@@ -187,7 +160,6 @@ namespace SuperMech.Code
             int actualCost = GetActualCost(a, nodeId, cost);
             if (!SpendPotential(a, actualCost)) return false;
             SuperMechKnowledge.Unlock(a, nodeId);
-            // 降临者学习知识获得经验（ch132：学基础组装得1000经验）
             if (SuperMechAwakened.IsAwakened(a))
             {
                 SuperMechAwakened.AddXp(a, 1000f);
@@ -198,11 +170,6 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>
-        /// 每tick检测气力等级提升，给潜能点。
-        /// 原著：每次升级+1潜能点（ch3/ch50）。
-        /// 这里用气力量级提升模拟升级（每升1级气力=1潜能点）。
-        /// </summary>
         public static void TickPotential()
         {
             var units = World.world.units.units_only_alive;
@@ -221,7 +188,6 @@ namespace SuperMech.Code
                 if (curLv > lastLv)
                 {
                     int gained = curLv - lastLv;
-                    // 高阶位（S级以上）给觉醒点而非潜能点
                     if (a.hasTrait("sm_rank_10_s") || a.hasTrait("sm_rank_11_s_plus") || a.hasTrait("sm_rank_12_ss") || a.hasTrait("sm_rank_13_x"))
                     {
                         int curAw = GetAwakening(a);
@@ -244,7 +210,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>强制解锁知识节点（不消耗潜能点，星海人传承度用）。</summary>
         public static void ForceUnlockNode(Actor a, string nodeId)
         {
             if (a == null) return;
@@ -252,11 +217,9 @@ namespace SuperMech.Code
             SuperMechKnowledge.Unlock(a, nodeId);
         }
 
-        /// <summary>获取单位已解锁节点数量。</summary>
         public static int GetUnlockedCount(Actor a)
         {
             if (a == null) return 0;
-            // 统计五系已解锁知识
             int total = 0;
             total += SuperMechKnowledge.GetUnlockedCount(a, "mech");
             total += SuperMechKnowledge.GetUnlockedCount(a, "martial");
@@ -266,16 +229,13 @@ namespace SuperMech.Code
             return total;
         }
 
-        /// <summary>清空所有潜能点数据（世界切换用）。</summary>
         public static void Clear()
         {
             _potentialMap.Clear();
             _awakeningMap.Clear();
             _lastQiLevel.Clear();
-            // 知识解锁数据在SuperMechKnowledge中清理
         }
 
-        /// <summary>清理已死亡单位的字典数据。</summary>
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
