@@ -20,7 +20,6 @@ namespace SuperMech.Code
 
                 ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
                 ShowMainInfo(__instance, actor);
-                ShowCustomStats(__instance, actor);
                 AddInfoButton(__instance, actor);
             }
             catch (System.Exception e)
@@ -74,7 +73,6 @@ namespace SuperMech.Code
         }
 
         private static readonly Color InfoColor = new Color(1f, 0.9f, 0.6f);
-        private static readonly Color StatColor = new Color(0.7f, 0.85f, 1f);
 
         private static void ShowMainInfo(UnitWindow window, Actor a)
         {
@@ -179,44 +177,6 @@ namespace SuperMech.Code
             catch (Exception e)
             {
                 Debug.LogWarning("[超神机械师] showStatRow调用失败: " + e.Message);
-            }
-        }
-
-        private static void ShowCustomStats(UnitWindow window, Actor a)
-        {
-            try
-            {
-                float div = a.stats[SuperMechCustomStats.StatDivinityLayers];
-                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1152"), div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"), null, StatColor);
-
-                int sanctuaryTotal = 0;
-                string[] sanctuaryStats = {
-                    SuperMechCustomStats.StatSanctuary1,
-                    SuperMechCustomStats.StatSanctuary2,
-                    SuperMechCustomStats.StatSanctuary3,
-                    SuperMechCustomStats.StatSanctuary4,
-                    SuperMechCustomStats.StatSanctuary5,
-                    SuperMechCustomStats.StatSanctuary6
-                };
-                foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
-                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1154"), sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"), null, StatColor);
-
-                float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
-                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1156"), mechAff.ToString("F0") + "%", null, StatColor);
-
-                float mageAff = a.stats[SuperMechCustomStats.StatMageAffinity];
-                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1157"), mageAff.ToString("F0") + "%", null, StatColor);
-
-                float mystery = a.stats[SuperMechCustomStats.StatMystery];
-                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1158"), mystery.ToString("F0"), null, StatColor);
-                float charm = a.stats[SuperMechCustomStats.StatCharm];
-                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1159"), charm.ToString("F0"), null, StatColor);
-                float luck = a.stats[SuperMechCustomStats.StatLuck];
-                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1160"), luck.ToString("F0"), null, StatColor);
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning("[超神机械师] 自定义属性显示失败: " + e.Message);
             }
         }
     }
