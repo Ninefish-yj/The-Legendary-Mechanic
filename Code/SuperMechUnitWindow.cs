@@ -26,7 +26,7 @@ namespace SuperMech.Code
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[超神机械师] 单位面板主要信息失败: {e.Message}");
+                Debug.LogError($"[超神机械师] 单位面板主要信息失败: {e.Message}\n{e.StackTrace}");
             }
         }
 
