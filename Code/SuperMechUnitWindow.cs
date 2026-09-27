@@ -18,19 +18,62 @@ namespace SuperMech.Code
             try
             {
                 Actor actor = GetActor(__instance);
-                if (actor == null || !actor.isAlive())
-                {
-                    SuperMechInfoCard.Hide(__instance);
-                    return;
-                }
+                if (actor == null || !actor.isAlive()) return;
 
-                SuperMechInfoCard.Show(__instance, actor);
+                ShowMainInfo(__instance, actor);
                 ShowCustomStats(__instance, actor);
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[超神机械师] 单位面板浮动卡片失败: {e.Message}");
+                Debug.LogError($"[超神机械师] 单位面板主要信息失败: {e.Message}");
             }
+        }
+
+        private static void ShowMainInfo(UnitWindow window, Actor a)
+        {
+            bool hasTalent = SuperMechTalent.HasTalent(a);
+            if (!hasTalent)
+            {
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"));
+                return;
+            }
+
+            ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a));
+
+            bool hasProfession = SuperMechProfession.HasProfession(a);
+            if (hasProfession)
+            {
+                string cls = SuperMechProfession.GetClass(a);
+                string clsAspect = GetClassAspect(cls);
+                string clsText = cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）");
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), clsText);
+
+                string stage = SuperMechStage.GetStageName(a);
+                if (stage != "—" && stage != "sm_knowledgetab_829")
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stage);
+            }
+            else
+            {
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"));
+            }
+
+            float onar = SuperMechAdvancement.CalcOnar(a);
+            ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}");
+
+            float qi = SuperMechQi.GetQi(a);
+            float qiMax = SuperMechQi.GetQiMax(a);
+            int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
+            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
+            string qiName = GetQiDisplayName(a);
+            string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
+            ShowRow(window, qiName, $"{qiBar}（{qiLvText}）");
+
+            int pot = SuperMechPotential.GetPotential(a);
+            if (pot > 0)
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString());
+
+            if (SuperMechAwakened.IsAwakened(a))
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"));
         }
 
         private static Actor GetActor(UnitWindow window)
