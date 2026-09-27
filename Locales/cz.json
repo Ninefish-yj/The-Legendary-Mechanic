@@ -3780,5 +3780,17 @@
   "sm_ui_unequipped": "未装备",
   "sm_ui_wild": "野生超能者（未选定方向）",
   "sm_ui_wild_desc": "有天赋但没系统学习职业知识，靠本能战斗",
-  "sm_ui_wild_title": "野生超能者（未选定方向）"
+  "sm_ui_wild_title": "野生超能者（未选定方向）",
+  "sm_powers_920_description": "召唤一个机械游骑兵单位（士兵模板，磁环阶段）",
+  "sm_powers_921_description": "召唤一个机甲单位（巨人模板，数据阶段）",
+  "sm_powers_922_description": "召唤一个降临者单位（天选者模板，完整超能者）",
+  "sm_powers_923_description": "催化SS阶以上单位尝试突破超神级",
+  "sm_powers_924_description": "释放异化之灾，生成异化生物攻击文明",
+  "sm_powers_925_description": "异化之灾（天灾模式）",
+  "sm_powers_926_description": "查看选中单位的潜能点和天赋",
+  "sm_powers_927_description": "解锁武装系知识树",
+  "sm_powers_928_description": "解锁能量系知识树",
+  "sm_powers_929_description": "解锁虚拟系知识树",
+  "sm_powers_930_description": "神之催化：提升突破超神级的成功率",
+  "异能者": "异能者"
 }

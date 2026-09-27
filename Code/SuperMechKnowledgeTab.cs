@@ -662,6 +662,8 @@ namespace SuperMech.Code
 
         private static void AddActionButton(Transform parent, string text, System.Action onClick, Color bgColor)
         {
+            if (parent == null) return;
+            if (string.IsNullOrEmpty(text)) text = "?";
             text = LocalizedTextManager.getText(text);
             GameObject go = new GameObject("ActionButton", typeof(RectTransform));
             go.transform.SetParent(parent, false);

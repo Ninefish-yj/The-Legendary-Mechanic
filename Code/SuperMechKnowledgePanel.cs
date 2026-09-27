@@ -214,7 +214,7 @@ namespace SuperMech.Code
             GameObject titleGo = new GameObject("GraphTitle", typeof(RectTransform));
             titleGo.transform.SetParent(graph.transform, false);
             Text titleText = titleGo.AddComponent<Text>();
-            titleText.text = "sm_knowledgepanel_788";
+            titleText.text = LocalizedTextManager.getText("sm_knowledgepanel_788");
             titleText.fontSize = 14;
             titleText.fontStyle = FontStyle.Bold;
             titleText.color = new Color(0.9f, 0.9f, 0.95f);
@@ -246,6 +246,7 @@ namespace SuperMech.Code
 
         private static void CreateLibraryLayer()
         {
+            if (_container == null) return;
             GameObject lib = new GameObject("LibraryLayer", typeof(RectTransform));
             lib.transform.SetParent(_container.transform, false);
             LayoutElement le = lib.AddComponent<LayoutElement>();
@@ -266,7 +267,7 @@ namespace SuperMech.Code
             titleBg.color = new Color(0.1f, 0.12f, 0.18f, 0.9f);
             titleBg.raycastTarget = false;
             Text titleTxt = titleGo.AddComponent<Text>();
-            titleTxt.text = "sm_knowledgepanel_789";
+            titleTxt.text = LocalizedTextManager.getText("sm_knowledgepanel_789");
             titleTxt.fontSize = 13;
             titleTxt.fontStyle = FontStyle.Bold;
             titleTxt.color = new Color(0.85f, 0.88f, 0.92f);
@@ -363,7 +364,7 @@ namespace SuperMech.Code
 
             if (_libraryTitle != null && _currentActor != null)
             {
-                _libraryTitle.text = "sm_knowledgepanel_789";
+                _libraryTitle.text = LocalizedTextManager.getText("sm_knowledgepanel_789");
             }
             if (_libraryProgress != null && _currentActor != null)
             {
