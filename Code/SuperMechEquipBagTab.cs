@@ -519,6 +519,11 @@ namespace SuperMech.Code
             {
                 if (_equipButtonPrefab == null)
                     _equipButtonPrefab = Resources.Load<EquipmentButton>("ui/EquipmentButton");
+                if (_equipButtonPrefab == null)
+                {
+                    Debug.LogError("[超神机械师] 无法加载原版EquipmentButton预制体 ui/EquipmentButton");
+                    return null;
+                }
                 btn = Object.Instantiate(_equipButtonPrefab, parent);
             }
             _activeButtons.Add(btn);
@@ -538,6 +543,7 @@ namespace SuperMech.Code
         private static GameObject CreateItemIcon(Transform parent, string iconPath, Color qColor, int size, string name, string tooltip)
         {
             EquipmentButton btn = GetButton(parent);
+            if (btn == null) return CreateFallbackIcon(parent, iconPath, qColor, size, tooltip);
 
             RectTransform rt = btn.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(size, size);
@@ -573,6 +579,43 @@ namespace SuperMech.Code
             if (button != null) button.onClick.RemoveAllListeners();
 
             return btn.gameObject;
+        }
+
+        private static GameObject CreateFallbackIcon(Transform parent, string iconPath, Color qColor, int size, string tooltip)
+        {
+            var iconGo = new GameObject("ItemIcon", typeof(RectTransform));
+            iconGo.transform.SetParent(parent, false);
+            var borderImg = iconGo.AddComponent<Image>();
+            borderImg.color = qColor;
+            var innerGo = new GameObject("Inner", typeof(RectTransform));
+            innerGo.transform.SetParent(iconGo.transform, false);
+            var innerImg = innerGo.AddComponent<Image>();
+            innerImg.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
+            RectTransform innerRt = innerGo.GetComponent<RectTransform>();
+            innerRt.anchorMin = new Vector2(0.08f, 0.08f);
+            innerRt.anchorMax = new Vector2(0.92f, 0.92f);
+            innerRt.offsetMin = Vector2.zero;
+            innerRt.offsetMax = Vector2.zero;
+            var itemIcon = new GameObject("Icon", typeof(RectTransform));
+            itemIcon.transform.SetParent(innerGo.transform, false);
+            var itemImg = itemIcon.AddComponent<Image>();
+            Sprite iconSprite = SpriteTextureLoader.getSprite(iconPath);
+            if (iconSprite != null) itemImg.sprite = iconSprite;
+            itemImg.color = Color.white;
+            RectTransform iconRt = itemIcon.GetComponent<RectTransform>();
+            iconRt.anchorMin = new Vector2(0.15f, 0.15f);
+            iconRt.anchorMax = new Vector2(0.85f, 0.85f);
+            iconRt.offsetMin = Vector2.zero;
+            iconRt.offsetMax = Vector2.zero;
+            RectTransform irt = iconGo.GetComponent<RectTransform>();
+            irt.sizeDelta = new Vector2(size, size);
+            var btn = iconGo.AddComponent<Button>();
+            btn.targetGraphic = borderImg;
+            var tip = iconGo.AddComponent<TipButton>();
+            tip.textOnClick = tooltip;
+            tip.textOnClickDescription = string.Empty;
+            tip.text_description_2 = string.Empty;
+            return iconGo;
         }
 
         private static Color GetQualityColor(int q)
