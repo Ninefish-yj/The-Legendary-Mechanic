@@ -34,7 +34,7 @@ namespace SuperMech.Code
         private static void Refresh(UnitWindow window)
         {
             if (window == null) return;
-            Actor actor = GetActor(window);
+            Actor actor = SuperMechUtils.GetActor(window);
             if (actor == null || !actor.isAlive()) return;
 
             ScrollWindow scroll = window.scroll_window;
@@ -66,21 +66,6 @@ namespace SuperMech.Code
 
             bool onBag = scroll.tabs != null && scroll.tabs.isActiveTab(tab);
             if (onBag) RenderBag(actor);
-        }
-
-        private static Actor GetActor(UnitWindow window)
-        {
-            try
-            {
-                var prop = typeof(UnitWindow).GetProperty("actor",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (prop != null) return prop.GetValue(window) as Actor;
-                var field = typeof(UnitWindow).GetField("actor",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (field != null) return field.GetValue(window) as Actor;
-            }
-            catch { }
-            return null;
         }
 
         private static WindowMetaTab FindExistingTab(ScrollWindow scroll)
@@ -239,7 +224,7 @@ namespace SuperMech.Code
         private static void OnTabShow(WindowMetaTab tab)
         {
             if (tab != _bagTab) return;
-            Actor actor = GetActor(_boundWindow);
+            Actor actor = SuperMechUtils.GetActor(_boundWindow);
             if (actor != null) RenderBag(actor);
         }
 
@@ -308,7 +293,7 @@ namespace SuperMech.Code
 
             if (bagCount == 0)
             {
-                var emptyText = CreateText(gridGo.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.6f));
+                var emptyText = SuperMechUtils.CreateText(gridGo.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.6f));
                 var emptyRt = emptyText.GetComponent<RectTransform>();
                 emptyRt.anchorMin = Vector2.zero;
                 emptyRt.anchorMax = Vector2.one;
@@ -495,7 +480,7 @@ namespace SuperMech.Code
             var border = slot.AddComponent<UnityEngine.UI.Image>();
             border.color = new Color(0.3f, 0.3f, 0.35f, 0.5f);
 
-            var txt = CreateText(slot.transform, label, 10, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.7f));
+            var txt = SuperMechUtils.CreateText(slot.transform, label, 10, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.7f));
             var txtRt = txt.GetComponent<RectTransform>();
             txtRt.anchorMin = Vector2.zero;
             txtRt.anchorMax = Vector2.one;
@@ -574,7 +559,7 @@ namespace SuperMech.Code
                 errImg.color = new Color(1f, 0f, 0f, 0.8f);
                 var errRt = errGo.GetComponent<RectTransform>();
                 errRt.sizeDelta = new Vector2(size, size);
-                var errTxt = CreateText(errGo.transform, "ERROR", 10, TextAnchor.MiddleCenter, Color.white);
+                var errTxt = SuperMechUtils.CreateText(errGo.transform, "ERROR", 10, TextAnchor.MiddleCenter, Color.white);
                 var errTxtRt = errTxt.GetComponent<RectTransform>();
                 errTxtRt.anchorMin = Vector2.zero;
                 errTxtRt.anchorMax = Vector2.one;
@@ -641,21 +626,6 @@ namespace SuperMech.Code
             string[] keys = { "sm_quality_0", "sm_quality_1", "sm_quality_2", "sm_quality_3", "sm_quality_4",
                               "sm_quality_5", "sm_quality_6", "sm_quality_7", "sm_quality_8" };
             return q >= 0 && q < keys.Length ? LocalizedTextManager.getText(keys[q]) : "?";
-        }
-
-        private static Text CreateText(Transform parent, string text, int fontSize, TextAnchor anchor, Color color)
-        {
-            GameObject obj = new GameObject("Text", typeof(RectTransform));
-            obj.transform.SetParent(parent, false);
-            Text t = obj.AddComponent<Text>();
-            t.font = LocalizedTextManager.current_font;
-            t.fontSize = fontSize;
-            t.color = color;
-            t.alignment = anchor;
-            t.horizontalOverflow = HorizontalWrapMode.Overflow;
-            t.verticalOverflow = VerticalWrapMode.Overflow;
-            t.text = text;
-            return t;
         }
 
         private static void AddButton(Transform parent, string text, System.Action onClick)

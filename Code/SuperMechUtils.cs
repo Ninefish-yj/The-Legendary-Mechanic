@@ -9,6 +9,11 @@ namespace SuperMech.Code
         {
             try
             {
+                if (SelectedUnit.unit != null && SelectedUnit.unit.isAlive()) return SelectedUnit.unit;
+                var fi = typeof(UnitWindow).GetField("_actor",
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic);
+                if (fi != null) return fi.GetValue(window) as Actor;
                 var prop = typeof(UnitWindow).GetProperty("actor",
                     System.Reflection.BindingFlags.NonPublic |
                     System.Reflection.BindingFlags.Instance |
@@ -27,6 +32,11 @@ namespace SuperMech.Code
         {
             GameObject txtObj = new GameObject("Text", typeof(RectTransform));
             txtObj.transform.SetParent(parent, false);
+            RectTransform rt = txtObj.GetComponent<RectTransform>();
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
             Text txt = txtObj.AddComponent<Text>();
             txt.text = content;
             txt.fontSize = fontSize;

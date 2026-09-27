@@ -15,7 +15,7 @@ namespace SuperMech.Code
         {
             try
             {
-                Actor actor = GetActor(__instance);
+                Actor actor = SuperMechUtils.GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return true;
 
                 ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
@@ -77,22 +77,6 @@ namespace SuperMech.Code
 
             if (SuperMechAwakened.IsAwakened(a))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
-        }
-
-        private static Actor GetActor(UnitWindow window)
-        {
-            try
-            {
-                if (SelectedUnit.unit != null && SelectedUnit.unit.isAlive()) return SelectedUnit.unit;
-                var prop = typeof(UnitWindow).GetProperty("actor",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (prop != null) return prop.GetValue(window) as Actor;
-                var field = typeof(UnitWindow).GetField("actor",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (field != null) return field.GetValue(window) as Actor;
-            }
-            catch { }
-            return null;
         }
 
         public static string GetClassAspect(string cls)

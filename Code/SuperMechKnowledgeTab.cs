@@ -29,7 +29,7 @@ namespace SuperMech.Code
         private static void Refresh(UnitWindow window)
         {
             if (window == null) return;
-            Actor actor = GetActor(window);
+            Actor actor = SuperMechUtils.GetActor(window);
             if (actor == null || !actor.isAlive()) return;
 
             ScrollWindow scroll = window.scroll_window;
@@ -61,19 +61,6 @@ namespace SuperMech.Code
             {
                 RenderContent(actor);
             }
-        }
-
-        private static Actor GetActor(UnitWindow window)
-        {
-            try
-            {
-                FieldInfo fi = typeof(UnitWindow).GetField("_actor", BindingFlags.Instance | BindingFlags.NonPublic);
-                if (fi != null) return fi.GetValue(window) as Actor;
-                PropertyInfo pi = typeof(UnitWindow).GetProperty("actor", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                if (pi != null) return pi.GetValue(window) as Actor;
-            }
-            catch { }
-            return null;
         }
 
         private static WindowMetaTab FindOrCreateTab(ScrollWindow scroll, UnitWindow window)
@@ -235,7 +222,7 @@ namespace SuperMech.Code
         private static void OnTabShow(WindowMetaTab tab)
         {
             if (tab != _knowTab) return;
-            Actor actor = GetActor(_boundWindow);
+            Actor actor = SuperMechUtils.GetActor(_boundWindow);
             if (actor != null) RenderContent(actor);
         }
 
@@ -566,21 +553,6 @@ namespace SuperMech.Code
             {
                 AddInfoRow(_container.transform, "sm_knowledgetab_867", subList.Trim());
             }
-        }
-
-        private static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor)
-        {
-            GameObject txtObj = new GameObject("Text", typeof(RectTransform));
-            txtObj.transform.SetParent(parent, false);
-            Text txt = txtObj.AddComponent<Text>();
-            txt.text = content;
-            txt.fontSize = fontSize;
-            txt.alignment = anchor;
-            txt.color = Color.white;
-            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            if (LocalizedTextManager.current_font != null) txt.font = LocalizedTextManager.current_font;
-            return txt;
         }
 
         private static void AddInfoRow(Transform parent, string left, string right)

@@ -414,7 +414,7 @@ namespace SuperMech.Code
             iconRt.anchoredPosition = new Vector2(16f, 0f);
             iconRt.sizeDelta = new Vector2(14f, 14f);
 
-            Text nameTxt = CreateText(header.transform, GetTierName(tier), 11, TextAnchor.MiddleLeft);
+            Text nameTxt = SuperMechUtils.CreateText(header.transform, GetTierName(tier), 11, TextAnchor.MiddleLeft);
             nameTxt.color = tierColor;
             nameTxt.fontStyle = FontStyle.Bold;
             RectTransform nameRt = nameTxt.GetComponent<RectTransform>();
@@ -449,7 +449,7 @@ namespace SuperMech.Code
             barFillRt.offsetMin = Vector2.zero;
             barFillRt.offsetMax = new Vector2(barBgRt.rect.width * progress, 0);
 
-            Text progressTxt = CreateText(header.transform, $"{unlocked}/{defs.Count}", 9, TextAnchor.MiddleRight);
+            Text progressTxt = SuperMechUtils.CreateText(header.transform, $"{unlocked}/{defs.Count}", 9, TextAnchor.MiddleRight);
             progressTxt.color = new Color(0.7f, 0.75f, 0.8f);
             RectTransform progRt = progressTxt.GetComponent<RectTransform>();
             progRt.anchorMin = new Vector2(1, 0);
@@ -628,28 +628,6 @@ namespace SuperMech.Code
             rightRt.sizeDelta = new Vector2(1f, 0);
             rightRt.offsetMin = Vector2.zero;
             rightRt.offsetMax = Vector2.zero;
-        }
-
-        private static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor)
-        {
-            GameObject txtObj = new GameObject("Text", typeof(RectTransform));
-            txtObj.transform.SetParent(parent, false);
-            RectTransform rt = txtObj.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.one;
-            rt.offsetMin = Vector2.zero;
-            rt.offsetMax = Vector2.zero;
-
-            Text txt = txtObj.AddComponent<Text>();
-            txt.font = LocalizedTextManager.current_font;
-            txt.fontSize = fontSize;
-            txt.alignment = anchor;
-            txt.color = Color.white;
-            txt.text = content;
-            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            txt.raycastTarget = false;
-            return txt;
         }
 
         private static string GetTierName(int tier)
