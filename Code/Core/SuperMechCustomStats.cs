@@ -10,10 +10,6 @@ namespace SuperMech.Code
     {
         public const string StatQi = "sm_qi";
         public const string StatQiMax = "sm_qi_max";
-        public const string StatMana = "sm_mana";
-        public const string StatManaMax = "sm_mana_max";
-        public const string StatMindPower = "sm_mind_power";
-        public const string StatMindPowerMax = "sm_mind_power_max";
         public const string StatMechAffinity = "sm_mech_affinity";
         public const string StatMageAffinity = "sm_mage_affinity";
         public const string StatMystery = "sm_mystery";
@@ -40,10 +36,6 @@ namespace SuperMech.Code
             {
                 (StatQi, "sm_customstats_695", "sm_customstats_696", true, 0f, 3000000f, false),
                 (StatQiMax, "sm_customstats_697", "sm_customstats_698", true, 0f, 3000000f, false),
-                (StatMana, "sm_customstats_699", "sm_customstats_700", true, 0f, 100000f, false),
-                (StatManaMax, "sm_customstats_701", "sm_customstats_702", true, 0f, 100000f, false),
-                (StatMindPower, "sm_customstats_703", "sm_customstats_704", true, 0f, 100000f, false),
-                (StatMindPowerMax, "sm_customstats_705", "sm_customstats_706", true, 0f, 100000f, false),
                 (StatMechAffinity, "sm_customstats_707", "sm_customstats_708", true, 0f, 50000f, true),
                 (StatMageAffinity, "sm_customstats_709", "sm_customstats_710", true, 0f, 50000f, true),
                 (StatMystery, "sm_customstats_711", "sm_customstats_712", true, 0f, 50000f, false),
@@ -86,7 +78,7 @@ namespace SuperMech.Code
                 registered++;
             }
 
-            Debug.Log($"[超神机械师] 自定义属性注册完成：{registered}个（气力/气力上限/魔力/魔力上限/精神力/精神力上限/械感/魔感/神秘/魅力/幸运/职业等级/潜能点/神性蜕变/6圣所权限）");
+            Debug.Log($"[超神机械师] 自定义属性注册完成：{registered}个（气力/气力上限/械感/魔感/神秘/魅力/幸运/职业等级/潜能点/神性蜕变/6圣所权限）");
         }
 
         public static void TickSync()
@@ -140,16 +132,8 @@ namespace SuperMech.Code
 
             if (a.hasTrait(SuperMechTraits.ClassMage))
             {
-                stats[StatMana] = qi * 0.8f;
-                stats[StatManaMax] = qiMax * 0.8f;
                 int qiLvForMage = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
                 stats[StatMageAffinity] = 100f * Mathf.Pow(1.2f, qiLvForMage);
-            }
-
-            if (a.hasTrait(SuperMechTraits.ClassMind))
-            {
-                stats[StatMindPower] = qi * 1.2f;
-                stats[StatMindPowerMax] = qiMax * 1.2f;
             }
 
             stats[StatProfessionLevel] = SuperMechStage.GetStage(a);
