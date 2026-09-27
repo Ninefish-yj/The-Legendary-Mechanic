@@ -22,7 +22,6 @@ namespace SuperMech.Code
 
                 ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
                 ShowMainInfo(__instance, actor);
-                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_custom_stats"), "", null, new Color(0.5f, 0.7f, 1f));
                 ShowCustomStats(__instance, actor);
             }
             catch (System.Exception e)
