@@ -134,11 +134,20 @@ namespace SuperMech.Code
             {
                 btn.OnHover(() =>
                 {
+                    if (Config.tooltips_active)
+                    {
+                        Tooltip.show(iconGo, "normal", new TooltipData
+                        {
+                            tip_name = def.name,
+                            tip_description = tooltip
+                        });
+                    }
                     iconGo.transform.DOKill();
                     iconGo.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack);
                 });
                 btn.OnHoverOut(() =>
                 {
+                    Tooltip.hideTooltip();
                     iconGo.transform.DOKill();
                     iconGo.transform.DOScale(1f, 0.1f).SetEase(Ease.InBack);
                 });
@@ -196,19 +205,30 @@ namespace SuperMech.Code
             amountTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (amountTxt.font == null) amountTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-            TipButton tipBtn = itemGo.AddComponent<TipButton>();
-            tipBtn.textOnClick = res.name + "\n" + res.tooltip;
-            tipBtn.textOnClickDescription = string.Empty;
-            tipBtn.text_description_2 = string.Empty;
-
             Button resBtn = itemGo.AddComponent<Button>();
+            resBtn.OnHover(() =>
+            {
+                if (Config.tooltips_active) ShowResourceTooltip(itemGo, res);
+            });
+            resBtn.OnHoverOut(() => Tooltip.hideTooltip());
             resBtn.onClick.AddListener(() =>
             {
+                ShowResourceTooltip(itemGo, res);
                 itemGo.transform.DOKill();
                 itemGo.transform.DOScale(0.8f, 0.1f).SetEase(Ease.InBack).OnComplete(() =>
                 {
                     itemGo.transform.DOScale(1f, 0.1f).SetEase(Ease.OutBack);
                 });
+            });
+        }
+
+        private static void ShowResourceTooltip(GameObject obj, ResourceAsset res)
+        {
+            Tooltip.show(obj, "normal", new TooltipData
+            {
+                tip_name = res.name,
+                tip_description = res.tooltip,
+                resource = res
             });
         }
 
@@ -312,7 +332,7 @@ namespace SuperMech.Code
             if (tipBtn != null)
             {
                 tipBtn.clickAction = null;
-                tipBtn.textOnClick = tooltip;
+                tipBtn.textOnClick = string.Empty;
                 tipBtn.textOnClickDescription = string.Empty;
                 tipBtn.text_description_2 = string.Empty;
             }
