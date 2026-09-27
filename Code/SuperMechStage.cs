@@ -10,142 +10,142 @@ namespace SuperMech.Code
     /// - 每个分支有独立的职业阶段名（ch175：枪炮师学徒/见习枪炮师）
     /// - 机械师（虚拟系）原著完整14阶段：磁环→数据→战争→虚拟→星海→真理→使徒→帝皇→主宰→神座→超神
     /// - 枪炮师高级职业叫【战争堡垒】（ch50），械武者可解锁【机甲操控师】（ch50）
-    /// - 中阶4-7各分支有自己的特色名（避免直接用虚拟系机械师的"磁环/数据/战争/虚拟"）
+    /// - 中阶4-7各分支有自己的特色名（避免直接用虚拟系机械师的"sm_stage_000"）
     /// - 高阶8-14通用（星海/真理/使徒/帝皇/主宰/神座/超神是宇宙级地位，所有系通用）
-    /// - 其他四系原著未逐一列出，按"每系同样结构"原则同人补全
+    /// - 其他四系原著未逐一列出，按"sm_stage_001"原则同人补全
     /// </summary>
     public static class SuperMechStage
     {
         // ===== 每个分支的完整14阶段名 =====
         // 机械系（原著ch50三分支：枪炮师/械武者/机械师）
-        // 原著逻辑：各分支按自身能力命名阶段，不套用机械师的"磁环/数据/战争/虚拟"技术前缀。
+        // 原著逻辑：各分支按自身能力命名阶段，不套用机械师的"sm_stage_000"技术前缀。
         // 机械师分支：原著完整14阶段（韩萧路线）。
         // 枪炮师分支：按火力/射击能力命名，高阶用原著【战争堡垒】（ch50）。
         // 械武者分支：按近战/殖装能力命名，高阶用原著【机甲操控师】（ch50）。
         // 后7阶（星海→超神）为宇宙通用境界名，各系共用。
         private static readonly string[] Stage_Gunner =
         {
-            "机械系入门者", "枪炮师学徒", "见习枪炮师",
-            "精准枪炮师", "火力枪炮师", "重炮枪炮师", "战争堡垒",
-            "星海枪炮师", "真理枪炮师", "使徒枪炮师", "帝皇枪炮师", "主宰枪炮师", "神座枪炮师", "超神枪炮师"
+            "sm_stage_002", "sm_stage_003", "sm_stage_004",
+            "sm_stage_005", "sm_stage_006", "sm_stage_007", "sm_stage_008",
+            "sm_stage_009", "sm_stage_010", "sm_stage_011", "sm_stage_012", "sm_stage_013", "sm_stage_014", "sm_stage_015"
         };
         private static readonly string[] Stage_Mech =
         {
-            "机械入门者", "机械师学徒", "见习机械师",
-            "磁环机械师", "数据机械师", "战争机械师", "虚拟机械师",
-            "星海机械师", "真理机械师", "使徒机械师", "帝皇机械师", "主宰机械师", "神座机械师", "超神机械师"
+            "sm_stage_016", "sm_stage_017", "sm_stage_018",
+            "sm_stage_019", "sm_stage_020", "sm_stage_021", "sm_stage_022",
+            "sm_stage_023", "sm_stage_024", "sm_stage_025", "sm_stage_026", "sm_stage_027", "sm_stage_028", "sm_stage_029"
         };
         private static readonly string[] Stage_MechMartial =
         {
-            "机械系入门者", "械武者学徒", "见习械武者",
-            "殖装械武者", "格斗械武者", "战技械武者", "机甲操控师",
-            "星海械武者", "真理械武者", "使徒械武者", "帝皇械武者", "主宰械武者", "神座械武者", "超神械武者"
+            "sm_stage_002", "sm_stage_030", "sm_stage_031",
+            "sm_stage_032", "sm_stage_033", "sm_stage_034", "sm_stage_035",
+            "sm_stage_036", "sm_stage_037", "sm_stage_038", "sm_stage_039", "sm_stage_040", "sm_stage_041", "sm_stage_042"
         };
 
         // 武道系（同人三分支：体魄/战术/超能）
         private static readonly string[] Stage_MartialBody =
         {
-            "武道系入门者", "体魄学徒", "见习体魄",
-            "炼体武道家", "钢筋武道家", "铁骨武道家", "不灭武道家",
-            "星海武道家", "真理武道家", "使徒武道家", "帝皇武道家", "主宰武道家", "神座武道家", "超神武道家"
+            "sm_stage_043", "sm_stage_044", "sm_stage_045",
+            "sm_stage_046", "sm_stage_047", "sm_stage_048", "sm_stage_049",
+            "sm_stage_050", "sm_stage_051", "sm_stage_052", "sm_stage_053", "sm_stage_054", "sm_stage_055", "sm_stage_056"
         };
         private static readonly string[] Stage_MartialTactic =
         {
-            "武道系入门者", "战术学徒", "见习战术",
-            "格斗武道家", "战技武道家", "兵法武道家", "谋略武道家",
-            "星海武道家", "真理武道家", "使徒武道家", "帝皇武道家", "主宰武道家", "神座武道家", "超神武道家"
+            "sm_stage_043", "sm_stage_057", "sm_stage_058",
+            "sm_stage_059", "sm_stage_060", "sm_stage_061", "sm_stage_062",
+            "sm_stage_050", "sm_stage_051", "sm_stage_052", "sm_stage_053", "sm_stage_054", "sm_stage_055", "sm_stage_056"
         };
         private static readonly string[] Stage_MartialPower =
         {
-            "武道系入门者", "超能学徒", "见习超能",
-            "气劲武道家", "离体武道家", "闪气武道家", "暴气武道家",
-            "星海武道家", "真理武道家", "使徒武道家", "帝皇武道家", "主宰武道家", "神座武道家", "超神武道家"
+            "sm_stage_043", "sm_stage_063", "sm_stage_064",
+            "sm_stage_065", "sm_stage_066", "sm_stage_067", "sm_stage_068",
+            "sm_stage_050", "sm_stage_051", "sm_stage_052", "sm_stage_053", "sm_stage_054", "sm_stage_055", "sm_stage_056"
         };
 
         // 异能系（同人三分支：攻效/循环/功能，对应基因链三维度）
         private static readonly string[] Stage_PsiAttack =
         {
-            "异能系入门者", "攻效学徒", "见习攻效",
-            "能级异能者", "强化异能者", "爆发异能者", "极限异能者",
-            "星海异能者", "真理异能者", "使徒异能者", "帝皇异能者", "主宰异能者", "神座异能者", "超神异能者"
+            "sm_stage_069", "sm_stage_070", "sm_stage_071",
+            "sm_stage_072", "sm_stage_073", "sm_stage_074", "sm_stage_075",
+            "sm_stage_076", "sm_stage_077", "sm_stage_078", "sm_stage_079", "sm_stage_080", "sm_stage_081", "sm_stage_082"
         };
         private static readonly string[] Stage_PsiCycle =
         {
-            "异能系入门者", "循环学徒", "见习循环",
-            "续航异能者", "持久异能者", "恢复异能者", "永动异能者",
-            "星海异能者", "真理异能者", "使徒异能者", "帝皇异能者", "主宰异能者", "神座异能者", "超神异能者"
+            "sm_stage_069", "sm_stage_083", "sm_stage_084",
+            "sm_stage_085", "sm_stage_086", "sm_stage_087", "sm_stage_088",
+            "sm_stage_076", "sm_stage_077", "sm_stage_078", "sm_stage_079", "sm_stage_080", "sm_stage_081", "sm_stage_082"
         };
         private static readonly string[] Stage_PsiFunc =
         {
-            "异能系入门者", "功能学徒", "见习功能",
-            "操控异能者", "精细异能者", "范围异能者", "领域异能者",
-            "星海异能者", "真理异能者", "使徒异能者", "帝皇异能者", "主宰异能者", "神座异能者", "超神异能者"
+            "sm_stage_069", "sm_stage_089", "sm_stage_090",
+            "sm_stage_091", "sm_stage_092", "sm_stage_093", "sm_stage_094",
+            "sm_stage_076", "sm_stage_077", "sm_stage_078", "sm_stage_079", "sm_stage_080", "sm_stage_081", "sm_stage_082"
         };
 
         // 魔法系（原著两类：专精法师/魔网法师）
         private static readonly string[] Stage_MageSpecialist =
         {
-            "魔法系入门者", "专精学徒", "见习专精",
-            "元素法师", "符文法师", "魔导法师", "奥术法师",
-            "星海法师", "真理法师", "使徒法师", "帝皇法师", "主宰法师", "神座法师", "超神法师"
+            "sm_stage_095", "sm_stage_096", "sm_stage_097",
+            "sm_stage_098", "sm_stage_099", "sm_stage_100", "sm_stage_101",
+            "sm_stage_102", "sm_stage_103", "sm_stage_104", "sm_stage_105", "sm_stage_106", "sm_stage_107", "sm_stage_108"
         };
         private static readonly string[] Stage_MageWeave =
         {
-            "魔法系入门者", "魔网学徒", "见习魔网",
-            "编织法师", "链接法师", "共鸣法师", "位面法师",
-            "星海法师", "真理法师", "使徒法师", "帝皇法师", "主宰法师", "神座法师", "超神法师"
+            "sm_stage_095", "sm_stage_109", "sm_stage_110",
+            "sm_stage_111", "sm_stage_112", "sm_stage_113", "sm_stage_114",
+            "sm_stage_102", "sm_stage_103", "sm_stage_104", "sm_stage_105", "sm_stage_106", "sm_stage_107", "sm_stage_108"
         };
 
         // 念力系（同人三分支：灵魂/法则/现实）
         private static readonly string[] Stage_MindSoul =
         {
-            "念力系入门者", "灵魂学徒", "见习灵魂",
-            "精神念力师", "魂火念力师", "夺舍念力师", "亡灵念力师",
-            "星海念力师", "真理念力师", "使徒念力师", "帝皇念力师", "主宰念力师", "神座念力师", "超神念力师"
+            "sm_stage_115", "sm_stage_116", "sm_stage_117",
+            "sm_stage_118", "sm_stage_119", "sm_stage_120", "sm_stage_121",
+            "sm_stage_122", "sm_stage_123", "sm_stage_124", "sm_stage_125", "sm_stage_126", "sm_stage_127", "sm_stage_128"
         };
         private static readonly string[] Stage_MindLaw =
         {
-            "念力系入门者", "法则学徒", "见习法则",
-            "感知念力师", "扭曲念力师", "干涉念力师", "掌控念力师",
-            "星海念力师", "真理念力师", "使徒念力师", "帝皇念力师", "主宰念力师", "神座念力师", "超神念力师"
+            "sm_stage_115", "sm_stage_129", "sm_stage_130",
+            "sm_stage_131", "sm_stage_132", "sm_stage_133", "sm_stage_134",
+            "sm_stage_122", "sm_stage_123", "sm_stage_124", "sm_stage_125", "sm_stage_126", "sm_stage_127", "sm_stage_128"
         };
         private static readonly string[] Stage_MindReality =
         {
-            "念力系入门者", "现实学徒", "见习现实",
-            "具现念力师", "造物念力师", "改写念力师", "创世纪念力师",
-            "星海念力师", "真理念力师", "使徒念力师", "帝皇念力师", "主宰念力师", "神座念力师", "超神念力师"
+            "sm_stage_115", "sm_stage_135", "sm_stage_136",
+            "sm_stage_137", "sm_stage_138", "sm_stage_139", "sm_stage_140",
+            "sm_stage_122", "sm_stage_123", "sm_stage_124", "sm_stage_125", "sm_stage_126", "sm_stage_127", "sm_stage_128"
         };
 
         // 未选分支的通用阶段名（按系）
         private static readonly string[] Stage_GenericMech =
         {
-            "机械系入门者", "机械学徒", "见习机械师",
-            "磁环机械师", "数据机械师", "战争机械师", "虚拟机械师",
-            "星海机械师", "真理机械师", "使徒机械师", "帝皇机械师", "主宰机械师", "神座机械师", "超神机械师"
+            "sm_stage_002", "sm_stage_141", "sm_stage_018",
+            "sm_stage_019", "sm_stage_020", "sm_stage_021", "sm_stage_022",
+            "sm_stage_023", "sm_stage_024", "sm_stage_025", "sm_stage_026", "sm_stage_027", "sm_stage_028", "sm_stage_029"
         };
         private static readonly string[] Stage_GenericMartial =
         {
-            "武道系入门者", "武道学徒", "见习武道家",
-            "炼体武道家", "格斗武道家", "战技武道家", "气劲武道家",
-            "星海武道家", "真理武道家", "使徒武道家", "帝皇武道家", "主宰武道家", "神座武道家", "超神武道家"
+            "sm_stage_043", "sm_stage_142", "sm_stage_143",
+            "sm_stage_046", "sm_stage_059", "sm_stage_060", "sm_stage_065",
+            "sm_stage_050", "sm_stage_051", "sm_stage_052", "sm_stage_053", "sm_stage_054", "sm_stage_055", "sm_stage_056"
         };
         private static readonly string[] Stage_GenericPsi =
         {
-            "异能系入门者", "异能学徒", "见习异能者",
-            "基因链觉醒者", "能力操控者", "能力大师", "神通觉醒者",
-            "星海异能者", "真理异能者", "使徒异能者", "帝皇异能者", "主宰异能者", "神座异能者", "超神异能者"
+            "sm_stage_069", "sm_stage_144", "sm_stage_145",
+            "sm_stage_146", "sm_stage_147", "sm_stage_148", "sm_stage_149",
+            "sm_stage_076", "sm_stage_077", "sm_stage_078", "sm_stage_079", "sm_stage_080", "sm_stage_081", "sm_stage_082"
         };
         private static readonly string[] Stage_GenericMage =
         {
-            "魔法系入门者", "法师学徒", "见习法师",
-            "魔网编织者", "符文法师", "魔法大师", "神权掌握者",
-            "星海法师", "真理法师", "使徒法师", "帝皇法师", "主宰法师", "神座法师", "超神法师"
+            "sm_stage_095", "sm_stage_150", "sm_stage_151",
+            "sm_stage_152", "sm_stage_099", "sm_stage_153", "sm_stage_154",
+            "sm_stage_102", "sm_stage_103", "sm_stage_104", "sm_stage_105", "sm_stage_106", "sm_stage_107", "sm_stage_108"
         };
         private static readonly string[] Stage_GenericMind =
         {
-            "念力系入门者", "念力学徒", "见习念力师",
-            "精神觉醒者", "念动力者", "念力大师", "神魂凝练者",
-            "星海念力师", "真理念力师", "使徒念力师", "帝皇念力师", "主宰念力师", "神座念力师", "超神念力师"
+            "sm_stage_115", "sm_stage_155", "sm_stage_156",
+            "sm_stage_157", "sm_stage_158", "sm_stage_159", "sm_stage_160",
+            "sm_stage_122", "sm_stage_123", "sm_stage_124", "sm_stage_125", "sm_stage_126", "sm_stage_127", "sm_stage_128"
         };
 
         // 每阶段转职的气力奖励（原著原文确认）
@@ -192,47 +192,58 @@ namespace SuperMech.Code
         {
             if (a == null) return "—";
             int s = GetStage(a);
-            if (s <= 0) return "未入门";
+            string result;
+            if (s <= 0) { result = "sm_stage_none"; }
             // 机械系单位：检查是否已选分支
-            bool isMechClass = a.hasTrait(SuperMechTraits.ClassMech);
-            bool hasMechBranch = a.hasTrait(SuperMechBranch.BranchMech) ||
-                                 a.hasTrait(SuperMechBranch.BranchGunner) ||
-                                 a.hasTrait(SuperMechBranch.BranchMartial);
-            if (isMechClass && !hasMechBranch) return "未选择分支（磁环后可选）";
+            else if (a.hasTrait(SuperMechTraits.ClassMech) &&
+                     !(a.hasTrait(SuperMechBranch.BranchMech) ||
+                       a.hasTrait(SuperMechBranch.BranchGunner) ||
+                       a.hasTrait(SuperMechBranch.BranchMartial)))
+            { result = "sm_stage_161"; }
             // 机械师分支：完整14阶段
-            if (a.hasTrait(SuperMechBranch.BranchMech))
+            else if (a.hasTrait(SuperMechBranch.BranchMech))
             {
                 string[] arr = GetStageArray(a);
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
-                return arr[idx];
+                result = arr[idx];
             }
             // 枪炮师/械武者分支：前7阶有职业名，后7阶用阶位+职业名
-            if (a.hasTrait(SuperMechBranch.BranchGunner) || a.hasTrait(SuperMechBranch.BranchMartial))
+            else if (a.hasTrait(SuperMechBranch.BranchGunner) || a.hasTrait(SuperMechBranch.BranchMartial))
             {
                 if (s <= 7)
                 {
                     string[] arr = GetStageArray(a);
                     int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
-                    return arr[idx];
+                    result = arr[idx];
                 }
-                string rank = SuperMechRanks.GetRankName(a);
-                string subClass = a.hasTrait(SuperMechBranch.BranchGunner) ? "枪炮师" : "械武者";
-                return $"{rank}{subClass}";
+                else
+                {
+                    string rank = SuperMechRanks.GetRankName(a);
+                    string subClass = a.hasTrait(SuperMechBranch.BranchGunner) ? "sm_sub_gunner" : "sm_sub_mechmartial";
+                    result = $"{rank}{LocalizedTextManager.getText(subClass)}";
+                }
             }
             // 其他四系：阶位+职业名（原著逻辑）
-            string rankName = SuperMechRanks.GetRankName(a);
-            string className = GetGenericClassName(a);
-            return $"{rankName}{className}";
+            else
+            {
+                string rankName = SuperMechRanks.GetRankName(a);
+                string className = GetGenericClassName(a);
+                result = $"{rankName}{LocalizedTextManager.getText(className)}";
+            }
+            // 转换key为中文（阶位名已经是中文如F/E，不需要转换）
+            if (result.StartsWith("sm_stage_") || result.StartsWith("sm_sub_"))
+                return LocalizedTextManager.getText(result);
+            return result;
         }
 
         /// <summary>获取其他四系的通用职业名（原著称呼）。</summary>
         private static string GetGenericClassName(Actor a)
         {
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道家";
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "异能者";
-            if (a.hasTrait(SuperMechTraits.ClassMage)) return "魔法师";
-            if (a.hasTrait(SuperMechTraits.ClassMind)) return "念力师";
-            return "超能者";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "sm_stage_162";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "sm_stage_163";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "sm_stage_164";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "sm_stage_165";
+            return "sm_stage_166";
         }
 
         /// <summary>设置单位职业阶段（转职时调用）。</summary>
@@ -249,7 +260,7 @@ namespace SuperMech.Code
             if (!SuperMechAwakened.IsAwakened(a)) return false;
             int cur = GetStage(a);
             if (cur >= 14) return false;
-            string oldName = cur <= 0 ? "未入门" : GetStageName(a);
+            string oldName = cur <= 0 ? "sm_stage_none" : GetStageName(a);
             SetStage(a, cur + 1);
             string newName = GetStageName(a);
             // 转职气力奖励（原著：转职后气力上限提升，当前值补满）
