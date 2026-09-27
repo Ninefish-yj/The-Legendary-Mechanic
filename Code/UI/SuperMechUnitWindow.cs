@@ -146,7 +146,7 @@ namespace SuperMech.Code
         {
             try
             {
-                if (__instance?.GetActor() == null) return;
+                if (SuperMechUtils.GetActor(__instance) == null) return;
                 if (_infoButton == null)
                 {
                     CreateInfoButton(__instance);
@@ -215,7 +215,7 @@ namespace SuperMech.Code
                 Button button = buttonObj.GetComponent<Button>();
                 button.onClick.AddListener(() =>
                 {
-                    Actor actor = window.GetActor();
+                    Actor actor = SuperMechUtils.GetActor(window);
                     if (actor != null && actor.isAlive())
                     {
                         SMUnitInfoWindow.Show(actor);
