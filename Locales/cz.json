@@ -3812,5 +3812,11 @@
   "sm_icon_sm_magic_affinity": "魔感",
   "sm_icon_sm_mystery": "神秘",
   "sm_icon_sm_charm": "魅力",
-  "sm_icon_sm_luck": "幸运"
+  "sm_icon_sm_luck": "幸运",
+  "sm_ui_filter_all": "全部",
+  "sm_ui_filter_currency": "货币",
+  "sm_ui_filter_strategic": "战略",
+  "sm_ui_filter_ingredient": "材料",
+  "sm_ui_filter_food_mat": "食物材料",
+  "sm_ui_filter_food": "食物"
 }

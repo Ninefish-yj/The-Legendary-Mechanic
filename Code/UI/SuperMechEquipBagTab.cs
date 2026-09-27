@@ -26,6 +26,10 @@ namespace SuperMech.Code
         private static readonly List<EquipmentButton> _activeButtons = new List<EquipmentButton>();
         private static readonly Queue<EquipmentButton> _buttonPool = new Queue<EquipmentButton>();
 
+        private static readonly List<GameObject> _activeResourceItems = new List<GameObject>();
+        private static readonly Queue<GameObject> _resourcePool = new Queue<GameObject>();
+        private static int _currentFilter = -1;
+
         public static void Postfix(UnitWindow __instance)
         {
             try { Refresh(__instance); } catch { }

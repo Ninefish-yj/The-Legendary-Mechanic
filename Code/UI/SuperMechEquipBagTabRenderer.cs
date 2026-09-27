@@ -22,12 +22,52 @@ namespace SuperMech.Code
                 if (child.name != "LayoutGroup") Object.Destroy(child.gameObject);
             }
 
+            GameObject filterBar = new GameObject("FilterBar", typeof(RectTransform));
+            filterBar.transform.SetParent(_container.transform, false);
+            RectTransform filterRt = filterBar.GetComponent<RectTransform>();
+            filterRt.anchorMin = new Vector2(0, 1);
+            filterRt.anchorMax = new Vector2(1, 1);
+            filterRt.pivot = new Vector2(0.5f, 1f);
+            filterRt.sizeDelta = new Vector2(0, 24);
+
+            HorizontalLayoutGroup filterHlg = filterBar.AddComponent<HorizontalLayoutGroup>();
+            filterHlg.childAlignment = TextAnchor.MiddleCenter;
+            filterHlg.childControlWidth = true;
+            filterHlg.childControlHeight = true;
+            filterHlg.childForceExpandWidth = true;
+            filterHlg.childForceExpandHeight = true;
+            filterHlg.spacing = 4f;
+            filterHlg.padding = new RectOffset(4, 4, 2, 2);
+
+            string[] filterNames = { "sm_ui_filter_all", "sm_ui_filter_currency", "sm_ui_filter_strategic",
+                                     "sm_ui_filter_ingredient", "sm_ui_filter_food_mat", "sm_ui_filter_food" };
+            for (int i = 0; i < filterNames.Length; i++)
+            {
+                int filterIdx = i - 1;
+                GameObject btnGo = new GameObject("FilterBtn", typeof(RectTransform));
+                btnGo.transform.SetParent(filterBar.transform, false);
+                Image btnBg = btnGo.AddComponent<Image>();
+                btnBg.color = _currentFilter == filterIdx
+                    ? new Color(0.3f, 0.5f, 0.8f, 0.8f)
+                    : new Color(0.15f, 0.17f, 0.2f, 0.8f);
+                Button btn = btnGo.AddComponent<Button>();
+                Text btnTxt = SuperMechUtils.CreateText(btnGo.transform, LocalizedTextManager.getText(filterNames[i]),
+                    9, TextAnchor.MiddleCenter, Color.white);
+                btnTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+                int idx = filterIdx;
+                btn.onClick.AddListener(() =>
+                {
+                    _currentFilter = idx;
+                    RenderBag(actor);
+                });
+            }
+
             GameObject gridGo = new GameObject("BagGrid", typeof(RectTransform));
             gridGo.transform.SetParent(_container.transform, false);
             RectTransform gridRt = gridGo.GetComponent<RectTransform>();
             gridRt.anchorMin = Vector2.zero;
             gridRt.anchorMax = Vector2.one;
-            gridRt.offsetMin = Vector2.zero;
+            gridRt.offsetMin = new Vector2(0, 28);
             gridRt.offsetMax = Vector2.zero;
 
             GridLayoutGroup grid = gridGo.AddComponent<GridLayoutGroup>();
@@ -43,14 +83,14 @@ namespace SuperMech.Code
             int totalCount = 0;
 
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
-            if (currentIdx >= 0)
+            if (currentIdx >= 0 && _currentFilter < 0)
             {
                 RenderEquipItem(gridGo.transform, actor, SuperMechRelic.Equipments[currentIdx], true);
                 totalCount++;
             }
 
             var bag = SuperMechEquipBag.GetBag(actor);
-            if (bag != null)
+            if (bag != null && _currentFilter < 0)
             {
                 var sortedBag = new List<string>(bag);
                 sortedBag.Sort((a, b) =>
@@ -81,6 +121,7 @@ namespace SuperMech.Code
                     if (kv.Value.amount <= 0) continue;
                     ResourceAsset res = AssetManager.resources.get(kv.Key);
                     if (res == null) continue;
+                    if (_currentFilter >= 0 && (int)res.type != _currentFilter) continue;
                     resources.Add((res, kv.Value.amount));
                 }
                 resources.Sort((a, b) => a.asset.order.CompareTo(b.asset.order));
@@ -168,6 +209,50 @@ namespace SuperMech.Code
 
         private static void RenderResourceItem(Transform parent, Actor actor, ResourceAsset res, int amount)
         {
+            GameObject itemGo = GetResourceItem(parent);
+
+            Image iconImg = itemGo.transform.Find("Icon").GetComponent<Image>();
+            try
+            {
+                Sprite sprite = SpriteTextureLoader.getSprite(res.path_icon);
+                if (sprite != null) iconImg.sprite = sprite;
+            }
+            catch { }
+
+            Text amountTxt = itemGo.transform.Find("Amount").GetComponent<Text>();
+            amountTxt.text = amount.ToString();
+
+            Button resBtn = itemGo.GetComponent<Button>();
+            resBtn.onClick.RemoveAllListeners();
+            resBtn.OnHover(() =>
+            {
+                if (Config.tooltips_active) ShowResourceTooltip(itemGo, actor, res);
+            });
+            resBtn.OnHoverOut(() => Tooltip.hideTooltip());
+            resBtn.onClick.AddListener(() =>
+            {
+                ShowResourceTooltip(itemGo, actor, res);
+                itemGo.transform.DOKill();
+                itemGo.transform.DOScale(0.8f, 0.1f).SetEase(Ease.InBack).OnComplete(() =>
+                {
+                    itemGo.transform.DOScale(1f, 0.1f).SetEase(Ease.OutBack);
+                });
+            });
+
+            _activeResourceItems.Add(itemGo);
+        }
+
+        private static GameObject GetResourceItem(Transform parent)
+        {
+            if (_resourcePool.Count > 0)
+            {
+                GameObject item = _resourcePool.Dequeue();
+                item.transform.SetParent(parent, false);
+                item.SetActive(true);
+                item.transform.localScale = Vector3.one;
+                return item;
+            }
+
             GameObject itemGo = new GameObject("ResourceItem", typeof(RectTransform));
             itemGo.transform.SetParent(parent, false);
             RectTransform rt = itemGo.GetComponent<RectTransform>();
@@ -183,12 +268,6 @@ namespace SuperMech.Code
             iconRt.anchorMax = new Vector2(0.85f, 0.85f);
             iconRt.offsetMin = Vector2.zero;
             iconRt.offsetMax = Vector2.zero;
-            try
-            {
-                Sprite sprite = SpriteTextureLoader.getSprite(res.path_icon);
-                if (sprite != null) iconImg.sprite = sprite;
-            }
-            catch { }
 
             Text amountTxt = new GameObject("Amount", typeof(RectTransform)).AddComponent<Text>();
             amountTxt.transform.SetParent(itemGo.transform, false);
@@ -197,7 +276,6 @@ namespace SuperMech.Code
             amtRt.anchorMax = new Vector2(1, 0.4f);
             amtRt.offsetMin = new Vector2(2, 0);
             amtRt.offsetMax = new Vector2(-2, 0);
-            amountTxt.text = amount.ToString();
             amountTxt.fontSize = 10;
             amountTxt.fontStyle = FontStyle.Bold;
             amountTxt.color = Color.white;
@@ -205,21 +283,8 @@ namespace SuperMech.Code
             amountTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
             if (amountTxt.font == null) amountTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
 
-            Button resBtn = itemGo.AddComponent<Button>();
-            resBtn.OnHover(() =>
-            {
-                if (Config.tooltips_active) ShowResourceTooltip(itemGo, actor, res);
-            });
-            resBtn.OnHoverOut(() => Tooltip.hideTooltip());
-            resBtn.onClick.AddListener(() =>
-            {
-                ShowResourceTooltip(itemGo, actor, res);
-                itemGo.transform.DOKill();
-                itemGo.transform.DOScale(0.8f, 0.1f).SetEase(Ease.InBack).OnComplete(() =>
-                {
-                    itemGo.transform.DOScale(1f, 0.1f).SetEase(Ease.OutBack);
-                });
-            });
+            itemGo.AddComponent<Button>();
+            return itemGo;
         }
 
         private static void ShowResourceTooltip(GameObject obj, Actor actor, ResourceAsset res)
@@ -284,6 +349,13 @@ namespace SuperMech.Code
                 _buttonPool.Enqueue(btn);
             }
             _activeButtons.Clear();
+
+            foreach (var item in _activeResourceItems)
+            {
+                item.SetActive(false);
+                _resourcePool.Enqueue(item);
+            }
+            _activeResourceItems.Clear();
         }
 
         private static GameObject CreateItemIcon(Transform parent, string iconPath, Color qColor, int size, string name, string tooltip)
