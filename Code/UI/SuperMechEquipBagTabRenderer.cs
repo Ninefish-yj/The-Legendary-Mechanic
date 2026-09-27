@@ -39,28 +39,52 @@ namespace SuperMech.Code
             gridFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
             gridFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-            var allItems = new List<(string equipId, int idx, bool equipped)>();
+            int totalCount = 0;
 
             int currentIdx = SuperMechRelic.GetCurrentEquipIndex(actor);
             if (currentIdx >= 0)
             {
-                allItems.Add((SuperMechRelic.Equipments[currentIdx].id, currentIdx, true));
+                RenderEquipItem(gridGo.transform, actor, SuperMechRelic.Equipments[currentIdx], true);
+                totalCount++;
             }
 
             var bag = SuperMechEquipBag.GetBag(actor);
             if (bag != null)
             {
-                foreach (string equipId in bag)
+                var sortedBag = new List<string>(bag);
+                sortedBag.Sort((a, b) =>
+                {
+                    int idxA = SuperMechRelic.GetEquipIndex(a);
+                    int idxB = SuperMechRelic.GetEquipIndex(b);
+                    int qA = idxA >= 0 ? SuperMechRelic.Equipments[idxA].qualityLevel : 0;
+                    int qB = idxB >= 0 ? SuperMechRelic.Equipments[idxB].qualityLevel : 0;
+                    return qB.CompareTo(qA);
+                });
+                foreach (string equipId in sortedBag)
                 {
                     int idx = SuperMechRelic.GetEquipIndex(equipId);
                     if (idx >= 0 && idx != currentIdx)
                     {
-                        allItems.Add((equipId, idx, false));
+                        RenderEquipItem(gridGo.transform, actor, SuperMechRelic.Equipments[idx], false);
+                        totalCount++;
                     }
                 }
             }
 
-            if (allItems.Count == 0)
+            ActorBag inv = actor.inventory;
+            if (inv != null && inv.dict != null)
+            {
+                foreach (var kv in inv.dict)
+                {
+                    if (kv.Value.amount <= 0) continue;
+                    ResourceAsset res = AssetManager.resources.get(kv.Key);
+                    if (res == null) continue;
+                    RenderResourceItem(gridGo.transform, res, kv.Value.amount);
+                    totalCount++;
+                }
+            }
+
+            if (totalCount == 0)
             {
                 var emptyText = SuperMechUtils.CreateText(gridGo.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.6f));
                 var emptyRt = emptyText.GetComponent<RectTransform>();
@@ -71,61 +95,94 @@ namespace SuperMech.Code
                 LayoutElement emptyLe = emptyText.AddComponent<LayoutElement>();
                 emptyLe.minWidth = 200;
                 emptyLe.minHeight = 40;
-                return;
+            }
+        }
+
+        private static void RenderEquipItem(Transform parent, Actor actor, EquipDef def, bool equipped)
+        {
+            Color qColor = GetQualityColor(def.qualityLevel);
+            string actionText = equipped
+                ? LocalizedTextManager.getText("sm_ui_unequip")
+                : LocalizedTextManager.getText("sm_ui_equip");
+            string tooltip = $"{def.name}\n{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{actionText}";
+
+            var iconGo = CreateItemIcon(parent, def.icon, qColor, 44, def.name, tooltip);
+
+            if (equipped)
+            {
+                var equippedMark = new GameObject("EquippedMark", typeof(RectTransform));
+                equippedMark.transform.SetParent(iconGo.transform, false);
+                var markImg = equippedMark.AddComponent<Image>();
+                markImg.color = new Color(1f, 0.84f, 0f, 0.25f);
+                var markRt = equippedMark.GetComponent<RectTransform>();
+                markRt.anchorMin = Vector2.zero;
+                markRt.anchorMax = Vector2.one;
+                markRt.offsetMin = Vector2.zero;
+                markRt.offsetMax = Vector2.zero;
+                markRt.raycastTarget = false;
             }
 
-            allItems.Sort((a, b) =>
+            var btn = iconGo.GetComponent<Button>();
+            if (btn != null)
             {
-                if (a.equipped != b.equipped) return a.equipped ? -1 : 1;
-                int qA = SuperMechRelic.Equipments[a.idx].qualityLevel;
-                int qB = SuperMechRelic.Equipments[b.idx].qualityLevel;
-                return qB.CompareTo(qA);
-            });
-
-            foreach (var item in allItems)
-            {
-                var def = SuperMechRelic.Equipments[item.idx];
-                Color qColor = GetQualityColor(def.qualityLevel);
-
-                string actionText = item.equipped
-                    ? LocalizedTextManager.getText("sm_ui_unequip")
-                    : LocalizedTextManager.getText("sm_ui_equip");
-
-                string tooltip = $"{def.name}\n{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{actionText}";
-
-                var iconGo = CreateItemIcon(gridGo.transform, def.icon, qColor, 44, def.name, tooltip);
-
-                if (item.equipped)
+                btn.onClick.AddListener(() =>
                 {
-                    var equippedMark = new GameObject("EquippedMark", typeof(RectTransform));
-                    equippedMark.transform.SetParent(iconGo.transform, false);
-                    var markImg = equippedMark.AddComponent<Image>();
-                    markImg.color = new Color(1f, 0.84f, 0f, 0.25f);
-                    var markRt = equippedMark.GetComponent<RectTransform>();
-                    markRt.anchorMin = Vector2.zero;
-                    markRt.anchorMax = Vector2.one;
-                    markRt.offsetMin = Vector2.zero;
-                    markRt.offsetMax = Vector2.zero;
-                    markRt.raycastTarget = false;
-                }
-
-                var btn = iconGo.GetComponent<Button>();
-                if (btn != null)
-                {
-                    btn.onClick.AddListener(() =>
+                    if (equipped)
                     {
-                        if (item.equipped)
-                        {
-                            SuperMechEquipBag.UnequipToBag(actor);
-                        }
-                        else
-                        {
-                            SuperMechEquipBag.EquipFromBag(actor, item.equipId);
-                        }
-                        RenderBag(actor);
-                    });
-                }
+                        SuperMechEquipBag.UnequipToBag(actor);
+                    }
+                    else
+                    {
+                        SuperMechEquipBag.EquipFromBag(actor, def.id);
+                    }
+                    RenderBag(actor);
+                });
             }
+        }
+
+        private static void RenderResourceItem(Transform parent, ResourceAsset res, int amount)
+        {
+            GameObject itemGo = new GameObject("ResourceItem", typeof(RectTransform));
+            itemGo.transform.SetParent(parent, false);
+            RectTransform rt = itemGo.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(44, 44);
+
+            Image bg = itemGo.AddComponent<Image>();
+            bg.color = new Color(0.15f, 0.17f, 0.2f, 0.8f);
+
+            Image iconImg = new GameObject("Icon", typeof(RectTransform)).AddComponent<Image>();
+            iconImg.transform.SetParent(itemGo.transform, false);
+            RectTransform iconRt = iconImg.GetComponent<RectTransform>();
+            iconRt.anchorMin = new Vector2(0.15f, 0.15f);
+            iconRt.anchorMax = new Vector2(0.85f, 0.85f);
+            iconRt.offsetMin = Vector2.zero;
+            iconRt.offsetMax = Vector2.zero;
+            try
+            {
+                Sprite sprite = SpriteTextureLoader.getSprite(res.path_icon);
+                if (sprite != null) iconImg.sprite = sprite;
+            }
+            catch { }
+
+            Text amountTxt = new GameObject("Amount", typeof(RectTransform)).AddComponent<Text>();
+            amountTxt.transform.SetParent(itemGo.transform, false);
+            RectTransform amtRt = amountTxt.GetComponent<RectTransform>();
+            amtRt.anchorMin = new Vector2(0, 0);
+            amtRt.anchorMax = new Vector2(1, 0.4f);
+            amtRt.offsetMin = new Vector2(2, 0);
+            amtRt.offsetMax = new Vector2(-2, 0);
+            amountTxt.text = amount.ToString();
+            amountTxt.fontSize = 10;
+            amountTxt.fontStyle = FontStyle.Bold;
+            amountTxt.color = Color.white;
+            amountTxt.alignment = TextAnchor.LowerRight;
+            amountTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            if (amountTxt.font == null) amountTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+
+            TipButton tipBtn = itemGo.AddComponent<TipButton>();
+            tipBtn.textOnClick = res.name + "\n" + res.tooltip;
+            tipBtn.textOnClickDescription = string.Empty;
+            tipBtn.text_description_2 = string.Empty;
         }
 
         private static void InitEquipmentButton(EquipmentButton btn)
