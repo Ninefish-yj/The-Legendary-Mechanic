@@ -598,6 +598,65 @@ namespace SuperMech.Code
             rt.sizeDelta = new Vector2(0, 20);
         }
 
+        private static void AddHeader(Transform parent, string text)
+        {
+            GameObject go = new GameObject("Header", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            Text txt = go.AddComponent<Text>();
+            txt.text = text;
+            txt.fontSize = 16;
+            txt.fontStyle = FontStyle.Bold;
+            txt.color = new Color(1f, 0.85f, 0.4f);
+            txt.alignment = TextAnchor.MiddleCenter;
+            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            txt.verticalOverflow = VerticalWrapMode.Overflow;
+            if (LocalizedTextManager.current_font != null) txt.font = LocalizedTextManager.current_font;
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 28);
+        }
+
+        private static void AddSectionHeader(Transform parent, string text)
+        {
+            AddSectionHeader(parent, text, new Color(0.6f, 0.8f, 1f));
+        }
+
+        private static void AddSectionHeader(Transform parent, string text, Color color)
+        {
+            GameObject go = new GameObject("SectionHeader", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            Text txt = go.AddComponent<Text>();
+            txt.text = LocalizedTextManager.getText(text);
+            txt.fontSize = 13;
+            txt.fontStyle = FontStyle.Bold;
+            txt.color = color;
+            txt.alignment = TextAnchor.MiddleLeft;
+            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            txt.verticalOverflow = VerticalWrapMode.Overflow;
+            if (LocalizedTextManager.current_font != null) txt.font = LocalizedTextManager.current_font;
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 22);
+        }
+
+        private static void AddActionButton(Transform parent, string text, System.Action onClick, Color color)
+        {
+            GameObject go = new GameObject("ActionButton", typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            Image bg = go.AddComponent<Image>();
+            bg.color = new Color(color.r, color.g, color.b, 0.2f);
+            Button btn = go.AddComponent<Button>();
+            btn.onClick.AddListener(() => onClick?.Invoke());
+            Text txt = go.AddComponent<Text>();
+            txt.text = text;
+            txt.fontSize = 12;
+            txt.color = Color.white;
+            txt.alignment = TextAnchor.MiddleCenter;
+            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            txt.verticalOverflow = VerticalWrapMode.Overflow;
+            if (LocalizedTextManager.current_font != null) txt.font = LocalizedTextManager.current_font;
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 26);
+        }
+
         private static void AddKnowledgeIcon(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock, int actualCost = 0)
         {
             SuperMechKnowledgeButton btn = SuperMechKnowledgeButton.Create(parent);
