@@ -54,12 +54,12 @@ namespace SuperMech.Code
                 rt.anchoredPosition = new Vector2(0f, -4f);
 
                 Image bg = btnGo.AddComponent<Image>();
-                bg.color = new Color(0.2f, 0.35f, 0.5f, 0.9f);
+                bg.color = new Color(0.05f, 0.15f, 0.2f, 0.9f);
 
                 Button btn = btnGo.AddComponent<Button>();
                 btn.onClick.AddListener(() => SMUnitInfoWindow.Show(actor));
 
-                Text txt = SuperMechUtils.CreateText(btnGo.transform, LocalizedTextManager.getText("sm_ui_open_info"), 12, TextAnchor.MiddleCenter, Color.white);
+                Text txt = SuperMechUtils.CreateText(btnGo.transform, LocalizedTextManager.getText("sm_ui_open_info"), 12, TextAnchor.MiddleCenter, new Color(0.3f, 0.85f, 1f));
                 txt.fontStyle = FontStyle.Bold;
                 RectTransform txtRt = txt.rectTransform;
                 txtRt.anchorMin = Vector2.zero;
