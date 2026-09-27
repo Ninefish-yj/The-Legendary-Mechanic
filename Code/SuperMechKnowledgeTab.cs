@@ -386,8 +386,8 @@ namespace SuperMech.Code
             GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
             panelHost.transform.SetParent(_container.transform, false);
             LayoutElement panelLe = panelHost.AddComponent<LayoutElement>();
-            panelLe.minHeight = 520f;
-            panelLe.preferredHeight = 520f;
+            panelLe.minHeight = 0f;
+            panelLe.preferredHeight = -1f;
             panelLe.flexibleHeight = 0f;
             SuperMechKnowledgePanel.Ensure(panelHost.transform, actor);
 

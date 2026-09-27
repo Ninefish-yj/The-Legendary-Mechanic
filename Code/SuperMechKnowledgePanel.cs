@@ -73,6 +73,10 @@ namespace SuperMech.Code
             vlg.childForceExpandHeight = false;
             vlg.spacing = 2f;
             vlg.padding = new RectOffset(2, 2, 2, 2);
+
+            ContentSizeFitter containerFitter = _container.AddComponent<ContentSizeFitter>();
+            containerFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+            containerFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
         private static void CreateHeaderLayer()
@@ -250,8 +254,8 @@ namespace SuperMech.Code
             GameObject lib = new GameObject("LibraryLayer", typeof(RectTransform));
             lib.transform.SetParent(_container.transform, false);
             LayoutElement le = lib.AddComponent<LayoutElement>();
-            le.minHeight = LibraryHeight;
-            le.preferredHeight = LibraryHeight;
+            le.minHeight = 0f;
+            le.preferredHeight = -1f;
             le.flexibleHeight = 0f;
 
             AddBoxFrame(lib, new Color(0.06f, 0.07f, 0.1f, 0.9f), new Color(0.25f, 0.27f, 0.32f, 0.8f));
@@ -292,29 +296,14 @@ namespace SuperMech.Code
             progRt.offsetMax = new Vector2(-6, 0);
             _libraryProgress = progressTxt;
 
-            ScrollRect scroll = lib.AddComponent<ScrollRect>();
-            scroll.horizontal = false;
-            scroll.vertical = true;
-            scroll.scrollSensitivity = 50f;
-
-            GameObject viewport = new GameObject("Viewport", typeof(RectTransform));
-            viewport.transform.SetParent(lib.transform, false);
-            RectTransform vpRt = viewport.GetComponent<RectTransform>();
-            vpRt.anchorMin = Vector2.zero;
-            vpRt.anchorMax = Vector2.one;
-            vpRt.offsetMin = new Vector2(2, 2);
-            vpRt.offsetMax = new Vector2(-2, 22);
-            viewport.AddComponent<Mask>().showMaskGraphic = false;
-            Image vpImg = viewport.AddComponent<Image>();
-            vpImg.color = new Color(0, 0, 0, 0.2f);
-
             GameObject content = new GameObject("Content", typeof(RectTransform));
-            content.transform.SetParent(viewport.transform, false);
+            content.transform.SetParent(lib.transform, false);
             RectTransform cRt = content.GetComponent<RectTransform>();
-            cRt.anchorMin = new Vector2(0, 1);
+            cRt.anchorMin = new Vector2(0, 0);
             cRt.anchorMax = new Vector2(1, 1);
             cRt.pivot = new Vector2(0.5f, 1f);
-            cRt.sizeDelta = new Vector2(0, 100f);
+            cRt.offsetMin = new Vector2(4, 4);
+            cRt.offsetMax = new Vector2(-4, -26);
 
             ContentSizeFitter csf = content.AddComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -327,14 +316,7 @@ namespace SuperMech.Code
             vlg.childForceExpandWidth = true;
             vlg.childForceExpandHeight = false;
             vlg.spacing = 3f;
-            vlg.padding = new RectOffset(4, 4, 4, 4);
-
-            ContentSizeFitter fitter = content.AddComponent<ContentSizeFitter>();
-            fitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            scroll.viewport = vpRt;
-            scroll.content = cRt;
+            vlg.padding = new RectOffset(2, 2, 2, 2);
 
             _libraryLayer = content.transform;
         }
