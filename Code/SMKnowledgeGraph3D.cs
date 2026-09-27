@@ -238,27 +238,76 @@ namespace SuperMech.Code
             List<SuperMechKnowledge.KnowledgeDef> allKnowledge = SuperMechKnowledge.GetAllByPrefix(_prefix);
             if (allKnowledge == null || allKnowledge.Count == 0) return;
 
-            int total = allKnowledge.Count;
-            for (int i = 0; i < total; i++)
+            foreach (var def in allKnowledge)
             {
-                var def = allKnowledge[i];
+                if (!SuperMechKnowledge.IsUnlocked(_actor, def.id)) continue;
+
                 KnowledgeNode node = new KnowledgeNode
                 {
                     id = def.id,
                     name = LocalizedTextManager.getText(def.name),
                     icon = def.icon,
                     tier = def.tier,
-                    unlocked = SuperMechKnowledge.IsUnlocked(_actor, def.id),
-                    cost = def.cost
+                    unlocked = true,
+                    cost = def.cost,
+                    unlockable = false
                 };
-                int actualCost = SuperMechPotential.GetActualCost(_actor, def.id, def.cost);
-                node.unlockable = !node.unlocked && SuperMechPotential.GetPotential(_actor) >= actualCost;
 
+                _nodes.Add(node);
+            }
+
+            RecalculateNodePositions();
+
+            foreach (var node in _nodes)
+            {
+                CreateNodeGameObject(node);
+            }
+        }
+
+        private void RecalculateNodePositions()
+        {
+            int total = _nodes.Count;
+            if (total == 0) return;
+
+            for (int i = 0; i < total; i++)
+            {
+                var node = _nodes[i];
                 float tierRadius = Radius * (0.7f + node.tier * 0.08f);
                 node.spherePos = GetPositionOnSphere(i, total, tierRadius);
+            }
+        }
 
-                CreateNodeGameObject(node);
+        private void CheckAndAddNewNodes()
+        {
+            List<SuperMechKnowledge.KnowledgeDef> allKnowledge = SuperMechKnowledge.GetAllByPrefix(_prefix);
+            if (allKnowledge == null) return;
+
+            bool added = false;
+            foreach (var def in allKnowledge)
+            {
+                if (!SuperMechKnowledge.IsUnlocked(_actor, def.id)) continue;
+                if (_nodes.Exists(n => n.id == def.id)) continue;
+
+                KnowledgeNode node = new KnowledgeNode
+                {
+                    id = def.id,
+                    name = LocalizedTextManager.getText(def.name),
+                    icon = def.icon,
+                    tier = def.tier,
+                    unlocked = true,
+                    cost = def.cost,
+                    unlockable = false
+                };
+
                 _nodes.Add(node);
+                CreateNodeGameObject(node);
+                added = true;
+            }
+
+            if (added)
+            {
+                RecalculateNodePositions();
+                GenerateAxons();
             }
         }
 
@@ -629,6 +678,8 @@ namespace SuperMech.Code
         {
         }
 
+        private int _checkFrameCounter;
+
         void Update()
         {
             if (!_isDragging)
@@ -639,6 +690,13 @@ namespace SuperMech.Code
             }
 
             _axonHighlight = Mathf.Lerp(_axonHighlight, 0f, Time.deltaTime * 2f);
+
+            _checkFrameCounter++;
+            if (_checkFrameCounter >= 30)
+            {
+                _checkFrameCounter = 0;
+                CheckAndAddNewNodes();
+            }
 
             UpdateAutoImpulseSpawn();
 
