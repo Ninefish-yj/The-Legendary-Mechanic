@@ -12,8 +12,6 @@ namespace SuperMech.Code
 
     public static class SuperMechUnitWindow
     {
-        private static MethodInfo _showStatRow;
-
         [HarmonyPostfix]
         public static void Postfix(UnitWindow __instance)
         {
@@ -99,43 +97,7 @@ namespace SuperMech.Code
         {
             try
             {
-                if (_showStatRow == null)
-                {
-                    var methods = typeof(UnitWindow).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                    MethodInfo best = null;
-                    foreach (var m in methods)
-                    {
-                        if (m.Name == "showStatRow" && m.GetParameters().Length >= 2)
-                        {
-                            if (best == null || m.GetParameters().Length > best.GetParameters().Length)
-                                best = m;
-                        }
-                    }
-                    _showStatRow = best;
-                    if (_showStatRow == null)
-                    {
-                        Debug.LogWarning("[超神机械师] 未找到UnitWindow.showStatRow方法，单位面板注入将跳过");
-                        return;
-                    }
-                }
-
-                ParameterInfo[] parms = _showStatRow.GetParameters();
-                object[] args = new object[parms.Length];
-                args[0] = label;
-                args[1] = value;
-                for (int i = 2; i < parms.Length; i++)
-                {
-                    Type pt = parms[i].ParameterType;
-                    string pname = parms[i].Name;
-                    if (pname == "pLocalize") { args[i] = false; continue; }
-                    if (pt == typeof(string)) args[i] = null;
-                    else if (pt == typeof(bool)) args[i] = false;
-                    else if (pt == typeof(long)) args[i] = -1L;
-                    else if (pt == typeof(MetaType)) args[i] = MetaType.None;
-                    else if (pt.IsEnum) args[i] = System.Enum.ToObject(pt, 0);
-                    else args[i] = null;
-                }
-                _showStatRow.Invoke(window, args);
+                window.showStatRow(label, value, null, MetaType.None, -1L, pColorText: false, null, null, null, pLocalize: false);
             }
             catch (Exception e)
             {

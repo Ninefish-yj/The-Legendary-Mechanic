@@ -40,7 +40,7 @@ namespace SuperMech.Code
                 rect.anchorMax = new Vector2(0f, 1f);
                 rect.pivot = new Vector2(0f, 1f);
                 rect.sizeDelta = new Vector2(CardWidth, 0f);
-                rect.anchoredPosition = new Vector2(70f, -24f);
+                rect.anchoredPosition = new Vector2(70f, -100f);
 
                 Image img = card.GetComponent<Image>();
                 img.color = new Color(0.03f, 0.04f, 0.07f, 0.92f);
