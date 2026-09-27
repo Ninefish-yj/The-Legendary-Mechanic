@@ -908,63 +908,19 @@ namespace SuperMech.Code
 
         private static void AddKnowledgeIcon(Transform parent, Actor actor, SuperMechKnowledge.KnowledgeDef def, string branch, bool unlocked, bool canUnlock, int actualCost = 0)
         {
-            Color qColor = GetTierColor(def.tier);
+            SuperMechKnowledgeButton btn = SuperMechKnowledgeButton.Create(parent);
+            btn.gameObject.SetActive(true);
 
-            GameObject go = new GameObject("KnowledgeIcon", typeof(RectTransform));
-            go.transform.SetParent(parent, false);
-
-            var borderImg = go.AddComponent<Image>();
-            borderImg.color = unlocked ? qColor : new Color(0.3f, 0.3f, 0.3f, 0.8f);
-
-            var innerGo = new GameObject("Inner", typeof(RectTransform));
-            innerGo.transform.SetParent(go.transform, false);
-            var innerImg = innerGo.AddComponent<Image>();
-            innerImg.color = new Color(0.08f, 0.08f, 0.08f, 0.95f);
-            RectTransform innerRt = innerGo.GetComponent<RectTransform>();
-            innerRt.anchorMin = new Vector2(0.08f, 0.08f);
-            innerRt.anchorMax = new Vector2(0.92f, 0.92f);
-            innerRt.offsetMin = Vector2.zero;
-            innerRt.offsetMax = Vector2.zero;
-
-            var iconGo = new GameObject("Icon", typeof(RectTransform));
-            iconGo.transform.SetParent(innerGo.transform, false);
-            var iconImg = iconGo.AddComponent<Image>();
             string iconPath = def.icon ?? GetTierIcon(def.tier);
             Sprite sprite = SpriteTextureLoader.getSprite(iconPath);
-            if (sprite != null) iconImg.sprite = sprite;
-            iconImg.color = unlocked ? Color.white : (canUnlock ? new Color(0.6f, 0.8f, 1f, 0.9f) : new Color(0.4f, 0.4f, 0.4f, 0.6f));
-            RectTransform iconRt = iconGo.GetComponent<RectTransform>();
-            iconRt.anchorMin = new Vector2(0.15f, 0.15f);
-            iconRt.anchorMax = new Vector2(0.85f, 0.85f);
-            iconRt.offsetMin = Vector2.zero;
-            iconRt.offsetMax = Vector2.zero;
+            btn.Setup(def.id, sprite, unlocked, canUnlock, def.tier);
 
-            if (unlocked)
-            {
-                var markGo = new GameObject("Mark", typeof(RectTransform));
-                markGo.transform.SetParent(go.transform, false);
-                Text markText = markGo.AddComponent<Text>();
-                markText.text = "✓";
-                markText.fontSize = 10;
-                markText.fontStyle = FontStyle.Bold;
-                markText.alignment = TextAnchor.UpperRight;
-                markText.color = new Color(0.5f, 1f, 0.5f);
-                if (markText.font == null) markText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                RectTransform markRt = markGo.GetComponent<RectTransform>();
-                markRt.anchorMin = new Vector2(0.6f, 0.6f);
-                markRt.anchorMax = new Vector2(1f, 1f);
-                markRt.offsetMin = new Vector2(0, -2);
-                markRt.offsetMax = new Vector2(-2, 0);
-            }
-
-            RectTransform rt = go.GetComponent<RectTransform>();
+            RectTransform rt = btn.GetComponent<RectTransform>();
             rt.sizeDelta = new Vector2(44, 44);
 
             if (canUnlock)
             {
-                var btn = go.AddComponent<Button>();
-                btn.targetGraphic = borderImg;
-                btn.onClick.AddListener(() =>
+                btn.button.onClick.AddListener(() =>
                 {
                     if (SuperMechPotential.UnlockNode(actor, def.id, def.cost))
                     {
@@ -973,7 +929,7 @@ namespace SuperMech.Code
                 });
             }
 
-            var tip = go.AddComponent<TipButton>();
+            var tip = btn.gameObject.AddComponent<TipButton>();
             bool crossClass = SuperMechPotential.IsCrossClass(actor, def.id);
             bool hasSynergy = SuperMechPotential.HasPowerSynergy(actor, SuperMechPotential.GetKnowledgePrefix(def.id));
             float intel = actor.stats["intelligence"];
