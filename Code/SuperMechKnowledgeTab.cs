@@ -382,35 +382,6 @@ namespace SuperMech.Code
 
             string cls = SuperMechProfession.GetClass(actor);
             string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
-            bool isAwakened = SuperMechAwakened.IsAwakened(actor);
-
-            var talents = SuperMechTalent.GetTalents(actor);
-            string talentText = "";
-            foreach (var t in talents)
-            {
-                talentText += $"{t.specificPower}（{SuperMechTalent.GetTalentName(t.type)}·{SuperMechTalent.RatingNames[t.rating]}） ";
-            }
-
-            GameObject hintObj = new GameObject("KnowledgeHint", typeof(RectTransform));
-            hintObj.transform.SetParent(_container.transform, false);
-            LayoutElement hintLE = hintObj.AddComponent<LayoutElement>();
-            hintLE.minHeight = 20f;
-            hintLE.preferredHeight = 20f;
-            Text hintTxt = hintObj.AddComponent<Text>();
-            hintTxt.font = LocalizedTextManager.current_font;
-            if (hintTxt.font == null) hintTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            hintTxt.fontSize = 10;
-            hintTxt.color = new Color(0.92f, 0.86f, 0.55f);
-            hintTxt.alignment = TextAnchor.MiddleCenter;
-            hintTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
-            hintTxt.raycastTarget = false;
-            string stageName = SuperMechStage.GetStageName(actor);
-            string branchName = SuperMechBranch.GetBranchName(actor);
-            int mainUnlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
-            int mainTotal = SuperMechKnowledge.GetAllByPrefix(prefix).Count;
-            hintTxt.text = $"{LocalizedTextManager.getText("sm_ui_knowledge_tree")} · {stageName}" + 
-                (branchName != "sm_knowledgetab_830" ? $" · {branchName}" : "") +
-                $" · {LocalizedTextManager.getText("sm_ui_potential")}:{pot} · {mainUnlocked}/{mainTotal}";
 
             GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
             panelHost.transform.SetParent(_container.transform, false);

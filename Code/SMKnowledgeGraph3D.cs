@@ -85,16 +85,16 @@ namespace SuperMech.Code
             _graphContainer = new GameObject("Graph3D", typeof(RectTransform));
             _graphContainer.transform.SetParent(parent, false);
             RectTransform grt = _graphContainer.GetComponent<RectTransform>();
-            grt.anchorMin = new Vector2(0.5f, 0.5f);
-            grt.anchorMax = new Vector2(0.5f, 0.5f);
+            grt.anchorMin = Vector2.zero;
+            grt.anchorMax = Vector2.one;
             grt.pivot = new Vector2(0.5f, 0.5f);
-            grt.localPosition = Vector3.zero;
+            grt.offsetMin = Vector2.zero;
+            grt.offsetMax = Vector2.zero;
             float w = parent.GetComponent<RectTransform>().rect.width;
             float h = parent.GetComponent<RectTransform>().rect.height;
             if (w <= 10f) w = 340f;
             if (h <= 10f) h = 220f;
-            grt.sizeDelta = new Vector2(w, h);
-            Debug.Log($"[超神机械师] 3D知识图谱初始化: prefix={_prefix}, 容器大小={w}x{h}, 知识数={SuperMechKnowledge.GetAllByPrefix(_prefix)?.Count ?? 0}");
+            Debug.Log($"[超神机械师] 3D知识图谱初始化: prefix={_prefix}, 父容器大小={w}x{h}, 知识数={SuperMechKnowledge.GetAllByPrefix(_prefix)?.Count ?? 0}");
 
             CreateBackground(_graphContainer.transform);
 
@@ -108,11 +108,11 @@ namespace SuperMech.Code
             foreach (Transform t in new[] { _axonsParent.transform, _nodesParent.transform, _impulsesParent.transform })
             {
                 RectTransform rt = t.GetComponent<RectTransform>();
-                rt.anchorMin = new Vector2(0.5f, 0.5f);
-                rt.anchorMax = new Vector2(0.5f, 0.5f);
+                rt.anchorMin = Vector2.zero;
+                rt.anchorMax = Vector2.one;
                 rt.pivot = new Vector2(0.5f, 0.5f);
-                rt.localPosition = Vector3.zero;
-                rt.sizeDelta = _graphContainer.GetComponent<RectTransform>().sizeDelta;
+                rt.offsetMin = Vector2.zero;
+                rt.offsetMax = Vector2.zero;
             }
 
             GenerateNodes();
@@ -125,9 +125,11 @@ namespace SuperMech.Code
             UpdateAxons();
             UpdateGraphTransform();
 
+            this.enabled = true;
+
             if (_nodes.Count > 0)
             {
-                Debug.Log($"[超神机械师] 3D图谱初始化完成: 节点数={_nodes.Count}, 轴突数={_axons.Count}, 首节点位置={_nodes[0].gameObject?.transform.localPosition}");
+                Debug.Log($"[超神机械师] 3D图谱初始化完成: 节点数={_nodes.Count}, 轴突数={_axons.Count}, 首节点位置={_nodes[0].gameObject?.transform.localPosition}, 首节点大小={_nodes[0].gameObject?.GetComponent<RectTransform>().sizeDelta}");
             }
             else
             {
