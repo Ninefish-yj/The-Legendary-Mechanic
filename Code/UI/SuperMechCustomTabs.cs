@@ -264,7 +264,7 @@ namespace SuperMech.Code
             SMUnitBag.Render(resGrid.transform, actor);
         }
 
-        private static void CreateEquipIcon(Transform parent, EquipDef equip, bool isCurrent, Actor actor)
+        private static void CreateEquipIcon(Transform parent, SuperMechRelic.EquipDef equip, bool isCurrent, Actor actor)
         {
             GameObject go = new GameObject("Equip_" + equip.id, typeof(RectTransform));
             go.transform.SetParent(parent, false);
@@ -303,11 +303,11 @@ namespace SuperMech.Code
             {
                 if (isCurrent)
                 {
-                    SuperMechRelic.Unequip(actor);
+                    SuperMechEquipBag.UnequipToBag(actor);
                 }
                 else
                 {
-                    SuperMechRelic.Equip(actor, equip.id);
+                    SuperMechEquipBag.EquipFromBag(actor, equip.id);
                 }
             });
         }

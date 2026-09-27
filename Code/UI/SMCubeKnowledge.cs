@@ -12,7 +12,7 @@ namespace SuperMech.Code
 
         public Vector4 logical_pos;
         internal List<SMCubeNode> connected_nodes = new List<SMCubeNode>();
-        private List<SMCubeNodeConnection> connections = new List<SMCubeNodeConnection>();
+        internal List<SMCubeNodeConnection> connections = new List<SMCubeNodeConnection>();
 
         private Image _image;
         private Text _text;
