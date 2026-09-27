@@ -199,6 +199,13 @@ namespace SuperMech.Code
         {
             if (_container != null) return;
             Transform scrollContent = scroll.transform_content;
+            // 查找已存在的container（窗口重新打开时复用）
+            Transform existing = scrollContent.Find(ContainerName);
+            if (existing != null)
+            {
+                _container = existing.gameObject;
+                return;
+            }
             _container = new GameObject(ContainerName, typeof(RectTransform));
             _container.transform.SetParent(scrollContent, false);
 
@@ -236,8 +243,22 @@ namespace SuperMech.Code
 
         private static void RegisterCallbacks(ScrollWindow scroll)
         {
-            if (_callbacksRegistered) return;
+            if (_callbacksRegistered || scroll.tabs == null) return;
             _callbacksRegistered = true;
+            scroll.tabs.addTabShowCallback(OnTabShow);
+            scroll.tabs.addTabHideCallback(OnTabHide);
+        }
+
+        private static void OnTabShow(WindowMetaTab tab)
+        {
+            if (tab != _knowTab) return;
+            Actor actor = GetActor(_boundWindow);
+            if (actor != null) RenderContent(actor);
+        }
+
+        private static void OnTabHide()
+        {
+            // tab_elements机制会自动隐藏内容
         }
 
         private static void RenderContent(Actor actor)
@@ -251,7 +272,7 @@ namespace SuperMech.Code
             if (!SuperMechTalent.HasTalent(actor))
             {
                 AddHeader(_container.transform, LocalizedTextManager.getText("sm_ui_mortal_title"));
-                AddInfoRow(_container.transform, LocalizedTextManager.getText("sm_ui_mortal_desc1"), "点击下方按钮激发潜能，获得天赋倾向");
+                AddInfoRow(_container.transform, LocalizedTextManager.getText("sm_ui_mortal_desc1"), LocalizedTextManager.getText("sm_ui_mortal_desc2"));
                 AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_operation"));
                 AddActionButton(_container.transform, LocalizedTextManager.getText("sm_ui_awaken_potential"), () =>
                 {
@@ -292,17 +313,17 @@ namespace SuperMech.Code
                 AddInfoRow(_container.transform, LocalizedTextManager.getText("sm_ui_talent_tendency"), talentText2.Trim());
 
                 AddHeader(_container.transform, LocalizedTextManager.getText("sm_ui_wild_title"));
-                AddInfoRow(_container.transform, LocalizedTextManager.getText("sm_ui_status"), "有天赋但没系统学习职业知识，靠本能战斗");
+                AddInfoRow(_container.transform, LocalizedTextManager.getText("sm_ui_status"), LocalizedTextManager.getText("sm_ui_wild_desc"));
                 AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_select_class"));
 
                 // 五个方向按钮
                 var directions = new[]
                 {
-                    new { name = "机械系", type = SuperMechProfession.ProfessionType.Mechanical, color = new Color(0.3f, 0.5f, 0.7f) },
-                    new { name = "武道系", type = SuperMechProfession.ProfessionType.Martial, color = new Color(0.7f, 0.3f, 0.3f) },
-                    new { name = "异能系", type = SuperMechProfession.ProfessionType.Psi, color = new Color(0.5f, 0.3f, 0.7f) },
-                    new { name = "魔法系", type = SuperMechProfession.ProfessionType.Mage, color = new Color(0.3f, 0.7f, 0.5f) },
-                    new { name = "念力系", type = SuperMechProfession.ProfessionType.Mind, color = new Color(0.7f, 0.5f, 0.3f) }
+                    new { name = LocalizedTextManager.getText("sm_class_mech"), type = SuperMechProfession.ProfessionType.Mechanical, color = new Color(0.3f, 0.5f, 0.7f) },
+                    new { name = LocalizedTextManager.getText("sm_class_martial"), type = SuperMechProfession.ProfessionType.Martial, color = new Color(0.7f, 0.3f, 0.3f) },
+                    new { name = LocalizedTextManager.getText("sm_class_psi"), type = SuperMechProfession.ProfessionType.Psi, color = new Color(0.5f, 0.3f, 0.7f) },
+                    new { name = LocalizedTextManager.getText("sm_class_mage"), type = SuperMechProfession.ProfessionType.Mage, color = new Color(0.3f, 0.7f, 0.5f) },
+                    new { name = LocalizedTextManager.getText("sm_class_mind"), type = SuperMechProfession.ProfessionType.Mind, color = new Color(0.7f, 0.5f, 0.3f) }
                 };
                 foreach (var d in directions)
                 {
@@ -339,7 +360,7 @@ namespace SuperMech.Code
             float qi = SuperMechQi.GetQi(actor);
             float qiMax = SuperMechQi.GetQiMax(actor);
             int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : "未入流";
+            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
             string qiLabel = LocalizedTextManager.getText("sm_qi_qi");
             if (cls == "机械系" && SuperMechStage.GetStage(actor) >= 4) qiLabel = LocalizedTextManager.getText("sm_qi_mech");
             AddInfoRow(detail1, qiLabel, $"{qi:F0}/{qiMax:F0}【{qiLvText}】");
@@ -478,7 +499,8 @@ namespace SuperMech.Code
 
             // 跨系兼修（原著ch611：其他分支知识潜能点费用×3）
             string[] allPrefixes = { "mech", "martial", "psi", "mage", "mind" };
-            string[] allClassNames = { "机械系", "武道系", "异能系", "魔法系", "念力系" };
+            string[] allClassKeys = { "sm_class_mech", "sm_class_martial", "sm_class_psi", "sm_class_mage", "sm_class_mind" };
+            string[] allClassNames = System.Array.ConvertAll(allClassKeys, k => LocalizedTextManager.getText(k));
             for (int i = 0; i < allPrefixes.Length; i++)
             {
                 if (allPrefixes[i] == prefix) continue; // 跳过主职业
@@ -510,11 +532,11 @@ namespace SuperMech.Code
                 foreach (var syn in synergies)
                 {
                     string bonusText = "";
-                    if (syn.dmgMul > 1f) bonusText += $"伤害+{((syn.dmgMul - 1f) * 100):0}% ";
-                    if (syn.hpMul > 1f) bonusText += $"生命+{((syn.hpMul - 1f) * 100):0}% ";
-                    if (syn.speedMul > 1f) bonusText += $"攻速+{((syn.speedMul - 1f) * 100):0}% ";
-                    if (syn.qiBonus > 0) bonusText += $"气力+{syn.qiBonus:0} ";
-                    if (syn.potentialBonus > 0) bonusText += $"潜能+{syn.potentialBonus}";
+                    if (syn.dmgMul > 1f) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_damage\")}+{((syn.dmgMul - 1f) * 100):0}% ";
+                    if (syn.hpMul > 1f) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_health\")}+{((syn.hpMul - 1f) * 100):0}% ";
+                    if (syn.speedMul > 1f) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_attack_speed\")}+{((syn.speedMul - 1f) * 100):0}% ";
+                    if (syn.qiBonus > 0) bonusText += $"{LocalizedTextManager.getText(\"sm_qi_qi\")}+{syn.qiBonus:0} ";
+                    if (syn.potentialBonus > 0) bonusText += $"{LocalizedTextManager.getText(\"sm_ui_potential\")}+{syn.potentialBonus}";
                     AddInfoRow(_container.transform, syn.name, bonusText.Trim());
                 }
             }
