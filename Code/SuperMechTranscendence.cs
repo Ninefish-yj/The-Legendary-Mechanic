@@ -15,7 +15,6 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _divineCatalyst = new Dictionary<long, int>();
 
         private static readonly List<WorldTile> _legacySpawns = new List<WorldTile>();
-        private static bool _legacyInitialized = false;
 
         public static bool IsAdvancementTaskDone(Actor a)
         {
