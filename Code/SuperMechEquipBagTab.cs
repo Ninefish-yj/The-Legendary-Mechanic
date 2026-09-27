@@ -278,51 +278,64 @@ namespace SuperMech.Code
                 CreateEmptySlot(equippedBox, 56, LocalizedTextManager.getText("sm_ui_unequipped"));
             }
 
-            var spacer = new GameObject("Spacer", typeof(RectTransform));
-            spacer.transform.SetParent(_container.transform, false);
-            spacer.GetComponent<RectTransform>().sizeDelta = new Vector2(0, 8);
-
             var bag = SuperMechEquipBag.GetBag(actor);
             int bagCount = bag != null ? bag.Count : 0;
 
-            var bagBox = CreateCategoryBox(_container.transform, LocalizedTextManager.getText("sm_ui_bag"), new Color(0.5f, 0.55f, 0.65f), bagCount);
-
-            GameObject gridGo = new GameObject("BagGrid", typeof(RectTransform));
-            gridGo.transform.SetParent(bagBox, false);
-            RectTransform gridRt = gridGo.GetComponent<RectTransform>();
-            gridRt.anchorMin = Vector2.zero;
-            gridRt.anchorMax = Vector2.one;
-            gridRt.offsetMin = Vector2.zero;
-            gridRt.offsetMax = Vector2.zero;
-
-            GridLayoutGroup grid = gridGo.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(40, 40);
-            grid.spacing = new Vector2(4, 4);
-            grid.childAlignment = TextAnchor.UpperLeft;
-            grid.constraint = GridLayoutGroup.Constraint.Flexible;
-
-            ContentSizeFitter gridFitter = gridGo.AddComponent<ContentSizeFitter>();
-            gridFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-            gridFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-
-            if (bagCount > 0)
+            if (bagCount == 0)
             {
-                var sortedBag = new List<string>(bag);
-                sortedBag.Sort((a, b) =>
-                {
-                    int idxA = SuperMechRelic.GetEquipIndex(a);
-                    int idxB = SuperMechRelic.GetEquipIndex(b);
-                    int qA = idxA >= 0 ? SuperMechRelic.Equipments[idxA].qualityLevel : 0;
-                    int qB = idxB >= 0 ? SuperMechRelic.Equipments[idxB].qualityLevel : 0;
-                    return qB.CompareTo(qA);
-                });
+                var emptyBox = CreateCategoryBox(_container.transform, LocalizedTextManager.getText("sm_ui_bag"), new Color(0.5f, 0.55f, 0.65f), 0);
+                var emptyText = CreateText(emptyBox, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.6f));
+                var emptyRt = emptyText.GetComponent<RectTransform>();
+                emptyRt.anchorMin = Vector2.zero;
+                emptyRt.anchorMax = Vector2.one;
+                emptyRt.offsetMin = Vector2.zero;
+                emptyRt.offsetMax = Vector2.zero;
+                LayoutElement emptyLe = emptyText.AddComponent<LayoutElement>();
+                emptyLe.minWidth = 200;
+                emptyLe.minHeight = 40;
+                return;
+            }
 
-                foreach (string equipId in sortedBag)
+            var byQuality = new Dictionary<int, List<string>>();
+            foreach (string equipId in bag)
+            {
+                int idx = SuperMechRelic.GetEquipIndex(equipId);
+                if (idx < 0) continue;
+                int q = SuperMechRelic.Equipments[idx].qualityLevel;
+                if (!byQuality.ContainsKey(q)) byQuality[q] = new List<string>();
+                byQuality[q].Add(equipId);
+            }
+
+            for (int q = 8; q >= 0; q--)
+            {
+                if (!byQuality.ContainsKey(q) || byQuality[q].Count == 0) continue;
+
+                Color qColor = GetQualityColor(q);
+                var qBox = CreateCategoryBox(_container.transform, GetQualityName(q), qColor, byQuality[q].Count);
+
+                GameObject gridGo = new GameObject("QualityGrid_" + q, typeof(RectTransform));
+                gridGo.transform.SetParent(qBox, false);
+                RectTransform gridRt = gridGo.GetComponent<RectTransform>();
+                gridRt.anchorMin = Vector2.zero;
+                gridRt.anchorMax = Vector2.one;
+                gridRt.offsetMin = Vector2.zero;
+                gridRt.offsetMax = Vector2.zero;
+
+                GridLayoutGroup grid = gridGo.AddComponent<GridLayoutGroup>();
+                grid.cellSize = new Vector2(40, 40);
+                grid.spacing = new Vector2(4, 4);
+                grid.childAlignment = TextAnchor.UpperLeft;
+                grid.constraint = GridLayoutGroup.Constraint.Flexible;
+
+                ContentSizeFitter gridFitter = gridGo.AddComponent<ContentSizeFitter>();
+                gridFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+                gridFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+
+                foreach (string equipId in byQuality[q])
                 {
                     int idx = SuperMechRelic.GetEquipIndex(equipId);
                     if (idx < 0) continue;
                     var def = SuperMechRelic.Equipments[idx];
-                    Color qColor = GetQualityColor(def.qualityLevel);
 
                     var iconGo = CreateItemIcon(gridGo.transform, def.icon, qColor, 36, def.name,
                         $"{LocalizedTextManager.getText("sm_ui_quality")}: {GetQualityName(def.qualityLevel)}\n{LocalizedTextManager.getText("sm_ui_damage")}×{def.dmgMul}  {LocalizedTextManager.getText("sm_ui_health")}×{def.hpMul}\n{LocalizedTextManager.getText("sm_ui_equip")}");
@@ -336,18 +349,6 @@ namespace SuperMech.Code
                         });
                     }
                 }
-            }
-            else
-            {
-                var emptyText = CreateText(gridGo.transform, LocalizedTextManager.getText("sm_ui_none_dash"), 12, TextAnchor.MiddleCenter, new Color(0.5f, 0.5f, 0.55f, 0.6f));
-                var emptyRt = emptyText.GetComponent<RectTransform>();
-                emptyRt.anchorMin = Vector2.zero;
-                emptyRt.anchorMax = Vector2.one;
-                emptyRt.offsetMin = Vector2.zero;
-                emptyRt.offsetMax = Vector2.zero;
-                LayoutElement emptyLe = emptyText.AddComponent<LayoutElement>();
-                emptyLe.minWidth = 200;
-                emptyLe.minHeight = 40;
             }
         }
 
