@@ -506,6 +506,29 @@ namespace SuperMech.Code
             return slot;
         }
 
+        private static System.Reflection.MethodInfo _createMethod;
+        private static System.Reflection.FieldInfo _isEditorButtonField;
+
+        private static void InitEquipmentButton(EquipmentButton btn)
+        {
+            if (_createMethod == null)
+            {
+                _createMethod = typeof(AugmentationButton<EquipmentAsset>).GetMethod("create",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Instance);
+            }
+            if (_isEditorButtonField == null)
+            {
+                _isEditorButtonField = typeof(AugmentationButton<EquipmentAsset>).GetField("is_editor_button",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.Public);
+            }
+            _createMethod?.Invoke(btn, null);
+            if (_isEditorButtonField != null)
+                _isEditorButtonField.SetValue(btn, true);
+        }
+
         private static EquipmentButton GetButton(Transform parent)
         {
             EquipmentButton btn;
@@ -525,7 +548,7 @@ namespace SuperMech.Code
                     return null;
                 }
                 btn = Object.Instantiate(_equipButtonPrefab, parent);
-                btn.enabled = false;
+                InitEquipmentButton(btn);
             }
             _activeButtons.Add(btn);
             return btn;

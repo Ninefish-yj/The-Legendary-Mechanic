@@ -18,7 +18,7 @@ namespace SuperMech
         protected override void OnModLoad()
         {
             Instance = this;
-            LogInfo("[超神机械师] 模组加载");
+            Debug.Log("[超神机械师] 模组加载");
             SuperMechConfig.Init();
             SuperMechTraitGroups.Register();
             SuperMechCustomStats.Register();
@@ -48,11 +48,11 @@ namespace SuperMech
 
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();
-            LogInfo("[超神机械师] Harmony Patch 完成（单位面板注入+战斗挂钩）");
+            Debug.Log("[超神机械师] Harmony Patch 完成（单位面板注入+战斗挂钩）");
 
             SuperMechSaveData.Load();
 
-            LogInfo("[超神机械师] Phase 1 系统注册完成");
+            Debug.Log("[超神机械师] Phase 1 系统注册完成");
         }
 
         private void Update()
