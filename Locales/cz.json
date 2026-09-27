@@ -3792,5 +3792,11 @@
   "sm_powers_928_description": "解锁能量系知识树",
   "sm_powers_929_description": "解锁虚拟系知识树",
   "sm_powers_930_description": "神之催化：提升突破超神级的成功率",
-  "异能者": "异能者"
+  "异能者": "异能者",
+  "sm_ui_knowledge_tree": "知识树",
+  "sm_know_tier_0": "基础知识",
+  "sm_know_tier_1": "进阶知识",
+  "sm_know_tier_2": "高端知识",
+  "sm_know_tier_3": "尖端知识",
+  "sm_know_tier_4": "终极知识"
 }

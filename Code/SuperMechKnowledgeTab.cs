@@ -253,10 +253,66 @@ namespace SuperMech.Code
 
             if (!SuperMechTalent.HasTalent(actor))
             {
-                AddHeader(_container.transform, LocalizedTextManager.getText("sm_ui_mortal_title"));
-                AddInfoRow(_container.transform, LocalizedTextManager.getText("sm_ui_mortal_desc1"), LocalizedTextManager.getText("sm_ui_mortal_desc2"));
-                AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_operation"));
-                AddActionButton(_container.transform, LocalizedTextManager.getText("sm_ui_awaken_potential"), () =>
+                GameObject mortalCard = new GameObject("MortalCard", typeof(RectTransform));
+                mortalCard.transform.SetParent(_container.transform, false);
+                LayoutElement mcLE = mortalCard.AddComponent<LayoutElement>();
+                mcLE.minHeight = 200f;
+                mcLE.flexibleHeight = 0f;
+                Image mcBg = mortalCard.AddComponent<Image>();
+                mcBg.color = new Color(0.05f, 0.06f, 0.09f, 0.95f);
+                Image mcBorder = mortalCard.AddComponent<Image>();
+                mcBorder.color = new Color(0.3f, 0.35f, 0.45f, 0.5f);
+
+                GameObject iconContainer = new GameObject("BigIcon", typeof(RectTransform));
+                iconContainer.transform.SetParent(mortalCard.transform, false);
+                Image bigIcon = iconContainer.AddComponent<Image>();
+                Sprite mortalSprite = SpriteTextureLoader.getSprite("ui/Icons/actor_traits/iconWeak");
+                if (mortalSprite != null) bigIcon.sprite = mortalSprite;
+                bigIcon.color = new Color(0.5f, 0.55f, 0.65f, 0.8f);
+                RectTransform bigIconRt = iconContainer.GetComponent<RectTransform>();
+                bigIconRt.anchorMin = new Vector2(0.5f, 0.55f);
+                bigIconRt.anchorMax = new Vector2(0.5f, 0.55f);
+                bigIconRt.pivot = new Vector2(0.5f, 0.5f);
+                bigIconRt.sizeDelta = new Vector2(64, 64);
+
+                GameObject titleContainer = new GameObject("MortalTitle", typeof(RectTransform));
+                titleContainer.transform.SetParent(mortalCard.transform, false);
+                Text mortalTitle = titleContainer.AddComponent<Text>();
+                mortalTitle.text = LocalizedTextManager.getText("sm_ui_mortal_title");
+                mortalTitle.fontSize = 22;
+                mortalTitle.fontStyle = FontStyle.Bold;
+                mortalTitle.color = new Color(0.85f, 0.75f, 0.4f);
+                mortalTitle.alignment = TextAnchor.MiddleCenter;
+                mortalTitle.horizontalOverflow = HorizontalWrapMode.Overflow;
+                if (mortalTitle.font == null) mortalTitle.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                RectTransform titleRt = titleContainer.GetComponent<RectTransform>();
+                titleRt.anchorMin = new Vector2(0, 0.35f);
+                titleRt.anchorMax = new Vector2(1, 0.35f);
+                titleRt.pivot = new Vector2(0.5f, 0.5f);
+                titleRt.sizeDelta = new Vector2(0, 28);
+
+                GameObject descContainer = new GameObject("MortalDesc", typeof(RectTransform));
+                descContainer.transform.SetParent(mortalCard.transform, false);
+                Text mortalDesc = descContainer.AddComponent<Text>();
+                mortalDesc.text = LocalizedTextManager.getText("sm_ui_mortal_desc1") + "\n" + LocalizedTextManager.getText("sm_ui_mortal_desc2");
+                mortalDesc.fontSize = 12;
+                mortalDesc.color = new Color(0.6f, 0.65f, 0.75f);
+                mortalDesc.alignment = TextAnchor.MiddleCenter;
+                mortalDesc.horizontalOverflow = HorizontalWrapMode.Overflow;
+                if (mortalDesc.font == null) mortalDesc.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                RectTransform descRt = descContainer.GetComponent<RectTransform>();
+                descRt.anchorMin = new Vector2(0.1f, 0.18f);
+                descRt.anchorMax = new Vector2(0.9f, 0.18f);
+                descRt.pivot = new Vector2(0.5f, 0.5f);
+                descRt.sizeDelta = new Vector2(0, 40);
+
+                GameObject btnContainer = new GameObject("AwakenBtn", typeof(RectTransform));
+                btnContainer.transform.SetParent(mortalCard.transform, false);
+                Image btnBg = btnContainer.AddComponent<Image>();
+                btnBg.color = new Color(0.15f, 0.3f, 0.5f, 0.9f);
+                Button awakenBtn = btnContainer.AddComponent<Button>();
+                awakenBtn.targetGraphic = btnBg;
+                awakenBtn.onClick.AddListener(() =>
                 {
                     SuperMechTalent.GrantTalents(actor);
                     if (!actor.hasTrait("sm_rank_00_f"))
@@ -274,7 +330,19 @@ namespace SuperMech.Code
                     SuperMechCustomStats.SyncStats(actor);
                     Debug.Log($"[超神机械师] {actor.name} 激发潜能，踏入超能（初始5潜能点）");
                     RenderContent(actor);
-                }, new Color(0.2f, 0.4f, 0.6f));
+                });
+                Text btnText = btnContainer.AddComponent<Text>();
+                btnText.text = LocalizedTextManager.getText("sm_ui_awaken_potential");
+                btnText.fontSize = 14;
+                btnText.fontStyle = FontStyle.Bold;
+                btnText.color = Color.white;
+                btnText.alignment = TextAnchor.MiddleCenter;
+                if (btnText.font == null) btnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                RectTransform btnRt = btnContainer.GetComponent<RectTransform>();
+                btnRt.anchorMin = new Vector2(0.3f, 0.05f);
+                btnRt.anchorMax = new Vector2(0.7f, 0.05f);
+                btnRt.pivot = new Vector2(0.5f, 0.5f);
+                btnRt.sizeDelta = new Vector2(0, 32);
                 return;
             }
 
@@ -439,6 +507,35 @@ namespace SuperMech.Code
                 AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "sm_knowledgetab_842");
             else if (SuperMechAura.IsSuppressed(actor))
                 AddInfoRow(detail4, LocalizedTextManager.getText("sm_ui_status"), "sm_knowledgetab_843");
+
+            AddSectionHeader(_container.transform, LocalizedTextManager.getText("sm_ui_knowledge_tree"), new Color(0.4f, 0.6f, 0.9f));
+            var allMainDefs = SuperMechKnowledge.GetAllByPrefix(prefix);
+            int mainTotal = allMainDefs.Count;
+            int mainUnlocked = SuperMechKnowledge.GetUnlockedCount(actor, prefix);
+            Color[] tierColors = {
+                new Color(0.5f, 0.5f, 0.55f),
+                new Color(0.3f, 0.6f, 0.4f),
+                new Color(0.3f, 0.5f, 0.7f),
+                new Color(0.6f, 0.4f, 0.7f),
+                new Color(0.8f, 0.6f, 0.3f)
+            };
+            string[] tierIcons = {
+                "ui/Icons/actor_traits/iconWeak",
+                "ui/Icons/actor_traits/iconStrong",
+                "ui/Icons/actor_traits/iconGenius",
+                "ui/Icons/actor_traits/iconImmortal",
+                "ui/Icons/actor_traits/iconChosenOne"
+            };
+            for (int tier = 0; tier <= 4; tier++)
+            {
+                var tierDefs = allMainDefs.FindAll(d => d.tier == tier);
+                if (tierDefs.Count == 0) continue;
+                int tierUnlocked = 0;
+                foreach (var d in tierDefs) if (SuperMechKnowledge.IsUnlocked(actor, d.id)) tierUnlocked++;
+                string tierTitle = $"sm_know_tier_{tier}";
+                CreateKnowledgeCard(_container.transform, tierTitle, tierIcons[tier], tierColors[tier],
+                    tierUnlocked, tierDefs.Count, tierDefs, actor, cls);
+            }
 
             GameObject panelHost = new GameObject("KnowledgePanelHost", typeof(RectTransform));
             panelHost.transform.SetParent(_container.transform, false);
@@ -624,6 +721,129 @@ namespace SuperMech.Code
             {
                 AddInfoRow(_container.transform, "sm_knowledgetab_867", subList.Trim());
             }
+        }
+
+        private static Transform CreateKnowledgeCard(Transform parent, string title, string iconPath, Color accentColor, int unlocked, int total, List<SuperMechKnowledge.KnowledgeDef> defs, Actor actor, string branch)
+        {
+            if (parent == null) return null;
+            title = LocalizedTextManager.getText(title);
+
+            GameObject card = new GameObject("KnowledgeCard", typeof(RectTransform));
+            card.transform.SetParent(parent, false);
+            LayoutElement cardLE = card.AddComponent<LayoutElement>();
+            cardLE.minHeight = 120f;
+            cardLE.flexibleHeight = 0f;
+
+            Image cardBg = card.AddComponent<Image>();
+            cardBg.color = new Color(0.06f, 0.08f, 0.12f, 0.9f);
+            cardBg.raycastTarget = false;
+
+            Image cardBorder = card.AddComponent<Image>();
+            cardBorder.color = new Color(accentColor.r, accentColor.g, accentColor.b, 0.4f);
+
+            GameObject header = new GameObject("CardHeader", typeof(RectTransform));
+            header.transform.SetParent(card.transform, false);
+            RectTransform hRt = header.GetComponent<RectTransform>();
+            hRt.anchorMin = new Vector2(0, 1);
+            hRt.anchorMax = new Vector2(1, 1);
+            hRt.pivot = new Vector2(0.5f, 1f);
+            hRt.sizeDelta = new Vector2(0, 36f);
+            Image hBg = header.AddComponent<Image>();
+            hBg.color = new Color(accentColor.r * 0.3f, accentColor.g * 0.3f, accentColor.b * 0.3f, 0.6f);
+            hBg.raycastTarget = false;
+
+            GameObject iconGo = new GameObject("CardIcon", typeof(RectTransform));
+            iconGo.transform.SetParent(header.transform, false);
+            Image iconImg = iconGo.AddComponent<Image>();
+            Sprite iconSprite = SpriteTextureLoader.getSprite(iconPath ?? "ui/Icons/actor_traits/iconGenius");
+            if (iconSprite != null) iconImg.sprite = iconSprite;
+            iconImg.color = accentColor;
+            RectTransform iconRt = iconGo.GetComponent<RectTransform>();
+            iconRt.anchorMin = new Vector2(0, 0);
+            iconRt.anchorMax = new Vector2(0, 1);
+            iconRt.pivot = new Vector2(0, 0.5f);
+            iconRt.offsetMin = new Vector2(6, 4);
+            iconRt.offsetMax = new Vector2(34, -4);
+
+            GameObject titleGo = new GameObject("CardTitle", typeof(RectTransform));
+            titleGo.transform.SetParent(header.transform, false);
+            Text titleTxt = titleGo.AddComponent<Text>();
+            titleTxt.text = title;
+            titleTxt.fontSize = 14;
+            titleTxt.fontStyle = FontStyle.Bold;
+            titleTxt.color = new Color(0.9f, 0.92f, 0.95f);
+            titleTxt.alignment = TextAnchor.MiddleLeft;
+            titleTxt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            if (titleTxt.font == null) titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform titleRt = titleGo.GetComponent<RectTransform>();
+            titleRt.anchorMin = new Vector2(0, 0);
+            titleRt.anchorMax = new Vector2(0.7f, 1);
+            titleRt.pivot = new Vector2(0, 0.5f);
+            titleRt.offsetMin = new Vector2(40, 0);
+            titleRt.offsetMax = new Vector2(0, 0);
+
+            GameObject progressGo = new GameObject("CardProgress", typeof(RectTransform));
+            progressGo.transform.SetParent(header.transform, false);
+            Text progTxt = progressGo.AddComponent<Text>();
+            progTxt.text = $"{unlocked}/{total}";
+            progTxt.fontSize = 11;
+            progTxt.color = new Color(0.6f, 0.7f, 0.8f);
+            progTxt.alignment = TextAnchor.MiddleRight;
+            if (progTxt.font == null) progTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            RectTransform progRt = progressGo.GetComponent<RectTransform>();
+            progRt.anchorMin = new Vector2(0.7f, 0);
+            progRt.anchorMax = new Vector2(1, 1);
+            progRt.pivot = new Vector2(1, 0.5f);
+            progRt.offsetMin = new Vector2(0, 0);
+            progRt.offsetMax = new Vector2(-8, 0);
+
+            GameObject barBg = new GameObject("ProgressBarBg", typeof(RectTransform));
+            barBg.transform.SetParent(card.transform, false);
+            Image barBgImg = barBg.AddComponent<Image>();
+            barBgImg.color = new Color(0.1f, 0.12f, 0.15f, 0.8f);
+            RectTransform barBgRt = barBg.GetComponent<RectTransform>();
+            barBgRt.anchorMin = new Vector2(0, 1);
+            barBgRt.anchorMax = new Vector2(1, 1);
+            barBgRt.pivot = new Vector2(0.5f, 1f);
+            barBgRt.offsetMin = new Vector2(4, -38);
+            barBgRt.offsetMax = new Vector2(-4, -34);
+
+            GameObject barFill = new GameObject("ProgressBarFill", typeof(RectTransform));
+            barFill.transform.SetParent(barBg.transform, false);
+            Image barFillImg = barFill.AddComponent<Image>();
+            barFillImg.color = accentColor;
+            RectTransform barFillRt = barFill.GetComponent<RectTransform>();
+            barFillRt.anchorMin = Vector2.zero;
+            barFillRt.anchorMax = new Vector2(total > 0 ? (float)unlocked / total : 0f, 1f);
+            barFillRt.offsetMin = Vector2.zero;
+            barFillRt.offsetMax = Vector2.zero;
+
+            GameObject iconsContainer = new GameObject("IconsContainer", typeof(RectTransform));
+            iconsContainer.transform.SetParent(card.transform, false);
+            RectTransform icRt = iconsContainer.GetComponent<RectTransform>();
+            icRt.anchorMin = Vector2.zero;
+            icRt.anchorMax = Vector2.one;
+            icRt.offsetMin = new Vector2(6, 6);
+            icRt.offsetMax = new Vector2(-6, -44);
+            HorizontalLayoutGroup icLayout = iconsContainer.AddComponent<HorizontalLayoutGroup>();
+            icLayout.spacing = 4;
+            icLayout.childAlignment = TextAnchor.UpperLeft;
+            icLayout.childControlWidth = false;
+            icLayout.childControlHeight = false;
+
+            if (defs != null)
+            {
+                int pot = SuperMechPotential.GetPotential(actor);
+                foreach (var def in defs)
+                {
+                    bool unlockedNode = SuperMechKnowledge.IsUnlocked(actor, def.id);
+                    int actualCost = SuperMechPotential.GetActualCost(actor, def.id, def.cost);
+                    bool canUnlock = !unlockedNode && pot >= actualCost;
+                    AddKnowledgeIcon(iconsContainer.transform, actor, def, branch, unlockedNode, canUnlock, actualCost);
+                }
+            }
+
+            return card.transform;
         }
 
         private static void AddHeader(Transform parent, string text)
