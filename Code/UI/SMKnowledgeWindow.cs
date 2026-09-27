@@ -20,8 +20,8 @@ namespace SuperMech.Code
             if (parent == null || actor == null) return;
 
             VerticalLayoutGroup vlg = parent.gameObject.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 6f;
-            vlg.padding = new RectOffset(6, 6, 6, 6);
+            vlg.spacing = 8f;
+            vlg.padding = new RectOffset(8, 8, 8, 8);
             vlg.childAlignment = TextAnchor.UpperCenter;
             ContentSizeFitter csf = parent.gameObject.AddComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
@@ -36,7 +36,7 @@ namespace SuperMech.Code
             GameObject graphObj = new GameObject("CubeOverview", typeof(RectTransform));
             graphObj.transform.SetParent(parent, false);
             RectTransform graphRt = graphObj.GetComponent<RectTransform>();
-            graphRt.sizeDelta = new Vector2(0, 300f);
+            graphRt.sizeDelta = new Vector2(0, 320f);
             SMCubeKnowledge graph = graphObj.AddComponent<SMCubeKnowledge>();
             graph.Init(actor);
 
@@ -54,23 +54,36 @@ namespace SuperMech.Code
             GameObject barObj = new GameObject("ProgressBar", typeof(RectTransform));
             barObj.transform.SetParent(parent, false);
             RectTransform barRt = barObj.GetComponent<RectTransform>();
-            barRt.sizeDelta = new Vector2(0, 24f);
+            barRt.sizeDelta = new Vector2(0, 28f);
 
             Image bg = barObj.AddComponent<Image>();
-            bg.color = new Color(0.1f, 0.1f, 0.1f, 0.8f);
+            bg.color = new Color(0.08f, 0.08f, 0.08f, 0.9f);
+
+            GameObject maskObj = new GameObject("Mask", typeof(RectTransform));
+            maskObj.transform.SetParent(barObj.transform, false);
+            Image maskImg = maskObj.AddComponent<Image>();
+            maskImg.color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
+            RectTransform maskRt = maskObj.GetComponent<RectTransform>();
+            maskRt.anchorMin = Vector2.zero;
+            maskRt.anchorMax = Vector2.one;
+            maskRt.offsetMin = new Vector2(2, 2);
+            maskRt.offsetMax = new Vector2(-2, -2);
+            Mask mask = maskObj.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
 
             GameObject fillObj = new GameObject("Fill", typeof(RectTransform));
-            fillObj.transform.SetParent(barObj.transform, false);
+            fillObj.transform.SetParent(maskObj.transform, false);
             Image fill = fillObj.AddComponent<Image>();
             fill.color = new Color(0.3f, 0.85f, 1f, 0.8f);
             RectTransform fillRt = fillObj.GetComponent<RectTransform>();
             fillRt.anchorMin = new Vector2(0, 0);
-            fillRt.anchorMax = new Vector2(total > 0 ? (float)unlocked / total : 0, 1);
-            fillRt.offsetMin = Vector2.zero;
-            fillRt.offsetMax = Vector2.zero;
+            fillRt.anchorMax = new Vector2(0, 1);
+            fillRt.pivot = new Vector2(0, 0.5f);
+            float ratio = total > 0 ? (float)unlocked / total : 0;
+            fillRt.sizeDelta = new Vector2(maskRt.rect.width * ratio, 0);
 
             Text text = SuperMechUtils.CreateText(barObj.transform,
-                $"{unlocked}/{total}", 11, TextAnchor.MiddleCenter, Color.white);
+                $"{unlocked}/{total}", 12, TextAnchor.MiddleCenter, Color.white);
             text.fontStyle = FontStyle.Bold;
             RectTransform textRt = text.GetComponent<RectTransform>();
             textRt.anchorMin = Vector2.zero;
@@ -84,47 +97,78 @@ namespace SuperMech.Code
             GameObject elementObj = new GameObject($"KnowledgeElement_Tier{tier}", typeof(RectTransform));
             elementObj.transform.SetParent(parent, false);
             RectTransform elementRt = elementObj.GetComponent<RectTransform>();
-            elementRt.sizeDelta = new Vector2(0, 100f);
+            elementRt.sizeDelta = new Vector2(0, 120f);
 
             Image bg = elementObj.AddComponent<Image>();
-            bg.color = new Color(0.05f, 0.08f, 0.1f, 0.6f);
+            bg.color = new Color(0.05f, 0.08f, 0.1f, 0.7f);
 
             VerticalLayoutGroup vlg = elementObj.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 4f;
-            vlg.padding = new RectOffset(6, 6, 4, 4);
+            vlg.spacing = 6f;
+            vlg.padding = new RectOffset(8, 8, 6, 6);
             vlg.childAlignment = TextAnchor.UpperLeft;
 
             GameObject headerObj = new GameObject("Header", typeof(RectTransform));
             headerObj.transform.SetParent(elementObj.transform, false);
             HorizontalLayoutGroup hlg = headerObj.AddComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 6f;
+            hlg.spacing = 8f;
             hlg.childAlignment = TextAnchor.MiddleLeft;
             hlg.childControlHeight = false;
             hlg.childControlWidth = false;
             RectTransform headerRt = headerObj.GetComponent<RectTransform>();
-            headerRt.sizeDelta = new Vector2(0, 20f);
+            headerRt.sizeDelta = new Vector2(0, 28f);
 
-            Image tierIcon = new GameObject("TierIcon", typeof(RectTransform)).AddComponent<Image>();
-            tierIcon.transform.SetParent(headerObj.transform, false);
-            tierIcon.color = TierColors[tier];
-            RectTransform iconRt = tierIcon.GetComponent<RectTransform>();
-            iconRt.sizeDelta = new Vector2(16, 16);
+            Image leftIcon = new GameObject("IconLeft", typeof(RectTransform)).AddComponent<Image>();
+            leftIcon.transform.SetParent(headerObj.transform, false);
+            leftIcon.color = TierColors[tier];
+            RectTransform leftIconRt = leftIcon.GetComponent<RectTransform>();
+            leftIconRt.sizeDelta = new Vector2(24, 24);
 
             int tierUnlocked = knowledge.FindAll(k => SuperMechKnowledge.IsUnlocked(actor, k.id)).Count;
             Text title = SuperMechUtils.CreateText(headerObj.transform,
-                $"{LocalizedTextManager.getText("sm_ui_tier")} {tier + 1}  {tierUnlocked}/{knowledge.Count}",
-                11, TextAnchor.MiddleLeft, TierColors[tier]);
+                $"{LocalizedTextManager.getText("sm_ui_tier")} {tier + 1}",
+                13, TextAnchor.MiddleLeft, TierColors[tier]);
             title.fontStyle = FontStyle.Bold;
+            RectTransform titleRt = title.GetComponent<RectTransform>();
+            titleRt.sizeDelta = new Vector2(80, 24);
 
-            GameObject gridObj = new GameObject("Icons", typeof(RectTransform));
+            GameObject miniBarObj = new GameObject("MiniProgress", typeof(RectTransform));
+            miniBarObj.transform.SetParent(headerObj.transform, false);
+            RectTransform miniBarRt = miniBarObj.GetComponent<RectTransform>();
+            miniBarRt.sizeDelta = new Vector2(120, 16);
+            Image miniBg = miniBarObj.AddComponent<Image>();
+            miniBg.color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
+            GameObject miniFillObj = new GameObject("Fill", typeof(RectTransform));
+            miniFillObj.transform.SetParent(miniBarObj.transform, false);
+            Image miniFill = miniFillObj.AddComponent<Image>();
+            miniFill.color = TierColors[tier];
+            RectTransform miniFillRt = miniFillObj.GetComponent<RectTransform>();
+            miniFillRt.anchorMin = new Vector2(0, 0);
+            miniFillRt.anchorMax = new Vector2(knowledge.Count > 0 ? (float)tierUnlocked / knowledge.Count : 0, 1);
+            miniFillRt.offsetMin = Vector2.zero;
+            miniFillRt.offsetMax = Vector2.zero;
+            Text miniText = SuperMechUtils.CreateText(miniBarObj.transform,
+                $"{tierUnlocked}/{knowledge.Count}", 10, TextAnchor.MiddleCenter, Color.white);
+            RectTransform miniTextRt = miniText.GetComponent<RectTransform>();
+            miniTextRt.anchorMin = Vector2.zero;
+            miniTextRt.anchorMax = Vector2.one;
+            miniTextRt.offsetMin = Vector2.zero;
+            miniTextRt.offsetMax = Vector2.zero;
+
+            Image rightIcon = new GameObject("IconRight", typeof(RectTransform)).AddComponent<Image>();
+            rightIcon.transform.SetParent(headerObj.transform, false);
+            rightIcon.color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+            RectTransform rightIconRt = rightIcon.GetComponent<RectTransform>();
+            rightIconRt.sizeDelta = new Vector2(20, 20);
+
+            GameObject gridObj = new GameObject("RunningIcons", typeof(RectTransform));
             gridObj.transform.SetParent(elementObj.transform, false);
             GridLayoutGroup glg = gridObj.AddComponent<GridLayoutGroup>();
-            glg.cellSize = new Vector2(24, 24);
-            glg.spacing = new Vector2(3, 3);
+            glg.cellSize = new Vector2(28, 28);
+            glg.spacing = new Vector2(4, 4);
             glg.constraint = GridLayoutGroup.Constraint.Flexible;
             glg.childAlignment = TextAnchor.UpperLeft;
             RectTransform gridRt = gridObj.GetComponent<RectTransform>();
-            gridRt.sizeDelta = new Vector2(0, 60f);
+            gridRt.sizeDelta = new Vector2(0, 70f);
 
             foreach (var def in knowledge)
             {
@@ -132,7 +176,7 @@ namespace SuperMech.Code
                 GameObject iconObj = new GameObject(def.id, typeof(RectTransform));
                 iconObj.transform.SetParent(gridObj.transform, false);
                 Image img = iconObj.AddComponent<Image>();
-                img.color = unlocked ? TierColors[tier] : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                img.color = unlocked ? TierColors[tier] : new Color(0.25f, 0.25f, 0.25f, 0.6f);
                 try
                 {
                     Sprite sprite = SpriteTextureLoader.getSprite(def.icon);
