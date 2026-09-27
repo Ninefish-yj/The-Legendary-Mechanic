@@ -146,7 +146,8 @@ namespace SuperMech.Code
             try
             {
                 Color c = color ?? Color.white;
-                window.showStatRow(label, value, c, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: true);
+                string colorHex = "#" + ColorUtility.ToHtmlStringRGB(c);
+                window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: true);
             }
             catch (Exception e)
             {
