@@ -124,6 +124,15 @@ namespace SuperMech.Code
             UpdateNodes();
             UpdateAxons();
             UpdateGraphTransform();
+
+            if (_nodes.Count > 0)
+            {
+                Debug.Log($"[超神机械师] 3D图谱初始化完成: 节点数={_nodes.Count}, 轴突数={_axons.Count}, 首节点位置={_nodes[0].gameObject?.transform.localPosition}");
+            }
+            else
+            {
+                Debug.Log($"[超神机械师] 3D图谱初始化完成: 无节点（单位未解锁任何知识）");
+            }
         }
 
         private void CreateBackground(Transform parent)
@@ -236,8 +245,13 @@ namespace SuperMech.Code
         private void GenerateNodes()
         {
             List<SuperMechKnowledge.KnowledgeDef> allKnowledge = SuperMechKnowledge.GetAllByPrefix(_prefix);
-            if (allKnowledge == null || allKnowledge.Count == 0) return;
+            if (allKnowledge == null || allKnowledge.Count == 0)
+            {
+                Debug.Log($"[超神机械师] 3D图谱: prefix={_prefix} 没有知识定义");
+                return;
+            }
 
+            int unlockedCount = 0;
             foreach (var def in allKnowledge)
             {
                 if (!SuperMechKnowledge.IsUnlocked(_actor, def.id)) continue;
@@ -254,7 +268,12 @@ namespace SuperMech.Code
                 };
 
                 _nodes.Add(node);
+                unlockedCount++;
             }
+
+            Debug.Log($"[超神机械师] 3D图谱: prefix={_prefix}, 总知识={allKnowledge.Count}, 已解锁={unlockedCount}");
+
+            if (unlockedCount == 0) return;
 
             RecalculateNodePositions();
 
@@ -428,6 +447,12 @@ namespace SuperMech.Code
             node.gameObject = go;
             node.image = iconImg;
             node.button = btn;
+
+            RectTransform nodeRt = go.GetComponent<RectTransform>();
+            nodeRt.sizeDelta = new Vector2(nodeSize, nodeSize);
+            nodeRt.anchorMin = new Vector2(0.5f, 0.5f);
+            nodeRt.anchorMax = new Vector2(0.5f, 0.5f);
+            nodeRt.pivot = new Vector2(0.5f, 0.5f);
         }
 
         private void UpdateNodeVisual(KnowledgeNode node)
