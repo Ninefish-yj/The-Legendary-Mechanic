@@ -3805,5 +3805,12 @@
   "sm_eq_type_armor": "装甲",
   "sm_eq_type_boots": "靴子",
   "sm_eq_type_ring": "戒指",
-  "sm_eq_type_amulet": "护身符"
+  "sm_eq_type_amulet": "护身符",
+  "sm_icon_sm_divine": "神性蜕变",
+  "sm_icon_sm_sanctuary": "圣所权限",
+  "sm_icon_sm_mech_affinity": "械感",
+  "sm_icon_sm_magic_affinity": "魔感",
+  "sm_icon_sm_mystery": "神秘",
+  "sm_icon_sm_charm": "魅力",
+  "sm_icon_sm_luck": "幸运"
 }
