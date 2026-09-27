@@ -152,11 +152,8 @@ namespace SuperMech.Code
         {
             try
             {
-                float pp = a.stats[SuperMechCustomStats.StatPotentialPoints];
-                if (pp > 0) ShowRow(window, "sm_unitwindow_1151", pp.ToString("F0"));
-
                 float div = a.stats[SuperMechCustomStats.StatDivinityLayers];
-                if (div > 0) ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"));
+                ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"));
 
                 int sanctuaryTotal = 0;
                 string[] sanctuaryStats = {
@@ -168,21 +165,20 @@ namespace SuperMech.Code
                     SuperMechCustomStats.StatSanctuary6
                 };
                 foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
-                if (sanctuaryTotal > 0) ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"));
-
+                ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"));
 
                 float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
-                if (mechAff > 0) ShowRow(window, "sm_unitwindow_1156", mechAff.ToString("F0") + "%");
+                ShowRow(window, "sm_unitwindow_1156", mechAff.ToString("F0") + "%");
 
                 float mageAff = a.stats[SuperMechCustomStats.StatMageAffinity];
-                if (mageAff > 0) ShowRow(window, "sm_unitwindow_1157", mageAff.ToString("F0") + "%");
+                ShowRow(window, "sm_unitwindow_1157", mageAff.ToString("F0") + "%");
 
                 float mystery = a.stats[SuperMechCustomStats.StatMystery];
-                if (mystery > 0) ShowRow(window, "sm_unitwindow_1158", mystery.ToString("F0"));
+                ShowRow(window, "sm_unitwindow_1158", mystery.ToString("F0"));
                 float charm = a.stats[SuperMechCustomStats.StatCharm];
-                if (charm > 0) ShowRow(window, "sm_unitwindow_1159", charm.ToString("F0"));
+                ShowRow(window, "sm_unitwindow_1159", charm.ToString("F0"));
                 float luck = a.stats[SuperMechCustomStats.StatLuck];
-                if (luck > 0) ShowRow(window, "sm_unitwindow_1160", luck.ToString("F0"));
+                ShowRow(window, "sm_unitwindow_1160", luck.ToString("F0"));
             }
             catch (Exception e)
             {
