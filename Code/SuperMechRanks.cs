@@ -65,13 +65,13 @@ namespace SuperMech.Code
         public static string GetRankName(Actor a)
         {
             int exact = SuperMechAdvancement.GetExactRankIndex(a);
-            if (exact >= 0 && exact < All.Count) return All[exact].name;
+            if (exact >= 0 && exact < All.Count) return LocalizedTextManager.getText(All[exact].name);
             return LocalizedTextManager.getText("sm_ranks_957");
         }
 
         public static string GetRankName(int index)
         {
-            if (index >= 0 && index < All.Count) return All[index].name;
+            if (index >= 0 && index < All.Count) return LocalizedTextManager.getText(All[index].name);
             return LocalizedTextManager.getText("sm_ranks_957");
         }
     }
