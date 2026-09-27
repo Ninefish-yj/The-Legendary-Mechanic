@@ -12,13 +12,13 @@ namespace SuperMech.Code
 
     public static class SuperMechUnitWindow
     {
-        [HarmonyPostfix]
-        public static void Postfix(UnitWindow __instance)
+        [HarmonyPrefix]
+        public static bool Prefix(UnitWindow __instance)
         {
             try
             {
                 Actor actor = GetActor(__instance);
-                if (actor == null || !actor.isAlive()) return;
+                if (actor == null || !actor.isAlive()) return true;
 
                 ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
                 ShowMainInfo(__instance, actor);
@@ -28,6 +28,7 @@ namespace SuperMech.Code
             {
                 Debug.LogError($"[超神机械师] 单位面板主要信息失败: {e.Message}\n{e.StackTrace}");
             }
+            return true;
         }
 
         private static readonly Color InfoColor = new Color(1f, 0.9f, 0.6f);
