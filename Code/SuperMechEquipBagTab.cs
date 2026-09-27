@@ -23,6 +23,10 @@ namespace SuperMech.Code
         private static readonly FieldInfo TabsListField =
             AccessTools.Field(typeof(WindowMetaTabButtonsContainer), "_tabs");
 
+        private static EquipmentButton _equipButtonPrefab;
+        private static readonly List<EquipmentButton> _activeButtons = new List<EquipmentButton>();
+        private static readonly Queue<EquipmentButton> _buttonPool = new Queue<EquipmentButton>();
+
         public static void Postfix(UnitWindow __instance)
         {
             try { Refresh(__instance); } catch { }
@@ -247,6 +251,8 @@ namespace SuperMech.Code
         private static void RenderBag(Actor actor)
         {
             if (_container == null || actor == null) return;
+
+            ClearButtons();
 
             foreach (Transform child in _container.transform)
             {
@@ -500,48 +506,73 @@ namespace SuperMech.Code
             return slot;
         }
 
+        private static EquipmentButton GetButton(Transform parent)
+        {
+            EquipmentButton btn;
+            if (_buttonPool.Count > 0)
+            {
+                btn = _buttonPool.Dequeue();
+                btn.transform.SetParent(parent, false);
+                btn.gameObject.SetActive(true);
+            }
+            else
+            {
+                if (_equipButtonPrefab == null)
+                    _equipButtonPrefab = Resources.Load<EquipmentButton>("ui/EquipmentButton");
+                btn = Object.Instantiate(_equipButtonPrefab, parent);
+            }
+            _activeButtons.Add(btn);
+            return btn;
+        }
+
+        private static void ClearButtons()
+        {
+            foreach (var btn in _activeButtons)
+            {
+                btn.gameObject.SetActive(false);
+                _buttonPool.Enqueue(btn);
+            }
+            _activeButtons.Clear();
+        }
+
         private static GameObject CreateItemIcon(Transform parent, string iconPath, Color qColor, int size, string name, string tooltip)
         {
-            var iconGo = new GameObject("ItemIcon", typeof(RectTransform));
-            iconGo.transform.SetParent(parent, false);
+            EquipmentButton btn = GetButton(parent);
 
-            var borderImg = iconGo.AddComponent<Image>();
-            borderImg.color = qColor;
+            RectTransform rt = btn.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(size, size);
 
-            var innerGo = new GameObject("Inner", typeof(RectTransform));
-            innerGo.transform.SetParent(iconGo.transform, false);
-            var innerImg = innerGo.AddComponent<Image>();
-            innerImg.color = new Color(0.1f, 0.1f, 0.1f, 0.9f);
-            RectTransform innerRt = innerGo.GetComponent<RectTransform>();
-            innerRt.anchorMin = new Vector2(0.08f, 0.08f);
-            innerRt.anchorMax = new Vector2(0.92f, 0.92f);
-            innerRt.offsetMin = Vector2.zero;
-            innerRt.offsetMax = Vector2.zero;
-
-            var itemIcon = new GameObject("Icon", typeof(RectTransform));
-            itemIcon.transform.SetParent(innerGo.transform, false);
-            var itemImg = itemIcon.AddComponent<Image>();
+            Image iconImg = btn.transform.Find("TiltEffect/icon").GetComponent<Image>();
             Sprite iconSprite = SpriteTextureLoader.getSprite(iconPath);
-            if (iconSprite != null) itemImg.sprite = iconSprite;
-            itemImg.color = Color.white;
-            RectTransform iconRt = itemIcon.GetComponent<RectTransform>();
-            iconRt.anchorMin = new Vector2(0.15f, 0.15f);
-            iconRt.anchorMax = new Vector2(0.85f, 0.85f);
-            iconRt.offsetMin = Vector2.zero;
-            iconRt.offsetMax = Vector2.zero;
+            if (iconSprite != null) iconImg.sprite = iconSprite;
+            iconImg.color = Color.white;
 
-            RectTransform irt = iconGo.GetComponent<RectTransform>();
-            irt.sizeDelta = new Vector2(size, size);
+            Image lockedBg = btn.transform.Find("TiltEffect/locked_bg")?.GetComponent<Image>();
+            if (lockedBg != null) lockedBg.gameObject.SetActive(false);
 
-            var btn = iconGo.AddComponent<Button>();
-            btn.targetGraphic = borderImg;
+            IconOutline outline = btn.GetComponentInChildren<IconOutline>();
+            if (outline != null)
+            {
+                bool isHighQuality = qColor.r > 0.8f && qColor.g > 0.6f;
+                if (isHighQuality)
+                    outline.show(RarityLibrary.legendary.color_container);
+                else
+                    outline.gameObject.SetActive(false);
+            }
 
-            var tip = iconGo.AddComponent<TipButton>();
-            tip.textOnClick = tooltip;
-            tip.textOnClickDescription = string.Empty;
-            tip.text_description_2 = string.Empty;
+            TipButton tipBtn = btn.GetComponent<TipButton>();
+            if (tipBtn != null)
+            {
+                tipBtn.clickAction = null;
+                tipBtn.textOnClick = tooltip;
+                tipBtn.textOnClickDescription = string.Empty;
+                tipBtn.text_description_2 = string.Empty;
+            }
 
-            return iconGo;
+            Button button = btn.GetComponent<Button>();
+            if (button != null) button.onClick.RemoveAllListeners();
+
+            return btn.gameObject;
         }
 
         private static Color GetQualityColor(int q)
