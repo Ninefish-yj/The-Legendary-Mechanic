@@ -373,7 +373,7 @@ namespace SuperMech.Code
             scroll.vertical = true;
 
             GameObject viewport = new GameObject("Viewport", typeof(RectTransform));
-            viewport.transform.SetParent(scrollGo, false);
+            viewport.transform.SetParent(scrollGo.transform, false);
             RectTransform vpRt = viewport.GetComponent<RectTransform>();
             vpRt.anchorMin = Vector2.zero;
             vpRt.anchorMax = Vector2.one;
@@ -538,11 +538,11 @@ namespace SuperMech.Code
             {
                 if (equipped)
                 {
-                    SuperMechRelic.Unequip(_actor);
+                    SuperMechEquipBag.UnequipToBag(_actor);
                 }
                 else
                 {
-                    SuperMechRelic.Equip(_actor, def.id);
+                    SuperMechEquipBag.EquipFromBag(_actor, def.id);
                 }
                 Refresh();
             });
