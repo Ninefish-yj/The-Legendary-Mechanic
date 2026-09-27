@@ -525,6 +525,7 @@ namespace SuperMech.Code
                     return null;
                 }
                 btn = Object.Instantiate(_equipButtonPrefab, parent);
+                btn.enabled = false;
             }
             _activeButtons.Add(btn);
             return btn;

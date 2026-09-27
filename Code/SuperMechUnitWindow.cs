@@ -147,7 +147,7 @@ namespace SuperMech.Code
             {
                 Color c = color ?? Color.white;
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(c);
-                window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: true);
+                window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
             }
             catch (Exception e)
             {
@@ -160,7 +160,7 @@ namespace SuperMech.Code
             try
             {
                 float div = a.stats[SuperMechCustomStats.StatDivinityLayers];
-                ShowRow(window, "sm_unitwindow_1152", div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"), null, StatColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1152"), div.ToString("F0") + LocalizedTextManager.getText("sm_unitwindow_1153"), null, StatColor);
 
                 int sanctuaryTotal = 0;
                 string[] sanctuaryStats = {
@@ -172,20 +172,20 @@ namespace SuperMech.Code
                     SuperMechCustomStats.StatSanctuary6
                 };
                 foreach (var s in sanctuaryStats) sanctuaryTotal += (int)a.stats[s];
-                ShowRow(window, "sm_unitwindow_1154", sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"), null, StatColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1154"), sanctuaryTotal + LocalizedTextManager.getText("sm_unitwindow_1155"), null, StatColor);
 
                 float mechAff = a.stats[SuperMechCustomStats.StatMechAffinity];
-                ShowRow(window, "sm_unitwindow_1156", mechAff.ToString("F0") + "%", null, StatColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1156"), mechAff.ToString("F0") + "%", null, StatColor);
 
                 float mageAff = a.stats[SuperMechCustomStats.StatMageAffinity];
-                ShowRow(window, "sm_unitwindow_1157", mageAff.ToString("F0") + "%", null, StatColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1157"), mageAff.ToString("F0") + "%", null, StatColor);
 
                 float mystery = a.stats[SuperMechCustomStats.StatMystery];
-                ShowRow(window, "sm_unitwindow_1158", mystery.ToString("F0"), null, StatColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1158"), mystery.ToString("F0"), null, StatColor);
                 float charm = a.stats[SuperMechCustomStats.StatCharm];
-                ShowRow(window, "sm_unitwindow_1159", charm.ToString("F0"), null, StatColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1159"), charm.ToString("F0"), null, StatColor);
                 float luck = a.stats[SuperMechCustomStats.StatLuck];
-                ShowRow(window, "sm_unitwindow_1160", luck.ToString("F0"), null, StatColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_unitwindow_1160"), luck.ToString("F0"), null, StatColor);
             }
             catch (Exception e)
             {
