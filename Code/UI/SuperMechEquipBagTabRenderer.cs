@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Reflection;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -74,12 +75,18 @@ namespace SuperMech.Code
             ActorBag inv = actor.inventory;
             if (inv != null && inv.dict != null)
             {
+                var resources = new List<(ResourceAsset asset, int amount)>();
                 foreach (var kv in inv.dict)
                 {
                     if (kv.Value.amount <= 0) continue;
                     ResourceAsset res = AssetManager.resources.get(kv.Key);
                     if (res == null) continue;
-                    RenderResourceItem(gridGo.transform, res, kv.Value.amount);
+                    resources.Add((res, kv.Value.amount));
+                }
+                resources.Sort((a, b) => a.asset.order.CompareTo(b.asset.order));
+                foreach (var r in resources)
+                {
+                    RenderResourceItem(gridGo.transform, r.asset, r.amount);
                     totalCount++;
                 }
             }
@@ -125,6 +132,16 @@ namespace SuperMech.Code
             var btn = iconGo.GetComponent<Button>();
             if (btn != null)
             {
+                btn.OnHover(() =>
+                {
+                    iconGo.transform.DOKill();
+                    iconGo.transform.DOScale(1.1f, 0.1f).SetEase(Ease.OutBack);
+                });
+                btn.OnHoverOut(() =>
+                {
+                    iconGo.transform.DOKill();
+                    iconGo.transform.DOScale(1f, 0.1f).SetEase(Ease.InBack);
+                });
                 btn.onClick.AddListener(() =>
                 {
                     if (equipped)
@@ -183,6 +200,16 @@ namespace SuperMech.Code
             tipBtn.textOnClick = res.name + "\n" + res.tooltip;
             tipBtn.textOnClickDescription = string.Empty;
             tipBtn.text_description_2 = string.Empty;
+
+            Button resBtn = itemGo.AddComponent<Button>();
+            resBtn.onClick.AddListener(() =>
+            {
+                itemGo.transform.DOKill();
+                itemGo.transform.DOScale(0.8f, 0.1f).SetEase(Ease.InBack).OnComplete(() =>
+                {
+                    itemGo.transform.DOScale(1f, 0.1f).SetEase(Ease.OutBack);
+                });
+            });
         }
 
         private static void InitEquipmentButton(EquipmentButton btn)
