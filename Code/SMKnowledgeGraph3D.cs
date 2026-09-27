@@ -252,11 +252,11 @@ namespace SuperMech.Code
         {
             switch (prefix)
             {
-                case "mech": return "机械知识树";
-                case "martial": return "御气技巧树";                case "psi": return "基因树";
-                case "mage": return "魔法知识树";
-                case "mind": return "精神修炼树";
-                default: return "知识树";
+                case "mech": return LocalizedTextManager.getText("sm_tree_mech");
+                case "martial": return LocalizedTextManager.getText("sm_tree_martial");                case "psi": return LocalizedTextManager.getText("sm_tree_psi");
+                case "mage": return LocalizedTextManager.getText("sm_tree_mage");
+                case "mind": return LocalizedTextManager.getText("sm_tree_mind");
+                default: return LocalizedTextManager.getText("sm_tree_generic");
             }
         }
 
@@ -415,7 +415,7 @@ namespace SuperMech.Code
 
             // Tooltip
             TipButton tip = go.AddComponent<TipButton>();
-            tip.textOnClick = $"{node.name}\n阶位: {GetTierName(node.tier)}\n消耗: {node.cost}潜能点\n{(node.unlocked ? "已解锁" : (node.unlockable ? "点击解锁" : "未满足条件"))}";
+            tip.textOnClick = $"{node.name}\n阶位: {GetTierName(node.tier)}\n消耗: {node.cost}潜能点\n{(node.unlocked ? "已解锁" : (node.unlockable ? LocalizedTextManager.getText("sm_graph_click_unlock") : LocalizedTextManager.getText("sm_graph_locked")))}";
 
             node.gameObject = go;
             node.image = iconImg;
@@ -785,8 +785,8 @@ namespace SuperMech.Code
         /// <summary>获取阶位名称。</summary>
         private string GetTierName(int tier)
         {
-            string[] names = { "基础", "进阶", "高端", "尖端", "终极" };
-            return tier >= 0 && tier < names.Length ? names[tier] : "未知";
+            string[] names = { LocalizedTextManager.getText("sm_tier_basic"), LocalizedTextManager.getText("sm_tier_advanced"), LocalizedTextManager.getText("sm_tier_high"), LocalizedTextManager.getText("sm_tier_cutting"), LocalizedTextManager.getText("sm_tier_ultimate") };
+            return tier >= 0 && tier < names.Length ? names[tier] : LocalizedTextManager.getText("sm_tier_unknown");
         }
 
         /// <summary>清理。</summary>

@@ -36,11 +36,11 @@ namespace SuperMech.Code
         // 固定转职条件（原著明确的阶段，需要知识的必须固定）
         private static readonly Dictionary<int, AdvanceReq> FixedReqs = new Dictionary<int, AdvanceReq>
         {
-            { 1, new AdvanceReq { type = ReqType.Knowledge, intValue = 1, desc = "学会1项进阶知识" } },
-            { 2, new AdvanceReq { type = ReqType.Craft, intValue = 5, desc = "制造5个机械单位" } },
+            { 1, new AdvanceReq { type = ReqType.Knowledge, intValue = 1, desc = LocalizedTextManager.getText("sm_task_knowledge_1") } },
+            { 2, new AdvanceReq { type = ReqType.Craft, intValue = 5, desc = LocalizedTextManager.getText("sm_task_craft_5") } },
             // ch269：总等级80级+智力超过400点+学会5项机械系进阶知识
-            { 4, new AdvanceReq { type = ReqType.Knowledge, intValue = 5, statKey = "intelligence", statValue = 400f, totalLevel = 80, desc = "总等级80+智力>400+学会5项进阶知识" } },
-            { 12, new AdvanceReq { type = ReqType.Divinity, intValue = 10, desc = "神性蜕变达到第10层" } },
+            { 4, new AdvanceReq { type = ReqType.Knowledge, intValue = 5, statKey = "intelligence", statValue = 400f, totalLevel = 80, desc = LocalizedTextManager.getText("sm_task_advanced") } },
+            { 12, new AdvanceReq { type = ReqType.Divinity, intValue = 10, desc = LocalizedTextManager.getText("sm_task_divinity_10") } },
         };
 
         private static readonly float[] IntThresholds = { 0, 0, 50, 150, 400, 700, 1000, 1300, 1800, 2500, 3500, 5000, 7000 };

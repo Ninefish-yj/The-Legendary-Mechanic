@@ -26,7 +26,7 @@ namespace SuperMech.Code
         {
             try
             {
-                _frame = SMWindowFrame.Create("超神机械师·超能者排行榜", 640f, 700f);
+                _frame = SMWindowFrame.Create(LocalizedTextManager.getText("sm_rank_title"), 640f, 700f);
                 if (_frame == null) return;
                 Debug.Log("[超神机械师] 排行榜窗口创建成功");
             }
@@ -44,12 +44,12 @@ namespace SuperMech.Code
             const float x = 12f;
 
             // 排序切换
-            _frame.AddButton("按能级", x, y, 90f, 26f, () => { _sortMode = 0; Refresh(); }, _sortMode == 0 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
-            _frame.AddButton("按气力", x + 95f, y, 90f, 26f, () => { _sortMode = 1; Refresh(); }, _sortMode == 1 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
-            _frame.AddButton("按阶位", x + 190f, y, 90f, 26f, () => { _sortMode = 2; Refresh(); }, _sortMode == 2 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
+            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_onar"), x, y, 90f, 26f, () => { _sortMode = 0; Refresh(); }, _sortMode == 0 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
+            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_qi"), x + 95f, y, 90f, 26f, () => { _sortMode = 1; Refresh(); }, _sortMode == 1 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
+            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_rank"), x + 190f, y, 90f, 26f, () => { _sortMode = 2; Refresh(); }, _sortMode == 2 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
             y -= 36f;
 
-            _frame.AddLabel("排名  名称              系别    阶位    气力      能级", x, y, 600f, 20f, 12);
+            _frame.AddLabel(LocalizedTextManager.getText("sm_rank_header"), x, y, 600f, 20f, 12);
             y -= 24f;
 
             // 收集所有觉醒单位
@@ -88,22 +88,22 @@ namespace SuperMech.Code
 
             if (count == 0)
             {
-                _frame.AddLabel("暂无觉醒单位", x, y, 600f, 30f, 14, TextAnchor.MiddleCenter);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_rank_empty"), x, y, 600f, 30f, 14, TextAnchor.MiddleCenter);
             }
             else
             {
                 y -= 8f;
-                _frame.AddLabel($"共 {list.Count} 名觉醒者，显示前{count}名", x, y, 600f, 18f, 11);
+                _frame.AddLabel($"{LocalizedTextManager.getText(\"sm_rank_total\")} {list.Count} {LocalizedTextManager.getText(\"sm_rank_showing\")} {count}", x, y, 600f, 18f, 11);
             }
         }
 
         private static string GetClassShort(Actor a)
         {
-            if (a.hasTrait(SuperMechTraits.ClassMech)) return "机械";
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道";
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "异能";
-            if (a.hasTrait(SuperMechTraits.ClassMage)) return "魔法";
-            if (a.hasTrait(SuperMechTraits.ClassMind)) return "念力";
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return LocalizedTextManager.getText("sm_rank_class_mech");
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return LocalizedTextManager.getText("sm_rank_class_martial");
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return LocalizedTextManager.getText("sm_rank_class_psi");
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return LocalizedTextManager.getText("sm_rank_class_mage");
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return LocalizedTextManager.getText("sm_rank_class_mind");
             return "?";
         }
     }
