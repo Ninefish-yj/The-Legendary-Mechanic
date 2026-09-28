@@ -74,14 +74,14 @@ namespace SuperMech.Code
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
 
             Actor actorRef = a;
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBook",
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
                 new Color(0.25f, 0.7f, 0.95f), () => SMKnowledgeWindowImgui.Open(actorRef));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
                 new Color(0.9f, 0.7f, 0.3f), () => SMBagWindowImgui.Open(actorRef));
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconHammer",
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
                     new Color(0.6f, 0.8f, 0.4f), () => SMCraftWindow.Toggle(actorRef));
             }
         }

@@ -3731,5 +3731,7 @@
   "sm_ui_craft_none": "暂无可制造项目（需要机械师职业）",
   "sm_ui_craft_cost": "消耗",
   "sm_ui_craft_button": "制造",
-  "sm_ui_craft_entry": "制造"
+  "sm_ui_craft_entry": "制造",
+  "sm_ui_cost": "消耗",
+  "sm_ui_stage": "阶段"
 }
