@@ -151,6 +151,45 @@ namespace SuperMech.Code
         private const float SPEED_MOD_OUTER = 0.2f;
         private const float SPEED_MOD_4D = 0.3f;
 
+        private static readonly Vector4[] _hypercube_positions = new Vector4[16]
+        {
+            new Vector4(-1f, -1f, -1f, -1f),
+            new Vector4(1f, -1f, -1f, -1f),
+            new Vector4(-1f, 1f, -1f, -1f),
+            new Vector4(1f, 1f, -1f, -1f),
+            new Vector4(-1f, -1f, 1f, -1f),
+            new Vector4(1f, -1f, 1f, -1f),
+            new Vector4(-1f, 1f, 1f, -1f),
+            new Vector4(1f, 1f, 1f, -1f),
+            new Vector4(-1f, -1f, -1f, 1f),
+            new Vector4(1f, -1f, -1f, 1f),
+            new Vector4(-1f, 1f, -1f, 1f),
+            new Vector4(1f, 1f, -1f, 1f),
+            new Vector4(-1f, -1f, 1f, 1f),
+            new Vector4(1f, -1f, 1f, 1f),
+            new Vector4(-1f, 1f, 1f, 1f),
+            new Vector4(1f, 1f, 1f, 1f)
+        };
+
+        private static readonly int[,] _hypercube_connections = new int[32, 2]
+        {
+            { 0, 1 }, { 0, 2 }, { 0, 4 }, { 0, 8 },
+            { 1, 3 }, { 1, 5 }, { 1, 9 },
+            { 2, 3 }, { 2, 6 }, { 2, 10 },
+            { 3, 7 }, { 3, 11 },
+            { 4, 5 }, { 4, 6 }, { 4, 12 },
+            { 5, 7 }, { 5, 13 },
+            { 6, 7 }, { 6, 14 },
+            { 7, 15 },
+            { 8, 9 }, { 8, 10 }, { 8, 12 },
+            { 9, 11 }, { 9, 13 },
+            { 10, 11 }, { 10, 14 },
+            { 11, 15 },
+            { 12, 13 }, { 12, 14 },
+            { 13, 15 },
+            { 14, 15 }
+        };
+
         private SMCubeNode _active_node;
         private SMCubeNode _prefab_node;
         private SMCubeNodeConnection _prefab_connection;
@@ -262,9 +301,24 @@ namespace SuperMech.Code
             string prefix = SuperMechKnowledge.GetPrefixForClass(SuperMechProfession.GetClass(_actor));
             if (string.IsNullOrEmpty(prefix)) prefix = "mech";
             var allKnowledge = SuperMechKnowledge.GetAllByPrefix(prefix);
-            int index = 0;
-            foreach (var def in allKnowledge)
+
+            var selected = new List<SuperMechKnowledge.KnowledgeDef>();
+            if (allKnowledge.Count <= 16)
             {
+                selected.AddRange(allKnowledge);
+            }
+            else
+            {
+                var shuffled = new List<SuperMechKnowledge.KnowledgeDef>(allKnowledge);
+                shuffled.Shuffle();
+                selected.AddRange(shuffled.GetRange(0, 16));
+            }
+
+            for (int i = 0; i < _hypercube_positions.Length; i++)
+            {
+                if (i >= selected.Count) break;
+
+                var def = selected[i];
                 string kid = def.id;
                 bool unlocked = SuperMechKnowledge.IsUnlocked(_actor, kid);
                 int tier = def.tier;
@@ -273,25 +327,15 @@ namespace SuperMech.Code
                 Sprite icon = null;
                 try { icon = SpriteTextureLoader.getSprite(def.icon); } catch { }
                 node.setupNode(kid, tier, unlocked, icon);
-                node.logical_pos = GetLogicalPos(index, tier, allKnowledge.Count);
+                node.logical_pos = _hypercube_positions[i];
                 node.setColor(GetNodeColor(tier, unlocked));
+                node.gameObject.name = i.ToString();
                 _nodes.Add(node);
                 _nodes_by_index.Add(node);
-                index++;
             }
 
             GenerateConnections();
             UpdateVisual();
-        }
-
-        private Vector4 GetLogicalPos(int index, int tier, int total)
-        {
-            float angle = (index / (float)total) * Mathf.PI * 2f;
-            float radius = 0.3f + tier * 0.12f;
-            float x = Mathf.Cos(angle) * radius;
-            float y = Mathf.Sin(angle) * radius;
-            float z = Mathf.Sin(angle * 2f) * 0.2f;
-            return new Vector4(x, y, z, 1f);
         }
 
         private Color GetNodeColor(int tier, bool unlocked)
@@ -310,23 +354,24 @@ namespace SuperMech.Code
 
         private void GenerateConnections()
         {
-            for (int i = 0; i < _nodes.Count; i++)
+            for (int i = 0; i < _hypercube_connections.GetLength(0); i++)
             {
-                for (int j = i + 1; j < _nodes.Count; j++)
-                {
-                    SMCubeNode a = _nodes[i];
-                    SMCubeNode b = _nodes[j];
-                    float dist = Vector4.Distance(a.logical_pos, b.logical_pos);
-                    if (dist < 0.35f)
-                    {
-                        SMCubeNodeConnection conn = _pool_connections.getNext();
-                        conn.node_1 = a;
-                        conn.node_2 = b;
-                        conn.setConnection(a.tier == b.tier);
-                        a.addConnection(b, conn);
-                        b.addConnection(a, conn);
-                    }
-                }
+                int index1 = _hypercube_connections[i, 0];
+                int index2 = _hypercube_connections[i, 1];
+                if (index1 >= _nodes_by_index.Count || index2 >= _nodes_by_index.Count) continue;
+
+                SMCubeNode a = _nodes_by_index[index1];
+                SMCubeNode b = _nodes_by_index[index2];
+                if (a == null || b == null) continue;
+
+                SMCubeNodeConnection conn = _pool_connections.getNext();
+                conn.node_1 = a;
+                conn.node_2 = b;
+                bool isInner = a.logical_pos.w < 0f && b.logical_pos.w < 0f;
+                conn.setConnection(isInner);
+                a.addConnection(b, conn);
+                b.addConnection(a, conn);
+                conn.gameObject.name = "connection " + a.gameObject.name + "-" + b.gameObject.name;
             }
         }
 
