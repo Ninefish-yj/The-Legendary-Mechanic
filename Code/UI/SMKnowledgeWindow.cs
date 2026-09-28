@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -185,10 +186,51 @@ namespace SuperMech.Code
                             foreach (var k in knowledge)
                             {
                                 bool unlocked = SuperMechKnowledge.IsUnlocked(actor, k.id);
+                                Color tierColor = TierColors[tier];
+                                Color borderColor = unlocked ? tierColor : new Color(0.3f, 0.3f, 0.3f, 0.6f);
+                                Color innerColor = unlocked ? new Color(1f, 1f, 1f, 0.9f) : new Color(0.4f, 0.4f, 0.4f, 0.5f);
+
                                 GameObject iconObj = new GameObject(k.id, typeof(RectTransform));
                                 iconObj.transform.SetParent(runningIcons.transform, false);
-                                Image iconImg = iconObj.AddComponent<Image>();
-                                iconImg.color = unlocked ? TierColors[tier] : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                                RectTransform iconRt = iconObj.GetComponent<RectTransform>();
+                                iconRt.sizeDelta = new Vector2(28, 28);
+
+                                Image borderImg = iconObj.AddComponent<Image>();
+                                borderImg.color = borderColor;
+                                borderImg.sprite = SpriteTextureLoader.getSprite("ui/special/special_circle");
+                                if (borderImg.sprite == null)
+                                {
+                                    borderImg.sprite = SpriteTextureLoader.getSprite("ui/special/special_square");
+                                }
+                                borderImg.type = Image.Type.Sliced;
+
+                                GameObject innerObj = new GameObject("Inner", typeof(RectTransform));
+                                innerObj.transform.SetParent(iconObj.transform, false);
+                                RectTransform innerRt = innerObj.GetComponent<RectTransform>();
+                                innerRt.anchorMin = new Vector2(0.15f, 0.15f);
+                                innerRt.anchorMax = new Vector2(0.85f, 0.85f);
+                                innerRt.offsetMin = Vector2.zero;
+                                innerRt.offsetMax = Vector2.zero;
+                                Image innerImg = innerObj.AddComponent<Image>();
+                                innerImg.color = innerColor;
+                                try
+                                {
+                                    Sprite sprite = SpriteTextureLoader.getSprite(k.icon);
+                                    if (sprite != null)
+                                    {
+                                        innerImg.sprite = sprite;
+                                        innerImg.color = Color.white;
+                                    }
+                                }
+                                catch { }
+
+                                if (unlocked)
+                                {
+                                    Outline outline = iconObj.AddComponent<Outline>();
+                                    outline.effectColor = new Color(tierColor.r, tierColor.g, tierColor.b, 0.8f);
+                                    outline.effectDistance = new Vector2(1, 1);
+                                }
+
                                 Button iconBtn = iconObj.AddComponent<Button>();
                                 string kid = k.id;
                                 iconBtn.onClick.AddListener(() =>
@@ -198,6 +240,10 @@ namespace SuperMech.Code
                                         SuperMechKnowledge.Unlock(actor, kid);
                                     }
                                 });
+
+                                iconObj.transform.localScale = Vector3.one * 0.8f;
+                                iconObj.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
+
                                 TipButton tipBtn = iconObj.AddComponent<TipButton>();
                                 tipBtn.textOnClick = k.id;
                                 tipBtn.textOnClickDescription = k.desc;
