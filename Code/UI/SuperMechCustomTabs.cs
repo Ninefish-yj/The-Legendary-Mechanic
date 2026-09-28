@@ -18,6 +18,10 @@ namespace SuperMech.Code
         private const string BagIconPath = "ui/iconBackpack";
 
         private static bool _initialized = false;
+        private static WindowMetaTab _knowledgeTab;
+        private static WindowMetaTab _bagTab;
+        private static Transform _knowledgeContent;
+        private static Transform _bagContent;
 
         [HarmonyPrefix]
         private static void Prefix(UnitWindow __instance)
@@ -27,28 +31,47 @@ namespace SuperMech.Code
                 Actor actor = SuperMechUtils.GetActor(__instance);
                 if (actor == null || !actor.isAlive()) return;
 
-                if (_initialized) return;
-                _initialized = true;
-
                 Transform tabsRoot = __instance.transform.Find("Background/Tabs");
                 if (tabsRoot == null) return;
 
                 WindowMetaTab genealogyTab = tabsRoot.Find("Genealogy")?.GetComponent<WindowMetaTab>();
                 if (genealogyTab == null) return;
 
-                int genealogyIndex = -1;
-                for (int i = 0; i < tabsRoot.childCount; i++)
+                if (!_initialized)
                 {
-                    if (tabsRoot.GetChild(i).name.ToLower().Contains("genealogy"))
+                    int genealogyIndex = -1;
+                    for (int i = 0; i < tabsRoot.childCount; i++)
                     {
-                        genealogyIndex = i;
-                        break;
+                        if (tabsRoot.GetChild(i).name.ToLower().Contains("genealogy"))
+                        {
+                            genealogyIndex = i;
+                            break;
+                        }
                     }
-                }
-                if (genealogyIndex < 0) genealogyIndex = tabsRoot.childCount;
+                    if (genealogyIndex < 0) genealogyIndex = tabsRoot.childCount;
 
-                CreateKnowledgeTab(__instance, tabsRoot, genealogyTab, genealogyIndex);
-                CreateBagTab(__instance, tabsRoot, genealogyTab, genealogyIndex + 1);
+                    _knowledgeTab = CreateKnowledgeTab(__instance, tabsRoot, genealogyTab, genealogyIndex);
+                    _bagTab = CreateBagTab(__instance, tabsRoot, genealogyTab, genealogyIndex + 1);
+                    _initialized = true;
+                }
+
+                if (_knowledgeContent != null)
+                {
+                    for (int i = _knowledgeContent.childCount - 1; i >= 0; i--)
+                    {
+                        UnityEngine.Object.DestroyImmediate(_knowledgeContent.GetChild(i).gameObject);
+                    }
+                    SMKnowledgeWindow.Create(_knowledgeContent, actor);
+                }
+
+                if (_bagContent != null)
+                {
+                    for (int i = _bagContent.childCount - 1; i >= 0; i--)
+                    {
+                        UnityEngine.Object.DestroyImmediate(_bagContent.GetChild(i).gameObject);
+                    }
+                    RenderBagContent(_bagContent, actor);
+                }
             }
             catch (Exception e)
             {
@@ -56,7 +79,7 @@ namespace SuperMech.Code
             }
         }
 
-        private static void CreateKnowledgeTab(UnitWindow window, Transform tabsRoot, WindowMetaTab sourceTab, int index)
+        private static WindowMetaTab CreateKnowledgeTab(UnitWindow window, Transform tabsRoot, WindowMetaTab sourceTab, int index)
         {
             WindowMetaTab customTab = UnityEngine.Object.Instantiate(sourceTab, tabsRoot);
             customTab.name = KnowledgeTabId;
@@ -90,7 +113,7 @@ namespace SuperMech.Code
             customTab.transform.SetSiblingIndex(index);
 
             customTab.container = window.scroll_window.tabs;
-            customTab.tab_elements.RemoveAll((Transform t) => t.name.ToLower().StartsWith("content_"));
+            customTab.tab_elements.Clear();
 
             var tabsField = typeof(WindowMetaTabButtonsContainer).GetField("_tabs",
                 BindingFlags.NonPublic | BindingFlags.Instance);
@@ -115,9 +138,11 @@ namespace SuperMech.Code
                         window.transform.Find("Background/Scroll View/Viewport/Content"));
                     contentObj.name = KnowledgeContentName;
 
-                    KnowledgeElement keComp = contentObj.GetComponent<KnowledgeElement>();
-                    if (keComp != null)
-                        UnityEngine.Object.DestroyImmediate(keComp);
+                    foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
+                    {
+                        if (comp != null && comp.GetType() != typeof(RectTransform))
+                            UnityEngine.Object.DestroyImmediate(comp);
+                    }
 
                     for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
                     {
@@ -129,16 +154,18 @@ namespace SuperMech.Code
             if (contentObj == null)
             {
                 UnitGenealogyElement genealogyElement = window.transform.GetComponentInChildren<UnitGenealogyElement>(true);
-                if (genealogyElement == null) return;
+                if (genealogyElement == null) return customTab;
 
                 contentObj = UnityEngine.Object.Instantiate(
                     genealogyElement.gameObject,
                     window.transform.Find("Background/Scroll View/Viewport/Content"));
                 contentObj.name = KnowledgeContentName;
 
-                UnitGenealogyElement genealogyComp = contentObj.GetComponent<UnitGenealogyElement>();
-                if (genealogyComp != null)
-                    UnityEngine.Object.DestroyImmediate(genealogyComp);
+                foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
+                {
+                    if (comp != null && comp.GetType() != typeof(RectTransform))
+                        UnityEngine.Object.DestroyImmediate(comp);
+                }
 
                 for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
                 {
@@ -157,13 +184,18 @@ namespace SuperMech.Code
             contentRt.pivot = new Vector2(0.5f, 1f);
             contentRt.sizeDelta = new Vector2(0, 800f);
 
-            SMKnowledgeWindow.Create(contentObj.transform, SuperMechUtils.GetActor(window));
+            _knowledgeContent = contentObj.transform;
+            Actor actor = SuperMechUtils.GetActor(window);
+            if (actor != null)
+                SMKnowledgeWindow.Create(_knowledgeContent, actor);
 
             window.scroll_window.tabs.addTabContent(customTab, contentObj.transform);
             window.scroll_window.tabs.refillTabsWithContent();
+
+            return customTab;
         }
 
-        private static void CreateBagTab(UnitWindow window, Transform tabsRoot, WindowMetaTab sourceTab, int index)
+        private static WindowMetaTab CreateBagTab(UnitWindow window, Transform tabsRoot, WindowMetaTab sourceTab, int index)
         {
             WindowMetaTab customTab = UnityEngine.Object.Instantiate(sourceTab, tabsRoot);
             customTab.name = BagTabId;
@@ -205,7 +237,7 @@ namespace SuperMech.Code
             customTab.transform.SetSiblingIndex(index);
 
             customTab.container = window.scroll_window.tabs;
-            customTab.tab_elements.RemoveAll((Transform t) => t.name.ToLower().StartsWith("content_"));
+            customTab.tab_elements.Clear();
 
             var tabsField = typeof(WindowMetaTabButtonsContainer).GetField("_tabs",
                 BindingFlags.NonPublic | BindingFlags.Instance);
@@ -216,17 +248,17 @@ namespace SuperMech.Code
             }
 
             UnitGenealogyElement genealogyElement2 = window.transform.GetComponentInChildren<UnitGenealogyElement>(true);
-            if (genealogyElement2 == null) return;
+            if (genealogyElement2 == null) return customTab;
 
             GameObject contentObj = UnityEngine.Object.Instantiate(
                 genealogyElement2.gameObject,
                 window.transform.Find("Background/Scroll View/Viewport/Content"));
             contentObj.name = BagContentName;
 
-            UnitGenealogyElement genealogyComp2 = contentObj.GetComponent<UnitGenealogyElement>();
-            if (genealogyComp2 != null)
+            foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
             {
-                UnityEngine.Object.DestroyImmediate(genealogyComp2);
+                if (comp != null && comp.GetType() != typeof(RectTransform))
+                    UnityEngine.Object.DestroyImmediate(comp);
             }
 
             for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
@@ -245,10 +277,15 @@ namespace SuperMech.Code
             contentRt.pivot = new Vector2(0.5f, 1f);
             contentRt.sizeDelta = new Vector2(0, 600f);
 
-            RenderBagContent(contentObj.transform, SuperMechUtils.GetActor(window));
+            _bagContent = contentObj.transform;
+            Actor actor = SuperMechUtils.GetActor(window);
+            if (actor != null)
+                RenderBagContent(_bagContent, actor);
 
             window.scroll_window.tabs.addTabContent(customTab, contentObj.transform);
             window.scroll_window.tabs.refillTabsWithContent();
+
+            return customTab;
         }
 
         private static void RenderBagContent(Transform parent, Actor actor)
