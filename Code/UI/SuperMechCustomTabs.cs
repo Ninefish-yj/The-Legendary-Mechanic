@@ -128,26 +128,20 @@ namespace SuperMech.Code
             KnowledgeWindow knowledgeWindow = UnityEngine.Object.FindObjectOfType<KnowledgeWindow>();
             if (knowledgeWindow != null)
             {
-                var prefabField = typeof(KnowledgeWindow).GetField("_element_prefab",
-                    BindingFlags.NonPublic | BindingFlags.Instance);
-                KnowledgeElement elementPrefab = prefabField?.GetValue(knowledgeWindow) as KnowledgeElement;
-                if (elementPrefab != null)
+                contentObj = UnityEngine.Object.Instantiate(
+                    knowledgeWindow.gameObject,
+                    window.transform.Find("Background/Scroll View/Viewport/Content"));
+                contentObj.name = KnowledgeContentName;
+
+                foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
                 {
-                    contentObj = UnityEngine.Object.Instantiate(
-                        elementPrefab.gameObject,
-                        window.transform.Find("Background/Scroll View/Viewport/Content"));
-                    contentObj.name = KnowledgeContentName;
+                    if (comp != null && comp.GetType() != typeof(RectTransform))
+                        UnityEngine.Object.DestroyImmediate(comp);
+                }
 
-                    foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
-                    {
-                        if (comp != null && comp.GetType() != typeof(RectTransform))
-                            UnityEngine.Object.DestroyImmediate(comp);
-                    }
-
-                    for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
-                    {
-                        UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
-                    }
+                for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
+                {
+                    UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
                 }
             }
 
