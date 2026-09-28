@@ -179,12 +179,9 @@ namespace SuperMech.Code
             float dmg = a.stats["damage"];
             float hp = a.stats["health"];
             float spd = a.stats["speed"];
-            float armor = a.stats["armor"];
-            float stamina = a.stats["stamina"];
-
-            float bodyScore = (dmg / 20f) + (hp / 200f) + (spd / 50f) + (armor / 10f) + (stamina / 100f);
-            float factor = 1f + bodyScore * 0.02f;
-            return Mathf.Clamp(factor, 1f, 3f);
+            float bodyScore = dmg + hp / 10f + spd / 2f;
+            float factor = 1f + bodyScore / 100f;
+            return Mathf.Clamp(factor, 1f, 2.5f);
         }
 
         public static bool HasExternalModSystem(Actor a)

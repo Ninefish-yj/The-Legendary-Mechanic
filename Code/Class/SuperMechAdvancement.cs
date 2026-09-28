@@ -13,28 +13,9 @@ namespace SuperMech.Code
         public static float CalcOnar(Actor a)
         {
             if (a == null) return 0;
-
             float power = SuperMechCrossMod.GetUniversalPowerLevel(a);
             if (power <= 0) return 0;
-
-            int stage = SuperMechStage.GetStage(a);
-            float stageFactor = 1f + stage * 0.03f;
-
-            int rankIdx = GetExactRankIndex(a);
-            float rankFactor = 1f + rankIdx * 0.05f;
-
-            float qiLv = SuperMechQi.GetLevel(power);
-            float decay = 1f;
-            if (qiLv > 12) decay = 1f / (1f + (qiLv - 12) * 0.06f);
-
-            float externalBonus = 1f;
-            if (SuperMechCrossMod.HasExternalModSystem(a))
-            {
-                externalBonus = 1.1f;
-            }
-
-            return power * stageFactor * rankFactor * decay * externalBonus
-                * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
+            return power * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
         }
 
         public static void TickAutoAwakening()
