@@ -129,6 +129,7 @@ namespace SuperMech.Code
 
         public static int GetActualCost(Actor a, string nodeId, int baseCost)
         {
+            if (a == null || a.stats == null) return baseCost;
             if (SuperMechTalent.IsFiveSystemGenius(a)) return baseCost;
 
             string prefix = GetKnowledgePrefix(nodeId);

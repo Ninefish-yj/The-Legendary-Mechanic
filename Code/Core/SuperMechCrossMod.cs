@@ -173,15 +173,22 @@ namespace SuperMech.Code
             return basePower * 10f;
         }
 
+        private const float BodyDamageWeight = 1f;
+        private const float BodyHealthWeight = 0.1f;
+        private const float BodySpeedWeight = 0.5f;
+        private const float BodyFactorScale = 0.01f;
+        private const float BodyFactorMin = 1f;
+        private const float BodyFactorMax = 2.5f;
+
         private static float GetBodyFactor(Actor a)
         {
-            if (a == null || a.stats == null) return 1f;
+            if (a == null || a.stats == null) return BodyFactorMin;
             float dmg = a.stats["damage"];
             float hp = a.stats["health"];
             float spd = a.stats["speed"];
-            float bodyScore = dmg + hp / 10f + spd / 2f;
-            float factor = 1f + bodyScore / 100f;
-            return Mathf.Clamp(factor, 1f, 2.5f);
+            float bodyScore = dmg * BodyDamageWeight + hp * BodyHealthWeight + spd * BodySpeedWeight;
+            float factor = BodyFactorMin + bodyScore * BodyFactorScale;
+            return Mathf.Clamp(factor, BodyFactorMin, BodyFactorMax);
         }
 
         public static bool HasExternalModSystem(Actor a)
