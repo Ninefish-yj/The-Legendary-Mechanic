@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -109,131 +110,127 @@ namespace SuperMech.Code
 
         private static void CreateKnowledgeElement(Transform parent, Actor actor, int tier, List<SuperMechKnowledge.KnowledgeDef> knowledge, string prefix)
         {
-            GameObject elementObj = new GameObject($"KnowledgeElement_Tier{tier}", typeof(RectTransform));
-            elementObj.transform.SetParent(parent, false);
-            RectTransform elementRt = elementObj.GetComponent<RectTransform>();
+            GameObject elementObj = null;
 
-            Image bg = elementObj.AddComponent<Image>();
-            bg.color = new Color(0.05f, 0.08f, 0.1f, 0.7f);
-
-            VerticalLayoutGroup vlg = elementObj.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 6f;
-            vlg.padding = new RectOffset(8, 8, 6, 6);
-            vlg.childAlignment = TextAnchor.UpperLeft;
-            vlg.childControlHeight = true;
-            vlg.childControlWidth = true;
-            vlg.childForceExpandHeight = false;
-            vlg.childForceExpandWidth = true;
-
-            GameObject headerObj = new GameObject("Header", typeof(RectTransform));
-            headerObj.transform.SetParent(elementObj.transform, false);
-            HorizontalLayoutGroup hlg = headerObj.AddComponent<HorizontalLayoutGroup>();
-            hlg.spacing = 8f;
-            hlg.childAlignment = TextAnchor.MiddleLeft;
-            hlg.childControlHeight = true;
-            hlg.childControlWidth = false;
-            hlg.childForceExpandHeight = true;
-            hlg.childForceExpandWidth = false;
-            RectTransform headerRt = headerObj.GetComponent<RectTransform>();
-            headerRt.sizeDelta = new Vector2(0, 28f);
-
-            Image leftIcon = new GameObject("IconLeft", typeof(RectTransform)).AddComponent<Image>();
-            leftIcon.transform.SetParent(headerObj.transform, false);
-            leftIcon.color = TierColors[tier];
-            RectTransform leftIconRt = leftIcon.GetComponent<RectTransform>();
-            leftIconRt.sizeDelta = new Vector2(24, 24);
-
-            int tierUnlocked = knowledge.FindAll(k => SuperMechKnowledge.IsUnlocked(actor, k.id)).Count;
-            Text title = SuperMechUtils.CreateText(headerObj.transform,
-                $"{LocalizedTextManager.getText("sm_ui_tier")} {tier + 1}",
-                13, TextAnchor.MiddleLeft, TierColors[tier]);
-            title.fontStyle = FontStyle.Bold;
-            RectTransform titleRt = title.GetComponent<RectTransform>();
-            titleRt.sizeDelta = new Vector2(80, 24);
-
-            GameObject miniBarObj = new GameObject("MiniProgress", typeof(RectTransform));
-            miniBarObj.transform.SetParent(headerObj.transform, false);
-            RectTransform miniBarRt = miniBarObj.GetComponent<RectTransform>();
-            miniBarRt.sizeDelta = new Vector2(120, 16);
-            Image miniBg = miniBarObj.AddComponent<Image>();
-            miniBg.color = new Color(0.15f, 0.15f, 0.15f, 0.8f);
-
-            GameObject miniMaskObj = new GameObject("Mask", typeof(RectTransform));
-            miniMaskObj.transform.SetParent(miniBarObj.transform, false);
-            Image miniMaskImg = miniMaskObj.AddComponent<Image>();
-            miniMaskImg.color = new Color(0.2f, 0.2f, 0.2f, 0.5f);
-            RectTransform miniMaskRt = miniMaskObj.GetComponent<RectTransform>();
-            miniMaskRt.anchorMin = Vector2.zero;
-            miniMaskRt.anchorMax = Vector2.one;
-            miniMaskRt.offsetMin = new Vector2(1, 1);
-            miniMaskRt.offsetMax = new Vector2(-1, -1);
-            Mask miniMaskComp = miniMaskObj.AddComponent<Mask>();
-            miniMaskComp.showMaskGraphic = false;
-
-            GameObject miniFillObj = new GameObject("Bar", typeof(RectTransform));
-            miniFillObj.transform.SetParent(miniMaskObj.transform, false);
-            Image miniFill = miniFillObj.AddComponent<Image>();
-            miniFill.color = TierColors[tier];
-            RectTransform miniFillRt = miniFillObj.GetComponent<RectTransform>();
-            miniFillRt.anchorMin = new Vector2(0, 0);
-            miniFillRt.anchorMax = new Vector2(0, 1);
-            miniFillRt.pivot = new Vector2(0, 0.5f);
-            miniFillRt.sizeDelta = new Vector2(0, 0);
-
-            GameObject miniTextObj = new GameObject("Text", typeof(RectTransform));
-            miniTextObj.transform.SetParent(miniBarObj.transform, false);
-            Text miniText = SuperMechUtils.CreateText(miniTextObj.transform,
-                $"{tierUnlocked}/{knowledge.Count}", 10, TextAnchor.MiddleCenter, Color.white);
-            RectTransform miniTextRt = miniTextObj.GetComponent<RectTransform>();
-            miniTextRt.anchorMin = Vector2.zero;
-            miniTextRt.anchorMax = Vector2.one;
-            miniTextRt.offsetMin = Vector2.zero;
-            miniTextRt.offsetMax = Vector2.zero;
-
-            StatBar miniStatBar = miniBarObj.AddComponent<StatBar>();
-            miniStatBar.textField = miniText;
-            miniStatBar.mask = miniMaskRt;
-            miniStatBar.bar = miniFillRt;
-            miniStatBar.setBar(tierUnlocked, knowledge.Count, "/" + knowledge.Count);
-
-            Image rightIcon = new GameObject("IconRight", typeof(RectTransform)).AddComponent<Image>();
-            rightIcon.transform.SetParent(headerObj.transform, false);
-            rightIcon.color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
-            RectTransform rightIconRt = rightIcon.GetComponent<RectTransform>();
-            rightIconRt.sizeDelta = new Vector2(20, 20);
-
-            GameObject gridObj = new GameObject("RunningIcons", typeof(RectTransform));
-            gridObj.transform.SetParent(elementObj.transform, false);
-            GridLayoutGroup glg = gridObj.AddComponent<GridLayoutGroup>();
-            glg.cellSize = new Vector2(28, 28);
-            glg.spacing = new Vector2(4, 4);
-            glg.constraint = GridLayoutGroup.Constraint.Flexible;
-            glg.childAlignment = TextAnchor.UpperLeft;
-            RectTransform gridRt = gridObj.GetComponent<RectTransform>();
-            gridRt.sizeDelta = new Vector2(0, 70f);
-
-            foreach (var def in knowledge)
+            KnowledgeWindow knowledgeWindow = UnityEngine.Object.FindObjectOfType<KnowledgeWindow>();
+            if (knowledgeWindow != null)
             {
-                bool unlocked = SuperMechKnowledge.IsUnlocked(actor, def.id);
-                GameObject iconObj = new GameObject(def.id, typeof(RectTransform));
-                iconObj.transform.SetParent(gridObj.transform, false);
-                Image img = iconObj.AddComponent<Image>();
-                img.color = unlocked ? TierColors[tier] : new Color(0.25f, 0.25f, 0.25f, 0.6f);
-                try
+                var prefabField = typeof(KnowledgeWindow).GetField("_element_prefab",
+                    BindingFlags.NonPublic | BindingFlags.Instance);
+                KnowledgeElement elementPrefab = prefabField?.GetValue(knowledgeWindow) as KnowledgeElement;
+                if (elementPrefab != null)
                 {
-                    Sprite sprite = SpriteTextureLoader.getSprite(def.icon);
-                    if (sprite != null) img.sprite = sprite;
-                }
-                catch { }
-                Button btn = iconObj.AddComponent<Button>();
-                string kid = def.id;
-                btn.onClick.AddListener(() =>
-                {
-                    if (!unlocked && actor != null)
+                    elementObj = UnityEngine.Object.Instantiate(elementPrefab.gameObject, parent, false);
+                    elementObj.name = $"KnowledgeElement_Tier{tier}";
+
+                    KnowledgeElement keComp = elementObj.GetComponent<KnowledgeElement>();
+                    if (keComp != null)
                     {
-                        SuperMechKnowledge.Unlock(actor, kid);
+                        var localizedTextField = typeof(KnowledgeElement).GetField("_localized_text",
+                            BindingFlags.NonPublic | BindingFlags.Instance);
+                        var iconLeftField = typeof(KnowledgeElement).GetField("_icon_left",
+                            BindingFlags.NonPublic | BindingFlags.Instance);
+                        var progressBarField = typeof(KnowledgeElement).GetField("_progress_bar",
+                            BindingFlags.NonPublic | BindingFlags.Instance);
+                        var runningIconsField = typeof(KnowledgeElement).GetField("_running_icons",
+                            BindingFlags.NonPublic | BindingFlags.Instance);
+
+                        LocalizedText locText = localizedTextField?.GetValue(keComp) as LocalizedText;
+                        Image iconLeft = iconLeftField?.GetValue(keComp) as Image;
+                        StatBar progressBar = progressBarField?.GetValue(keComp) as StatBar;
+                        RunningIcons runningIcons = runningIconsField?.GetValue(keComp) as RunningIcons;
+
+                        UnityEngine.Object.DestroyImmediate(keComp);
+
+                        int tierUnlocked = knowledge.FindAll(k => SuperMechKnowledge.IsUnlocked(actor, k.id)).Count;
+
+                        if (locText != null)
+                        {
+                            locText.gameObject.SetActive(true);
+                            Text textComp = locText.GetComponent<Text>();
+                            if (textComp != null)
+                            {
+                                textComp.text = $"{LocalizedTextManager.getText("sm_ui_tier")} {tier + 1}";
+                                textComp.color = TierColors[tier];
+                                textComp.fontStyle = FontStyle.Bold;
+                            }
+                        }
+
+                        if (iconLeft != null)
+                        {
+                            iconLeft.gameObject.SetActive(true);
+                            iconLeft.color = TierColors[tier];
+                        }
+
+                        if (progressBar != null)
+                        {
+                            progressBar.gameObject.SetActive(true);
+                            progressBar.setBar(tierUnlocked, knowledge.Count, "/" + knowledge.Count);
+                        }
+
+                        if (runningIcons != null)
+                        {
+                            runningIcons.gameObject.SetActive(true);
+                            foreach (Transform child in runningIcons.transform)
+                            {
+                                UnityEngine.Object.DestroyImmediate(child.gameObject);
+                            }
+
+                            GridLayoutGroup glg = runningIcons.GetComponent<GridLayoutGroup>();
+                            if (glg == null) glg = runningIcons.gameObject.AddComponent<GridLayoutGroup>();
+                            glg.cellSize = new Vector2(24, 24);
+                            glg.spacing = new Vector2(4, 4);
+                            glg.childAlignment = TextAnchor.UpperLeft;
+
+                            foreach (var k in knowledge)
+                            {
+                                bool unlocked = SuperMechKnowledge.IsUnlocked(actor, k.id);
+                                GameObject iconObj = new GameObject(k.id, typeof(RectTransform));
+                                iconObj.transform.SetParent(runningIcons.transform, false);
+                                Image iconImg = iconObj.AddComponent<Image>();
+                                iconImg.color = unlocked ? TierColors[tier] : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                                Button iconBtn = iconObj.AddComponent<Button>();
+                                string kid = k.id;
+                                iconBtn.onClick.AddListener(() =>
+                                {
+                                    if (!unlocked && actor != null)
+                                    {
+                                        SuperMechKnowledge.Unlock(actor, kid);
+                                    }
+                                });
+                                TipButton tipBtn = iconObj.AddComponent<TipButton>();
+                                tipBtn.textOnClick = k.id;
+                                tipBtn.textOnClickDescription = k.desc;
+                            }
+                        }
                     }
-                });
+                }
+            }
+
+            if (elementObj == null)
+            {
+                elementObj = new GameObject($"KnowledgeElement_Tier{tier}", typeof(RectTransform));
+                elementObj.transform.SetParent(parent, false);
+                Image bg = elementObj.AddComponent<Image>();
+                bg.color = new Color(0.05f, 0.08f, 0.1f, 0.7f);
+                VerticalLayoutGroup vlg = elementObj.AddComponent<VerticalLayoutGroup>();
+                vlg.spacing = 6f;
+                vlg.padding = new RectOffset(8, 8, 6, 6);
+                int tierUnlocked = knowledge.FindAll(k => SuperMechKnowledge.IsUnlocked(actor, k.id)).Count;
+                SuperMechUtils.CreateText(elementObj.transform,
+                    $"{LocalizedTextManager.getText("sm_ui_tier")} {tier + 1}  {tierUnlocked}/{knowledge.Count}",
+                    13, TextAnchor.MiddleLeft, TierColors[tier]);
+                GridLayoutGroup glg = elementObj.AddComponent<GridLayoutGroup>();
+                glg.cellSize = new Vector2(24, 24);
+                glg.spacing = new Vector2(4, 4);
+                foreach (var k in knowledge)
+                {
+                    bool unlocked = SuperMechKnowledge.IsUnlocked(actor, k.id);
+                    GameObject iconObj = new GameObject(k.id, typeof(RectTransform));
+                    iconObj.transform.SetParent(elementObj.transform, false);
+                    Image iconImg = iconObj.AddComponent<Image>();
+                    iconImg.color = unlocked ? TierColors[tier] : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                }
             }
         }
     }
