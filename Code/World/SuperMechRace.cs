@@ -382,26 +382,13 @@ namespace SuperMech.Code
         {
             try
             {
-                var nameField = species.GetType().GetField("name",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (nameField != null) nameField.SetValue(species, name);
-                else
+                SuperMechReflection.SetFieldValue(species, "name", name);
+                SuperMechReflection.InvokeMethod(species, "set_name", new object[] { name });
+
+                object locText = SuperMechReflection.GetFieldValue<object>(species, "name_localized");
+                if (locText != null)
                 {
-                    var setName = species.GetType().GetMethod("set_name",
-                        BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                    setName?.Invoke(species, new object[] { name });
-                }
-                var nameLocField = species.GetType().GetField("name_localized",
-                    BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                if (nameLocField != null)
-                {
-                    var locText = nameLocField.GetValue(species);
-                    if (locText != null)
-                    {
-                        var textField = locText.GetType().GetField("text",
-                            BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                        textField?.SetValue(locText, name);
-                    }
+                    SuperMechReflection.SetFieldValue(locText, "text", name);
                 }
             }
             catch (Exception e)

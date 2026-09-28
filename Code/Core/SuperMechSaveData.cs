@@ -328,8 +328,8 @@ namespace SuperMech.Code
                     }
                     if (ad.fiveSystemGenius)
                     {
-                        typeof(SuperMechTalent).GetField("_fiveSystemGenius", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
-                            ?.SetValue(null, new HashSet<long> { a.id });
+                        SuperMechReflection.SetStaticFieldValue(typeof(SuperMechTalent), "_fiveSystemGenius",
+                            new HashSet<long> { a.id });
                     }
 
                     _pendingLoad.actors.Remove(id);
@@ -410,8 +410,8 @@ namespace SuperMech.Code
                         specificPower = d.ContainsKey("specificPower") ? d["specificPower"].ToString() : ""
                     });
                 }
-                typeof(SuperMechTalent).GetField("_talents", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)
-                    ?.SetValue(null, new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } });
+                SuperMechReflection.SetStaticFieldValue(typeof(SuperMechTalent), "_talents",
+                    new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } });
             }
             catch { Debug.LogWarning("[超神机械师] 存档恢复失败"); }
         }

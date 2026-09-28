@@ -138,23 +138,12 @@ namespace SuperMech.Code
             newGroup.transform.localScale = Vector3.one;
         }
 
-        private static System.Reflection.MethodInfo _setIconValueMethod;
-
         private static void CallSetIconValue(UnitWindow window, string name, float value)
         {
             try
             {
-                if (_setIconValueMethod == null)
-                {
-                    _setIconValueMethod = typeof(UnitWindow).GetMethod("setIconValue",
-                        System.Reflection.BindingFlags.NonPublic |
-                        System.Reflection.BindingFlags.Instance |
-                        System.Reflection.BindingFlags.Public);
-                }
-                if (_setIconValueMethod != null)
-                {
-                    _setIconValueMethod.Invoke(window, new object[] { name, value, null, "", false, "", '/' });
-                }
+                SuperMechReflection.InvokeMethod(window, "setIconValue",
+                    new object[] { name, value, null, "", false, "", '/' });
             }
             catch (Exception e)
             {

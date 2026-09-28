@@ -132,9 +132,7 @@ namespace SuperMech.Code
             KnowledgeWindow knowledgeWindow = UnityEngine.Object.FindObjectOfType<KnowledgeWindow>();
             if (knowledgeWindow != null)
             {
-                var prefabField = typeof(KnowledgeWindow).GetField("_element_prefab",
-                    BindingFlags.NonPublic | BindingFlags.Instance);
-                KnowledgeElement elementPrefab = prefabField?.GetValue(knowledgeWindow) as KnowledgeElement;
+                KnowledgeElement elementPrefab = SuperMechReflection.GetFieldValue<KnowledgeElement>(knowledgeWindow, "_element_prefab");
                 if (elementPrefab != null)
                 {
                     elementObj = UnityEngine.Object.Instantiate(elementPrefab.gameObject, parent, false);
@@ -149,19 +147,10 @@ namespace SuperMech.Code
                     KnowledgeElement keComp = elementObj.GetComponent<KnowledgeElement>();
                     if (keComp != null)
                     {
-                        var localizedTextField = typeof(KnowledgeElement).GetField("_localized_text",
-                            BindingFlags.NonPublic | BindingFlags.Instance);
-                        var iconLeftField = typeof(KnowledgeElement).GetField("_icon_left",
-                            BindingFlags.NonPublic | BindingFlags.Instance);
-                        var progressBarField = typeof(KnowledgeElement).GetField("_progress_bar",
-                            BindingFlags.NonPublic | BindingFlags.Instance);
-                        var runningIconsField = typeof(KnowledgeElement).GetField("_running_icons",
-                            BindingFlags.NonPublic | BindingFlags.Instance);
-
-                        LocalizedText locText = localizedTextField?.GetValue(keComp) as LocalizedText;
-                        Image iconLeft = iconLeftField?.GetValue(keComp) as Image;
-                        StatBar progressBar = progressBarField?.GetValue(keComp) as StatBar;
-                        RunningIcons runningIcons = runningIconsField?.GetValue(keComp) as RunningIcons;
+                        LocalizedText locText = SuperMechReflection.GetFieldValue<LocalizedText>(keComp, "_localized_text");
+                        Image iconLeft = SuperMechReflection.GetFieldValue<Image>(keComp, "_icon_left");
+                        StatBar progressBar = SuperMechReflection.GetFieldValue<StatBar>(keComp, "_progress_bar");
+                        RunningIcons runningIcons = SuperMechReflection.GetFieldValue<RunningIcons>(keComp, "_running_icons");
 
                         UnityEngine.Object.DestroyImmediate(keComp);
 

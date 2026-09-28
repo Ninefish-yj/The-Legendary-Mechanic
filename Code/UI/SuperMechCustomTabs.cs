@@ -115,9 +115,7 @@ namespace SuperMech.Code
             customTab.container = window.scroll_window.tabs;
             customTab.tab_elements.Clear();
 
-            var tabsField = typeof(WindowMetaTabButtonsContainer).GetField("_tabs",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            List<WindowMetaTab> tabsList = tabsField?.GetValue(window.scroll_window.tabs) as List<WindowMetaTab>;
+            List<WindowMetaTab> tabsList = SuperMechReflection.GetFieldValue<List<WindowMetaTab>>(window.scroll_window.tabs, "_tabs");
             if (tabsList != null && !tabsList.Contains(customTab))
             {
                 tabsList.Add(customTab);
@@ -260,9 +258,7 @@ namespace SuperMech.Code
             customTab.container = window.scroll_window.tabs;
             customTab.tab_elements.Clear();
 
-            var tabsField = typeof(WindowMetaTabButtonsContainer).GetField("_tabs",
-                BindingFlags.NonPublic | BindingFlags.Instance);
-            List<WindowMetaTab> tabsList = tabsField?.GetValue(window.scroll_window.tabs) as List<WindowMetaTab>;
+            List<WindowMetaTab> tabsList = SuperMechReflection.GetFieldValue<List<WindowMetaTab>>(window.scroll_window.tabs, "_tabs");
             if (tabsList != null && !tabsList.Contains(customTab))
             {
                 tabsList.Add(customTab);
@@ -439,20 +435,7 @@ namespace SuperMech.Code
 
         private static ScrollWindow LoadKnowledgeWindowPrefab()
         {
-            try
-            {
-                MethodInfo method = typeof(WindowPreloader).GetMethod("getWindowPrefab",
-                    BindingFlags.NonPublic | BindingFlags.Static);
-                if (method != null)
-                {
-                    return method.Invoke(null, new object[] { "knowledge" }) as ScrollWindow;
-                }
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning("[超神机械师] 加载知识窗口预制体失败: " + e.Message);
-            }
-            return null;
+            return SuperMechReflection.LoadWindowPrefab<ScrollWindow>("knowledge");
         }
 
         public static void ClearStaticState()

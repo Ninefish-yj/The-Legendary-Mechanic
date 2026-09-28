@@ -7,29 +7,12 @@ namespace SuperMech.Code
     {
         public static Actor GetActor(UnitWindow window)
         {
-            try
-            {
-                if (SelectedUnit.unit != null && SelectedUnit.unit.isAlive()) return SelectedUnit.unit;
-                var fi = typeof(UnitWindow).GetField("_actor",
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.NonPublic);
-                if (fi != null) return fi.GetValue(window) as Actor;
-                var prop = typeof(UnitWindow).GetProperty("actor",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public);
-                if (prop != null) return prop.GetValue(window) as Actor;
-                var field = typeof(UnitWindow).GetField("actor",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public);
-                return field?.GetValue(window) as Actor;
-            }
-            catch (Exception e)
-            {
-                Debug.LogWarning("[超神机械师] GetActor反射失败: " + e.Message);
-                return null;
-            }
+            if (SelectedUnit.unit != null && SelectedUnit.unit.isAlive()) return SelectedUnit.unit;
+            Actor actor = SuperMechReflection.GetFieldValue<Actor>(window, "_actor");
+            if (actor != null) return actor;
+            actor = SuperMechReflection.GetPropertyValue<Actor>(window, "actor");
+            if (actor != null) return actor;
+            return SuperMechReflection.GetFieldValue<Actor>(window, "actor");
         }
 
         public static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor, Color color)
