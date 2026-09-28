@@ -13,23 +13,27 @@ namespace SuperMech.Code
         public static float CalcOnar(Actor a)
         {
             if (a == null) return 0;
-            float qi = SuperMechQi.GetQiMax(a);
-            if (qi <= 0) return 0;
+
+            float power = SuperMechCrossMod.GetUniversalPowerLevel(a);
+            if (power <= 0) return 0;
 
             int stage = SuperMechStage.GetStage(a);
             float stageFactor = 1f + stage * 0.03f;
 
-            var s = SuperMechStats.Of(a);
-            float dmg = s != null ? s["damage"] : 0;
-            float hp = s != null ? s["health"] : 0;
-            float intell = s != null ? s["intelligence"] : 0;
-            float attrFactor = 1f + (dmg / 100f + hp / 1000f + intell / 20f) * 0.02f;
+            int rankIdx = GetExactRankIndex(a);
+            float rankFactor = 1f + rankIdx * 0.05f;
 
-            int qiLv = SuperMechQi.GetLevel(qi);
+            float qiLv = SuperMechQi.GetLevel(power);
             float decay = 1f;
             if (qiLv > 12) decay = 1f / (1f + (qiLv - 12) * 0.06f);
 
-            return qi * stageFactor * attrFactor * decay
+            float externalBonus = 1f;
+            if (SuperMechCrossMod.HasExternalModSystem(a))
+            {
+                externalBonus = 1.1f;
+            }
+
+            return power * stageFactor * rankFactor * decay * externalBonus
                 * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
         }
 

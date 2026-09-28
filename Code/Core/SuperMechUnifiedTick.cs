@@ -27,6 +27,7 @@ namespace SuperMech.Code
                     SuperMechRefinement.TickRefinement();
                     SuperMechRefinement.TickCultivation();
                     SuperMechCustomStats.TickSync();
+                    SuperMechCrossMod.TickEnergySync();
                 }
                 else if (group == 1)
                 {

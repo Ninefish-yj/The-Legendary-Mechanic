@@ -44,6 +44,7 @@ namespace SuperMech
             SuperMechSanctuary.Register();
             SuperMechCrafting.Register();
             SuperMechPowers.Register();
+            SuperMechCrossMod.Init();
 
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();
