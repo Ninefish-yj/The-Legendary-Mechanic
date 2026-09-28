@@ -9,6 +9,13 @@ namespace SuperMech.Code
         private static SMWindowFrame _frame;
         private static int _sortMode;
 
+        private static readonly Color[] RankColors = {
+            new Color(0.95f, 0.8f, 0.35f, 0.9f),
+            new Color(0.8f, 0.85f, 0.9f, 0.8f),
+            new Color(0.85f, 0.55f, 0.35f, 0.75f),
+            new Color(0.1f, 0.15f, 0.25f, 0.6f)
+        };
+
         public static void Show()
         {
             if (_frame == null) Init();
@@ -21,7 +28,7 @@ namespace SuperMech.Code
         {
             try
             {
-                _frame = SMWindowFrame.Create(LocalizedTextManager.getText("sm_rank_title"), 640f, 700f);
+                _frame = SMWindowFrame.Create(LocalizedTextManager.getText("sm_rank_title"), 680f, 720f);
                 if (_frame == null) return;
                 Debug.Log("[超神机械师] 排行榜窗口创建成功");
             }
@@ -37,14 +44,19 @@ namespace SuperMech.Code
             _frame.ClearContent();
             float y = -8f;
             const float x = 12f;
+            float width = 640f;
 
-            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_onar"), x, y, 90f, 26f, () => { _sortMode = 0; Refresh(); }, _sortMode == 0 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
-            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_qi"), x + 95f, y, 90f, 26f, () => { _sortMode = 1; Refresh(); }, _sortMode == 1 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
-            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_rank"), x + 190f, y, 90f, 26f, () => { _sortMode = 2; Refresh(); }, _sortMode == 2 ? new Color(0.2f, 0.4f, 0.7f) : (Color?)null);
-            y -= 36f;
+            _frame.AddLabel(LocalizedTextManager.getText("sm_rank_subtitle"), x, y, width, 24f, 13, TextAnchor.MiddleCenter);
+            y -= 30f;
 
-            _frame.AddLabel(LocalizedTextManager.getText("sm_rank_header"), x, y, 600f, 20f, 12);
-            y -= 24f;
+            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_onar"), x, y, 100f, 28f, () => { _sortMode = 0; Refresh(); }, _sortMode == 0 ? SMImguiTheme.Cyan : (Color?)null);
+            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_qi"), x + 105f, y, 100f, 28f, () => { _sortMode = 1; Refresh(); }, _sortMode == 1 ? SMImguiTheme.Cyan : (Color?)null);
+            _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_rank"), x + 210f, y, 100f, 28f, () => { _sortMode = 2; Refresh(); }, _sortMode == 2 ? SMImguiTheme.Cyan : (Color?)null);
+            y -= 38f;
+
+            _frame.AddLabel($"{"#",-4} {"名称",-16} {"系别",-6} {"阶位",-6} {"气力",-5} {"能级",-8}",
+                x, y, width, 22f, 12, TextAnchor.MiddleLeft, SMImguiTheme.Cyan);
+            y -= 26f;
 
             var list = new List<(Actor a, float onar, float qi, int rank)>();
             if (World.world != null && World.world.units != null)
@@ -72,21 +84,41 @@ namespace SuperMech.Code
                 string rank = SuperMechRanks.GetRankName(entry.a);
                 int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQi(entry.a));
 
-                Color rowColor = i < 3 ? new Color(0.15f, 0.12f, 0.05f, 0.6f) : new Color(0.08f, 0.08f, 0.12f, 0.5f);
-                _frame.AddButton($"{i + 1,2}. {entry.a.name,-14} {cls,-4} {rank,-5} Lv{qiLv,-3} {entry.onar,8:F0}",
-                    x, y, 600f, 26f, () => { MoveCamera.setFocusUnit(entry.a); }, rowColor);
-                y -= 30f;
+                Color rowColor = i < 3 ? RankColors[i] : RankColors[3];
+                string rankPrefix = i < 3 ? GetRankIcon(i) : $"{i + 1,2}.";
+                string line = $"{rankPrefix} {Truncate(entry.a.name, 14),-14} {cls,-5} {rank,-5} Lv{qiLv,-3} {entry.onar,8:F0}";
+
+                _frame.AddButton(line, x, y, width, 28f, () => { MoveCamera.setFocusUnit(entry.a); }, rowColor);
+                y -= 32f;
             }
 
             if (count == 0)
             {
-                _frame.AddLabel(LocalizedTextManager.getText("sm_rank_empty"), x, y, 600f, 30f, 14, TextAnchor.MiddleCenter);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_rank_empty"), x, y, width, 40f, 14, TextAnchor.MiddleCenter);
             }
             else
             {
-                y -= 8f;
-                _frame.AddLabel($"{LocalizedTextManager.getText("sm_rank_total")} {list.Count} {LocalizedTextManager.getText("sm_rank_showing")} {count}", x, y, 600f, 18f, 11);
+                y -= 6f;
+                _frame.AddLabel($"{LocalizedTextManager.getText("sm_rank_total")} {list.Count} {LocalizedTextManager.getText("sm_rank_showing")} {count}",
+                    x, y, width, 18f, 11, TextAnchor.MiddleLeft, SMImguiTheme.TextDim);
             }
+        }
+
+        private static string GetRankIcon(int rank)
+        {
+            switch (rank)
+            {
+                case 0: return "①";
+                case 1: return "②";
+                case 2: return "③";
+                default: return $"{rank + 1}.";
+            }
+        }
+
+        private static string Truncate(string s, int max)
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+            return s.Length > max ? s.Substring(0, max) + ".." : s;
         }
 
         private static string GetClassShort(Actor a)

@@ -114,7 +114,7 @@ namespace SuperMech.Code
 
         public bool IsVisible => Root != null && Root.activeSelf;
 
-        public Text AddLabel(string text, float x, float y, float w, float h, int fontSize = 14, TextAnchor align = TextAnchor.UpperLeft)
+        public Text AddLabel(string text, float x, float y, float w, float h, int fontSize = 14, TextAnchor align = TextAnchor.UpperLeft, Color? color = null)
         {
             var go = new GameObject("Label", typeof(RectTransform), typeof(Text));
             go.transform.SetParent(ContentParent, false);
@@ -128,7 +128,7 @@ namespace SuperMech.Code
             t.font = SafeFont();
             t.fontSize = fontSize;
             t.alignment = align;
-            t.color = new Color(0.85f, 0.85f, 0.85f, 1f);
+            t.color = color ?? new Color(0.85f, 0.85f, 0.85f, 1f);
             t.text = text;
             t.horizontalOverflow = HorizontalWrapMode.Overflow;
             t.verticalOverflow = VerticalWrapMode.Overflow;

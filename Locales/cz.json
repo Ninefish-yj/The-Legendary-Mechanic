@@ -3746,5 +3746,6 @@
   "sm_ui_empty": "（空）",
   "sm_ui_eat": "食用",
   "sm_ui_ate": "已食用",
-  "sm_ui_click_open": "点击打开 →"
+  "sm_ui_click_open": "点击打开 →",
+  "sm_rank_subtitle": "星际超能者实力排名"
 }

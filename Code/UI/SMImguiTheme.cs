@@ -6,19 +6,24 @@ namespace SuperMech.Code
     {
         private static bool _ready;
         private static Texture2D _pixel;
+        private static Texture2D _scanline;
 
-        public static readonly Color Background = new Color(0.03f, 0.04f, 0.07f, 0.95f);
-        public static readonly Color Panel = new Color(0.07f, 0.09f, 0.15f, 1f);
-        public static readonly Color PanelRaised = new Color(0.09f, 0.13f, 0.21f, 1f);
-        public static readonly Color Border = new Color(0.2f, 0.26f, 0.35f, 1f);
-        public static readonly Color Gold = new Color(0.91f, 0.76f, 0.42f, 1f);
-        public static readonly Color Cyan = new Color(0.29f, 0.84f, 0.89f, 1f);
-        public static readonly Color Teal = new Color(0.3f, 0.71f, 0.67f, 1f);
-        public static readonly Color Success = new Color(0.4f, 0.82f, 0.56f, 1f);
-        public static readonly Color Warning = new Color(0.91f, 0.64f, 0.29f, 1f);
-        public static readonly Color Danger = new Color(0.89f, 0.36f, 0.42f, 1f);
-        public static readonly Color Text = new Color(0.91f, 0.93f, 0.96f, 1f);
-        public static readonly Color Muted = new Color(0.58f, 0.64f, 0.74f, 1f);
+        public static readonly Color Background = new Color(0.02f, 0.05f, 0.08f, 0.96f);
+        public static readonly Color Panel = new Color(0.04f, 0.08f, 0.14f, 0.9f);
+        public static readonly Color PanelRaised = new Color(0.06f, 0.12f, 0.2f, 0.95f);
+        public static readonly Color PanelDark = new Color(0.02f, 0.04f, 0.07f, 0.95f);
+        public static readonly Color Border = new Color(0.15f, 0.4f, 0.6f, 0.8f);
+        public static readonly Color BorderGlow = new Color(0.25f, 0.7f, 0.95f, 1f);
+        public static readonly Color Gold = new Color(0.95f, 0.8f, 0.45f, 1f);
+        public static readonly Color Cyan = new Color(0.3f, 0.85f, 0.95f, 1f);
+        public static readonly Color Teal = new Color(0.25f, 0.75f, 0.7f, 1f);
+        public static readonly Color Blue = new Color(0.35f, 0.6f, 0.95f, 1f);
+        public static readonly Color Success = new Color(0.35f, 0.85f, 0.6f, 1f);
+        public static readonly Color Warning = new Color(0.95f, 0.7f, 0.35f, 1f);
+        public static readonly Color Danger = new Color(0.95f, 0.4f, 0.45f, 1f);
+        public static readonly Color Text = new Color(0.92f, 0.95f, 0.98f, 1f);
+        public static readonly Color TextDim = new Color(0.65f, 0.75f, 0.85f, 1f);
+        public static readonly Color Muted = new Color(0.45f, 0.55f, 0.68f, 1f);
 
         public static GUIStyle Label { get; private set; }
         public static GUIStyle WrappedLabel { get; private set; }
@@ -33,6 +38,8 @@ namespace SuperMech.Code
         public static GUIStyle Tab { get; private set; }
         public static GUIStyle TabActive { get; private set; }
         public static GUIStyle Input { get; private set; }
+        public static GUIStyle DataLabel { get; private set; }
+        public static GUIStyle DataValue { get; private set; }
         public static GUISkin RootSkin { get; private set; }
 
         public static void Ensure()
@@ -40,71 +47,97 @@ namespace SuperMech.Code
             if (_ready) return;
             _ready = true;
             EnsurePixel();
+            EnsureScanline();
 
             Label = new GUIStyle(GUI.skin.label)
             {
-                fontSize = 14,
+                fontSize = 13,
                 normal = { textColor = Text },
                 richText = true
             };
             WrappedLabel = new GUIStyle(Label) { wordWrap = true };
-            Small = new GUIStyle(Label) { fontSize = 11, normal = { textColor = Muted } };
-            Title = new GUIStyle(Label) { fontSize = 18, fontStyle = FontStyle.Bold, normal = { textColor = Gold } };
-            Section = new GUIStyle(Label) { fontSize = 14, fontStyle = FontStyle.Bold, normal = { textColor = Cyan } };
+            Small = new GUIStyle(Label) { fontSize = 11, normal = { textColor = TextDim } };
+            Title = new GUIStyle(Label)
+            {
+                fontSize = 20,
+                fontStyle = FontStyle.Bold,
+                normal = { textColor = Cyan },
+                alignment = TextAnchor.MiddleCenter
+            };
+            Section = new GUIStyle(Label)
+            {
+                fontSize = 14,
+                fontStyle = FontStyle.Bold,
+                normal = { textColor = Cyan }
+            };
+            DataLabel = new GUIStyle(Label)
+            {
+                fontSize = 12,
+                normal = { textColor = TextDim },
+                alignment = TextAnchor.MiddleLeft
+            };
+            DataValue = new GUIStyle(Label)
+            {
+                fontSize = 13,
+                fontStyle = FontStyle.Bold,
+                normal = { textColor = Cyan },
+                alignment = TextAnchor.MiddleRight
+            };
 
             PanelStyle = new GUIStyle(GUI.skin.box)
             {
                 normal = { background = MakeFrame(Panel, Border) },
                 border = new RectOffset(2, 2, 2, 2),
-                padding = new RectOffset(8, 8, 8, 8)
+                padding = new RectOffset(10, 10, 8, 8)
             };
             RaisedPanelStyle = new GUIStyle(PanelStyle)
             {
-                normal = { background = MakeFrame(PanelRaised, Border) }
+                normal = { background = MakeFrame(PanelRaised, BorderGlow) }
             };
 
             WindowStyle = new GUIStyle(GUI.skin.window)
             {
-                normal = { background = MakeFrame(Background, Border) },
+                normal = { background = MakeFrame(Background, BorderGlow) },
                 active = { background = MakeFrame(Background, Gold) },
                 border = new RectOffset(3, 3, 3, 3),
-                padding = new RectOffset(10, 10, 32, 10),
-                fontSize = 14,
+                padding = new RectOffset(12, 12, 36, 12),
+                fontSize = 15,
                 fontStyle = FontStyle.Bold,
-                normal = { textColor = Gold },
+                normal = { textColor = Cyan },
                 alignment = TextAnchor.UpperCenter
             };
 
             Button = new GUIStyle(GUI.skin.button)
             {
-                normal = { background = MakeFrame(PanelRaised, Border), textColor = Text },
-                hover = { background = MakeFrame(new Color(0.12f, 0.17f, 0.27f, 1f), Gold), textColor = Gold },
-                active = { background = MakeFrame(new Color(0.15f, 0.2f, 0.32f, 1f), Cyan), textColor = Cyan },
+                normal = { background = MakeFrame(PanelDark, Border), textColor = Text },
+                hover = { background = MakeFrame(PanelRaised, BorderGlow), textColor = Cyan },
+                active = { background = MakeFrame(new Color(0.1f, 0.2f, 0.35f, 1f), Cyan), textColor = Cyan },
                 border = new RectOffset(3, 3, 3, 3),
                 padding = new RectOffset(8, 8, 5, 5),
-                fontSize = 13,
+                fontSize = 12,
                 alignment = TextAnchor.MiddleCenter
             };
             PrimaryButton = new GUIStyle(Button)
             {
-                normal = { background = MakeFrame(new Color(0.15f, 0.3f, 0.45f, 1f), Cyan), textColor = Cyan },
-                hover = { background = MakeFrame(new Color(0.2f, 0.4f, 0.55f, 1f), Gold), textColor = Gold }
+                normal = { background = MakeFrame(new Color(0.1f, 0.25f, 0.4f, 1f), Cyan), textColor = Cyan },
+                hover = { background = MakeFrame(new Color(0.15f, 0.35f, 0.5f, 1f), Gold), textColor = Gold }
             };
 
             Tab = new GUIStyle(Button)
             {
                 fontSize = 12,
-                padding = new RectOffset(6, 6, 4, 4)
+                padding = new RectOffset(8, 8, 5, 5),
+                normal = { background = MakeFrame(PanelDark, Border), textColor = TextDim }
             };
             TabActive = new GUIStyle(Tab)
             {
-                normal = { background = MakeFrame(new Color(0.15f, 0.3f, 0.45f, 1f), Gold), textColor = Gold }
+                normal = { background = MakeFrame(new Color(0.1f, 0.25f, 0.4f, 1f), Cyan), textColor = Cyan }
             };
 
             Input = new GUIStyle(GUI.skin.textField)
             {
-                normal = { background = MakeFrame(new Color(0.02f, 0.03f, 0.06f, 1f), Border), textColor = Text },
-                focused = { background = MakeFrame(new Color(0.02f, 0.03f, 0.06f, 1f), Cyan), textColor = Text },
+                normal = { background = MakeFrame(PanelDark, Border), textColor = Text },
+                focused = { background = MakeFrame(PanelDark, Cyan), textColor = Text },
                 border = new RectOffset(3, 3, 3, 3),
                 padding = new RectOffset(6, 6, 4, 4),
                 fontSize = 13
@@ -122,9 +155,9 @@ namespace SuperMech.Code
             RootSkin.box = new GUIStyle(PanelStyle);
             RootSkin.textField = new GUIStyle(Input);
             RootSkin.window = new GUIStyle(WindowStyle);
-            RootSkin.verticalScrollbar.normal.background = MakeFrame(Background, Border);
+            RootSkin.verticalScrollbar.normal.background = MakeFrame(PanelDark, Border);
             RootSkin.verticalScrollbar.border = new RectOffset(1, 1, 1, 1);
-            RootSkin.verticalScrollbarThumb.normal.background = MakeFrame(Border, Muted);
+            RootSkin.verticalScrollbarThumb.normal.background = MakeFrame(Border, Cyan);
             RootSkin.verticalScrollbarThumb.border = new RectOffset(1, 1, 1, 1);
         }
 
@@ -137,16 +170,33 @@ namespace SuperMech.Code
             _pixel.Apply();
         }
 
+        private static void EnsureScanline()
+        {
+            if (_scanline != null) return;
+            _scanline = new Texture2D(1, 4, TextureFormat.RGBA32, false);
+            _scanline.hideFlags = HideFlags.HideAndDontSave;
+            for (int y = 0; y < 4; y++)
+            {
+                _scanline.SetPixel(0, y, y == 0 ? new Color(1, 1, 1, 0.06f) : new Color(0, 0, 0, 0));
+            }
+            _scanline.Apply();
+            _scanline.wrapMode = TextureWrapMode.Repeat;
+        }
+
         public static Texture2D MakeFrame(Color fill, Color edge)
         {
-            var tex = new Texture2D(3, 3, TextureFormat.RGBA32, false)
+            var tex = new Texture2D(4, 4, TextureFormat.RGBA32, false)
             {
                 hideFlags = HideFlags.HideAndDontSave,
                 filterMode = FilterMode.Point
             };
-            for (int y = 0; y < 3; y++)
-                for (int x = 0; x < 3; x++)
-                    tex.SetPixel(x, y, (x == 1 && y == 1) ? fill : edge);
+            for (int y = 0; y < 4; y++)
+                for (int x = 0; x < 4; x++)
+                {
+                    bool isEdge = x == 0 || y == 0 || x == 3 || y == 3;
+                    bool isCorner = (x == 0 || x == 3) && (y == 0 || y == 3);
+                    tex.SetPixel(x, y, isCorner ? new Color(edge.r, edge.g, edge.b, edge.a * 0.5f) : isEdge ? edge : fill);
+                }
             tex.Apply();
             return tex;
         }
@@ -166,6 +216,34 @@ namespace SuperMech.Code
             DrawRect(new Rect(rect.x, rect.yMax - thickness, rect.width, thickness), color);
             DrawRect(new Rect(rect.x, rect.y, thickness, rect.height), color);
             DrawRect(new Rect(rect.xMax - thickness, rect.y, thickness, rect.height), color);
+        }
+
+        public static void DrawCorners(Rect rect, Color color, float size = 8f)
+        {
+            DrawRect(new Rect(rect.x, rect.y, size, 2f), color);
+            DrawRect(new Rect(rect.x, rect.y, 2f, size), color);
+            DrawRect(new Rect(rect.xMax - size, rect.y, size, 2f), color);
+            DrawRect(new Rect(rect.xMax - 2f, rect.y, 2f, size), color);
+            DrawRect(new Rect(rect.x, rect.yMax - 2f, size, 2f), color);
+            DrawRect(new Rect(rect.x, rect.yMax - size, 2f, size), color);
+            DrawRect(new Rect(rect.xMax - size, rect.yMax - 2f, size, 2f), color);
+            DrawRect(new Rect(rect.xMax - 2f, rect.yMax - size, 2f, size), color);
+        }
+
+        public static void DrawScanline(Rect rect)
+        {
+            if (_scanline == null) EnsureScanline();
+            Color old = GUI.color;
+            GUI.color = new Color(1, 1, 1, 0.3f);
+            GUI.DrawTextureWithTexCoords(rect, _scanline, new Rect(0, 0, 1, rect.height / 4f));
+            GUI.color = old;
+        }
+
+        public static void DrawDataRow(string label, string value, float width, ref float y, float x = 0f)
+        {
+            GUI.Label(new Rect(x + 8f, y, width * 0.5f, 20f), label, DataLabel);
+            GUI.Label(new Rect(x + width * 0.5f, y, width * 0.5f - 8f, 20f), value, DataValue);
+            y += 22f;
         }
 
         public static float Px(float value)
