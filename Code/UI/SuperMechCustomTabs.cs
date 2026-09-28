@@ -125,23 +125,50 @@ namespace SuperMech.Code
 
             GameObject contentObj = null;
 
-            KnowledgeWindow knowledgeWindow = UnityEngine.Object.FindObjectOfType<KnowledgeWindow>();
-            if (knowledgeWindow != null)
+            ScrollWindow knowledgePrefab = LoadKnowledgeWindowPrefab();
+            if (knowledgePrefab != null)
             {
-                contentObj = UnityEngine.Object.Instantiate(
-                    knowledgeWindow.gameObject,
-                    window.transform.Find("Background/Scroll View/Viewport/Content"));
-                contentObj.name = KnowledgeContentName;
-
-                foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
+                KnowledgeWindow kw = knowledgePrefab.GetComponentInChildren<KnowledgeWindow>(true);
+                if (kw != null)
                 {
-                    if (comp != null && comp.GetType() != typeof(RectTransform))
-                        UnityEngine.Object.DestroyImmediate(comp);
+                    contentObj = UnityEngine.Object.Instantiate(
+                        kw.gameObject,
+                        window.transform.Find("Background/Scroll View/Viewport/Content"));
+                    contentObj.name = KnowledgeContentName;
+
+                    foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
+                    {
+                        if (comp != null && comp.GetType() != typeof(RectTransform))
+                            UnityEngine.Object.DestroyImmediate(comp);
+                    }
+
+                    for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
+                    {
+                        UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
+                    }
                 }
+            }
 
-                for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
+            if (contentObj == null)
+            {
+                KnowledgeWindow knowledgeWindow = UnityEngine.Object.FindObjectOfType<KnowledgeWindow>();
+                if (knowledgeWindow != null)
                 {
-                    UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
+                    contentObj = UnityEngine.Object.Instantiate(
+                        knowledgeWindow.gameObject,
+                        window.transform.Find("Background/Scroll View/Viewport/Content"));
+                    contentObj.name = KnowledgeContentName;
+
+                    foreach (var comp in contentObj.GetComponents<MonoBehaviour>())
+                    {
+                        if (comp != null && comp.GetType() != typeof(RectTransform))
+                            UnityEngine.Object.DestroyImmediate(comp);
+                    }
+
+                    for (int i = contentObj.transform.childCount - 1; i >= 0; i--)
+                    {
+                        UnityEngine.Object.DestroyImmediate(contentObj.transform.GetChild(i).gameObject);
+                    }
                 }
             }
 
@@ -408,6 +435,24 @@ namespace SuperMech.Code
             };
             if (q >= 0 && q < colors.Length) return colors[q];
             return Color.white;
+        }
+
+        private static ScrollWindow LoadKnowledgeWindowPrefab()
+        {
+            try
+            {
+                MethodInfo method = typeof(WindowPreloader).GetMethod("getWindowPrefab",
+                    BindingFlags.NonPublic | BindingFlags.Static);
+                if (method != null)
+                {
+                    return method.Invoke(null, new object[] { "knowledge" }) as ScrollWindow;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 加载知识窗口预制体失败: " + e.Message);
+            }
+            return null;
         }
     }
 }
