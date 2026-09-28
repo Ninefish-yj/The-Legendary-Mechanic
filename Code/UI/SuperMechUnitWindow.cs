@@ -78,6 +78,12 @@ namespace SuperMech.Code
                 new Color(0.25f, 0.7f, 0.95f), () => SMKnowledgeWindowImgui.Open(actorRef));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
                 new Color(0.9f, 0.7f, 0.3f), () => SMBagWindowImgui.Open(actorRef));
+
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconHammer",
+                    new Color(0.6f, 0.8f, 0.4f), () => SMCraftWindow.Toggle(actorRef));
+            }
         }
 
         private static void ShowEntryButton(UnitWindow window, string label, string iconPath, Color color, System.Action onClick)

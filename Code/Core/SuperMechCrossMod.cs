@@ -222,6 +222,9 @@ namespace SuperMech.Code
         public static void TickEnergySync()
         {
             if (!SuperMechConfig.CrossModEnergySync) return;
+            if (_cacheDirty || _cachedEnergyStats == null) RebuildEnergyStatCache();
+            if (_cachedEnergyStats.Count == 0) return;
+
             var units = World.world.units.units_only_alive;
             if (units == null) return;
 

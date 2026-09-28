@@ -3724,5 +3724,12 @@
   "sm_ui_system": "系别",
   "sm_ui_rank_col": "阶位",
   "sm_ui_qi_col": "气力",
-  "sm_ui_onar_col": "能级"
+  "sm_ui_onar_col": "能级",
+  "sm_ui_craft_title": "机械制造",
+  "sm_ui_craft_maker": "制造者",
+  "sm_ui_craft_cooldown": "冷却",
+  "sm_ui_craft_none": "暂无可制造项目（需要机械师职业）",
+  "sm_ui_craft_cost": "消耗",
+  "sm_ui_craft_button": "制造",
+  "sm_ui_craft_entry": "制造"
 }
