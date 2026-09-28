@@ -8,31 +8,77 @@ namespace SuperMech.Code
         private static bool _initialized;
         private static readonly Dictionary<string, float> _modEnergyCache = new Dictionary<string, float>();
 
-        public static readonly string[] KnownEnergyStats = {
-            "mana", "magic", "mp", "sp", "stamina",
-            "cultivation", "qi", "xianqi", "spiritual_energy",
-            "divine_power", "faith", "soul_power",
-            "chakra", "nen", "ki", "aura",
-            "essence", "vitality", "life_force"
+        public static readonly string[] EnergyKeywords = {
+            "mana", "magic", "mp_", "_mp", "spell_power",
+            "cultivation", "xianqi", "spiritual", "soul",
+            "divine", "faith", "chakra", "nen",
+            "aura", "battle_qi", "true_qi", "primordial",
+            "star_power", "cosmic", "origin", "source_energy"
         };
+
+        public static readonly string[] ExcludeKeywords = {
+            "max", "cost", "regen", "rate", "gain",
+            "multiplier", "bonus", "damage", "defense",
+            "resistance", "penetration", "crit", "speed",
+            "vitality", "essence", "stamina", "life_force",
+            "level", "exp", "experience", "point"
+        };
+
+        private static HashSet<string> _cachedEnergyStats;
+        private static bool _cacheDirty = true;
 
         public static void Init()
         {
             if (_initialized) return;
             _initialized = true;
-            Debug.Log("[超神机械师] 跨模组适配层初始化：检测其他模组能量体系");
+            RebuildEnergyStatCache();
+            Debug.Log("[超神机械师] 跨模组适配层初始化：动态扫描能量属性");
+        }
+
+        public static void RebuildEnergyStatCache()
+        {
+            _cachedEnergyStats = new HashSet<string>();
+            var allStats = AssetManager.base_stats_library;
+            if (allStats == null) return;
+
+            foreach (var kv in allStats.dict)
+            {
+                string id = kv.Key.ToLower();
+                if (IsLikelyEnergyStat(id))
+                {
+                    _cachedEnergyStats.Add(kv.Key);
+                }
+            }
+            _cacheDirty = false;
+            Debug.Log($"[超神机械师] 能量属性缓存重建：检测到{_cachedEnergyStats.Count}个可能的能量属性");
+        }
+
+        private static bool IsLikelyEnergyStat(string id)
+        {
+            foreach (string excl in ExcludeKeywords)
+            {
+                if (id.Contains(excl)) return false;
+            }
+            foreach (string kw in EnergyKeywords)
+            {
+                if (id.Contains(kw)) return true;
+            }
+            return false;
         }
 
         public static float DetectExternalEnergy(Actor a)
         {
             if (a == null || a.stats == null) return 0f;
+            if (_cacheDirty || _cachedEnergyStats == null) RebuildEnergyStatCache();
+
             float total = 0f;
             int found = 0;
 
-            foreach (string statId in KnownEnergyStats)
+            foreach (string statId in _cachedEnergyStats)
             {
+                if (statId.StartsWith("sm_")) continue;
                 float val = a.stats[statId];
-                if (val > 0f)
+                if (val > 1f)
                 {
                     total += val;
                     found++;
@@ -95,10 +141,17 @@ namespace SuperMech.Code
 
         public static string GetDetectedMods()
         {
+            if (_cacheDirty || _cachedEnergyStats == null) RebuildEnergyStatCache();
             var mods = new List<string>();
-            if (AssetManager.base_stats_library.get("mana") != null) mods.Add("西幻/魔法类");
-            if (AssetManager.base_stats_library.get("cultivation") != null) mods.Add("修仙类");
-            if (AssetManager.base_stats_library.get("divine_power") != null) mods.Add("神权类");
+            foreach (string stat in _cachedEnergyStats)
+            {
+                string low = stat.ToLower();
+                if (low.Contains("mana") || low.Contains("magic")) mods.Add("魔法类");
+                else if (low.Contains("cultivation") || low.Contains("xianqi") || low.Contains("spiritual")) mods.Add("修仙类");
+                else if (low.Contains("divine") || low.Contains("faith")) mods.Add("神权类");
+                else if (low.Contains("chakra") || low.Contains("nen") || low.Contains("aura")) mods.Add("异能类");
+                else mods.Add(stat);
+            }
             return mods.Count > 0 ? string.Join("、", mods) : "无";
         }
 
