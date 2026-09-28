@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    [HarmonyPatch(typeof(UnitWindow), "OnEnable")]
+    // [HarmonyPatch(typeof(UnitWindow), "OnEnable")] 已禁用，改用IMGUI独立窗口
     public static class SuperMechCustomTabs
     {
         private const string KnowledgeTabId = "SMKnowledgeTab";

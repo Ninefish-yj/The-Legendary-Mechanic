@@ -74,6 +74,21 @@ namespace SuperMech.Code
 
             if (SuperMechAwakened.IsAwakened(a))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
+
+            Actor actorRef = a;
+            KeyValueField knowledgeRow = ShowRow(window, LocalizedTextManager.getText("sm_ui_knowledge"),
+                LocalizedTextManager.getText("sm_ui_click_open"), "iconBook", new Color(0.3f, 0.85f, 1f));
+            if (knowledgeRow != null)
+            {
+                knowledgeRow.on_click_value = () => SMKnowledgeWindowImgui.Open(actorRef);
+            }
+
+            KeyValueField bagRow = ShowRow(window, LocalizedTextManager.getText("sm_ui_bag"),
+                LocalizedTextManager.getText("sm_ui_click_open"), "iconBox", new Color(0.3f, 0.85f, 1f));
+            if (bagRow != null)
+            {
+                bagRow.on_click_value = () => SMBagWindowImgui.Open(actorRef);
+            }
         }
 
         public static string GetClassAspect(string cls)
@@ -121,17 +136,18 @@ namespace SuperMech.Code
             }
         }
 
-        private static void ShowRow(UnitWindow window, string label, object value, string iconPath = null, Color? color = null)
+        private static KeyValueField ShowRow(UnitWindow window, string label, object value, string iconPath = null, Color? color = null)
         {
             try
             {
                 Color c = color ?? Color.white;
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(c);
-                window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
+                return window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
             }
             catch (Exception e)
             {
                 Debug.LogWarning("[超神机械师] showStatRow调用失败: " + e.Message);
+                return null;
             }
         }
     }
