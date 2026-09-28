@@ -7,12 +7,14 @@ namespace SuperMech.Code
     {
         public const string SummonAwakened = "sm_summon_awakened";
         public const string DisasterAlien = "sm_disaster_alien";
+        public const string OpenSanctuary = "sm_open_sanctuary";
 
         public static void Register()
         {
             AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");
             AddDisaster(DisasterAlien, "sm_powers_924");
-            Debug.Log("[超神机械师] 神权注册完成：1召唤 + 1天灾 = 2个核心神权");
+            AddSanctuaryPower(OpenSanctuary, "sm_sanctuary_974", "ui/Icons/actor_traits/iconBlessing");
+            Debug.Log("[超神机械师] 神权注册完成：1召唤 + 1天灾 + 1圣所 = 3个核心神权");
         }
 
         private static void AddAwakenedPower(string id, string name, string icon)
@@ -70,6 +72,31 @@ namespace SuperMech.Code
                 return true;
             };
             AssetManager.powers.add(p);
+        }
+
+        private static void AddSanctuaryPower(string id, string name, string icon)
+        {
+            var p = new GodPower
+            {
+                id = id,
+                name = name,
+                path_icon = icon,
+                rank = PowerRank.Rank0_free,
+                force_map_mode = MetaType.None,
+                ignore_fast_spawn = true,
+                hold_action = false,
+                unselect_when_window = true,
+                requires_premium = false
+            };
+            p.click_action += (tile, powerId) =>
+            {
+                SuperMechSanctuaryWindow.Show();
+                return true;
+            };
+            AssetManager.powers.add(p);
+            LocalizedTextManager.add("power_" + id, LocalizedTextManager.getText(name), pReplace: true);
+            LocalizedTextManager.add("power_" + id + "_desc",
+                LocalizedTextManager.getText("sm_sanctuary_975"), pReplace: true);
         }
     }
 }
