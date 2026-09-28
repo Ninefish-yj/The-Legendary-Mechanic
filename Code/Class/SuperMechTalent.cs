@@ -228,5 +228,11 @@ namespace SuperMech.Code
                 _talents[id] = list;
             }
         }
+
+        public static void Clear()
+        {
+            _talents.Clear();
+            _fiveSystemGenius.Clear();
+        }
     }
 }

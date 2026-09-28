@@ -177,6 +177,12 @@ namespace SuperMech.Code
             CallSetIconValue(window, "sm_charm", charm);
             CallSetIconValue(window, "sm_luck", luck);
         }
+
+        public static void ClearStaticState()
+        {
+            _initialized = false;
+            _contentTransform = null;
+        }
     }
 
     public class StatsIconData

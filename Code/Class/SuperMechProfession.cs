@@ -131,6 +131,12 @@ namespace SuperMech.Code
             }
         }
 
+        public static void Clear()
+        {
+            _profession.Clear();
+            _switchCount.Clear();
+        }
+
         public static Dictionary<string, object> GetSaveData()
         {
             var data = new Dictionary<string, object>();
