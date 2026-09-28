@@ -157,26 +157,46 @@ namespace SuperMech.Code
         {
             if (a == null || a.stats == null) return 0f;
 
+            float bodyFactor = GetBodyFactor(a);
+
             float qi = SuperMechQi.GetQiMax(a);
-            if (qi > 0f) return qi;
+            if (qi > 0f) return qi * bodyFactor;
 
             float external = DetectExternalEnergy(a);
-            if (external > 0f) return external * SuperMechConfig.CrossModEnergyRatio;
+            if (external > 0f) return external * SuperMechConfig.CrossModEnergyRatio * bodyFactor;
 
             float dmg = a.stats["damage"];
             float hp = a.stats["health"];
-            float basePower = Mathf.Sqrt(dmg * dmg + hp * hp * 0.1f);
+            float spd = a.stats["speed"];
+            float armor = a.stats["armor"];
+            float basePower = Mathf.Sqrt(dmg * dmg + hp * hp * 0.1f + spd * spd * 0.5f + armor * armor * 0.3f);
             return basePower * 10f;
+        }
+
+        private static float GetBodyFactor(Actor a)
+        {
+            if (a == null || a.stats == null) return 1f;
+            float dmg = a.stats["damage"];
+            float hp = a.stats["health"];
+            float spd = a.stats["speed"];
+            float armor = a.stats["armor"];
+            float stamina = a.stats["stamina"];
+
+            float bodyScore = (dmg / 20f) + (hp / 200f) + (spd / 50f) + (armor / 10f) + (stamina / 100f);
+            float factor = 1f + bodyScore * 0.02f;
+            return Mathf.Clamp(factor, 1f, 3f);
         }
 
         public static bool HasExternalModSystem(Actor a)
         {
             if (a == null || a.stats == null) return false;
-            foreach (string statId in KnownEnergyStats)
+            if (_cacheDirty || _cachedEnergyStats == null) RebuildEnergyStatCache();
+            foreach (string statId in _cachedEnergyStats)
             {
-                if (a.stats[statId] > 0f) return true;
+                if (statId.StartsWith("sm_")) continue;
+                if (a.stats[statId] > 1f) return true;
             }
-            return false;
+            return DetectDataEnergy(a) > 0f;
         }
 
         public static string GetDetectedMods()
