@@ -74,18 +74,27 @@ namespace SuperMech.Code
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
 
             Actor actorRef = a;
-            KeyValueField knowledgeRow = ShowRow(window, LocalizedTextManager.getText("sm_ui_knowledge"),
-                LocalizedTextManager.getText("sm_ui_click_open"), "iconBook", new Color(0.3f, 0.85f, 1f));
-            if (knowledgeRow != null)
-            {
-                knowledgeRow.on_click_value = () => SMKnowledgeWindowImgui.Open(actorRef);
-            }
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBook",
+                new Color(0.25f, 0.7f, 0.95f), () => SMKnowledgeWindowImgui.Open(actorRef));
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
+                new Color(0.9f, 0.7f, 0.3f), () => SMBagWindowImgui.Open(actorRef));
+        }
 
-            KeyValueField bagRow = ShowRow(window, LocalizedTextManager.getText("sm_ui_bag"),
-                LocalizedTextManager.getText("sm_ui_click_open"), "iconBox", new Color(0.3f, 0.85f, 1f));
-            if (bagRow != null)
+        private static void ShowEntryButton(UnitWindow window, string label, string iconPath, Color color, System.Action onClick)
+        {
+            try
             {
-                bagRow.on_click_value = () => SMBagWindowImgui.Open(actorRef);
+                string colorHex = "#" + ColorUtility.ToHtmlStringRGB(color);
+                var row = window.showStatRow(label, "▶ " + LocalizedTextManager.getText("sm_ui_click_open"),
+                    colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
+                if (row != null)
+                {
+                    row.on_click_value = () => onClick?.Invoke();
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 入口按钮创建失败: " + e.Message);
             }
         }
 
