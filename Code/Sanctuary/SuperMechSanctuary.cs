@@ -318,25 +318,6 @@ namespace SuperMech.Code
         public static void Register()
         {
             Load();
-            var enterPower = new GodPower
-            {
-                id = "sm_enter_sanctuary",
-                name = "sm_sanctuary_974",
-                path_icon = "ui/Icons/actor_traits/iconBlessing",
-                rank = PowerRank.Rank0_free,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = false
-            };
-            enterPower.click_action += (WorldTile tile, string powerId) =>
-            {
-                if (tile == null) return true;
-                tile.doUnits(delegate (Actor a) { EnterSanctuary(a); });
-                return true;
-            };
-            AssetManager.powers.add(enterPower);
 
             var divinityTrait = new ActorTrait
             {

@@ -44,8 +44,6 @@ namespace SuperMech
             SuperMechSanctuary.Register();
             SuperMechCrafting.Register();
             SuperMechPowers.Register();
-            SuperMechUI.Init();
-            SuperMechTooltip.Register();
 
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();
@@ -75,8 +73,6 @@ namespace SuperMech
 
             bool paused = Time.timeScale <= 0.01f;
             if (paused) return;
-
-            try { SuperMechPanel.Tick(); } catch { }
 
             if (_worldInitPending)
             {

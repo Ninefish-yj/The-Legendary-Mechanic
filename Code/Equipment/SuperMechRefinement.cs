@@ -43,39 +43,6 @@ namespace SuperMech.Code
             };
             AssetManager.traits.add(t2);
 
-            var givePower = new GodPower
-            {
-                id = "sm_give_refinement",
-                name = "sm_refinement_084",
-                path_icon = "iconDivineLight",
-                rank = PowerRank.Rank0_free,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = false
-            };
-            givePower.click_action += (WorldTile tile, string powerId) =>
-            {
-                if (tile == null) return true;
-                tile.doUnits(delegate (Actor a)
-                {
-                    if (!a.hasTrait(RefinementTrait))
-                    {
-                        a.addTrait(RefinementTrait);
-                        _refineQiBonus[a.data.id] = RefineBaseQi;
-                        SuperMechQi.AddQiMax(a, RefineBaseQi);
-                    }
-                    if (a.hasTrait(SuperMechTraits.ClassMech) && !a.hasTrait(EmRefinementTrait))
-                    {
-                        a.addTrait(EmRefinementTrait);
-                    }
-                });
-                return true;
-            };
-            AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_refinement", LocalizedTextManager.getText("sm_refinement_084"), pReplace: true);
-
             AddVariantTrait(PsiResonance, "sm_refinement_085", "sm_refinement_086");
             AddVariantTrait(ManaMeditation, "sm_refinement_087", "sm_refinement_088");
             AddVariantTrait(MindTrain, "sm_refinement_089", "sm_refinement_090");

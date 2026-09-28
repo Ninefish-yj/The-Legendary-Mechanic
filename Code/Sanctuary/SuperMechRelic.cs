@@ -78,46 +78,6 @@ namespace SuperMech.Code
                 registered++;
             }
 
-            var givePower = new GodPower
-            {
-                id = "sm_give_equip",
-                name = "sm_relic_104",
-                path_icon = "iconDivineLight",
-                rank = PowerRank.Rank0_free,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = false
-            };
-            givePower.click_action += (WorldTile tile, string powerId) =>
-            {
-                if (tile == null) return true;
-                tile.doUnits(delegate (Actor a)
-                {
-                    if (Random.value < 0.5f)
-                    {
-                        EquipItem(a, 8);
-                    }
-                    else
-                    {
-                        var manMade = SuperMechCosmicRelic.Relics.FindAll(r => !r.isWonder);
-                        if (manMade.Count > 0)
-                        {
-                            var pick = manMade[Random.Range(0, manMade.Count)];
-                            SuperMechCosmicRelic.EquipCosmicRelic(a, pick.id);
-                        }
-                        else
-                        {
-                            EquipItem(a, 8);
-                        }
-                    }
-                });
-                return true;
-            };
-            AssetManager.powers.add(givePower);
-            LocalizedTextManager.add("power_sm_give_equip", LocalizedTextManager.getText("sm_relic_104"), pReplace: true);
-
             Debug.Log($"[超神机械师] 装备系统注册完成：{registered}件装备（普通→金色，原版EquipmentAsset）");
         }
 
