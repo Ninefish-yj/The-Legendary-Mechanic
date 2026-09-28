@@ -13,7 +13,11 @@ namespace SuperMech.Code
             "cultivation", "xianqi", "spiritual", "soul",
             "divine", "faith", "chakra", "nen",
             "aura", "battle_qi", "true_qi", "primordial",
-            "star_power", "cosmic", "origin", "source_energy"
+            "star_power", "cosmic", "origin", "source_energy",
+            "incense", "fire", "worship", "believer",
+            "merit", "virtue", "karma", "luck_power",
+            "battle_power", "combat_power", "power_level",
+            "internal_force", "zhenqi", "jingqi", "shenhun"
         };
 
         public static readonly string[] ExcludeKeywords = {
@@ -21,7 +25,13 @@ namespace SuperMech.Code
             "multiplier", "bonus", "damage", "defense",
             "resistance", "penetration", "crit", "speed",
             "vitality", "essence", "stamina", "life_force",
-            "level", "exp", "experience", "point"
+            "level", "point", "icon", "texture", "sprite"
+        };
+
+        public static readonly string[] DataKeyPatterns = {
+            ".exp", ".exp_", ".cultivation", ".qi", ".mana",
+            ".energy", ".power", ".realm", ".stage",
+            "fanren.standalone.exp", "fanren.standalone.realm_level"
         };
 
         private static HashSet<string> _cachedEnergyStats;
@@ -85,10 +95,40 @@ namespace SuperMech.Code
                 }
             }
 
+            float dataEnergy = DetectDataEnergy(a);
+            if (dataEnergy > 0f)
+            {
+                total += dataEnergy;
+                found++;
+            }
+
             if (found > 0)
             {
                 return total / found;
             }
+            return 0f;
+        }
+
+        private static float DetectDataEnergy(Actor a)
+        {
+            if (a == null || a.data == null) return 0f;
+            float total = 0f;
+            int found = 0;
+
+            foreach (string pattern in DataKeyPatterns)
+            {
+                try
+                {
+                    if (a.data.get(pattern, out float val, -1f) && val > 0f)
+                    {
+                        total += val;
+                        found++;
+                    }
+                }
+                catch { }
+            }
+
+            if (found > 0) return total / found;
             return 0f;
         }
 
