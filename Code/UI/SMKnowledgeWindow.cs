@@ -188,21 +188,55 @@ namespace SuperMech.Code
                                 UnityEngine.Object.DestroyImmediate(child.gameObject);
                             }
 
-                            HorizontalLayoutGroup hlgIcons = runningIcons.GetComponent<HorizontalLayoutGroup>();
-                            if (hlgIcons == null) hlgIcons = runningIcons.gameObject.AddComponent<HorizontalLayoutGroup>();
+                            RectTransform runningRt = runningIcons.GetComponent<RectTransform>();
+                            if (runningRt != null)
+                            {
+                                runningRt.sizeDelta = new Vector2(0, 32f);
+                            }
+
+                            ScrollRect scrollRect = runningIcons.GetComponent<ScrollRect>();
+                            if (scrollRect == null)
+                            {
+                                scrollRect = runningIcons.gameObject.AddComponent<ScrollRect>();
+                                scrollRect.horizontal = true;
+                                scrollRect.vertical = false;
+                                scrollRect.horizontalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+                                scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+                            }
+
+                            GameObject viewportObj = new GameObject("Viewport", typeof(RectTransform));
+                            viewportObj.transform.SetParent(runningIcons.transform, false);
+                            RectTransform viewportRt = viewportObj.GetComponent<RectTransform>();
+                            viewportRt.anchorMin = Vector2.zero;
+                            viewportRt.anchorMax = Vector2.one;
+                            viewportRt.offsetMin = Vector2.zero;
+                            viewportRt.offsetMax = Vector2.zero;
+                            Image viewportImg = viewportObj.AddComponent<Image>();
+                            viewportImg.color = new Color(0, 0, 0, 0.01f);
+                            scrollRect.viewport = viewportRt;
+
+                            GameObject contentObj = new GameObject("Content", typeof(RectTransform));
+                            contentObj.transform.SetParent(viewportObj.transform, false);
+                            RectTransform contentRt = contentObj.GetComponent<RectTransform>();
+                            contentRt.anchorMin = new Vector2(0, 0.5f);
+                            contentRt.anchorMax = new Vector2(0, 0.5f);
+                            contentRt.pivot = new Vector2(0, 0.5f);
+                            contentRt.sizeDelta = new Vector2(knowledge.Count * 30f, 32f);
+                            scrollRect.content = contentRt;
+
+                            HorizontalLayoutGroup hlgIcons = contentObj.AddComponent<HorizontalLayoutGroup>();
                             hlgIcons.spacing = 3f;
                             hlgIcons.childAlignment = TextAnchor.MiddleLeft;
                             hlgIcons.childControlHeight = true;
                             hlgIcons.childControlWidth = false;
                             hlgIcons.childForceExpandHeight = false;
                             hlgIcons.childForceExpandWidth = false;
-                            ContentSizeFitter iconsCsf = runningIcons.GetComponent<ContentSizeFitter>();
-                            if (iconsCsf == null) iconsCsf = runningIcons.gameObject.AddComponent<ContentSizeFitter>();
+                            hlgIcons.padding = new RectOffset(2, 2, 2, 2);
+                            ContentSizeFitter iconsCsf = contentObj.AddComponent<ContentSizeFitter>();
                             iconsCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
                             iconsCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-                            int displayCount = Mathf.Min(knowledge.Count, 6);
-                            for (int ki = 0; ki < displayCount; ki++)
+                            for (int ki = 0; ki < knowledge.Count; ki++)
                             {
                                 var k = knowledge[ki];
                                 bool unlocked = SuperMechKnowledge.IsUnlocked(actor, k.id);
@@ -211,7 +245,7 @@ namespace SuperMech.Code
                                 Color innerColor = unlocked ? new Color(1f, 1f, 1f, 0.9f) : new Color(0.4f, 0.4f, 0.4f, 0.5f);
 
                                 GameObject iconObj = new GameObject(k.id, typeof(RectTransform));
-                                iconObj.transform.SetParent(runningIcons.transform, false);
+                                iconObj.transform.SetParent(contentObj.transform, false);
                                 RectTransform iconRt = iconObj.GetComponent<RectTransform>();
                                 iconRt.sizeDelta = new Vector2(24, 24);
 
@@ -264,19 +298,6 @@ namespace SuperMech.Code
                                 TipButton tipBtn = iconObj.AddComponent<TipButton>();
                                 tipBtn.textOnClick = k.id;
                                 tipBtn.textOnClickDescription = k.desc;
-                            }
-
-                            if (knowledge.Count > 6)
-                            {
-                                GameObject moreObj = new GameObject("More", typeof(RectTransform));
-                                moreObj.transform.SetParent(runningIcons.transform, false);
-                                RectTransform moreRt = moreObj.GetComponent<RectTransform>();
-                                moreRt.sizeDelta = new Vector2(24, 24);
-                                Image moreImg = moreObj.AddComponent<Image>();
-                                moreImg.color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
-                                Text moreText = SuperMechUtils.CreateText(moreObj.transform,
-                                    $"+{knowledge.Count - 6}", 10, TextAnchor.MiddleCenter, Color.white);
-                                moreText.transform.SetParent(moreObj.transform, false);
                             }
                         }
                     }
