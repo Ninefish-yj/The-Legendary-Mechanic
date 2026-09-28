@@ -142,16 +142,23 @@ namespace SuperMech.Code
 
         private static void CallSetIconValue(UnitWindow window, string name, float value)
         {
-            if (_setIconValueMethod == null)
+            try
             {
-                _setIconValueMethod = typeof(UnitWindow).GetMethod("setIconValue",
-                    System.Reflection.BindingFlags.NonPublic |
-                    System.Reflection.BindingFlags.Instance |
-                    System.Reflection.BindingFlags.Public);
+                if (_setIconValueMethod == null)
+                {
+                    _setIconValueMethod = typeof(UnitWindow).GetMethod("setIconValue",
+                        System.Reflection.BindingFlags.NonPublic |
+                        System.Reflection.BindingFlags.Instance |
+                        System.Reflection.BindingFlags.Public);
+                }
+                if (_setIconValueMethod != null)
+                {
+                    _setIconValueMethod.Invoke(window, new object[] { name, value, null, "", false, "", '/' });
+                }
             }
-            if (_setIconValueMethod != null)
+            catch (Exception e)
             {
-                _setIconValueMethod.Invoke(window, new object[] { name, value, null, "", false, "", '/' });
+                Debug.LogWarning("[超神机械师] setIconValue反射调用失败: " + e.Message);
             }
         }
 

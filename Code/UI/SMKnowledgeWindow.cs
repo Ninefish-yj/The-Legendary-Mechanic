@@ -125,6 +125,8 @@ namespace SuperMech.Code
 
         private static void CreateKnowledgeElement(Transform parent, Actor actor, int tier, List<SuperMechKnowledge.KnowledgeDef> knowledge, string prefix)
         {
+            try
+            {
             GameObject elementObj = null;
 
             KnowledgeWindow knowledgeWindow = UnityEngine.Object.FindObjectOfType<KnowledgeWindow>();
@@ -316,6 +318,11 @@ namespace SuperMech.Code
                     Image iconImg = iconObj.AddComponent<Image>();
                     iconImg.color = unlocked ? TierColors[tier] : new Color(0.3f, 0.3f, 0.3f, 0.5f);
                 }
+            }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 创建知识分类元素失败: " + e.Message);
             }
         }
     }
