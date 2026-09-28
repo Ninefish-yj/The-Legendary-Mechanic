@@ -11,9 +11,6 @@ namespace SuperMech.Code
             ("sm_classes",      "sm_traitgroups_1017",   "#00BFFF"),
             ("sm_branches",     "sm_traitgroups_1018",   "#9370DB"),
             ("sm_perks",        "sm_traitgroups_1019",       "#FFD700"),
-            ("sm_gene",         "sm_traitgroups_1020", "#32CD32"),
-            ("sm_mana",         "sm_traitgroups_1021", "#4169E1"),
-            ("sm_mind",         "sm_traitgroups_1022", "#8A2BE2"),
             ("sm_refinement",   "sm_traitgroups_1023",     "#228B22"),
             ("sm_relic",        "sm_traitgroups_1024",   "#FFD700"),
             ("sm_cosmic_relic", "sm_traitgroups_1025",   "#FFA500"),
@@ -23,6 +20,7 @@ namespace SuperMech.Code
             ("sm_rank_specialty","sm_traitgroups_1029",   "#FF4500"),
             ("sm_subclass",     "sm_traitgroups_1030",     "#708090"),
             ("sm_race",         "sm_traitgroups_1031",   "#9932CC"),
+            ("sm_race_talents", "sm_traitgroups_1031",   "#9932CC"),
             ("sm_skills",       "sm_traitgroups_1032",   "#FF4500"),
             ("sm_sanctuary",    "sm_traitgroups_1033",       "#FFD700"),
         };
