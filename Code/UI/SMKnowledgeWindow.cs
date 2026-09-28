@@ -9,6 +9,8 @@ namespace SuperMech.Code
 {
     public static class SMKnowledgeWindow
     {
+        private static SMCubeKnowledge _currentCube;
+
         private static readonly Color[] TierColors = {
             new Color(0.3f, 0.71f, 0.67f),
             new Color(0.15f, 0.65f, 0.6f),
@@ -49,6 +51,7 @@ namespace SuperMech.Code
             graphRt.sizeDelta = new Vector2(0, 450f);
             SMCubeKnowledge graph = graphObj.AddComponent<SMCubeKnowledge>();
             graph.Init(actor);
+            _currentCube = graph;
 
             GameObject elementsParent = new GameObject("ElementsParent", typeof(RectTransform));
             elementsParent.transform.SetParent(parent, false);
@@ -149,6 +152,7 @@ namespace SuperMech.Code
                     {
                         LocalizedText locText = SuperMechReflection.GetFieldValue<LocalizedText>(keComp, "_localized_text");
                         Image iconLeft = SuperMechReflection.GetFieldValue<Image>(keComp, "_icon_left");
+                        Image iconRight = SuperMechReflection.GetFieldValue<Image>(keComp, "_icon_right");
                         StatBar progressBar = SuperMechReflection.GetFieldValue<StatBar>(keComp, "_progress_bar");
                         RunningIcons runningIcons = SuperMechReflection.GetFieldValue<RunningIcons>(keComp, "_running_icons");
 
@@ -172,6 +176,34 @@ namespace SuperMech.Code
                         {
                             iconLeft.gameObject.SetActive(true);
                             iconLeft.color = TierColors[tier];
+                        }
+
+                        if (iconRight != null)
+                        {
+                            iconRight.gameObject.SetActive(true);
+                            iconRight.color = TierColors[tier];
+                            Button filterBtn = iconRight.GetComponent<Button>();
+                            if (filterBtn == null) filterBtn = iconRight.gameObject.AddComponent<Button>();
+                            int filterTier = tier;
+                            filterBtn.onClick.AddListener(() =>
+                            {
+                                if (_currentCube != null)
+                                {
+                                    int currentFilter = SuperMechReflection.GetFieldValue<int>(_currentCube, "_filterTier");
+                                    if (currentFilter == filterTier)
+                                    {
+                                        _currentCube.SetFilter(-1);
+                                    }
+                                    else
+                                    {
+                                        _currentCube.SetFilter(filterTier);
+                                    }
+                                }
+                            });
+                            TipButton filterTip = iconRight.GetComponent<TipButton>();
+                            if (filterTip == null) filterTip = iconRight.gameObject.AddComponent<TipButton>();
+                            filterTip.textOnClick = LocalizedTextManager.getText("sm_ui_filter_tier");
+                            filterTip.textOnClickDescription = LocalizedTextManager.getText("sm_ui_filter_tier_desc");
                         }
 
                         if (progressBar != null)

@@ -3849,5 +3849,7 @@
   "sm_ui_bag_tab_desc": "查看装备和资源",
   "sm_ui_knowledge_library": "知识库",
   "sm_ui_tier": "阶位",
-  "sm_ui_vanilla_equipment": "原版装备"
+  "sm_ui_vanilla_equipment": "原版装备",
+  "sm_ui_filter_tier": "过滤",
+  "sm_ui_filter_tier_desc": "点击只显示此阶位知识，再次点击取消过滤"
 }

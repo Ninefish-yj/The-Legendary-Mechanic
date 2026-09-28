@@ -217,6 +217,16 @@ namespace SuperMech.Code
 
         private Actor _actor;
         private bool _initialized;
+        private int _filterTier = -1;
+
+        public void SetFilter(int tier)
+        {
+            _filterTier = tier;
+            if (_initialized)
+            {
+                GenerateNodes();
+            }
+        }
 
         public void Init(Actor actor)
         {
@@ -301,6 +311,11 @@ namespace SuperMech.Code
             string prefix = SuperMechKnowledge.GetPrefixForClass(SuperMechProfession.GetClass(_actor));
             if (string.IsNullOrEmpty(prefix)) prefix = "mech";
             var allKnowledge = SuperMechKnowledge.GetAllByPrefix(prefix);
+
+            if (_filterTier >= 0)
+            {
+                allKnowledge = allKnowledge.FindAll(k => k.tier == _filterTier);
+            }
 
             var selected = new List<SuperMechKnowledge.KnowledgeDef>();
             if (allKnowledge.Count <= 16)
