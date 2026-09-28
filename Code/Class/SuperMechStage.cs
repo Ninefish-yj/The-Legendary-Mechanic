@@ -188,7 +188,7 @@ namespace SuperMech.Code
             {
                 string rankName = SuperMechRanks.GetRankName(a);
                 string className = GetGenericClassName(a);
-                result = $"{rankName}{LocalizedTextManager.getText(className)}";
+                result = $"{rankName}{className}";
             }
             if (result.StartsWith("sm_stage_") || result.StartsWith("sm_sub_"))
                 return LocalizedTextManager.getText(result);
