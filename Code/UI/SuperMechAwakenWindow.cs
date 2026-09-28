@@ -72,5 +72,11 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] {_target.name} 觉醒为{className}，获得F阶");
             _window?.Hide();
         }
+
+        public static void ClearStaticState()
+        {
+            _window = null;
+            _target = null;
+        }
     }
 }

@@ -138,7 +138,10 @@ namespace SuperMech.Code
                 tipBtn.textOnClickDescription = string.Empty;
                 tipBtn.text_description_2 = string.Empty;
             }
-            catch { }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 设置神权按钮tooltip失败: " + e.Message);
+            }
         }
     }
 }

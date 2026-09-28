@@ -13,7 +13,11 @@ namespace SuperMech.Code
         {
             if (a == null || StatsField == null) return null;
             try { return (BaseStats)StatsField.GetValue(a); }
-            catch { return null; }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 获取BaseStats反射失败: " + e.Message);
+                return null;
+            }
         }
     }
 }

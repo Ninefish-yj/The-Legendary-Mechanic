@@ -154,6 +154,8 @@ namespace SuperMech.Code
             try { SuperMechCrafting.Clear(); } catch { }
             try { SuperMechPotentialRating.Clear(); } catch { }
             try { SMWindowFrame.ClearAll(); } catch { }
+            try { SuperMechCustomTabs.ClearStaticState(); } catch { }
+            try { SuperMechAwakenWindow.ClearStaticState(); } catch { }
             Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");
         }
     }

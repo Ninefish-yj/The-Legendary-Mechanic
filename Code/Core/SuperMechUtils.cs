@@ -25,7 +25,11 @@ namespace SuperMech.Code
                     System.Reflection.BindingFlags.Public);
                 return field?.GetValue(window) as Actor;
             }
-            catch { return null; }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] GetActor反射失败: " + e.Message);
+                return null;
+            }
         }
 
         public static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor, Color color)

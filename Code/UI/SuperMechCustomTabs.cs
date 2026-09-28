@@ -454,5 +454,14 @@ namespace SuperMech.Code
             }
             return null;
         }
+
+        public static void ClearStaticState()
+        {
+            _initialized = false;
+            _knowledgeTab = null;
+            _bagTab = null;
+            _knowledgeContent = null;
+            _bagContent = null;
+        }
     }
 }
