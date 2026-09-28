@@ -19,12 +19,20 @@ namespace SuperMech.Code
         {
             if (parent == null || actor == null) return;
 
-            VerticalLayoutGroup vlg = parent.gameObject.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 8f;
-            vlg.padding = new RectOffset(8, 8, 8, 8);
+            VerticalLayoutGroup vlg = parent.gameObject.GetComponent<VerticalLayoutGroup>();
+            if (vlg == null) vlg = parent.gameObject.AddComponent<VerticalLayoutGroup>();
+            vlg.spacing = 10f;
+            vlg.padding = new RectOffset(10, 10, 10, 10);
             vlg.childAlignment = TextAnchor.UpperCenter;
-            ContentSizeFitter csf = parent.gameObject.AddComponent<ContentSizeFitter>();
+            vlg.childControlHeight = true;
+            vlg.childControlWidth = true;
+            vlg.childForceExpandHeight = false;
+            vlg.childForceExpandWidth = true;
+
+            ContentSizeFitter csf = parent.gameObject.GetComponent<ContentSizeFitter>();
+            if (csf == null) csf = parent.gameObject.AddComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            csf.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
 
             string prefix = SuperMechKnowledge.GetPrefixForClass(SuperMechProfession.GetClass(actor));
             if (string.IsNullOrEmpty(prefix)) prefix = "mech";
@@ -36,7 +44,7 @@ namespace SuperMech.Code
             GameObject graphObj = new GameObject("CubeOverview", typeof(RectTransform));
             graphObj.transform.SetParent(parent, false);
             RectTransform graphRt = graphObj.GetComponent<RectTransform>();
-            graphRt.sizeDelta = new Vector2(0, 320f);
+            graphRt.sizeDelta = new Vector2(0, 300f);
             SMCubeKnowledge graph = graphObj.AddComponent<SMCubeKnowledge>();
             graph.Init(actor);
 
@@ -104,7 +112,6 @@ namespace SuperMech.Code
             GameObject elementObj = new GameObject($"KnowledgeElement_Tier{tier}", typeof(RectTransform));
             elementObj.transform.SetParent(parent, false);
             RectTransform elementRt = elementObj.GetComponent<RectTransform>();
-            elementRt.sizeDelta = new Vector2(0, 120f);
 
             Image bg = elementObj.AddComponent<Image>();
             bg.color = new Color(0.05f, 0.08f, 0.1f, 0.7f);
@@ -113,14 +120,20 @@ namespace SuperMech.Code
             vlg.spacing = 6f;
             vlg.padding = new RectOffset(8, 8, 6, 6);
             vlg.childAlignment = TextAnchor.UpperLeft;
+            vlg.childControlHeight = true;
+            vlg.childControlWidth = true;
+            vlg.childForceExpandHeight = false;
+            vlg.childForceExpandWidth = true;
 
             GameObject headerObj = new GameObject("Header", typeof(RectTransform));
             headerObj.transform.SetParent(elementObj.transform, false);
             HorizontalLayoutGroup hlg = headerObj.AddComponent<HorizontalLayoutGroup>();
             hlg.spacing = 8f;
             hlg.childAlignment = TextAnchor.MiddleLeft;
-            hlg.childControlHeight = false;
+            hlg.childControlHeight = true;
             hlg.childControlWidth = false;
+            hlg.childForceExpandHeight = true;
+            hlg.childForceExpandWidth = false;
             RectTransform headerRt = headerObj.GetComponent<RectTransform>();
             headerRt.sizeDelta = new Vector2(0, 28f);
 
