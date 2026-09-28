@@ -10,10 +10,12 @@ namespace SuperMech.Code
     {
         private const string SaveDirName = "Saves";
         private const string FileExt = ".json";
+        private const int CurrentSaveVersion = 1;
 
         [Serializable]
         public class SaveData
         {
+            public int version = CurrentSaveVersion;
             public Dictionary<string, ActorSaveData> actors = new Dictionary<string, ActorSaveData>();
             public SanctuarySaveData sanctuary = new SanctuarySaveData();
             public string worldSeed = "";
@@ -196,6 +198,11 @@ namespace SuperMech.Code
                 string json = File.ReadAllText(path);
                 var data = JsonConvert.DeserializeObject<SaveData>(json);
                 if (data == null) return;
+
+                if (data.version != CurrentSaveVersion)
+                {
+                    Debug.LogWarning($"[超神机械师] 存档版本不兼容: v{data.version} vs 当前v{CurrentSaveVersion}，尝试兼容加载");
+                }
 
                 SuperMechSanctuary.Data.unlocked_sanctuaries = data.sanctuary.unlockedSanctuaries;
                 SuperMechSanctuary.Data.key_fragments = data.sanctuary.keyFragments;

@@ -10,12 +10,31 @@ namespace SuperMech.Code
         private const BindingFlags AllStatic = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
         private const BindingFlags All = AllInstance | AllStatic;
 
+        private static readonly System.Collections.Generic.Dictionary<string, FieldInfo> _fieldCache =
+            new System.Collections.Generic.Dictionary<string, FieldInfo>();
+        private static readonly System.Collections.Generic.Dictionary<string, MethodInfo> _methodCache =
+            new System.Collections.Generic.Dictionary<string, MethodInfo>();
+        private static readonly System.Collections.Generic.Dictionary<string, PropertyInfo> _propertyCache =
+            new System.Collections.Generic.Dictionary<string, PropertyInfo>();
+
+        private static string CacheKey(Type type, string name, BindingFlags flags)
+        {
+            return $"{type.FullName}.{name}.{(int)flags}";
+        }
+
+        public static void ClearCache()
+        {
+            _fieldCache.Clear();
+            _methodCache.Clear();
+            _propertyCache.Clear();
+        }
+
         public static T GetFieldValue<T>(object obj, string fieldName, BindingFlags flags = AllInstance)
         {
             if (obj == null) return default;
             try
             {
-                FieldInfo field = obj.GetType().GetField(fieldName, flags);
+                FieldInfo field = GetCachedField(obj.GetType(), fieldName, flags);
                 if (field == null)
                 {
                     Debug.LogWarning($"[超神机械师] 反射字段未找到: {obj.GetType().Name}.{fieldName}");
@@ -30,12 +49,21 @@ namespace SuperMech.Code
             }
         }
 
+        private static FieldInfo GetCachedField(Type type, string fieldName, BindingFlags flags)
+        {
+            string key = CacheKey(type, fieldName, flags);
+            if (_fieldCache.TryGetValue(key, out FieldInfo cached)) return cached;
+            FieldInfo field = type.GetField(fieldName, flags);
+            _fieldCache[key] = field;
+            return field;
+        }
+
         public static T GetStaticFieldValue<T>(Type type, string fieldName)
         {
             if (type == null) return default;
             try
             {
-                FieldInfo field = type.GetField(fieldName, AllStatic);
+                FieldInfo field = GetCachedField(type, fieldName, AllStatic);
                 if (field == null)
                 {
                     Debug.LogWarning($"[超神机械师] 反射静态字段未找到: {type.Name}.{fieldName}");
@@ -55,7 +83,7 @@ namespace SuperMech.Code
             if (obj == null) return;
             try
             {
-                FieldInfo field = obj.GetType().GetField(fieldName, flags);
+                FieldInfo field = GetCachedField(obj.GetType(), fieldName, flags);
                 if (field == null)
                 {
                     Debug.LogWarning($"[超神机械师] 反射字段未找到: {obj.GetType().Name}.{fieldName}");
@@ -74,7 +102,7 @@ namespace SuperMech.Code
             if (type == null) return;
             try
             {
-                FieldInfo field = type.GetField(fieldName, AllStatic);
+                FieldInfo field = GetCachedField(type, fieldName, AllStatic);
                 if (field == null)
                 {
                     Debug.LogWarning($"[超神机械师] 反射静态字段未找到: {type.Name}.{fieldName}");
@@ -93,7 +121,7 @@ namespace SuperMech.Code
             if (obj == null) return default;
             try
             {
-                PropertyInfo prop = obj.GetType().GetProperty(propertyName, flags);
+                PropertyInfo prop = GetCachedProperty(obj.GetType(), propertyName, flags);
                 if (prop == null)
                 {
                     Debug.LogWarning($"[超神机械师] 反射属性未找到: {obj.GetType().Name}.{propertyName}");
@@ -108,12 +136,21 @@ namespace SuperMech.Code
             }
         }
 
+        private static PropertyInfo GetCachedProperty(Type type, string propertyName, BindingFlags flags)
+        {
+            string key = CacheKey(type, propertyName, flags);
+            if (_propertyCache.TryGetValue(key, out PropertyInfo cached)) return cached;
+            PropertyInfo prop = type.GetProperty(propertyName, flags);
+            _propertyCache[key] = prop;
+            return prop;
+        }
+
         public static MethodInfo GetMethod(Type type, string methodName, BindingFlags flags = All)
         {
             if (type == null) return null;
             try
             {
-                return type.GetMethod(methodName, flags);
+                return GetCachedMethod(type, methodName, flags);
             }
             catch (Exception e)
             {
@@ -122,12 +159,21 @@ namespace SuperMech.Code
             }
         }
 
+        private static MethodInfo GetCachedMethod(Type type, string methodName, BindingFlags flags)
+        {
+            string key = CacheKey(type, methodName, flags);
+            if (_methodCache.TryGetValue(key, out MethodInfo cached)) return cached;
+            MethodInfo method = type.GetMethod(methodName, flags);
+            _methodCache[key] = method;
+            return method;
+        }
+
         public static object InvokeMethod(object obj, string methodName, object[] args = null, BindingFlags flags = AllInstance)
         {
             if (obj == null) return null;
             try
             {
-                MethodInfo method = obj.GetType().GetMethod(methodName, flags);
+                MethodInfo method = GetCachedMethod(obj.GetType(), methodName, flags);
                 if (method == null)
                 {
                     Debug.LogWarning($"[超神机械师] 反射方法未找到: {obj.GetType().Name}.{methodName}");
@@ -147,7 +193,7 @@ namespace SuperMech.Code
             if (type == null) return null;
             try
             {
-                MethodInfo method = type.GetMethod(methodName, AllStatic);
+                MethodInfo method = GetCachedMethod(type, methodName, AllStatic);
                 if (method == null)
                 {
                     Debug.LogWarning($"[超神机械师] 反射静态方法未找到: {type.Name}.{methodName}");
@@ -166,7 +212,7 @@ namespace SuperMech.Code
         {
             try
             {
-                MethodInfo method = typeof(WindowPreloader).GetMethod("getWindowPrefab", AllStatic);
+                MethodInfo method = GetCachedMethod(typeof(WindowPreloader), "getWindowPrefab", AllStatic);
                 if (method == null)
                 {
                     Debug.LogWarning($"[超神机械师] WindowPreloader.getWindowPrefab方法未找到");

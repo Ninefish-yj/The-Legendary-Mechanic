@@ -204,6 +204,7 @@ namespace SuperMech.Code
             contentRt.sizeDelta = new Vector2(0, 800f);
 
             _knowledgeContent = contentObj.transform;
+            contentObj.SetActive(false);
             Actor actor = SuperMechUtils.GetActor(window);
             if (actor != null)
                 SMKnowledgeWindow.Create(_knowledgeContent, actor);
@@ -295,6 +296,7 @@ namespace SuperMech.Code
             contentRt.sizeDelta = new Vector2(0, 600f);
 
             _bagContent = contentObj.transform;
+            contentObj.SetActive(false);
             Actor actor = SuperMechUtils.GetActor(window);
             if (actor != null)
                 RenderBagContent(_bagContent, actor);
