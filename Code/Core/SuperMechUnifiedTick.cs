@@ -154,7 +154,6 @@ namespace SuperMech.Code
             try { SuperMechCrafting.Clear(); } catch { }
             try { SuperMechPotentialRating.Clear(); } catch { }
             try { SMWindowFrame.ClearAll(); } catch { }
-            try { SuperMechCustomTabs.ClearStaticState(); } catch { }
             try { SuperMechAwakenWindow.ClearStaticState(); } catch { }
             try { SuperMechStatsIcon.ClearStaticState(); } catch { }
             try { SuperMechProfession.Clear(); } catch { }
