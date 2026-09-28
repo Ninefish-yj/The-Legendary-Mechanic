@@ -23,8 +23,8 @@ namespace SuperMech.Code
 
             VerticalLayoutGroup vlg = parent.gameObject.GetComponent<VerticalLayoutGroup>();
             if (vlg == null) vlg = parent.gameObject.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 10f;
-            vlg.padding = new RectOffset(10, 10, 10, 10);
+            vlg.spacing = 8f;
+            vlg.padding = new RectOffset(8, 8, 8, 8);
             vlg.childAlignment = TextAnchor.UpperCenter;
             vlg.childControlHeight = true;
             vlg.childControlWidth = true;
@@ -46,16 +46,30 @@ namespace SuperMech.Code
             GameObject graphObj = new GameObject("CubeOverview", typeof(RectTransform));
             graphObj.transform.SetParent(parent, false);
             RectTransform graphRt = graphObj.GetComponent<RectTransform>();
-            graphRt.sizeDelta = new Vector2(0, 300f);
+            graphRt.sizeDelta = new Vector2(0, 450f);
             SMCubeKnowledge graph = graphObj.AddComponent<SMCubeKnowledge>();
             graph.Init(actor);
+
+            GameObject elementsParent = new GameObject("ElementsParent", typeof(RectTransform));
+            elementsParent.transform.SetParent(parent, false);
+            HorizontalLayoutGroup hlg = elementsParent.AddComponent<HorizontalLayoutGroup>();
+            hlg.spacing = 6f;
+            hlg.padding = new RectOffset(4, 4, 4, 4);
+            hlg.childAlignment = TextAnchor.UpperLeft;
+            hlg.childControlHeight = true;
+            hlg.childControlWidth = false;
+            hlg.childForceExpandHeight = false;
+            hlg.childForceExpandWidth = false;
+            ContentSizeFitter elementsCsf = elementsParent.AddComponent<ContentSizeFitter>();
+            elementsCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+            elementsCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             for (int tier = 0; tier <= 4; tier++)
             {
                 var tierKnowledge = allKnowledge.FindAll(k => k.tier == tier);
                 if (tierKnowledge.Count == 0) continue;
 
-                CreateKnowledgeElement(parent, actor, tier, tierKnowledge, prefix);
+                CreateKnowledgeElement(elementsParent.transform, actor, tier, tierKnowledge, prefix);
             }
         }
 
@@ -123,6 +137,12 @@ namespace SuperMech.Code
                 {
                     elementObj = UnityEngine.Object.Instantiate(elementPrefab.gameObject, parent, false);
                     elementObj.name = $"KnowledgeElement_Tier{tier}";
+                    RectTransform elementRt = elementObj.GetComponent<RectTransform>();
+                    elementRt.sizeDelta = new Vector2(160f, 0f);
+                    LayoutElement le = elementObj.GetComponent<LayoutElement>();
+                    if (le == null) le = elementObj.AddComponent<LayoutElement>();
+                    le.preferredWidth = 160f;
+                    le.flexibleWidth = 0f;
 
                     KnowledgeElement keComp = elementObj.GetComponent<KnowledgeElement>();
                     if (keComp != null)
@@ -177,14 +197,23 @@ namespace SuperMech.Code
                                 UnityEngine.Object.DestroyImmediate(child.gameObject);
                             }
 
-                            GridLayoutGroup glg = runningIcons.GetComponent<GridLayoutGroup>();
-                            if (glg == null) glg = runningIcons.gameObject.AddComponent<GridLayoutGroup>();
-                            glg.cellSize = new Vector2(24, 24);
-                            glg.spacing = new Vector2(4, 4);
-                            glg.childAlignment = TextAnchor.UpperLeft;
+                            HorizontalLayoutGroup hlgIcons = runningIcons.GetComponent<HorizontalLayoutGroup>();
+                            if (hlgIcons == null) hlgIcons = runningIcons.gameObject.AddComponent<HorizontalLayoutGroup>();
+                            hlgIcons.spacing = 3f;
+                            hlgIcons.childAlignment = TextAnchor.MiddleLeft;
+                            hlgIcons.childControlHeight = true;
+                            hlgIcons.childControlWidth = false;
+                            hlgIcons.childForceExpandHeight = false;
+                            hlgIcons.childForceExpandWidth = false;
+                            ContentSizeFitter iconsCsf = runningIcons.GetComponent<ContentSizeFitter>();
+                            if (iconsCsf == null) iconsCsf = runningIcons.gameObject.AddComponent<ContentSizeFitter>();
+                            iconsCsf.horizontalFit = ContentSizeFitter.FitMode.PreferredSize;
+                            iconsCsf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
-                            foreach (var k in knowledge)
+                            int displayCount = Mathf.Min(knowledge.Count, 6);
+                            for (int ki = 0; ki < displayCount; ki++)
                             {
+                                var k = knowledge[ki];
                                 bool unlocked = SuperMechKnowledge.IsUnlocked(actor, k.id);
                                 Color tierColor = TierColors[tier];
                                 Color borderColor = unlocked ? tierColor : new Color(0.3f, 0.3f, 0.3f, 0.6f);
@@ -193,7 +222,7 @@ namespace SuperMech.Code
                                 GameObject iconObj = new GameObject(k.id, typeof(RectTransform));
                                 iconObj.transform.SetParent(runningIcons.transform, false);
                                 RectTransform iconRt = iconObj.GetComponent<RectTransform>();
-                                iconRt.sizeDelta = new Vector2(28, 28);
+                                iconRt.sizeDelta = new Vector2(24, 24);
 
                                 Image borderImg = iconObj.AddComponent<Image>();
                                 borderImg.color = borderColor;
@@ -241,12 +270,22 @@ namespace SuperMech.Code
                                     }
                                 });
 
-                                iconObj.transform.localScale = Vector3.one * 0.8f;
-                                iconObj.transform.DOScale(Vector3.one, 0.3f).SetEase(Ease.OutBack);
-
                                 TipButton tipBtn = iconObj.AddComponent<TipButton>();
                                 tipBtn.textOnClick = k.id;
                                 tipBtn.textOnClickDescription = k.desc;
+                            }
+
+                            if (knowledge.Count > 6)
+                            {
+                                GameObject moreObj = new GameObject("More", typeof(RectTransform));
+                                moreObj.transform.SetParent(runningIcons.transform, false);
+                                RectTransform moreRt = moreObj.GetComponent<RectTransform>();
+                                moreRt.sizeDelta = new Vector2(24, 24);
+                                Image moreImg = moreObj.AddComponent<Image>();
+                                moreImg.color = new Color(0.5f, 0.5f, 0.5f, 0.6f);
+                                Text moreText = SuperMechUtils.CreateText(moreObj.transform,
+                                    $"+{knowledge.Count - 6}", 10, TextAnchor.MiddleCenter, Color.white);
+                                moreText.transform.SetParent(moreObj.transform, false);
                             }
                         }
                     }
