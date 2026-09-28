@@ -12,11 +12,11 @@ namespace SuperMech.Code
 
         private static readonly (string trait, string name, Color color)[] Classes =
         {
-            (SuperMechTraits.ClassMech, "sm_panel_1200", new Color(0.3f, 0.5f, 0.9f)),
-            (SuperMechTraits.ClassMartial, "sm_panel_1201", new Color(0.9f, 0.3f, 0.3f)),
-            (SuperMechTraits.ClassPsi, "sm_panel_1202", new Color(0.3f, 0.9f, 0.5f)),
-            (SuperMechTraits.ClassMage, "sm_panel_1203", new Color(0.7f, 0.3f, 0.9f)),
-            (SuperMechTraits.ClassMind, "sm_panel_1204", new Color(0.9f, 0.7f, 0.3f)),
+            (SuperMechTraits.ClassMech, "sm_panel_885", new Color(0.3f, 0.5f, 0.9f)),
+            (SuperMechTraits.ClassMartial, "sm_panel_886", new Color(0.9f, 0.3f, 0.3f)),
+            (SuperMechTraits.ClassPsi, "sm_panel_887", new Color(0.3f, 0.9f, 0.5f)),
+            (SuperMechTraits.ClassMage, "sm_panel_888", new Color(0.7f, 0.3f, 0.9f)),
+            (SuperMechTraits.ClassMind, "sm_panel_889", new Color(0.9f, 0.7f, 0.3f)),
         };
 
         public static void Show()
@@ -31,7 +31,7 @@ namespace SuperMech.Code
         {
             try
             {
-                _frame = SMWindowFrame.Create(LocalizedTextManager.getText("sm_panel_1205"), 720f, 640f);
+                _frame = SMWindowFrame.Create(LocalizedTextManager.getText("sm_panel_890"), 720f, 640f);
                 if (_frame == null) return;
                 Debug.Log("[超神机械师] 超能者面板窗口创建成功");
             }
@@ -69,7 +69,7 @@ namespace SuperMech.Code
 
             if (a == null || !a.isAlive())
             {
-                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_1206"), leftX, y, 680f, 30f, 16, TextAnchor.MiddleCenter);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_891"), leftX, y, 680f, 30f, 16, TextAnchor.MiddleCenter);
                 return;
             }
 
@@ -107,7 +107,7 @@ namespace SuperMech.Code
 
             if (!SuperMechAdvancement.IsSuperMechUnit(a))
             {
-                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_1207"), leftX, y, 200f, 22f, 14);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_899"), leftX, y, 200f, 22f, 14);
                 y -= 28f;
                 for (int i = 0; i < Classes.Length; i++)
                 {
@@ -131,9 +131,9 @@ namespace SuperMech.Code
             }
             else
             {
-                if (branch == "sm_panel_1208" && CanSelectBranch(a))
+                if (branch == "sm_panel_900" && CanSelectBranch(a))
                 {
-                    _frame.AddLabel(LocalizedTextManager.getText("sm_panel_1209"), leftX, y, 200f, 22f, 14);
+                    _frame.AddLabel(LocalizedTextManager.getText("sm_panel_901"), leftX, y, 200f, 22f, 14);
                     y -= 28f;
                     var branches = SuperMechBranch.GetBranchesForClass(GetClassTrait(a));
                     for (int i = 0; i < branches.Count; i++)
@@ -157,9 +157,9 @@ namespace SuperMech.Code
 
                 if (a.hasTrait(SuperMechTraits.ClassMech))
                 {
-                    _frame.AddLabel(LocalizedTextManager.getText("sm_panel_1210"), leftX, y, 200f, 22f, 14);
+                    _frame.AddLabel(LocalizedTextManager.getText("sm_panel_902"), leftX, y, 200f, 22f, 14);
                     y -= 28f;
-                    string[] crafts = { "sm_panel_1211", "sm_panel_1212", "sm_panel_1213", "sm_panel_1214", "sm_panel_1215" };
+                    string[] crafts = { "sm_panel_903", "sm_panel_904", "sm_panel_905", "sm_panel_906", "sm_panel_907" };
                     string[] craftIds = { "sm_craft_ranger", "sm_craft_drone", "sm_craft_mech", "sm_craft_fortress", "sm_craft_virtual" };
                     for (int i = 0; i < crafts.Length; i++)
                     {
@@ -175,9 +175,9 @@ namespace SuperMech.Code
                     y -= 10f;
                 }
 
-                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_1216"), leftX, y, 280f, 22f, 14);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_908"), leftX, y, 280f, 22f, 14);
                 y -= 28f;
-                string[] knowNames = { "sm_panel_1217", "sm_panel_1218", "sm_panel_1219" };
+                string[] knowNames = { "sm_panel_909", "sm_panel_910", "sm_panel_911" };
                 string[] knowIds = { SuperMechPowers.UnlockArmed, SuperMechPowers.UnlockEnergy, SuperMechPowers.UnlockVirtual };
                 for (int i = 0; i < knowNames.Length; i++)
                 {
@@ -191,9 +191,9 @@ namespace SuperMech.Code
                 }
                 y -= 38f;
 
-                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_1220"), leftX, y, 200f, 22f, 14);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_912"), leftX, y, 200f, 22f, 14);
                 y -= 28f;
-                _frame.AddButton(LocalizedTextManager.getText("sm_panel_1221"), leftX, y, 200f, 28f, () =>
+                _frame.AddButton(LocalizedTextManager.getText("sm_panel_913"), leftX, y, 200f, 28f, () =>
                 {
                     var p = AssetManager.powers.get("sm_give_refinement");
                     if (p != null) p.click_action?.Invoke(a.current_tile, "sm_give_refinement");
@@ -201,14 +201,14 @@ namespace SuperMech.Code
                 });
                 y -= 38f;
 
-                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_1222"), leftX, y, 200f, 22f, 14);
+                _frame.AddLabel(LocalizedTextManager.getText("sm_panel_914"), leftX, y, 200f, 22f, 14);
                 y -= 28f;
-                _frame.AddButton(LocalizedTextManager.getText("sm_panel_1223"), leftX, y, 145f, 28f, () =>
+                _frame.AddButton(LocalizedTextManager.getText("sm_panel_915"), leftX, y, 145f, 28f, () =>
                 {
                     var p = AssetManager.powers.get(SuperMechPowers.CheckPotential);
                     if (p != null) p.click_action?.Invoke(a.current_tile, SuperMechPowers.CheckPotential);
                 });
-                _frame.AddButton(LocalizedTextManager.getText("sm_panel_1224"), leftX + 155f, y, 105f, 28f, () =>
+                _frame.AddButton(LocalizedTextManager.getText("sm_panel_916"), leftX + 155f, y, 105f, 28f, () =>
                 {
                     var p = AssetManager.powers.get("sm_enter_sanctuary");
                     if (p != null) p.click_action?.Invoke(a.current_tile, "sm_enter_sanctuary");
@@ -223,7 +223,7 @@ namespace SuperMech.Code
             {
                 if (a.hasTrait(c.trait)) return LocalizedTextManager.getText(c.name);
             }
-            return LocalizedTextManager.getText("sm_panel_1225");
+            return LocalizedTextManager.getText("sm_panel_917");
         }
 
         private static string GetClassTrait(Actor a)
