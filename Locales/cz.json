@@ -3848,5 +3848,6 @@
   "sm_ui_bag_tab": "背包",
   "sm_ui_bag_tab_desc": "查看装备和资源",
   "sm_ui_knowledge_library": "知识库",
-  "sm_ui_tier": "阶位"
+  "sm_ui_tier": "阶位",
+  "sm_ui_vanilla_equipment": "原版装备"
 }

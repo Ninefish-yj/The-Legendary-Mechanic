@@ -318,6 +318,32 @@ namespace SuperMech.Code
             ContentSizeFitter csf = parent.gameObject.AddComponent<ContentSizeFitter>();
             csf.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
+            GameObject vanillaTitle = new GameObject("VanillaEquipTitle", typeof(RectTransform));
+            vanillaTitle.transform.SetParent(parent, false);
+            Text vanillaTxt = SuperMechUtils.CreateText(vanillaTitle.transform, LocalizedTextManager.getText("sm_ui_vanilla_equipment"), 12, TextAnchor.MiddleLeft, new Color(0.3f, 0.85f, 1f));
+            vanillaTxt.fontStyle = FontStyle.Bold;
+            RectTransform vanillaRt = vanillaTitle.GetComponent<RectTransform>();
+            vanillaRt.sizeDelta = new Vector2(0, 24f);
+
+            GameObject vanillaGrid = new GameObject("VanillaEquipGrid", typeof(RectTransform));
+            vanillaGrid.transform.SetParent(parent, false);
+            GridLayoutGroup vanillaGlg = vanillaGrid.AddComponent<GridLayoutGroup>();
+            vanillaGlg.cellSize = new Vector2(48, 48);
+            vanillaGlg.spacing = new Vector2(6, 6);
+            vanillaGlg.constraint = GridLayoutGroup.Constraint.Flexible;
+            vanillaGlg.childAlignment = TextAnchor.UpperLeft;
+
+            if (actor.equipment != null)
+            {
+                foreach (ActorEquipmentSlot slot in actor.equipment)
+                {
+                    if (!slot.isEmpty())
+                    {
+                        CreateVanillaEquipIcon(vanillaGrid.transform, slot.getItem());
+                    }
+                }
+            }
+
             GameObject equipTitle = new GameObject("EquipTitle", typeof(RectTransform));
             equipTitle.transform.SetParent(parent, false);
             Text equipTxt = SuperMechUtils.CreateText(equipTitle.transform, LocalizedTextManager.getText("sm_ui_equipment"), 12, TextAnchor.MiddleLeft, new Color(0.3f, 0.85f, 1f));
@@ -368,6 +394,42 @@ namespace SuperMech.Code
             resGlg.childAlignment = TextAnchor.UpperLeft;
 
             SMUnitBag.Render(resGrid.transform, actor);
+        }
+
+        private static void CreateVanillaEquipIcon(Transform parent, Item item)
+        {
+            if (item == null) return;
+            EquipmentButton prefab = Resources.Load<EquipmentButton>("ui/EquipmentButton");
+            if (prefab != null)
+            {
+                EquipmentButton btn = UnityEngine.Object.Instantiate(prefab, parent, false);
+                btn.name = "VanillaEquip_" + item.data.asset_id;
+                SuperMechReflection.SetFieldValue(btn, "is_editor_button", true);
+                SuperMechReflection.InvokeMethod(btn, "create", null);
+                btn.load(item);
+            }
+            else
+            {
+                CreateEquipIconFallback(parent, item.getSprite(), item.data.asset_id);
+            }
+        }
+
+        private static void CreateEquipIconFallback(Transform parent, Sprite sprite, string name)
+        {
+            GameObject go = new GameObject("Equip_" + name, typeof(RectTransform));
+            go.transform.SetParent(parent, false);
+            RectTransform rt = go.GetComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(48, 48);
+
+            Image bg = go.AddComponent<Image>();
+            bg.color = new Color(0.05f, 0.12f, 0.18f, 0.6f);
+
+            Image icon = new GameObject("Icon", typeof(RectTransform)).AddComponent<Image>();
+            icon.transform.SetParent(go.transform, false);
+            if (sprite != null) icon.sprite = sprite;
+            RectTransform iconRt = icon.GetComponent<RectTransform>();
+            iconRt.anchorMin = new Vector2(0.15f, 0.15f);
+            iconRt.anchorMax = new Vector2(0.85f, 0.85f);
         }
 
         private static void CreateEquipIcon(Transform parent, SuperMechRelic.EquipDef equip, bool isCurrent, Actor actor)
