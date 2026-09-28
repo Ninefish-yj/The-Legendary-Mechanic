@@ -54,8 +54,14 @@ namespace SuperMech.Code
             _frame.AddButton(LocalizedTextManager.getText("sm_rank_sort_rank"), x + 210f, y, 100f, 28f, () => { _sortMode = 2; Refresh(); }, _sortMode == 2 ? SMImguiTheme.Cyan : (Color?)null);
             y -= 38f;
 
-            _frame.AddLabel($"{"#",-4} {"名称",-16} {"系别",-6} {"阶位",-6} {"气力",-5} {"能级",-8}",
-                x, y, width, 22f, 12, TextAnchor.MiddleLeft, SMImguiTheme.Cyan);
+            string header = string.Format("{0,-4} {1,-16} {2,-6} {3,-6} {4,-5} {5,-8}",
+                "#",
+                LocalizedTextManager.getText("sm_ui_name"),
+                LocalizedTextManager.getText("sm_ui_system"),
+                LocalizedTextManager.getText("sm_ui_rank_col"),
+                LocalizedTextManager.getText("sm_ui_qi_col"),
+                LocalizedTextManager.getText("sm_ui_onar_col"));
+            _frame.AddLabel(header, x, y, width, 22f, 12, TextAnchor.MiddleLeft, SMImguiTheme.Cyan);
             y -= 26f;
 
             var list = new List<(Actor a, float onar, float qi, int rank)>();

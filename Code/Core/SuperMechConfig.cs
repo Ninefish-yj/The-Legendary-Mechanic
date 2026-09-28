@@ -50,7 +50,6 @@ namespace SuperMech.Code
 
         public static bool CrossModEnergySync = true;
         public static float CrossModEnergyRatio = 1.0f;
-        public static bool UniversalOnarFormula = true;
 
         public static void Init()
         {

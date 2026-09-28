@@ -179,7 +179,7 @@ namespace SuperMech.Code
                 if (_nodes == null || _nodes.Length == 0)
                 {
                     GUI.Label(new Rect(local.width / 2 - 100, local.height / 2 - 10, 200, 20),
-                        "暂无知识数据", _nodeNameStyle);
+                        LocalizedTextManager.getText("sm_ui_no_knowledge"), _nodeNameStyle);
                     return;
                 }
 
@@ -331,7 +331,9 @@ namespace SuperMech.Code
 
                     if (_zoom >= 0.7f)
                     {
-                        string status = unlocked ? "✓ 已解锁" : $"消耗 {def.cost} 潜能";
+                        string status = unlocked
+                            ? LocalizedTextManager.getText("sm_ui_unlocked")
+                            : string.Format(LocalizedTextManager.getText("sm_ui_cost_potential"), def.cost);
                         GUI.Label(new Rect(r.x + 8, r.y + 28, r.width - 16, 16), status, _nodeDescStyle);
                     }
                 }
