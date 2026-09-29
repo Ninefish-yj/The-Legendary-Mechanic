@@ -55,9 +55,9 @@ namespace SuperMech.Code
         {
             try
             {
-                LogInfo("sm_config_547");
+                Debug.Log("sm_config_547");
                 RegisterLocalization();
-                LogInfo($"sm_config_548");
+                Debug.Log($"sm_config_548");
             }
             catch (Exception e)
             {
@@ -125,36 +125,36 @@ namespace SuperMech.Code
         }
 
 
-        public static void SetModEnabled(bool val) { ModEnabled = val; LogInfo($"sm_config_621"); }
+        public static void SetModEnabled(bool val) { ModEnabled = val; Debug.Log($"sm_config_621"); }
 
-        public static void SetAutoAwakening(bool val) { AutoAwakening = val; LogInfo($"sm_config_622"); }
-        public static void SetAwakeningChance(float val) { AwakeningChance = Mathf.Clamp01(val); LogInfo($"sm_config_623"); }
-        public static void SetAwakeningMinAge(int val) { AwakeningMinAge = Mathf.Max(0, val); LogInfo($"sm_config_624"); }
+        public static void SetAutoAwakening(bool val) { AutoAwakening = val; Debug.Log($"sm_config_622"); }
+        public static void SetAwakeningChance(float val) { AwakeningChance = Mathf.Clamp01(val); Debug.Log($"sm_config_623"); }
+        public static void SetAwakeningMinAge(int val) { AwakeningMinAge = Mathf.Max(0, val); Debug.Log($"sm_config_624"); }
 
-        public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); LogInfo($"sm_config_625"); }
-        public static void SetQiUnlimited(bool val) { QiUnlimited = val; LogInfo($"sm_config_626"); }
+        public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); Debug.Log($"sm_config_625"); }
+        public static void SetQiUnlimited(bool val) { QiUnlimited = val; Debug.Log($"sm_config_626"); }
 
-        public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); LogInfo($"sm_config_627"); }
-        public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); LogInfo($"sm_config_628"); }
-        public static void SetAutoPromotion(bool val) { AutoPromotion = val; LogInfo($"sm_config_629"); }
+        public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); Debug.Log($"sm_config_627"); }
+        public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); Debug.Log($"sm_config_628"); }
+        public static void SetAutoPromotion(bool val) { AutoPromotion = val; Debug.Log($"sm_config_629"); }
         public static void SetAutoPromotionMaxRank(int val)
         {
             AutoPromotionMaxRank = Mathf.Clamp(val, 0, 12);
             string[] rankNames = { "F", "E", "D", "D+", "C", "C+", "B", "B+", "A", "A+", "S", "S+", "SS", "sm_config_630" };
-            LogInfo($"sm_config_631");
+            Debug.Log($"sm_config_631");
         }
-        public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; LogInfo($"sm_config_632"); }
+        public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; Debug.Log($"sm_config_632"); }
 
-        public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; LogInfo($"sm_config_633"); }
-        public static void SetAutoFavoriteF(bool val) { AutoFavoriteF = val; LogInfo($"sm_config_634"); }
-        public static void SetAutoFavoriteE(bool val) { AutoFavoriteE = val; LogInfo($"sm_config_635"); }
-        public static void SetAutoFavoriteD(bool val) { AutoFavoriteD = val; LogInfo($"sm_config_636"); }
-        public static void SetAutoFavoriteC(bool val) { AutoFavoriteC = val; LogInfo($"sm_config_637"); }
-        public static void SetAutoFavoriteB(bool val) { AutoFavoriteB = val; LogInfo($"sm_config_638"); }
-        public static void SetAutoFavoriteA(bool val) { AutoFavoriteA = val; LogInfo($"sm_config_639"); }
-        public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; LogInfo($"sm_config_640"); }
-        public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; LogInfo($"sm_config_641"); }
-        public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; LogInfo($"sm_config_642"); }
+        public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; Debug.Log($"sm_config_633"); }
+        public static void SetAutoFavoriteF(bool val) { AutoFavoriteF = val; Debug.Log($"sm_config_634"); }
+        public static void SetAutoFavoriteE(bool val) { AutoFavoriteE = val; Debug.Log($"sm_config_635"); }
+        public static void SetAutoFavoriteD(bool val) { AutoFavoriteD = val; Debug.Log($"sm_config_636"); }
+        public static void SetAutoFavoriteC(bool val) { AutoFavoriteC = val; Debug.Log($"sm_config_637"); }
+        public static void SetAutoFavoriteB(bool val) { AutoFavoriteB = val; Debug.Log($"sm_config_638"); }
+        public static void SetAutoFavoriteA(bool val) { AutoFavoriteA = val; Debug.Log($"sm_config_639"); }
+        public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; Debug.Log($"sm_config_640"); }
+        public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; Debug.Log($"sm_config_641"); }
+        public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; Debug.Log($"sm_config_642"); }
 
         public static bool ShouldFavoriteRank(int rankIdx)
         {
@@ -169,23 +169,23 @@ namespace SuperMech.Code
             return AutoFavoriteX;
         }
 
-        public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; LogInfo($"sm_config_643"); }
-        public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; LogInfo($"sm_config_644"); }
+        public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; Debug.Log($"sm_config_643"); }
+        public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; Debug.Log($"sm_config_644"); }
         public static void SetSanctuaryCount(int val) {  }
 
-        public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; LogInfo($"sm_config_645"); }
-        public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); LogInfo($"sm_config_646"); }
+        public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; Debug.Log($"sm_config_645"); }
+        public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); Debug.Log($"sm_config_646"); }
 
-        public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); LogInfo($"sm_config_647"); }
-        public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); LogInfo($"sm_config_648"); }
-        public static void SetLogVerbose(bool val) { LogVerbose = val; LogInfo($"sm_config_649"); }
+        public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); Debug.Log($"sm_config_647"); }
+        public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); Debug.Log($"sm_config_648"); }
+        public static void SetLogVerbose(bool val) { LogVerbose = val; Debug.Log($"sm_config_649"); }
 
-        public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; LogInfo($"sm_config_650"); }
-        public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); LogInfo($"sm_config_651"); }
+        public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; Debug.Log($"sm_config_650"); }
+        public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); Debug.Log($"sm_config_651"); }
 
-        public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); LogInfo($"sm_config_652"); }
+        public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); Debug.Log($"sm_config_652"); }
 
-        private static void LogInfo(string msg)
+        private static void Debug.Log(string msg)
         {
             if (LogVerbose) Debug.Log(msg);
         }
