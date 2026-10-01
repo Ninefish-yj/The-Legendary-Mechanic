@@ -1,5 +1,4 @@
 using UnityEngine;
-using System.IO;
 
 namespace SuperMech.Code
 {
@@ -8,12 +7,13 @@ namespace SuperMech.Code
         private static bool _ready;
         private static Texture2D _pixel;
         private static Texture2D _scanline;
+        private static Texture2D _starfield;
+        private static Texture2D _glowCircle;
+        private static Texture2D _gradientPanel;
 
-        public static Texture2D UiPanel { get; private set; }
-
-        public static readonly Color Background = new Color(0.85f, 0.88f, 0.92f, 0.85f);
-        public static readonly Color Panel = new Color(0.92f, 0.94f, 0.97f, 0.7f);
-        public static readonly Color PanelRaised = new Color(0.96f, 0.97f, 0.99f, 0.8f);
+        public static readonly Color Background = new Color(0.88f, 0.91f, 0.95f, 0.88f);
+        public static readonly Color Panel = new Color(0.93f, 0.95f, 0.98f, 0.75f);
+        public static readonly Color PanelRaised = new Color(0.97f, 0.98f, 1f, 0.85f);
         public static readonly Color PanelDark = new Color(0.78f, 0.82f, 0.88f, 0.6f);
         public static readonly Color Silver = new Color(0.6f, 0.65f, 0.72f, 1f);
         public static readonly Color SilverDim = new Color(0.45f, 0.5f, 0.58f, 1f);
@@ -54,7 +54,9 @@ namespace SuperMech.Code
             _ready = true;
             EnsurePixel();
             EnsureScanline();
-            LoadUITextures();
+            EnsureStarfield();
+            EnsureGlowCircle();
+            EnsureGradientPanel();
 
             Label = new GUIStyle(GUI.skin.label)
             {
@@ -189,6 +191,61 @@ namespace SuperMech.Code
             _scanline.wrapMode = TextureWrapMode.Repeat;
         }
 
+        private static void EnsureStarfield()
+        {
+            if (_starfield != null) return;
+            _starfield = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+            _starfield.hideFlags = HideFlags.HideAndDontSave;
+            var rng = new System.Random(42);
+            for (int x = 0; x < 256; x++)
+                for (int y = 0; y < 256; y++)
+                {
+                    float v = (float)rng.NextDouble();
+                    if (v > 0.985f) _starfield.SetPixel(x, y, new Color(1f, 1f, 1f, 0.8f));
+                    else if (v > 0.97f) _starfield.SetPixel(x, y, new Color(0.7f, 0.85f, 1f, 0.5f));
+                    else _starfield.SetPixel(x, y, new Color(0, 0, 0, 0));
+                }
+            _starfield.Apply();
+            _starfield.wrapMode = TextureWrapMode.Repeat;
+        }
+
+        private static void EnsureGlowCircle()
+        {
+            if (_glowCircle != null) return;
+            int size = 64;
+            _glowCircle = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            _glowCircle.hideFlags = HideFlags.HideAndDontSave;
+            float cx = size / 2f, cy = size / 2f;
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                {
+                    float dist = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) / (size / 2f);
+                    float alpha = Mathf.Clamp01(1f - dist);
+                    alpha = alpha * alpha;
+                    _glowCircle.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+                }
+            _glowCircle.Apply();
+        }
+
+        private static void EnsureGradientPanel()
+        {
+            if (_gradientPanel != null) return;
+            int w = 4, h = 64;
+            _gradientPanel = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            _gradientPanel.hideFlags = HideFlags.HideAndDontSave;
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    float t = (float)y / h;
+                    float r = Mathf.Lerp(0.95f, 0.82f, t);
+                    float g = Mathf.Lerp(0.96f, 0.85f, t);
+                    float b = Mathf.Lerp(0.98f, 0.90f, t);
+                    _gradientPanel.SetPixel(x, y, new Color(r, g, b, 0.6f));
+                }
+            _gradientPanel.Apply();
+            _gradientPanel.wrapMode = TextureWrapMode.Clamp;
+        }
+
         public static Texture2D MakeFrame(Color fill, Color edge)
         {
             var tex = new Texture2D(4, 4, TextureFormat.RGBA32, false)
@@ -258,65 +315,6 @@ namespace SuperMech.Code
             return value * Mathf.Max(0.7f, Mathf.Min(1.3f, scale));
         }
 
-        private static Texture2D _starfield;
-        private static Texture2D _glowCircle;
-        private static Texture2D _gradientPanel;
-
-        private static void EnsureStarfield()
-        {
-            if (_starfield != null) return;
-            _starfield = new Texture2D(256, 256, TextureFormat.RGBA32, false);
-            _starfield.hideFlags = HideFlags.HideAndDontSave;
-            var rng = new System.Random(42);
-            for (int x = 0; x < 256; x++)
-                for (int y = 0; y < 256; y++)
-                {
-                    float v = (float)rng.NextDouble();
-                    if (v > 0.985f) _starfield.SetPixel(x, y, new Color(1f, 1f, 1f, 0.8f));
-                    else if (v > 0.97f) _starfield.SetPixel(x, y, new Color(0.7f, 0.85f, 1f, 0.5f));
-                    else _starfield.SetPixel(x, y, new Color(0, 0, 0, 0));
-                }
-            _starfield.Apply();
-            _starfield.wrapMode = TextureWrapMode.Repeat;
-        }
-
-        private static void EnsureGlowCircle()
-        {
-            if (_glowCircle != null) return;
-            int size = 64;
-            _glowCircle = new Texture2D(size, size, TextureFormat.RGBA32, false);
-            _glowCircle.hideFlags = HideFlags.HideAndDontSave;
-            float cx = size / 2f, cy = size / 2f;
-            for (int x = 0; x < size; x++)
-                for (int y = 0; y < size; y++)
-                {
-                    float dist = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) / (size / 2f);
-                    float alpha = Mathf.Clamp01(1f - dist);
-                    alpha = alpha * alpha;
-                    _glowCircle.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
-                }
-            _glowCircle.Apply();
-        }
-
-        private static void EnsureGradientPanel()
-        {
-            if (_gradientPanel != null) return;
-            int w = 4, h = 64;
-            _gradientPanel = new Texture2D(w, h, TextureFormat.RGBA32, false);
-            _gradientPanel.hideFlags = HideFlags.HideAndDontSave;
-            for (int x = 0; x < w; x++)
-                for (int y = 0; y < h; y++)
-                {
-                    float t = (float)y / h;
-                    float r = Mathf.Lerp(0.95f, 0.82f, t);
-                    float g = Mathf.Lerp(0.96f, 0.85f, t);
-                    float b = Mathf.Lerp(0.98f, 0.90f, t);
-                    _gradientPanel.SetPixel(x, y, new Color(r, g, b, 0.6f));
-                }
-            _gradientPanel.Apply();
-            _gradientPanel.wrapMode = TextureWrapMode.Clamp;
-        }
-
         public static void DrawStarfield(Rect rect)
         {
             EnsureStarfield();
@@ -357,47 +355,20 @@ namespace SuperMech.Code
             GUI.color = old;
         }
 
-        private static void LoadUITextures()
+        public static void DrawWindowBackground(Rect rect)
         {
-            UiPanel = LoadUITexture("ui_panel.png");
-        }
-
-        private static Texture2D LoadUITexture(string filename)
-        {
-            try
+            DrawGradientPanel(rect);
+            DrawStarfield(new Rect(rect.x + 4, rect.y + 40, rect.width - 8, rect.height - 44));
+            DrawGlowBorder(rect, BorderGlow, 4f);
+            DrawCorners(rect, BorderGlow, 10f);
+            DrawRect(new Rect(rect.x + 12, rect.y + 38, rect.width - 24, 1f), new Color(0.4f, 0.65f, 0.9f, 0.4f));
+            for (int i = 0; i < 8; i++)
             {
-                string modPath = Main.Instance.GetDeclaration().FolderPath;
-                string path = Path.Combine(modPath, "GameResources", filename);
-                if (!File.Exists(path))
-                {
-                    Debug.LogWarning("[超神机械师] UI图片不存在: " + path);
-                    return null;
-                }
-                byte[] bytes = File.ReadAllBytes(path);
-                Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                tex.hideFlags = HideFlags.HideAndDontSave;
-                tex.LoadImage(bytes);
-                return tex;
+                float y = rect.y + 50 + i * 14f;
+                if (y > rect.yMax - 20) break;
+                DrawRect(new Rect(rect.x + 6, y, 8f, 1f), new Color(0.4f, 0.65f, 0.9f, 0.3f));
             }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning("[超神机械师] 加载UI图片失败: " + filename + " - " + e.Message);
-                return null;
-            }
-        }
-
-        public static void DrawWindowBackground(Rect rect, Texture2D bg)
-        {
-            if (bg == null)
-            {
-                DrawGradientPanel(rect);
-                DrawGlowBorder(rect, BorderGlow, 4f);
-                return;
-            }
-            Color old = GUI.color;
-            GUI.color = Color.white;
-            GUI.DrawTexture(rect, bg, ScaleMode.StretchToFill);
-            GUI.color = old;
+            DrawScanline(new Rect(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4));
         }
 
         public static bool DrawBackdrop(Rect windowRect, float alpha = 0.45f)
