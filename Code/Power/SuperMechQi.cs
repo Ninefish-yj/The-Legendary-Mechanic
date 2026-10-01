@@ -53,8 +53,8 @@ namespace SuperMech.Code
             float stageMul = 1f + stage * 0.1f;
 
             // 原著Lv10总加成：力+71/敏+97/耐+108/智+122/神秘+77 (ch539)
-            // 线性增长，Lv30时qiMul≈7x，配合阶位30x+知识2x=420x总倍率
-            float qiMul = 1f + level * 0.2f * stageMul;
+            // 主要战力来源：气力线性增长，Lv30时qiMul≈10x，配合阶位20x+知识2x=400x总倍率
+            float qiMul = 1f + level * 0.3f * stageMul;
 
             var synBonus = SuperMechKnowledgeSynergy.GetBonus(a);
             qiMul *= synBonus.dmgMul;
@@ -71,19 +71,19 @@ namespace SuperMech.Code
             stats["multiplier_damage"] = qiMul;
             stats["multiplier_health"] = qiMul * 1.2f * synBonus.hpMul * fusionMul * knowFusion.hpMul * skillBonus.hpMul;
             stats["multiplier_stamina"] = qiMul * 1.1f;
-            stats["armor"] = Mathf.Min(80f, level * 0.4f * stageMul);
-            stats["multiplier_speed"] = (1f + level * 0.01f * stageMul) * synBonus.speedMul * knowFusion.speedMul * skillBonus.speedMul;
-            stats["multiplier_crit"] = 1f + level * 0.015f * stageMul;
-            stats["experience"] = 1f + level * 0.01f;
+            stats["armor"] = Mathf.Min(100f, level * 0.6f * stageMul);
+            stats["multiplier_speed"] = (1f + level * 0.015f * stageMul) * synBonus.speedMul * knowFusion.speedMul * skillBonus.speedMul;
+            stats["multiplier_crit"] = 1f + level * 0.02f * stageMul;
+            stats["experience"] = 1f + level * 0.015f;
 
-            stats["damage"] = level * 0.5f * stageMul;
-            stats["health"] = level * 5f * stageMul;
-            stats["stamina"] = level * 3f * stageMul;
-            stats["intelligence"] = level * 0.3f * stageMul + skillBonus.intelligence;
+            stats["damage"] = level * 0.8f * stageMul;
+            stats["health"] = level * 8f * stageMul;
+            stats["stamina"] = level * 4f * stageMul;
+            stats["intelligence"] = level * 0.4f * stageMul + skillBonus.intelligence;
 
             if (level >= 6)
             {
-                stats["critical_chance"] = (level - 5) * 0.005f * stageMul;
+                stats["critical_chance"] = (level - 5) * 0.008f * stageMul;
             }
             _appliedLevel[a.id] = level;
         }
