@@ -14,10 +14,16 @@ namespace SuperMech.Code
             try
             {
                 Actor actor = SuperMechUtils.GetActor(__instance);
-                if (actor == null || !actor.isAlive()) return true;
+                if (actor == null || !actor.isAlive())
+                {
+                    Debug.Log("[超神机械师] 单位面板patch: actor为null或已死亡，跳过");
+                    return true;
+                }
 
+                Debug.Log($"[超神机械师] 单位面板patch: 开始显示信息，actor={actor.name}");
                 ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
                 ShowMainInfo(__instance, actor);
+                Debug.Log("[超神机械师] 单位面板patch: 信息显示完成");
             }
             catch (System.Exception e)
             {
@@ -91,6 +97,7 @@ namespace SuperMech.Code
         {
             try
             {
+                Debug.Log($"[超神机械师] 创建入口按钮: {label}");
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(color);
                 string valueText = "▸ " + LocalizedTextManager.getText("sm_ui_open");
                 var row = window.showStatRow(label, valueText,
@@ -98,21 +105,16 @@ namespace SuperMech.Code
                 if (row != null)
                 {
                     row.on_click_value = () => onClick?.Invoke();
-                    if (row.background != null)
-                    {
-                        var btn = row.background.gameObject.GetComponent<UnityEngine.UI.Button>();
-                        if (btn == null)
-                        {
-                            btn = row.background.gameObject.AddComponent<UnityEngine.UI.Button>();
-                        }
-                        btn.onClick.RemoveAllListeners();
-                        btn.onClick.AddListener(() => onClick?.Invoke());
-                    }
+                    Debug.Log($"[超神机械师] 入口按钮创建成功: {label}");
+                }
+                else
+                {
+                    Debug.LogWarning($"[超神机械师] 入口按钮创建失败: showStatRow返回null, label={label}");
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning("[超神机械师] 入口按钮创建失败: " + e.Message);
+                Debug.LogWarning("[超神机械师] 入口按钮创建失败: " + e.Message + "\n" + e.StackTrace);
             }
         }
 
