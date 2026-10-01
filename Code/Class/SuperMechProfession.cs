@@ -137,43 +137,5 @@ namespace SuperMech.Code
             _profession.Clear();
             _switchCount.Clear();
         }
-
-        public static Dictionary<string, object> GetSaveData()
-        {
-            var data = new Dictionary<string, object>();
-            var prof = new Dictionary<string, object>();
-            var sw = new Dictionary<string, object>();
-            foreach (var kv in _profession) prof[kv.Key.ToString()] = (int)kv.Value;
-            foreach (var kv in _switchCount) sw[kv.Key.ToString()] = kv.Value;
-            data["profession"] = prof;
-            data["switchCount"] = sw;
-            return data;
-        }
-
-        public static void LoadSaveData(Dictionary<string, object> data)
-        {
-            _profession.Clear();
-            _switchCount.Clear();
-            if (data == null) return;
-
-            if (data.ContainsKey("profession"))
-            {
-                var dict = data["profession"] as Dictionary<string, object>;
-                if (dict != null)
-                {
-                    foreach (var kv in dict)
-                        _profession[long.Parse(kv.Key)] = (ProfessionType)System.Convert.ToInt32(kv.Value);
-                }
-            }
-            if (data.ContainsKey("switchCount"))
-            {
-                var dict = data["switchCount"] as Dictionary<string, object>;
-                if (dict != null)
-                {
-                    foreach (var kv in dict)
-                        _switchCount[long.Parse(kv.Key)] = System.Convert.ToInt32(kv.Value);
-                }
-            }
-        }
     }
 }

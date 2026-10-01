@@ -66,6 +66,27 @@ namespace SuperMech.Code
             public int profession;
             public int switchCount;
             public bool fiveSystemGenius;
+            public string equippedAffixes;
+            public string durability;
+            public int refineCount;
+            public int emRefineCount;
+            public float refineQiBonus;
+            public float emRefineQiBonus;
+            public List<string> activeSynergies;
+            public int geneStage;
+            public int manaStage;
+            public int mindStage;
+            public int geneProgress;
+            public int manaProgress;
+            public int mindProgress;
+            public string activeDimension;
+            public float insightProgress;
+            public string potentialRating;
+            public List<string> learnedSkills;
+            public int towerLevel;
+            public string subXpData;
+            public string subLevelData;
+            public int craftCount;
         }
 
         [Serializable]
@@ -156,7 +177,28 @@ namespace SuperMech.Code
                             talents = SerializeTalents(a),
                             profession = (int)SuperMechProfession.GetProfession(a),
                             switchCount = SuperMechProfession.GetSwitchCount(a),
-                            fiveSystemGenius = SuperMechTalent.IsFiveSystemGenius(a)
+                            fiveSystemGenius = SuperMechTalent.IsFiveSystemGenius(a),
+                            equippedAffixes = SerializeAffixes(a),
+                            durability = SuperMechEquipBreak.GetDurability(a).ToString(),
+                            refineCount = SuperMechRefinement.GetRefineCount(a),
+                            emRefineCount = SuperMechRefinement.GetEmRefineCount(a),
+                            refineQiBonus = SuperMechRefinement.GetRefineQiBonus(a),
+                            emRefineQiBonus = GetEmRefineQiBonus(a),
+                            activeSynergies = GetActiveSynergyIds(a),
+                            geneStage = SuperMechCorePower.GetGeneStage(a),
+                            manaStage = SuperMechCorePower.GetManaStage(a),
+                            mindStage = SuperMechCorePower.GetMindStage(a),
+                            geneProgress = (int)SuperMechCorePower.GetGeneProgress(a),
+                            manaProgress = (int)SuperMechCorePower.GetManaProgress(a),
+                            mindProgress = (int)SuperMechCorePower.GetMindProgress(a),
+                            activeDimension = SuperMechDimension.GetActiveDimension(a),
+                            insightProgress = GetInsightProgress(a),
+                            potentialRating = SuperMechPotentialRating.GetRating(a),
+                            learnedSkills = GetLearnedSkillIds(a),
+                            towerLevel = SuperMechMageTower.GetTowerLevel(a),
+                            subXpData = SerializeSubXp(a),
+                            subLevelData = SerializeSubLevels(a),
+                            craftCount = SuperMechAdvancementTask.GetCraftCount(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -339,6 +381,8 @@ namespace SuperMech.Code
                             new HashSet<long> { a.id });
                     }
 
+                    RestoreNewFields(a, ad);
+
                     _pendingLoad.actors.Remove(id);
                     restored++;
                 }
@@ -421,6 +465,213 @@ namespace SuperMech.Code
                     new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } });
             }
             catch { Debug.LogWarning("[超神机械师] 存档恢复失败"); }
+        }
+
+        private static float GetEmRefineQiBonus(Actor a)
+        {
+            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechRefinement), "_emRefineQiBonus");
+            return dict != null && dict.TryGetValue(a.id, out float v) ? v : 0f;
+        }
+
+        private static float GetInsightProgress(Actor a)
+        {
+            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechDivinity), "_insightProgress");
+            return dict != null && dict.TryGetValue(a.id, out float v) ? v : 0f;
+        }
+
+        private static List<string> GetActiveSynergyIds(Actor a)
+        {
+            var active = SuperMechKnowledgeSynergy.GetActiveSynergies(a);
+            if (active == null || active.Count == 0) return null;
+            var list = new List<string>();
+            foreach (var s in active) list.Add(s.id);
+            return list;
+        }
+
+        private static List<string> GetLearnedSkillIds(Actor a)
+        {
+            var learned = SuperMechSkills.GetLearned(a);
+            if (learned == null || learned.Count == 0) return null;
+            var list = new List<string>();
+            foreach (var s in learned) list.Add(s.id);
+            return list;
+        }
+
+        private static string SerializeSubXp(Actor a)
+        {
+            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, float>>>(typeof(SuperMechSubClass), "_subXp");
+            if (dict == null || !dict.TryGetValue(a.id, out var subDict) || subDict.Count == 0) return null;
+            return JsonConvert.SerializeObject(subDict);
+        }
+
+        private static string SerializeSubLevels(Actor a)
+        {
+            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, int>>>(typeof(SuperMechSubClass), "_subLevel");
+            if (dict == null || !dict.TryGetValue(a.id, out var subDict) || subDict.Count == 0) return null;
+            return JsonConvert.SerializeObject(subDict);
+        }
+
+        private static string SerializeAffixes(Actor a)
+        {
+            var affixes = SuperMechEquipAffix.GetAffixes(a);
+            if (affixes == null || affixes.Count == 0) return null;
+            var list = new List<Dictionary<string, object>>();
+            foreach (var aff in affixes)
+            {
+                list.Add(new Dictionary<string, object>
+                {
+                    { "id", aff.id ?? "" },
+                    { "value", aff.value }
+                });
+            }
+            return JsonConvert.SerializeObject(list);
+        }
+
+        private static void RestoreNewFields(Actor a, ActorSaveData ad)
+        {
+            try
+            {
+                if (!string.IsNullOrEmpty(ad.equippedAffixes))
+                {
+                    var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(ad.equippedAffixes);
+                    if (list != null)
+                    {
+                        var affixes = new List<SuperMechEquipAffix.EquipAffixInstance>();
+                        foreach (var d in list)
+                        {
+                            affixes.Add(new SuperMechEquipAffix.EquipAffixInstance
+                            {
+                                id = d.ContainsKey("id") ? d["id"].ToString() : "",
+                                value = System.Convert.ToSingle(d["value"])
+                            });
+                        }
+                        var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, List<SuperMechEquipAffix.EquipAffixInstance>>>(typeof(SuperMechEquipAffix), "_equippedAffixes");
+                        if (dict != null) dict[a.id] = affixes;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(ad.durability) && float.TryParse(ad.durability, out float dur))
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechEquipBreak), "_durability");
+                    if (dict != null) dict[a.id] = dur;
+                }
+
+                if (ad.refineCount > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechRefinement), "_refineCount");
+                    if (dict != null) dict[a.id] = ad.refineCount;
+                }
+                if (ad.emRefineCount > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechRefinement), "_emRefineCount");
+                    if (dict != null) dict[a.id] = ad.emRefineCount;
+                }
+                if (ad.refineQiBonus > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechRefinement), "_refineQiBonus");
+                    if (dict != null) dict[a.id] = ad.refineQiBonus;
+                }
+                if (ad.emRefineQiBonus > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechRefinement), "_emRefineQiBonus");
+                    if (dict != null) dict[a.id] = ad.emRefineQiBonus;
+                }
+
+                if (ad.activeSynergies != null && ad.activeSynergies.Count > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, HashSet<string>>>(typeof(SuperMechKnowledgeSynergy), "_active");
+                    if (dict != null) dict[a.id] = new HashSet<string>(ad.activeSynergies);
+                }
+
+                if (ad.geneStage > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_geneStage");
+                    if (dict != null) dict[a.id] = ad.geneStage;
+                }
+                if (ad.manaStage > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_manaStage");
+                    if (dict != null) dict[a.id] = ad.manaStage;
+                }
+                if (ad.mindStage > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_mindStage");
+                    if (dict != null) dict[a.id] = ad.mindStage;
+                }
+                if (ad.geneProgress > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_geneProgress");
+                    if (dict != null) dict[a.id] = ad.geneProgress;
+                }
+                if (ad.manaProgress > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_manaProgress");
+                    if (dict != null) dict[a.id] = ad.manaProgress;
+                }
+                if (ad.mindProgress > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_mindProgress");
+                    if (dict != null) dict[a.id] = ad.mindProgress;
+                }
+
+                if (!string.IsNullOrEmpty(ad.activeDimension))
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, string>>(typeof(SuperMechDimension), "_activeDimension");
+                    if (dict != null) dict[a.id] = ad.activeDimension;
+                }
+
+                if (ad.insightProgress > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechDivinity), "_insightProgress");
+                    if (dict != null) dict[a.id] = ad.insightProgress;
+                }
+
+                if (!string.IsNullOrEmpty(ad.potentialRating))
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, string>>(typeof(SuperMechPotentialRating), "_ratings");
+                    if (dict != null) dict[a.id] = ad.potentialRating;
+                }
+
+                if (ad.learnedSkills != null && ad.learnedSkills.Count > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, HashSet<string>>>(typeof(SuperMechSkills), "_learned");
+                    if (dict != null) dict[a.id] = new HashSet<string>(ad.learnedSkills);
+                }
+
+                if (ad.towerLevel > 0)
+                {
+                    SuperMechMageTower.SetTowerLevel(a, ad.towerLevel);
+                }
+
+                if (!string.IsNullOrEmpty(ad.subXpData))
+                {
+                    var subDict = JsonConvert.DeserializeObject<Dictionary<string, float>>(ad.subXpData);
+                    if (subDict != null)
+                    {
+                        var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, float>>>(typeof(SuperMechSubClass), "_subXp");
+                        if (dict != null) dict[a.id] = subDict;
+                    }
+                }
+                if (!string.IsNullOrEmpty(ad.subLevelData))
+                {
+                    var subDict = JsonConvert.DeserializeObject<Dictionary<string, int>>(ad.subLevelData);
+                    if (subDict != null)
+                    {
+                        var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, int>>>(typeof(SuperMechSubClass), "_subLevel");
+                        if (dict != null) dict[a.id] = subDict;
+                    }
+                }
+
+                if (ad.craftCount > 0)
+                {
+                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechAdvancementTask), "_craftCount");
+                    if (dict != null) dict[a.id] = ad.craftCount;
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 新字段存档恢复异常: {e.Message}");
+            }
         }
     }
 }

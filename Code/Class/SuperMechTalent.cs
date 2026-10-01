@@ -183,53 +183,6 @@ namespace SuperMech.Code
             foreach (var id in toRemove) _talents.Remove(id);
         }
 
-        public static Dictionary<string, object> GetSaveData()
-        {
-            var data = new Dictionary<string, object>();
-            var dict = new Dictionary<string, object>();
-            foreach (var kv in _talents)
-            {
-                var list = new List<object>();
-                foreach (var t in kv.Value)
-                {
-                    list.Add(new Dictionary<string, object> { { "type", (int)t.type }, { "rating", t.rating } });
-                }
-                dict[kv.Key.ToString()] = list;
-            }
-            data["talents"] = dict;
-            return data;
-        }
-
-        public static void LoadSaveData(Dictionary<string, object> data)
-        {
-            _talents.Clear();
-            if (data == null || !data.ContainsKey("talents")) return;
-            var dict = data["talents"] as Dictionary<string, object>;
-            if (dict == null) return;
-            foreach (var kv in dict)
-            {
-                long id = long.Parse(kv.Key);
-                var list = new List<TalentInfo>();
-                var arr = kv.Value as List<object>;
-                if (arr != null)
-                {
-                    foreach (var item in arr)
-                    {
-                        var d = item as Dictionary<string, object>;
-                        if (d != null)
-                        {
-                            list.Add(new TalentInfo
-                            {
-                                type = (TalentType)System.Convert.ToInt32(d["type"]),
-                                rating = System.Convert.ToInt32(d["rating"])
-                            });
-                        }
-                    }
-                }
-                _talents[id] = list;
-            }
-        }
-
         public static void Clear()
         {
             _talents.Clear();
