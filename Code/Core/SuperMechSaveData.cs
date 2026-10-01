@@ -520,7 +520,7 @@ namespace SuperMech.Code
             {
                 list.Add(new Dictionary<string, object>
                 {
-                    { "id", aff.id ?? "" },
+                    { "affixId", aff.affixId ?? "" },
                     { "value", aff.value }
                 });
             }
@@ -541,7 +541,7 @@ namespace SuperMech.Code
                         {
                             affixes.Add(new SuperMechEquipAffix.EquipAffixInstance
                             {
-                                id = d.ContainsKey("id") ? d["id"].ToString() : "",
+                                affixId = d.ContainsKey("affixId") ? d["affixId"].ToString() : "",
                                 value = System.Convert.ToSingle(d["value"])
                             });
                         }
