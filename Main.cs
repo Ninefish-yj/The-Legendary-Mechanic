@@ -19,7 +19,7 @@ namespace SuperMech
         protected override void OnModLoad()
         {
             Instance = this;
-            ModPath = Info?.Path ?? System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            ModPath = GetDeclaration().FolderPath;
             Debug.Log("[超神机械师] 模组加载: " + ModPath);
             SuperMechConfig.Init();
             SuperMechTraitGroups.Register();

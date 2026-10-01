@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.19.4** | 修复v0.19.0 UGUI重构引入的9个编译错误：SelectedMetas.selected_actor→SelectedUnit.unit（2处），Main.cs Info→GetDeclaration().FolderPath，SuperMechRank不存在→自己实现排行榜排序，AssetManager.equipment_library→AssetManager.items（2处），equip.texture→equip.gameplay_sprites[0]，rarity从string改int，SMKnowledgeGraph width变量未定义→添加lineWidth，删除重复文件SMUgUiWindow.cs（和SMUguiWindow.cs同名类冲突） |
 | **v0.19.3** | 适配器境界映射+欧纳公式重构：5个适配器全部改为"境界等级→能量强度"直接映射（凡人修仙传10境界/香火神道10阶/西幻7职业等级/诡秘13序列/诸天神座10万象能量阶），欧纳公式改为原著定义"综合战力=能量强度×1.0+身体素质战力×0.3"，身体素质战力用√(damage²+health²×0.01+speed²×0.5+armor²×0.3)×5，删除旧对数压缩代码和GetBodyFactor |
 | **v0.19.2** | 跨模组逐个适配：移除对数归一化偷懒方案，创建模组适配框架（5个适配器：凡人修仙传/香火神道/西幻世界/诸天神座/诡秘之主），排除原版mana/stamina等属性不再误判为魔法模组，每个模组独立转换公式和系数 |
 | **v0.19.1** | 跨模组能量归一化：修复不同体系能量数量级差异导致的能级失真，三层归一化（相对值/对数压缩/体系系数），西幻100魔力和修仙100万灵力归一化后在同一量级 |

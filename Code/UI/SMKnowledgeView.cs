@@ -9,7 +9,7 @@ namespace SuperMech.Code
         private RectTransform _listPanel;
         private Text _detailText;
         private string _selectedId;
-        private static Actor SelectedActor => SelectedMetas.selected_actor;
+        private static Actor SelectedActor => SelectedUnit.unit;
 
         void Awake()
         {

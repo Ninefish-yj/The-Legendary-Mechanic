@@ -8,7 +8,7 @@ namespace SuperMech.Code
     {
         private RectTransform _gridPanel;
         private Text _detailText;
-        private static Actor SelectedActor => SelectedMetas.selected_actor;
+        private static Actor SelectedActor => SelectedUnit.unit;
 
         void Awake()
         {
@@ -84,7 +84,7 @@ namespace SuperMech.Code
 
             foreach (var equipId in bag)
             {
-                var equip = AssetManager.equipment_library.get(equipId);
+                var equip = AssetManager.items.get(equipId);
                 if (equip == null) continue;
 
                 var slotGo = new GameObject($"Slot_{equipId}");
@@ -99,11 +99,9 @@ namespace SuperMech.Code
                 iconRect.anchorMin = new Vector2(0.15f, 0.15f);
                 iconRect.anchorMax = new Vector2(0.85f, 0.85f);
                 var iconImg = iconGo.AddComponent<Image>();
-                if (equip.texture != null)
+                if (equip.gameplay_sprites != null && equip.gameplay_sprites.Length > 0 && equip.gameplay_sprites[0] != null)
                 {
-                    iconImg.sprite = Sprite.Create(equip.texture,
-                        new Rect(0, 0, equip.texture.width, equip.texture.height),
-                        new Vector2(0.5f, 0.5f));
+                    iconImg.sprite = equip.gameplay_sprites[0];
                     iconImg.preserveAspect = true;
                 }
                 else
@@ -116,27 +114,29 @@ namespace SuperMech.Code
             }
         }
 
-        private Color QualityColor(string rarity)
+        private Color QualityColor(int rarity)
         {
             switch (rarity)
             {
-                case "common": return new Color(0.7f, 0.7f, 0.7f);
-                case "uncommon": return new Color(0.2f, 0.7f, 0.3f);
-                case "rare": return new Color(0.2f, 0.4f, 0.9f);
-                case "epic": return new Color(0.6f, 0.2f, 0.8f);
-                case "legendary": return new Color(0.9f, 0.5f, 0.1f);
-                case "divine": return new Color(0.9f, 0.8f, 0.2f);
+                case 1: return new Color(0.7f, 0.7f, 0.7f);
+                case 2: return new Color(0.2f, 0.7f, 0.3f);
+                case 3: return new Color(0.2f, 0.4f, 0.9f);
+                case 4: return new Color(0.6f, 0.2f, 0.8f);
+                case 5: return new Color(0.9f, 0.5f, 0.1f);
+                case 6: return new Color(0.9f, 0.8f, 0.2f);
                 default: return new Color(0.5f, 0.5f, 0.5f);
             }
         }
 
         private void SelectItem(string id)
         {
-            var equip = AssetManager.equipment_library.get(id);
+            var equip = AssetManager.items.get(id);
             if (equip == null) return;
-            _detailText.text = $"<b>{equip.name}</b>\n" +
+            string name = LocalizedTextManager.getText(equip.getLocaleID());
+            string desc = LocalizedTextManager.getText(equip.getDescriptionID());
+            _detailText.text = $"<b>{name}</b>\n" +
                 $"{LocalizedTextManager.getText("sm_ui_rarity")}: {equip.rarity}\n" +
-                $"{equip.description}";
+                $"{desc}";
         }
     }
 }

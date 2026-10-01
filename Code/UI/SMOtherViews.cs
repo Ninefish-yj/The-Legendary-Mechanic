@@ -67,7 +67,23 @@ namespace SuperMech.Code
         private void RefreshRank()
         {
             var content = transform.Find("Scroll/Content");
-            var rankings = SuperMechRank.GetTopRankings(20);
+            if (content == null) return;
+
+            var units = World.world?.units?.units_only_alive;
+            if (units == null) return;
+
+            var rankings = new System.Collections.Generic.List<(string name, string rankKey, float onar)>();
+            foreach (Actor a in units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                float onar = SuperMechAdvancement.CalcOnar(a);
+                if (onar <= 0) continue;
+                string rankKey = SuperMechRanks.GetRankName(a);
+                rankings.Add((a.name, rankKey, onar));
+            }
+            rankings.Sort((x, y) => y.onar.CompareTo(x.onar));
+            if (rankings.Count > 20) rankings.RemoveRange(20, rankings.Count - 20);
+
             int rank = 1;
             foreach (var r in rankings)
             {
@@ -89,7 +105,7 @@ namespace SuperMech.Code
                 text.fontSize = 13;
                 text.color = new Color(0.1f, 0.15f, 0.25f);
                 text.alignment = TextAnchor.MiddleLeft;
-                text.text = $"#{rank}  {r.actorName}  -  {LocalizedTextManager.getText(r.rankKey)}  (能级:{r.onar})";
+                text.text = $"#{rank}  {r.name}  -  {r.rankKey}  (能级:{r.onar:F0})";
                 rank++;
             }
         }

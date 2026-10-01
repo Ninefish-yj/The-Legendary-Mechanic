@@ -310,10 +310,11 @@ namespace SuperMech.Code
                 Vector2 p1 = ScreenPoint(new Vector2(from.local.center.x, from.local.yMax));
                 Vector2 p2 = ScreenPoint(new Vector2(to.local.center.x, to.local.yMin));
                 float midY = (p1.y + p2.y) * 0.5f;
+                float lineWidth = 2f;
 
-                DrawLine(p1, new Vector2(p1.x, midY), color, width);
-                DrawLine(new Vector2(p1.x, midY), new Vector2(p2.x, midY), color, width);
-                DrawLine(new Vector2(p2.x, midY), p2, color, width);
+                DrawLine(p1, new Vector2(p1.x, midY), color, lineWidth);
+                DrawLine(new Vector2(p1.x, midY), new Vector2(p2.x, midY), color, lineWidth);
+                DrawLine(new Vector2(p2.x, midY), p2, color, lineWidth);
             }
         }
 
