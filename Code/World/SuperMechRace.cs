@@ -382,14 +382,7 @@ namespace SuperMech.Code
         {
             try
             {
-                SuperMechReflection.SetFieldValue(species, "name", name);
-                SuperMechReflection.InvokeMethod(species, "set_name", new object[] { name });
-
-                object locText = SuperMechReflection.GetFieldValue<object>(species, "name_localized");
-                if (locText != null)
-                {
-                    SuperMechReflection.SetFieldValue(locText, "text", name);
-                }
+                species.setName(name);
             }
             catch (Exception e)
             {
