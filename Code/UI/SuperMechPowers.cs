@@ -93,7 +93,7 @@ namespace SuperMech.Code
                 id = id, name = name, path_icon = icon,
                 rank = PowerRank.Rank1_common, force_map_mode = MetaType.None,
                 ignore_fast_spawn = true, hold_action = false,
-                unselect_when_window = true, requires_premium = false
+                unselect_when_window = true, requires_premium = true
             };
             p.click_action += (tile, powerId) =>
             {
@@ -127,7 +127,7 @@ namespace SuperMech.Code
                 ignore_fast_spawn = true,
                 hold_action = false,
                 unselect_when_window = true,
-                requires_premium = false
+                requires_premium = true
             };
             p.click_action += (tile, powerId) =>
             {
@@ -155,7 +155,7 @@ namespace SuperMech.Code
                 ignore_fast_spawn = true,
                 hold_action = false,
                 unselect_when_window = true,
-                requires_premium = false
+                requires_premium = true
             };
             p.click_action += (tile, powerId) =>
             {
@@ -180,7 +180,7 @@ namespace SuperMech.Code
                 ignore_fast_spawn = true,
                 hold_action = false,
                 unselect_when_window = true,
-                requires_premium = false
+                requires_premium = true
             };
             p.click_action += (tile, powerId) =>
             {
