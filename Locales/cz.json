@@ -3735,5 +3735,7 @@
   "sm_ui_cost": "消耗",
   "sm_ui_stage": "阶段",
   "sm_ui_condition": "学习条件",
-  "sm_ui_no_prerequisite": "无前置知识"
+  "sm_ui_no_prerequisite": "无前置知识",
+  "sm_ui_craft_success": "制造成功",
+  "sm_ui_craft_fail": "制造失败，材料不足或冷却中"
 }
