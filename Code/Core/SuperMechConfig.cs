@@ -184,10 +184,5 @@ namespace SuperMech.Code
         public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); Debug.Log($"sm_config_651"); }
 
         public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); Debug.Log($"sm_config_652"); }
-
-        private static void Debug.Log(string msg)
-        {
-            if (LogVerbose) Debug.Log(msg);
-        }
     }
 }

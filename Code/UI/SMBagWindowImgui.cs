@@ -74,7 +74,7 @@ namespace SuperMech.Code
             {
                 if (_target == null || _target.data == null || _target.data.id != _targetId)
                 {
-                    GUILayout.Label(LocalizedTextManager.getText("sm_ui_need_target"), SMImguiTheme.Muted);
+                    GUILayout.Label(LocalizedTextManager.getText("sm_ui_need_target"), SMImguiTheme.Label);
                     GUI.DragWindow();
                     return;
                 }
@@ -139,7 +139,7 @@ namespace SuperMech.Code
 
             if (_target.equipment == null || !_target.equipment.hasItems())
             {
-                GUILayout.Label(LocalizedTextManager.getText("sm_ui_empty"), SMImguiTheme.Muted);
+                GUILayout.Label(LocalizedTextManager.getText("sm_ui_empty"), SMImguiTheme.Label);
                 GUILayout.EndVertical();
                 return;
             }
@@ -156,7 +156,7 @@ namespace SuperMech.Code
                 GUILayout.Label($"[{slot.type}] {item.data.asset_id}", SMImguiTheme.Label, GUILayout.Width(200));
                 if (asset != null)
                 {
-                    GUILayout.Label($"ATK:{asset.base_stats.get(StatType.Attack)} DEF:{asset.base_stats.get(StatType.Defense)}",
+                    GUILayout.Label($"ATK:{asset.base_stats.get("damage")} DEF:{asset.base_stats.get("defense")}",
                         SMImguiTheme.Small);
                 }
                 GUILayout.FlexibleSpace();
@@ -184,7 +184,7 @@ namespace SuperMech.Code
 
             if (currentIdx < 0 && (bag == null || bag.Count == 0))
             {
-                GUILayout.Label(LocalizedTextManager.getText("sm_ui_empty"), SMImguiTheme.Muted);
+                GUILayout.Label(LocalizedTextManager.getText("sm_ui_empty"), SMImguiTheme.Label);
                 GUILayout.EndVertical();
                 return;
             }
@@ -253,7 +253,7 @@ namespace SuperMech.Code
 
             if (_target.inventory == null || _target.inventory.dict == null || _target.inventory.dict.Count == 0)
             {
-                GUILayout.Label(LocalizedTextManager.getText("sm_ui_empty"), SMImguiTheme.Muted);
+                GUILayout.Label(LocalizedTextManager.getText("sm_ui_empty"), SMImguiTheme.Label);
                 GUILayout.EndVertical();
                 return;
             }
@@ -279,7 +279,7 @@ namespace SuperMech.Code
                 }
 
                 GUILayout.BeginVertical(SMImguiTheme.RaisedPanelStyle, GUILayout.Width(60));
-                GUILayout.Label(res.asset.name, SMImguiTheme.Small, GUILayout.Width(56));
+                GUILayout.Label(LocalizedTextManager.getText(res.asset.getLocaleID()), SMImguiTheme.Small, GUILayout.Width(56));
                 GUILayout.Label($"x{res.amount}", SMImguiTheme.Label, GUILayout.Width(56));
                 if (res.asset.type == ResType.Food)
                 {

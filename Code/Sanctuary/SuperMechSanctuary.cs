@@ -212,7 +212,7 @@ namespace SuperMech.Code
 
             Save();
 
-            string className = GetClassTrait(a) ?? "sm_sanctuary_971";
+            string className = SuperMechProfession.GetClass(a) ?? "sm_sanctuary_971";
             string sanctuaryName = sanctuaryIndex >= 0 ? $"sm_sanctuary_972" : "sm_sanctuary_973";
             Debug.Log($"[超神机械师] {a.name} 进入{sanctuaryName}！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
             return true;

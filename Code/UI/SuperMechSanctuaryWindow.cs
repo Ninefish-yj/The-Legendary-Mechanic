@@ -89,56 +89,6 @@ namespace SuperMech.Code
             _frame.AddLabel($"{LocalizedTextManager.getText("sm_sanctuary_fragments")}:{total}  {LocalizedTextManager.getText("sm_sanctuary_unlocked")}:{unlockedCount}/6  {LocalizedTextManager.getText("sm_sanctuary_keys")}:{data.key_fragments}  {LocalizedTextManager.getText("sm_sanctuary_visits")}:{data.total_visits}  {LocalizedTextManager.getText("sm_sanctuary_resurrect")}:{data.total_resurrections}", x, y, 540f, 18f, 12);
             y -= 24f;
 
-            _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_resurrect_title"), x, y, 540f, 20f, 13);
-            y -= 26f;
-
-            bool canRes = SuperMechSanctuary.CanResurrect();
-            var deadList = SuperMechSanctuary.GetDeadList();
-            if (deadList.Count == 0)
-            {
-                _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_no_dead"), x, y, 540f, 18f, 11);
-                y -= 24f;
-            }
-            else
-            {
-                int showCount = Math.Min(deadList.Count, 5);
-                for (int i = 0; i < showCount; i++)
-                {
-                    var rec = deadList[i];
-                    string rankName = rec.rankIndex >= 0 && rec.rankIndex < SuperMechRanks.All.Count
-                        ? SuperMechRanks.All[rec.rankIndex].name : "?";
-                    int nextRevive = rec.reviveCount + 1;
-                    float infoLoss = Mathf.Clamp(0.1f * nextRevive, 0.1f, 0.5f);
-                    string riskText = LocalizedTextManager.getText(nextRevive >= 4 ? "sm_sanctuarywindow_980" : nextRevive >= 2 ? "sm_sanctuarywindow_981" : "sm_sanctuarywindow_982");
-                    string btnTemplate = LocalizedTextManager.getText("sm_sanctuarywindow_983");
-                    string btnText = btnTemplate
-                        .Replace("{rec.name}", rec.name)
-                        .Replace("{rankName}", rankName)
-                        .Replace("{rec.reviveCount}", rec.reviveCount.ToString())
-                        .Replace("{infoLoss:P0}", $"{infoLoss * 100:F0}%")
-                        .Replace("{riskText}", riskText);
-                    Color btnBg = canRes ? new Color(0.2f, 0.15f, 0.1f, 0.9f) : new Color(0.15f, 0.15f, 0.15f, 0.8f);
-                    int idx = i;
-                    _frame.AddButton(btnText, x, y, 540f, 30f, () =>
-                    {
-                        WorldTile tile = GetSpawnTile();
-                        if (tile != null)
-                        {
-                            SuperMechSanctuary.Resurrect(idx, tile);
-                            Refresh();
-                        }
-                    }, btnBg);
-                    y -= 34f;
-                }
-                if (deadList.Count > 5)
-                {
-                    string moreTemplate = LocalizedTextManager.getText("sm_sanctuarywindow_984");
-                    string moreText = moreTemplate.Replace("{deadList.Count - 5}", (deadList.Count - 5).ToString());
-                    _frame.AddLabel(moreText, x, y, 540f, 16f, 10);
-                    y -= 20f;
-                }
-            }
-
             y -= 6f;
             _frame.AddLabel(LocalizedTextManager.getText("sm_sanctuary_dimension_title"), x, y, 540f, 20f, 13);
             y -= 26f;

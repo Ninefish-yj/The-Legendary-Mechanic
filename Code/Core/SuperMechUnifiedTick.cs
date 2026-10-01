@@ -54,8 +54,6 @@ namespace SuperMech.Code
                 }
                 else
                 {
-                    SuperMechSanctuary.TickDivinity();
-                    SuperMechSanctuary.TickDeadTracking();
                     SuperMechMageTower.TickMageTowers();
                     SuperMechRelic.TickRelicDrops();
                     SuperMechFavorite.TickAutoFavorite();

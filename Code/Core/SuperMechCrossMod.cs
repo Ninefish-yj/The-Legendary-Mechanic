@@ -119,7 +119,9 @@ namespace SuperMech.Code
             {
                 try
                 {
-                    if (a.data.get(pattern, out float val, -1f) && val > 0f)
+                    float val = -1f;
+                    a.data.get(pattern, out val, -1f);
+                    if (val > 0f)
                     {
                         total += val;
                         found++;

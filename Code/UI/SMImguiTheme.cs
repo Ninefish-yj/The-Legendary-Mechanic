@@ -97,13 +97,12 @@ namespace SuperMech.Code
 
             WindowStyle = new GUIStyle(GUI.skin.window)
             {
-                normal = { background = MakeFrame(Background, BorderGlow) },
+                normal = { background = MakeFrame(Background, BorderGlow), textColor = Cyan },
                 active = { background = MakeFrame(Background, Gold) },
                 border = new RectOffset(3, 3, 3, 3),
                 padding = new RectOffset(12, 12, 36, 12),
                 fontSize = 15,
                 fontStyle = FontStyle.Bold,
-                normal = { textColor = Cyan },
                 alignment = TextAnchor.UpperCenter
             };
 

@@ -71,7 +71,7 @@ namespace SuperMech.Code
 
         public void Build(string prefix, Actor a)
         {
-            var all = SuperMechKnowledge.GetAllKnowledge();
+            var all = SuperMechKnowledge.GetAllByPrefix(prefix);
             var list = new List<NodePos>();
             var edgeList = new List<Edge>();
 

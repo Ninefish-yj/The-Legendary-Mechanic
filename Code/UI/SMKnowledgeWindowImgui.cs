@@ -82,7 +82,7 @@ namespace SuperMech.Code
             {
                 if (_target == null || _target.data == null || _target.data.id != _targetId)
                 {
-                    GUILayout.Label(LocalizedTextManager.getText("sm_ui_need_target"), SMImguiTheme.Muted);
+                    GUILayout.Label(LocalizedTextManager.getText("sm_ui_need_target"), SMImguiTheme.Label);
                     GUI.DragWindow();
                     return;
                 }
@@ -167,7 +167,7 @@ namespace SuperMech.Code
             string selectedId = _graph != null ? _graph.Selected : null;
             if (string.IsNullOrEmpty(selectedId))
             {
-                GUILayout.Label(LocalizedTextManager.getText("sm_ui_select_knowledge"), SMImguiTheme.Muted);
+                GUILayout.Label(LocalizedTextManager.getText("sm_ui_select_knowledge"), SMImguiTheme.Label);
                 GUILayout.FlexibleSpace();
                 GUILayout.EndVertical();
                 return;
@@ -176,7 +176,7 @@ namespace SuperMech.Code
             var def = SuperMechKnowledge.GetDef(selectedId);
             if (def == null)
             {
-                GUILayout.Label(LocalizedTextManager.getText("sm_ui_not_found"), SMImguiTheme.Muted);
+                GUILayout.Label(LocalizedTextManager.getText("sm_ui_not_found"), SMImguiTheme.Label);
                 GUILayout.EndVertical();
                 return;
             }
