@@ -149,6 +149,7 @@ namespace SuperMech.Code
             public string prefix;
             public int tier;
             public int branch;
+            public int index;
             public int cost;
             public string icon;
         }
@@ -223,6 +224,7 @@ namespace SuperMech.Code
                             prefix = prefix,
                             tier = ti,
                             branch = bi,
+                            index = ki,
                             cost = (ti + 1) * 2,
                             icon = GetKnowledgeIcon(prefix, bi, ti, ki)
                         };
