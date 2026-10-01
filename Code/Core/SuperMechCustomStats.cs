@@ -27,48 +27,49 @@ namespace SuperMech.Code
 
         private static bool _registered = false;
 
+        private struct StatInfo { public string id, name, desc; public bool normalize, percent; public float min, max; public StatInfo(string a, string b, string c, bool n, float mn, float mx, bool p) { id=a; name=b; desc=c; normalize=n; min=mn; max=mx; percent=p; } }
         public static void Register()
         {
             if (_registered) return;
             _registered = true;
 
-            var stats = new (string id, string name, string desc, bool normalize, float min, float max, bool percent)[]
+            var stats = new StatInfo[]
             {
-                (StatQi, "sm_customstats_695", "sm_customstats_696", true, 0f, 3000000f, false),
-                (StatQiMax, "sm_customstats_697", "sm_customstats_698", true, 0f, 3000000f, false),
-                (StatMechAffinity, "sm_customstats_707", "sm_customstats_708", true, 0f, 50000f, true),
-                (StatMageAffinity, "sm_customstats_709", "sm_customstats_710", true, 0f, 50000f, true),
-                (StatMystery, "sm_customstats_711", "sm_customstats_712", true, 0f, 50000f, false),
-                (StatCharm, "sm_customstats_713", "sm_customstats_714", true, 0f, 50000f, false),
-                (StatLuck, "sm_customstats_715", "sm_customstats_716", true, 0f, 50000f, false),
-                (StatProfessionLevel, "sm_customstats_717", "sm_customstats_718", false, 0f, 600f, false),
-                (StatPotentialPoints, "sm_customstats_719", "sm_customstats_720", false, 0f, 10000f, false),
-                (StatDivinityLayers, "sm_customstats_721", "sm_customstats_722", false, 0f, 20f, false),
-                (StatSanctuary1, "sm_customstats_723", "sm_customstats_724", false, 0f, 100f, false),
-                (StatSanctuary2, "sm_customstats_725", "sm_customstats_726", false, 0f, 100f, false),
-                (StatSanctuary3, "sm_customstats_727", "sm_customstats_728", false, 0f, 100f, false),
-                (StatSanctuary4, "sm_customstats_729", "sm_customstats_730", false, 0f, 100f, false),
-                (StatSanctuary5, "sm_customstats_731", "sm_customstats_732", false, 0f, 100f, false),
-                (StatSanctuary6, "sm_customstats_733", "sm_customstats_734", false, 0f, 100f, false),
+                new StatInfo(StatQi, "sm_customstats_695", "sm_customstats_696", true, 0f, 3000000f, false),
+                new StatInfo(StatQiMax, "sm_customstats_697", "sm_customstats_698", true, 0f, 3000000f, false),
+                new StatInfo(StatMechAffinity, "sm_customstats_707", "sm_customstats_708", true, 0f, 50000f, true),
+                new StatInfo(StatMageAffinity, "sm_customstats_709", "sm_customstats_710", true, 0f, 50000f, true),
+                new StatInfo(StatMystery, "sm_customstats_711", "sm_customstats_712", true, 0f, 50000f, false),
+                new StatInfo(StatCharm, "sm_customstats_713", "sm_customstats_714", true, 0f, 50000f, false),
+                new StatInfo(StatLuck, "sm_customstats_715", "sm_customstats_716", true, 0f, 50000f, false),
+                new StatInfo(StatProfessionLevel, "sm_customstats_717", "sm_customstats_718", false, 0f, 600f, false),
+                new StatInfo(StatPotentialPoints, "sm_customstats_719", "sm_customstats_720", false, 0f, 10000f, false),
+                new StatInfo(StatDivinityLayers, "sm_customstats_721", "sm_customstats_722", false, 0f, 20f, false),
+                new StatInfo(StatSanctuary1, "sm_customstats_723", "sm_customstats_724", false, 0f, 100f, false),
+                new StatInfo(StatSanctuary2, "sm_customstats_725", "sm_customstats_726", false, 0f, 100f, false),
+                new StatInfo(StatSanctuary3, "sm_customstats_727", "sm_customstats_728", false, 0f, 100f, false),
+                new StatInfo(StatSanctuary4, "sm_customstats_729", "sm_customstats_730", false, 0f, 100f, false),
+                new StatInfo(StatSanctuary5, "sm_customstats_731", "sm_customstats_732", false, 0f, 100f, false),
+                new StatInfo(StatSanctuary6, "sm_customstats_733", "sm_customstats_734", false, 0f, 100f, false),
             };
 
             int registered = 0;
-            foreach (var (id, name, desc, normalize, min, max, percent) in stats)
+            foreach (var s in stats)
             {
-                if (AssetManager.base_stats_library.get(id) != null) continue;
+                if (AssetManager.base_stats_library.get(s.id) != null) continue;
 
                 var asset = new BaseStatAsset
                 {
-                    id = id,
-                    translation_key = name,
+                    id = s.id,
+                    translation_key = s.name,
                     hidden = false,
                     icon = "ui/Icons/actor_traits/iconBlessing",
-                    normalize = normalize,
-                    normalize_min = min,
-                    normalize_max = max,
+                    normalize = s.normalize,
+                    normalize_min = s.min,
+                    normalize_max = s.max,
                     used_only_for_civs = false,
                     actor_data_attribute = false,
-                    show_as_percents = percent,
+                    show_as_percents = s.percent,
                     multiplier = false,
                     sort_rank = 100 + registered,
                 };

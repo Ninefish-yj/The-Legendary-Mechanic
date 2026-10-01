@@ -22,22 +22,14 @@ namespace SuperMech.Code
             0.90f,
         };
 
-        private static readonly (int min, int max)[] _qualityRangeByRank = new (int, int)[]
+        private static readonly int[] _qualityMinByRank = new int[]
         {
-            (0, 0),
-            (0, 1),
-            (0, 2),
-            (1, 2),
-            (1, 3),
-            (2, 3),
-            (2, 4),
-            (3, 4),
-            (3, 5),
-            (4, 5),
-            (4, 6),
-            (5, 6),
-            (5, 7),
-            (6, 8),
+            0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6
+        };
+
+        private static readonly int[] _qualityMaxByRank = new int[]
+        {
+            0, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 8
         };
 
         public static void TryDrop(Actor killer, Actor target)
@@ -54,7 +46,8 @@ namespace SuperMech.Code
 
             if (UnityEngine.Random.value > dropChance) return;
 
-            var (minQ, maxQ) = _qualityRangeByRank[rankIdx];
+            int minQ = _qualityMinByRank[rankIdx];
+            int maxQ = _qualityMaxByRank[rankIdx];
             int quality = UnityEngine.Random.Range(minQ, maxQ + 1);
 
             string equipId = SuperMechRelic.Equipments[quality].id;
@@ -67,7 +60,8 @@ namespace SuperMech.Code
         public static string GetDropInfo(int rankIdx)
         {
             if (rankIdx < 0 || rankIdx >= _dropChanceByRank.Length) return "—";
-            var (minQ, maxQ) = _qualityRangeByRank[rankIdx];
+            int minQ = _qualityMinByRank[rankIdx];
+            int maxQ = _qualityMaxByRank[rankIdx];
             string minName = SuperMechRelic.Equipments[minQ].name;
             string maxName = SuperMechRelic.Equipments[maxQ].name;
             return $"{(_dropChanceByRank[rankIdx] * 100):0}% ({minName}~{maxName})";

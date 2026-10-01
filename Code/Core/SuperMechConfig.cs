@@ -63,62 +63,64 @@ namespace SuperMech.Code
             }
         }
 
+        private struct CatInfo { public string key, name; public CatInfo(string a, string b) { key=a; name=b; } }
+        private struct ItemInfo { public string id, name, desc; public ItemInfo(string a, string b, string c) { id=a; name=b; desc=c; } }
         private static void RegisterLocalization()
         {
-            var categories = new (string key, string name)[]
+            var categories = new CatInfo[]
             {
-                ("General", "sm_config_549"),
-                ("Awakening", "sm_config_550"),
-                ("Qi", "sm_config_551"),
-                ("Promotion", "sm_config_552"),
-                ("AutoFavorite", "sm_config_553"),
-                ("Sanctuary", "sm_config_554"),
-                ("Mech", "sm_config_555"),
-                ("Refinement", "sm_config_556"),
-                ("Relic", "sm_config_557"),
-                ("Performance", "sm_config_558"),
+                new CatInfo("General", "sm_config_549"),
+                new CatInfo("Awakening", "sm_config_550"),
+                new CatInfo("Qi", "sm_config_551"),
+                new CatInfo("Promotion", "sm_config_552"),
+                new CatInfo("AutoFavorite", "sm_config_553"),
+                new CatInfo("Sanctuary", "sm_config_554"),
+                new CatInfo("Mech", "sm_config_555"),
+                new CatInfo("Refinement", "sm_config_556"),
+                new CatInfo("Relic", "sm_config_557"),
+                new CatInfo("Performance", "sm_config_558"),
             };
-            foreach (var (key, name) in categories)
-                LocalizedTextManager.add(key, LocalizedTextManager.getText(name), pReplace: true);
+            foreach (var c in categories)
+                LocalizedTextManager.add(c.key, LocalizedTextManager.getText(c.name), pReplace: true);
 
-            var items = new (string id, string name, string desc)[]
+            var items = new ItemInfo[]
             {
-                ("mod_enabled", "sm_config_559", "sm_config_560"),
-                ("auto_awakening", "sm_config_561", "sm_config_562"),
-                ("awakening_chance", "sm_config_563", "sm_config_564"),
-                ("awakening_min_age", "sm_config_565", "sm_config_566"),
-                ("qi_growth_rate", "sm_config_567", "sm_config_568"),
-                ("qi_unlimited", "sm_config_569", "sm_config_570"),
-                ("auto_promotion", "sm_config_571", "sm_config_572"),
-                ("auto_promotion_max_rank", "sm_config_573", "sm_config_574"),
-                ("promotion_speed", "sm_config_575", "sm_config_576"),
-                ("ona_multiplier", "sm_config_577", "sm_config_578"),
-                ("show_rank_in_panel", "sm_config_579", "sm_config_580"),
-                ("auto_favorite_enabled", "sm_config_581", "sm_config_582"),
-                ("auto_favorite_f", "sm_config_583", "sm_config_584"),
-                ("auto_favorite_e", "sm_config_585", "sm_config_586"),
-                ("auto_favorite_d", "sm_config_587", "sm_config_588"),
-                ("auto_favorite_c", "sm_config_589", "sm_config_590"),
-                ("auto_favorite_b", "sm_config_591", "sm_config_592"),
-                ("auto_favorite_a", "sm_config_593", "sm_config_594"),
-                ("auto_favorite_s", "sm_config_595", "sm_config_596"),
-                ("auto_favorite_ss", "sm_config_597", "sm_config_598"),
-                ("auto_favorite_x", "sm_config_599", "sm_config_600"),
-                ("sanctuary_enabled", "sm_config_601", "sm_config_602"),
-                ("sanctuary_autosave", "sm_config_603", "sm_config_604"),
-                ("mech_summon_enabled", "sm_config_605", "sm_config_606"),
-                ("max_summoned_units", "sm_config_607", "sm_config_608"),
-                ("refinement_bonus", "sm_config_609", "sm_config_610"),
-                ("relic_drop_enabled", "sm_config_611", "sm_config_612"),
-                ("relic_drop_rate", "sm_config_613", "sm_config_614"),
-                ("tick_interval", "sm_config_615", "sm_config_616"),
-                ("max_tracked_actors", "sm_config_617", "sm_config_618"),
-                ("log_verbose", "sm_config_619", "sm_config_620"),
+                new ItemInfo("mod_enabled", "sm_config_559", "sm_config_560"),
+                new ItemInfo("auto_awakening", "sm_config_561", "sm_config_562"),
+                new ItemInfo("awakening_chance", "sm_config_563", "sm_config_564"),
+                new ItemInfo("awakening_min_age", "sm_config_565", "sm_config_566"),
+                new ItemInfo("qi_growth_rate", "sm_config_567", "sm_config_568"),
+                new ItemInfo("qi_unlimited", "sm_config_569", "sm_config_570"),
+                new ItemInfo("auto_promotion", "sm_config_571", "sm_config_572"),
+                new ItemInfo("auto_promotion_max_rank", "sm_config_573", "sm_config_574"),
+                new ItemInfo("promotion_speed", "sm_config_575", "sm_config_576"),
+                new ItemInfo("ona_multiplier", "sm_config_577", "sm_config_578"),
+                new ItemInfo("show_rank_in_panel", "sm_config_579", "sm_config_580"),
+                new ItemInfo("auto_favorite_enabled", "sm_config_581", "sm_config_582"),
+                new ItemInfo("auto_favorite_f", "sm_config_583", "sm_config_584"),
+                new ItemInfo("auto_favorite_e", "sm_config_585", "sm_config_586"),
+                new ItemInfo("auto_favorite_d", "sm_config_587", "sm_config_588"),
+                new ItemInfo("auto_favorite_c", "sm_config_589", "sm_config_590"),
+                new ItemInfo("auto_favorite_b", "sm_config_591", "sm_config_592"),
+                new ItemInfo("auto_favorite_a", "sm_config_593", "sm_config_594"),
+                new ItemInfo("auto_favorite_s", "sm_config_595", "sm_config_596"),
+                new ItemInfo("auto_favorite_ss", "sm_config_597", "sm_config_598"),
+                new ItemInfo("auto_favorite_x", "sm_config_599", "sm_config_600"),
+                new ItemInfo("sanctuary_enabled", "sm_config_601", "sm_config_602"),
+                new ItemInfo("sanctuary_autosave", "sm_config_603", "sm_config_604"),
+                new ItemInfo("mech_summon_enabled", "sm_config_605", "sm_config_606"),
+                new ItemInfo("max_summoned_units", "sm_config_607", "sm_config_608"),
+                new ItemInfo("refinement_bonus", "sm_config_609", "sm_config_610"),
+                new ItemInfo("relic_drop_enabled", "sm_config_611", "sm_config_612"),
+                new ItemInfo("relic_drop_rate", "sm_config_613", "sm_config_614"),
+                new ItemInfo("tick_interval", "sm_config_615", "sm_config_616"),
+                new ItemInfo("max_tracked_actors", "sm_config_617", "sm_config_618"),
+                new ItemInfo("log_verbose", "sm_config_619", "sm_config_620"),
             };
-            foreach (var (id, name, desc) in items)
+            foreach (var it in items)
             {
-                LocalizedTextManager.add(id, LocalizedTextManager.getText(name), pReplace: true);
-                LocalizedTextManager.add(id + " Description", LocalizedTextManager.getText(desc), pReplace: true);
+                LocalizedTextManager.add(it.id, LocalizedTextManager.getText(it.name), pReplace: true);
+                LocalizedTextManager.add(it.id + " Description", LocalizedTextManager.getText(it.desc), pReplace: true);
             }
         }
 

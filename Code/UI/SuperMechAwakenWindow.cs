@@ -8,13 +8,14 @@ namespace SuperMech.Code
         private static SMWindowFrame _window;
         private static Actor _target;
 
-        private static readonly (string traitId, string nameKey, string descKey, string aspectKey)[] Classes =
+        private struct ClassInfo { public string traitId, nameKey, descKey, aspectKey; public ClassInfo(string a, string b, string c, string d) { traitId=a; nameKey=b; descKey=c; aspectKey=d; } }
+        private static readonly ClassInfo[] Classes =
         {
-            (SuperMechTraits.ClassMech,    "sm_class_mech",    "sm_awaken_desc_mech",    "sm_aspect_mech"),
-            (SuperMechTraits.ClassMartial, "sm_class_martial", "sm_awaken_desc_martial", "sm_aspect_martial"),
-            (SuperMechTraits.ClassPsi,     "sm_class_psi",     "sm_awaken_desc_psi",     "sm_aspect_psi"),
-            (SuperMechTraits.ClassMage,    "sm_class_mage",    "sm_awaken_desc_mage",    "sm_aspect_mage"),
-            (SuperMechTraits.ClassMind,    "sm_class_mind",    "sm_awaken_desc_mind",    "sm_aspect_mind"),
+            new ClassInfo(SuperMechTraits.ClassMech,    "sm_class_mech",    "sm_awaken_desc_mech",    "sm_aspect_mech"),
+            new ClassInfo(SuperMechTraits.ClassMartial, "sm_class_martial", "sm_awaken_desc_martial", "sm_aspect_martial"),
+            new ClassInfo(SuperMechTraits.ClassPsi,     "sm_class_psi",     "sm_awaken_desc_psi",     "sm_aspect_psi"),
+            new ClassInfo(SuperMechTraits.ClassMage,    "sm_class_mage",    "sm_awaken_desc_mage",    "sm_aspect_mage"),
+            new ClassInfo(SuperMechTraits.ClassMind,    "sm_class_mind",    "sm_awaken_desc_mind",    "sm_aspect_mind"),
         };
 
         public static void Show(Actor target)
@@ -38,12 +39,12 @@ namespace SuperMech.Code
                 10f, -55f, 260f, 30f, 12, TextAnchor.MiddleCenter);
 
             float y = -95f;
-            foreach (var (traitId, nameKey, descKey, aspectKey) in Classes)
+            foreach (var c in Classes)
             {
-                string name = LocalizedTextManager.getText(nameKey);
-                string aspect = LocalizedTextManager.getText(aspectKey);
+                string name = LocalizedTextManager.getText(c.nameKey);
+                string aspect = LocalizedTextManager.getText(c.aspectKey);
                 string btnText = $"{name}（{aspect}）";
-                var btn = _window.AddButton(btnText, 20f, y, 240f, 32f, () => Awaken(traitId, name));
+                var btn = _window.AddButton(btnText, 20f, y, 240f, 32f, () => Awaken(c.traitId, name));
                 y -= 40f;
             }
 

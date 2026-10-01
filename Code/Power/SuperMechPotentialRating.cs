@@ -42,14 +42,15 @@ namespace SuperMech.Code
             { RatingS, 12 },
         };
 
-        private static readonly (string rating, int weight)[] RatingWeights =
+        private struct RatingWeight { public string rating; public int weight; public RatingWeight(string r, int w) { rating=r; weight=w; } }
+        private static readonly RatingWeight[] RatingWeights =
         {
-            (RatingE, 25),
-            (RatingD, 25),
-            (RatingC, 25),
-            (RatingB, 15),
-            (RatingA, 8),
-            (RatingS, 2),
+            new RatingWeight(RatingE, 25),
+            new RatingWeight(RatingD, 25),
+            new RatingWeight(RatingC, 25),
+            new RatingWeight(RatingB, 15),
+            new RatingWeight(RatingA, 8),
+            new RatingWeight(RatingS, 2),
         };
 
         private static readonly Dictionary<long, string> _ratings = new Dictionary<long, string>();

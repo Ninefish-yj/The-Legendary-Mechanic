@@ -6,41 +6,42 @@ namespace SuperMech.Code
 {
     public static class SuperMechTraitGroups
     {
-        private static readonly (string id, string name, string color)[] Groups =
+        private struct GroupInfo { public string id, name, color; public GroupInfo(string a, string b, string c) { id=a; name=b; color=c; } }
+        private static readonly GroupInfo[] Groups =
         {
-            ("sm_ranks",        "sm_traitgroups_1016",       "#FFD700"),
-            ("sm_classes",      "sm_traitgroups_1017",   "#00BFFF"),
-            ("sm_branches",     "sm_traitgroups_1018",   "#9370DB"),
-            ("sm_perks",        "sm_traitgroups_1019",       "#FFD700"),
-            ("sm_refinement",   "sm_traitgroups_1023",     "#228B22"),
-            ("sm_relic",        "sm_traitgroups_1024",   "#FFD700"),
-            ("sm_cosmic_relic", "sm_traitgroups_1025",   "#FFA500"),
-            ("sm_mage_tower",   "sm_traitgroups_1026",     "#4169E1"),
-            ("sm_awakened",     "sm_traitgroups_1027",     "#FFD700"),
-            ("sm_specialty",    "sm_traitgroups_1028",   "#FF69B4"),
-            ("sm_rank_specialty","sm_traitgroups_1029",   "#FF4500"),
-            ("sm_subclass",     "sm_traitgroups_1030",     "#708090"),
-            ("sm_race",         "sm_traitgroups_1031",   "#9932CC"),
-            ("sm_race_talents", "sm_traitgroups_1031",   "#9932CC"),
-            ("sm_skills",       "sm_traitgroups_1032",   "#FF4500"),
-            ("sm_sanctuary",    "sm_traitgroups_1033",       "#FFD700"),
+            new GroupInfo("sm_ranks",        "sm_traitgroups_1016", "#FFD700"),
+            new GroupInfo("sm_classes",      "sm_traitgroups_1017", "#00BFFF"),
+            new GroupInfo("sm_branches",     "sm_traitgroups_1018", "#9370DB"),
+            new GroupInfo("sm_perks",        "sm_traitgroups_1019", "#FFD700"),
+            new GroupInfo("sm_refinement",   "sm_traitgroups_1023", "#228B22"),
+            new GroupInfo("sm_relic",        "sm_traitgroups_1024", "#FFD700"),
+            new GroupInfo("sm_cosmic_relic", "sm_traitgroups_1025", "#FFA500"),
+            new GroupInfo("sm_mage_tower",   "sm_traitgroups_1026", "#4169E1"),
+            new GroupInfo("sm_awakened",     "sm_traitgroups_1027", "#FFD700"),
+            new GroupInfo("sm_specialty",    "sm_traitgroups_1028", "#FF69B4"),
+            new GroupInfo("sm_rank_specialty","sm_traitgroups_1029","#FF4500"),
+            new GroupInfo("sm_subclass",     "sm_traitgroups_1030", "#708090"),
+            new GroupInfo("sm_race",         "sm_traitgroups_1031", "#9932CC"),
+            new GroupInfo("sm_race_talents", "sm_traitgroups_1031", "#9932CC"),
+            new GroupInfo("sm_skills",       "sm_traitgroups_1032", "#FF4500"),
+            new GroupInfo("sm_sanctuary",    "sm_traitgroups_1033", "#FFD700"),
         };
 
         public static void Register()
         {
-            foreach (var (id, name, color) in Groups)
+            foreach (var g in Groups)
             {
-                if (AssetManager.trait_groups.get(id) != null) continue;
+                if (AssetManager.trait_groups.get(g.id) != null) continue;
 
                 var group = new ActorTraitGroupAsset
                 {
-                    id = id,
-                    name = "trait_group_" + id,
-                    color = color
+                    id = g.id,
+                    name = "trait_group_" + g.id,
+                    color = g.color
                 };
                 AssetManager.trait_groups.add(group);
 
-                LocalizedTextManager.add("trait_group_" + id, LocalizedTextManager.getText(name), pReplace: true);
+                LocalizedTextManager.add("trait_group_" + g.id, LocalizedTextManager.getText(g.name), pReplace: true);
             }
 
             Debug.Log($"[超神机械师] 特质组注册完成：{Groups.Length} 个自定义组");

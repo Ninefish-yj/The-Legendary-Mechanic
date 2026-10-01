@@ -17,12 +17,13 @@ namespace SuperMech.Code
         public static readonly string[] TowerNames = {
             "sm_magetower_357", "sm_magetower_358", "sm_magetower_359", "sm_magetower_360", "sm_magetower_361"
         };
-        public static readonly (float dmg, float hp, int intel, float mana)[] TowerBonus = {
-            (0.20f, 0.20f, 10, 50f),
-            (0.40f, 0.40f, 20, 100f),
-            (0.70f, 0.70f, 35, 200f),
-            (1.00f, 1.00f, 50, 400f),
-            (2.00f, 2.00f, 80, 800f),
+        public struct TowerBonusInfo { public float dmg, hp, mana; public int intel; public TowerBonusInfo(float d, float h, int i, float m) { dmg=d; hp=h; intel=i; mana=m; } }
+        public static readonly TowerBonusInfo[] TowerBonus = {
+            new TowerBonusInfo(0.20f, 0.20f, 10, 50f),
+            new TowerBonusInfo(0.40f, 0.40f, 20, 100f),
+            new TowerBonusInfo(0.70f, 0.70f, 35, 200f),
+            new TowerBonusInfo(1.00f, 1.00f, 50, 400f),
+            new TowerBonusInfo(2.00f, 2.00f, 80, 800f),
         };
 
         private static readonly Dictionary<long, int> _towerLevel = new Dictionary<long, int>();
