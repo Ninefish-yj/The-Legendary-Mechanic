@@ -51,6 +51,7 @@ namespace SuperMech.Code
         {
             if (!_visible) return;
             SMImguiTheme.Ensure();
+            if (SMImguiTheme.DrawBackdrop(_windowRect)) { _visible = false; return; }
             NormalizeRect();
             SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiPanel);
             try

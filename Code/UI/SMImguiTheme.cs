@@ -399,5 +399,15 @@ namespace SuperMech.Code
             GUI.DrawTexture(rect, bg, ScaleMode.StretchToFill);
             GUI.color = old;
         }
+
+        public static bool DrawBackdrop(Rect windowRect, float alpha = 0.45f)
+        {
+            EnsurePixel();
+            Color old = GUI.color;
+            GUI.color = new Color(0f, 0f, 0f, alpha);
+            GUI.DrawTexture(new Rect(0, 0, Screen.width, Screen.height), _pixel);
+            GUI.color = old;
+            return GUI.Button(new Rect(0, 0, Screen.width, Screen.height), "", GUIStyle.none);
+        }
     }
 }
