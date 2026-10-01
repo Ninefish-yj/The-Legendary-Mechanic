@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.15.2-alpha**（Alpha内测阶段）
+**v0.15.3-alpha**（Alpha内测阶段）
 
 ### 已实现系统
 
@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.15.3** | 修复单位面板按钮不显示：从OnEnable+Coroutine改为showStatsRows Postfix（参考诸天神座），解决Collection was modified枚举错误
 | **v0.15.2** | 综合bug修复：神权栏动态克隆PowerButton（三次迭代最终解决）、单位面板改为OnEnable Postfix+Coroutine（参考诡秘之主）、修复RankEntry字段名编译错误 |
 | **v0.15.1** | 配置项全部本地化：删除default_config.json中的Name字段，改用Id作为本地化key（参考诡秘之主），添加31个配置项+10个分类名翻译 |
 | **v0.15.0** | 性能优化：排行榜UI数据快照缓存（每0.5秒刷新）、背包窗口消除OnGUI中的GC分配、知识图谱DrawEdges缓存posMap、修复9处硬编码中文 |

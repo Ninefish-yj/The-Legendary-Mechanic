@@ -1,35 +1,28 @@
 using System;
-using System.Collections;
 using NeoModLoader.services;
 using HarmonyLib;
 using UnityEngine;
 
 namespace SuperMech.Code
 {
-    [HarmonyPatch(typeof(UnitWindow), "OnEnable")]
+    [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
     public static class SuperMechUnitWindow
     {
         [HarmonyPostfix]
         public static void Postfix(UnitWindow __instance)
         {
-            if (__instance.actor == null || !__instance.actor.isAlive()) return;
-            __instance.StartCoroutine(DelayedShow(__instance));
-        }
-
-        private static IEnumerator DelayedShow(UnitWindow window)
-        {
-            yield return null;
-            if (window.actor == null || !window.actor.isAlive()) yield break;
-
             try
             {
-                Actor a = window.actor;
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
-                ShowMainInfo(window, a);
+                if (__instance == null) return;
+                Actor actor = __instance.actor;
+                if (actor == null || actor.isRekt() || actor.data == null) return;
+
+                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
+                ShowMainInfo(__instance, actor);
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[超神机械师] 单位面板信息失败: {e.Message}\n{e.StackTrace}");
+                Debug.LogWarning($"[超神机械师] 单位面板信息注入异常: {e.Message}");
             }
         }
 
@@ -81,16 +74,15 @@ namespace SuperMech.Code
             if (SuperMechAwakened.IsAwakened(a))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
 
-            Actor actorRef = a;
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
-                new Color(0.5f, 0.35f, 0.7f), () => SMKnowledgeWindowImgui.Toggle(actorRef));
+                new Color(0.5f, 0.35f, 0.7f), () => SMKnowledgeWindowImgui.Toggle(a));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
-                new Color(0.9f, 0.7f, 0.3f), () => SMBagWindowImgui.Toggle(actorRef));
+                new Color(0.9f, 0.7f, 0.3f), () => SMBagWindowImgui.Toggle(a));
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
-                    new Color(0.6f, 0.8f, 0.4f), () => SMCraftWindow.Toggle(actorRef));
+                    new Color(0.6f, 0.8f, 0.4f), () => SMCraftWindow.Toggle(a));
             }
         }
 
