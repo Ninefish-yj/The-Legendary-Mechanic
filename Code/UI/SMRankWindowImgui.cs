@@ -177,8 +177,9 @@ namespace SuperMech.Code
                 int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQi(entry.a));
 
                 Color rowColor = i < 3 ? RankColors[i] : RankColors[3];
-                string rankPrefix = i < 3 ? GetRankIcon(i) : $"{i + 1,2}.";
-                string line = $"{rankPrefix} {Truncate(entry.a.name, 14),-14} {cls,-5} {rank,-5} Lv{qiLv,-3} {entry.onar,8:F0}";
+                string rankPrefix = i < 3 ? GetRankIcon(i) : (i + 1).ToString().PadLeft(2) + ".";
+                string nameTrunc = Truncate(entry.a.name, 14).PadRight(14);
+                string line = rankPrefix + " " + nameTrunc + " " + cls.PadRight(5) + " " + rank.PadRight(5) + " Lv" + qiLv.ToString().PadRight(3) + " " + entry.onar.ToString("F0").PadLeft(8);
 
                 var oldColor = GUI.color;
                 GUI.color = rowColor;
