@@ -76,9 +76,9 @@ namespace SuperMech.Code
 
             Actor actorRef = a;
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
-                new Color(0.25f, 0.7f, 0.95f), () => SMKnowledgeWindowImgui.Open(actorRef));
+                new Color(0.25f, 0.7f, 0.95f), () => SMKnowledgeWindowImgui.Toggle(actorRef));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
-                new Color(0.9f, 0.7f, 0.3f), () => SMBagWindowImgui.Open(actorRef));
+                new Color(0.9f, 0.7f, 0.3f), () => SMBagWindowImgui.Toggle(actorRef));
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {

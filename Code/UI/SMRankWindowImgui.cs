@@ -30,6 +30,12 @@ namespace SuperMech.Code
             _instance = go.AddComponent<SMRankWindowImgui>();
         }
 
+        public static void Toggle()
+        {
+            Ensure();
+            _instance._visible = !_instance._visible;
+        }
+
         public static void Show()
         {
             Ensure();

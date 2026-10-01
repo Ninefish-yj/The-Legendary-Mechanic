@@ -22,6 +22,13 @@ namespace SuperMech.Code
             _instance = go.AddComponent<SMSanctuaryWindowImgui>();
         }
 
+        public static void Toggle()
+        {
+            Ensure();
+            _instance._visible = !_instance._visible;
+            if (_instance._visible) _instance._message = "";
+        }
+
         public static void Show()
         {
             Ensure();

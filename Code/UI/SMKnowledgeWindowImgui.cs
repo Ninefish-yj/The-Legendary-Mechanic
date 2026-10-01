@@ -32,6 +32,13 @@ namespace SuperMech.Code
             _instance = go.AddComponent<SMKnowledgeWindowImgui>();
         }
 
+        public static void Toggle(Actor actor)
+        {
+            Ensure();
+            _instance._visible = !_instance._visible;
+            if (_instance._visible) _instance._actor = actor;
+        }
+
         public static void Open(Actor actor)
         {
             Ensure();
