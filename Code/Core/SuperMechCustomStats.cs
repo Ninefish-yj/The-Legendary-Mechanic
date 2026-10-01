@@ -10,6 +10,9 @@ namespace SuperMech.Code
     {
         public const string StatQi = "sm_qi";
         public const string StatQiMax = "sm_qi_max";
+        public const string StatStrength = "sm_strength";
+        public const string StatAgility = "sm_agility";
+        public const string StatEndurance = "sm_endurance";
         public const string StatMechAffinity = "sm_mech_affinity";
         public const string StatMageAffinity = "sm_mage_affinity";
         public const string StatMystery = "sm_mystery";
@@ -37,6 +40,9 @@ namespace SuperMech.Code
             {
                 new StatInfo(StatQi, "sm_customstats_695", "sm_customstats_696", true, 0f, 3000000f, false),
                 new StatInfo(StatQiMax, "sm_customstats_697", "sm_customstats_698", true, 0f, 3000000f, false),
+                new StatInfo(StatStrength, "sm_customstats_740", "sm_customstats_741", true, 0f, 10000f, false),
+                new StatInfo(StatAgility, "sm_customstats_742", "sm_customstats_743", true, 0f, 10000f, false),
+                new StatInfo(StatEndurance, "sm_customstats_744", "sm_customstats_745", true, 0f, 10000f, false),
                 new StatInfo(StatMechAffinity, "sm_customstats_707", "sm_customstats_708", true, 0f, 50000f, true),
                 new StatInfo(StatMageAffinity, "sm_customstats_709", "sm_customstats_710", true, 0f, 50000f, true),
                 new StatInfo(StatMystery, "sm_customstats_711", "sm_customstats_712", true, 0f, 50000f, false),
@@ -125,7 +131,13 @@ namespace SuperMech.Code
             }
 
             int qiLvForStats = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-            stats[StatMystery] = qiLvForStats * qiLvForStats * 7.1f;
+            // 原著Lv10气力总加成(ch539)：力量+71、敏捷+97、耐力+108、智力+122、神秘+77
+            // 非线性增长：等级越高每一层加成越显著(ch51"气力等级越高，每一层加成越显著")
+            float levelScale = Mathf.Pow(qiLvForStats / 10f, 1.3f);
+            stats[StatStrength] = 71f * levelScale;
+            stats[StatAgility] = 97f * levelScale;
+            stats[StatEndurance] = 108f * levelScale;
+            stats[StatMystery] = 77f * levelScale;
             stats[StatCharm] = qiLvForStats * qiLvForStats * 5.7f;
             stats[StatLuck] = qiLvForStats * qiLvForStats * 2.1f;
 
