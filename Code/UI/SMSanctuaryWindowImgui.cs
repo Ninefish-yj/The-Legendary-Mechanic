@@ -77,7 +77,7 @@ namespace SuperMech.Code
                 GUILayout.Space(8);
 
                 Rect contentRect = GUILayoutUtility.GetRect(_windowRect.width - 24, _windowRect.height - 90f);
-                SMImguiTheme.DrawGlowBorder(contentRect, new Color(0.55f, 0.4f, 0.75f, 0.5f), 3f);
+                SMImguiTheme.DrawGlowBorder(contentRect, new Color(0.35f, 0.62f, 0.88f, 0.5f), 3f);
 
                 GUILayout.BeginArea(new Rect(contentRect.x + 12, contentRect.y + 12, contentRect.width - 24, contentRect.height - 24));
                 _scroll = GUILayout.BeginScrollView(_scroll);
@@ -115,7 +115,7 @@ namespace SuperMech.Code
             GUILayout.EndHorizontal();
 
             Rect titleLine = new Rect(8, 36, _windowRect.width - 16, 1f);
-            SMImguiTheme.DrawRect(titleLine, new Color(0.55f, 0.4f, 0.75f, 0.4f));
+            SMImguiTheme.DrawRect(titleLine, new Color(0.35f, 0.62f, 0.88f, 0.4f));
         }
 
         private void DrawSanctuaryList()
@@ -184,7 +184,7 @@ namespace SuperMech.Code
         private void DrawDimensionList()
         {
             Rect divider = GUILayoutUtility.GetRect(0, 1f, GUILayout.ExpandWidth(true));
-            SMImguiTheme.DrawRect(divider, new Color(0.55f, 0.4f, 0.75f, 0.3f));
+            SMImguiTheme.DrawRect(divider, new Color(0.35f, 0.62f, 0.88f, 0.3f));
             GUILayout.Space(8);
 
             GUILayout.Label(LocalizedTextManager.getText("sm_sanctuary_dimension_title"), SMImguiTheme.Section);

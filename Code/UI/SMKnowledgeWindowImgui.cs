@@ -140,7 +140,7 @@ namespace SuperMech.Code
             GUILayout.EndHorizontal();
 
             Rect titleLine = new Rect(8, 36, _windowRect.width - 16, 1f);
-            SMImguiTheme.DrawRect(titleLine, new Color(0.5f, 0.35f, 0.7f, 0.4f));
+            SMImguiTheme.DrawRect(titleLine, new Color(0.3f, 0.6f, 0.85f, 0.4f));
 
             if (!string.IsNullOrEmpty(_message))
             {
@@ -228,7 +228,7 @@ namespace SuperMech.Code
             GUILayout.Space(6);
 
             Rect divider = GUILayoutUtility.GetRect(0, 1f, GUILayout.ExpandWidth(true));
-            SMImguiTheme.DrawRect(divider, new Color(0.5f, 0.35f, 0.7f, 0.3f));
+            SMImguiTheme.DrawRect(divider, new Color(0.3f, 0.6f, 0.85f, 0.3f));
             GUILayout.Space(6);
 
             GUILayout.Label(def.desc, SMImguiTheme.WrappedLabel);

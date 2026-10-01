@@ -72,7 +72,7 @@ namespace SuperMech.Code
             string stageName = SuperMechStage.GetStageName(a);
 
             Rect infoRect = new Rect(14, y, w, 50);
-            SMImguiTheme.DrawGlowBorder(infoRect, new Color(0.55f, 0.4f, 0.75f, 0.4f), 2f);
+            SMImguiTheme.DrawGlowBorder(infoRect, new Color(0.35f, 0.62f, 0.88f, 0.4f), 2f);
 
             GUI.Label(new Rect(22, y + 6, w - 16, 18),
                 $"{LocalizedTextManager.getText("sm_ui_craft_maker")}: {a.name}", SMImguiTheme.DataLabel);
@@ -103,7 +103,7 @@ namespace SuperMech.Code
             }
 
             Rect scrollRect = new Rect(14, y, w, _windowRect.height - y - 50);
-            SMImguiTheme.DrawGlowBorder(scrollRect, new Color(0.55f, 0.4f, 0.75f, 0.4f), 2f);
+            SMImguiTheme.DrawGlowBorder(scrollRect, new Color(0.35f, 0.62f, 0.88f, 0.4f), 2f);
 
             _scrollPos = GUI.BeginScrollView(new Rect(scrollRect.x + 4, scrollRect.y + 4, scrollRect.width - 8, scrollRect.height - 8),
                 _scrollPos, new Rect(0, 0, scrollRect.width - 24, recipes.Count * 76));
@@ -163,7 +163,7 @@ namespace SuperMech.Code
             GUILayout.EndHorizontal();
 
             Rect titleLine = new Rect(8, 36, _windowRect.width - 16, 1f);
-            SMImguiTheme.DrawRect(titleLine, new Color(0.55f, 0.4f, 0.75f, 0.4f));
+            SMImguiTheme.DrawRect(titleLine, new Color(0.35f, 0.62f, 0.88f, 0.4f));
         }
 
         public static void ClearStaticState()
