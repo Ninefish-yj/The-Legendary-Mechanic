@@ -405,7 +405,7 @@ namespace SuperMech.Code
                 return;
             }
             Color old = GUI.color;
-            GUI.color = new Color(1f, 1f, 1f, 0.95f);
+            GUI.color = Color.white;
             GUI.DrawTexture(rect, bg, ScaleMode.StretchToFill);
             GUI.color = old;
         }
