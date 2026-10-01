@@ -80,6 +80,8 @@ namespace SuperMech.Code
             stats["health"] = level * 8f * stageMul;
             stats["stamina"] = level * 4f * stageMul;
             stats["intelligence"] = level * 0.4f * stageMul + skillBonus.intelligence;
+            stats["warfare"] = level * 0.5f * stageMul;
+            stats["lifespan"] = level * 10f * stageMul;
 
             if (level >= 6)
             {
