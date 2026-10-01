@@ -260,7 +260,7 @@ namespace SuperMech.Code
         {
             GUI.DrawTexture(local, _bgTex);
             float pitch = 30f * Math.Max(0.5f, _zoom);
-            Color gridColor = new Color(0.15f, 0.2f, 0.3f, 0.3f);
+            Color gridColor = new Color(0.6f, 0.65f, 0.72f, 0.3f);
             for (float x = _pan.x % pitch; x < local.width; x += pitch)
             {
                 GUI.DrawTexture(new Rect(x, 0, 1, local.height), MakeLineTex(gridColor));
@@ -312,12 +312,12 @@ namespace SuperMech.Code
                 var def = SuperMechKnowledge.GetDef(n.id);
                 if (def == null) continue;
 
-                Color bgColor = unlocked ? new Color(0.08f, 0.2f, 0.15f) :
-                                isSelected ? new Color(0.15f, 0.18f, 0.28f) :
-                                new Color(0.08f, 0.1f, 0.15f);
+                Color bgColor = unlocked ? new Color(0.78f, 0.9f, 0.82f) :
+                                isSelected ? new Color(0.75f, 0.8f, 0.88f) :
+                                new Color(0.82f, 0.85f, 0.9f);
                 Color borderColor = unlocked ? new Color(0.3f, 0.85f, 0.5f) :
                                     isSelected ? new Color(0.9f, 0.75f, 0.3f) :
-                                    new Color(0.25f, 0.3f, 0.4f);
+                                    new Color(0.65f, 0.7f, 0.78f);
 
                 GUI.DrawTexture(new Rect(r.x + 2, r.y + 3, r.width, r.height), MakeTex(new Color(0, 0, 0, 0.4f)));
                 GUI.DrawTexture(ExpandRect(r, isSelected ? 2 : 1), MakeTex(borderColor));
@@ -388,8 +388,8 @@ namespace SuperMech.Code
 
         private void EnsureTextures()
         {
-            if (_bgTex == null) _bgTex = MakeTex(new Color(0.03f, 0.05f, 0.09f));
-            if (_nodeTex == null) _nodeTex = MakeTex(new Color(0.08f, 0.1f, 0.15f));
+            if (_bgTex == null) _bgTex = MakeTex(new Color(0.88f, 0.9f, 0.94f));
+            if (_nodeTex == null) _nodeTex = MakeTex(new Color(0.82f, 0.85f, 0.9f));
             if (_borderTex == null) _borderTex = MakeTex(new Color(0.3f, 0.4f, 0.6f));
             if (_lineTex == null) _lineTex = MakeTex(Color.white);
         }

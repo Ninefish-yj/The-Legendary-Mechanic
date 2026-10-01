@@ -19,7 +19,7 @@ namespace SuperMech.Code
             new Color(1f, 0.85f, 0.4f, 0.9f),
             new Color(0.85f, 0.9f, 0.95f, 0.8f),
             new Color(0.9f, 0.6f, 0.4f, 0.75f),
-            new Color(0.08f, 0.12f, 0.2f, 0.6f)
+            new Color(0.8f, 0.85f, 0.9f, 0.6f)
         };
 
         public static void Ensure()

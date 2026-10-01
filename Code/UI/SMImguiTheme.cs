@@ -16,25 +16,25 @@ namespace SuperMech.Code
         public static Texture2D UiSanctuary { get; private set; }
         public static Texture2D UiTooltip { get; private set; }
 
-        public static readonly Color Background = new Color(0.02f, 0.04f, 0.1f, 0.97f);
-        public static readonly Color Panel = new Color(0.12f, 0.16f, 0.24f, 0.55f);
-        public static readonly Color PanelRaised = new Color(0.18f, 0.22f, 0.32f, 0.65f);
-        public static readonly Color PanelDark = new Color(0.06f, 0.09f, 0.15f, 0.8f);
-        public static readonly Color Silver = new Color(0.75f, 0.8f, 0.88f, 1f);
-        public static readonly Color SilverDim = new Color(0.55f, 0.6f, 0.7f, 1f);
-        public static readonly Color Border = new Color(0.4f, 0.55f, 0.75f, 0.6f);
-        public static readonly Color BorderGlow = new Color(0.5f, 0.8f, 1f, 1f);
-        public static readonly Color Gold = new Color(1f, 0.88f, 0.55f, 1f);
-        public static readonly Color Cyan = new Color(0.45f, 0.9f, 1f, 1f);
-        public static readonly Color Teal = new Color(0.35f, 0.82f, 0.78f, 1f);
-        public static readonly Color Blue = new Color(0.5f, 0.7f, 1f, 1f);
-        public static readonly Color Purple = new Color(0.7f, 0.5f, 1f, 1f);
-        public static readonly Color Success = new Color(0.45f, 0.92f, 0.68f, 1f);
-        public static readonly Color Warning = new Color(1f, 0.78f, 0.45f, 1f);
-        public static readonly Color Danger = new Color(1f, 0.5f, 0.55f, 1f);
-        public static readonly Color Text = new Color(0.96f, 0.97f, 1f, 1f);
-        public static readonly Color TextDim = new Color(0.75f, 0.8f, 0.88f, 1f);
-        public static readonly Color Muted = new Color(0.55f, 0.62f, 0.75f, 1f);
+        public static readonly Color Background = new Color(0.85f, 0.88f, 0.92f, 0.85f);
+        public static readonly Color Panel = new Color(0.92f, 0.94f, 0.97f, 0.7f);
+        public static readonly Color PanelRaised = new Color(0.96f, 0.97f, 0.99f, 0.8f);
+        public static readonly Color PanelDark = new Color(0.78f, 0.82f, 0.88f, 0.6f);
+        public static readonly Color Silver = new Color(0.6f, 0.65f, 0.72f, 1f);
+        public static readonly Color SilverDim = new Color(0.45f, 0.5f, 0.58f, 1f);
+        public static readonly Color Border = new Color(0.35f, 0.55f, 0.75f, 0.7f);
+        public static readonly Color BorderGlow = new Color(0.4f, 0.7f, 0.95f, 1f);
+        public static readonly Color Gold = new Color(0.85f, 0.65f, 0.25f, 1f);
+        public static readonly Color Cyan = new Color(0.15f, 0.55f, 0.85f, 1f);
+        public static readonly Color Teal = new Color(0.1f, 0.5f, 0.55f, 1f);
+        public static readonly Color Blue = new Color(0.2f, 0.4f, 0.75f, 1f);
+        public static readonly Color Purple = new Color(0.5f, 0.35f, 0.75f, 1f);
+        public static readonly Color Success = new Color(0.15f, 0.55f, 0.35f, 1f);
+        public static readonly Color Warning = new Color(0.75f, 0.5f, 0.15f, 1f);
+        public static readonly Color Danger = new Color(0.75f, 0.25f, 0.3f, 1f);
+        public static readonly Color Text = new Color(0.1f, 0.15f, 0.25f, 1f);
+        public static readonly Color TextDim = new Color(0.3f, 0.35f, 0.45f, 1f);
+        public static readonly Color Muted = new Color(0.45f, 0.5f, 0.6f, 1f);
 
         public static GUIStyle Label { get; private set; }
         public static GUIStyle WrappedLabel { get; private set; }
@@ -122,7 +122,7 @@ namespace SuperMech.Code
             {
                 normal = { background = MakeFrame(PanelDark, Border), textColor = Text },
                 hover = { background = MakeFrame(PanelRaised, BorderGlow), textColor = Cyan },
-                active = { background = MakeFrame(new Color(0.1f, 0.2f, 0.35f, 1f), Cyan), textColor = Cyan },
+                active = { background = MakeFrame(new Color(0.7f, 0.82f, 0.92f, 1f), Cyan), textColor = Cyan },
                 border = new RectOffset(3, 3, 3, 3),
                 padding = new RectOffset(8, 8, 5, 5),
                 fontSize = 12,
@@ -130,8 +130,8 @@ namespace SuperMech.Code
             };
             PrimaryButton = new GUIStyle(Button)
             {
-                normal = { background = MakeFrame(new Color(0.1f, 0.25f, 0.4f, 1f), Cyan), textColor = Cyan },
-                hover = { background = MakeFrame(new Color(0.15f, 0.35f, 0.5f, 1f), Gold), textColor = Gold }
+                normal = { background = MakeFrame(new Color(0.65f, 0.8f, 0.92f, 1f), BorderGlow), textColor = new Color(0.08f, 0.2f, 0.4f, 1f) },
+                hover = { background = MakeFrame(new Color(0.75f, 0.88f, 0.97f, 1f), Gold), textColor = Gold }
             };
 
             Tab = new GUIStyle(Button)
@@ -142,7 +142,7 @@ namespace SuperMech.Code
             };
             TabActive = new GUIStyle(Tab)
             {
-                normal = { background = MakeFrame(new Color(0.1f, 0.25f, 0.4f, 1f), Cyan), textColor = Cyan }
+                normal = { background = MakeFrame(new Color(0.7f, 0.85f, 0.95f, 1f), BorderGlow), textColor = Cyan }
             };
 
             Input = new GUIStyle(GUI.skin.textField)
@@ -313,10 +313,10 @@ namespace SuperMech.Code
                 for (int y = 0; y < h; y++)
                 {
                     float t = (float)y / h;
-                    float r = Mathf.Lerp(0.15f, 0.22f, t);
-                    float g = Mathf.Lerp(0.18f, 0.26f, t);
-                    float b = Mathf.Lerp(0.26f, 0.35f, t);
-                    _gradientPanel.SetPixel(x, y, new Color(r, g, b, 0.5f));
+                    float r = Mathf.Lerp(0.95f, 0.82f, t);
+                    float g = Mathf.Lerp(0.96f, 0.85f, t);
+                    float b = Mathf.Lerp(0.98f, 0.90f, t);
+                    _gradientPanel.SetPixel(x, y, new Color(r, g, b, 0.6f));
                 }
             _gradientPanel.Apply();
             _gradientPanel.wrapMode = TextureWrapMode.Clamp;

@@ -138,7 +138,7 @@ namespace SuperMech.Code
                 int fragments = data.sanctuary_fragments[i];
 
                 Rect itemRect = GUILayoutUtility.GetRect(_windowRect.width - 50, 50);
-                Color bg = unlocked ? new Color(0.08f, 0.18f, 0.12f, 0.85f) : new Color(0.06f, 0.08f, 0.14f, 0.85f);
+                Color bg = unlocked ? new Color(0.78f, 0.9f, 0.82f, 0.85f) : new Color(0.85f, 0.88f, 0.92f, 0.85f);
                 SMImguiTheme.DrawRect(itemRect, bg);
                 SMImguiTheme.DrawBorder(itemRect, unlocked ? SMImguiTheme.Success : SMImguiTheme.Border, 1f);
 
@@ -204,7 +204,7 @@ namespace SuperMech.Code
             {
                 bool canEnter = SuperMechDimension.CanEnter(selected, dim);
                 Rect itemRect = GUILayoutUtility.GetRect(_windowRect.width - 50, 36);
-                Color bg = canEnter ? new Color(0.06f, 0.1f, 0.2f, 0.9f) : new Color(0.08f, 0.08f, 0.1f, 0.8f);
+                Color bg = canEnter ? new Color(0.78f, 0.85f, 0.92f, 0.9f) : new Color(0.82f, 0.82f, 0.85f, 0.8f);
                 SMImguiTheme.DrawRect(itemRect, bg);
                 SMImguiTheme.DrawBorder(itemRect, canEnter ? SMImguiTheme.BorderGlow : SMImguiTheme.Border, 1f);
 

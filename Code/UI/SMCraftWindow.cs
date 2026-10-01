@@ -117,7 +117,7 @@ namespace SuperMech.Code
                 bool selected = _selectedRecipe == r.id;
                 Rect itemRect = new Rect(4, ry, scrollRect.width - 28, 68);
 
-                Color itemBg = selected ? new Color(0.08f, 0.14f, 0.25f, 0.9f) : new Color(0.04f, 0.07f, 0.14f, 0.8f);
+                Color itemBg = selected ? new Color(0.75f, 0.85f, 0.92f, 0.9f) : new Color(0.85f, 0.9f, 0.95f, 0.8f);
                 SMImguiTheme.DrawRect(itemRect, itemBg);
                 SMImguiTheme.DrawBorder(itemRect, selected ? SMImguiTheme.BorderGlow : SMImguiTheme.Border, 1f);
 
