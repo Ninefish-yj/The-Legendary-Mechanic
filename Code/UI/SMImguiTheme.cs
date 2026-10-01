@@ -9,22 +9,24 @@ namespace SuperMech.Code
         private static Texture2D _scanline;
 
         public static readonly Color Background = new Color(0.02f, 0.04f, 0.1f, 0.97f);
-        public static readonly Color Panel = new Color(0.04f, 0.07f, 0.15f, 0.85f);
-        public static readonly Color PanelRaised = new Color(0.06f, 0.1f, 0.2f, 0.9f);
-        public static readonly Color PanelDark = new Color(0.015f, 0.03f, 0.07f, 0.95f);
-        public static readonly Color Border = new Color(0.18f, 0.45f, 0.7f, 0.7f);
-        public static readonly Color BorderGlow = new Color(0.3f, 0.75f, 1f, 1f);
-        public static readonly Color Gold = new Color(1f, 0.85f, 0.5f, 1f);
-        public static readonly Color Cyan = new Color(0.35f, 0.88f, 1f, 1f);
-        public static readonly Color Teal = new Color(0.3f, 0.8f, 0.75f, 1f);
-        public static readonly Color Blue = new Color(0.4f, 0.65f, 1f, 1f);
-        public static readonly Color Purple = new Color(0.65f, 0.45f, 1f, 1f);
-        public static readonly Color Success = new Color(0.4f, 0.9f, 0.65f, 1f);
-        public static readonly Color Warning = new Color(1f, 0.75f, 0.4f, 1f);
-        public static readonly Color Danger = new Color(1f, 0.45f, 0.5f, 1f);
-        public static readonly Color Text = new Color(0.94f, 0.96f, 1f, 1f);
-        public static readonly Color TextDim = new Color(0.7f, 0.8f, 0.9f, 1f);
-        public static readonly Color Muted = new Color(0.5f, 0.6f, 0.75f, 1f);
+        public static readonly Color Panel = new Color(0.12f, 0.16f, 0.24f, 0.55f);
+        public static readonly Color PanelRaised = new Color(0.18f, 0.22f, 0.32f, 0.65f);
+        public static readonly Color PanelDark = new Color(0.06f, 0.09f, 0.15f, 0.8f);
+        public static readonly Color Silver = new Color(0.75f, 0.8f, 0.88f, 1f);
+        public static readonly Color SilverDim = new Color(0.55f, 0.6f, 0.7f, 1f);
+        public static readonly Color Border = new Color(0.4f, 0.55f, 0.75f, 0.6f);
+        public static readonly Color BorderGlow = new Color(0.5f, 0.8f, 1f, 1f);
+        public static readonly Color Gold = new Color(1f, 0.88f, 0.55f, 1f);
+        public static readonly Color Cyan = new Color(0.45f, 0.9f, 1f, 1f);
+        public static readonly Color Teal = new Color(0.35f, 0.82f, 0.78f, 1f);
+        public static readonly Color Blue = new Color(0.5f, 0.7f, 1f, 1f);
+        public static readonly Color Purple = new Color(0.7f, 0.5f, 1f, 1f);
+        public static readonly Color Success = new Color(0.45f, 0.92f, 0.68f, 1f);
+        public static readonly Color Warning = new Color(1f, 0.78f, 0.45f, 1f);
+        public static readonly Color Danger = new Color(1f, 0.5f, 0.55f, 1f);
+        public static readonly Color Text = new Color(0.96f, 0.97f, 1f, 1f);
+        public static readonly Color TextDim = new Color(0.75f, 0.8f, 0.88f, 1f);
+        public static readonly Color Muted = new Color(0.55f, 0.62f, 0.75f, 1f);
 
         public static GUIStyle Label { get; private set; }
         public static GUIStyle WrappedLabel { get; private set; }
@@ -302,10 +304,10 @@ namespace SuperMech.Code
                 for (int y = 0; y < h; y++)
                 {
                     float t = (float)y / h;
-                    float r = Mathf.Lerp(0.03f, 0.06f, t);
-                    float g = Mathf.Lerp(0.06f, 0.12f, t);
-                    float b = Mathf.Lerp(0.12f, 0.2f, t);
-                    _gradientPanel.SetPixel(x, y, new Color(r, g, b, 0.92f));
+                    float r = Mathf.Lerp(0.15f, 0.22f, t);
+                    float g = Mathf.Lerp(0.18f, 0.26f, t);
+                    float b = Mathf.Lerp(0.26f, 0.35f, t);
+                    _gradientPanel.SetPixel(x, y, new Color(r, g, b, 0.5f));
                 }
             _gradientPanel.Apply();
             _gradientPanel.wrapMode = TextureWrapMode.Clamp;
