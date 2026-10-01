@@ -3822,5 +3822,16 @@
   "relic_drop_rate Description": "神器碎片掉落概率（百分比）",
   "tick_interval Description": "模组核心系统Tick间隔（秒，越小越频繁）",
   "max_tracked_actors Description": "同时追踪的超能者数量上限（影响性能）",
-  "log_verbose Description": "详细日志输出（调试用，会刷屏）"
+  "log_verbose Description": "详细日志输出（调试用，会刷屏）",
+  "sm_ui_craft": "制造",
+  "sm_ui_select_item": "选择一个物品查看详情",
+  "sm_ui_no_actor": "请先选中一个单位",
+  "sm_ui_category": "分类",
+  "sm_ui_locked": "未解锁",
+  "sm_ui_count": "数量",
+  "sm_ui_rarity": "品质",
+  "sm_ui_craft_info": "制造系统开发中...\n\n机械师学会相关知识后，可以在制造台制作装备、道具和机械单位。",
+  "sm_ui_sanctuary_info": "圣所系统开发中...\n\n达到相应阶位后可解锁圣所权限，学习传承知识和技能。",
+  "sm_class_power": "异能",
+  "sm_class_magic": "魔法"
 }

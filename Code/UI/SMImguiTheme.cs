@@ -462,6 +462,21 @@ namespace SuperMech.Code
             catch { }
         }
 
+        private static Sprite _panelSprite;
+
+        public static Sprite GetPanelSprite()
+        {
+            EnsurePanelTexture();
+            if (_panelSprite == null && _panelTex != null)
+            {
+                _panelSprite = Sprite.Create(_panelTex,
+                    new Rect(0, 0, _panelTex.width, _panelTex.height),
+                    new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect,
+                    new Vector4(42, 50, 42, 50));
+            }
+            return _panelSprite;
+        }
+
         private static readonly float[] _sliceUv = { 0.047f, 0.955f, 0.068f, 0.939f };
         private static readonly int[] _slicePx = { 42, 42, 50, 50 };
 

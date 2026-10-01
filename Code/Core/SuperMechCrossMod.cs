@@ -41,8 +41,9 @@ namespace SuperMech.Code
         {
             if (_initialized) return;
             _initialized = true;
+            SuperMechModAdapters.Init();
             RebuildEnergyStatCache();
-            Debug.Log("[超神机械师] 跨模组适配层初始化：动态扫描能量属性");
+            Debug.Log("[超神机械师] 跨模组适配层初始化：逐个模组适配 + 原版属性排除");
         }
 
         public static void RebuildEnergyStatCache()
@@ -54,13 +55,14 @@ namespace SuperMech.Code
             foreach (var kv in allStats.dict)
             {
                 string id = kv.Key.ToLower();
+                if (SuperMechModAdapters.IsVanillaStat(id)) continue;
                 if (IsLikelyEnergyStat(id))
                 {
                     _cachedEnergyStats.Add(kv.Key);
                 }
             }
             _cacheDirty = false;
-            Debug.Log($"[超神机械师] 能量属性缓存重建：检测到{_cachedEnergyStats.Count}个可能的能量属性");
+            Debug.Log($"[超神机械师] 能量属性缓存重建：检测到{_cachedEnergyStats.Count}个非原版能量属性");
         }
 
         private static bool IsLikelyEnergyStat(string id)
@@ -76,9 +78,23 @@ namespace SuperMech.Code
             return false;
         }
 
+        private const float NormalizedBase = 100f;
+        private const float LogScaleFactor = 50f;
+        private const float MinEnergyForLog = 2f;
+
+        private static readonly string[] MaxSuffixes = {
+            "_max", "_maximum", "_max_value", "max_", "maximum_",
+            "_limit", "_cap", "_upper", "max"
+        };
+
         public static float DetectExternalEnergy(Actor a)
         {
-            if (a == null || a.stats == null) return 0f;
+            if (a == null) return 0f;
+
+            float modPower = SuperMechModAdapters.GetModPower(a);
+            if (modPower > 0f) return modPower;
+
+            if (a.stats == null) return 0f;
             if (_cacheDirty || _cachedEnergyStats == null) RebuildEnergyStatCache();
 
             float total = 0f;
@@ -87,10 +103,14 @@ namespace SuperMech.Code
             foreach (string statId in _cachedEnergyStats)
             {
                 if (statId.StartsWith("sm_")) continue;
+                if (SuperMechModAdapters.IsVanillaStat(statId)) continue;
                 float val = a.stats[statId];
-                if (val > 1f)
+                if (val <= MinEnergyForLog) continue;
+
+                float normalized = NormalizeEnergyValue(a, statId, val);
+                if (normalized > 0f)
                 {
-                    total += val;
+                    total += normalized;
                     found++;
                 }
             }
@@ -102,11 +122,80 @@ namespace SuperMech.Code
                 found++;
             }
 
-            if (found > 0)
+            if (found > 0) return total / found;
+            return 0f;
+        }
+
+        private static float NormalizeEnergyValue(Actor a, string statId, float rawValue)
+        {
+            float maxVal = FindEnergyMax(a, statId);
+            if (maxVal > 0f && rawValue <= maxVal * 1.5f)
             {
-                return total / found;
+                float ratio = Mathf.Clamp01(rawValue / maxVal);
+                return ratio * NormalizedBase;
+            }
+
+            float systemFactor = GetSystemFactor(statId);
+            float logVal = Mathf.Log10(rawValue);
+            return Mathf.Max(0f, logVal * LogScaleFactor * systemFactor);
+        }
+
+        private static float FindEnergyMax(Actor a, string statId)
+        {
+            if (a == null || a.stats == null) return 0f;
+            string lower = statId.ToLower();
+
+            foreach (string suffix in MaxSuffixes)
+            {
+                string candidate;
+                if (suffix.EndsWith("_"))
+                    candidate = suffix + statId;
+                else
+                    candidate = statId + suffix;
+
+                if (AssetManager.base_stats_library.contains(candidate))
+                {
+                    float maxVal = a.stats[candidate];
+                    if (maxVal > 0f) return maxVal;
+                }
+            }
+
+            if (lower.Contains("mana")) return TryGetStat(a, "mana_max", "max_mana", "mana_maximum");
+            if (lower.Contains("qi") || lower.Contains("zhenqi")) return TryGetStat(a, "qi_max", "max_qi", "zhenqi_max");
+            if (lower.Contains("cultivation")) return TryGetStat(a, "cultivation_max", "max_cultivation", "cultivation_limit");
+            if (lower.Contains("soul") || lower.Contains("spiritual")) return TryGetStat(a, "soul_max", "max_soul", "spiritual_max");
+
+            return 0f;
+        }
+
+        private static float TryGetStat(Actor a, params string[] candidates)
+        {
+            if (a == null || a.stats == null) return 0f;
+            foreach (string c in candidates)
+            {
+                if (AssetManager.base_stats_library.contains(c))
+                {
+                    float v = a.stats[c];
+                    if (v > 0f) return v;
+                }
             }
             return 0f;
+        }
+
+        private static float GetSystemFactor(string statId)
+        {
+            string lower = statId.ToLower();
+            if (lower.Contains("cultivation") || lower.Contains("xianqi") || lower.Contains("spiritual"))
+                return 0.7f;
+            if (lower.Contains("divine") || lower.Contains("faith") || lower.Contains("worship"))
+                return 0.8f;
+            if (lower.Contains("mana") || lower.Contains("magic") || lower.Contains("mp"))
+                return 1.2f;
+            if (lower.Contains("chakra") || lower.Contains("nen") || lower.Contains("aura"))
+                return 1.0f;
+            if (lower.Contains("battle_qi") || lower.Contains("true_qi") || lower.Contains("internal_force"))
+                return 1.1f;
+            return 1.0f;
         }
 
         private static float DetectDataEnergy(Actor a)
@@ -121,9 +210,10 @@ namespace SuperMech.Code
                 {
                     float val = -1f;
                     a.data.get(pattern, out val, -1f);
-                    if (val > 0f)
+                    if (val > MinEnergyForLog)
                     {
-                        total += val;
+                        float logVal = Mathf.Log10(val);
+                        total += logVal * LogScaleFactor * 0.8f;
                         found++;
                     }
                 }
@@ -139,18 +229,31 @@ namespace SuperMech.Code
             if (a == null) return;
             if (!SuperMechConfig.CrossModEnergySync) return;
 
-            float externalEnergy = DetectExternalEnergy(a);
-            if (externalEnergy <= 0f) return;
-
-            float currentQi = SuperMechQi.GetQiMax(a);
-            if (currentQi <= 0f)
+            float modQi = SuperMechModAdapters.ConvertModToQi(a);
+            if (modQi > 0f)
             {
-                float converted = externalEnergy * SuperMechConfig.CrossModEnergyRatio;
+                float currentQi = SuperMechQi.GetQiMax(a);
+                if (currentQi <= 0f)
+                {
+                    SuperMechQi.SetQiMax(a, modQi);
+                    SuperMechQi.SetQi(a, modQi);
+                    Debug.Log($"[超神机械师] 模组能量同步：{a.name} [{SuperMechModAdapters.GetDetectedModName(a)}] 转换为气力{modQi:F0}");
+                }
+                return;
+            }
+
+            float normalizedEnergy = DetectExternalEnergy(a);
+            if (normalizedEnergy <= 0f) return;
+
+            float currentQi2 = SuperMechQi.GetQiMax(a);
+            if (currentQi2 <= 0f)
+            {
+                float converted = normalizedEnergy * SuperMechConfig.CrossModEnergyRatio;
                 if (converted > 10f)
                 {
                     SuperMechQi.SetQiMax(a, converted);
                     SuperMechQi.SetQi(a, converted);
-                    Debug.Log($"[超神机械师] 跨模组能量同步：{a.name} 检测到外部能量{externalEnergy:F0}，转换为气力{converted:F0}");
+                    Debug.Log($"[超神机械师] 通用能量同步：{a.name} 归一化能量{normalizedEnergy:F0}，转换为气力{converted:F0}");
                 }
             }
         }
@@ -159,47 +262,52 @@ namespace SuperMech.Code
         {
             if (a == null || a.stats == null) return 0f;
 
-            float bodyFactor = GetBodyFactor(a);
+            float energyStrength = GetEnergyStrength(a);
+            float bodyPower = GetBodyCombatPower(a);
+
+            const float energyWeight = 1.0f;
+            const float bodyWeight = 0.3f;
+
+            return energyStrength * energyWeight + bodyPower * bodyWeight;
+        }
+
+        private static float GetEnergyStrength(Actor a)
+        {
+            if (a == null) return 0f;
 
             float qi = SuperMechQi.GetQiMax(a);
-            if (qi > 0f) return qi * bodyFactor;
+            if (qi > 0f) return qi;
+
+            float modEnergy = SuperMechModAdapters.GetModPower(a);
+            if (modEnergy > 0f) return modEnergy;
 
             float external = DetectExternalEnergy(a);
-            if (external > 0f) return external * SuperMechConfig.CrossModEnergyRatio * bodyFactor;
+            if (external > 0f) return external * SuperMechConfig.CrossModEnergyRatio;
 
+            return 0f;
+        }
+
+        private static float GetBodyCombatPower(Actor a)
+        {
+            if (a == null || a.stats == null) return 0f;
             float dmg = a.stats["damage"];
             float hp = a.stats["health"];
             float spd = a.stats["speed"];
             float armor = a.stats["armor"];
-            float basePower = Mathf.Sqrt(dmg * dmg + hp * hp * 0.1f + spd * spd * 0.5f + armor * armor * 0.3f);
-            return basePower * 10f;
-        }
-
-        private const float BodyDamageWeight = 1f;
-        private const float BodyHealthWeight = 0.1f;
-        private const float BodySpeedWeight = 0.5f;
-        private const float BodyFactorScale = 0.01f;
-        private const float BodyFactorMin = 1f;
-        private const float BodyFactorMax = 2.5f;
-
-        private static float GetBodyFactor(Actor a)
-        {
-            if (a == null || a.stats == null) return BodyFactorMin;
-            float dmg = a.stats["damage"];
-            float hp = a.stats["health"];
-            float spd = a.stats["speed"];
-            float bodyScore = dmg * BodyDamageWeight + hp * BodyHealthWeight + spd * BodySpeedWeight;
-            float factor = BodyFactorMin + bodyScore * BodyFactorScale;
-            return Mathf.Clamp(factor, BodyFactorMin, BodyFactorMax);
+            float bodyScore = Mathf.Sqrt(dmg * dmg + hp * hp * 0.01f + spd * spd * 0.5f + armor * armor * 0.3f);
+            return bodyScore * 5f;
         }
 
         public static bool HasExternalModSystem(Actor a)
         {
-            if (a == null || a.stats == null) return false;
+            if (a == null) return false;
+            if (SuperMechModAdapters.DetectMod(a) != null) return true;
+            if (a.stats == null) return false;
             if (_cacheDirty || _cachedEnergyStats == null) RebuildEnergyStatCache();
             foreach (string statId in _cachedEnergyStats)
             {
                 if (statId.StartsWith("sm_")) continue;
+                if (SuperMechModAdapters.IsVanillaStat(statId)) continue;
                 if (a.stats[statId] > 1f) return true;
             }
             return DetectDataEnergy(a) > 0f;
@@ -211,11 +319,16 @@ namespace SuperMech.Code
             var mods = new List<string>();
             foreach (string stat in _cachedEnergyStats)
             {
+                if (SuperMechModAdapters.IsVanillaStat(stat)) continue;
                 string low = stat.ToLower();
-                if (low.Contains("mana") || low.Contains("magic")) mods.Add(LocalizedTextManager.getText("sm_crossmod_magic"));
-                else if (low.Contains("cultivation") || low.Contains("xianqi") || low.Contains("spiritual")) mods.Add(LocalizedTextManager.getText("sm_crossmod_cultivation"));
-                else if (low.Contains("divine") || low.Contains("faith")) mods.Add(LocalizedTextManager.getText("sm_crossmod_divine"));
-                else if (low.Contains("chakra") || low.Contains("nen") || low.Contains("aura")) mods.Add(LocalizedTextManager.getText("sm_crossmod_power"));
+                if (low.Contains("cultivation") || low.Contains("xianqi") || low.Contains("spiritual"))
+                    mods.Add(LocalizedTextManager.getText("sm_crossmod_cultivation"));
+                else if (low.Contains("divine") || low.Contains("faith") || low.Contains("incense"))
+                    mods.Add(LocalizedTextManager.getText("sm_crossmod_divine"));
+                else if (low.Contains("mana") || low.Contains("magic") || low.Contains("mp"))
+                    mods.Add(LocalizedTextManager.getText("sm_crossmod_magic"));
+                else if (low.Contains("chakra") || low.Contains("nen") || low.Contains("aura"))
+                    mods.Add(LocalizedTextManager.getText("sm_crossmod_power"));
                 else mods.Add(stat);
             }
             return mods.Count > 0 ? string.Join("、", mods) : LocalizedTextManager.getText("sm_crossmod_none");
