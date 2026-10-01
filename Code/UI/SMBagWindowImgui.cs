@@ -92,14 +92,21 @@ namespace SuperMech.Code
         {
             try
             {
+                DrawTitleBar();
+
                 if (_target == null || _target.data == null || _target.data.id != _targetId)
                 {
-                    GUILayout.Label(LocalizedTextManager.getText("sm_ui_need_target"), SMImguiTheme.Label);
-                    GUI.DragWindow();
+                    GUILayout.FlexibleSpace();
+                    GUILayout.BeginHorizontal();
+                    GUILayout.FlexibleSpace();
+                    GUILayout.Label(LocalizedTextManager.getText("sm_ui_need_target"), SMImguiTheme.Title, GUILayout.Height(40));
+                    GUILayout.FlexibleSpace();
+                    GUILayout.EndHorizontal();
+                    GUILayout.FlexibleSpace();
+                    GUI.DragWindow(new Rect(0, 0, 10000, 36));
                     return;
                 }
 
-                DrawTitleBar();
                 DrawTabs();
                 GUILayout.Space(8);
 

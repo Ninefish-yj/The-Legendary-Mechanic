@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.15.4-alpha**（Alpha内测阶段）
+**v0.15.5-alpha**（Alpha内测阶段）
 
 ### 已实现系统
 
@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.15.5** | 修复知识/背包窗口无选中单位时缺少关闭按钮：标题栏移到target检查之前，空状态居中显示提示
 | **v0.15.4** | 补充31个配置项描述（Id Description格式），消除本地化missing text警告
 | **v0.15.3** | 修复单位面板按钮不显示：从OnEnable+Coroutine改为showStatsRows Postfix（参考诸天神座），解决Collection was modified枚举错误
 | **v0.15.2** | 综合bug修复：神权栏动态克隆PowerButton（三次迭代最终解决）、单位面板改为OnEnable Postfix+Coroutine（参考诡秘之主）、修复RankEntry字段名编译错误 |
