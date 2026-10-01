@@ -33,7 +33,7 @@ namespace SuperMech.Code
         private static readonly int[] CraftThresholds = { 0, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55 };
 
         private static readonly Dictionary<long, Dictionary<int, AdvanceReq>> _unitReqs = new Dictionary<long, Dictionary<int, AdvanceReq>>();
-        private static readonly Dictionary<long, int> _craftCount = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _craftCount = new Dictionary<long, int>();
 
         public static void Register()
         {

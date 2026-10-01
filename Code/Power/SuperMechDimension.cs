@@ -122,9 +122,9 @@ namespace SuperMech.Code
             },
         };
 
-        private static readonly Dictionary<long, string> _activeDimension = new Dictionary<long, string>();
-        private static readonly Dictionary<long, long> _buffEndTime = new Dictionary<long, long>();
-        private static readonly Dictionary<long, long> _cooldown = new Dictionary<long, long>();
+        public static readonly Dictionary<long, string> _activeDimension = new Dictionary<long, string>();
+        public static readonly Dictionary<long, long> _buffEndTime = new Dictionary<long, long>();
+        public static readonly Dictionary<long, long> _cooldown = new Dictionary<long, long>();
         public const float BuffDurationSeconds = 120f;
         public const float CooldownSeconds = 300f;
 

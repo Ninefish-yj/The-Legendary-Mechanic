@@ -144,12 +144,16 @@ namespace SuperMech.Code
         {
             try
             {
-                SuperMechReflection.InvokeMethod(window, "setIconValue",
-                    new object[] { name, value, null, "", false, "", '/' });
+                Transform t = window.transform.FindRecursive(name);
+                if (t == null) return;
+                StatsIcon icon = t.GetComponent<StatsIcon>();
+                if (icon == null) return;
+                icon.gameObject.SetActive(true);
+                icon.setValue(value, null, "", false, "", '/');
             }
             catch (Exception e)
             {
-                Debug.LogWarning("[超神机械师] setIconValue反射调用失败: " + e.Message);
+                Debug.LogWarning("[超神机械师] setIconValue调用失败: " + e.Message);
             }
         }
 

@@ -5,9 +5,9 @@ namespace SuperMech.Code
 {
     public static class SuperMechEquipBreak
     {
-        private static readonly Dictionary<long, float> _durability = new Dictionary<long, float>();
+        public static readonly Dictionary<long, float> _durability = new Dictionary<long, float>();
 
-        private static readonly Dictionary<long, float> _breakCooldown = new Dictionary<long, float>();
+        public static readonly Dictionary<long, float> _breakCooldown = new Dictionary<long, float>();
 
         public static void OnTakeDamage(Actor a, float damage)
         {

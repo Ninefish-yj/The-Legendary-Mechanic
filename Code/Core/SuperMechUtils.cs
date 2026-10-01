@@ -9,11 +9,8 @@ namespace SuperMech.Code
         public static Actor GetActor(UnitWindow window)
         {
             if (SelectedUnit.unit != null && SelectedUnit.unit.isAlive()) return SelectedUnit.unit;
-            Actor actor = SuperMechReflection.GetFieldValue<Actor>(window, "_actor");
-            if (actor != null) return actor;
-            actor = SuperMechReflection.GetPropertyValue<Actor>(window, "actor");
-            if (actor != null) return actor;
-            return SuperMechReflection.GetFieldValue<Actor>(window, "actor");
+            if (window != null && window.actor != null) return window.actor;
+            return null;
         }
 
         public static Text CreateText(Transform parent, string content, int fontSize, TextAnchor anchor, Color color)

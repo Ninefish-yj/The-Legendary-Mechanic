@@ -377,8 +377,7 @@ namespace SuperMech.Code
                     }
                     if (ad.fiveSystemGenius)
                     {
-                        SuperMechReflection.SetStaticFieldValue(typeof(SuperMechTalent), "_fiveSystemGenius",
-                            new HashSet<long> { a.id });
+                        SuperMechTalent._fiveSystemGenius = new HashSet<long> { a.id };
                     }
 
                     RestoreNewFields(a, ad);
@@ -461,21 +460,20 @@ namespace SuperMech.Code
                         specificPower = d.ContainsKey("specificPower") ? d["specificPower"].ToString() : ""
                     });
                 }
-                SuperMechReflection.SetStaticFieldValue(typeof(SuperMechTalent), "_talents",
-                    new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } });
+                SuperMechTalent._talents = new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } };
             }
             catch { Debug.LogWarning("[超神机械师] 存档恢复失败"); }
         }
 
         private static float GetEmRefineQiBonus(Actor a)
         {
-            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechRefinement), "_emRefineQiBonus");
+            var dict = SuperMechRefinement._emRefineQiBonus;
             return dict != null && dict.TryGetValue(a.id, out float v) ? v : 0f;
         }
 
         private static float GetInsightProgress(Actor a)
         {
-            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechDivinity), "_insightProgress");
+            var dict = SuperMechDivinity._insightProgress;
             return dict != null && dict.TryGetValue(a.id, out float v) ? v : 0f;
         }
 
@@ -499,14 +497,14 @@ namespace SuperMech.Code
 
         private static string SerializeSubXp(Actor a)
         {
-            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, float>>>(typeof(SuperMechSubClass), "_subXp");
+            var dict = SuperMechSubClass._subXp;
             if (dict == null || !dict.TryGetValue(a.id, out var subDict) || subDict.Count == 0) return null;
             return JsonConvert.SerializeObject(subDict);
         }
 
         private static string SerializeSubLevels(Actor a)
         {
-            var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, int>>>(typeof(SuperMechSubClass), "_subLevel");
+            var dict = SuperMechSubClass._subLevel;
             if (dict == null || !dict.TryGetValue(a.id, out var subDict) || subDict.Count == 0) return null;
             return JsonConvert.SerializeObject(subDict);
         }
@@ -545,96 +543,96 @@ namespace SuperMech.Code
                                 value = System.Convert.ToSingle(d["value"])
                             });
                         }
-                        var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, List<SuperMechEquipAffix.EquipAffixInstance>>>(typeof(SuperMechEquipAffix), "_equippedAffixes");
+                        var dict = SuperMechEquipAffix._equippedAffixes;
                         if (dict != null) dict[a.id] = affixes;
                     }
                 }
 
                 if (!string.IsNullOrEmpty(ad.durability) && float.TryParse(ad.durability, out float dur))
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechEquipBreak), "_durability");
+                    var dict = SuperMechEquipBreak._durability;
                     if (dict != null) dict[a.id] = dur;
                 }
 
                 if (ad.refineCount > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechRefinement), "_refineCount");
+                    var dict = SuperMechRefinement._refineCount;
                     if (dict != null) dict[a.id] = ad.refineCount;
                 }
                 if (ad.emRefineCount > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechRefinement), "_emRefineCount");
+                    var dict = SuperMechRefinement._emRefineCount;
                     if (dict != null) dict[a.id] = ad.emRefineCount;
                 }
                 if (ad.refineQiBonus > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechRefinement), "_refineQiBonus");
+                    var dict = SuperMechRefinement._refineQiBonus;
                     if (dict != null) dict[a.id] = ad.refineQiBonus;
                 }
                 if (ad.emRefineQiBonus > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechRefinement), "_emRefineQiBonus");
+                    var dict = SuperMechRefinement._emRefineQiBonus;
                     if (dict != null) dict[a.id] = ad.emRefineQiBonus;
                 }
 
                 if (ad.activeSynergies != null && ad.activeSynergies.Count > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, HashSet<string>>>(typeof(SuperMechKnowledgeSynergy), "_active");
+                    var dict = SuperMechKnowledgeSynergy._active;
                     if (dict != null) dict[a.id] = new HashSet<string>(ad.activeSynergies);
                 }
 
                 if (ad.geneStage > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_geneStage");
+                    var dict = SuperMechCorePower._geneStage;
                     if (dict != null) dict[a.id] = ad.geneStage;
                 }
                 if (ad.manaStage > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_manaStage");
+                    var dict = SuperMechCorePower._manaStage;
                     if (dict != null) dict[a.id] = ad.manaStage;
                 }
                 if (ad.mindStage > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_mindStage");
+                    var dict = SuperMechCorePower._mindStage;
                     if (dict != null) dict[a.id] = ad.mindStage;
                 }
                 if (ad.geneProgress > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_geneProgress");
+                    var dict = SuperMechCorePower._geneProgress;
                     if (dict != null) dict[a.id] = ad.geneProgress;
                 }
                 if (ad.manaProgress > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_manaProgress");
+                    var dict = SuperMechCorePower._manaProgress;
                     if (dict != null) dict[a.id] = ad.manaProgress;
                 }
                 if (ad.mindProgress > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechCorePower), "_mindProgress");
+                    var dict = SuperMechCorePower._mindProgress;
                     if (dict != null) dict[a.id] = ad.mindProgress;
                 }
 
                 if (!string.IsNullOrEmpty(ad.activeDimension))
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, string>>(typeof(SuperMechDimension), "_activeDimension");
+                    var dict = SuperMechDimension._activeDimension;
                     if (dict != null) dict[a.id] = ad.activeDimension;
                 }
 
                 if (ad.insightProgress > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, float>>(typeof(SuperMechDivinity), "_insightProgress");
+                    var dict = SuperMechDivinity._insightProgress;
                     if (dict != null) dict[a.id] = ad.insightProgress;
                 }
 
                 if (!string.IsNullOrEmpty(ad.potentialRating))
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, string>>(typeof(SuperMechPotentialRating), "_ratings");
+                    var dict = SuperMechPotentialRating._ratings;
                     if (dict != null) dict[a.id] = ad.potentialRating;
                 }
 
                 if (ad.learnedSkills != null && ad.learnedSkills.Count > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, HashSet<string>>>(typeof(SuperMechSkills), "_learned");
+                    var dict = SuperMechSkills._learned;
                     if (dict != null) dict[a.id] = new HashSet<string>(ad.learnedSkills);
                 }
 
@@ -648,7 +646,7 @@ namespace SuperMech.Code
                     var subDict = JsonConvert.DeserializeObject<Dictionary<string, float>>(ad.subXpData);
                     if (subDict != null)
                     {
-                        var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, float>>>(typeof(SuperMechSubClass), "_subXp");
+                        var dict = SuperMechSubClass._subXp;
                         if (dict != null) dict[a.id] = subDict;
                     }
                 }
@@ -657,14 +655,14 @@ namespace SuperMech.Code
                     var subDict = JsonConvert.DeserializeObject<Dictionary<string, int>>(ad.subLevelData);
                     if (subDict != null)
                     {
-                        var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, Dictionary<string, int>>>(typeof(SuperMechSubClass), "_subLevel");
+                        var dict = SuperMechSubClass._subLevel;
                         if (dict != null) dict[a.id] = subDict;
                     }
                 }
 
                 if (ad.craftCount > 0)
                 {
-                    var dict = SuperMechReflection.GetStaticFieldValue<Dictionary<long, int>>(typeof(SuperMechAdvancementTask), "_craftCount");
+                    var dict = SuperMechAdvancementTask._craftCount;
                     if (dict != null) dict[a.id] = ad.craftCount;
                 }
             }

@@ -22,7 +22,7 @@ namespace SuperMech.Code
             public string specificPower;
         }
 
-        private static readonly string[][] SpecificPowers = {
+        public static readonly string[][] SpecificPowers = {
             new[] { "sm_talent_1370", "sm_talent_1371", "sm_talent_1372", "sm_talent_1373", "sm_talent_1374", "sm_talent_1375" },
             new[] { "sm_talent_1376", "sm_talent_1377", "sm_talent_1378", "sm_talent_1379", "sm_talent_1380", "sm_talent_1381" },
             new[] { "sm_talent_1382", "sm_talent_1383", "sm_talent_1384", "sm_talent_1385", "sm_talent_1386", "sm_talent_1387" },
@@ -30,7 +30,7 @@ namespace SuperMech.Code
             new[] { "sm_talent_1394", "sm_talent_1395", "sm_talent_1396", "sm_talent_1397", "sm_talent_1398", "sm_talent_1399" }
         };
 
-        private static readonly Dictionary<long, List<TalentInfo>> _talents = new Dictionary<long, List<TalentInfo>>();
+        public static readonly Dictionary<long, List<TalentInfo>> _talents = new Dictionary<long, List<TalentInfo>>();
 
         public static readonly string[] RatingNames = { "F", "E", "D", "C", "B", "A", "S" };
 
@@ -60,7 +60,7 @@ namespace SuperMech.Code
             }
         }
 
-        private static readonly HashSet<long> _fiveSystemGenius = new HashSet<long>();
+        public static readonly HashSet<long> _fiveSystemGenius = new HashSet<long>();
 
         public static bool IsFiveSystemGenius(Actor a)
         {

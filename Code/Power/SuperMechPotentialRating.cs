@@ -53,7 +53,7 @@ namespace SuperMech.Code
             new RatingWeight(RatingS, 2),
         };
 
-        private static readonly Dictionary<long, string> _ratings = new Dictionary<long, string>();
+        public static readonly Dictionary<long, string> _ratings = new Dictionary<long, string>();
 
         public static string RollRating(Actor a)
         {

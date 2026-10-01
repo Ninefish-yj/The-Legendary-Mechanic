@@ -5,11 +5,11 @@ namespace SuperMech.Code
 {
     public static class SuperMechDivinity
     {
-        private static readonly Dictionary<long, int> _points = new Dictionary<long, int>();
-        private static readonly Dictionary<long, int> _profLayers = new Dictionary<long, int>();
-        private static readonly Dictionary<long, int> _speciesLayers = new Dictionary<long, int>();
-        private static readonly Dictionary<long, float> _insightProgress = new Dictionary<long, float>();
-        private static readonly Dictionary<long, bool> _awakened = new Dictionary<long, bool>();
+        public static readonly Dictionary<long, int> _points = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _profLayers = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _speciesLayers = new Dictionary<long, int>();
+        public static readonly Dictionary<long, float> _insightProgress = new Dictionary<long, float>();
+        public static readonly Dictionary<long, bool> _awakened = new Dictionary<long, bool>();
 
         public const int PointsPerLayer = 3;
         public const int MaxLayers = 10;

@@ -16,7 +16,7 @@ namespace SuperMech.Code
             public int minQuality;
         }
 
-        private static readonly List<AffixDef> _affixPool = new List<AffixDef>
+        public static readonly List<AffixDef> _affixPool = new List<AffixDef>
         {
             new AffixDef { id="affix_dmg", name="sm_equipaffix_737", statKey="multiplier_damage", minValue=0.05f, maxValue=0.25f, isMultiplier=true, minQuality=0 },
             new AffixDef { id="affix_hp", name="sm_equipaffix_738", statKey="multiplier_health", minValue=0.05f, maxValue=0.30f, isMultiplier=true, minQuality=0 },
@@ -32,7 +32,7 @@ namespace SuperMech.Code
             new AffixDef { id="affix_all", name="sm_equipaffix_748", statKey="multiplier_damage", minValue=0.03f, maxValue=0.10f, isMultiplier=true, minQuality=5 },
         };
 
-        private static readonly Dictionary<long, List<EquipAffixInstance>> _equippedAffixes = new Dictionary<long, List<EquipAffixInstance>>();
+        public static readonly Dictionary<long, List<EquipAffixInstance>> _equippedAffixes = new Dictionary<long, List<EquipAffixInstance>>();
 
         public class EquipAffixInstance
         {

@@ -13,10 +13,10 @@ namespace SuperMech.Code
         public const string ManaMeditation = "sm_pcult_meditation";
         public const string MindTrain    = "sm_pcult_mind_train";
 
-        private static readonly Dictionary<long, int> _refineCount = new Dictionary<long, int>();
-        private static readonly Dictionary<long, int> _emRefineCount = new Dictionary<long, int>();
-        private static readonly Dictionary<long, float> _refineQiBonus = new Dictionary<long, float>();
-        private static readonly Dictionary<long, float> _emRefineQiBonus = new Dictionary<long, float>();
+        public static readonly Dictionary<long, int> _refineCount = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _emRefineCount = new Dictionary<long, int>();
+        public static readonly Dictionary<long, float> _refineQiBonus = new Dictionary<long, float>();
+        public static readonly Dictionary<long, float> _emRefineQiBonus = new Dictionary<long, float>();
 
         public const int MaxRefineCount = 80;
         public const int RefineXpCost = 800;

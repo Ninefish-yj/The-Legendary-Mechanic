@@ -18,13 +18,13 @@ namespace SuperMech.Code
         };
         public static readonly int[] StageProgressReq = { 0, 100, 300, 600, 1000 };
 
-        private static readonly Dictionary<long, int> _geneStage = new Dictionary<long, int>();
-        private static readonly Dictionary<long, int> _manaStage = new Dictionary<long, int>();
-        private static readonly Dictionary<long, int> _mindStage = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _geneStage = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _manaStage = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _mindStage = new Dictionary<long, int>();
 
-        private static readonly Dictionary<long, int> _geneProgress = new Dictionary<long, int>();
-        private static readonly Dictionary<long, int> _manaProgress = new Dictionary<long, int>();
-        private static readonly Dictionary<long, int> _mindProgress = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _geneProgress = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _manaProgress = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _mindProgress = new Dictionary<long, int>();
 
         public static void Register()
         {

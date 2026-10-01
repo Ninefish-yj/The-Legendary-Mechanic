@@ -18,9 +18,9 @@ namespace SuperMech.Code
 
         public const int MaxSubLevel = 10;
 
-        private static readonly Dictionary<long, Dictionary<string, float>> _subXp = new Dictionary<long, Dictionary<string, float>>();
-        private static readonly Dictionary<long, Dictionary<string, int>> _subLevel = new Dictionary<long, Dictionary<string, int>>();
-        private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
+        public static readonly Dictionary<long, Dictionary<string, float>> _subXp = new Dictionary<long, Dictionary<string, float>>();
+        public static readonly Dictionary<long, Dictionary<string, int>> _subLevel = new Dictionary<long, Dictionary<string, int>>();
+        public static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
 
         public static readonly int[] LevelThresholds = { 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500 };
 

@@ -143,7 +143,7 @@ namespace SuperMech.Code
             }
         };
 
-        private static readonly Dictionary<long, HashSet<string>> _learned = new Dictionary<long, HashSet<string>>();
+        public static readonly Dictionary<long, HashSet<string>> _learned = new Dictionary<long, HashSet<string>>();
 
         private static readonly Dictionary<long, Dictionary<string, float>> _cooldown = new Dictionary<long, Dictionary<string, float>>();
 

@@ -19,11 +19,11 @@ namespace SuperMech.Code
             public int potentialBonus;
         }
 
-        private static readonly List<SynergyDef> _synergies = new List<SynergyDef>();
+        public static readonly List<SynergyDef> _synergies = new List<SynergyDef>();
 
-        private static readonly Dictionary<long, HashSet<string>> _active = new Dictionary<long, HashSet<string>>();
+        public static readonly Dictionary<long, HashSet<string>> _active = new Dictionary<long, HashSet<string>>();
 
-        private static readonly Dictionary<long, SynergyBonus> _bonusCache = new Dictionary<long, SynergyBonus>();
+        public static readonly Dictionary<long, SynergyBonus> _bonusCache = new Dictionary<long, SynergyBonus>();
 
         public class SynergyBonus
         {
