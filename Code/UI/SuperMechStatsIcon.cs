@@ -97,13 +97,13 @@ namespace SuperMech.Code
                 return;
             }
 
-            GameObject newGroup = Object.Instantiate(originalGroup.gameObject);
+            GameObject newGroup = UnityEngine.Object.Instantiate(originalGroup.gameObject);
             for (int i = newGroup.transform.childCount - 1; i >= 0; i--)
             {
                 Transform child = newGroup.transform.GetChild(i);
                 if (child.name != "i_kills")
                 {
-                    Object.Destroy(child.gameObject);
+                    UnityEngine.Object.Destroy(child.gameObject);
                 }
             }
 
@@ -114,7 +114,7 @@ namespace SuperMech.Code
                 if (!data.isShow) continue;
                 if (index >= 25) break;
 
-                GameObject newIcon = Object.Instantiate(template.gameObject, newGroup.transform);
+                GameObject newIcon = UnityEngine.Object.Instantiate(template.gameObject, newGroup.transform);
                 newIcon.name = data.name;
                 StatsIcon icon = newIcon.GetComponent<StatsIcon>();
                 TipButton tip = newIcon.GetComponent<TipButton>();
@@ -134,7 +134,7 @@ namespace SuperMech.Code
                 index++;
             }
 
-            Object.DestroyImmediate(template.gameObject);
+            UnityEngine.Object.DestroyImmediate(template.gameObject);
             newGroup.name = "sm_custom_icons";
             newGroup.transform.SetParent(_contentTransform, false);
             newGroup.transform.localScale = Vector3.one;

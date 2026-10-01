@@ -82,7 +82,7 @@ namespace SuperMech.Code
 
             Dictionary<string, NodePos> posMap = new Dictionary<string, NodePos>();
 
-            foreach (var def in all.Values)
+            foreach (var def in all)
             {
                 if (def.prefix != prefix) continue;
                 float x = def.branch * branchPitch + def.index * indexPitch;
@@ -99,7 +99,7 @@ namespace SuperMech.Code
                 posMap[def.id] = np;
             }
 
-            foreach (var def in all.Values)
+            foreach (var def in all)
             {
                 if (def.prefix != prefix) continue;
                 if (def.tier > 0)
