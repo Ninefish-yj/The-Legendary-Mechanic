@@ -250,5 +250,104 @@ namespace SuperMech.Code
             float scale = Mathf.Min(Screen.width / 1920f, Screen.height / 1080f);
             return value * Mathf.Max(0.7f, Mathf.Min(1.3f, scale));
         }
+
+        private static Texture2D _starfield;
+        private static Texture2D _glowCircle;
+        private static Texture2D _gradientPanel;
+
+        private static void EnsureStarfield()
+        {
+            if (_starfield != null) return;
+            _starfield = new Texture2D(256, 256, TextureFormat.RGBA32, false);
+            _starfield.hideFlags = HideFlags.HideAndDontSave;
+            var rng = new System.Random(42);
+            for (int x = 0; x < 256; x++)
+                for (int y = 0; y < 256; y++)
+                {
+                    float v = (float)rng.NextDouble();
+                    if (v > 0.985f) _starfield.SetPixel(x, y, new Color(1f, 1f, 1f, 0.8f));
+                    else if (v > 0.97f) _starfield.SetPixel(x, y, new Color(0.7f, 0.85f, 1f, 0.5f));
+                    else _starfield.SetPixel(x, y, new Color(0, 0, 0, 0));
+                }
+            _starfield.Apply();
+            _starfield.wrapMode = TextureWrapMode.Repeat;
+        }
+
+        private static void EnsureGlowCircle()
+        {
+            if (_glowCircle != null) return;
+            int size = 64;
+            _glowCircle = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            _glowCircle.hideFlags = HideFlags.HideAndDontSave;
+            float cx = size / 2f, cy = size / 2f;
+            for (int x = 0; x < size; x++)
+                for (int y = 0; y < size; y++)
+                {
+                    float dist = Mathf.Sqrt((x - cx) * (x - cx) + (y - cy) * (y - cy)) / (size / 2f);
+                    float alpha = Mathf.Clamp01(1f - dist);
+                    alpha = alpha * alpha;
+                    _glowCircle.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+                }
+            _glowCircle.Apply();
+        }
+
+        private static void EnsureGradientPanel()
+        {
+            if (_gradientPanel != null) return;
+            int w = 4, h = 64;
+            _gradientPanel = new Texture2D(w, h, TextureFormat.RGBA32, false);
+            _gradientPanel.hideFlags = HideFlags.HideAndDontSave;
+            for (int x = 0; x < w; x++)
+                for (int y = 0; y < h; y++)
+                {
+                    float t = (float)y / h;
+                    float r = Mathf.Lerp(0.03f, 0.06f, t);
+                    float g = Mathf.Lerp(0.06f, 0.12f, t);
+                    float b = Mathf.Lerp(0.12f, 0.2f, t);
+                    _gradientPanel.SetPixel(x, y, new Color(r, g, b, 0.92f));
+                }
+            _gradientPanel.Apply();
+            _gradientPanel.wrapMode = TextureWrapMode.Clamp;
+        }
+
+        public static void DrawStarfield(Rect rect)
+        {
+            EnsureStarfield();
+            Color old = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, 0.6f);
+            GUI.DrawTextureWithTexCoords(rect, _starfield, new Rect(0, 0, rect.width / 256f, rect.height / 256f));
+            GUI.color = old;
+        }
+
+        public static void DrawGlowBorder(Rect rect, Color color, float glowSize = 6f)
+        {
+            EnsureGlowCircle();
+            Color old = GUI.color;
+            GUI.color = new Color(color.r, color.g, color.b, color.a * 0.3f);
+            DrawBorder(new Rect(rect.x - glowSize, rect.y - glowSize, rect.width + glowSize * 2, rect.height + glowSize * 2), color, glowSize);
+            GUI.color = new Color(color.r, color.g, color.b, color.a * 0.6f);
+            DrawBorder(new Rect(rect.x - glowSize / 2, rect.y - glowSize / 2, rect.width + glowSize, rect.height + glowSize), color, glowSize / 2);
+            GUI.color = color;
+            DrawBorder(rect, color, 1.5f);
+            GUI.color = old;
+        }
+
+        public static void DrawGlowCircle(Rect rect, Color color)
+        {
+            EnsureGlowCircle();
+            Color old = GUI.color;
+            GUI.color = color;
+            GUI.DrawTexture(rect, _glowCircle);
+            GUI.color = old;
+        }
+
+        public static void DrawGradientPanel(Rect rect)
+        {
+            EnsureGradientPanel();
+            Color old = GUI.color;
+            GUI.color = Color.white;
+            GUI.DrawTexture(rect, _gradientPanel);
+            GUI.color = old;
+        }
     }
 }

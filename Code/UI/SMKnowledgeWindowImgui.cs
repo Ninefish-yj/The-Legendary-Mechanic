@@ -18,9 +18,11 @@ namespace SuperMech.Code
         private string _message = "";
         private SMKnowledgeGraph _graph;
         private bool _graphBuilt;
+        private int _selectedTab = 0;
 
         private static readonly string[] _prefixes = { "mech", "martial", "mage", "mind", "psi" };
         private static readonly string[] _prefixNames = { "sm_tree_mech", "sm_tree_martial", "sm_tree_mage", "sm_tree_mind", "sm_tree_psi" };
+        private static readonly string[] _tabNames = { "sm_ui_knowledge_tree", "sm_ui_branch", "sm_ui_condition" };
 
         public static void Ensure()
         {
@@ -52,12 +54,13 @@ namespace SuperMech.Code
             if (!_visible) return;
             SMImguiTheme.Ensure();
             NormalizeRect();
-            SMImguiTheme.DrawRect(_windowRect, SMImguiTheme.Background);
-            SMImguiTheme.DrawBorder(_windowRect, SMImguiTheme.Border, 2f);
+            SMImguiTheme.DrawRect(_windowRect, new Color(0.01f, 0.03f, 0.06f, 0.97f));
+            SMImguiTheme.DrawStarfield(_windowRect);
+            SMImguiTheme.DrawGlowBorder(_windowRect, SMImguiTheme.BorderGlow, 8f);
             try
             {
                 _windowRect = GUI.Window(WINDOW_ID, _windowRect, DrawWindow,
-                    LocalizedTextManager.getText("sm_ui_knowledge_title"), SMImguiTheme.WindowStyle);
+                    "", SMImguiTheme.WindowStyle);
             }
             catch (System.Exception e)
             {
@@ -70,8 +73,8 @@ namespace SuperMech.Code
         {
             float maxW = Mathf.Max(600f, Screen.width - 30f);
             float maxH = Mathf.Max(400f, Screen.height - 30f);
-            _windowRect.width = Mathf.Min(Mathf.Max(800f, Screen.width * 0.75f), maxW);
-            _windowRect.height = Mathf.Min(Mathf.Max(500f, Screen.height * 0.8f), maxH);
+            _windowRect.width = Mathf.Min(Mathf.Max(900f, Screen.width * 0.78f), maxW);
+            _windowRect.height = Mathf.Min(Mathf.Max(550f, Screen.height * 0.82f), maxH);
             _windowRect.x = Mathf.Clamp(_windowRect.x, 10f, Screen.width - _windowRect.width - 10f);
             _windowRect.y = Mathf.Clamp(_windowRect.y, 10f, Screen.height - _windowRect.height - 10f);
         }
@@ -94,18 +97,17 @@ namespace SuperMech.Code
                     _graphBuilt = true;
                 }
 
-                DrawTopBar();
-                GUILayout.Space(4);
+                DrawTitleBar();
                 DrawClassTabs();
                 GUILayout.Space(6);
 
                 GUILayout.BeginHorizontal();
-                DrawGraph();
-                GUILayout.Space(8);
-                DrawDetailPanel();
+                DrawLeftPanel();
+                GUILayout.Space(10);
+                DrawRightPanel();
                 GUILayout.EndHorizontal();
 
-                GUI.DragWindow(new Rect(0, 0, 10000, 28));
+                GUI.DragWindow(new Rect(0, 0, 10000, 36));
             }
             catch (System.Exception e)
             {
@@ -113,18 +115,26 @@ namespace SuperMech.Code
             }
         }
 
-        private void DrawTopBar()
+        private void DrawTitleBar()
         {
-            GUILayout.BeginHorizontal();
+            GUILayout.BeginHorizontal(GUILayout.Height(36));
+            GUILayout.Space(8);
+            GUILayout.Label("◀", SMImguiTheme.Label, GUILayout.Width(24));
+            GUILayout.Label(LocalizedTextManager.getText("sm_ui_knowledge_title"), SMImguiTheme.Title, GUILayout.Height(30));
+            GUILayout.FlexibleSpace();
             var all = SuperMechKnowledge.GetAllByPrefix(_currentPrefix);
             int unlocked = all.FindAll(k => SuperMechKnowledge.IsUnlocked(_target, k.id)).Count;
-            GUILayout.Label($"{LocalizedTextManager.getText("sm_ui_progress")}: {unlocked}/{all.Count}", SMImguiTheme.Small);
-            GUILayout.FlexibleSpace();
-            if (GUILayout.Button("✕", SMImguiTheme.Button, GUILayout.Width(28), GUILayout.Height(22)))
+            GUILayout.Label($"{LocalizedTextManager.getText("sm_ui_progress")}: {unlocked}/{all.Count}", SMImguiTheme.Small, GUILayout.Height(30));
+            GUILayout.Space(10);
+            if (GUILayout.Button("✕", SMImguiTheme.Button, GUILayout.Width(30), GUILayout.Height(26)))
             {
                 _visible = false;
             }
+            GUILayout.Space(8);
             GUILayout.EndHorizontal();
+
+            Rect titleLine = new Rect(8, 36, _windowRect.width - 16, 1f);
+            SMImguiTheme.DrawRect(titleLine, new Color(0.25f, 0.7f, 0.95f, 0.4f));
 
             if (!string.IsNullOrEmpty(_message))
             {
@@ -135,11 +145,13 @@ namespace SuperMech.Code
         private void DrawClassTabs()
         {
             GUILayout.BeginHorizontal();
+            GUILayout.Space(8);
             for (int i = 0; i < _prefixes.Length; i++)
             {
                 bool active = _currentPrefix == _prefixes[i];
                 string name = LocalizedTextManager.getText(_prefixNames[i]);
-                if (GUILayout.Button(name, active ? SMImguiTheme.TabActive : SMImguiTheme.Tab, GUILayout.Height(28)))
+                var style = active ? SMImguiTheme.TabActive : SMImguiTheme.Tab;
+                if (GUILayout.Button(name, style, GUILayout.Height(30), GUILayout.MinWidth(70)))
                 {
                     _currentPrefix = _prefixes[i];
                     _graphBuilt = false;
@@ -150,17 +162,42 @@ namespace SuperMech.Code
             GUILayout.EndHorizontal();
         }
 
-        private void DrawGraph()
+        private void DrawLeftPanel()
         {
-            GUILayout.BeginVertical(SMImguiTheme.PanelStyle, GUILayout.ExpandWidth(true));
-            float graphHeight = _windowRect.height - 140f;
+            float panelW = _windowRect.width * 0.58f;
+            GUILayout.BeginVertical(GUILayout.Width(panelW));
+
+            Rect panelRect = GUILayoutUtility.GetRect(panelW - 8, _windowRect.height - 130f);
+            SMImguiTheme.DrawGradientPanel(panelRect);
+            SMImguiTheme.DrawGlowBorder(panelRect, new Color(0.2f, 0.5f, 0.8f, 0.6f), 4f);
+            SMImguiTheme.DrawStarfield(panelRect);
+
+            GUILayout.BeginArea(new Rect(panelRect.x + 4, panelRect.y + 4, panelRect.width - 8, panelRect.height - 8));
+            float graphHeight = panelRect.height - 40f;
             _graph.Draw(_target, graphHeight);
+            GUILayout.EndArea();
+
             GUILayout.EndVertical();
         }
 
-        private void DrawDetailPanel()
+        private void DrawRightPanel()
         {
-            GUILayout.BeginVertical(SMImguiTheme.RaisedPanelStyle, GUILayout.Width(SMImguiTheme.Px(260)));
+            float panelW = _windowRect.width * 0.38f;
+            GUILayout.BeginVertical(GUILayout.Width(panelW));
+
+            Rect panelRect = GUILayoutUtility.GetRect(panelW - 8, _windowRect.height - 130f);
+            SMImguiTheme.DrawGradientPanel(panelRect);
+            SMImguiTheme.DrawGlowBorder(panelRect, new Color(0.3f, 0.6f, 0.9f, 0.5f), 4f);
+
+            GUILayout.BeginArea(new Rect(panelRect.x + 8, panelRect.y + 8, panelRect.width - 16, panelRect.height - 16));
+            DrawDetailContent();
+            GUILayout.EndArea();
+
+            GUILayout.EndVertical();
+        }
+
+        private void DrawDetailContent()
+        {
             GUILayout.Label(LocalizedTextManager.getText("sm_ui_detail"), SMImguiTheme.Section);
             GUILayout.Space(4);
 
@@ -168,8 +205,6 @@ namespace SuperMech.Code
             if (string.IsNullOrEmpty(selectedId))
             {
                 GUILayout.Label(LocalizedTextManager.getText("sm_ui_select_knowledge"), SMImguiTheme.Label);
-                GUILayout.FlexibleSpace();
-                GUILayout.EndVertical();
                 return;
             }
 
@@ -177,23 +212,35 @@ namespace SuperMech.Code
             if (def == null)
             {
                 GUILayout.Label(LocalizedTextManager.getText("sm_ui_not_found"), SMImguiTheme.Label);
-                GUILayout.EndVertical();
                 return;
             }
 
             _detailScroll = GUILayout.BeginScrollView(_detailScroll);
-            GUILayout.Label(LocalizedTextManager.getText(def.name), SMImguiTheme.Title);
-            GUILayout.Space(4);
-            GUILayout.Label($"{LocalizedTextManager.getText("sm_ui_tier")}: {def.tier + 1}", SMImguiTheme.Label);
-            GUILayout.Label($"{LocalizedTextManager.getText("sm_ui_unlocked")}: {(SuperMechKnowledge.IsUnlocked(_target, def.id) ? "✓" : "✗")}", SMImguiTheme.Label);
-            GUILayout.Label($"{LocalizedTextManager.getText("sm_ui_cost")}: {def.cost} {LocalizedTextManager.getText("sm_ui_potential")}", SMImguiTheme.Label);
-            GUILayout.Space(6);
-            GUILayout.Label(def.desc, SMImguiTheme.WrappedLabel);
-            GUILayout.Space(8);
 
-            if (!SuperMechKnowledge.IsUnlocked(_target, def.id))
+            bool unlocked = SuperMechKnowledge.IsUnlocked(_target, def.id);
+            Color titleColor = unlocked ? SMImguiTheme.Success : SMImguiTheme.Cyan;
+            GUILayout.Label($"<color=#{ColorUtility.ToHtmlStringRGB(titleColor)}>{LocalizedTextManager.getText(def.name)}</color>", SMImguiTheme.Title);
+            GUILayout.Space(4);
+
+            GUILayout.Label($"{LocalizedTextManager.getText("sm_ui_tier")}: {def.tier + 1}  |  {LocalizedTextManager.getText("sm_ui_cost")}: {def.cost} {LocalizedTextManager.getText("sm_ui_potential")}", SMImguiTheme.Small);
+            GUILayout.Label($"{LocalizedTextManager.getText("sm_ui_unlocked")}: {(unlocked ? "✓" : "✗")}", SMImguiTheme.Small);
+            GUILayout.Space(6);
+
+            Rect divider = GUILayoutUtility.GetRect(0, 1f, GUILayout.ExpandWidth(true));
+            SMImguiTheme.DrawRect(divider, new Color(0.25f, 0.7f, 0.95f, 0.3f));
+            GUILayout.Space(6);
+
+            GUILayout.Label(def.desc, SMImguiTheme.WrappedLabel);
+            GUILayout.Space(10);
+
+            GUILayout.Label(LocalizedTextManager.getText("sm_ui_condition"), SMImguiTheme.Section);
+            GUILayout.Space(4);
+            DrawConditionList(def);
+            GUILayout.Space(10);
+
+            if (!unlocked)
             {
-                if (GUILayout.Button(LocalizedTextManager.getText("sm_ui_unlock"), SMImguiTheme.PrimaryButton, GUILayout.Height(30)))
+                if (GUILayout.Button(LocalizedTextManager.getText("sm_ui_unlock"), SMImguiTheme.PrimaryButton, GUILayout.Height(34)))
                 {
                     bool success = SuperMechKnowledge.Unlock(_target, def.id);
                     _message = success ?
@@ -208,7 +255,27 @@ namespace SuperMech.Code
             }
 
             GUILayout.EndScrollView();
-            GUILayout.EndVertical();
+        }
+
+        private void DrawConditionList(SuperMechKnowledge.KnowledgeDef def)
+        {
+            var all = SuperMechKnowledge.GetAllByPrefix(_currentPrefix);
+            int conditions = 0;
+            foreach (var k in all)
+            {
+                if (k.tier == def.tier - 1 && k.branch == def.branch)
+                {
+                    bool condUnlocked = SuperMechKnowledge.IsUnlocked(_target, k.id);
+                    string mark = condUnlocked ? "✓" : "○";
+                    string color = condUnlocked ? "#66D18F" : "#8899AA";
+                    GUILayout.Label($"  <color={color}>{mark}</color>  {LocalizedTextManager.getText(k.name)}", SMImguiTheme.Small);
+                    conditions++;
+                }
+            }
+            if (conditions == 0)
+            {
+                GUILayout.Label($"  <color=#8899AA>—</color>  {LocalizedTextManager.getText("sm_ui_no_prerequisite")}", SMImguiTheme.Small);
+            }
         }
     }
 }
