@@ -18,6 +18,18 @@ namespace SuperMech.Code
         private string _message = "";
 
         private static readonly string[] _tabKeys = { "sm_ui_vanilla_equipment", "sm_ui_equipment", "sm_ui_resources" };
+        private static readonly List<ResourceContainer> _resourceCache = new List<ResourceContainer>();
+        private static readonly Color[] _qualityColors = {
+            new Color(0.55f, 0.55f, 0.6f),
+            new Color(0.35f, 0.85f, 0.4f),
+            new Color(0.35f, 0.55f, 1f),
+            new Color(0.75f, 0.45f, 1f),
+            new Color(0.85f, 0.25f, 0.85f),
+            new Color(1f, 0.45f, 0.75f),
+            new Color(1f, 0.65f, 0.25f),
+            new Color(0.85f, 0.85f, 0.95f),
+            new Color(1f, 0.88f, 0.1f)
+        };
 
         public static void Ensure()
         {
@@ -259,18 +271,18 @@ namespace SuperMech.Code
                 return;
             }
 
-            var resources = new List<ResourceContainer>();
+            _resourceCache.Clear();
             foreach (var kv in _target.inventory.dict)
             {
-                if (kv.Value.amount > 0) resources.Add(kv.Value);
+                if (kv.Value.amount > 0) _resourceCache.Add(kv.Value);
             }
-            resources.Sort((a, b) => a.asset.order.CompareTo(b.asset.order));
+            _resourceCache.Sort((a, b) => a.asset.order.CompareTo(b.asset.order));
 
             _scroll = GUILayout.BeginScrollView(_scroll);
             int cols = Mathf.Max(4, (int)(_windowRect.width - 100) / 75);
             int count = 0;
             GUILayout.BeginHorizontal();
-            foreach (var res in resources)
+            foreach (var res in _resourceCache)
             {
                 if (count >= cols)
                 {
@@ -289,7 +301,7 @@ namespace SuperMech.Code
                     {
                         _target.consumeFoodResource(res.asset);
                         _target.inventory.remove(res.asset.id, 1);
-                        _message = $"<color=#66E096>{LocalizedTextManager.getText("sm_ui_ate")}</color>";
+                        _message = LocalizedTextManager.getText("sm_ui_ate_msg");
                     }
                 }
                 GUILayout.EndVertical();
@@ -301,18 +313,7 @@ namespace SuperMech.Code
 
         private Color GetQualityColor(int q)
         {
-            Color[] colors = {
-                new Color(0.55f, 0.55f, 0.6f),
-                new Color(0.35f, 0.85f, 0.4f),
-                new Color(0.35f, 0.55f, 1f),
-                new Color(0.75f, 0.45f, 1f),
-                new Color(0.85f, 0.25f, 0.85f),
-                new Color(1f, 0.45f, 0.75f),
-                new Color(1f, 0.65f, 0.25f),
-                new Color(0.85f, 0.85f, 0.95f),
-                new Color(1f, 0.88f, 0.1f)
-            };
-            if (q >= 0 && q < colors.Length) return colors[q];
+            if (q >= 0 && q < _qualityColors.Length) return _qualityColors[q];
             return Color.white;
         }
     }

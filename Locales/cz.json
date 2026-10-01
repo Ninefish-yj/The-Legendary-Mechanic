@@ -3749,5 +3749,6 @@
   "sm_sanctuary_msg_locked": "<color=#FFB347>{0}未解锁，需集齐3碎片</color>",
   "sm_sanctuary_msg_nounit": "<color=#FF7070>请先将鼠标移到一个单位上再进入圣所</color>",
   "sm_sanctuary_msg_enter": "<color=#66E096>{0} 进入{1}</color>",
-  "sm_sanctuary_msg_enter_dim": "<color=#66E096>进入{0}</color>"
+  "sm_sanctuary_msg_enter_dim": "<color=#66E096>进入{0}</color>",
+  "sm_ui_ate_msg": "<color=#66E096>已食用</color>"
 }
