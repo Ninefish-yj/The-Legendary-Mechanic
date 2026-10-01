@@ -353,19 +353,6 @@ namespace SuperMech.Code
             GUI.color = old;
         }
 
-        public static void DrawWindowBackground(Rect rect, Texture2D bg)
-        {
-            if (bg != null)
-            {
-                Color old = GUI.color;
-                GUI.color = Color.white;
-                GUI.DrawTexture(rect, bg, ScaleMode.StretchToFill);
-                GUI.color = old;
-            }
-            DrawStarfield(rect);
-            DrawScanline(rect);
-        }
-
         public static void DrawGradientPanel(Rect rect)
         {
             EnsureGradientPanel();
@@ -421,6 +408,8 @@ namespace SuperMech.Code
             GUI.color = new Color(1f, 1f, 1f, 0.92f);
             GUI.DrawTexture(rect, bg, ScaleMode.StretchToFill);
             GUI.color = old;
+            DrawStarfield(rect);
+            DrawScanline(rect);
         }
     }
 }
