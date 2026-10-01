@@ -3740,5 +3740,14 @@
   "sm_ui_craft_fail": "制造失败，材料不足或冷却中",
   "sm_sanctuary_enter": "进入",
   "sm_sanctuary_locked": "未解锁",
-  "sm_ui_open": "打开"
+  "sm_ui_open": "打开",
+  "sm_crossmod_magic": "魔法类",
+  "sm_crossmod_cultivation": "修仙类",
+  "sm_crossmod_divine": "神权类",
+  "sm_crossmod_power": "异能类",
+  "sm_crossmod_none": "无",
+  "sm_sanctuary_msg_locked": "<color=#FFB347>{0}未解锁，需集齐3碎片</color>",
+  "sm_sanctuary_msg_nounit": "<color=#FF7070>请先将鼠标移到一个单位上再进入圣所</color>",
+  "sm_sanctuary_msg_enter": "<color=#66E096>{0} 进入{1}</color>",
+  "sm_sanctuary_msg_enter_dim": "<color=#66E096>进入{0}</color>"
 }

@@ -15,6 +15,18 @@ namespace SuperMech.Code
         private Rect _windowRect = new Rect(150, 60, 720, 650);
         private int _sortMode;
 
+        private struct RankEntry
+        {
+            public Actor actor;
+            public float onar;
+            public float qi;
+            public int rank;
+        }
+
+        private static List<RankEntry> _snapshot = new List<RankEntry>();
+        private static float _lastSnapshotTime = -999f;
+        private static int _lastSnapshotSort = -1;
+
         private static readonly Color[] RankColors = {
             new Color(1f, 0.85f, 0.4f, 0.9f),
             new Color(0.85f, 0.9f, 0.95f, 0.8f),
@@ -147,32 +159,16 @@ namespace SuperMech.Code
             GUILayout.Label(header, SMImguiTheme.Small);
             GUILayout.Space(4);
 
-            var list = new List<(Actor a, float onar, float qi, int rank)>();
-            if (World.world != null && World.world.units != null)
-            {
-                foreach (Actor a in World.world.units)
-                {
-                    if (a == null || !a.isAlive()) continue;
-                    if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
-                    list.Add((a, SuperMechAdvancement.CalcOnar(a), SuperMechQi.GetQi(a), SuperMechAdvancement.GetRankIndex(a)));
-                }
-            }
-
-            switch (_sortMode)
-            {
-                case 0: list.Sort((a, b) => b.onar.CompareTo(a.onar)); break;
-                case 1: list.Sort((a, b) => b.qi.CompareTo(a.qi)); break;
-                case 2: list.Sort((a, b) => b.rank.CompareTo(a.rank)); break;
-            }
+            EnsureSnapshot();
 
             _scroll = GUILayout.BeginScrollView(_scroll);
-            int count = Math.Min(list.Count, 50);
+            int count = Math.Min(_snapshot.Count, 50);
             for (int i = 0; i < count; i++)
             {
-                var entry = list[i];
-                string cls = GetClassShort(entry.a);
-                string rank = SuperMechRanks.GetRankName(entry.a);
-                int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQi(entry.a));
+                var entry = _snapshot[i];
+                string cls = GetClassShort(entry.actor);
+                string rank = SuperMechRanks.GetRankName(entry.actor);
+                int qiLv = SuperMechQi.GetLevel(entry.qi);
 
                 Color rowColor = i < 3 ? RankColors[i] : RankColors[3];
                 string rankPrefix = i < 3 ? GetRankIcon(i) : (i + 1).ToString().PadLeft(2) + ".";
@@ -196,8 +192,39 @@ namespace SuperMech.Code
             }
             else
             {
-                GUILayout.Label($"{LocalizedTextManager.getText("sm_rank_total")} {list.Count} {LocalizedTextManager.getText("sm_rank_showing")} {Math.Min(count, list.Count)}",
+                GUILayout.Label($"{LocalizedTextManager.getText("sm_rank_total")} {_snapshot.Count} {LocalizedTextManager.getText("sm_rank_showing")} {Math.Min(count, _snapshot.Count)}",
                     SMImguiTheme.Small);
+            }
+        }
+
+        private void EnsureSnapshot()
+        {
+            if (Time.realtimeSinceStartup - _lastSnapshotTime < 0.5f && _lastSnapshotSort == _sortMode) return;
+            _lastSnapshotTime = Time.realtimeSinceStartup;
+            _lastSnapshotSort = _sortMode;
+
+            _snapshot.Clear();
+            if (World.world != null && World.world.units != null)
+            {
+                foreach (Actor a in World.world.units)
+                {
+                    if (a == null || !a.isAlive()) continue;
+                    if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                    _snapshot.Add(new RankEntry
+                    {
+                        actor = a,
+                        onar = SuperMechAdvancement.CalcOnar(a),
+                        qi = SuperMechQi.GetQi(a),
+                        rank = SuperMechAdvancement.GetRankIndex(a)
+                    });
+                }
+            }
+
+            switch (_sortMode)
+            {
+                case 0: _snapshot.Sort((a, b) => b.onar.CompareTo(a.onar)); break;
+                case 1: _snapshot.Sort((a, b) => b.qi.CompareTo(a.qi)); break;
+                case 2: _snapshot.Sort((a, b) => b.rank.CompareTo(a.rank)); break;
             }
         }
 

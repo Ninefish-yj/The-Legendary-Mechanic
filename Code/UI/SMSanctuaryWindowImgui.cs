@@ -155,18 +155,18 @@ namespace SuperMech.Code
                 {
                     if (!unlocked)
                     {
-                        _message = $"<color=#FFB347>{names[sanctuaryIndex]}未解锁，需集齐3碎片</color>";
+                        _message = string.Format(LocalizedTextManager.getText("sm_sanctuary_msg_locked"), names[sanctuaryIndex]);
                         return;
                     }
                     Actor selected = World.world.getActorNearCursor();
                     if (selected == null)
                     {
-                        _message = "<color=#FF7070>请先将鼠标移到一个单位上再进入圣所</color>";
+                        _message = LocalizedTextManager.getText("sm_sanctuary_msg_nounit");
                         return;
                     }
                     if (SuperMechSanctuary.EnterSanctuary(selected, sanctuaryIndex))
                     {
-                        _message = $"<color=#66E096>{selected.name} 进入{names[sanctuaryIndex]}</color>";
+                        _message = string.Format(LocalizedTextManager.getText("sm_sanctuary_msg_enter"), selected.name, names[sanctuaryIndex]);
                     }
                 }
                 GUILayout.Space(4);
@@ -217,7 +217,7 @@ namespace SuperMech.Code
                 {
                     if (SuperMechDimension.Enter(selected, dim))
                     {
-                        _message = $"<color=#66E096>进入{dim.name}</color>";
+                        _message = string.Format(LocalizedTextManager.getText("sm_sanctuary_msg_enter_dim"), dim.name);
                     }
                 }
                 GUILayout.Space(4);

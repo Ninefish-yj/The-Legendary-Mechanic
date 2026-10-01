@@ -212,13 +212,13 @@ namespace SuperMech.Code
             foreach (string stat in _cachedEnergyStats)
             {
                 string low = stat.ToLower();
-                if (low.Contains("mana") || low.Contains("magic")) mods.Add("魔法类");
-                else if (low.Contains("cultivation") || low.Contains("xianqi") || low.Contains("spiritual")) mods.Add("修仙类");
-                else if (low.Contains("divine") || low.Contains("faith")) mods.Add("神权类");
-                else if (low.Contains("chakra") || low.Contains("nen") || low.Contains("aura")) mods.Add("异能类");
+                if (low.Contains("mana") || low.Contains("magic")) mods.Add(LocalizedTextManager.getText("sm_crossmod_magic"));
+                else if (low.Contains("cultivation") || low.Contains("xianqi") || low.Contains("spiritual")) mods.Add(LocalizedTextManager.getText("sm_crossmod_cultivation"));
+                else if (low.Contains("divine") || low.Contains("faith")) mods.Add(LocalizedTextManager.getText("sm_crossmod_divine"));
+                else if (low.Contains("chakra") || low.Contains("nen") || low.Contains("aura")) mods.Add(LocalizedTextManager.getText("sm_crossmod_power"));
                 else mods.Add(stat);
             }
-            return mods.Count > 0 ? string.Join("、", mods) : "无";
+            return mods.Count > 0 ? string.Join("、", mods) : LocalizedTextManager.getText("sm_crossmod_none");
         }
 
         public static void TickEnergySync()
