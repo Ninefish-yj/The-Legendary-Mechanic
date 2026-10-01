@@ -64,11 +64,16 @@ namespace SuperMech.Code
             {
                 if (AssetManager.base_stats_library.get(s.id) != null) continue;
 
+                // 神性蜕变和圣所权限不在属性面板显示，作为信息面板的一行信息
+                bool isHidden = s.id == StatDivinityLayers ||
+                    s.id == StatSanctuary1 || s.id == StatSanctuary2 || s.id == StatSanctuary3 ||
+                    s.id == StatSanctuary4 || s.id == StatSanctuary5 || s.id == StatSanctuary6;
+
                 var asset = new BaseStatAsset
                 {
                     id = s.id,
                     translation_key = s.name,
-                    hidden = false,
+                    hidden = isHidden,
                     icon = "ui/Icons/actor_traits/iconBlessing",
                     normalize = s.normalize,
                     normalize_min = s.min,

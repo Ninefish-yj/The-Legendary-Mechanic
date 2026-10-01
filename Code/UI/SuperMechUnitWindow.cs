@@ -71,6 +71,16 @@ namespace SuperMech.Code
             if (pot > 0)
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), null, InfoColor);
 
+            // 神性蜕变层数（信息面板显示，不作为属性）
+            int divLayers = SuperMechDivinity.GetTotalLayers(a);
+            if (divLayers > 0)
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}", null, new Color(1f, 0.6f, 0.9f));
+
+            // 圣所权限（信息面板显示，不作为属性）
+            string sanctuaryInfo = GetSanctuaryInfo(a);
+            if (!string.IsNullOrEmpty(sanctuaryInfo))
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, null, new Color(0.7f, 0.9f, 1f));
+
             if (SuperMechAwakened.IsAwakened(a))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
 
@@ -148,6 +158,22 @@ namespace SuperMech.Code
                 case "sm_unitwindow_1147": return LocalizedTextManager.getText("sm_tree_mind");
                 default: return LocalizedTextManager.getText("sm_tree_mech");
             }
+        }
+
+        private static string GetSanctuaryInfo(Actor a)
+        {
+            var parts = new System.Collections.Generic.List<string>();
+            string[] names = { "sm_sanctuary_name_1", "sm_sanctuary_name_2", "sm_sanctuary_name_3",
+                               "sm_sanctuary_name_4", "sm_sanctuary_name_5", "sm_sanctuary_name_6" };
+            for (int i = 0; i < 6; i++)
+            {
+                float auth = SuperMechSanctuary.GetAuthority(a, i);
+                if (auth > 0)
+                {
+                    parts.Add($"{LocalizedTextManager.getText(names[i])}:{auth:F0}");
+                }
+            }
+            return string.Join(" ", parts);
         }
 
         private static KeyValueField ShowRow(UnitWindow window, string label, object value, string iconPath = null, Color? color = null)

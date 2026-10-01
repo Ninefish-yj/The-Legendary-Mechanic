@@ -3838,6 +3838,14 @@
   "sm_ui_rarity": "品质",
   "sm_ui_craft_info": "制造系统开发中...\n\n机械师学会相关知识后，可以在制造台制作装备、道具和机械单位。",
   "sm_ui_sanctuary_info": "圣所系统开发中...\n\n达到相应阶位后可解锁圣所权限，学习传承知识和技能。",
+  "sm_ui_divinity": "神性蜕变",
+  "sm_ui_divinity_layer": "层",
+  "sm_sanctuary_name_1": "机械",
+  "sm_sanctuary_name_2": "武道",
+  "sm_sanctuary_name_3": "异能",
+  "sm_sanctuary_name_4": "魔法",
+  "sm_sanctuary_name_5": "念力",
+  "sm_sanctuary_name_6": "信息",
   "sm_class_power": "异能",
   "sm_class_magic": "魔法"
 }
