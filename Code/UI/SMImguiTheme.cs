@@ -110,10 +110,10 @@ namespace SuperMech.Code
 
             WindowStyle = new GUIStyle(GUI.skin.window)
             {
-                normal = { background = MakeFrame(Background, BorderGlow), textColor = Text },
-                active = { background = MakeFrame(Background, Purple) },
-                border = new RectOffset(3, 3, 3, 3),
-                padding = new RectOffset(12, 12, 36, 12),
+                normal = { background = null, textColor = Text },
+                active = { background = null, textColor = Text },
+                border = new RectOffset(0, 0, 0, 0),
+                padding = new RectOffset(42, 42, 0, 50),
                 fontSize = 15,
                 fontStyle = FontStyle.Bold,
                 alignment = TextAnchor.UpperCenter

@@ -167,8 +167,6 @@ namespace SuperMech.Code
             GUILayout.Space(8);
             GUILayout.EndHorizontal();
 
-            Rect titleLine = new Rect(8, 36, _windowRect.width - 16, 1f);
-            SMImguiTheme.DrawRect(titleLine, new Color(0.35f, 0.62f, 0.88f, 0.4f));
         }
 
         public static void ClearStaticState()
