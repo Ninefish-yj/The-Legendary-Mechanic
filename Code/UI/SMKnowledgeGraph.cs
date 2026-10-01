@@ -280,8 +280,14 @@ namespace SuperMech.Code
         {
             EnsureWhiteTex();
             Color old = GUI.color;
-            GUI.color = new Color(0.88f, 0.9f, 0.94f, 0.9f);
+            GUI.color = new Color(0.94f, 0.96f, 0.99f, 0.95f);
             GUI.DrawTexture(local, _whiteTex);
+            float pitch = 32f * Mathf.Max(0.5f, _zoom);
+            GUI.color = new Color(0.75f, 0.82f, 0.9f, 0.35f);
+            for (float x = _pan.x % pitch; x < local.width; x += pitch)
+                GUI.DrawTexture(new Rect(x, 0, 1, local.height), _whiteTex);
+            for (float y = _pan.y % pitch; y < local.height; y += pitch)
+                GUI.DrawTexture(new Rect(0, y, local.width, 1), _whiteTex);
             GUI.color = old;
         }
 
@@ -305,7 +311,9 @@ namespace SuperMech.Code
                 Vector2 p2 = ScreenPoint(new Vector2(to.local.center.x, to.local.yMin));
                 float midY = (p1.y + p2.y) * 0.5f;
 
-                DrawBezier(p1, new Vector2(p1.x, midY), new Vector2(p2.x, midY), p2, color, 2f);
+                DrawLine(p1, new Vector2(p1.x, midY), color, width);
+                DrawLine(new Vector2(p1.x, midY), new Vector2(p2.x, midY), color, width);
+                DrawLine(new Vector2(p2.x, midY), p2, color, width);
             }
         }
 
@@ -370,20 +378,6 @@ namespace SuperMech.Code
         private Rect ExpandRect(Rect r, float amount)
         {
             return new Rect(r.x - amount, r.y - amount, r.width + amount * 2, r.height + amount * 2);
-        }
-
-        private void DrawBezier(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, Color color, float width)
-        {
-            int segments = 6;
-            Vector2 prev = p1;
-            for (int i = 1; i <= segments; i++)
-            {
-                float t = i / (float)segments;
-                float u = 1 - t;
-                Vector2 point = u * u * u * p1 + 3 * u * u * t * p2 + 3 * u * t * t * p3 + t * t * t * p4;
-                DrawLine(prev, point, color, width);
-                prev = point;
-            }
         }
 
         private void DrawLine(Vector2 from, Vector2 to, Color color, float width)
