@@ -92,11 +92,22 @@ namespace SuperMech.Code
             try
             {
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(color);
-                var row = window.showStatRow(label, "▶ " + LocalizedTextManager.getText("sm_ui_click_open"),
+                string valueText = "▸ " + LocalizedTextManager.getText("sm_ui_open");
+                var row = window.showStatRow(label, valueText,
                     colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
                 if (row != null)
                 {
                     row.on_click_value = () => onClick?.Invoke();
+                    if (row.background != null)
+                    {
+                        var btn = row.background.gameObject.GetComponent<UnityEngine.UI.Button>();
+                        if (btn == null)
+                        {
+                            btn = row.background.gameObject.AddComponent<UnityEngine.UI.Button>();
+                        }
+                        btn.onClick.RemoveAllListeners();
+                        btn.onClick.AddListener(() => onClick?.Invoke());
+                    }
                 }
             }
             catch (System.Exception e)

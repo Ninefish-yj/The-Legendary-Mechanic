@@ -3739,5 +3739,6 @@
   "sm_ui_craft_success": "制造成功",
   "sm_ui_craft_fail": "制造失败，材料不足或冷却中",
   "sm_sanctuary_enter": "进入",
-  "sm_sanctuary_locked": "未解锁"
+  "sm_sanctuary_locked": "未解锁",
+  "sm_ui_open": "打开"
 }
