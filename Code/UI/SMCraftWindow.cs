@@ -42,7 +42,6 @@ namespace SuperMech.Code
             if (!_visible) return;
             if (_target == null || !_target.isAlive()) { _visible = false; return; }
             SMImguiTheme.Ensure();
-            if (SMImguiTheme.DrawBackdrop(_windowRect)) { _visible = false; return; }
             NormalizeRect();
             SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiPanel);
             _windowRect = GUI.Window(WindowId, _windowRect, DrawWindow,
