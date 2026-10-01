@@ -60,6 +60,7 @@ namespace SuperMech.Code
                 var asset = new BaseStatAsset
                 {
                     id = id,
+                    translation_key = name,
                     hidden = false,
                     icon = "ui/Icons/actor_traits/iconBlessing",
                     normalize = normalize,
@@ -72,9 +73,6 @@ namespace SuperMech.Code
                     sort_rank = 100 + registered,
                 };
                 AssetManager.base_stats_library.add(asset);
-
-                LocalizedTextManager.add(id, LocalizedTextManager.getText(name), pReplace: true);
-                LocalizedTextManager.add(id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
                 registered++;
             }
 

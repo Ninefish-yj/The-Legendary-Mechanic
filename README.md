@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.16.2-alpha**（Alpha内测阶段）
+**v0.16.3-alpha**（Alpha内测阶段）
 
 ### 已实现系统
 
@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.16.3** | 修复属性名missing text：BaseStatAsset设置translation_key字段，替代LocalizedTextManager.add映射id
 | **v0.16.2** | 修复神权栏按钮不显示：克隆模板后用反射重置_initialized字段，重新触发OnEnable初始化图标/tooltip/点击事件
 | **v0.16.1** | 修复知识/背包窗口从单位面板打开时仍提示需要选中单位：Toggle方法补充_targetId设置
 | **v0.16.0** | UI重构：完全用代码绘制窗口背景（渐变+星空+发光边框+切角+刻度线+扫描线），删除AI背景图，参考星海知识终端设计
