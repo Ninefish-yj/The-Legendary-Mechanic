@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.20.2** | X阶定位修正为宇宙级：查证原著ch1300+，神化=超神级，晋升时"能量提升到宇宙级能量涌动的层次"，机械亲和+1500%，基础属性+1500，能体内开辟次级维度。阶位加成全面上调：X阶30x→50x伤害/20x→35x生命，SS阶22x→32x，S阶12.5x→16x，A阶7.5x→9x。X阶总倍率≈50×7×2=700倍原版 |
 | **v0.20.1** | 战力加成优化：阶位加成从13x提升到30x（X阶），A阶7.5x/S阶12.5x/SS阶22x，符合原著"A阶毁城市/S阶毁星球表面/X阶星系级"的碾压感；气力加成系数从0.15提到0.2（Lv30时qiMul≈7x），damage/health基础值提高；X阶总倍率≈30×7×2=420倍原版，既符合原著又不会一刀秒全图 |
 | **v0.20.0** | 数值体系回归原著：阶位能级下限全部按原著调整（X=148800/SS=82600/S=43000/A=17810/B=10000/C=2000/E=100，依据ch3/ch237/ch476/ch671/ch864/ch1040/ch1402），阶位加成从500x降到13x避免数值膨胀；气力等级从40级精简到30级，阈值按原著前6级推算（Lv21≈7.3万对应神性蜕变门槛78000，Lv30≈17.2万超X阶）；气力加成从平方增长改线性增长（原著Lv10总加成才力+71/敏+97）；5个跨模组适配器能量上限全部降到15~16万（对应X阶），解决和其他模组数值不对等问题 |
 | **v0.19.4** | 修复v0.19.0 UGUI重构引入的9个编译错误：SelectedMetas.selected_actor→SelectedUnit.unit（2处），Main.cs Info→GetDeclaration().FolderPath，SuperMechRank不存在→自己实现排行榜排序，AssetManager.equipment_library→AssetManager.items（2处），equip.texture→equip.gameplay_sprites[0]，rarity从string改int，SMKnowledgeGraph width变量未定义→添加lineWidth，删除重复文件SMUgUiWindow.cs（和SMUguiWindow.cs同名类冲突） |
