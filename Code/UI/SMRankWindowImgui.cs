@@ -84,7 +84,7 @@ namespace SuperMech.Code
                 GUILayout.Space(8);
 
                 Rect contentRect = GUILayoutUtility.GetRect(_windowRect.width - 24, _windowRect.height - 120f);
-                SMImguiTheme.DrawGlowBorder(contentRect, new Color(0.25f, 0.55f, 0.85f, 0.5f), 3f);
+                SMImguiTheme.DrawGlowBorder(contentRect, new Color(0.55f, 0.4f, 0.75f, 0.5f), 3f);
 
                 GUILayout.BeginArea(new Rect(contentRect.x + 12, contentRect.y + 12, contentRect.width - 24, contentRect.height - 24));
                 DrawRankList();
@@ -113,7 +113,7 @@ namespace SuperMech.Code
             GUILayout.EndHorizontal();
 
             Rect titleLine = new Rect(8, 36, _windowRect.width - 16, 1f);
-            SMImguiTheme.DrawRect(titleLine, new Color(0.3f, 0.75f, 1f, 0.4f));
+            SMImguiTheme.DrawRect(titleLine, new Color(0.55f, 0.4f, 0.75f, 0.4f));
         }
 
         private void DrawSortButtons()

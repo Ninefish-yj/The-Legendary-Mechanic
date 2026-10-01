@@ -127,7 +127,7 @@ namespace SuperMech.Code
             GUILayout.EndHorizontal();
 
             Rect titleLine = new Rect(8, 36, _windowRect.width - 16, 1f);
-            SMImguiTheme.DrawRect(titleLine, new Color(0.3f, 0.75f, 1f, 0.4f));
+            SMImguiTheme.DrawRect(titleLine, new Color(0.55f, 0.4f, 0.75f, 0.4f));
         }
 
         private void DrawTabs()

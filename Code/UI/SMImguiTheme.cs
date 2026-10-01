@@ -22,13 +22,13 @@ namespace SuperMech.Code
         public static readonly Color PanelDark = new Color(0.78f, 0.82f, 0.88f, 0.6f);
         public static readonly Color Silver = new Color(0.6f, 0.65f, 0.72f, 1f);
         public static readonly Color SilverDim = new Color(0.45f, 0.5f, 0.58f, 1f);
-        public static readonly Color Border = new Color(0.35f, 0.55f, 0.75f, 0.7f);
-        public static readonly Color BorderGlow = new Color(0.4f, 0.7f, 0.95f, 1f);
-        public static readonly Color Gold = new Color(0.85f, 0.65f, 0.25f, 1f);
-        public static readonly Color Cyan = new Color(0.15f, 0.55f, 0.85f, 1f);
-        public static readonly Color Teal = new Color(0.1f, 0.5f, 0.55f, 1f);
-        public static readonly Color Blue = new Color(0.2f, 0.4f, 0.75f, 1f);
-        public static readonly Color Purple = new Color(0.5f, 0.35f, 0.75f, 1f);
+        public static readonly Color Border = new Color(0.55f, 0.58f, 0.65f, 0.8f);
+        public static readonly Color BorderGlow = new Color(0.65f, 0.5f, 0.8f, 1f);
+        public static readonly Color Gold = new Color(0.75f, 0.6f, 0.25f, 1f);
+        public static readonly Color Cyan = new Color(0.5f, 0.35f, 0.7f, 1f);
+        public static readonly Color Teal = new Color(0.4f, 0.5f, 0.65f, 1f);
+        public static readonly Color Blue = new Color(0.3f, 0.25f, 0.5f, 1f);
+        public static readonly Color Purple = new Color(0.55f, 0.35f, 0.75f, 1f);
         public static readonly Color Success = new Color(0.15f, 0.55f, 0.35f, 1f);
         public static readonly Color Warning = new Color(0.75f, 0.5f, 0.15f, 1f);
         public static readonly Color Danger = new Color(0.75f, 0.25f, 0.3f, 1f);
@@ -73,14 +73,14 @@ namespace SuperMech.Code
             {
                 fontSize = 20,
                 fontStyle = FontStyle.Bold,
-                normal = { textColor = Cyan },
+                normal = { textColor = Text },
                 alignment = TextAnchor.MiddleCenter
             };
             Section = new GUIStyle(Label)
             {
                 fontSize = 14,
                 fontStyle = FontStyle.Bold,
-                normal = { textColor = Cyan }
+                normal = { textColor = Text }
             };
             DataLabel = new GUIStyle(Label)
             {
@@ -92,7 +92,7 @@ namespace SuperMech.Code
             {
                 fontSize = 13,
                 fontStyle = FontStyle.Bold,
-                normal = { textColor = Cyan },
+                normal = { textColor = Purple },
                 alignment = TextAnchor.MiddleRight
             };
 
@@ -109,8 +109,8 @@ namespace SuperMech.Code
 
             WindowStyle = new GUIStyle(GUI.skin.window)
             {
-                normal = { background = MakeFrame(Background, BorderGlow), textColor = Cyan },
-                active = { background = MakeFrame(Background, Gold) },
+                normal = { background = MakeFrame(Background, BorderGlow), textColor = Text },
+                active = { background = MakeFrame(Background, Purple) },
                 border = new RectOffset(3, 3, 3, 3),
                 padding = new RectOffset(12, 12, 36, 12),
                 fontSize = 15,
@@ -121,8 +121,8 @@ namespace SuperMech.Code
             Button = new GUIStyle(GUI.skin.button)
             {
                 normal = { background = MakeFrame(PanelDark, Border), textColor = Text },
-                hover = { background = MakeFrame(PanelRaised, BorderGlow), textColor = Cyan },
-                active = { background = MakeFrame(new Color(0.7f, 0.82f, 0.92f, 1f), Cyan), textColor = Cyan },
+                hover = { background = MakeFrame(PanelRaised, BorderGlow), textColor = Text },
+                active = { background = MakeFrame(new Color(0.85f, 0.82f, 0.9f, 1f), Purple), textColor = Text },
                 border = new RectOffset(3, 3, 3, 3),
                 padding = new RectOffset(8, 8, 5, 5),
                 fontSize = 12,
@@ -130,8 +130,8 @@ namespace SuperMech.Code
             };
             PrimaryButton = new GUIStyle(Button)
             {
-                normal = { background = MakeFrame(new Color(0.65f, 0.8f, 0.92f, 1f), BorderGlow), textColor = new Color(0.08f, 0.2f, 0.4f, 1f) },
-                hover = { background = MakeFrame(new Color(0.75f, 0.88f, 0.97f, 1f), Gold), textColor = Gold }
+                normal = { background = MakeFrame(new Color(0.82f, 0.78f, 0.9f, 1f), BorderGlow), textColor = Text },
+                hover = { background = MakeFrame(new Color(0.9f, 0.88f, 0.95f, 1f), Purple), textColor = Purple }
             };
 
             Tab = new GUIStyle(Button)
@@ -142,7 +142,7 @@ namespace SuperMech.Code
             };
             TabActive = new GUIStyle(Tab)
             {
-                normal = { background = MakeFrame(new Color(0.7f, 0.85f, 0.95f, 1f), BorderGlow), textColor = Cyan }
+                normal = { background = MakeFrame(new Color(0.85f, 0.82f, 0.9f, 1f), BorderGlow), textColor = Text }
             };
 
             Input = new GUIStyle(GUI.skin.textField)
