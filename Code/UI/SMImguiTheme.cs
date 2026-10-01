@@ -462,6 +462,30 @@ namespace SuperMech.Code
             catch { }
         }
 
+        private static readonly float[] _sliceUv = { 0.047f, 0.955f, 0.068f, 0.939f };
+        private static readonly int[] _slicePx = { 42, 42, 50, 50 };
+
+        private static void DrawTexture9Slice(Rect rect, Texture2D tex)
+        {
+            float l = _slicePx[0], r = _slicePx[1], t = _slicePx[2], b = _slicePx[3];
+            float u0 = 0, u1 = _sliceUv[0], u2 = _sliceUv[1], u3 = 1f;
+            float v0 = 0, v1 = _sliceUv[2], v2 = _sliceUv[3], v3 = 1f;
+            float x0 = rect.x, x1 = rect.x + l, x2 = rect.xMax - r, x3 = rect.xMax;
+            float y0 = rect.y, y1 = rect.y + t, y2 = rect.yMax - b, y3 = rect.yMax;
+            var cols = new[] { x0, x1, x2, x3 };
+            var rows = new[] { y0, y1, y2, y3 };
+            var uvs = new[] { u0, u1, u2, u3 };
+            var vvs = new[] { v0, v1, v2, v3 };
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                {
+                    var dst = new Rect(cols[i], rows[j], cols[i + 1] - cols[i], rows[j + 1] - rows[j]);
+                    if (dst.width <= 0 || dst.height <= 0) continue;
+                    var src = new Rect(uvs[i], 1f - vvs[j + 1], uvs[i + 1] - uvs[i], vvs[j + 1] - vvs[j]);
+                    GUI.DrawTextureWithTexCoords(dst, tex, src);
+                }
+        }
+
         public static void DrawWindowBackground(Rect rect)
         {
             if (Event.current.type != EventType.Repaint) return;
@@ -470,7 +494,7 @@ namespace SuperMech.Code
             {
                 Color old = GUI.color;
                 GUI.color = Color.white;
-                GUI.DrawTexture(rect, _panelTex);
+                DrawTexture9Slice(rect, _panelTex);
                 GUI.color = old;
             }
             else
