@@ -10,6 +10,7 @@ namespace SuperMech.Code
         private static Texture2D _starfield;
         private static Texture2D _glowCircle;
         private static Texture2D _gradientPanel;
+        private static Texture2D _windowBg;
 
         public static readonly Color Background = new Color(0.88f, 0.91f, 0.95f, 0.88f);
         public static readonly Color Panel = new Color(0.93f, 0.95f, 0.98f, 0.75f);
@@ -355,13 +356,60 @@ namespace SuperMech.Code
             GUI.color = old;
         }
 
+        private static void EnsureWindowBackground()
+        {
+            if (_windowBg != null) return;
+            int w = 512, h = 512;
+            _windowBg = new Texture2D(w, h, TextureFormat.RGBA32, false)
+            {
+                hideFlags = HideFlags.HideAndDontSave,
+                filterMode = FilterMode.Bilinear,
+                wrapMode = TextureWrapMode.Clamp
+            };
+            var rng = new System.Random(42);
+            var pixels = new Color[w * h];
+            for (int y = 0; y < h; y++)
+            {
+                float ty = (float)y / h;
+                for (int x = 0; x < w; x++)
+                {
+                    float tx = (float)x / w;
+                    float edgeX = Mathf.Min(tx, 1f - tx) * 2f;
+                    float edgeY = Mathf.Min(ty, 1f - ty) * 2f;
+                    float edge = Mathf.Min(edgeX, edgeY);
+                    float glow = Mathf.Clamp01(1f - edge * 4f) * 0.35f;
+                    float r = Mathf.Lerp(0.96f, 0.82f, ty);
+                    float g = Mathf.Lerp(0.97f, 0.86f, ty);
+                    float b = Mathf.Lerp(1.00f, 0.93f, ty);
+                    r = Mathf.Lerp(r, 0.45f, glow);
+                    g = Mathf.Lerp(g, 0.70f, glow);
+                    b = Mathf.Lerp(b, 0.95f, glow);
+                    float star = 0f;
+                    if (rng.NextDouble() > 0.997f) star = (float)rng.NextDouble() * 0.6f;
+                    float scan = (y % 5 == 0) ? 0.03f : 0f;
+                    float a = 0.90f + star - scan;
+                    pixels[y * w + x] = new Color(
+                        Mathf.Clamp01(r + star),
+                        Mathf.Clamp01(g + star),
+                        Mathf.Clamp01(b + star),
+                        Mathf.Clamp01(a));
+                }
+            }
+            _windowBg.SetPixels(pixels);
+            _windowBg.Apply();
+        }
+
         public static void DrawWindowBackground(Rect rect)
         {
             if (Event.current.type != EventType.Repaint) return;
-            DrawGradientPanel(rect);
-            DrawGlowBorder(rect, BorderGlow, 4f);
-            DrawCorners(rect, BorderGlow, 10f);
-            DrawRect(new Rect(rect.x + 12, rect.y + 38, rect.width - 24, 1f), new Color(0.4f, 0.65f, 0.9f, 0.4f));
+            EnsureWindowBackground();
+            Color old = GUI.color;
+            GUI.color = Color.white;
+            GUI.DrawTexture(rect, _windowBg);
+            GUI.color = old;
+            DrawGlowBorder(rect, BorderGlow, 3f);
+            DrawCorners(rect, BorderGlow, 12f);
+            DrawRect(new Rect(rect.x + 14, rect.y + 40, rect.width - 28, 1.5f), new Color(0.4f, 0.65f, 0.9f, 0.5f));
         }
 
         public static bool DrawBackdrop(Rect windowRect, float alpha = 0.45f)
