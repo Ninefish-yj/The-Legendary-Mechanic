@@ -11,6 +11,7 @@ namespace SuperMech
     public class Main : BasicMod<Main>
     {
         public new static Main Instance { get; private set; }
+        public static string ModPath { get; private set; }
         private float _promoTimer;
         private MapBox _lastWorld;
         private bool _worldInitPending;
@@ -18,7 +19,8 @@ namespace SuperMech
         protected override void OnModLoad()
         {
             Instance = this;
-            Debug.Log("[超神机械师] 模组加载");
+            ModPath = Info?.Path ?? System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+            Debug.Log("[超神机械师] 模组加载: " + ModPath);
             SuperMechConfig.Init();
             SuperMechTraitGroups.Register();
             SuperMechCustomStats.Register();

@@ -11,6 +11,9 @@ namespace SuperMech.Code
         private static Texture2D _glowCircle;
         private static Texture2D _gradientPanel;
         private static Texture2D _windowBg;
+        private static Texture2D _panelTex;
+
+        public static readonly RectOffset ContentPadding = new RectOffset(42, 42, 56, 50);
 
         public static readonly Color Background = new Color(0.88f, 0.91f, 0.95f, 0.88f);
         public static readonly Color Panel = new Color(0.93f, 0.95f, 0.98f, 0.75f);
@@ -439,14 +442,45 @@ namespace SuperMech.Code
             _windowBg.Apply();
         }
 
+        private static void EnsurePanelTexture()
+        {
+            if (_panelTex != null) return;
+            try
+            {
+                string path = System.IO.Path.Combine(Main.ModPath, "GameResources", "ui_panel.png");
+                if (System.IO.File.Exists(path))
+                {
+                    byte[] data = System.IO.File.ReadAllBytes(path);
+                    _panelTex = new Texture2D(2, 2, TextureFormat.RGBA32, false)
+                    {
+                        hideFlags = HideFlags.HideAndDontSave,
+                        filterMode = FilterMode.Bilinear
+                    };
+                    _panelTex.LoadImage(data);
+                }
+            }
+            catch { }
+        }
+
         public static void DrawWindowBackground(Rect rect)
         {
             if (Event.current.type != EventType.Repaint) return;
-            EnsureWindowBackground();
-            Color old = GUI.color;
-            GUI.color = Color.white;
-            GUI.DrawTexture(rect, _windowBg);
-            GUI.color = old;
+            EnsurePanelTexture();
+            if (_panelTex != null)
+            {
+                Color old = GUI.color;
+                GUI.color = Color.white;
+                GUI.DrawTexture(rect, _panelTex);
+                GUI.color = old;
+            }
+            else
+            {
+                EnsureWindowBackground();
+                Color old = GUI.color;
+                GUI.color = Color.white;
+                GUI.DrawTexture(rect, _windowBg);
+                GUI.color = old;
+            }
             DrawRect(new Rect(rect.x + 16, rect.y + 42, rect.width - 32, 1.5f), new Color(0.4f, 0.65f, 0.9f, 0.5f));
         }
 
