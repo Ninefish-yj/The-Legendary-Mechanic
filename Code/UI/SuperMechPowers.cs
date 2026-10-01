@@ -33,7 +33,7 @@ namespace SuperMech.Code
             foreach (Transform child in PowerButtonSelector.instance.buttons.transform)
             {
                 var pb = child.GetComponent<PowerButton>();
-                if (pb != null)
+                if (pb != null && pb.type == PowerButtonType.Active)
                 {
                     template = pb;
                     break;
@@ -42,9 +42,25 @@ namespace SuperMech.Code
 
             if (template == null)
             {
+                foreach (Transform child in PowerButtonSelector.instance.buttons.transform)
+                {
+                    var pb = child.GetComponent<PowerButton>();
+                    if (pb != null)
+                    {
+                        template = pb;
+                        break;
+                    }
+                }
+            }
+
+            if (template == null)
+            {
                 Debug.LogWarning("[超神机械师] 未找到PowerButton模板，稍后重试");
                 return;
             }
+
+            var initField = typeof(PowerButton).GetField("_initialized",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
             int created = 0;
             foreach (string id in PowerIds)
@@ -59,17 +75,11 @@ namespace SuperMech.Code
                 if (pb != null)
                 {
                     pb.type = PowerButtonType.Active;
-                    pb.godPower = godPower;
-                    if (pb.icon != null)
-                    {
-                        pb.icon.sprite = godPower.getIconSprite();
-                        pb.icon.color = Color.white;
-                    }
-                    GodPower.addPower(godPower, pb);
-                    if (!PowerButton.power_buttons.Contains(pb))
-                        PowerButton.power_buttons.Add(pb);
+                    if (initField != null) initField.SetValue(pb, false);
+                    go.SetActive(false);
+                    go.SetActive(true);
+                    created++;
                 }
-                created++;
             }
 
             _buttonsCreated = true;
