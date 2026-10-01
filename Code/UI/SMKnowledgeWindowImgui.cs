@@ -170,15 +170,12 @@ namespace SuperMech.Code
 
         private void DrawLeftPanel()
         {
-            float panelW = _windowRect.width * 0.58f;
+            float panelW = _windowRect.width * 0.55f;
             GUILayout.BeginVertical(GUILayout.Width(panelW));
 
             Rect panelRect = GUILayoutUtility.GetRect(panelW - 8, _windowRect.height - 130f);
-            SMImguiTheme.DrawGradientPanel(panelRect);
-            SMImguiTheme.DrawGlowBorder(panelRect, new Color(0.2f, 0.5f, 0.8f, 0.6f), 4f);
-            SMImguiTheme.DrawStarfield(panelRect);
 
-            GUILayout.BeginArea(new Rect(panelRect.x + 4, panelRect.y + 4, panelRect.width - 8, panelRect.height - 8));
+            GUILayout.BeginArea(new Rect(panelRect.x + 8, panelRect.y + 8, panelRect.width - 16, panelRect.height - 16));
             float graphHeight = panelRect.height - 40f;
             _graph.Draw(_target, graphHeight);
             GUILayout.EndArea();
@@ -188,14 +185,12 @@ namespace SuperMech.Code
 
         private void DrawRightPanel()
         {
-            float panelW = _windowRect.width * 0.38f;
+            float panelW = _windowRect.width * 0.40f;
             GUILayout.BeginVertical(GUILayout.Width(panelW));
 
             Rect panelRect = GUILayoutUtility.GetRect(panelW - 8, _windowRect.height - 130f);
-            SMImguiTheme.DrawGradientPanel(panelRect);
-            SMImguiTheme.DrawGlowBorder(panelRect, new Color(0.3f, 0.6f, 0.9f, 0.5f), 4f);
 
-            GUILayout.BeginArea(new Rect(panelRect.x + 8, panelRect.y + 8, panelRect.width - 16, panelRect.height - 16));
+            GUILayout.BeginArea(new Rect(panelRect.x + 12, panelRect.y + 12, panelRect.width - 24, panelRect.height - 24));
             DrawDetailContent();
             GUILayout.EndArea();
 

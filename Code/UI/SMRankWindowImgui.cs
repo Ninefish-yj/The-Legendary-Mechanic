@@ -53,7 +53,6 @@ namespace SuperMech.Code
             SMImguiTheme.Ensure();
             NormalizeRect();
             SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiRank);
-            SMImguiTheme.DrawGlowBorder(_windowRect, SMImguiTheme.BorderGlow, 8f);
             try
             {
                 _windowRect = GUI.Window(WINDOW_ID, _windowRect, DrawWindow,
@@ -85,10 +84,9 @@ namespace SuperMech.Code
                 GUILayout.Space(8);
 
                 Rect contentRect = GUILayoutUtility.GetRect(_windowRect.width - 24, _windowRect.height - 120f);
-                SMImguiTheme.DrawGradientPanel(contentRect);
                 SMImguiTheme.DrawGlowBorder(contentRect, new Color(0.25f, 0.55f, 0.85f, 0.5f), 3f);
 
-                GUILayout.BeginArea(new Rect(contentRect.x + 8, contentRect.y + 8, contentRect.width - 16, contentRect.height - 16));
+                GUILayout.BeginArea(new Rect(contentRect.x + 12, contentRect.y + 12, contentRect.width - 24, contentRect.height - 24));
                 DrawRankList();
                 GUILayout.EndArea();
 

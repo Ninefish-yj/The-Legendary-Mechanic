@@ -44,7 +44,6 @@ namespace SuperMech.Code
             SMImguiTheme.Ensure();
             NormalizeRect();
             SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiCraft);
-            SMImguiTheme.DrawGlowBorder(_windowRect, SMImguiTheme.BorderGlow, 8f);
             _windowRect = GUI.Window(WindowId, _windowRect, DrawWindow,
                 "", SMImguiTheme.WindowStyle);
         }
@@ -73,7 +72,6 @@ namespace SuperMech.Code
             string stageName = SuperMechStage.GetStageName(a);
 
             Rect infoRect = new Rect(14, y, w, 50);
-            SMImguiTheme.DrawGradientPanel(infoRect);
             SMImguiTheme.DrawGlowBorder(infoRect, new Color(0.25f, 0.55f, 0.85f, 0.4f), 2f);
 
             GUI.Label(new Rect(22, y + 6, w - 16, 18),
@@ -105,7 +103,6 @@ namespace SuperMech.Code
             }
 
             Rect scrollRect = new Rect(14, y, w, _windowRect.height - y - 50);
-            SMImguiTheme.DrawGradientPanel(scrollRect);
             SMImguiTheme.DrawGlowBorder(scrollRect, new Color(0.25f, 0.55f, 0.85f, 0.4f), 2f);
 
             _scrollPos = GUI.BeginScrollView(new Rect(scrollRect.x + 4, scrollRect.y + 4, scrollRect.width - 8, scrollRect.height - 8),
