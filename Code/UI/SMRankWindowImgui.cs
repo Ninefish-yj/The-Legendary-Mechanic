@@ -172,14 +172,14 @@ namespace SuperMech.Code
 
                 Color rowColor = i < 3 ? RankColors[i] : RankColors[3];
                 string rankPrefix = i < 3 ? GetRankIcon(i) : (i + 1).ToString().PadLeft(2) + ".";
-                string nameTrunc = Truncate(entry.a.name, 14).PadRight(14);
+                string nameTrunc = Truncate(entry.actor.name, 14).PadRight(14);
                 string line = rankPrefix + " " + nameTrunc + " " + cls.PadRight(5) + " " + rank.PadRight(5) + " Lv" + qiLv.ToString().PadRight(3) + " " + entry.onar.ToString("F0").PadLeft(8);
 
                 var oldColor = GUI.color;
                 GUI.color = rowColor;
                 if (GUILayout.Button(line, SMImguiTheme.Button, GUILayout.Height(28)))
                 {
-                    MoveCamera.setFocusUnit(entry.a);
+                    MoveCamera.setFocusUnit(entry.actor);
                 }
                 GUI.color = oldColor;
                 GUILayout.Space(2);
