@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.15.3-alpha**（Alpha内测阶段）
+**v0.15.4-alpha**（Alpha内测阶段）
 
 ### 已实现系统
 
@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.15.4** | 配置项全部本地化：删除default_config.json中的Name字段，改用Id作为本地化key（参考诡秘之主），添加31个配置项+10个分类名翻译
 | **v0.15.3** | 修复神权栏不显示：Rank0_free按钮不加入rank列表，改为Rank1_common
 | **v0.15.2** | 性能优化：知识图谱DrawEdges消除每帧Dictionary分配（Build时缓存posMap）
 | **v0.15.1** | 性能优化：背包窗口消除OnGUI中的GC分配（缓存List和Color数组）；修复硬编码消息

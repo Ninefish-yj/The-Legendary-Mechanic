@@ -2,7 +2,6 @@
   "General": [
     {
       "Id": "mod_enabled",
-      "Name": "模组总开关",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetModEnabled"
@@ -11,14 +10,12 @@
   "Awakening": [
     {
       "Id": "auto_awakening",
-      "Name": "自然觉醒",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoAwakening"
     },
     {
       "Id": "awakening_chance",
-      "Name": "觉醒概率",
       "Type": "SLIDER",
       "FloatVal": 0.05,
       "MinVal": 0.0,
@@ -28,7 +25,6 @@
     },
     {
       "Id": "awakening_min_age",
-      "Name": "最小觉醒年龄",
       "Type": "INT_SLIDER",
       "IntVal": 16,
       "MinIntVal": 0,
@@ -40,7 +36,6 @@
   "Qi": [
     {
       "Id": "qi_growth_rate",
-      "Name": "气力增长倍率",
       "Type": "SLIDER",
       "FloatVal": 1.0,
       "MinVal": 0.1,
@@ -50,7 +45,6 @@
     },
     {
       "Id": "qi_unlimited",
-      "Name": "气力无上限",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetQiUnlimited"
@@ -59,14 +53,12 @@
   "Promotion": [
     {
       "Id": "auto_promotion",
-      "Name": "自动晋升",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotion"
     },
     {
       "Id": "auto_promotion_max_rank",
-      "Name": "自动晋升上限",
       "Type": "INT_SLIDER",
       "IntVal": 12,
       "MinIntVal": 0,
@@ -76,7 +68,6 @@
     },
     {
       "Id": "promotion_speed",
-      "Name": "晋升速度",
       "Type": "SLIDER",
       "FloatVal": 1.0,
       "MinVal": 0.1,
@@ -86,7 +77,6 @@
     },
     {
       "Id": "ona_multiplier",
-      "Name": "欧纳计算倍率",
       "Type": "SLIDER",
       "FloatVal": 1.0,
       "MinVal": 0.1,
@@ -96,7 +86,6 @@
     },
     {
       "Id": "show_rank_in_panel",
-      "Name": "面板显示阶位",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetShowRankInPanel"
@@ -105,70 +94,60 @@
   "AutoFavorite": [
     {
       "Id": "auto_favorite_enabled",
-      "Name": "自动收藏总开关",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled"
     },
     {
       "Id": "auto_favorite_f",
-      "Name": "F阶自动收藏",
       "Type": "SWITCH",
       "BoolVal": false,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteF"
     },
     {
       "Id": "auto_favorite_e",
-      "Name": "E阶自动收藏",
       "Type": "SWITCH",
       "BoolVal": false,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteE"
     },
     {
       "Id": "auto_favorite_d",
-      "Name": "D阶自动收藏",
       "Type": "SWITCH",
       "BoolVal": false,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteD"
     },
     {
       "Id": "auto_favorite_c",
-      "Name": "C阶自动收藏",
       "Type": "SWITCH",
       "BoolVal": false,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteC"
     },
     {
       "Id": "auto_favorite_b",
-      "Name": "B阶自动收藏",
       "Type": "SWITCH",
       "BoolVal": false,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteB"
     },
     {
       "Id": "auto_favorite_a",
-      "Name": "A阶自动收藏",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteA"
     },
     {
       "Id": "auto_favorite_s",
-      "Name": "S阶(超A)自动收藏",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteS"
     },
     {
       "Id": "auto_favorite_ss",
-      "Name": "SS阶自动收藏",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteSS"
     },
     {
       "Id": "auto_favorite_x",
-      "Name": "X阶(超神)自动收藏",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteX"
@@ -177,14 +156,12 @@
   "Sanctuary": [
     {
       "Id": "sanctuary_enabled",
-      "Name": "圣所跨存档",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnabled"
     },
     {
       "Id": "sanctuary_autosave",
-      "Name": "圣所自动保存",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryAutoSave"
@@ -193,14 +170,12 @@
   "Mech": [
     {
       "Id": "mech_summon_enabled",
-      "Name": "机械召唤",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetMechSummonEnabled"
     },
     {
       "Id": "max_summoned_units",
-      "Name": "最大召唤单位",
       "Type": "INT_SLIDER",
       "IntVal": 50,
       "MinIntVal": 0,
@@ -212,7 +187,6 @@
   "Refinement": [
     {
       "Id": "refinement_bonus",
-      "Name": "提炼法气力加成",
       "Type": "SLIDER",
       "FloatVal": 2.0,
       "MinVal": 0.0,
@@ -224,14 +198,12 @@
   "Relic": [
     {
       "Id": "relic_drop_enabled",
-      "Name": "宇宙宝物掉落",
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropEnabled"
     },
     {
       "Id": "relic_drop_rate",
-      "Name": "宝物掉落率",
       "Type": "SLIDER",
       "FloatVal": 0.01,
       "MinVal": 0.0,
@@ -243,7 +215,6 @@
   "Performance": [
     {
       "Id": "tick_interval",
-      "Name": "主循环间隔",
       "Type": "SLIDER",
       "FloatVal": 1.25,
       "MinVal": 1.0,
@@ -253,7 +224,6 @@
     },
     {
       "Id": "max_tracked_actors",
-      "Name": "最大追踪单位",
       "Type": "INT_SLIDER",
       "IntVal": 500,
       "MinIntVal": 50,
@@ -263,7 +233,6 @@
     },
     {
       "Id": "log_verbose",
-      "Name": "详细日志",
       "Type": "SWITCH",
       "BoolVal": false,
       "Callback": "SuperMech.Code.SuperMechConfig:SetLogVerbose"
