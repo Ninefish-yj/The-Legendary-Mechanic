@@ -194,7 +194,8 @@ namespace SuperMech.Code
                 EquipmentAsset asset = item.getAsset();
 
                 GUILayout.BeginHorizontal(SMImguiTheme.RaisedPanelStyle);
-                GUILayout.Label($"[{slot.type}] {item.data.asset_id}", SMImguiTheme.Label, GUILayout.Width(220));
+                string equipName = asset != null ? LocalizedTextManager.getText(asset.getLocaleID()) : item.data.asset_id;
+                GUILayout.Label($"[{slot.type}] {equipName}", SMImguiTheme.Label, GUILayout.Width(220));
                 if (asset != null)
                 {
                     GUILayout.Label($"ATK:{asset.base_stats.get("damage")} DEF:{asset.base_stats.get("defense")}",
@@ -253,7 +254,7 @@ namespace SuperMech.Code
             Color qColor = GetQualityColor(equip.qualityLevel);
             var oldColor = GUI.color;
             GUI.color = qColor;
-            GUILayout.Label(equip.name, SMImguiTheme.Label, GUILayout.Width(200));
+            GUILayout.Label(LocalizedTextManager.getText(equip.name), SMImguiTheme.Label, GUILayout.Width(200));
             GUI.color = oldColor;
             GUILayout.Label($"DMG:{equip.dmgMul} HP:{equip.hpMul}", SMImguiTheme.Small);
             GUILayout.FlexibleSpace();

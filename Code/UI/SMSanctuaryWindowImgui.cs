@@ -212,9 +212,9 @@ namespace SuperMech.Code
                 SMImguiTheme.DrawBorder(itemRect, canEnter ? SMImguiTheme.BorderGlow : SMImguiTheme.Border, 1f);
 
                 GUI.Label(new Rect(itemRect.x + 8, itemRect.y + 4, itemRect.width - 90, 18),
-                    dim.name, SMImguiTheme.Label);
+                    LocalizedTextManager.getText(dim.name), SMImguiTheme.Label);
                 GUI.Label(new Rect(itemRect.x + 8, itemRect.y + 20, itemRect.width - 90, 14),
-                    dim.desc, SMImguiTheme.Small);
+                    LocalizedTextManager.getText(dim.desc), SMImguiTheme.Small);
 
                 if (GUI.Button(new Rect(itemRect.xMax - 80, itemRect.y + 6, 70, 24),
                     LocalizedTextManager.getText("sm_sanctuary_enter"),
