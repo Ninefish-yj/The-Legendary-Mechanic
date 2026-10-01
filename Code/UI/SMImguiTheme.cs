@@ -368,31 +368,71 @@ namespace SuperMech.Code
             };
             var rng = new System.Random(42);
             var pixels = new Color[w * h];
+            int corner = 22;
+            int borderOuter = 10;
+            int borderMid = 7;
+            int borderInner = 4;
             for (int y = 0; y < h; y++)
             {
                 float ty = (float)y / h;
                 for (int x = 0; x < w; x++)
                 {
                     float tx = (float)x / w;
-                    float edgeX = Mathf.Min(tx, 1f - tx) * 2f;
-                    float edgeY = Mathf.Min(ty, 1f - ty) * 2f;
-                    float edge = Mathf.Min(edgeX, edgeY);
-                    float glow = Mathf.Clamp01(1f - edge * 4f) * 0.35f;
+                    int idx = y * w + x;
+                    int dx = Mathf.Min(x, w - 1 - x);
+                    int dy = Mathf.Min(y, h - 1 - y);
+                    bool inCorner = false;
+                    int cornerDist = 0;
+                    if (x < corner && y < corner) { inCorner = true; cornerDist = (corner - x) + (corner - y); }
+                    else if (x >= w - corner && y < corner) { inCorner = true; cornerDist = (x - (w - corner - 1)) + (corner - y); }
+                    else if (x < corner && y >= h - corner) { inCorner = true; cornerDist = (corner - x) + (y - (h - corner - 1)); }
+                    else if (x >= w - corner && y >= h - corner) { inCorner = true; cornerDist = (x - (w - corner - 1)) + (y - (h - corner - 1)); }
+                    if (inCorner && cornerDist < corner) { pixels[idx] = new Color(0, 0, 0, 0); continue; }
                     float r = Mathf.Lerp(0.96f, 0.82f, ty);
                     float g = Mathf.Lerp(0.97f, 0.86f, ty);
                     float b = Mathf.Lerp(1.00f, 0.93f, ty);
-                    r = Mathf.Lerp(r, 0.45f, glow);
-                    g = Mathf.Lerp(g, 0.70f, glow);
-                    b = Mathf.Lerp(b, 0.95f, glow);
+                    float a = 0.92f;
+                    int distToEdge = Mathf.Min(dx, dy);
+                    if (inCorner) distToEdge = Mathf.Min(distToEdge, cornerDist - corner);
+                    if (distToEdge < borderOuter)
+                    {
+                        float t = 1f - (float)distToEdge / borderOuter;
+                        r = Mathf.Lerp(r, 0.50f, t * 0.5f);
+                        g = Mathf.Lerp(g, 0.75f, t * 0.5f);
+                        b = Mathf.Lerp(b, 0.98f, t * 0.5f);
+                    }
+                    if (distToEdge >= borderMid && distToEdge < borderMid + 2)
+                    {
+                        r = Mathf.Lerp(r, 0.85f, 0.6f);
+                        g = Mathf.Lerp(g, 0.88f, 0.6f);
+                        b = Mathf.Lerp(b, 0.95f, 0.6f);
+                    }
+                    if (distToEdge >= borderInner && distToEdge < borderInner + 1)
+                    {
+                        r = Mathf.Lerp(r, 0.40f, 0.7f);
+                        g = Mathf.Lerp(g, 0.65f, 0.7f);
+                        b = Mathf.Lerp(b, 0.95f, 0.7f);
+                    }
                     float star = 0f;
-                    if (rng.NextDouble() > 0.997f) star = (float)rng.NextDouble() * 0.6f;
-                    float scan = (y % 5 == 0) ? 0.03f : 0f;
-                    float a = 0.90f + star - scan;
-                    pixels[y * w + x] = new Color(
+                    if (distToEdge > 20 && rng.NextDouble() > 0.997f) star = (float)rng.NextDouble() * 0.5f;
+                    float scan = (y % 5 == 0 && distToEdge > 15) ? 0.025f : 0f;
+                    if ((x == 14 || x == w - 15) && y > 30 && y < h - 30 && (y % 12 < 3))
+                    {
+                        r = Mathf.Lerp(r, 0.5f, 0.4f);
+                        g = Mathf.Lerp(g, 0.7f, 0.4f);
+                        b = Mathf.Lerp(b, 0.9f, 0.4f);
+                    }
+                    if ((y == 14 || y == h - 15) && x > 30 && x < w - 30 && (x % 12 < 3))
+                    {
+                        r = Mathf.Lerp(r, 0.5f, 0.4f);
+                        g = Mathf.Lerp(g, 0.7f, 0.4f);
+                        b = Mathf.Lerp(b, 0.9f, 0.4f);
+                    }
+                    pixels[idx] = new Color(
                         Mathf.Clamp01(r + star),
                         Mathf.Clamp01(g + star),
                         Mathf.Clamp01(b + star),
-                        Mathf.Clamp01(a));
+                        Mathf.Clamp01(a - scan));
                 }
             }
             _windowBg.SetPixels(pixels);
@@ -407,9 +447,7 @@ namespace SuperMech.Code
             GUI.color = Color.white;
             GUI.DrawTexture(rect, _windowBg);
             GUI.color = old;
-            DrawGlowBorder(rect, BorderGlow, 3f);
-            DrawCorners(rect, BorderGlow, 12f);
-            DrawRect(new Rect(rect.x + 14, rect.y + 40, rect.width - 28, 1.5f), new Color(0.4f, 0.65f, 0.9f, 0.5f));
+            DrawRect(new Rect(rect.x + 16, rect.y + 42, rect.width - 32, 1.5f), new Color(0.4f, 0.65f, 0.9f, 0.5f));
         }
 
         public static bool DrawBackdrop(Rect windowRect, float alpha = 0.45f)
