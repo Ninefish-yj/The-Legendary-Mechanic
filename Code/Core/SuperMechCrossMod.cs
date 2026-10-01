@@ -258,6 +258,12 @@ namespace SuperMech.Code
             }
         }
 
+        // 原著能级公式(ch3/ch51)：
+        // "气力是超能者的基础，很大部分决定了能级与位阶"
+        // "高级以后，技能给战斗力带来的增强甚至还超过升级的效果"
+        // 公式：欧纳 = 气力强度 + 身体素质 × 0.3
+        // 气力是核心(权重1.0)，身体素质是辅助(权重0.3)
+        // 技能/知识/装备/职业的加成已包含在damage/health等属性中
         public static float GetUniversalPowerLevel(Actor a)
         {
             if (a == null || a.stats == null) return 0f;
@@ -265,12 +271,10 @@ namespace SuperMech.Code
             float energyStrength = GetEnergyStrength(a);
             float bodyPower = GetBodyCombatPower(a);
 
-            const float energyWeight = 1.0f;
-            const float bodyWeight = 0.3f;
-
-            return energyStrength * energyWeight + bodyPower * bodyWeight;
+            return energyStrength + bodyPower * 0.3f;
         }
 
+        // 气力强度：优先用本模组气力，其次用其他模组能量
         private static float GetEnergyStrength(Actor a)
         {
             if (a == null) return 0f;
@@ -287,6 +291,9 @@ namespace SuperMech.Code
             return 0f;
         }
 
+        // 身体素质战力：线性加权各属性
+        // damage(伤害)权重10, health(生命)权重0.5, speed(速度)权重20, armor(护甲)权重15
+        // 技能/知识/装备/神性蜕变的加成已反映在这些属性中
         private static float GetBodyCombatPower(Actor a)
         {
             if (a == null || a.stats == null) return 0f;
@@ -294,8 +301,7 @@ namespace SuperMech.Code
             float hp = a.stats["health"];
             float spd = a.stats["speed"];
             float armor = a.stats["armor"];
-            float bodyScore = Mathf.Sqrt(dmg * dmg + hp * hp * 0.01f + spd * spd * 0.5f + armor * armor * 0.3f);
-            return bodyScore * 5f;
+            return dmg * 10f + hp * 0.5f + spd * 20f + armor * 15f;
         }
 
         public static bool HasExternalModSystem(Actor a)

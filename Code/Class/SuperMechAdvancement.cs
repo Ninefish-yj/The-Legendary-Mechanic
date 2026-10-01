@@ -10,6 +10,7 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _exactRank = new Dictionary<long, int>();
         private static readonly Dictionary<long, int> _appliedRankIdx = new Dictionary<long, int>();
 
+        // 原著能级(ch3)：气力为核心，身体素质为辅助，技能/知识/装备通过属性间接体现
         public static float CalcOnar(Actor a)
         {
             if (a == null) return 0;
