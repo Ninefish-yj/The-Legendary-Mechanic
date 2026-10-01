@@ -25,7 +25,7 @@ namespace SuperMech.Code
             var p = new GodPower
             {
                 id = id, name = name, path_icon = icon,
-                rank = PowerRank.Rank0_free, force_map_mode = MetaType.None,
+                rank = PowerRank.Rank1_common, force_map_mode = MetaType.None,
                 ignore_fast_spawn = true, hold_action = false,
                 unselect_when_window = true, requires_premium = false
             };
@@ -56,7 +56,7 @@ namespace SuperMech.Code
                 id = id,
                 name = name,
                 path_icon = "iconDiscord",
-                rank = PowerRank.Rank0_free,
+                rank = PowerRank.Rank1_common,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
                 hold_action = false,
@@ -84,7 +84,7 @@ namespace SuperMech.Code
                 id = id,
                 name = name,
                 path_icon = icon,
-                rank = PowerRank.Rank0_free,
+                rank = PowerRank.Rank1_common,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
                 hold_action = false,
@@ -109,7 +109,7 @@ namespace SuperMech.Code
                 id = id,
                 name = name,
                 path_icon = icon,
-                rank = PowerRank.Rank0_free,
+                rank = PowerRank.Rank1_common,
                 force_map_mode = MetaType.None,
                 ignore_fast_spawn = true,
                 hold_action = false,
