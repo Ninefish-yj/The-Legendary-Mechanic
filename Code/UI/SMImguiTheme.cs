@@ -390,7 +390,7 @@ namespace SuperMech.Code
             try
             {
                 string modPath = Main.Instance.GetDeclaration().FolderPath;
-                string path = Path.Combine(modPath, "Assets", filename);
+                string path = Path.Combine(modPath, "GameResources", filename);
                 if (!File.Exists(path))
                 {
                     Debug.LogWarning("[超神机械师] UI图片不存在: " + path);
