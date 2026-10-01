@@ -52,8 +52,7 @@ namespace SuperMech.Code
             if (!_visible) return;
             SMImguiTheme.Ensure();
             NormalizeRect();
-            SMImguiTheme.DrawRect(_windowRect, new Color(0.01f, 0.025f, 0.06f, 0.97f));
-            SMImguiTheme.DrawStarfield(_windowRect);
+            SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiBag);
             SMImguiTheme.DrawGlowBorder(_windowRect, SMImguiTheme.BorderGlow, 8f);
             try
             {

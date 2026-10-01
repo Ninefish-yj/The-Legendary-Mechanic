@@ -43,8 +43,7 @@ namespace SuperMech.Code
             if (_target == null || !_target.isAlive()) { _visible = false; return; }
             SMImguiTheme.Ensure();
             NormalizeRect();
-            SMImguiTheme.DrawRect(_windowRect, new Color(0.01f, 0.025f, 0.06f, 0.97f));
-            SMImguiTheme.DrawStarfield(_windowRect);
+            SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiCraft);
             SMImguiTheme.DrawGlowBorder(_windowRect, SMImguiTheme.BorderGlow, 8f);
             _windowRect = GUI.Window(WindowId, _windowRect, DrawWindow,
                 "", SMImguiTheme.WindowStyle);

@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.IO;
 
 namespace SuperMech.Code
 {
@@ -7,6 +8,13 @@ namespace SuperMech.Code
         private static bool _ready;
         private static Texture2D _pixel;
         private static Texture2D _scanline;
+
+        public static Texture2D UiKnowledge { get; private set; }
+        public static Texture2D UiBag { get; private set; }
+        public static Texture2D UiCraft { get; private set; }
+        public static Texture2D UiRank { get; private set; }
+        public static Texture2D UiSanctuary { get; private set; }
+        public static Texture2D UiTooltip { get; private set; }
 
         public static readonly Color Background = new Color(0.02f, 0.04f, 0.1f, 0.97f);
         public static readonly Color Panel = new Color(0.12f, 0.16f, 0.24f, 0.55f);
@@ -51,6 +59,7 @@ namespace SuperMech.Code
             _ready = true;
             EnsurePixel();
             EnsureScanline();
+            LoadUITextures();
 
             Label = new GUIStyle(GUI.skin.label)
             {
@@ -344,12 +353,73 @@ namespace SuperMech.Code
             GUI.color = old;
         }
 
+        public static void DrawWindowBackground(Rect rect, Texture2D bg)
+        {
+            if (bg != null)
+            {
+                Color old = GUI.color;
+                GUI.color = Color.white;
+                GUI.DrawTexture(rect, bg, ScaleMode.StretchToFill);
+                GUI.color = old;
+            }
+            DrawStarfield(rect);
+            DrawScanline(rect);
+        }
+
         public static void DrawGradientPanel(Rect rect)
         {
             EnsureGradientPanel();
             Color old = GUI.color;
             GUI.color = Color.white;
             GUI.DrawTexture(rect, _gradientPanel);
+            GUI.color = old;
+        }
+
+        private static void LoadUITextures()
+        {
+            UiKnowledge = LoadUITexture("ui_knowledge.png");
+            UiBag = LoadUITexture("ui_bag.png");
+            UiCraft = LoadUITexture("ui_craft.png");
+            UiRank = LoadUITexture("ui_rank.png");
+            UiSanctuary = LoadUITexture("ui_sanctuary.png");
+            UiTooltip = LoadUITexture("ui_tooltip.png");
+        }
+
+        private static Texture2D LoadUITexture(string filename)
+        {
+            try
+            {
+                string modPath = Main.Instance.GetDeclaration().FolderPath;
+                string path = Path.Combine(modPath, "Assets", filename);
+                if (!File.Exists(path))
+                {
+                    Debug.LogWarning("[超神机械师] UI图片不存在: " + path);
+                    return null;
+                }
+                byte[] bytes = File.ReadAllBytes(path);
+                Texture2D tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                tex.hideFlags = HideFlags.HideAndDontSave;
+                tex.LoadImage(bytes);
+                return tex;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 加载UI图片失败: " + filename + " - " + e.Message);
+                return null;
+            }
+        }
+
+        public static void DrawWindowBackground(Rect rect, Texture2D bg)
+        {
+            if (bg == null)
+            {
+                DrawGradientPanel(rect);
+                DrawGlowBorder(rect, BorderGlow, 4f);
+                return;
+            }
+            Color old = GUI.color;
+            GUI.color = new Color(1f, 1f, 1f, 0.92f);
+            GUI.DrawTexture(rect, bg, ScaleMode.StretchToFill);
             GUI.color = old;
         }
     }
