@@ -57,6 +57,8 @@ namespace SuperMech
 
         private void Update()
         {
+            SuperMechPowers.TryCreateButtons();
+
             if (!SuperMechConfig.ModEnabled) return;
 
             MapBox world = World.world;

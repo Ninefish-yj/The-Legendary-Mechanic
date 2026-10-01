@@ -11,13 +11,58 @@ namespace SuperMech.Code
         public const string OpenSanctuary = "sm_open_sanctuary";
         public const string OpenRank = "sm_open_rank";
 
+        private static bool _buttonsCreated;
+        private static readonly string[] PowerIds = { SummonAwakened, DisasterAlien, OpenSanctuary, OpenRank };
+
         public static void Register()
         {
             AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");
             AddDisaster(DisasterAlien, "sm_powers_924");
             AddSanctuaryPower(OpenSanctuary, "sm_sanctuary_974", "actor_traits/iconBlessing");
             AddWindowPower(OpenRank, "sm_rank_title", "iconDivineLight", () => SMRankWindowImgui.Toggle());
-            Debug.Log("[超神机械师] 神权注册完成：1召唤 + 1天灾 + 1圣所 + 1排行榜 = 4个核心神权");
+            Debug.Log("[超神机械师] 神权数据注册完成：4个GodPower");
+        }
+
+        public static void TryCreateButtons()
+        {
+            if (_buttonsCreated) return;
+            if (PowerButtonSelector.instance == null) return;
+            if (PowerButtonSelector.instance.buttons == null) return;
+
+            PowerButton template = null;
+            foreach (Transform child in PowerButtonSelector.instance.buttons.transform)
+            {
+                var pb = child.GetComponent<PowerButton>();
+                if (pb != null && pb.type == PowerButtonType.Active && pb.godPower != null)
+                {
+                    template = pb;
+                    break;
+                }
+            }
+
+            if (template == null)
+            {
+                Debug.LogWarning("[超神机械师] 未找到Active类型PowerButton模板，稍后重试");
+                return;
+            }
+
+            int created = 0;
+            foreach (string id in PowerIds)
+            {
+                if (PowerButton.get(id) != null) continue;
+                var go = Object.Instantiate(template.gameObject, PowerButtonSelector.instance.buttons.transform);
+                go.name = id;
+                var pb = go.GetComponent<PowerButton>();
+                if (pb != null)
+                {
+                    pb.type = PowerButtonType.Active;
+                    pb.godPower = null;
+                }
+                created++;
+            }
+
+            _buttonsCreated = true;
+            Debug.Log($"[超神机械师] 神权按钮创建完成：{created}个新按钮");
         }
 
         private static void AddAwakenedPower(string id, string name, string icon)
