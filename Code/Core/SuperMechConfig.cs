@@ -55,9 +55,7 @@ namespace SuperMech.Code
         {
             try
             {
-                Debug.Log("sm_config_547");
                 RegisterLocalization();
-                Debug.Log($"sm_config_548");
             }
             catch (Exception e)
             {

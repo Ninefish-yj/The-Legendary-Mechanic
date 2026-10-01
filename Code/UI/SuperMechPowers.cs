@@ -62,6 +62,11 @@ namespace SuperMech.Code
             var initField = typeof(PowerButton).GetField("_initialized",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
+            var viewer = PowerButtonSelector.instance.buttons.GetComponent<ButtonsViewer>();
+            var viewerButtonsField = viewer != null ? typeof(ButtonsViewer).GetField("buttons",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance) : null;
+            var viewerButtons = viewerButtonsField?.GetValue(viewer) as System.Collections.IList;
+
             int created = 0;
             foreach (string id in PowerIds)
             {
@@ -78,8 +83,16 @@ namespace SuperMech.Code
                     if (initField != null) initField.SetValue(pb, false);
                     go.SetActive(false);
                     go.SetActive(true);
+                    if (viewerButtons != null && !viewerButtons.Contains(pb))
+                        viewerButtons.Add(pb);
                     created++;
                 }
+            }
+
+            if (created > 0)
+            {
+                var rt = PowerButtonSelector.instance.buttons.GetComponent<RectTransform>();
+                if (rt != null) UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
             }
 
             _buttonsCreated = true;
