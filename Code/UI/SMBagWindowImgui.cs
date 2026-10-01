@@ -74,7 +74,6 @@ namespace SuperMech.Code
             NormalizeRect();
             SMWindowBlocker.Get(WINDOW_ID).Sync(_windowRect);
             SMImguiTheme.DrawWindowBackground(_windowRect);
-            SMImguiTheme.DrawGlowBorder(_windowRect, SMImguiTheme.BorderGlow, 8f);
             try
             {
                 _windowRect = GUI.Window(WINDOW_ID, _windowRect, DrawWindow,

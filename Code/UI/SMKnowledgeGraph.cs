@@ -38,11 +38,28 @@ namespace SuperMech.Code
         private GUIStyle _nodeNameStyle;
         private GUIStyle _nodeDescStyle;
         private Texture2D _bgTex;
-        private Texture2D _nodeTex;
-        private Texture2D _borderTex;
-        private Texture2D _lineTex;
+        private Texture2D _whiteTex;
 
         public string Selected => _selected;
+
+        private void EnsureWhiteTex()
+        {
+            if (_whiteTex == null)
+            {
+                _whiteTex = new Texture2D(1, 1);
+                _whiteTex.SetPixel(0, 0, Color.white);
+                _whiteTex.Apply();
+            }
+        }
+
+        private void DrawColoredRect(Rect rect, Color color)
+        {
+            EnsureWhiteTex();
+            Color old = GUI.color;
+            GUI.color = color;
+            GUI.DrawTexture(rect, _whiteTex);
+            GUI.color = old;
+        }
 
         public void Reset()
         {
@@ -261,17 +278,11 @@ namespace SuperMech.Code
 
         private void DrawBackground(Rect local)
         {
-            GUI.DrawTexture(local, _bgTex);
-            float pitch = 30f * Math.Max(0.5f, _zoom);
-            Color gridColor = new Color(0.6f, 0.65f, 0.72f, 0.3f);
-            for (float x = _pan.x % pitch; x < local.width; x += pitch)
-            {
-                GUI.DrawTexture(new Rect(x, 0, 1, local.height), MakeLineTex(gridColor));
-            }
-            for (float y = _pan.y % pitch; y < local.height; y += pitch)
-            {
-                GUI.DrawTexture(new Rect(0, y, local.width, 1), MakeLineTex(gridColor));
-            }
+            EnsureWhiteTex();
+            Color old = GUI.color;
+            GUI.color = new Color(0.88f, 0.9f, 0.94f, 0.9f);
+            GUI.DrawTexture(local, _whiteTex);
+            GUI.color = old;
         }
 
         private void DrawEdges(Rect local, Actor a)
@@ -320,10 +331,10 @@ namespace SuperMech.Code
                                     isSelected ? new Color(0.9f, 0.75f, 0.3f) :
                                     new Color(0.65f, 0.7f, 0.78f);
 
-                GUI.DrawTexture(new Rect(r.x + 2, r.y + 3, r.width, r.height), MakeTex(new Color(0, 0, 0, 0.4f)));
-                GUI.DrawTexture(ExpandRect(r, isSelected ? 2 : 1), MakeTex(borderColor));
-                GUI.DrawTexture(r, MakeTex(bgColor));
-                GUI.DrawTexture(new Rect(r.x, r.y, 3, r.height), MakeTex(borderColor));
+                DrawColoredRect(new Rect(r.x + 2, r.y + 3, r.width, r.height), new Color(0, 0, 0, 0.4f));
+                DrawColoredRect(ExpandRect(r, isSelected ? 2 : 1), borderColor);
+                DrawColoredRect(r, bgColor);
+                DrawColoredRect(new Rect(r.x, r.y, 3, r.height), borderColor);
 
                 if (_zoom >= 0.4f)
                 {
@@ -363,7 +374,7 @@ namespace SuperMech.Code
 
         private void DrawBezier(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4, Color color, float width)
         {
-            int segments = 12;
+            int segments = 6;
             Vector2 prev = p1;
             for (int i = 1; i <= segments; i++)
             {
@@ -383,16 +394,13 @@ namespace SuperMech.Code
             float angle = Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg;
             Matrix4x4 matrix = GUI.matrix;
             GUIUtility.RotateAroundPivot(angle, from);
-            GUI.DrawTexture(new Rect(from.x, from.y - width / 2, len, width), MakeLineTex(color));
+            DrawColoredRect(new Rect(from.x, from.y - width / 2, len, width), color);
             GUI.matrix = matrix;
         }
 
         private void EnsureTextures()
         {
-            if (_bgTex == null) _bgTex = MakeTex(new Color(0.88f, 0.9f, 0.94f));
-            if (_nodeTex == null) _nodeTex = MakeTex(new Color(0.82f, 0.85f, 0.9f));
-            if (_borderTex == null) _borderTex = MakeTex(new Color(0.3f, 0.4f, 0.6f));
-            if (_lineTex == null) _lineTex = MakeTex(Color.white);
+            EnsureWhiteTex();
         }
 
         private void EnsureStyles()
@@ -416,19 +424,6 @@ namespace SuperMech.Code
                     alignment = TextAnchor.UpperLeft
                 };
             }
-        }
-
-        private Texture2D MakeTex(Color color)
-        {
-            Texture2D tex = new Texture2D(1, 1);
-            tex.SetPixel(0, 0, color);
-            tex.Apply();
-            return tex;
-        }
-
-        private Texture2D MakeLineTex(Color color)
-        {
-            return MakeTex(color);
         }
     }
 }

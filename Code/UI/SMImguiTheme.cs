@@ -357,18 +357,11 @@ namespace SuperMech.Code
 
         public static void DrawWindowBackground(Rect rect)
         {
+            if (Event.current.type != EventType.Repaint) return;
             DrawGradientPanel(rect);
-            DrawStarfield(new Rect(rect.x + 4, rect.y + 40, rect.width - 8, rect.height - 44));
             DrawGlowBorder(rect, BorderGlow, 4f);
             DrawCorners(rect, BorderGlow, 10f);
             DrawRect(new Rect(rect.x + 12, rect.y + 38, rect.width - 24, 1f), new Color(0.4f, 0.65f, 0.9f, 0.4f));
-            for (int i = 0; i < 8; i++)
-            {
-                float y = rect.y + 50 + i * 14f;
-                if (y > rect.yMax - 20) break;
-                DrawRect(new Rect(rect.x + 6, y, 8f, 1f), new Color(0.4f, 0.65f, 0.9f, 0.3f));
-            }
-            DrawScanline(new Rect(rect.x + 2, rect.y + 2, rect.width - 4, rect.height - 4));
         }
 
         public static bool DrawBackdrop(Rect windowRect, float alpha = 0.45f)
