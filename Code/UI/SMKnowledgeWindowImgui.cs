@@ -36,7 +36,12 @@ namespace SuperMech.Code
         {
             Ensure();
             _instance._visible = !_instance._visible;
-            if (_instance._visible) _target = actor;
+            if (_instance._visible)
+            {
+                _target = actor;
+                _targetId = actor != null ? actor.data.id : -1L;
+                _instance._graphBuilt = false;
+            }
         }
 
         public static void Open(Actor actor)
