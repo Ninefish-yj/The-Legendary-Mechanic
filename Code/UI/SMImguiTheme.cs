@@ -10,7 +10,6 @@ namespace SuperMech.Code
         private static Texture2D _scanline;
 
         public static Texture2D UiPanel { get; private set; }
-        public static Texture2D UiTooltip { get; private set; }
 
         public static readonly Color Background = new Color(0.85f, 0.88f, 0.92f, 0.85f);
         public static readonly Color Panel = new Color(0.92f, 0.94f, 0.97f, 0.7f);
@@ -361,7 +360,6 @@ namespace SuperMech.Code
         private static void LoadUITextures()
         {
             UiPanel = LoadUITexture("ui_panel.png");
-            UiTooltip = LoadUITexture("ui_tooltip.png");
         }
 
         private static Texture2D LoadUITexture(string filename)
