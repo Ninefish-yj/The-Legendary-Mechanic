@@ -15,8 +15,8 @@ namespace SuperMech.Code
         {
             AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");
             AddDisaster(DisasterAlien, "sm_powers_924");
-            AddSanctuaryPower(OpenSanctuary, "sm_sanctuary_974", "ui/Icons/actor_traits/iconBlessing");
-            AddWindowPower(OpenRank, "sm_rank_title", "ui/Icons/iconTrophy", () => SMRankWindowImgui.Toggle());
+            AddSanctuaryPower(OpenSanctuary, "sm_sanctuary_974", "actor_traits/iconBlessing");
+            AddWindowPower(OpenRank, "sm_rank_title", "iconDivineLight", () => SMRankWindowImgui.Toggle());
             Debug.Log("[超神机械师] 神权注册完成：1召唤 + 1天灾 + 1圣所 + 1排行榜 = 4个核心神权");
         }
 
