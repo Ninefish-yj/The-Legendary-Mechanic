@@ -43,7 +43,7 @@ namespace SuperMech.Code
             if (_target == null || !_target.isAlive()) { _visible = false; return; }
             SMImguiTheme.Ensure();
             NormalizeRect();
-            SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiCraft);
+            SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiPanel);
             _windowRect = GUI.Window(WindowId, _windowRect, DrawWindow,
                 "", SMImguiTheme.WindowStyle);
         }

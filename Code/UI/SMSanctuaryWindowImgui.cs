@@ -46,7 +46,7 @@ namespace SuperMech.Code
             if (!_visible) return;
             SMImguiTheme.Ensure();
             NormalizeRect();
-            SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiSanctuary);
+            SMImguiTheme.DrawWindowBackground(_windowRect, SMImguiTheme.UiPanel);
             try
             {
                 _windowRect = GUI.Window(WINDOW_ID, _windowRect, DrawWindow,

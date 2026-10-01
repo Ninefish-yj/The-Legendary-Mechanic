@@ -9,11 +9,7 @@ namespace SuperMech.Code
         private static Texture2D _pixel;
         private static Texture2D _scanline;
 
-        public static Texture2D UiKnowledge { get; private set; }
-        public static Texture2D UiBag { get; private set; }
-        public static Texture2D UiCraft { get; private set; }
-        public static Texture2D UiRank { get; private set; }
-        public static Texture2D UiSanctuary { get; private set; }
+        public static Texture2D UiPanel { get; private set; }
         public static Texture2D UiTooltip { get; private set; }
 
         public static readonly Color Background = new Color(0.85f, 0.88f, 0.92f, 0.85f);
@@ -364,11 +360,7 @@ namespace SuperMech.Code
 
         private static void LoadUITextures()
         {
-            UiKnowledge = LoadUITexture("ui_knowledge.png");
-            UiBag = LoadUITexture("ui_bag.png");
-            UiCraft = LoadUITexture("ui_craft.png");
-            UiRank = LoadUITexture("ui_rank.png");
-            UiSanctuary = LoadUITexture("ui_sanctuary.png");
+            UiPanel = LoadUITexture("ui_panel.png");
             UiTooltip = LoadUITexture("ui_tooltip.png");
         }
 
