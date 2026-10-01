@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.15.7-alpha**（Alpha内测阶段）
+**v0.15.8-alpha**（Alpha内测阶段）
 
 ### 已实现系统
 
@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.15.8** | 重构单位面板：从showStatsRows Prefix改为OnEnable Postfix+Coroutine延迟一帧（参考诡秘之主），直接访问window.actor避免反射失败
 | **v0.15.7** | 单位面板添加入口按钮调试日志，定位不显示问题；简化ShowEntryButton逻辑
 | **v0.15.6** | 修复神权栏不显示：动态克隆PowerButton并添加到原版神权栏容器（之前只注册GodPower数据，没有创建UI按钮）
 | **v0.15.5** | 修复编译错误：SMRankWindowImgui中RankEntry字段名错误（entry.a→entry.actor）

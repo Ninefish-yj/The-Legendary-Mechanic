@@ -1,35 +1,36 @@
 using System;
+using System.Collections;
 using NeoModLoader.services;
 using HarmonyLib;
 using UnityEngine;
 
 namespace SuperMech.Code
 {
-    [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
+    [HarmonyPatch(typeof(UnitWindow), "OnEnable")]
     public static class SuperMechUnitWindow
     {
-        [HarmonyPrefix]
-        public static bool Prefix(UnitWindow __instance)
+        [HarmonyPostfix]
+        public static void Postfix(UnitWindow __instance)
         {
+            if (__instance.actor == null || !__instance.actor.isAlive()) return;
+            __instance.StartCoroutine(DelayedShow(__instance));
+        }
+
+        private static IEnumerator DelayedShow(UnitWindow window)
+        {
+            yield return null;
+            if (window.actor == null || !window.actor.isAlive()) yield break;
+
             try
             {
-                Actor actor = SuperMechUtils.GetActor(__instance);
-                if (actor == null || !actor.isAlive())
-                {
-                    Debug.Log("[超神机械师] 单位面板patch: actor为null或已死亡，跳过");
-                    return true;
-                }
-
-                Debug.Log($"[超神机械师] 单位面板patch: 开始显示信息，actor={actor.name}");
-                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
-                ShowMainInfo(__instance, actor);
-                Debug.Log("[超神机械师] 单位面板patch: 信息显示完成");
+                Actor a = window.actor;
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
+                ShowMainInfo(window, a);
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[超神机械师] 单位面板主要信息失败: {e.Message}\n{e.StackTrace}");
+                Debug.LogError($"[超神机械师] 单位面板信息失败: {e.Message}\n{e.StackTrace}");
             }
-            return true;
         }
 
         private static readonly Color InfoColor = new Color(1f, 0.9f, 0.6f);
@@ -97,7 +98,6 @@ namespace SuperMech.Code
         {
             try
             {
-                Debug.Log($"[超神机械师] 创建入口按钮: {label}");
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(color);
                 string valueText = "▸ " + LocalizedTextManager.getText("sm_ui_open");
                 var row = window.showStatRow(label, valueText,
@@ -105,16 +105,11 @@ namespace SuperMech.Code
                 if (row != null)
                 {
                     row.on_click_value = () => onClick?.Invoke();
-                    Debug.Log($"[超神机械师] 入口按钮创建成功: {label}");
-                }
-                else
-                {
-                    Debug.LogWarning($"[超神机械师] 入口按钮创建失败: showStatRow返回null, label={label}");
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning("[超神机械师] 入口按钮创建失败: " + e.Message + "\n" + e.StackTrace);
+                Debug.LogWarning("[超神机械师] 入口按钮创建失败: " + e.Message);
             }
         }
 
