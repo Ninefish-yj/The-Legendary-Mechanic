@@ -136,9 +136,9 @@ namespace SuperMech.Code
             }
 
             int qiLvForStats = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-            // 原著Lv10气力总加成(ch539)：力量+71、敏捷+97、耐力+108、智力+122、神秘+77
-            // 非线性增长：等级越高每一层加成越显著(ch51"气力等级越高，每一层加成越显著")
-            float levelScale = Mathf.Pow(qiLvForStats / 10f, 1.3f);
+            // 原著气力加成(ch539/ch1039)：Lv10力+71, Lv21力+3206, Lv25力+6620
+            // 拟合公式：基础值 × (level/10)^5，和SuperMechQi.Apply保持一致
+            float levelScale = Mathf.Pow(qiLvForStats / 10f, 5f);
             stats[StatStrength] = 71f * levelScale;
             stats[StatAgility] = 97f * levelScale;
             stats[StatEndurance] = 108f * levelScale;

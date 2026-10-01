@@ -8,16 +8,18 @@ namespace SuperMech.Code
 
     public static class SuperMechQi
     {
-        // 原著前6级：lv1=10, lv2=50, lv3=100, lv4=200, lv5=400, lv6=1000 (ch51)
-        // Lv21对应能级78000+（神性蜕变门槛，ch1039）
-        // Lv30≈17.2万，超过X阶148800
+        // 原著气力等级阈值(ch51/ch539/ch1039)：
+        // 前6级明确：lv1=10, lv2=50, lv3=100, lv4=200, lv5=400, lv6=1000
+        // Lv10≈9000(ch539"突破9000大关进入下一等级")
+        // Lv21=182075(ch1039"气力：182075【Lv21】")
+        // Lv10~Lv21每级倍率≈1.32，Lv21以上每级倍率≈1.25
         public static readonly float[] Thresholds = {
             10f, 50f, 100f, 200f, 400f, 1000f,
-            1800f, 3000f, 4800f, 7200f,
-            10500f, 14500f, 19000f, 24000f, 29500f,
-            35500f, 42000f, 49000f, 56500f, 64500f,
-            73000f, 82000f, 91500f, 101500f, 112000f,
-            123000f, 134500f, 146500f, 159000f, 172000f,
+            1730f, 3000f, 5200f, 9000f,
+            11900f, 15700f, 20700f, 27300f, 36100f,
+            47600f, 62800f, 82900f, 109500f, 144500f,
+            182075f, 227600f, 284500f, 355600f, 444500f,
+            555600f, 694500f, 868100f, 1085100f, 1356400f,
         };
 
         public static readonly string[] LevelNames = {
@@ -52,10 +54,12 @@ namespace SuperMech.Code
             int stage = SuperMechStage.GetStage(a);
             float stageMul = 1f + stage * 0.1f;
 
-            // 原著气力系统(ch51/ch539)：
-            // Lv10总加成：力量+71、敏捷+97、耐力+108、智力+122、神秘+77、体力上限+10920、机械亲和+85%
-            // "气力等级越高，每一层加成越显著" → 非线性增长
-            float levelScale = Mathf.Pow(level / 10f, 1.3f) * stageMul;
+            // 原著气力系统(ch51/ch539/ch1039)：
+            // Lv10总加成：力量+71、敏捷+97、耐力+108、智力+122、神秘+77
+            // Lv21总加成：力量+3206、敏捷+3928、耐力+4870、智力+6505、神秘+3123
+            // Lv25总加成：力量+6620、敏捷+7745、耐力+10308、智力+14187、神秘+6060
+            // 拟合公式：基础值 × (level/10)^5，Lv21时≈45倍，Lv25时≈93倍
+            float levelScale = Mathf.Pow(level / 10f, 5f) * stageMul;
             float strength = 71f * levelScale;    // 力量
             float agility = 97f * levelScale;     // 敏捷
             float endurance = 108f * levelScale;  // 耐力
