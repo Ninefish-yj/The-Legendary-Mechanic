@@ -39,10 +39,15 @@ namespace SuperMech.Code
 
         private void OnGUI()
         {
-            if (!_visible) return;
+            if (!_visible)
+            {
+                SMWindowBlocker.Get(WindowId).Hide();
+                return;
+            }
             if (_target == null || !_target.isAlive()) { _visible = false; return; }
             SMImguiTheme.Ensure();
             NormalizeRect();
+            SMWindowBlocker.Get(WindowId).Sync(_windowRect);
             SMImguiTheme.DrawWindowBackground(_windowRect);
             _windowRect = GUI.Window(WindowId, _windowRect, DrawWindow,
                 "", SMImguiTheme.WindowStyle);

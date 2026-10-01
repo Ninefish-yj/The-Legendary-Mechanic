@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.16.3-alpha**（Alpha内测阶段）
+**v0.16.4-alpha**（Alpha内测阶段）
 
 ### 已实现系统
 
@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.16.4** | 修复鼠标穿透：所有5个IMGUI窗口添加透明UGUI Image阻挡器（参考诸天神座），窗口内点击不穿透到游戏
 | **v0.16.3** | 修复属性名missing text：BaseStatAsset设置translation_key字段，替代LocalizedTextManager.add映射id
 | **v0.16.2** | 修复神权栏按钮不显示：克隆模板后用反射重置_initialized字段，重新触发OnEnable初始化图标/tooltip/点击事件
 | **v0.16.1** | 修复知识/背包窗口从单位面板打开时仍提示需要选中单位：Toggle方法补充_targetId设置

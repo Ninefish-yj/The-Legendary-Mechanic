@@ -61,9 +61,14 @@ namespace SuperMech.Code
 
         private void OnGUI()
         {
-            if (!_visible) return;
+            if (!_visible)
+            {
+                SMWindowBlocker.Get(WINDOW_ID).Hide();
+                return;
+            }
             SMImguiTheme.Ensure();
             NormalizeRect();
+            SMWindowBlocker.Get(WINDOW_ID).Sync(_windowRect);
             SMImguiTheme.DrawWindowBackground(_windowRect);
             try
             {
