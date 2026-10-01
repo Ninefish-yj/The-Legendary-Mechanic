@@ -24,6 +24,7 @@ namespace SuperMech.Code
 
         private NodePos[] _nodes;
         private Edge[] _edges;
+        private Dictionary<string, NodePos> _posMap;
         private Rect _bounds;
         private Vector2 _pan;
         private float _zoom = 1f;
@@ -126,6 +127,8 @@ namespace SuperMech.Code
 
             _nodes = list.ToArray();
             _edges = edgeList.ToArray();
+            _posMap = new Dictionary<string, NodePos>();
+            foreach (var n in _nodes) _posMap[n.id] = n;
 
             if (_nodes.Length > 0)
             {
@@ -273,15 +276,13 @@ namespace SuperMech.Code
 
         private void DrawEdges(Rect local, Actor a)
         {
-            if (_edges == null) return;
-            Dictionary<string, NodePos> posMap = new Dictionary<string, NodePos>();
-            foreach (var n in _nodes) posMap[n.id] = n;
+            if (_edges == null || _posMap == null) return;
 
             foreach (var edge in _edges)
             {
-                if (!posMap.ContainsKey(edge.from) || !posMap.ContainsKey(edge.to)) continue;
-                NodePos from = posMap[edge.from];
-                NodePos to = posMap[edge.to];
+                if (!_posMap.ContainsKey(edge.from) || !_posMap.ContainsKey(edge.to)) continue;
+                NodePos from = _posMap[edge.from];
+                NodePos to = _posMap[edge.to];
 
                 bool fromUnlocked = SuperMechKnowledge.IsUnlocked(a, edge.from);
                 bool toUnlocked = SuperMechKnowledge.IsUnlocked(a, edge.to);
