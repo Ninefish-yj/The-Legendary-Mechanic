@@ -90,6 +90,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.20.0** | 数值体系回归原著：阶位能级下限全部按原著调整（X=148800/SS=82600/S=43000/A=17810/B=10000/C=2000/E=100，依据ch3/ch237/ch476/ch671/ch864/ch1040/ch1402），阶位加成从500x降到13x避免数值膨胀；气力等级从40级精简到30级，阈值按原著前6级推算（Lv21≈7.3万对应神性蜕变门槛78000，Lv30≈17.2万超X阶）；气力加成从平方增长改线性增长（原著Lv10总加成才力+71/敏+97）；5个跨模组适配器能量上限全部降到15~16万（对应X阶），解决和其他模组数值不对等问题 |
 | **v0.19.4** | 修复v0.19.0 UGUI重构引入的9个编译错误：SelectedMetas.selected_actor→SelectedUnit.unit（2处），Main.cs Info→GetDeclaration().FolderPath，SuperMechRank不存在→自己实现排行榜排序，AssetManager.equipment_library→AssetManager.items（2处），equip.texture→equip.gameplay_sprites[0]，rarity从string改int，SMKnowledgeGraph width变量未定义→添加lineWidth，删除重复文件SMUgUiWindow.cs（和SMUguiWindow.cs同名类冲突） |
 | **v0.19.3** | 适配器境界映射+欧纳公式重构：5个适配器全部改为"境界等级→能量强度"直接映射（凡人修仙传10境界/香火神道10阶/西幻7职业等级/诡秘13序列/诸天神座10万象能量阶），欧纳公式改为原著定义"综合战力=能量强度×1.0+身体素质战力×0.3"，身体素质战力用√(damage²+health²×0.01+speed²×0.5+armor²×0.3)×5，删除旧对数压缩代码和GetBodyFactor |
 | **v0.19.2** | 跨模组逐个适配：移除对数归一化偷懒方案，创建模组适配框架（5个适配器：凡人修仙传/香火神道/西幻世界/诸天神座/诡秘之主），排除原版mana/stamina等属性不再误判为魔法模组，每个模组独立转换公式和系数 |

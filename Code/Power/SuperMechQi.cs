@@ -8,47 +8,16 @@ namespace SuperMech.Code
 
     public static class SuperMechQi
     {
+        // 原著前6级：lv1=10, lv2=50, lv3=100, lv4=200, lv5=400, lv6=1000 (ch51)
+        // Lv21对应能级78000+（神性蜕变门槛，ch1039）
+        // Lv30≈17.2万，超过X阶148800
         public static readonly float[] Thresholds = {
-            10f,
-            50f,
-            100f,
-            200f,
-            400f,
-            1000f,
-            2000f,
-            2500f,
-            5000f,
-            8000f,
-            15000f,
-            22000f,
-            30000f,
-            42000f,
-            50000f,
-            65000f,
-            75000f,
-            100000f,
-            120000f,
-            150000f,
-            170000f,
-            194000f,
-            221000f,
-            252000f,
-            287000f,
-            327000f,
-            373000f,
-            425000f,
-            450000f,
-            553000f,
-            636000f,
-            731000f,
-            841000f,
-            967000f,
-            1112000f,
-            1279000f,
-            1471000f,
-            1692000f,
-            1946000f,
-            2238000f,
+            10f, 50f, 100f, 200f, 400f, 1000f,
+            1800f, 3000f, 4800f, 7200f,
+            10500f, 14500f, 19000f, 24000f, 29500f,
+            35500f, 42000f, 49000f, 56500f, 64500f,
+            73000f, 82000f, 91500f, 101500f, 112000f,
+            123000f, 134500f, 146500f, 159000f, 172000f,
         };
 
         public static readonly string[] LevelNames = {
@@ -58,8 +27,6 @@ namespace SuperMech.Code
             "Lv16", "Lv17", "Lv18", "Lv19", "Lv20",
             "Lv21", "Lv22", "Lv23", "Lv24", "Lv25",
             "Lv26", "Lv27", "Lv28", "Lv29", "Lv30",
-            "Lv31", "Lv32", "Lv33", "Lv34", "Lv35",
-            "Lv36", "Lv37", "Lv38", "Lv39", "Lv40",
         };
 
         private static readonly Dictionary<long, float> _qiMap = new Dictionary<long, float>();
@@ -83,9 +50,11 @@ namespace SuperMech.Code
             if (stats == null) return;
 
             int stage = SuperMechStage.GetStage(a);
-            float stageMul = 1f + stage * 0.15f;
+            float stageMul = 1f + stage * 0.1f;
 
-            float qiMul = 1f + level * level * 0.02f * stageMul;
+            // 原著Lv10总加成：力+71/敏+97/耐+108/智+122/神秘+77 (ch539)
+            // 采用线性增长，避免平方膨胀
+            float qiMul = 1f + level * 0.15f * stageMul;
 
             var synBonus = SuperMechKnowledgeSynergy.GetBonus(a);
             qiMul *= synBonus.dmgMul;
@@ -100,21 +69,21 @@ namespace SuperMech.Code
             qiMul *= skillBonus.dmgMul;
 
             stats["multiplier_damage"] = qiMul;
-            stats["multiplier_health"] = qiMul * 1.3f * synBonus.hpMul * fusionMul * knowFusion.hpMul * skillBonus.hpMul;
-            stats["multiplier_stamina"] = qiMul * 1.2f;
-            stats["armor"] = Mathf.Min(80f, level * 0.5f * stageMul);
-            stats["multiplier_speed"] = (1f + level * 0.012f * stageMul) * synBonus.speedMul * knowFusion.speedMul * skillBonus.speedMul;
-            stats["multiplier_crit"] = 1f + level * 0.018f * stageMul;
-            stats["experience"] = 1f + level * 0.01f;
+            stats["multiplier_health"] = qiMul * 1.2f * synBonus.hpMul * fusionMul * knowFusion.hpMul * skillBonus.hpMul;
+            stats["multiplier_stamina"] = qiMul * 1.1f;
+            stats["armor"] = Mathf.Min(60f, level * 0.3f * stageMul);
+            stats["multiplier_speed"] = (1f + level * 0.008f * stageMul) * synBonus.speedMul * knowFusion.speedMul * skillBonus.speedMul;
+            stats["multiplier_crit"] = 1f + level * 0.012f * stageMul;
+            stats["experience"] = 1f + level * 0.008f;
 
-            stats["damage"] = level * level * 0.05f * stageMul;
-            stats["health"] = level * level * 0.5f * stageMul;
-            stats["stamina"] = level * level * 0.3f * stageMul;
-            stats["intelligence"] = level * 0.3f * stageMul + skillBonus.intelligence;
+            stats["damage"] = level * 0.3f * stageMul;
+            stats["health"] = level * 3f * stageMul;
+            stats["stamina"] = level * 2f * stageMul;
+            stats["intelligence"] = level * 0.2f * stageMul + skillBonus.intelligence;
 
             if (level >= 6)
             {
-                stats["critical_chance"] = (level - 5) * 0.005f * stageMul;
+                stats["critical_chance"] = (level - 5) * 0.004f * stageMul;
             }
             _appliedLevel[a.id] = level;
         }

@@ -101,15 +101,15 @@ namespace SuperMech.Code
         private static readonly float[] RealmEnergyMap = {
             0f,       // 0 凡人
             100f,     // 1 炼气期
-            1000f,    // 2 筑基期
-            5000f,    // 3 结丹期
-            50000f,   // 4 元婴期
-            150000f,  // 5 化神期
-            400000f,  // 6 炼虚期
-            800000f,  // 7 合体期
-            1500000f, // 8 大乘期
-            3000000f, // 9 渡劫期
-            6000000f  // 10 真仙
+            500f,     // 2 筑基期
+            2000f,    // 3 结丹期
+            8000f,    // 4 元婴期
+            20000f,   // 5 化神期
+            40000f,   // 6 炼虚期
+            70000f,   // 7 合体期
+            100000f,  // 8 大乘期
+            130000f,  // 9 渡劫期
+            160000f   // 10 真仙（≈X阶148800）
         };
 
         public bool Detect(Actor a)
@@ -178,7 +178,7 @@ namespace SuperMech.Code
             if (realm <= 0) return 0f;
             float[] energyMap = {
                 0f, 50f, 200f, 500f, 1000f, 3000f,
-                8000f, 20000f, 50000f, 120000f, 300000f
+                8000f, 20000f, 50000f, 100000f, 150000f
             };
             if (realm >= energyMap.Length) return energyMap[energyMap.Length - 1];
             return energyMap[realm];
@@ -205,10 +205,10 @@ namespace SuperMech.Code
             100f,     // 1 一阶
             500f,     // 2 二阶
             2000f,    // 3 三阶
-            10000f,   // 4 四阶
-            50000f,   // 5 五阶
-            200000f,  // 6 六阶
-            800000f   // 7 七阶
+            8000f,    // 4 四阶
+            25000f,   // 5 五阶
+            70000f,   // 6 六阶
+            150000f   // 7 七阶（≈X阶148800）
         };
 
         public bool Detect(Actor a)
@@ -287,7 +287,7 @@ namespace SuperMech.Code
             if (realm <= 0) return 0f;
             float[] energyMap = {
                 0f, 100f, 300f, 800f, 2000f, 5000f,
-                12000f, 30000f, 80000f, 200000f, 500000f
+                12000f, 30000f, 70000f, 120000f, 160000f
             };
             if (realm >= energyMap.Length) return energyMap[energyMap.Length - 1];
             return energyMap[realm];
@@ -310,19 +310,19 @@ namespace SuperMech.Code
         };
 
         private static readonly float[] SequenceEnergyMap = {
-            6000000f, // 旧日尊主
-            2500000f, // 神明本尊
-            1000000f, // 天使之王
-            500000f,  // 大天使
-            250000f,  // 序列1
-            100000f,  // 序列2
-            40000f,   // 序列3
-            15000f,   // 序列4
-            5000f,    // 序列5
-            2000f,    // 序列6
-            800f,     // 序列7
-            300f,     // 序列8
-            100f      // 序列9
+            160000f, // 旧日尊主（≈X阶148800）
+            150000f, // 神明本尊
+            135000f, // 天使之王
+            120000f, // 大天使
+            100000f, // 序列1
+            60000f,  // 序列2
+            30000f,  // 序列3
+            12000f,  // 序列4
+            5000f,   // 序列5
+            2000f,   // 序列6
+            800f,    // 序列7
+            300f,    // 序列8
+            100f     // 序列9
         };
 
         public bool Detect(Actor a)
