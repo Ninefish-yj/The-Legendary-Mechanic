@@ -115,6 +115,42 @@ if [ -n "$BAD_CATCH" ]; then
     API_WARNINGS=$((API_WARNINGS+1))
 fi
 
+# 检查5: 危险调用模式 - 调用外部方法前没有try-catch保护
+# 这些方法内部可能访问null字段，调用时必须有保护
+DANGEROUS_METHODS="findNeighbours|findNeighbour|GetComponent|GetComponentInChildren|Instantiate|Resources.Load|AssetManager\..*\.get"
+DANGEROUS_CALLS=$(grep -rn "\.\($DANGEROUS_METHODS\)\s*(" "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "try\|catch\|//\|null\s*!=?\|!= null\|== null\|?\." | head -10)
+if [ -n "$DANGEROUS_CALLS" ]; then
+    echo "  ⚠️  发现危险调用（外部方法可能返回null，建议加try-catch或null检查）:"
+    echo "$DANGEROUS_CALLS"
+    API_WARNINGS=$((API_WARNINGS+1))
+fi
+
+# 检查6: 可能的null引用链 - a.b.c形式没有null检查（排除枚举/静态类/命名空间/数据访问/我们自己的类/枚举赋值/transform）
+NULL_CHAIN=$(grep -rnP '\w+\.\w+\.\w+\s*[;=]' "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "//\|try\|catch\|null\|?\.\|System\.\|UnityEngine\.\|NeoModLoader\.\|SuperMech\.\|Code\.\|get_\|set_\|typeof\|nameof\|Mathf\.\|Debug\.\|LogService\.\|Resources\.\|AssetManager\.\|World\.\|Time\.\|GUI\.\|GUILayout\.\|PlayerConfig\.\|Config\.\|TalentType\.\|ProfessionType\.\|ClassMech\|ClassMartial\|ClassPsi\|ClassMage\|ClassMind\|All\.\|Count\b\|\.Data\.\|\.data\.\|\.sanctuary\.\|frame\.\|RootRt\|ContentParent\|\.Type\.\|\.FitMode\.\|\.ScaleMode\.\|\.transform\.\|subspecies.name" | head -10)
+if [ -n "$NULL_CHAIN" ]; then
+    echo "  ⚠️  发现可能的null引用链（a.b.c，建议加null检查）:"
+    echo "$NULL_CHAIN"
+    API_WARNINGS=$((API_WARNINGS+1))
+fi
+
+# 检查7: 创建外部对象后未验证关键字段
+# 只检查PowerButtonCreator（可能返回null），不检查Object.Instantiate（参数非null则返回非null）
+UNVERIFIED_CREATE=$(grep -rn "PowerButtonCreator\." "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "//" | while read line; do
+    file=$(echo "$line" | cut -d: -f1)
+    linenum=$(echo "$line" | cut -d: -f2)
+    nextline=$((linenum+1))
+    nextcontent=$(sed -n "${nextline}p" "$file" 2>/dev/null)
+    if echo "$nextcontent" | grep -q "if.*!= null\|if.*== null\|VerifyButtonFields\|try"; then
+        continue
+    fi
+    echo "$line"
+done | head -10)
+if [ -n "$UNVERIFIED_CREATE" ]; then
+    echo "  ⚠️  发现创建外部对象后未验证（建议创建后检查关键字段）:"
+    echo "$UNVERIFIED_CREATE"
+    API_WARNINGS=$((API_WARNINGS+1))
+fi
+
 if [ "$API_WARNINGS" -eq 0 ]; then
     echo "  ✅ API使用模式检查通过"
 fi
