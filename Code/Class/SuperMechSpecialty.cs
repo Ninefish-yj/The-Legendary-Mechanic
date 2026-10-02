@@ -141,24 +141,33 @@ namespace SuperMech.Code
             if (a == null) return;
             string specId = null;
 
+            // 机械系三分支
             if (branchTraitId == SuperMechBranch.BranchGunner) specId = MechTurret;
             else if (branchTraitId == SuperMechBranch.BranchMech) specId = MechMech;
             else if (branchTraitId == SuperMechBranch.BranchMartial) specId = MechDrone;
 
-            else if (branchTraitId == SuperMechBranch.BranchMartialBody) specId = MartialShield;
-            else if (branchTraitId == SuperMechBranch.BranchMartialTactic) specId = MartialFlash;
-            else if (branchTraitId == SuperMechBranch.BranchMartialPower) specId = MartialExplode;
+            // 念力系四大分支
+            else if (branchTraitId == SuperMechBranch.BranchPsiMind) specId = MindControl;
+            else if (branchTraitId == SuperMechBranch.BranchPsiKinesis) specId = MindTelekinesis;
+            else if (branchTraitId == SuperMechBranch.BranchPsiSense) specId = MindDetect;
+            else if (branchTraitId == SuperMechBranch.BranchPsiPotential) specId = PsiSoulFire;
 
-            else if (branchTraitId == SuperMechBranch.BranchMageSpecialist)
+            // 武道系/魔法系/异能系无固定转职分支，随机分配一个对应体系的专长
+            else if (a.hasTrait(SuperMechTraits.ClassMartial))
+            {
+                string[] specs = { MartialShield, MartialFlash, MartialExplode, MartialWave, MartialBurst };
+                specId = specs[Random.Range(0, specs.Length)];
+            }
+            else if (a.hasTrait(SuperMechTraits.ClassMage))
             {
                 string[] elements = { MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark };
                 specId = elements[Random.Range(0, elements.Length)];
             }
-            else if (branchTraitId == SuperMechBranch.BranchMageWeave) specId = MageLight;
-
-            else if (branchTraitId == SuperMechBranch.BranchMindSoul) specId = MindControl;
-            else if (branchTraitId == SuperMechBranch.BranchMindLaw) specId = MindDetect;
-            else if (branchTraitId == SuperMechBranch.BranchMindReality) specId = MindTelekinesis;
+            else if (a.hasTrait(SuperMechTraits.ClassMind))
+            {
+                string[] specs = { PsiFire, PsiIce, PsiElectric, PsiTransform, PsiControl, PsiLuck };
+                specId = specs[Random.Range(0, specs.Length)];
+            }
 
             if (specId != null && !a.hasTrait(specId))
             {

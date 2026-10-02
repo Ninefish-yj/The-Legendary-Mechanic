@@ -125,24 +125,9 @@ namespace SuperMech.Code
                     stats["stamina"] = (stats["stamina"]) + rate * 1.5f;
                     stats["armor"] = (stats["armor"]) + rate * 0.5f;
                     stats["speed"] = (stats["speed"]) + rate * 0.3f;
-                    if (branch == SuperMechBranch.BranchMartialBody)
-                    {
-                        stats["damage"] = (stats["damage"]) + rate * 1f;
-                        stats["health"] = (stats["health"]) + rate * 1f;
-                        stats["stamina"] = (stats["stamina"]) + rate * 0.5f;
-                    }
-                    else if (branch == SuperMechBranch.BranchMartialTactic)
-                    {
-                        stats["speed"] = (stats["speed"]) + rate * 1f;
-                        stats["attack_speed"] = (stats["attack_speed"]) + rate * 1f;
-                        stats["warfare"] = (stats["warfare"]) + rate * 0.8f;
-                    }
-                    else if (branch == SuperMechBranch.BranchMartialPower)
-                    {
-                        stats["damage"] = (stats["damage"]) + rate * 0.8f;
-                        stats["mana"] = (stats["mana"]) + rate * 1f;
-                        stats["intelligence"] = (stats["intelligence"]) + rate * 0.5f;
-                    }
+                    // 武道系无固定分支，通用加成
+                    stats["damage"] = (stats["damage"]) + rate * 0.6f;
+                    stats["health"] = (stats["health"]) + rate * 0.6f;
                     break;
 
                 case "sm_heritage_377":

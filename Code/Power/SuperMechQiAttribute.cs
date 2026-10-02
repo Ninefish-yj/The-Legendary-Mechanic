@@ -61,20 +61,24 @@ namespace SuperMech.Code
             }
             else if (a.hasTrait(SuperMechTraits.ClassMartial))
             {
-                if (a.hasTrait(SuperMechBranch.BranchMartialPower)) attr = AttrFire;
-                else if (a.hasTrait(SuperMechBranch.BranchMartialTactic)) attr = AttrWind;
-                else if (a.hasTrait(SuperMechBranch.BranchMartialBody)) attr = AttrIron;
+                // 武道系无固定分支，随机分配气力属性
+                string[] martialAttrs = { AttrIron, AttrFire, AttrWind };
+                attr = martialAttrs[Mathf.Abs(a.data.id.GetHashCode()) % martialAttrs.Length];
             }
             else if (a.hasTrait(SuperMechTraits.ClassPsi))
             {
-                string[] psiAttrs = { AttrFire, AttrWater, AttrLightning, AttrDark, AttrLight };
-                attr = psiAttrs[Mathf.Abs(a.data.id.GetHashCode()) % psiAttrs.Length];
+                // 念力系按四大分支分配属性
+                if (a.hasTrait(SuperMechBranch.BranchPsiMind)) attr = AttrSpirit;
+                else if (a.hasTrait(SuperMechBranch.BranchPsiKinesis)) attr = AttrWind;
+                else if (a.hasTrait(SuperMechBranch.BranchPsiSense)) attr = AttrLight;
+                else if (a.hasTrait(SuperMechBranch.BranchPsiPotential)) attr = AttrFire;
+                else attr = AttrSpirit;
             }
             else if (a.hasTrait(SuperMechTraits.ClassMage))
             {
-                if (a.hasTrait(SuperMechBranch.BranchMageSpecialist)) attr = AttrFire;
-                else if (a.hasTrait(SuperMechBranch.BranchMageWeave)) attr = AttrLight;
-                else attr = AttrLight;
+                // 魔法系无固定分支（法术可兼修），随机分配元素属性
+                string[] mageAttrs = { AttrFire, AttrWater, AttrLightning, AttrLight, AttrDark };
+                attr = mageAttrs[Mathf.Abs(a.data.id.GetHashCode()) % mageAttrs.Length];
             }
 
             if (attr != AttrNone) SetAttribute(a, attr);
