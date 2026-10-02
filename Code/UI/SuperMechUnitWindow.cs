@@ -37,9 +37,9 @@ namespace SuperMech.Code
                 return;
             }
 
+            // === 核心身份组 ===
             ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a), null, InfoColor);
 
-            // 天赋倾向
             string talentText = GetTalentText(a);
             if (!string.IsNullOrEmpty(talentText))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_talent_tendency"), talentText, null, InfoColor);
@@ -61,6 +61,9 @@ namespace SuperMech.Code
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"), null, InfoColor);
             }
 
+            // === 数值组（分隔线） ===
+            ShowSeparator(window);
+
             float onar = SuperMechAdvancement.CalcOnar(a);
             ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}", null, InfoColor);
 
@@ -76,19 +79,27 @@ namespace SuperMech.Code
             if (pot > 0)
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), null, InfoColor);
 
-            // 神性蜕变层数（信息面板显示，不作为属性）
+            // === 特殊组（分隔线） ===
+            bool hasSpecial = false;
             int divLayers = SuperMechDivinity.GetTotalLayers(a);
-            if (divLayers > 0)
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}", null, new Color(1f, 0.6f, 0.9f));
-
-            // 圣所权限（信息面板显示，不作为属性）
+            if (divLayers > 0) hasSpecial = true;
             string sanctuaryInfo = GetSanctuaryInfo(a);
-            if (!string.IsNullOrEmpty(sanctuaryInfo))
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, null, new Color(0.7f, 0.9f, 1f));
+            if (!string.IsNullOrEmpty(sanctuaryInfo)) hasSpecial = true;
+            if (SuperMechAwakened.IsAwakened(a)) hasSpecial = true;
 
-            if (SuperMechAwakened.IsAwakened(a))
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
+            if (hasSpecial)
+            {
+                ShowSeparator(window);
+                if (divLayers > 0)
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}", null, new Color(1f, 0.6f, 0.9f));
+                if (!string.IsNullOrEmpty(sanctuaryInfo))
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, null, new Color(0.7f, 0.9f, 1f));
+                if (SuperMechAwakened.IsAwakened(a))
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
+            }
 
+            // === 入口按钮组（分隔线） ===
+            ShowSeparator(window);
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
                 new Color(0.5f, 0.35f, 0.7f), () => SMWindowManager.OpenKnowledge());
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
@@ -193,6 +204,15 @@ namespace SuperMech.Code
                 }
             }
             return string.Join(" ", parts);
+        }
+
+        private static void ShowSeparator(UnitWindow window)
+        {
+            try
+            {
+                window.showStatRow("", "────────", "#556677", MetaType.None, -1L, pColorText: false, null, null, null, pLocalize: false);
+            }
+            catch { }
         }
 
         private static KeyValueField ShowRow(UnitWindow window, string label, object value, string iconPath = null, Color? color = null)
