@@ -15,7 +15,7 @@ namespace SuperMech.Code
         /// <summary>能级评估等级（14阶）</summary>
         public enum EnergyGrade
         {
-            Mortal = 0,   // 凡人，能级<100
+            Mortal = 0,   // 凡人，能级<1
             F = 1,        // F阶，1~99
             E = 2,        // E阶，100~599
             E_Plus = 3,   // E+阶，600~799
@@ -23,16 +23,19 @@ namespace SuperMech.Code
             D_Plus = 5,   // D+阶，1600~1999
             C = 6,        // C阶，2000~3999
             C_Plus = 7,   // C+阶，4000~5999
-            B = 8,        // B阶，6000~9999
-            B_Plus = 9,   // B+阶，10000~19999
-            A = 10,       // A阶，20000~32999（A级区间陡升）
-            A_Plus = 11,  // A+阶，33000~42999
-            S = 12,       // S阶（超A），43000~82599，常态一击爆星
-            S_Plus = 13,  // S+阶，82600~148799，星系~星团文明级
+            B = 8,        // B阶，6000~7999
+            B_Plus = 9,   // B+阶，8000~9999
+            A = 10,       // A阶，10000~19999（A级下限1万，弱A）
+            A_Plus = 11,  // A+阶，20000~32999（强A，上限3万3）
+            S = 12,       // S阶（超A），33000~82599，星系级，常态一击爆星
+            S_Plus = 13,  // S+阶，82600~148799，星团文明级
             X = 14        // X阶，148800+，超神级宇宙级
         }
 
-        /// <summary>能级阈值表（原著精确数值）</summary>
+        /// <summary>能级阈值表（原著精确数值）
+        /// 原著核心特征：EDCB四阶才跨越一万欧纳，A级从1万直接到3万3，内部差距极大。
+        /// 弱A(1万)和强A+(3万3)完全不是一个级别。
+        /// </summary>
         public static readonly Dictionary<EnergyGrade, float> GradeThresholds = new Dictionary<EnergyGrade, float>
         {
             { EnergyGrade.Mortal, 0f },
@@ -44,12 +47,12 @@ namespace SuperMech.Code
             { EnergyGrade.C, 2000f },
             { EnergyGrade.C_Plus, 4000f },
             { EnergyGrade.B, 6000f },
-            { EnergyGrade.B_Plus, 10000f },
-            { EnergyGrade.A, 20000f },
-            { EnergyGrade.A_Plus, 33000f },
-            { EnergyGrade.S, 43000f },
-            { EnergyGrade.S_Plus, 82600f },
-            { EnergyGrade.X, 148800f }
+            { EnergyGrade.B_Plus, 8000f },
+            { EnergyGrade.A, 10000f },      // 原著A级下限
+            { EnergyGrade.A_Plus, 20000f },  // 原著A+下限
+            { EnergyGrade.S, 33000f },       // 超A（星系级）
+            { EnergyGrade.S_Plus, 82600f },  // 星团级
+            { EnergyGrade.X, 148800f }       // 宇宙级
         };
 
         /// <summary>战力描述（本地化key）</summary>
@@ -140,15 +143,15 @@ namespace SuperMech.Code
                   + intelligence * 0.25f + mystery * 0.25f) * CurveParams.AttrWeight;
         }
 
-        /// <summary>根据能级值评估等级</summary>
+        /// <summary>根据能级值评估等级（按原著精确阈值）</summary>
         public static EnergyGrade Evaluate(float energy)
         {
             if (energy >= 148800f) return EnergyGrade.X;
             if (energy >= 82600f) return EnergyGrade.S_Plus;
-            if (energy >= 43000f) return EnergyGrade.S;
-            if (energy >= 33000f) return EnergyGrade.A_Plus;
-            if (energy >= 20000f) return EnergyGrade.A;
-            if (energy >= 10000f) return EnergyGrade.B_Plus;
+            if (energy >= 33000f) return EnergyGrade.S;
+            if (energy >= 20000f) return EnergyGrade.A_Plus;
+            if (energy >= 10000f) return EnergyGrade.A;
+            if (energy >= 8000f) return EnergyGrade.B_Plus;
             if (energy >= 6000f) return EnergyGrade.B;
             if (energy >= 4000f) return EnergyGrade.C_Plus;
             if (energy >= 2000f) return EnergyGrade.C;

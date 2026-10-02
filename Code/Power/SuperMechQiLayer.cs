@@ -62,6 +62,80 @@ namespace SuperMech.Code
         public static readonly float[] LayerSpeedBonus = BuildBonusArray(1.00f, 0.03f, 0.04f, 6);
         public static readonly float[] LayerRegenBonus = BuildBonusArray(1.00f, 0.10f, 0.12f, 6);
 
+        /// <summary>
+        /// 原著属性加成系数（幂函数：累积加成 = a × level^2.5）
+        /// Lv29总加成：力量+12480、敏捷+13640、耐力+17200、智力+22845、神秘+13590、机械亲和+14670%
+        /// </summary>
+        private const float AttrExponent = 2.5f;
+        private const float StrengthCoeff = 2.755f;    // Lv29 = 12480
+        private const float AgilityCoeff = 3.012f;     // Lv29 = 13640
+        private const float EnduranceCoeff = 3.798f;   // Lv29 = 17200
+        private const float IntelligenceCoeff = 5.044f; // Lv29 = 22845
+        private const float MysteryCoeff = 3.001f;     // Lv29 = 13590
+        private const float MechAffinityCoeff = 3.239f; // Lv29 = 14670%
+
+        /// <summary>获取力量属性加成（累积值，随层次非线性增长）</summary>
+        public static float GetStrengthBonus(Actor a)
+        {
+            int layer = GetEffectiveLayer(a);
+            return StrengthCoeff * Mathf.Pow(Mathf.Max(1, layer), AttrExponent);
+        }
+
+        /// <summary>获取敏捷属性加成</summary>
+        public static float GetAgilityBonus(Actor a)
+        {
+            int layer = GetEffectiveLayer(a);
+            return AgilityCoeff * Mathf.Pow(Mathf.Max(1, layer), AttrExponent);
+        }
+
+        /// <summary>获取耐力属性加成</summary>
+        public static float GetEnduranceBonus(Actor a)
+        {
+            int layer = GetEffectiveLayer(a);
+            return EnduranceCoeff * Mathf.Pow(Mathf.Max(1, layer), AttrExponent);
+        }
+
+        /// <summary>获取智力属性加成</summary>
+        public static float GetIntelligenceBonus(Actor a)
+        {
+            int layer = GetEffectiveLayer(a);
+            return IntelligenceCoeff * Mathf.Pow(Mathf.Max(1, layer), AttrExponent);
+        }
+
+        /// <summary>获取神秘属性加成</summary>
+        public static float GetMysteryBonus(Actor a)
+        {
+            int layer = GetEffectiveLayer(a);
+            return MysteryCoeff * Mathf.Pow(Mathf.Max(1, layer), AttrExponent);
+        }
+
+        /// <summary>获取机械亲和度加成（百分比）</summary>
+        public static float GetMechAffinityBonus(Actor a)
+        {
+            int layer = GetEffectiveLayer(a);
+            return MechAffinityCoeff * Mathf.Pow(Mathf.Max(1, layer), AttrExponent);
+        }
+
+        /// <summary>
+        /// 获取有效层次（气力低于当前层次阈值时，丧失该层次加成）。
+        /// 原著：气力减少到低于某等级标准，丧失该等级属性加成。
+        /// </summary>
+        public static int GetEffectiveLayer(Actor a)
+        {
+            if (a == null) return 0;
+            float currentQi = SuperMechQi.GetQi(a);
+            if (currentQi <= 0f) return 0;
+
+            // 从最高层次往下找，找到第一个气力≥阈值的层次
+            int maxLayer = GetLayer(a);
+            for (int i = maxLayer; i >= 1; i--)
+            {
+                if (currentQi >= LayerQiThresholds[i])
+                    return i;
+            }
+            return 0;
+        }
+
         /// <summary>构建加成数组：Lv1~5线性增长，Lv6+分水岭后加速增长</summary>
         private static float[] BuildBonusArray(float baseVal, float earlyStep, float lateStep, int breakthrough)
         {
