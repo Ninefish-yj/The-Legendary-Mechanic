@@ -150,7 +150,6 @@ namespace SuperMech.Code
         public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; }
         public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; }
         public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; }
-        public static void SetAutoFavoriteRank(int val) { }
 
         public static bool ShouldFavoriteRank(int rankIdx)
         {

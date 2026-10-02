@@ -105,7 +105,8 @@ namespace SuperMech.Code
                 text.fontSize = 13;
                 text.color = new Color(0.1f, 0.15f, 0.25f);
                 text.alignment = TextAnchor.MiddleLeft;
-                text.text = $"#{rank}  {r.name}  -  {r.rankKey}  (能级:{r.onar:F0})";
+                string onarLabel = LocalizedTextManager.getText("sm_ui_onar_col");
+                text.text = $"#{rank}  {r.name}  -  {r.rankKey}  ({onarLabel}:{r.onar:F0})";
                 rank++;
             }
         }
