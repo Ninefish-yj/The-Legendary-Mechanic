@@ -18,6 +18,7 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
+            // 上方网格区域（占82%高度）
             var gridGo = new GameObject("GridPanel");
             gridGo.transform.SetParent(transform, false);
             _gridPanel = gridGo.AddComponent<RectTransform>();
@@ -26,13 +27,18 @@ namespace SuperMech.Code
             _gridPanel.offsetMin = new Vector2(8, 4);
             _gridPanel.offsetMax = new Vector2(-8, -4);
 
+            // 滚动区（带Mask裁剪）
             var scrollGo = new GameObject("Scroll");
             scrollGo.transform.SetParent(_gridPanel, false);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
             var sr = scrollGo.GetComponent<RectTransform>();
             sr.anchorMin = Vector2.zero; sr.anchorMax = Vector2.one;
             sr.offsetMin = Vector2.zero; sr.offsetMax = Vector2.zero;
+            var mask = scrollGo.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
 
+            // Content（GridLayoutGroup）
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);
             var contentRect = contentGo.AddComponent<RectTransform>();
@@ -44,8 +50,14 @@ namespace SuperMech.Code
             grid.padding = new RectOffset(6, 6, 6, 6);
             grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
             grid.constraintCount = 9;
-            scrollRect.content = contentRect; scrollRect.vertical = true;
+            var fitter = contentGo.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            scrollRect.content = contentRect;
+            scrollRect.viewport = sr;
+            scrollRect.vertical = true;
+            scrollRect.horizontal = false;
 
+            // 下方详情区域（占18%高度）
             var detailGo = new GameObject("DetailPanel");
             detailGo.transform.SetParent(transform, false);
             var detailRect = detailGo.AddComponent<RectTransform>();
@@ -65,6 +77,7 @@ namespace SuperMech.Code
             _detailText.fontSize = 12; _detailText.color = SMUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _detailText.verticalOverflow = VerticalWrapMode.Truncate;
             _detailText.text = LocalizedTextManager.getText("sm_ui_select_item");
         }
 

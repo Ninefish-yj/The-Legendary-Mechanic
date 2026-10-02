@@ -13,12 +13,15 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            var text = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_craft_info"), 14, TextAnchor.UpperLeft);
+            var (scroll, content) = SMUiSkin.CreateScrollArea(transform, "Scroll");
+            var text = SMUiSkin.MakeText(content, LocalizedTextManager.getText("sm_ui_craft_info"), 14, TextAnchor.UpperLeft);
             var rect = text.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
+            rect.offsetMin = new Vector2(8, 4);
+            rect.offsetMax = new Vector2(-8, -4);
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
         }
     }
 
@@ -98,7 +101,7 @@ namespace SuperMech.Code
                 if (rank <= 3)
                     rowImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.2f);
                 else
-                    rowImg.sprite = rank % 2 == 0 ? SMUiSkin.RowEvenSprite : SMUiSkin.RowOddSprite;
+                    rowImg.color = rank % 2 == 0 ? new Color(1, 1, 1, 0.04f) : new Color(1, 1, 1, 0.02f);
 
                 var text = SMUiSkin.MakeText(rowGo.transform, "", 13, TextAnchor.MiddleLeft);
                 var textRect = text.GetComponent<RectTransform>();
@@ -124,12 +127,15 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            var text = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_sanctuary_info"), 14, TextAnchor.UpperLeft);
+            var (scroll, content) = SMUiSkin.CreateScrollArea(transform, "Scroll");
+            var text = SMUiSkin.MakeText(content, LocalizedTextManager.getText("sm_ui_sanctuary_info"), 14, TextAnchor.UpperLeft);
             var rect = text.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
+            rect.offsetMin = new Vector2(8, 4);
+            rect.offsetMax = new Vector2(-8, -4);
+            text.horizontalOverflow = HorizontalWrapMode.Wrap;
+            text.verticalOverflow = VerticalWrapMode.Truncate;
         }
     }
 }
