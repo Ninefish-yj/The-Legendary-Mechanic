@@ -54,7 +54,12 @@ namespace SuperMech.Code
 
                 string stage = SuperMechStage.GetStageName(a);
                 if (stage != "—" && stage != "sm_knowledgetab_829")
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stage, null, InfoColor);
+                {
+                    // v0.26.0 UI完善：显示职业阶段等级上限进度
+                    string progress = SuperMechStage.GetStageProgressText(a);
+                    string stageText = string.IsNullOrEmpty(progress) ? stage : $"{stage}（{progress}）";
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stageText, null, InfoColor);
+                }
 
                 // 机械师专精显示（只有机械师分支且解锁了专精才显示）
                 if (a.hasTrait(SuperMechBranch.BranchMech))

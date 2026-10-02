@@ -53,6 +53,46 @@ namespace SuperMech.Code
         public static bool CrossModEnergySync = true;
         public static float CrossModEnergyRatio = 1.0f;
 
+        // === 战斗压制配置（v0.26.0配置化补齐）===
+        /// <summary>能级压制开关</summary>
+        public static bool CombatSuppressionEnabled = true;
+        /// <summary>能级压制阈值：轻微/明显/强烈/碾压/秒杀级</summary>
+        public static float SuppressThresholdMinor = 1.1f;
+        public static float SuppressThresholdModerate = 1.5f;
+        public static float SuppressThresholdStrong = 2.0f;
+        public static float SuppressThresholdOverwhelm = 5.0f;
+        public static float SuppressThresholdAnnihilate = 10.0f;
+        /// <summary>伤害加成倍率（对应5档）</summary>
+        public static float SuppressDmgMinor = 0.10f;
+        public static float SuppressDmgModerate = 0.25f;
+        public static float SuppressDmgStrong = 0.50f;
+        public static float SuppressDmgOverwhelm = 1.00f;
+        public static float SuppressDmgAnnihilate = 2.00f;
+        /// <summary>强制命中概率（对应4档，轻微无强制命中）</summary>
+        public static float SuppressHitModerate = 0.10f;
+        public static float SuppressHitStrong = 0.20f;
+        public static float SuppressHitOverwhelm = 0.40f;
+        public static float SuppressHitAnnihilate = 0.60f;
+        /// <summary>暴击率（对应3档）</summary>
+        public static float SuppressCritModerate = 0.08f;
+        public static float SuppressCritStrong = 0.15f;
+        public static float SuppressCritOverwhelm = 0.25f;
+        /// <summary>抗性减免（对应4档，防守方高能级时）</summary>
+        public static float SuppressDefModerate = 0.10f;
+        public static float SuppressDefStrong = 0.20f;
+        public static float SuppressDefOverwhelm = 0.35f;
+        public static float SuppressDefAnnihilate = 0.50f;
+        /// <summary>闪避率（对应4档，防守方高能级时）</summary>
+        public static float SuppressDodgeModerate = 0.05f;
+        public static float SuppressDodgeStrong = 0.12f;
+        public static float SuppressDodgeOverwhelm = 0.25f;
+        public static float SuppressDodgeAnnihilate = 0.40f;
+        /// <summary>精神攻击穿甲比例（念力/异能对机械系）</summary>
+        public static float SpiritPierceRatio = 0.30f;
+        /// <summary>知识融合属性加成上限（单配方和总上限）</summary>
+        public static float FusionSingleMulCap = 2.0f;
+        public static float FusionTotalMulCap = 3.0f;
+
         public static void Init()
         {
             try
@@ -81,6 +121,7 @@ namespace SuperMech.Code
                 new CatInfo("Refinement", "sm_config_556"),
                 new CatInfo("Relic", "sm_config_557"),
                 new CatInfo("Performance", "sm_config_558"),
+                new CatInfo("Combat", "sm_config_621"),
             };
             foreach (var c in categories)
                 LocalizedTextManager.add(c.key, LocalizedTextManager.getText(c.name), pReplace: true);
@@ -118,6 +159,10 @@ namespace SuperMech.Code
                 new ItemInfo("tick_interval", "sm_config_615", "sm_config_616"),
                 new ItemInfo("max_tracked_actors", "sm_config_617", "sm_config_618"),
                 new ItemInfo("log_verbose", "sm_config_619", "sm_config_620"),
+                new ItemInfo("combat_suppression_enabled", "sm_config_622", "sm_config_623"),
+                new ItemInfo("spirit_pierce_ratio", "sm_config_624", "sm_config_625"),
+                new ItemInfo("fusion_single_mul_cap", "sm_config_626", "sm_config_627"),
+                new ItemInfo("fusion_total_mul_cap", "sm_config_628", "sm_config_629"),
             };
             foreach (var it in items)
             {
@@ -182,5 +227,10 @@ namespace SuperMech.Code
         public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); }
 
         public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); }
+
+        public static void SetCombatSuppressionEnabled(bool val) { CombatSuppressionEnabled = val; }
+        public static void SetSpiritPierceRatio(float val) { SpiritPierceRatio = Mathf.Clamp01(val); }
+        public static void SetFusionSingleMulCap(float val) { FusionSingleMulCap = Mathf.Max(1.0f, val); }
+        public static void SetFusionTotalMulCap(float val) { FusionTotalMulCap = Mathf.Max(1.0f, val); }
     }
 }

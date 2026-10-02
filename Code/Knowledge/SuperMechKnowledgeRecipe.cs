@@ -388,17 +388,19 @@ namespace SuperMech.Code
             {
                 if (_recipeById.TryGetValue(recipeId, out var recipe))
                 {
-                    // 每个配方的属性倍率叠加（乘法叠加，上限防止爆炸）
-                    stats.dmgMul *= Mathf.Min(recipe.dmgMul, 2.0f);
-                    stats.hpMul *= Mathf.Min(recipe.hpMul, 2.0f);
-                    stats.speedMul *= Mathf.Min(recipe.speedMul, 1.5f);
+                    // 每个配方的属性倍率叠加（乘法叠加，上限防止爆炸，可配置）
+                    float singleCap = SuperMechConfig.FusionSingleMulCap;
+                    stats.dmgMul *= Mathf.Min(recipe.dmgMul, singleCap);
+                    stats.hpMul *= Mathf.Min(recipe.hpMul, singleCap);
+                    stats.speedMul *= Mathf.Min(recipe.speedMul, singleCap);
                     stats.qiBonus += recipe.qiBonus;
                 }
             }
-            // 总加成上限
-            stats.dmgMul = Mathf.Min(stats.dmgMul, 3.0f);
-            stats.hpMul = Mathf.Min(stats.hpMul, 3.0f);
-            stats.speedMul = Mathf.Min(stats.speedMul, 2.0f);
+            // 总加成上限（可配置）
+            float totalCap = SuperMechConfig.FusionTotalMulCap;
+            stats.dmgMul = Mathf.Min(stats.dmgMul, totalCap);
+            stats.hpMul = Mathf.Min(stats.hpMul, totalCap);
+            stats.speedMul = Mathf.Min(stats.speedMul, totalCap);
             return stats;
         }
 

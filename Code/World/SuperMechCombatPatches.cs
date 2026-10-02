@@ -124,8 +124,8 @@ namespace SuperMech.Code
                     bool defMech = target.hasTrait(SuperMechTraits.ClassMech);
                     if (atkPsi && defMech)
                     {
-                        // 精神攻击穿甲：忽略目标50%护甲，直接造成伤害
-                        float armorPierceDamage = pDamage * 0.30f;
+                        // 精神攻击穿甲：忽略目标护甲，直接造成伤害（比例可配置）
+                        float armorPierceDamage = pDamage * SuperMechConfig.SpiritPierceRatio;
                         target.data.health -= (int)armorPierceDamage;
                     }
                 }
@@ -147,7 +147,9 @@ namespace SuperMech.Code
                 // 能级差分级压制（原著：能级差距影响伤害/命中/闪避/抗性多维度）
                 // 1.1-1.5轻微压制，1.5-2明显压制，2-5强烈压制，5-10碾压，>10秒杀级
                 // 支持跨模组：超神机械师单位用CalcOnar，其他模组用ConvertModToOnar
-                if (attacker != null && attacker.isAlive() && target != null && target.isAlive())
+                // v0.26.0：全部参数可配置化
+                if (SuperMechConfig.CombatSuppressionEnabled
+                    && attacker != null && attacker.isAlive() && target != null && target.isAlive())
                 {
                     float atkEnergy = SuperMechAwakened.IsAwakened(attacker)
                         ? SuperMechAdvancement.CalcOnar(attacker)
@@ -161,11 +163,11 @@ namespace SuperMech.Code
 
                         // 维度1：伤害加成
                         float dmgBonus = 0f;
-                        if (ratio >= 10f) dmgBonus = 2.0f;        // 秒杀级：伤害+200%
-                        else if (ratio >= 5f) dmgBonus = 1.0f;    // 碾压：伤害+100%
-                        else if (ratio >= 2f) dmgBonus = 0.5f;    // 强烈压制：伤害+50%
-                        else if (ratio >= 1.5f) dmgBonus = 0.25f; // 明显压制：伤害+25%
-                        else if (ratio >= 1.1f) dmgBonus = 0.10f; // 轻微压制：伤害+10%
+                        if (ratio >= SuperMechConfig.SuppressThresholdAnnihilate) dmgBonus = SuperMechConfig.SuppressDmgAnnihilate;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdOverwhelm) dmgBonus = SuperMechConfig.SuppressDmgOverwhelm;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdStrong) dmgBonus = SuperMechConfig.SuppressDmgStrong;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdModerate) dmgBonus = SuperMechConfig.SuppressDmgModerate;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdMinor) dmgBonus = SuperMechConfig.SuppressDmgMinor;
                         if (dmgBonus > 0)
                         {
                             float suppressDamage = pDamage * dmgBonus;
@@ -175,10 +177,10 @@ namespace SuperMech.Code
                         // 维度2：命中压制（高能级攻击低能级时，低能级闪避率降低）
                         // 通过概率性强制命中（跳过原版闪避判定）实现
                         float hitOverrideChance = 0f;
-                        if (ratio >= 10f) hitOverrideChance = 0.6f;    // 秒杀级：60%强制命中
-                        else if (ratio >= 5f) hitOverrideChance = 0.4f; // 碾压：40%强制命中
-                        else if (ratio >= 2f) hitOverrideChance = 0.2f; // 强烈压制：20%强制命中
-                        else if (ratio >= 1.5f) hitOverrideChance = 0.1f; // 明显压制：10%强制命中
+                        if (ratio >= SuperMechConfig.SuppressThresholdAnnihilate) hitOverrideChance = SuperMechConfig.SuppressHitAnnihilate;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdOverwhelm) hitOverrideChance = SuperMechConfig.SuppressHitOverwhelm;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdStrong) hitOverrideChance = SuperMechConfig.SuppressHitStrong;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdModerate) hitOverrideChance = SuperMechConfig.SuppressHitModerate;
                         if (hitOverrideChance > 0 && Random.value < hitOverrideChance)
                         {
                             // 强制命中：直接造成基础伤害（跳过原版闪避/护甲减免的一部分）
@@ -188,9 +190,9 @@ namespace SuperMech.Code
 
                         // 维度3：暴击压制（高能级对低能级暴击率提升）
                         float critChance = 0f;
-                        if (ratio >= 5f) critChance = 0.25f;    // 碾压：25%暴击
-                        else if (ratio >= 2f) critChance = 0.15f; // 强烈压制：15%暴击
-                        else if (ratio >= 1.5f) critChance = 0.08f; // 明显压制：8%暴击
+                        if (ratio >= SuperMechConfig.SuppressThresholdOverwhelm) critChance = SuperMechConfig.SuppressCritOverwhelm;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdStrong) critChance = SuperMechConfig.SuppressCritStrong;
+                        else if (ratio >= SuperMechConfig.SuppressThresholdModerate) critChance = SuperMechConfig.SuppressCritModerate;
                         if (critChance > 0 && Random.value < critChance)
                         {
                             float critDamage = pDamage * 0.5f; // 暴击额外50%伤害
@@ -202,10 +204,10 @@ namespace SuperMech.Code
                         // 维度4：抗性压制（高能级受到低能级攻击时，伤害减免）
                         float defRatio = defEnergy / atkEnergy;
                         float damageReduction = 0f;
-                        if (defRatio >= 10f) damageReduction = 0.5f;    // 秒杀级差距：减免50%
-                        else if (defRatio >= 5f) damageReduction = 0.35f; // 碾压差距：减免35%
-                        else if (defRatio >= 2f) damageReduction = 0.20f; // 强烈差距：减免20%
-                        else if (defRatio >= 1.5f) damageReduction = 0.10f; // 明显差距：减免10%
+                        if (defRatio >= SuperMechConfig.SuppressThresholdAnnihilate) damageReduction = SuperMechConfig.SuppressDefAnnihilate;
+                        else if (defRatio >= SuperMechConfig.SuppressThresholdOverwhelm) damageReduction = SuperMechConfig.SuppressDefOverwhelm;
+                        else if (defRatio >= SuperMechConfig.SuppressThresholdStrong) damageReduction = SuperMechConfig.SuppressDefStrong;
+                        else if (defRatio >= SuperMechConfig.SuppressThresholdModerate) damageReduction = SuperMechConfig.SuppressDefModerate;
                         if (damageReduction > 0)
                         {
                             // 抗性：恢复一部分即将受到的伤害（通过加血实现，因为pDamage已经在原版逻辑中应用）
@@ -216,10 +218,10 @@ namespace SuperMech.Code
                         // 维度5：闪避压制（低能级攻击高能级时，高能级闪避率提升）
                         // 原著：能级差距大时，低能级甚至无法触碰到高能级
                         float dodgeChance = 0f;
-                        if (defRatio >= 10f) dodgeChance = 0.40f;    // 秒杀级差距：40%概率完全闪避
-                        else if (defRatio >= 5f) dodgeChance = 0.25f; // 碾压差距：25%概率闪避
-                        else if (defRatio >= 2f) dodgeChance = 0.12f; // 强烈差距：12%概率闪避
-                        else if (defRatio >= 1.5f) dodgeChance = 0.05f; // 明显差距：5%概率闪避
+                        if (defRatio >= SuperMechConfig.SuppressThresholdAnnihilate) dodgeChance = SuperMechConfig.SuppressDodgeAnnihilate;
+                        else if (defRatio >= SuperMechConfig.SuppressThresholdOverwhelm) dodgeChance = SuperMechConfig.SuppressDodgeOverwhelm;
+                        else if (defRatio >= SuperMechConfig.SuppressThresholdStrong) dodgeChance = SuperMechConfig.SuppressDodgeStrong;
+                        else if (defRatio >= SuperMechConfig.SuppressThresholdModerate) dodgeChance = SuperMechConfig.SuppressDodgeModerate;
                         if (dodgeChance > 0 && Random.value < dodgeChance)
                         {
                             // 完全闪避：恢复全部伤害并跳过后续处理
