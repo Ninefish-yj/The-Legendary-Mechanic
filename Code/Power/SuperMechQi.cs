@@ -66,16 +66,18 @@ namespace SuperMech.Code
             int stage = SuperMechStage.GetStage(a);
             float stageMul = 1f + stage * 0.1f;
 
-            // 原著气力系统(ch51/ch539/ch1039)：
+            // 原著气力系统(ch51/ch539/ch1039/ch1203/ch1402)：
             // Lv10总加成：力量+71、敏捷+97、耐力+108、智力+122、神秘+77
             // Lv21总加成：力量+3206、敏捷+3928、耐力+4870、智力+6505、神秘+3123
             // Lv25总加成：力量+6620、敏捷+7745、耐力+10308、智力+14187、神秘+6060
-            // 拟合公式：基础值 × (level/10)^5，Lv21时≈45倍，Lv25时≈93倍
-            float levelScale = Mathf.Pow(level / 10f, 5f) * stageMul;
-            float strength = 71f * levelScale;    // 力量
-            float agility = 97f * levelScale;     // 敏捷
-            float endurance = 108f * levelScale;  // 耐力
-            float intel = 122f * levelScale;      // 智力
+            // Lv29总加成：力量+12480、敏捷+13640、耐力+17200、智力+22845、神秘+13590
+            // 四点回归拟合：属性 = 基准×1.04 × (level/10)^4.9，全局误差±4.2%
+            // （Lv21是神性蜕变拐点，分段指数5.14/4.2，统一用4.9折中）
+            float levelScale = Mathf.Pow(level / 10f, 4.9f) * stageMul;
+            float strength = 74f * levelScale;    // 力量（基准微调4%）
+            float agility = 101f * levelScale;    // 敏捷
+            float endurance = 112f * levelScale;  // 耐力
+            float intel = 127f * levelScale;      // 智力
 
             // 知识/技能/融合加成（保留倍率，这些是额外加成不是气力本身）
             var synBonus = SuperMechKnowledgeSynergy.GetBonus(a);

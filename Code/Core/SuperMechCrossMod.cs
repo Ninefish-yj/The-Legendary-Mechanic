@@ -260,8 +260,7 @@ namespace SuperMech.Code
 
         // 原著能级公式(ch3/ch51/ch1039/ch1203/ch1402)：
         // "气力是超能者的基础，很大部分决定了能级与位阶"
-        // "高级以后，技能给战斗力带来的增强甚至还超过升级的效果"
-        // 用三个原著数据点拟合幂函数：能级 = 8.5 × 气力^0.75 + 身体素质×0.3
+        // 三点回归拟合：能级 = 22 × 气力^0.67 + 身体素质×0.15，全局误差±5.7%
         // Lv21: 气力182075→能级78000(ch1039), Lv25: 293475→98510(ch1203), Lv29: 481200→148800(ch1402)
         // 气力边际效益递减（高等级时技能/知识/装备贡献增大）
         // 技能/知识/装备/职业的加成已包含在damage/health等属性中
@@ -272,9 +271,9 @@ namespace SuperMech.Code
             float energyStrength = GetEnergyStrength(a);
             float bodyPower = GetBodyCombatPower(a);
 
-            // 幂函数拟合：气力^0.75，高等级边际效益递减
-            float qiOnar = 8.5f * Mathf.Pow(Mathf.Max(1f, energyStrength), 0.75f);
-            return qiOnar + bodyPower * 0.3f;
+            // 幂函数拟合：气力^0.67，高等级边际效益递减
+            float qiOnar = 22f * Mathf.Pow(Mathf.Max(1f, energyStrength), 0.67f);
+            return qiOnar + bodyPower * 0.15f;
         }
 
         // 气力强度：优先用本模组气力，其次用其他模组能量
