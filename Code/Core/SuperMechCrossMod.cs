@@ -254,10 +254,11 @@ namespace SuperMech.Code
             }
         }
 
-        // 原著能级公式(ch3)：气力为核心，技能/知识/装备综合加成，曲线上升
-        // 统一逻辑：能级 = 基础能级 × (1 + 综合加成率)
-        // 基础能级 = 18 × 能量^0.67（和超神机械师一致）
-        // 综合加成率通过damage/health/speed/armor等属性估算（技能/装备加成已反映在属性中）
+        // 原著能级公式(ch3)：气力为核心，实际战力表现（技能/知识/装备）综合加成，曲线上升
+        // 跨模组适配：根据其他模组单位的实际战力属性（伤害/生命/速度/护甲）换算能级
+        // 能级 = 基础能级 × (1 + 战力加成率)
+        // 基础能级 = 15 × 能量^0.67（能量为核心，但权重降低）
+        // 战力加成率 = 实际属性相对于普通人的倍率 × 系数，上限80%
         public static float GetUniversalPowerLevel(Actor a)
         {
             if (a == null || a.stats == null) return 0f;
@@ -265,12 +266,19 @@ namespace SuperMech.Code
             float energyStrength = GetEnergyStrength(a);
             if (energyStrength <= 0f) return 0f;
 
-            // 基础能级（幂函数，曲线上升）
-            float baseOnar = 18f * Mathf.Pow(Mathf.Max(1f, energyStrength), 0.67f);
+            // 基础能级（能量核心，幂函数曲线上升）
+            float baseOnar = 15f * Mathf.Pow(Mathf.Max(1f, energyStrength), 0.67f);
 
-            // 综合加成率：通过身体素质属性估算（技能/知识/装备加成已反映在属性中）
-            float bodyPower = GetBodyCombatPower(a);
-            float bonusRate = Mathf.Min(0.5f, bodyPower * 0.15f / Mathf.Max(1f, baseOnar));
+            // 实际战力表现：相对于普通人的属性倍率
+            // 普通人基础值：damage≈10, health≈100, speed≈15, armor≈5
+            float dmgRatio = a.stats["damage"] / 10f;
+            float hpRatio = a.stats["health"] / 100f;
+            float spdRatio = a.stats["speed"] / 15f;
+            float armorRatio = a.stats["armor"] / 5f;
+            float combatRatio = (dmgRatio + hpRatio + spdRatio + armorRatio) / 4f;
+
+            // 战力加成率：实际战力越强，加成越高（上限80%）
+            float bonusRate = Mathf.Min(0.8f, Mathf.Max(0f, combatRatio - 1f) * 0.15f);
 
             return baseOnar * (1f + bonusRate);
         }
@@ -290,19 +298,6 @@ namespace SuperMech.Code
             if (external > 0f) return external * SuperMechConfig.CrossModEnergyRatio;
 
             return 0f;
-        }
-
-        // 身体素质战力：线性加权各属性
-        // damage(伤害)权重10, health(生命)权重0.5, speed(速度)权重20, armor(护甲)权重15
-        // 技能/知识/装备/神性蜕变的加成已反映在这些属性中
-        private static float GetBodyCombatPower(Actor a)
-        {
-            if (a == null || a.stats == null) return 0f;
-            float dmg = a.stats["damage"];
-            float hp = a.stats["health"];
-            float spd = a.stats["speed"];
-            float armor = a.stats["armor"];
-            return dmg * 10f + hp * 0.5f + spd * 20f + armor * 15f;
         }
 
         public static bool HasExternalModSystem(Actor a)
