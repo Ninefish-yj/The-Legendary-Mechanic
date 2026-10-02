@@ -112,7 +112,7 @@ namespace SuperMech.Code
                 return null;
             }
 
-            // 创建新单位（用原种族）——WorldBox中单位死亡后对象销毁，只能创建新单位+完整恢复数据
+            // 创建新单位（用原种族）——创建后复用原单位ID，使所有以ID为key的字典数据自动关联
             string speciesId = string.IsNullOrEmpty(state.species) ? "human" : state.species;
             Actor newActor = World.world.units.spawnNewUnit(speciesId, tile, false, true, 6f, null, false, true);
             if (newActor == null)
@@ -120,6 +120,10 @@ namespace SuperMech.Code
                 Debug.LogError("[超神机械师] 复活失败：单位创建失败");
                 return null;
             }
+
+            // 复用原单位内部ID（原著：信息态重塑肉身与灵魂，复活的是同一个体）
+            // WorldBox的data.id是可写long字段，ID自增不会冲突
+            newActor.data.id = state.actorId;
 
             // === 完整恢复信息态数据 ===
 
