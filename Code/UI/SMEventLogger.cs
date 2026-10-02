@@ -24,8 +24,9 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_sanctuary", "sm_log_sanctuary_text", new Color(0.8f, 0.5f, 1f));
             RegisterLogAsset("sm_log_iteration", "sm_log_iteration_text", new Color(1f, 0.5f, 0.5f));
             RegisterLogAsset("sm_log_resurrection", "sm_log_resurrection_text", new Color(1f, 0.3f, 0.8f));
+            RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f));
 
-            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册6类日志资产");
+            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册7类日志资产");
         }
 
         /// <summary>注册自定义WorldLogAsset</summary>
@@ -124,6 +125,21 @@ namespace SuperMech.Code
             if (asset == null) return;
 
             new WorldLogMessage(asset, a.getName(), reviveCount.ToString(), lostAbilities)
+            {
+                unit = a,
+                location = a.current_position
+            }.add();
+        }
+
+        /// <summary>推送法术学习成功事件日志</summary>
+        public static void LogSpellLearned(Actor a, string spellNameKey)
+        {
+            if (!_initialized || a == null) return;
+            var asset = GetAsset("sm_log_spell");
+            if (asset == null) return;
+
+            string spellName = LocalizedTextManager.getText(spellNameKey);
+            new WorldLogMessage(asset, a.getName(), spellName, "")
             {
                 unit = a,
                 location = a.current_position

@@ -158,6 +158,12 @@ namespace SuperMech.Code
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_fusion"), "iconSkills",
                 new Color(0.3f, 0.7f, 0.9f), () => SMWindowManager.OpenFusion(a));
 
+            if (a.hasTrait(SuperMechTraits.ClassMage))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_spell_entry"), "iconPurpleBook",
+                    new Color(0.6f, 0.4f, 1f), () => SMWindowManager.OpenSpell(a));
+            }
+
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
