@@ -98,6 +98,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.32.4** | UI修复：修复单位面板折叠功能点击无效的问题。原因是KeyValueField.OnDisable()会清空on_click_value事件，而StatsRowsContainer使用对象池复用行对象，导致设置的点击事件被清空。改用直接给Button组件添加onClick事件（不受OnDisable影响），同时保留on_click_value作为移动端备份 |
 | **v0.32.3** | UI修复：超能者排行榜添加滚动功能。原实现错误地认为"只显示前20名不需要滚动"，但20行内容在窗口高度内显示不全，导致底部条目被截断。已改用SMUiSkin.CreateScrollArea创建滚动区域，并添加ContentSizeFitter自适应内容高度 |
 | **v0.32.2** | Bug修复：修复自动觉醒子系统"Value cannot be null. Parameter name: key"异常。原因是部分刚创建的单位id为null时，调用了用a.id作为字典key的方法（SetQi/SetPotential/GrantTalents/SetProfession等）。已在TickAutoAwakening入口和所有关键字典操作方法中添加a.id null防御性检查，涉及SuperMechQi、SuperMechPotential、SuperMechTalent、SuperMechProfession四个类 |
 | **v0.32.1** | Bug修复：修复自定义属性"时有时无"的问题。原因是TickSync()中存在不合理的性能限制逻辑——当世界中单位超过500个时，非觉醒且阶位低于A级的单位会被随机跳过不同步，导致打开单位面板时属性时有时无。已移除该限制，所有存活单位都会被同步自定义属性 |

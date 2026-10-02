@@ -60,6 +60,17 @@ namespace SuperMech.Code
 
             if (row != null)
             {
+                // 直接给Button组件添加点击事件，避免on_click_value被OnDisable清空
+                var btn = row.value.GetComponent<UnityEngine.UI.Button>();
+                if (btn != null)
+                {
+                    btn.onClick.AddListener(() =>
+                    {
+                        Toggle(actorId, sectionId);
+                        rebuildAction?.Invoke();
+                    });
+                }
+                // 同时也设置on_click_value作为备份（移动端等无鼠标场景）
                 row.on_click_value = () =>
                 {
                     Toggle(actorId, sectionId);
