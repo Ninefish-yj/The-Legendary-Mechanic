@@ -217,7 +217,7 @@ namespace SuperMech.Code
                         found++;
                     }
                 }
-                catch { }
+                catch { Debug.LogWarning("[超神机械师] 跨模组能量读取异常"); }
             }
 
             if (found > 0) return total / found;

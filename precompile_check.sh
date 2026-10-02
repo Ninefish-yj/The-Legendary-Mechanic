@@ -78,9 +78,50 @@ if [ "$BRACKET_ERRORS" -eq 0 ]; then
     echo "  ✅ 所有文件括号平衡"
 fi
 
+# API使用模式静态检查
+echo ""
+echo "=== API使用模式检查 ==="
+API_WARNINGS=0
+
+# 检查1: 直接操作PowerButtonSelector.instance.buttons（错误模式）
+BAD_BUTTONS=$(grep -rn "PowerButtonSelector.instance.buttons" "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "//")
+if [ -n "$BAD_BUTTONS" ]; then
+    echo "  ⚠️  发现直接操作PowerButtonSelector.instance.buttons（应用PowerButtonCreator+TabManager）:"
+    echo "$BAD_BUTTONS" | head -5
+    API_WARNINGS=$((API_WARNINGS+1))
+fi
+
+# 检查2: 直接Instantiate PowerButton（应用PowerButtonCreator）
+BAD_INSTANTIATE=$(grep -rn "Instantiate.*PowerButton\|Instantiate.*template.*PowerButton" "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "//" | grep -v "StatsIcon")
+if [ -n "$BAD_INSTANTIATE" ]; then
+    echo "  ⚠️  发现直接Instantiate PowerButton（应用PowerButtonCreator.CreateGodPowerButton）:"
+    echo "$BAD_INSTANTIATE" | head -5
+    API_WARNINGS=$((API_WARNINGS+1))
+fi
+
+# 检查3: 硬编码中文（非日志/注释/模组名称）
+BAD_CHINESE=$(grep -rn '[\x{4e00}-\x{9fff}]' "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "Debug.Log\|//\|/\*\|ModName\|\"未知\"" | head -5)
+if [ -n "$BAD_CHINESE" ]; then
+    echo "  ⚠️  发现可能的硬编码中文UI文本（应用LocalizedTextManager）:"
+    echo "$BAD_CHINESE"
+    API_WARNINGS=$((API_WARNINGS+1))
+fi
+
+# 检查4: 真正的空catch（无日志、无返回值）
+BAD_CATCH=$(grep -rn "catch\s*{[^}]*}" "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "Debug\.\|return\|LogService\|//" | grep "catch\s*{}\|catch\s*{\s*}")
+if [ -n "$BAD_CATCH" ]; then
+    echo "  ⚠️  发现真正的空catch块（应至少记录日志）:"
+    echo "$BAD_CATCH" | head -5
+    API_WARNINGS=$((API_WARNINGS+1))
+fi
+
+if [ "$API_WARNINGS" -eq 0 ]; then
+    echo "  ✅ API使用模式检查通过"
+fi
+
 echo ""
 echo "=== 检查完成 ==="
-echo "代码错误: $ERROR_COUNT | 括号错误: $BRACKET_ERRORS | CS1069环境警告: $CS1069_COUNT"
+echo "代码错误: $ERROR_COUNT | 括号错误: $BRACKET_ERRORS | API警告: $API_WARNINGS | CS1069环境警告: $CS1069_COUNT"
 if [ "$ERROR_COUNT" -eq 0 ] && [ "$BRACKET_ERRORS" -eq 0 ]; then
     echo "✅ 可以打包发布"
 else

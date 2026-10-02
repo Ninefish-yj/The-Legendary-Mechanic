@@ -122,41 +122,41 @@ namespace SuperMech.Code
 
         public static void ClearAll()
         {
-            try { SuperMechQi.Clear(); } catch { }
-            try { SuperMechStage.Clear(); } catch { }
-            try { SuperMechPotential.Clear(); } catch { }
-            try { SuperMechKnowledge.Clear(); } catch { }
-            try { SuperMechKnowledgeSynergy.Clear(); } catch { }
-            try { SuperMechEquipAffix.Clear(); } catch { }
-            try { SuperMechEquipBreak.Clear(); } catch { }
-            try { SuperMechMechFusion.Clear(); } catch { }
-            try { SuperMechKnowledgeFusion.Clear(); } catch { }
-            try { SuperMechDivinity.Clear(); } catch { }
-            try { SuperMechTranscendence.Clear(); } catch { }
-            try { SuperMechInfoState.Clear(); } catch { }
-            try { SuperMechAwakened.Clear(); } catch { }
-            try { SuperMechAdvancementTask.Clear(); } catch { }
-            try { SuperMechHeritage.Clear(); } catch { }
-            try { SuperMechIntuition.Clear(); } catch { }
-            try { SuperMechQiAttribute.Clear(); } catch { }
-            try { SuperMechCorePower.Clear(); } catch { }
-            try { SuperMechSubClass.Clear(); } catch { }
-            try { SuperMechLegend.Clear(); } catch { }
-            try { SuperMechSanctuary.Clear(); } catch { }
-            try { SuperMechMageTower.Clear(); } catch { }
-            try { SuperMechRelic.Clear(); } catch { }
-            try { SuperMechCosmicRelic.Clear(); } catch { }
-            try { SuperMechEquipBag.Clear(); } catch { }
-            try { SuperMechRace.Clear(); } catch { }
-            try { SuperMechAdvancement.Clear(); } catch { }
-            try { SuperMechAura.Clear(); } catch { }
-            try { SuperMechCrafting.Clear(); } catch { }
-            try { SuperMechPotentialRating.Clear(); } catch { }
-            try { SMWindowFrame.ClearAll(); } catch { }
-            try { SuperMechAwakenWindow.ClearStaticState(); } catch { }
-            try { SuperMechStatsIcon.ClearStaticState(); } catch { }
-            try { SuperMechProfession.Clear(); } catch { }
-            try { SuperMechTalent.Clear(); } catch { }
+            try { SuperMechQi.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理Qi数据失败"); }
+            try { SuperMechStage.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理Stage数据失败"); }
+            try { SuperMechPotential.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPotential"); }
+            try { SuperMechKnowledge.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechKnowledge"); }
+            try { SuperMechKnowledgeSynergy.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechKnowledgeSynergy"); }
+            try { SuperMechEquipAffix.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEquipAffix"); }
+            try { SuperMechEquipBreak.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEquipBreak"); }
+            try { SuperMechMechFusion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechMechFusion"); }
+            try { SuperMechKnowledgeFusion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechKnowledgeFusion"); }
+            try { SuperMechDivinity.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechDivinity"); }
+            try { SuperMechTranscendence.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTranscendence"); }
+            try { SuperMechInfoState.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechInfoState"); }
+            try { SuperMechAwakened.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAwakened"); }
+            try { SuperMechAdvancementTask.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAdvancementTask"); }
+            try { SuperMechHeritage.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechHeritage"); }
+            try { SuperMechIntuition.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechIntuition"); }
+            try { SuperMechQiAttribute.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechQiAttribute"); }
+            try { SuperMechCorePower.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCorePower"); }
+            try { SuperMechSubClass.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechSubClass"); }
+            try { SuperMechLegend.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechLegend"); }
+            try { SuperMechSanctuary.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechSanctuary"); }
+            try { SuperMechMageTower.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechMageTower"); }
+            try { SuperMechRelic.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechRelic"); }
+            try { SuperMechCosmicRelic.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCosmicRelic"); }
+            try { SuperMechEquipBag.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEquipBag"); }
+            try { SuperMechRace.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechRace"); }
+            try { SuperMechAdvancement.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAdvancement"); }
+            try { SuperMechAura.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAura"); }
+            try { SuperMechCrafting.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCrafting"); }
+            try { SuperMechPotentialRating.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPotentialRating"); }
+            try { SMWindowFrame.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理WindowFrame失败"); }
+            try { SuperMechAwakenWindow.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理AwakenWindow失败"); }
+            try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
+            try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
+            try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }
             Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");
         }
     }

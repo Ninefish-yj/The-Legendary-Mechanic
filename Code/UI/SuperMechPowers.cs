@@ -68,7 +68,37 @@ namespace SuperMech.Code
                 Debug.Log($"[超神机械师] 神权按钮创建完成：{created}个（独立Tab）");
             }
 
+            // 运行时断言：验证所有按钮都在Tab列表中
+            VerifyButtonsInTab();
+
             _buttonsCreated = true;
+        }
+
+        /// <summary>
+        /// 运行时断言：验证所有按钮都正确加入Tab的_power_buttons列表
+        /// </summary>
+        private static void VerifyButtonsInTab()
+        {
+            if (_modTab == null) return;
+            var field = typeof(PowersTab).GetField("_power_buttons",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (field == null) return;
+            var list = field.GetValue(_modTab) as System.Collections.Generic.List<PowerButton>;
+            if (list == null) return;
+
+            foreach (string id in PowerIds)
+            {
+                var pb = PowerButton.get(id);
+                if (pb == null)
+                {
+                    Debug.LogError($"[超神机械师] 运行时断言失败：按钮{id}未创建！");
+                    continue;
+                }
+                if (!list.Contains(pb))
+                {
+                    Debug.LogError($"[超神机械师] 运行时断言失败：按钮{id}未加入Tab列表！");
+                }
+            }
         }
 
         /// <summary>
