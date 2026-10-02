@@ -76,9 +76,25 @@ namespace SuperMech.Code
                     }
                 }
 
-                // 气力属性克制：原著五属性克制环（金→磁→念→灵→暗→金）
-                // 克制+30%（第六级后+40%），被克-20%（第六级后-25%）
-                if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
+                // 原著职业克制：精神攻击穿甲
+                // 念力系/异能系的精神打击可穿透护甲直接伤害本体
+                // 机械系智力高幻术影响减弱，但无精神防御能力（除超A级虚拟机械师）
+                if (attacker != null && attacker.isAlive() && target != null && target.isAlive()
+                    && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
+                {
+                    bool atkPsi = attacker.hasTrait(SuperMechTraits.ClassPsi) || attacker.hasTrait(SuperMechTraits.ClassMind);
+                    bool defMech = target.hasTrait(SuperMechTraits.ClassMech);
+                    if (atkPsi && defMech)
+                    {
+                        // 精神攻击穿甲：忽略目标50%护甲，直接造成伤害
+                        float armorPierceDamage = pDamage * 0.30f;
+                        target.data.health -= (int)armorPierceDamage;
+                    }
+                }
+
+                // 气力属性克制环（游戏化扩展，原著无此设定，默认关闭）
+                if (SuperMechConfig.QiAttributeCounterEnabled
+                    && attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
                 {
                     float attrCounter = SuperMechQiAttribute.GetCounterMultiplier(attacker, target);
                     float classCounter = SuperMechQiAttribute.GetClassCounterMultiplier(attacker, target);

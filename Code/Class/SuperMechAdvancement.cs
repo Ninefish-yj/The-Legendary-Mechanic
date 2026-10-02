@@ -180,6 +180,8 @@ namespace SuperMech.Code
                         }
                         a.addTrait(targetId);
                         SuperMechRankSpecialty.OnRankUp(a, targetIdx);
+                        // 原著：武道系通过修行不同流派可改变气力属性（火的爆裂/风的速度/铁的坚韧）
+                        SuperMechQiAttribute.TryMartialStyleChange(a);
                     }
                 }
 

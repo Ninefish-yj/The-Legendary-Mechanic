@@ -48,6 +48,12 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetQiUnlimited"
+    },
+    {
+      "Id": "qi_attribute_counter",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetQiAttributeCounterEnabled"
     }
   ],
   "Promotion": [

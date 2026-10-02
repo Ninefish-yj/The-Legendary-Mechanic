@@ -156,6 +156,47 @@ namespace SuperMech.Code
             if (attr != AttrNone) SetAttribute(a, attr);
         }
 
+        /// <summary>
+        /// 原著：气力属性并非一成不变，武道系通过修行不同流派可改变属性。
+        /// 火的爆裂、风的速度、铁的坚韧。
+        /// </summary>
+        private static readonly string[] MartialStyles = { AttrIron, AttrFire, AttrWind, AttrWater, AttrLightning };
+
+        /// <summary>武道系流派改变属性的概率（每次升级时检查）</summary>
+        public const float MartialStyleChangeChance = 0.15f;
+
+        /// <summary>
+        /// 尝试改变武道系单位的气力属性（模拟修行不同流派）。
+        /// 原著：武道系通过修行不同流派，可改变自身气力属性。
+        /// </summary>
+        public static void TryMartialStyleChange(Actor a)
+        {
+            if (a == null) return;
+            if (!a.hasTrait(SuperMechTraits.ClassMartial)) return;
+            if (Random.value > MartialStyleChangeChance) return;
+
+            string currentAttr = GetAttribute(a);
+            string newAttr = MartialStyles[Mathf.Abs(a.data.id.GetHashCode() + (int)Time.time) % MartialStyles.Length];
+            if (newAttr != currentAttr && newAttr != AttrNone)
+            {
+                SetAttribute(a, newAttr);
+                if (SuperMechConfig.LogVerbose)
+                {
+                    Debug.Log($"[超神机械师] {a.data.name} 武道系修行新流派，气力属性变更");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 主动改变单位气力属性（用于技能/道具/事件）。
+        /// </summary>
+        public static void ChangeAttribute(Actor a, string newAttr)
+        {
+            if (a == null || string.IsNullOrEmpty(newAttr)) return;
+            if (newAttr == AttrNone) return;
+            SetAttribute(a, newAttr);
+        }
+
         private static void ApplyBonus(Actor a)
         {
             string attr = GetAttribute(a);

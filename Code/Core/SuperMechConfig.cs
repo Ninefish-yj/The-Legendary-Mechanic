@@ -15,6 +15,8 @@ namespace SuperMech.Code
         public static float QiGrowthRate = 1.0f;
         public static bool QiUnlimited = true;
         public static int QiDisplayDecimals = 0;
+        /// <summary>气力属性克制环开关（游戏化扩展，原著无此设定，默认关闭）</summary>
+        public static bool QiAttributeCounterEnabled = false;
 
         public static float PromotionSpeed = 1.0f;
         public static float OnaMultiplier = 1.0f;
@@ -133,6 +135,7 @@ namespace SuperMech.Code
 
         public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); }
         public static void SetQiUnlimited(bool val) { QiUnlimited = val; }
+        public static void SetQiAttributeCounterEnabled(bool val) { QiAttributeCounterEnabled = val; }
 
         public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); }
         public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); }
