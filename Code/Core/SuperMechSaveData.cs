@@ -47,6 +47,8 @@ namespace SuperMech.Code
             public int cosmicIteration = 0;       // 宇宙迭代次数
             public string civilizationData = "";  // 文明数据（JSON序列化）
             public List<string> unlockedRecipes = new List<string>(); // 已解锁融合配方
+            // === v0.37.0 超神遗力还原 ===
+            public string worldLegacyPool = "";   // 世界游离遗力池（JSON序列化）
         }
 
         [Serializable]
@@ -65,6 +67,7 @@ namespace SuperMech.Code
             public int divinitySpeciesLayers;
             public bool divinityTriggered;
             public int legacyPower;
+            public string legacySources = "";  // v0.37.0 遗力来源记录（JSON序列化）
             public bool transcended;
             public float advancementProgress;
             public bool advancementTaskDone;
@@ -185,6 +188,7 @@ namespace SuperMech.Code
                             divinitySpeciesLayers = SuperMechDivinity.GetSpeciesLayers(a),
                             divinityTriggered = SuperMechDivinity.IsDivineAwakened(a),
                             legacyPower = SuperMechTranscendence.GetLegacyPower(a),
+                            legacySources = SerializeLegacySources(SuperMechTranscendence.GetLegacySources(a)),
                             transcended = SuperMechTranscendence.IsTranscended(a),
                             advancementProgress = SuperMechTranscendence.GetAdvancementProgress(a),
                             advancementTaskDone = SuperMechTranscendence.IsAdvancementTaskDone(a),
@@ -251,6 +255,8 @@ namespace SuperMech.Code
                 // 保存宇宙迭代数据
                 data.cosmicIteration = SuperMechCosmicIteration.CurrentIteration;
                 data.civilizationData = SuperMechCivilizationData.Serialize();
+                // 保存世界遗力池（v0.37.0）
+                data.worldLegacyPool = SerializeWorldLegacyPool();
 
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
@@ -295,6 +301,8 @@ namespace SuperMech.Code
 
                 // 初始化宇宙迭代系统
                 SuperMechCosmicIteration.Initialize(data.cosmicIteration, data.civilizationData);
+                // 加载世界遗力池（v0.37.0）
+                SuperMechTranscendence.SetWorldLegacyPool(DeserializeWorldLegacyPool(data.worldLegacyPool));
 
                 Debug.Log($"[超神机械师] 存档加载：{data.actors.Count}个单位数据待恢复");
             }
@@ -351,6 +359,7 @@ namespace SuperMech.Code
                     SuperMechDivinity.SetPoints(a, ad.divinityPoints);
                     SuperMechDivinity.SetLayers(a, ad.divinityProfLayers, ad.divinitySpeciesLayers);
                     SuperMechTranscendence.SetLegacyPower(a, ad.legacyPower);
+                    SuperMechTranscendence.SetLegacySources(a, DeserializeLegacySources(ad.legacySources));
                     if (ad.transcended) SuperMechTranscendence.SetTranscended(a);
                     SuperMechTranscendence.SetAdvancementProgress(a, ad.advancementProgress);
                     if (ad.advancementTaskDone) SuperMechTranscendence.SetAdvancementTaskDone(a);
@@ -505,9 +514,63 @@ namespace SuperMech.Code
             catch { Debug.LogWarning("[超神机械师] 存档恢复失败"); }
         }
 
-        private static float GetEmRefineQiBonus(Actor a)
+        // === v0.37.0 超神遗力序列化 ===
+        private static string SerializeLegacySources(List<LegacyPowerSource> sources)
         {
-            var dict = SuperMechRefinement._emRefineQiBonus;
+            if (sources == null || sources.Count == 0) return "";
+            var list = new List<Dictionary<string, object>>();
+            foreach (var s in sources)
+            {
+                list.Add(new Dictionary<string, object>
+                {
+                    { "name", s.sourceName ?? "" },
+                    { "rank", s.sourceRank },
+                    { "energy", s.sourceEnergy },
+                    { "damage", s.deathDamage },
+                    { "type", s.deathType ?? "" }
+                });
+            }
+            return JsonConvert.SerializeObject(list);
+        }
+
+        private static List<LegacyPowerSource> DeserializeLegacySources(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return null;
+            try
+            {
+                var list = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(json);
+                if (list == null) return null;
+                var result = new List<LegacyPowerSource>();
+                foreach (var d in list)
+                {
+                    result.Add(new LegacyPowerSource
+                    {
+                        sourceName = d.ContainsKey("name") ? d["name"].ToString() : "",
+                        sourceRank = d.ContainsKey("rank") ? System.Convert.ToInt32(d["rank"]) : 0,
+                        sourceEnergy = d.ContainsKey("energy") ? System.Convert.ToSingle(d["energy"]) : 0f,
+                        deathDamage = d.ContainsKey("damage") ? System.Convert.ToSingle(d["damage"]) : 0f,
+                        deathType = d.ContainsKey("type") ? d["type"].ToString() : ""
+                    });
+                }
+                return result;
+            }
+            catch { return null; }
+        }
+
+        private static string SerializeWorldLegacyPool()
+        {
+            var pool = SuperMechTranscendence.GetWorldLegacyPool();
+            if (pool == null || pool.Count == 0) return "";
+            return SerializeLegacySources(pool);
+        }
+
+        private static List<LegacyPowerSource> DeserializeWorldLegacyPool(string json)
+        {
+            return DeserializeLegacySources(json);
+        }
+
+        private static float GetEmRefineQiBonus(Actor a)
+        {            var dict = SuperMechRefinement._emRefineQiBonus;
             return dict != null && dict.TryGetValue(a.id, out float v) ? v : 0f;
         }
 

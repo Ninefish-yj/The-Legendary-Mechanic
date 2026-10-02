@@ -73,6 +73,7 @@ namespace SuperMech.Code
             {
                 SafeRun("直觉", () => SuperMechIntuition.TickIntuition());
                 SafeRun("神性洞察", () => SuperMechDivinity.TickNativeInsight());
+                SafeRun("SS单位快照", () => SuperMechTranscendence.UpdateSsSnapshots());
                 SafeRun("传承感知", () => SuperMechTranscendence.TickLegacySense());
                 SafeRun("神化任务", () => SuperMechTranscendence.TickAdvancementTask());
                 SafeRun("自动神化尝试", () => SuperMechTranscendence.TickAutoAttempt());

@@ -4312,5 +4312,8 @@
   "sm_ui_san_info_empty": "暂无信息态记录",
   "sm_ui_san_info_records": "信息态记录",
   "sm_ui_san_info_qi": "气力",
-  "sm_ui_san_info_revive": "复活次数"
+  "sm_ui_san_info_revive": "复活次数",
+  "sm_legacy_sources": "遗力来源",
+  "sm_legacy_debt_warn": "继承遗力需承担死者死亡之伤",
+  "sm_legacy_damage": "承伤"
 }
