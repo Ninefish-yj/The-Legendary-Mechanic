@@ -4142,5 +4142,11 @@
   "sm_recipe_ec_t4_name": "时间能量图纸",
   "sm_recipe_ec_t4_desc": "能量+操控跨分支融合，产出时间能量装置",
   "sm_recipe_ec_t5_name": "创世AI图纸",
-  "sm_recipe_ec_t5_desc": "能量+操控终极融合，产出创世AI"
+  "sm_recipe_ec_t5_desc": "能量+操控终极融合，产出创世AI",
+  "sm_sanctuary_type_mech": "机械系圣所",
+  "sm_sanctuary_type_energy": "能量圣所",
+  "sm_sanctuary_type_bio": "生物基因圣所",
+  "sm_sanctuary_type_spatial": "时空圣所",
+  "sm_sanctuary_type_dimensional": "维度圣所",
+  "sm_sanctuary_type_info": "信息态圣所"
 }

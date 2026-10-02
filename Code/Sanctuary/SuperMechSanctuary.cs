@@ -24,6 +24,50 @@ namespace SuperMech.Code
         public const int DivinityQiLevel = 21;
         public const int FragmentsToUnlock = 3;
 
+        /// <summary>圣所类型（原著差异化设定）</summary>
+        public enum SanctuaryType
+        {
+            Mechanical = 0,    // 第一圣所：机械系技术（原著）
+            Energy = 1,        // 第二圣所：能量/能源技术
+            Biological = 2,    // 第三圣所：生物/基因/异能知识（原著）
+            Spatial = 3,       // 第四圣所：时空/维度技术
+            Dimensional = 4,   // 第五圣所：维度/虚空技术
+            Information = 5    // 第六圣所：信息态技术（原著）
+        }
+
+        /// <summary>各圣所类型（索引0~5对应第一~第六圣所）</summary>
+        public static readonly SanctuaryType[] SanctuaryTypes =
+        {
+            SanctuaryType.Mechanical,    // 第一圣所：机械系
+            SanctuaryType.Energy,        // 第二圣所：能量
+            SanctuaryType.Biological,    // 第三圣所：生物/基因/异能
+            SanctuaryType.Spatial,       // 第四圣所：时空
+            SanctuaryType.Dimensional,   // 第五圣所：维度
+            SanctuaryType.Information    // 第六圣所：信息态
+        };
+
+        /// <summary>圣所专属知识分支（访问时产出对应知识）</summary>
+        public static readonly string[][] SanctuaryKnowledgeBranches =
+        {
+            new[] { "mech_weapon", "mech_energy", "mech_control" },  // 第一圣所：机械系三支
+            new[] { "mech_energy" },                                  // 第二圣所：能量
+            new[] { "bio_gene", "bio_ability", "bio_evolution" },    // 第三圣所：生物/基因/异能
+            new[] { "space_time", "space_warp", "space_navigation" },// 第四圣所：时空
+            new[] { "dim_void", "dim_voidwalk", "dim_phase" },       // 第五圣所：维度
+            new[] { "info_state", "info_virtual", "info_resurrect" } // 第六圣所：信息态
+        };
+
+        /// <summary>圣所类型名称本地化key</summary>
+        public static readonly string[] SanctuaryTypeNames =
+        {
+            "sm_sanctuary_type_mech",
+            "sm_sanctuary_type_energy",
+            "sm_sanctuary_type_bio",
+            "sm_sanctuary_type_spatial",
+            "sm_sanctuary_type_dimensional",
+            "sm_sanctuary_type_info"
+        };
+
         private static readonly string DataPath =
             Path.Combine(Application.dataPath, "sm_sanctuary_970");
 
@@ -309,6 +353,89 @@ namespace SuperMech.Code
         {
             Data.key_fragments++;
             Save();
+        }
+
+        /// <summary>获取圣所类型</summary>
+        public static SanctuaryType GetSanctuaryType(int sanctuaryIndex)
+        {
+            if (sanctuaryIndex < 0 || sanctuaryIndex >= TotalSanctuaries) return SanctuaryType.Mechanical;
+            return SanctuaryTypes[sanctuaryIndex];
+        }
+
+        /// <summary>获取圣所类型名称（本地化）</summary>
+        public static string GetSanctuaryTypeName(int sanctuaryIndex)
+        {
+            if (sanctuaryIndex < 0 || sanctuaryIndex >= TotalSanctuaries) return "";
+            return LocalizedTextManager.getText(SanctuaryTypeNames[sanctuaryIndex]);
+        }
+
+        /// <summary>获取圣所专属知识分支列表</summary>
+        public static string[] GetSanctuaryKnowledgeBranches(int sanctuaryIndex)
+        {
+            if (sanctuaryIndex < 0 || sanctuaryIndex >= TotalSanctuaries) return new string[0];
+            return SanctuaryKnowledgeBranches[sanctuaryIndex];
+        }
+
+        /// <summary>访问圣所：根据圣所类型产出专属知识/权限（原著差异化）
+        /// 第一圣所产出机械系知识，第三圣所产出生物基因知识，第六圣所产出信息态知识
+        /// </summary>
+        public static bool VisitSanctuary(Actor a, int sanctuaryIndex)
+        {
+            if (a == null || sanctuaryIndex < 0 || sanctuaryIndex >= TotalSanctuaries) return false;
+            if ((Data.unlocked_sanctuaries & (1 << sanctuaryIndex)) == 0) return false;
+
+            // 增加访问次数和权限
+            Data.total_visits++;
+            AddAuthority(a, sanctuaryIndex, 10);
+
+            // 根据圣所类型产出专属知识（机械系单位访问第一圣所有额外加成）
+            var type = GetSanctuaryType(sanctuaryIndex);
+            bool isMatchingClass = false;
+            switch (type)
+            {
+                case SanctuaryType.Mechanical:
+                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMech);
+                    break;
+                case SanctuaryType.Biological:
+                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMind) || a.hasTrait(SuperMechTraits.ClassPsi);
+                    break;
+                case SanctuaryType.Information:
+                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMech) || a.hasTrait(SuperMechTraits.ClassPsi);
+                    break;
+            }
+
+            // 匹配体系的单位访问获得额外权限加成
+            if (isMatchingClass)
+            {
+                AddAuthority(a, sanctuaryIndex, 5);
+                Debug.Log($"[超神机械师] {a.name} 访问第{sanctuaryIndex + 1}圣所（{GetSanctuaryTypeName(sanctuaryIndex)}），体系匹配，额外权限+5");
+            }
+            else
+            {
+                Debug.Log($"[超神机械师] {a.name} 访问第{sanctuaryIndex + 1}圣所（{GetSanctuaryTypeName(sanctuaryIndex)}）");
+            }
+
+            Save();
+            return true;
+        }
+
+        /// <summary>获取圣所时间比例（原著：权限越高，时间比例越趋近1:1）
+        /// 基础比例1:10，每1000点权限提升10%，最高1:1
+        /// </summary>
+        public static float GetSanctuaryTimeRatio(Actor a, int sanctuaryIndex)
+        {
+            if (a == null) return 0.1f; // 基础1:10
+            int authority = GetAuthority(a, sanctuaryIndex);
+            float ratio = 0.1f + (authority / 1000f) * 0.1f;
+            return Mathf.Clamp(ratio, 0.1f, 1.0f);
+        }
+
+        /// <summary>获取圣所时间比例描述（用于UI显示）</summary>
+        public static string GetSanctuaryTimeRatioText(Actor a, int sanctuaryIndex)
+        {
+            float ratio = GetSanctuaryTimeRatio(a, sanctuaryIndex);
+            int outsideTime = Mathf.RoundToInt(1f / ratio);
+            return $"圣所内1小时 = 外界{outsideTime}小时";
         }
 
         public static void Register()
