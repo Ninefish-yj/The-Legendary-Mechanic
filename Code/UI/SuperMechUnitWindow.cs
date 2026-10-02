@@ -97,9 +97,9 @@ namespace SuperMech.Code
 
             // === 入口按钮组 ===
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
-                new Color(0.5f, 0.35f, 0.7f), () => SMWindowManager.OpenKnowledge());
+                new Color(0.5f, 0.35f, 0.7f), () => SMWindowManager.OpenKnowledge(a));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
-                new Color(0.9f, 0.7f, 0.3f), () => SMWindowManager.OpenBag());
+                new Color(0.9f, 0.7f, 0.3f), () => SMWindowManager.OpenBag(a));
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {

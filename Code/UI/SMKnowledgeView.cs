@@ -11,7 +11,9 @@ namespace SuperMech.Code
         private Text _detailText;
         private string _selectedId;
         private readonly Dictionary<string, bool> _folded = new Dictionary<string, bool>();
-        private static Actor SelectedActor => SelectedUnit.unit;
+        // 可指定查看单位（从单位面板打开时设置），不指定则用全局选中
+        public static Actor OverrideActor;
+        private static Actor SelectedActor => OverrideActor != null ? OverrideActor : SelectedUnit.unit;
 
         void Awake()
         {

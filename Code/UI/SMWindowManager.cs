@@ -43,8 +43,10 @@ namespace SuperMech.Code
             _buttons["sanctuary"] = btn5;
         }
 
-        public static void OpenKnowledge() { ToggleWindow("knowledge", "sm_ui_knowledge", 720, 520, DrawKnowledgeContent); }
-        public static void OpenBag() { ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
+        public static void OpenKnowledge() { SMKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 720, 520, DrawKnowledgeContent); }
+        public static void OpenKnowledge(Actor a) { SMKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 720, 520, DrawKnowledgeContent); }
+        public static void OpenBag() { SMBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
+        public static void OpenBag(Actor a) { SMBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
         public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 600, 460, DrawRankContent); }
         public static void OpenSanctuary() { ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 480, DrawSanctuaryContent); }
