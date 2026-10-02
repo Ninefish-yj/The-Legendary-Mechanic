@@ -159,30 +159,20 @@ namespace SuperMech.Code
             int s = GetStage(a);
             string result;
             if (s <= 0) { result = "sm_stage_none"; }
-            else if (a.hasTrait(SuperMechTraits.ClassMech))
+            else if (a.hasTrait(SuperMechTraits.ClassMech) ||
+                     a.hasTrait(SuperMechTraits.ClassMartial) ||
+                     a.hasTrait(SuperMechTraits.ClassPsi) ||
+                     a.hasTrait(SuperMechTraits.ClassMage) ||
+                     a.hasTrait(SuperMechTraits.ClassMind))
             {
-                // 机械系：未选分支时用通用机械师阶段，选了分支后用分支-specific阶段
+                // 所有超神机械师体系：用对应阶段数组显示实际职业阶段名
                 string[] arr = GetStageArray(a);
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
                 result = arr[idx];
             }
-            else if (a.hasTrait(SuperMechBranch.BranchGunner) || a.hasTrait(SuperMechBranch.BranchMartial))
-            {
-                if (s <= 7)
-                {
-                    string[] arr = GetStageArray(a);
-                    int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
-                    result = arr[idx];
-                }
-                else
-                {
-                    string rank = SuperMechRanks.GetRankName(a);
-                    string subClass = a.hasTrait(SuperMechBranch.BranchGunner) ? "sm_sub_gunner" : "sm_sub_mechmartial";
-                    result = $"{rank}{LocalizedTextManager.getText(subClass)}";
-                }
-            }
             else
             {
+                // 兜底：阶位+体系名
                 string rankName = SuperMechRanks.GetRankName(a);
                 string className = GetGenericClassName(a);
                 result = $"{rankName}{className}";
