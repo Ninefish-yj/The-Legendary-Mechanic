@@ -35,7 +35,7 @@ namespace SuperMech.Code
             _buttons["craft"] = btn3;
 
             var btn4 = SMDraggableButton.Create("rank", "sm_ui_rank", "ui/Icons/iconCrown", startX + spacing * 3, startY);
-            btn4.OnClick = () => ToggleWindow("rank", "sm_ui_rank", 600, 460, DrawRankContent);
+            btn4.OnClick = () => ToggleWindow("rank", "sm_ui_rank_window_title", 600, 460, DrawRankContent);
             _buttons["rank"] = btn4;
 
             var btn5 = SMDraggableButton.Create("sanctuary", "sm_ui_sanctuary", "ui/Icons/iconBlessing", startX + spacing * 4, startY);
@@ -46,7 +46,7 @@ namespace SuperMech.Code
         public static void OpenKnowledge() { ToggleWindow("knowledge", "sm_ui_knowledge", 720, 520, DrawKnowledgeContent); }
         public static void OpenBag() { ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
         public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
-        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank", 600, 460, DrawRankContent); }
+        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 600, 460, DrawRankContent); }
         public static void OpenSanctuary() { ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 480, DrawSanctuaryContent); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
