@@ -75,6 +75,31 @@ namespace SuperMech.Code
                         return false;
                     }
                 }
+
+                // 能级压制：攻击者能级远高于目标时，造成额外伤害
+                if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
+                {
+                    float atkEnergy = SuperMechAdvancement.CalcOnar(attacker);
+                    float defEnergy = SuperMechAdvancement.CalcOnar(target);
+                    if (defEnergy > 0 && atkEnergy > defEnergy * 1.5f)
+                    {
+                        float ratio = atkEnergy / defEnergy;
+                        float bonusDamage = pDamage * Mathf.Min(ratio - 1f, 3f) * 0.5f;
+                        target.data.health -= (int)bonusDamage;
+                    }
+                }
+
+                // 知识融合加成：已融合配方提供伤害加成
+                if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker))
+                {
+                    int fusionCount = SuperMechKnowledgeRecipe.GetFusionCount(attacker);
+                    if (fusionCount > 0)
+                    {
+                        float fusionBonus = Mathf.Min(fusionCount * 0.05f, 0.5f);
+                        float bonusDamage = pDamage * fusionBonus;
+                        target.data.health -= (int)bonusDamage;
+                    }
+                }
             }
             catch (System.Exception e)
             {

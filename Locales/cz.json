@@ -3975,5 +3975,8 @@
   "sm_ui_cosmic_iteration": "宇宙迭代",
   "sm_ui_civilization_history": "文明历史",
   "sm_ui_heritage": "圣所遗产",
-  "sm_ui_great_restart": "大重启"
+  "sm_ui_great_restart": "大重启",
+  "sm_ui_energy_suppression": "能级压制",
+  "sm_ui_fusion_bonus": "融合加成",
+  "sm_ui_combat_stats": "战斗属性"
 }
