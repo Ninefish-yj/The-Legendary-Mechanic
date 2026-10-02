@@ -141,20 +141,6 @@ namespace SuperMech.Code
                 _unitAuthority[a.id] = arr;
             }
             arr[sanctuaryIndex] += amount;
-            var stats = SuperMechStats.Of(a);
-            if (stats != null)
-            {
-                string[] statIds = {
-                    SuperMechCustomStats.StatSanctuary1,
-                    SuperMechCustomStats.StatSanctuary2,
-                    SuperMechCustomStats.StatSanctuary3,
-                    SuperMechCustomStats.StatSanctuary4,
-                    SuperMechCustomStats.StatSanctuary5,
-                    SuperMechCustomStats.StatSanctuary6
-                };
-                for (int i = 0; i < 6; i++)
-                    stats[statIds[i]] = arr[i];
-            }
         }
 
         public static void MarkTranscendenceFailed(Actor a)

@@ -161,14 +161,11 @@ namespace SuperMech.Code
         {
             if (!_initialized || _contentTransform == null) return;
 
-            float divine = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatDivinityLayers);
+            // 神性蜕变和圣所权限直接从各自系统获取（v0.31.1：不再通过自定义属性中转）
+            float divine = SuperMechDivinity.GetTotalLayers(actor);
             float sanctuary = 0f;
-            sanctuary += SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatSanctuary1);
-            sanctuary += SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatSanctuary2);
-            sanctuary += SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatSanctuary3);
-            sanctuary += SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatSanctuary4);
-            sanctuary += SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatSanctuary5);
-            sanctuary += SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatSanctuary6);
+            for (int i = 0; i < 6; i++)
+                sanctuary += SuperMechSanctuary.GetAuthority(actor, i);
             float mechAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMechAffinity);
             float mageAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMageAffinity);
             float mystery = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMystery);
