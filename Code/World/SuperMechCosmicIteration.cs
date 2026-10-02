@@ -12,8 +12,14 @@ namespace SuperMech.Code
         /// <summary>当前宇宙迭代次数</summary>
         public static int CurrentIteration { get; private set; } = 0;
 
-        /// <summary>遗产保留率（0~1），大重启时保留的圣所资源比例</summary>
-        public const float HeritageRetentionRate = 0.3f;
+        /// <summary>遗产保留率基础值（0~1），实际保留率随机波动并受圣所权限影响</summary>
+        public const float BaseHeritageRetentionRate = 0.3f;
+
+        /// <summary>遗产保留率最大波动范围（±20%）</summary>
+        public const float HeritageRetentionFluctuation = 0.2f;
+
+        /// <summary>圣所权限对保留率的加成（每100点权限+5%）</summary>
+        public const float AuthorityRetentionBonus = 0.0005f;
 
         /// <summary>是否已初始化</summary>
         private static bool _initialized = false;
@@ -65,21 +71,37 @@ namespace SuperMech.Code
             Debug.Log($"[超神机械师] 宇宙大重启! 进入第{CurrentIteration}轮迭代，遗产碎片{_pendingHeritage.retainedFragments}");
         }
 
+        /// <summary>计算实际遗产保留率（随机波动+圣所权限加成）
+        /// 原著：遗产保留不是固定比例，而是随机抽取部分信息融入，与圣所权限、迭代深度、文明等级相关
+        /// </summary>
+        private static float CalculateRetentionRate()
+        {
+            // 基础随机波动：±20%
+            float randomFactor = Random.Range(-HeritageRetentionFluctuation, HeritageRetentionFluctuation);
+            // 圣所权限加成：每100点权限+5%
+            float authorityBonus = SuperMechSanctuary.Data.total_permission * AuthorityRetentionBonus;
+            // 迭代深度加成：迭代越深，圣所积累越多，保留率越高
+            float iterationBonus = CurrentIteration * 0.01f;
+            return Mathf.Clamp01(BaseHeritageRetentionRate + randomFactor + authorityBonus + iterationBonus);
+        }
+
         /// <summary>计算本轮遗产（大重启时保留的资源）</summary>
         private static HeritageData CalculateHeritage()
         {
+            float retentionRate = CalculateRetentionRate();
+
             var heritage = new HeritageData
             {
                 iteration = CurrentIteration,
-                retainedFragments = Mathf.FloorToInt(SuperMechSanctuary.Data.key_fragments * HeritageRetentionRate),
-                retainedAuthority = Mathf.FloorToInt(SuperMechSanctuary.Data.total_permission * HeritageRetentionRate),
+                retainedFragments = Mathf.FloorToInt(SuperMechSanctuary.Data.key_fragments * retentionRate),
+                retainedAuthority = Mathf.FloorToInt(SuperMechSanctuary.Data.total_permission * retentionRate),
                 retainedKnowledge = new List<string>(),
                 summary = SuperMechCivilizationData.GetHistory().Count > 0
                     ? SuperMechCivilizationData.GetHistory()[SuperMechCivilizationData.GetHistory().Count - 1].summary
                     : "",
             };
 
-            // 保留部分知识（随机选择，最多10条）
+            // 随机保留部分知识（最多10条，随机抽取而非按比例）
             if (World.world != null && World.world.units != null)
             {
                 var allKnowledge = new HashSet<string>();
@@ -92,14 +114,21 @@ namespace SuperMech.Code
                         foreach (var k in unlocked) allKnowledge.Add(k.id);
                     }
                 }
-                int retainCount = Mathf.Min(10, Mathf.FloorToInt(allKnowledge.Count * HeritageRetentionRate));
+                int retainCount = Mathf.Min(10, Mathf.FloorToInt(allKnowledge.Count * retentionRate));
                 var list = new List<string>(allKnowledge);
+                // Fisher-Yates随机打乱
+                for (int i = list.Count - 1; i > 0; i--)
+                {
+                    int j = Random.Range(0, i + 1);
+                    string temp = list[i]; list[i] = list[j]; list[j] = temp;
+                }
                 for (int i = 0; i < retainCount && i < list.Count; i++)
                 {
                     heritage.retainedKnowledge.Add(list[i]);
                 }
             }
 
+            Debug.Log($"[超神机械师] 遗产保留率: {retentionRate:F0%} (随机+权限加成)");
             return heritage;
         }
 
@@ -137,7 +166,7 @@ namespace SuperMech.Code
                 $"历史文明: {history.Count}轮\n" +
                 $"累计觉醒: {totalAwakened}人\n" +
                 $"历史最高阶位: {(maxRank >= 0 && maxRank < SuperMechRanks.All.Count ? LocalizedTextManager.getText(SuperMechRanks.All[maxRank].name) : "无")}\n" +
-                $"遗产保留率: {HeritageRetentionRate * 100:F0}%";
+                $"遗产保留率: 基础{BaseHeritageRetentionRate * 100:F0}%（随机波动+权限加成）";
         }
 
         /// <summary>重置系统（新世界创建时）</summary>

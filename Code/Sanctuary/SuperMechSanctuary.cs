@@ -40,6 +40,7 @@ namespace SuperMech.Code
             public bool message_board_unlocked = false;
             public int total_divinity_ascensions = 0;
             public int total_resurrections = 0;
+            public float sanctuary_energy = 5000f;  // 圣所能量（复活媒介消耗）
         }
 
         public class DeadUnitRecord

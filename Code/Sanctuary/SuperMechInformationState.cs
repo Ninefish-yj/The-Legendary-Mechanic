@@ -31,6 +31,7 @@ namespace SuperMech.Code
             public int reviveCount;
             public long diedAt;
             public long worldAge;
+            public int iterationId;  // 所属迭代ID（仅能复苏同一迭代的个体）
         }
 
         private static readonly Dictionary<long, InformationStateRecord> _aliveSnapshot = new Dictionary<long, InformationStateRecord>();
@@ -126,6 +127,7 @@ namespace SuperMech.Code
                 energyLevel = SuperMechAdvancement.CalcOnar(a),
                 potential = SuperMechPotential.GetPotential(a),
                 reviveCount = SuperMechSanctuary.GetReviveCount(a),
+                iterationId = SuperMechCosmicIteration.CurrentIteration,
             };
 
             // 职业和分支

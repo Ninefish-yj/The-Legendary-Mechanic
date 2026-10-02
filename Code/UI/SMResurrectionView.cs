@@ -63,10 +63,9 @@ namespace SuperMech.Code
             var deadStates = SuperMechInformationState.GetDeadStates();
             int resurrectable = 0;
 
-            // 更新信息栏
-            _infoText.text = $"<color=#6ab7ff>钥匙碎片:</color> {SuperMechSanctuary.Data.key_fragments}  " +
-                $"<color=#6ab7ff>复活消耗:</color> {SuperMechResurrection.ResurrectCost}  " +
-                $"<color=#6ab7ff>条件:</color> S阶以上，最多{SuperMechResurrection.MaxResurrectCount}次\n" +
+            // 更新信息栏（原著设定：圣所能量媒介，信息完整度决定复苏质量）
+            _infoText.text = $"<color=#6ab7ff>圣所能量:</color> {SuperMechSanctuary.Data.sanctuary_energy:F0}  " +
+                $"<color=#6ab7ff>条件:</color> S阶(超A)以上，信息完整度>20%\n" +
                 $"<color=#8fa8c8>死亡记录: {deadStates.Count}条 | 可复活: {SuperMechResurrection.GetResurrectableStates().Count}个</color>";
 
             if (deadStates.Count == 0)
@@ -109,8 +108,9 @@ namespace SuperMech.Code
                     ? LocalizedTextManager.getText(SuperMechRanks.All[state.rankIndex].name)
                     : "?";
                 string reason = canRes ? "" : GetCannotReason(state);
+                float integrity = SuperMechResurrection.CalculateInformationIntegrity(state);
                 text.text = $"<b>{state.name}</b>  <color=#8fa8c8>{rankName}</color>\n" +
-                    $"<color=#8fa8c8>气力:{state.qi:F0} 复活次数:{state.reviveCount}/{SuperMechResurrection.MaxResurrectCount}</color>" +
+                    $"<color=#8fa8c8>气力:{state.qi:F0} 完整度:{integrity:F0%} 复活:{state.reviveCount}次</color>" +
                     (string.IsNullOrEmpty(reason) ? "" : $"\n<color=#ff9966>{reason}</color>");
 
                 // 复活按钮
@@ -151,10 +151,14 @@ namespace SuperMech.Code
         {
             if (state.rankIndex < SuperMechResurrection.MinRankForResurrect)
                 return LocalizedTextManager.getText("sm_ui_resurrect_rank_low");
-            if (state.reviveCount >= SuperMechResurrection.MaxResurrectCount)
-                return LocalizedTextManager.getText("sm_ui_resurrect_max_count");
-            if (SuperMechSanctuary.Data.key_fragments < SuperMechResurrection.ResurrectCost)
-                return LocalizedTextManager.getText("sm_ui_resurrect_no_fragment");
+            float integrity = SuperMechResurrection.CalculateInformationIntegrity(state);
+            if (integrity < SuperMechResurrection.MinInformationIntegrity)
+                return "信息完整度过低，无法复苏";
+            if (state.iterationId != SuperMechCosmicIteration.CurrentIteration)
+                return "跨迭代个体无法复苏";
+            float cost = SuperMechResurrection.GetResurrectCost(state);
+            if (SuperMechSanctuary.Data.sanctuary_energy < cost)
+                return $"圣所能量不足（需{cost:F0}）";
             return "";
         }
     }

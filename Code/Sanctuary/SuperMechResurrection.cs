@@ -4,25 +4,87 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 圣所复活系统：消耗圣所能量复活死亡单位
-    /// 限制：超A级（S阶以上）才能复活，最多复活3次，消耗钥匙碎片
+    /// 圣所复活系统（原著设定）。
+    /// 原著核心限制：
+    /// 1. 只有超A级（S阶）及以上才能通过圣所复苏
+    /// 2. 人格悖论：复苏的到底是不是原来的个体，一直是争论主题
+    /// 3. 随机失去能力：生前越强复苏越完整，复苏次数过多信息丢失越严重
+    /// 4. 唯一存在性：宇宙里只能同时存在一个你，未死亡时复苏无效
+    /// 5. 无法跨越迭代：仅能复苏同一迭代的个体
+    /// 6. 媒介消耗：消耗含有该超A生物信息的媒介（圣所能量）
     /// </summary>
     public static class SuperMechResurrection
     {
-        public const int MinRankForResurrect = 10; // S阶（index=10）以上才能复活
-        public const int MaxResurrectCount = 3;   // 最多复活3次
-        public const int ResurrectCost = 5;       // 每次复活消耗5个钥匙碎片
+        /// <summary>最低复活阶位：S阶（超A级）及以上</summary>
+        public const int MinRankForResurrect = 10;
 
-        /// <summary>检查是否可以复活该信息态</summary>
+        /// <summary>基础复活消耗的圣所能量</summary>
+        public const float BaseResurrectEnergyCost = 1000f;
+
+        /// <summary>每次复活后信息完整度衰减系数</summary>
+        public const float InformationDecayPerRevive = 0.15f;
+
+        /// <summary>信息完整度下限（低于此值无法复活）</summary>
+        public const float MinInformationIntegrity = 0.2f;
+
+        /// <summary>
+        /// 计算信息态完整度（0~1）。
+        /// 生前越强（阶位越高）基础完整度越高，复苏次数越多完整度越低。
+        /// 原著：生前越强复苏越完整，复苏次数过多信息丢失越严重。
+        /// </summary>
+        public static float CalculateInformationIntegrity(SuperMechInformationState.InformationStateRecord state)
+        {
+            if (state == null) return 0f;
+            // 基础完整度：阶位越高越完整（S阶=0.7, X阶=1.0）
+            float baseIntegrity = Mathf.Clamp01(0.5f + state.rankIndex * 0.04f);
+            // 复苏次数衰减
+            float decay = Mathf.Pow(1f - InformationDecayPerRevive, state.reviveCount);
+            return Mathf.Clamp01(baseIntegrity * decay);
+        }
+
+        /// <summary>检查是否可以复活该信息态（原著限制）</summary>
         public static bool CanResurrect(SuperMechInformationState.InformationStateRecord state)
         {
             if (state == null) return false;
-            if (state.rankIndex < MinRankForResurrect) return false; // 必须S阶以上
-            if (state.reviveCount >= MaxResurrectCount) return false; // 复活次数上限
-            if (SuperMechSanctuary.Data.key_fragments < ResurrectCost) return false; // 钥匙碎片不足
+            // 1. 必须超A级（S阶）及以上
+            if (state.rankIndex < MinRankForResurrect) return false;
+            // 2. 信息完整度必须高于下限
+            float integrity = CalculateInformationIntegrity(state);
+            if (integrity < MinInformationIntegrity) return false;
+            // 3. 唯一存在性：检查是否已有同名同种族单位存活
+            if (IsAlreadyAlive(state)) return false;
+            // 4. 同一迭代限制（当前迭代ID匹配）
+            if (state.iterationId != SuperMechCosmicIteration.CurrentIteration) return false;
+            // 5. 圣所能量足够
+            float cost = GetResurrectCost(state);
+            if (SuperMechSanctuary.Data.sanctuary_energy < cost) return false;
             if (World.world == null || World.world.units == null) return false;
-            // 检查是否已存活（同名同种族单位可能已存在）
             return true;
+        }
+
+        /// <summary>检查是否已有同名同种族单位存活（唯一存在性）</summary>
+        private static bool IsAlreadyAlive(SuperMechInformationState.InformationStateRecord state)
+        {
+            if (state == null || World.world == null || World.world.units == null) return false;
+            var units = World.world.units.units_only_alive;
+            if (units == null) return false;
+            foreach (Actor a in units)
+            {
+                if (a == null) continue;
+                if (a.name == state.name && a.asset?.id == state.species)
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>计算复活消耗的圣所能量（媒介消耗）</summary>
+        public static float GetResurrectCost(SuperMechInformationState.InformationStateRecord state)
+        {
+            if (state == null) return BaseResurrectEnergyCost;
+            // 阶位越高消耗越大，复苏次数越多消耗越大
+            float rankMultiplier = 1f + state.rankIndex * 0.2f;
+            float reviveMultiplier = 1f + state.reviveCount * 0.5f;
+            return BaseResurrectEnergyCost * rankMultiplier * reviveMultiplier;
         }
 
         /// <summary>执行复活，返回复活的Actor，失败返回null</summary>
@@ -30,8 +92,12 @@ namespace SuperMech.Code
         {
             if (!CanResurrect(state)) return null;
 
-            // 消耗钥匙碎片
-            SuperMechSanctuary.Data.key_fragments -= ResurrectCost;
+            // 计算信息完整度
+            float integrity = CalculateInformationIntegrity(state);
+
+            // 消耗圣所能量（媒介）
+            float cost = GetResurrectCost(state);
+            SuperMechSanctuary.Data.sanctuary_energy -= cost;
             SuperMechSanctuary.Data.total_resurrections++;
             SuperMechSanctuary.Save();
 
@@ -61,31 +127,46 @@ namespace SuperMech.Code
             // 恢复职业
             RestoreClass(newActor, state.classTrait);
 
-            // 恢复阶位和气力
-            SuperMechAdvancement.SetExactRank(newActor, Mathf.Max(0, state.rankIndex - 2)); // 复活后降2阶
-            SuperMechQi.SetQi(newActor, state.qi * 0.5f); // 复活后气力减半
+            // 按信息完整度恢复阶位和气力（原著：随机失去能力，完整度决定保留比例）
+            int restoredRank = Mathf.RoundToInt(state.rankIndex * integrity);
+            SuperMechAdvancement.SetExactRank(newActor, Mathf.Max(0, restoredRank));
+            SuperMechQi.SetQi(newActor, state.qi * integrity);
 
-            // 恢复潜能
-            SuperMechPotential.SetPotential(newActor, Mathf.Max(1, state.potential / 2));
+            // 恢复潜能（按完整度）
+            SuperMechPotential.SetPotential(newActor, Mathf.Max(1, Mathf.RoundToInt(state.potential * integrity)));
 
-            // 恢复部分知识（50%）
-            if (state.knowledge != null)
+            // 随机恢复知识（按完整度，随机选择保留哪些）
+            if (state.knowledge != null && state.knowledge.Count > 0)
             {
-                int restoreCount = Mathf.CeilToInt(state.knowledge.Count * 0.5f);
-                for (int i = 0; i < restoreCount && i < state.knowledge.Count; i++)
+                int restoreCount = Mathf.RoundToInt(state.knowledge.Count * integrity);
+                var shuffled = new List<string>(state.knowledge);
+                ShuffleList(shuffled);
+                for (int i = 0; i < restoreCount && i < shuffled.Count; i++)
                 {
-                    SuperMechKnowledge.Unlock(newActor, state.knowledge[i]);
+                    SuperMechKnowledge.Unlock(newActor, shuffled[i]);
                 }
             }
 
             // 记录复活次数
             SuperMechSanctuary.SetReviveCount(newActor, state.reviveCount + 1);
 
-            // 从信息态列表中移除
+            // 从信息态列表中移除（已复活）
             SuperMechInformationState.RemoveDeadState(state.actorId);
 
-            Debug.Log($"[超神机械师] 复活成功: {state.name} (原阶位{state.rankIndex}→{Mathf.Max(0, state.rankIndex - 2)}, 气力{state.qi * 0.5f:F0})");
+            Debug.Log($"[超神机械师] 复活成功: {state.name} (信息完整度{integrity:F0%}, 原阶位{state.rankIndex}→{restoredRank}, 消耗能量{cost:F0})");
             return newActor;
+        }
+
+        /// <summary>列表随机打乱（Fisher-Yates）</summary>
+        private static void ShuffleList<T>(List<T> list)
+        {
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                int j = Random.Range(0, i + 1);
+                T temp = list[i];
+                list[i] = list[j];
+                list[j] = temp;
+            }
         }
 
         /// <summary>恢复职业特质</summary>
@@ -119,7 +200,6 @@ namespace SuperMech.Code
             int cx = MapBox.width / 2;
             int cy = MapBox.height / 2;
 
-            // 从中心向外搜索
             for (int r = 0; r < 50; r++)
             {
                 for (int dx = -r; dx <= r; dx++)
