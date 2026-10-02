@@ -27,56 +27,40 @@ namespace SuperMech.Code
 
     public class SMRankView : MonoBehaviour
     {
+        private RectTransform _content;
+
         void Awake()
         {
-            try { BuildLayout(); RefreshRank(); }
+            try { BuildLayout(); }
             catch (System.Exception e) { Debug.LogError("[超神机械师] RankView初始化失败: " + e); }
+        }
+
+        void OnEnable()
+        {
+            try { RefreshRank(); }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] RankView刷新失败: " + e); }
         }
 
         private void BuildLayout()
         {
-            var scrollGo = new GameObject("Scroll");
-            scrollGo.transform.SetParent(transform, false);
-            var scrollRect = scrollGo.AddComponent<ScrollRect>();
-            var sr = scrollGo.GetComponent<RectTransform>();
-            sr.anchorMin = Vector2.zero;
-            sr.anchorMax = Vector2.one;
-            sr.offsetMin = Vector2.zero;
-            sr.offsetMax = Vector2.zero;
-            // Mask裁剪
-            var mask = scrollGo.AddComponent<Mask>();
-            mask.showMaskGraphic = false;
-            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
-
-            var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(scrollGo.transform, false);
-            var contentRect = contentGo.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 1);
-            contentRect.anchorMax = new Vector2(1, 1);
-            contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.sizeDelta = new Vector2(0, 100);
-            var layout = contentGo.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = 2;
-            layout.padding = new RectOffset(0, 0, 0, 0);
-            layout.childControlHeight = true;
-            layout.childControlWidth = true;
-            var fitter = contentGo.AddComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            scrollRect.content = contentRect;
-            scrollRect.viewport = sr;
-            scrollRect.vertical = true;
-            scrollRect.horizontal = false;
-            // 滚动条样式
-            scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+            var (scroll, content) = SMUiSkin.CreateScrollArea(transform, "Scroll");
+            _content = content;
         }
 
         private void RefreshRank()
         {
-            var content = transform.Find("Scroll/Content");
-            if (content == null) return;
+            if (_content == null) return;
+
+            // 清空旧内容
+            for (int i = _content.childCount - 1; i >= 0; i--)
+                Object.Destroy(_content.GetChild(i).gameObject);
 
             var units = World.world?.units?.units_only_alive;
-            if (units == null) return;
+            if (units == null)
+            {
+                ShowEmpty();
+                return;
+            }
 
             var rankings = new System.Collections.Generic.List<(string name, string rankKey, float onar)>();
             foreach (Actor a in units)
@@ -90,16 +74,17 @@ namespace SuperMech.Code
             rankings.Sort((x, y) => y.onar.CompareTo(x.onar));
             if (rankings.Count > 20) rankings.RemoveRange(20, rankings.Count - 20);
 
+            if (rankings.Count == 0)
+            {
+                ShowEmpty();
+                return;
+            }
+
             int rank = 1;
             foreach (var r in rankings)
             {
                 var rowGo = new GameObject($"Row_{rank}");
-                rowGo.transform.SetParent(content, false);
-                var rowRect = rowGo.AddComponent<RectTransform>();
-                rowRect.anchorMin = new Vector2(0, 1);
-                rowRect.anchorMax = new Vector2(1, 1);
-                rowRect.pivot = new Vector2(0.5f, 1);
-                rowRect.sizeDelta = new Vector2(0, 30);
+                rowGo.transform.SetParent(_content, false);
                 var layout = rowGo.AddComponent<LayoutElement>();
                 layout.preferredHeight = 30;
                 layout.minHeight = 30;
@@ -120,26 +105,20 @@ namespace SuperMech.Code
                 text.text = $"#{rank}  {r.name}  -  {r.rankKey}  ({onarLabel}:{r.onar:F0})";
                 rank++;
             }
+        }
 
-            // 没有数据时显示提示
-            if (rankings.Count == 0)
-            {
-                var emptyGo = new GameObject("Empty");
-                emptyGo.transform.SetParent(content, false);
-                var emptyRect = emptyGo.AddComponent<RectTransform>();
-                emptyRect.anchorMin = new Vector2(0, 1);
-                emptyRect.anchorMax = new Vector2(1, 1);
-                emptyRect.pivot = new Vector2(0.5f, 1);
-                emptyRect.sizeDelta = new Vector2(0, 40);
-                var emptyLayout = emptyGo.AddComponent<LayoutElement>();
-                emptyLayout.preferredHeight = 40;
-                var emptyText = SMUiSkin.MakeText(emptyGo.transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
-                var emptyTextRect = emptyText.GetComponent<RectTransform>();
-                emptyTextRect.anchorMin = Vector2.zero;
-                emptyTextRect.anchorMax = Vector2.one;
-                emptyTextRect.offsetMin = Vector2.zero;
-                emptyTextRect.offsetMax = Vector2.zero;
-            }
+        private void ShowEmpty()
+        {
+            var emptyGo = new GameObject("Empty");
+            emptyGo.transform.SetParent(_content, false);
+            var layout = emptyGo.AddComponent<LayoutElement>();
+            layout.preferredHeight = 40;
+            var emptyText = SMUiSkin.MakeText(emptyGo.transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
+            var textRect = emptyText.GetComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero;
+            textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
         }
     }
 
