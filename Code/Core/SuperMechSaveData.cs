@@ -10,7 +10,31 @@ namespace SuperMech.Code
     {
         private const string SaveDirName = "Saves";
         private const string FileExt = ".json";
-        private const int CurrentSaveVersion = 1;
+        private const int CurrentSaveVersion = 2;
+
+        /// <summary>
+        /// 存档迁移：将旧版本存档数据迁移到当前版本。
+        /// 缺失字段自动使用类定义中的默认值。
+        /// 未来字段重命名/格式变化时，在此添加对应版本的迁移逻辑。
+        /// </summary>
+        private static SaveData MigrateSaveData(SaveData data)
+        {
+            if (data == null) return null;
+
+            int fromVersion = data.version;
+
+            // v1 → v2：无字段变化，仅版本号升级
+            // 未来有实际迁移时在此添加逻辑，例如：
+            // if (fromVersion < 2) { /* v1到v2的迁移 */ }
+            // if (fromVersion < 3) { /* v2到v3的迁移 */ }
+
+            data.version = CurrentSaveVersion;
+            if (fromVersion < CurrentSaveVersion)
+            {
+                Debug.Log($"[超神机械师] 存档迁移: v{fromVersion} → v{CurrentSaveVersion}");
+            }
+            return data;
+        }
 
         [Serializable]
         public class SaveData
@@ -241,10 +265,9 @@ namespace SuperMech.Code
                 var data = JsonConvert.DeserializeObject<SaveData>(json);
                 if (data == null) return;
 
-                if (data.version != CurrentSaveVersion)
-                {
-                    Debug.LogWarning($"[超神机械师] 存档版本不兼容: v{data.version} vs 当前v{CurrentSaveVersion}，尝试兼容加载");
-                }
+                // 存档迁移：旧版本自动升级到当前版本
+                data = MigrateSaveData(data);
+                if (data == null) return;
 
                 SuperMechSanctuary.Data.unlocked_sanctuaries = data.sanctuary.unlockedSanctuaries;
                 SuperMechSanctuary.Data.key_fragments = data.sanctuary.keyFragments;

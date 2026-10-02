@@ -7,19 +7,34 @@ namespace SuperMech.Code
 
     public static class SuperMechUnifiedTick
     {
+        private const int AutoDisableThreshold = 5;
         private static int _tickCounter = 0;
         private static float _lastSaveTime = 0f;
         private static readonly System.Collections.Generic.Dictionary<string, int> _failCount = new();
+        private static readonly System.Collections.Generic.HashSet<string> _disabled = new();
 
         private static void SafeRun(string name, System.Action action)
         {
-            try { action(); }
+            if (_disabled.Contains(name)) return;
+            try
+            {
+                action();
+                _failCount[name] = 0; // 成功后清零
+            }
             catch (System.Exception e)
             {
                 _failCount.TryGetValue(name, out int c);
-                _failCount[name] = c + 1;
-                if (c < 5 || c % 50 == 0)
-                    Debug.LogError($"[超神机械师] 子系统[{name}]异常(第{c + 1}次): {e.Message}");
+                int next = c + 1;
+                _failCount[name] = next;
+                if (next >= AutoDisableThreshold)
+                {
+                    _disabled.Add(name);
+                    Debug.LogError($"[超神机械师] 子系统[{name}]连续失败{next}次，已自动禁用");
+                }
+                else if (next <= 3 || next % 20 == 0)
+                {
+                    Debug.LogError($"[超神机械师] 子系统[{name}]异常(第{next}次): {e.Message}");
+                }
             }
         }
 

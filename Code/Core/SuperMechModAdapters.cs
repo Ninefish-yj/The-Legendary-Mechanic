@@ -8,10 +8,12 @@ namespace SuperMech.Code
         private static bool _initialized;
         private static HashSet<string> _vanillaStats;
         private static List<IModAdapter> _adapters;
+        private static readonly List<string> _disabledAdapters = new();
 
         public interface IModAdapter
         {
             string ModName { get; }
+            bool IsAvailable { get; }
             bool Detect(Actor a);
             int GetRealmLevel(Actor a);
             float GetEnergyStrength(Actor a);
@@ -25,6 +27,22 @@ namespace SuperMech.Code
             BuildVanillaBlacklist();
             BuildAdapters();
         }
+
+        /// <summary>通过反射检测目标模组的关键类型是否存在于当前AppDomain</summary>
+        public static bool IsTypeLoaded(string typeName)
+        {
+            foreach (var asm in System.AppDomain.CurrentDomain.GetAssemblies())
+            {
+                try
+                {
+                    if (asm.GetType(typeName) != null) return true;
+                }
+                catch { }
+            }
+            return false;
+        }
+
+        public static IReadOnlyList<string> DisabledAdapters => _disabledAdapters;
 
         private static void BuildVanillaBlacklist()
         {
@@ -46,7 +64,7 @@ namespace SuperMech.Code
 
         private static void BuildAdapters()
         {
-            _adapters = new List<IModAdapter>
+            var all = new IModAdapter[]
             {
                 new FanrenXiuxianAdapter(),
                 new IncenseDivineAdapter(),
@@ -54,6 +72,20 @@ namespace SuperMech.Code
                 new ZhutianAdapter(),
                 new GuimiAdapter()
             };
+            _adapters = new List<IModAdapter>();
+            foreach (var adapter in all)
+            {
+                if (adapter.IsAvailable)
+                {
+                    _adapters.Add(adapter);
+                }
+                else
+                {
+                    _disabledAdapters.Add(adapter.ModName);
+                    Debug.LogWarning($"[超神机械师] 跨模组适配器已禁用: {adapter.ModName}（目标模组未加载）");
+                }
+            }
+            Debug.Log($"[超神机械师] 跨模组适配器: {_adapters.Count}个可用, {_disabledAdapters.Count}个禁用");
         }
 
         public static bool IsVanillaStat(string statId)
@@ -96,6 +128,8 @@ namespace SuperMech.Code
     public class FanrenXiuxianAdapter : SuperMechModAdapters.IModAdapter
     {
         public string ModName => "凡人修仙传";
+        public bool IsAvailable => SuperMechModAdapters.IsTypeLoaded("FanRenStandalone.Core.FanRenStandalone")
+            || SuperMechModAdapters.IsTypeLoaded("FanRenStandalone.Main");
 
         private static readonly float[] RealmEnergyMap = {
             0f,       // 0 凡人
@@ -147,6 +181,8 @@ namespace SuperMech.Code
     public class IncenseDivineAdapter : SuperMechModAdapters.IModAdapter
     {
         public string ModName => "香火神道";
+        public bool IsAvailable => SuperMechModAdapters.IsTypeLoaded("IncenseAndFire.IncenseDivine")
+            || SuperMechModAdapters.IsTypeLoaded("IncenseAndFire.Main");
 
         public bool Detect(Actor a)
         {
@@ -192,6 +228,8 @@ namespace SuperMech.Code
     public class WesternFantasyAdapter : SuperMechModAdapters.IModAdapter
     {
         public string ModName => "西幻世界";
+        public bool IsAvailable => SuperMechModAdapters.IsTypeLoaded("WesternFantasy.WesternFantasy")
+            || SuperMechModAdapters.IsTypeLoaded("WesternFantasy.Main");
 
         private static readonly string[] CareerPrefixes = {
             "enchanter", "pastor", "Paladin", "valiantgeneral",
@@ -256,6 +294,8 @@ namespace SuperMech.Code
     public class ZhutianAdapter : SuperMechModAdapters.IModAdapter
     {
         public string ModName => "诸天神座";
+        public bool IsAvailable => SuperMechModAdapters.IsTypeLoaded("WanXiang.WanXiangEnergy")
+            || SuperMechModAdapters.IsTypeLoaded("ZhuTian.Main");
 
         public bool Detect(Actor a)
         {
@@ -301,6 +341,8 @@ namespace SuperMech.Code
     public class GuimiAdapter : SuperMechModAdapters.IModAdapter
     {
         public string ModName => "诡秘之主";
+        public bool IsAvailable => SuperMechModAdapters.IsTypeLoaded("Guimi.GuimiMain")
+            || SuperMechModAdapters.IsTypeLoaded("LordOfMysteries.Main");
 
         private static readonly string[] SequenceTraits = {
             "XuLie94", "XuLie93", "XuLie92", "XuLie91",
