@@ -96,7 +96,13 @@ namespace SuperMech.Code
                 var rowGo = new GameObject($"Row_{rank}");
                 rowGo.transform.SetParent(content, false);
                 var rowRect = rowGo.AddComponent<RectTransform>();
+                rowRect.anchorMin = new Vector2(0, 1);
+                rowRect.anchorMax = new Vector2(1, 1);
+                rowRect.pivot = new Vector2(0.5f, 1);
                 rowRect.sizeDelta = new Vector2(0, 30);
+                var layout = rowGo.AddComponent<LayoutElement>();
+                layout.preferredHeight = 30;
+                layout.minHeight = 30;
                 var rowImg = rowGo.AddComponent<Image>();
                 if (rank <= 3)
                     rowImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.2f);
@@ -113,6 +119,26 @@ namespace SuperMech.Code
                 string onarLabel = LocalizedTextManager.getText("sm_ui_onar_col");
                 text.text = $"#{rank}  {r.name}  -  {r.rankKey}  ({onarLabel}:{r.onar:F0})";
                 rank++;
+            }
+
+            // 没有数据时显示提示
+            if (rankings.Count == 0)
+            {
+                var emptyGo = new GameObject("Empty");
+                emptyGo.transform.SetParent(content, false);
+                var emptyRect = emptyGo.AddComponent<RectTransform>();
+                emptyRect.anchorMin = new Vector2(0, 1);
+                emptyRect.anchorMax = new Vector2(1, 1);
+                emptyRect.pivot = new Vector2(0.5f, 1);
+                emptyRect.sizeDelta = new Vector2(0, 40);
+                var emptyLayout = emptyGo.AddComponent<LayoutElement>();
+                emptyLayout.preferredHeight = 40;
+                var emptyText = SMUiSkin.MakeText(emptyGo.transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
+                var emptyTextRect = emptyText.GetComponent<RectTransform>();
+                emptyTextRect.anchorMin = Vector2.zero;
+                emptyTextRect.anchorMax = Vector2.one;
+                emptyTextRect.offsetMin = Vector2.zero;
+                emptyTextRect.offsetMax = Vector2.zero;
             }
         }
     }
