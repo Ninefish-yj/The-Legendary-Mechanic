@@ -137,7 +137,6 @@ namespace SuperMech.Code
             SuperMechQi.AddQiMax(a, qiGain);
             SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a));
 
-            if (SuperMechConfig.LogVerbose)
 
             return true;
         }
@@ -160,7 +159,6 @@ namespace SuperMech.Code
             _emRefineQiBonus[id] += qiGain;
             SuperMechQi.AddQiMax(a, qiGain);
 
-            if (count + 1 >= MaxEmRefineCount && SuperMechConfig.LogVerbose)
 
             return true;
         }

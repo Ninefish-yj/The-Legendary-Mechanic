@@ -47,7 +47,6 @@ namespace SuperMech.Code
                     if (SetFavorite(a, true)) favorited++;
                 }
             }
-            if (favorited > 0 && SuperMechConfig.LogVerbose)
         }
     }
 }

@@ -73,7 +73,6 @@ namespace SuperMech.Code
                 string talentText = "";
                 foreach (var t in talents)
                     talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
-                if (SuperMechConfig.LogVerbose)
                     Debug.Log($"[超神机械师] {a.name}（{a.age}岁）激发潜能，天赋：{talentText.Trim()}");
             }
         }

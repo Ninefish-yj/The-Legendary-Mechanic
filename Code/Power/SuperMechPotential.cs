@@ -166,7 +166,6 @@ namespace SuperMech.Code
                 SuperMechAwakened.AddXp(a, 1000f);
             }
             bool cross = IsCrossClass(a, nodeId);
-            if (SuperMechConfig.LogVerbose)
             return true;
         }
 
@@ -192,12 +191,10 @@ namespace SuperMech.Code
                     {
                         int curAw = GetAwakening(a);
                         _awakeningMap[a.id] = curAw + gained;
-                        if (SuperMechConfig.LogVerbose)
                     }
                     else
                     {
                         AddPotential(a, gained);
-                        if (SuperMechConfig.LogVerbose)
                     }
                     _lastQiLevel[a.id] = curLv;
                 }

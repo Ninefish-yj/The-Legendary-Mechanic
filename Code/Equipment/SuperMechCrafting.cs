@@ -154,7 +154,6 @@ namespace SuperMech.Code
             if (SuperMechAwakened.IsAwakened(maker) && stage >= 4 && perfection >= 1.0f)
                 SuperMechDivinity.AwardCraftingPoints(maker);
 
-            if (SuperMechConfig.LogVerbose)
 
             float cdTime = Mathf.Max(2f, 5f - intel * 0.2f);
             _cooldown[maker.id] = now + cdTime;
@@ -227,7 +226,6 @@ namespace SuperMech.Code
             }
             SuperMechQi.AddQi(master, expShare * 0.1f);
 
-            if (SuperMechConfig.LogVerbose)
         }
 
         public static int GetMinionCount(Actor maker)

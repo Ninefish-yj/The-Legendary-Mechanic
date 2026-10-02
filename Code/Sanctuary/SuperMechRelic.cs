@@ -130,7 +130,6 @@ namespace SuperMech.Code
             int quality = Random.Range(0, maxQuality + 1);
 
             EquipItem(a, quality);
-            if (SuperMechConfig.LogVerbose)
         }
 
         public static void EquipItem(Actor a, int qualityIndex)

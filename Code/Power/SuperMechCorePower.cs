@@ -83,7 +83,6 @@ namespace SuperMech.Code
                 progDict[id] = 0;
                 stageDict[id] = stage + 1;
                 ApplyStageEffects(a);
-                if (SuperMechConfig.LogVerbose)
             }
         }
 

@@ -135,7 +135,6 @@ namespace SuperMech.Code
             if (!SuperMechAwakened.CanAdvanceStage(a)) return false;
             if (!CheckReq(a, stage)) return false;
             bool ok = SuperMechAwakened.TryAdvanceStage(a);
-            if (ok && SuperMechConfig.LogVerbose)
             return ok;
         }
 

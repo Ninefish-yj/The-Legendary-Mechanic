@@ -164,7 +164,6 @@ namespace SuperMech.Code
             _activeDimension[a.id] = dim.id;
             _buffEndTime[a.id] = now + System.TimeSpan.FromSeconds(BuffDurationSeconds).Ticks;
             _cooldown[a.id] = now + System.TimeSpan.FromSeconds(CooldownSeconds).Ticks;
-            if (SuperMechConfig.LogVerbose)
             return true;
         }
 
@@ -197,7 +196,6 @@ namespace SuperMech.Code
                     var dim = GetDef(dimId);
                     var stats = SuperMechStats.Of(a);
                     if (dim != null && stats != null) dim.removeBuff(stats);
-                    if (SuperMechConfig.LogVerbose)
                 }
                 _activeDimension.Remove(id);
                 _buffEndTime.Remove(id);

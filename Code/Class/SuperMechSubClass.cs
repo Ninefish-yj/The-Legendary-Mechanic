@@ -88,7 +88,6 @@ namespace SuperMech.Code
             if (curLv < MaxSubLevel && xpMap[subId] >= LevelThresholds[curLv])
             {
                 SetSubLevel(a, subId, curLv + 1);
-                if (SuperMechConfig.LogVerbose)
             }
         }
 

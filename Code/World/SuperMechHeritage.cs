@@ -79,7 +79,6 @@ namespace SuperMech.Code
                     _heritage[a.id] = h;
                     _autoUnlocked[a.id] = unlocked;
                     cost = GetCost(unlocked);
-                    if (SuperMechConfig.LogVerbose)
                 }
             }
         }

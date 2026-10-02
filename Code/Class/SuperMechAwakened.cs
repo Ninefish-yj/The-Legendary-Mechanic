@@ -171,7 +171,6 @@ namespace SuperMech.Code
             int stage = SuperMechStage.GetStage(a);
             if (!SuperMechAdvancementTask.CheckReq(a, stage))
             {
-                if (SuperMechConfig.LogVerbose)
                 return false;
             }
             SuperMechStage.Advance(a);

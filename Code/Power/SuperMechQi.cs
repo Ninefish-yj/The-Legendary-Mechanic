@@ -216,7 +216,6 @@ namespace SuperMech.Code
                     float healthCost = (remaining - stamina / 3f) * 2f;
                     a.data.health = (int)Mathf.Max(1f, a.data.health - healthCost);
                     spent += (stamina / 3f);
-                    if (SuperMechConfig.LogVerbose)
                 }
             }
             return spent;

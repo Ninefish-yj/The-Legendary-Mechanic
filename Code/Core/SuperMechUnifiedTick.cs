@@ -116,7 +116,6 @@ namespace SuperMech.Code
             removed += SuperMechPotentialRating.CleanupDead(alive);
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechAdvancementTask.CleanupDead(alive);
-            if (removed > 0 && SuperMechConfig.LogVerbose)
         }
 
         public static void ClearAll()
