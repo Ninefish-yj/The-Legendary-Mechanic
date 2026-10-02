@@ -35,6 +35,7 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_iteration", "sm_log_iteration_text", new Color(1f, 0.5f, 0.5f));
             RegisterLogAsset("sm_log_resurrection", "sm_log_resurrection_text", new Color(1f, 0.3f, 0.8f));
             RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f));
+            RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f));
 
             Debug.Log("[超神机械师] 事件日志系统初始化完成，注册7类日志资产");
         }
@@ -197,6 +198,28 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 推送复活日志失败: {e.Message}");
+            }
+        }
+
+        /// <summary>推送超神级概念重塑事件日志（原著：超神级普通死亡后信息态重塑）</summary>
+        public static void LogConceptReshape(Actor a)
+        {
+            TryInit();
+            if (!_initialized || a == null) return;
+            var asset = GetAsset("sm_log_concept_reshape");
+            if (asset == null) return;
+
+            try
+            {
+                new WorldLogMessage(asset, a.getName())
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送概念重塑日志失败: {e.Message}");
             }
         }
 

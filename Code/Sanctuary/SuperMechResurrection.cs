@@ -46,8 +46,9 @@ namespace SuperMech.Code
         public static bool CanResurrect(SuperMechInformationState.InformationStateRecord state)
         {
             if (state == null) return false;
-            // 1. 必须超A级（S阶）及以上
+            // 1. 必须超A级（S阶）及以上，但X阶（超神级）除外——超神级靠概念不朽，不走圣所通道
             if (state.rankIndex < MinRankForResurrect) return false;
+            if (state.rankIndex >= 13) return false;
             // 2. 信息完整度必须高于下限
             float integrity = CalculateInformationIntegrity(state);
             if (integrity < MinInformationIntegrity) return false;

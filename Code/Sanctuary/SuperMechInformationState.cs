@@ -198,11 +198,11 @@ namespace SuperMech.Code
 
             // 特质（自定义特质）
             record.traits = new List<string>();
-            if (a.data.traits != null)
+            if (a.data.saved_traits != null)
             {
-                foreach (var t in a.data.traits)
+                foreach (var t in a.data.saved_traits)
                 {
-                    if (t != null && t.id != null && t.id.StartsWith("sm_")) record.traits.Add(t.id);
+                    if (!string.IsNullOrEmpty(t) && t.StartsWith("sm_")) record.traits.Add(t);
                 }
             }
 

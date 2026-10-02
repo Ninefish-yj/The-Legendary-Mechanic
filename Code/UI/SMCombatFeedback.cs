@@ -70,5 +70,11 @@ namespace SuperMech.Code
         {
             SpawnAtActor(target, "fx_shield_hit", 1.0f, 1.4f);
         }
+
+        /// <summary>信息态抹杀反馈：超神级之间战斗触发真正死亡标记时</summary>
+        public static void OnInfoErase(Actor target)
+        {
+            SpawnAtActor(target, "fx_curse", 1.5f, 2.0f);
+        }
     }
 }

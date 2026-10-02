@@ -93,6 +93,13 @@ namespace SuperMech.Code
                     {
                         return false;
                     }
+                    // 原著：超神级之间战斗可触发信息态抹杀（第1450章）
+                    // 被信息态抹杀的超神级无法概念重塑，真正死亡
+                    if (atkRank >= 13 && Random.value < 0.05f)
+                    {
+                        SuperMechConceptImmortal.MarkInformationErased(target);
+                        SMCombatFeedback.OnInfoErase(target);
+                    }
                 }
 
                 if (attacker != null && attacker.isAlive() && SuperMechAura.IsSuppressed(attacker))
