@@ -47,8 +47,8 @@ namespace SuperMech.Code
         public static void OpenKnowledge(Actor a) { SMKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
         public static void OpenBag() { SMBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
         public static void OpenBag(Actor a) { SMBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
-        public static void OpenFusion() { SMFusionView.OverrideActor = null; ToggleWindow("fusion", "sm_ui_fusion", 680, 500, DrawFusionContent); }
-        public static void OpenFusion(Actor a) { SMFusionView.OverrideActor = a; ToggleWindow("fusion", "sm_ui_fusion", 680, 500, DrawFusionContent); }
+        public static void OpenFusion() { SMKnowledgeView.OverrideActor = null; SMFusionView.OverrideActor = null; SMKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
+        public static void OpenFusion(Actor a) { SMKnowledgeView.OverrideActor = a; SMFusionView.OverrideActor = a; SMKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
         public static void OpenSpell() { SMSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
         public static void OpenSpell(Actor a) { SMSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
         public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 560, 420, DrawCraftContent); }
@@ -91,18 +91,6 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SMBagView>();
-        }
-
-        private static void DrawFusionContent(RectTransform content)
-        {
-            var go = new GameObject("FusionView");
-            go.transform.SetParent(content, false);
-            var rect = go.AddComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            go.AddComponent<SMFusionView>();
         }
 
         private static void DrawSpellContent(RectTransform content)
