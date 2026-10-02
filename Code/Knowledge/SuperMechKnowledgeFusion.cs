@@ -21,6 +21,8 @@ namespace SuperMech.Code
             public float speedMul;
             public int qiBonus;
             public string icon;
+            /// <summary>最低职业阶段要求（0~13），原著：星海机械师解锁更高阶段图纸</summary>
+            public int requiredStage;
         }
 
         private static readonly List<FusionRecipe> _recipes = new List<FusionRecipe>();
@@ -46,12 +48,12 @@ namespace SuperMech.Code
             Add("fusion_viper_mech", "sm_fusion_viper_mech", "sm_knowledgefusion_754", "sm_knowledgefusion_750",
                 "sm_knowledgefusion_755",
                 new[] { "sm_know_mech_2_0_0", "sm_know_mech_2_1_0", "sm_know_mech_2_2_0" },
-                40000, 0.5f, 3.0f, 2.5f, 1.3f, 1000, "ui/Icons/actor_traits/iconChosenOne");
+                40000, 0.5f, 3.0f, 2.5f, 1.3f, 1000, "ui/Icons/actor_traits/iconChosenOne", 7);
 
             Add("fusion_god_mech", "sm_fusion_god_mech", "sm_knowledgefusion_756", "sm_knowledgefusion_750",
                 "sm_knowledgefusion_757",
                 new[] { "sm_know_mech_3_1_0", "sm_know_mech_4_1_0" },
-                100000, 0.35f, 6.0f, 4.5f, 1.5f, 3000, "ui/Icons/actor_traits/iconChosenOne");
+                100000, 0.35f, 6.0f, 4.5f, 1.5f, 3000, "ui/Icons/actor_traits/iconChosenOne", 8);
 
             Add("fusion_body_armor", "sm_fusion_body_armor", "sm_knowledgefusion_758", "sm_knowledgefusion_759",
                 "sm_knowledgefusion_760",
@@ -92,14 +94,14 @@ namespace SuperMech.Code
 
         private static void Add(string id, string equipId, string equipName, string productType, string desc,
             string[] required, int xpCost, float successRate,
-            float dmgMul, float hpMul, float speedMul, int qiBonus, string icon)
+            float dmgMul, float hpMul, float speedMul, int qiBonus, string icon, int requiredStage = 0)
         {
             _recipes.Add(new FusionRecipe
             {
                 id = id, equipId = equipId, equipName = equipName, productType = productType, desc = desc,
                 requiredKnowledge = required, xpCost = xpCost, successRate = successRate,
                 dmgMul = dmgMul, hpMul = hpMul, speedMul = speedMul, qiBonus = qiBonus,
-                icon = icon
+                icon = icon, requiredStage = requiredStage
             });
         }
 
@@ -128,6 +130,12 @@ namespace SuperMech.Code
                 {
                     if (!unlockedIds.Contains(req)) { canFuse = false; break; }
                 }
+                // 原著：转职星海机械师解锁更高阶段图纸
+                if (canFuse && recipe.requiredStage > 0)
+                {
+                    int currentStage = SuperMechStage.GetStage(a);
+                    if (currentStage < recipe.requiredStage) canFuse = false;
+                }
                 if (canFuse) list.Add(recipe);
             }
             return list;
@@ -146,6 +154,8 @@ namespace SuperMech.Code
             if (recipe == null) return false;
 
             if (!SuperMechAwakened.IsAwakened(a)) return false;
+            // 原著：转职阶段前置（星海机械师解锁更高阶段图纸）
+            if (recipe.requiredStage > 0 && SuperMechStage.GetStage(a) < recipe.requiredStage) return false;
             if (!SuperMechAwakened.SpendXp(a, recipe.xpCost)) return false;
 
             _cooldown[a.id] = Time.time + 10f;
