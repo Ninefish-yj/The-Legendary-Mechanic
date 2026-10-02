@@ -372,6 +372,44 @@ namespace SuperMech.Code
             AddDetailLine($"碎片可通过神性蜕变和高阶单位掉落获得", 12);
             AddDetailLine("", 8);
 
+            // 访问圣所按钮（v0.30.0新增：选中单位后可访问圣所获得知识和权限）
+            var visitBtnGo = new GameObject("VisitBtn");
+            visitBtnGo.transform.SetParent(_detailContent, false);
+            var visitBtnRect = visitBtnGo.AddComponent<RectTransform>();
+            visitBtnRect.anchorMin = new Vector2(0, 1);
+            visitBtnRect.anchorMax = new Vector2(1, 1);
+            visitBtnRect.pivot = new Vector2(0, 1);
+            visitBtnRect.sizeDelta = new Vector2(0, 32);
+            var visitBtnImg = visitBtnGo.AddComponent<Image>();
+            visitBtnImg.color = unlocked ? new Color(0.2f, 0.5f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.6f);
+            var visitBtn = visitBtnGo.AddComponent<Button>();
+            var visitBtnText = SMUiSkin.MakeText(visitBtnGo.transform,
+                unlocked ? LocalizedTextManager.getText("sm_ui_visit_sanctuary") : LocalizedTextManager.getText("sm_ui_sanctuary_locked"),
+                13, TextAnchor.MiddleCenter);
+            visitBtnText.color = Color.white;
+            visitBtnText.fontStyle = FontStyle.Bold;
+            var visitBtnTextRect = visitBtnText.GetComponent<RectTransform>();
+            visitBtnTextRect.anchorMin = Vector2.zero;
+            visitBtnTextRect.anchorMax = Vector2.one;
+            visitBtnTextRect.offsetMin = Vector2.zero;
+            visitBtnTextRect.offsetMax = Vector2.zero;
+            visitBtn.interactable = unlocked;
+            visitBtn.onClick.AddListener(() =>
+            {
+                Actor visitor = SelectedUnit.unit;
+                if (visitor == null || !visitor.isAlive())
+                {
+                    Debug.LogWarning("[超神机械师] 访问圣所失败：请先选中一个存活单位");
+                    return;
+                }
+                if (SuperMechSanctuary.VisitSanctuary(visitor, _selectedIndex))
+                {
+                    RefreshDetail(); // 刷新权限统计
+                }
+            });
+
+            AddDetailLine("", 8);
+
             // 复活按钮
             var btnGo = new GameObject("ResurrectBtn");
             btnGo.transform.SetParent(_detailContent, false);
