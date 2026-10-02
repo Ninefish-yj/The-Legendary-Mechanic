@@ -66,7 +66,7 @@ namespace SuperMech.Code
         private void BuildUI(string titleKey, float w, float h)
         {
             _bgImage = gameObject.AddComponent<Image>();
-            _bgImage.sprite = SMImguiTheme.GetPanelSprite();
+            _bgImage.sprite = SMUiAssets.GetPanelSprite();
             _bgImage.type = Image.Type.Sliced;
             if (_bgImage.sprite != null)
             {

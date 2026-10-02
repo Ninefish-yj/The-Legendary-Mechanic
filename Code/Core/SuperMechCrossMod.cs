@@ -153,7 +153,7 @@ namespace SuperMech.Code
                 else
                     candidate = statId + suffix;
 
-                if (AssetManager.base_stats_library.contains(candidate))
+                if (AssetManager.base_stats_library.has(candidate))
                 {
                     float maxVal = a.stats[candidate];
                     if (maxVal > 0f) return maxVal;
@@ -173,7 +173,7 @@ namespace SuperMech.Code
             if (a == null || a.stats == null) return 0f;
             foreach (string c in candidates)
             {
-                if (AssetManager.base_stats_library.contains(c))
+                if (AssetManager.base_stats_library.has(c))
                 {
                     float v = a.stats[c];
                     if (v > 0f) return v;

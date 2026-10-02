@@ -377,7 +377,8 @@ namespace SuperMech.Code
                     }
                     if (ad.fiveSystemGenius)
                     {
-                        SuperMechTalent._fiveSystemGenius = new HashSet<long> { a.id };
+                        SuperMechTalent._fiveSystemGenius.Clear();
+                        SuperMechTalent._fiveSystemGenius.Add(a.id);
                     }
 
                     RestoreNewFields(a, ad);
@@ -460,7 +461,7 @@ namespace SuperMech.Code
                         specificPower = d.ContainsKey("specificPower") ? d["specificPower"].ToString() : ""
                     });
                 }
-                SuperMechTalent._talents = new Dictionary<long, List<SuperMechTalent.TalentInfo>> { { a.id, talents } };
+                SuperMechTalent._talents[a.id] = talents;
             }
             catch { Debug.LogWarning("[超神机械师] 存档恢复失败"); }
         }

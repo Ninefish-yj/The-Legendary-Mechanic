@@ -36,7 +36,7 @@ namespace SuperMech.Code
         {
             var img = gameObject.AddComponent<Image>();
             img.color = new Color(0.15f, 0.2f, 0.3f, 0.85f);
-            img.sprite = SMImguiTheme.GetPanelSprite();
+            img.sprite = SMUiAssets.GetPanelSprite();
             if (img.sprite != null) img.type = Image.Type.Sliced;
 
             if (!string.IsNullOrEmpty(iconPath))

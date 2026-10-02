@@ -19,7 +19,7 @@ namespace SuperMech.Code
             AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");
             AddDisaster(DisasterAlien, "sm_powers_924");
             AddSanctuaryPower(OpenSanctuary, "sm_sanctuary_974", "actor_traits/iconBlessing");
-            AddWindowPower(OpenRank, "sm_rank_title", "iconDivineLight", () => SMRankWindowImgui.Toggle());
+            AddWindowPower(OpenRank, "sm_rank_title", "iconDivineLight", () => SMWindowManager.OpenRank());
             Debug.Log("[超神机械师] 神权数据注册完成：4个GodPower");
         }
 
@@ -172,7 +172,7 @@ namespace SuperMech.Code
             };
             p.click_action += (tile, powerId) =>
             {
-                SMSanctuaryWindowImgui.Toggle();
+                SMWindowManager.OpenSanctuary();
                 return true;
             };
             AssetManager.powers.add(p);
