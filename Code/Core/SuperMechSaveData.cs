@@ -248,6 +248,10 @@ namespace SuperMech.Code
                     totalResurrections = SuperMechSanctuary.Data.total_resurrections
                 };
 
+                // 保存宇宙迭代数据
+                data.cosmicIteration = SuperMechCosmicIteration.CurrentIteration;
+                data.civilizationData = SuperMechCivilizationData.Serialize();
+
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -288,6 +292,10 @@ namespace SuperMech.Code
 
                 _pendingLoad = data;
                 _loadPending = true;
+
+                // 初始化宇宙迭代系统
+                SuperMechCosmicIteration.Initialize(data.cosmicIteration, data.civilizationData);
+
                 Debug.Log($"[超神机械师] 存档加载：{data.actors.Count}个单位数据待恢复");
             }
             catch (Exception e)

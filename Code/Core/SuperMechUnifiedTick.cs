@@ -92,6 +92,7 @@ namespace SuperMech.Code
             if (now - _lastSaveTime >= 60f)
             {
                 _lastSaveTime = now;
+                SafeRun("文明统计更新", () => SuperMechCosmicIteration.TickUpdate());
                 SafeRun("自动存档", () => SuperMechSaveData.Save());
                 SafeRun("死单位清理", () => CleanupDeadActors());
             }

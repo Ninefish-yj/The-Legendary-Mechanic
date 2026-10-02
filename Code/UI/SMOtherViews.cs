@@ -192,7 +192,9 @@ namespace SuperMech.Code
                 $"<color=#6ab7ff>总权限:</color> {data.total_permission}\n" +
                 $"<color=#6ab7ff>总访问:</color> {data.total_visits}  " +
                 $"<color=#6ab7ff>神性蜕变:</color> {data.total_divinity_ascensions}  " +
-                $"<color=#6ab7ff>复活次数:</color> {data.total_resurrections}";
+                $"<color=#6ab7ff>复活次数:</color> {data.total_resurrections}\n" +
+                $"<color=#ffd700>宇宙迭代:</color> 第{SuperMechCosmicIteration.CurrentIteration}轮  " +
+                $"<color=#ffd700>历史文明:</color> {SuperMechCivilizationData.GetHistory().Count}轮";
 
             // 左侧列表面板（宽度180px，从顶部60px开始）
             var listGo = new GameObject("ListPanel");
