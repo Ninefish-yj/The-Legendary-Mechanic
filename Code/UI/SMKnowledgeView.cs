@@ -66,7 +66,7 @@ namespace SuperMech.Code
             textRect.offsetMin = new Vector2(10, 10); textRect.offsetMax = new Vector2(-10, -10);
             _detailText = textGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _detailText.fontSize = 13; _detailText.color = new Color(0.1f, 0.15f, 0.25f);
+            _detailText.fontSize = 13; _detailText.color = SMUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -97,7 +97,7 @@ namespace SuperMech.Code
                 var catText = catGo.AddComponent<Text>();
                 catText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 catText.fontSize = 13; catText.fontStyle = FontStyle.Bold;
-                catText.color = new Color(0.2f, 0.3f, 0.5f);
+                catText.color = SMUiSkin.AccentColor;
                 catText.alignment = TextAnchor.MiddleLeft;
                 catText.text = "  " + LocalizedTextManager.getText(prefixNames[prefix]);
 

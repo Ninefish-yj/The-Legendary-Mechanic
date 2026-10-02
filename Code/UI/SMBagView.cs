@@ -62,7 +62,7 @@ namespace SuperMech.Code
             textRect.offsetMin = new Vector2(8, 4); textRect.offsetMax = new Vector2(-8, -4);
             _detailText = textGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _detailText.fontSize = 12; _detailText.color = new Color(0.1f, 0.15f, 0.25f);
+            _detailText.fontSize = 12; _detailText.color = SMUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.text = LocalizedTextManager.getText("sm_ui_select_item");
@@ -90,7 +90,7 @@ namespace SuperMech.Code
                 var slotGo = new GameObject($"Slot_{equipId}");
                 slotGo.transform.SetParent(content, false);
                 var slotImg = slotGo.AddComponent<Image>();
-                slotImg.color = new Color(0.2f, 0.25f, 0.35f, 0.5f);
+                slotImg.color = new Color(0.3f, 0.4f, 0.55f, 0.4f);
                 var slotBtn = slotGo.AddComponent<Button>();
 
                 var iconGo = new GameObject("Icon");

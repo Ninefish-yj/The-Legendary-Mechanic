@@ -13,20 +13,12 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            var textGo = new GameObject("Info");
-            textGo.transform.SetParent(transform, false);
-            var rect = textGo.AddComponent<RectTransform>();
+            var text = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_craft_info"), 14, TextAnchor.UpperLeft);
+            var rect = text.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(15, 15);
-            rect.offsetMax = new Vector2(-15, -15);
-            var text = textGo.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.fontSize = 14;
-            text.color = new Color(0.1f, 0.15f, 0.25f);
-            text.alignment = TextAnchor.UpperLeft;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.text = LocalizedTextManager.getText("sm_ui_craft_info");
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
         }
     }
 
@@ -46,13 +38,12 @@ namespace SuperMech.Code
             var sr = scrollGo.GetComponent<RectTransform>();
             sr.anchorMin = Vector2.zero;
             sr.anchorMax = Vector2.one;
-            sr.offsetMin = new Vector2(10, 10);
-            sr.offsetMax = new Vector2(-10, -10);
-            // 添加Mask裁剪内容，防止超出窗口边界
+            sr.offsetMin = Vector2.zero;
+            sr.offsetMax = Vector2.zero;
+            // Mask裁剪
             var mask = scrollGo.AddComponent<Mask>();
             mask.showMaskGraphic = false;
-            var maskImg = scrollGo.AddComponent<Image>();
-            maskImg.color = new Color(0, 0, 0, 0);
+            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);
@@ -60,19 +51,20 @@ namespace SuperMech.Code
             contentRect.anchorMin = new Vector2(0, 1);
             contentRect.anchorMax = new Vector2(1, 1);
             contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.sizeDelta = new Vector2(0, 500);
+            contentRect.sizeDelta = new Vector2(0, 100);
             var layout = contentGo.AddComponent<VerticalLayoutGroup>();
-            layout.spacing = 4;
-            layout.padding = new RectOffset(4, 4, 4, 4);
+            layout.spacing = 2;
+            layout.padding = new RectOffset(0, 0, 0, 0);
             layout.childControlHeight = true;
             layout.childControlWidth = true;
-            // 自动适应内容高度
             var fitter = contentGo.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             scrollRect.content = contentRect;
             scrollRect.viewport = sr;
             scrollRect.vertical = true;
             scrollRect.horizontal = false;
+            // 滚动条样式
+            scrollRect.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
         }
 
         private void RefreshRank()
@@ -89,7 +81,7 @@ namespace SuperMech.Code
                 if (a == null || !a.isAlive()) continue;
                 float onar = SuperMechAdvancement.CalcOnar(a);
                 if (onar <= 0) continue;
-                string rankKey = SuperMechRanks.GetRankName(a);
+                string rankKey = LocalizedTextManager.getText(SuperMechRanks.GetRankName(a));
                 rankings.Add((a.name, rankKey, onar));
             }
             rankings.Sort((x, y) => y.onar.CompareTo(x.onar));
@@ -101,21 +93,20 @@ namespace SuperMech.Code
                 var rowGo = new GameObject($"Row_{rank}");
                 rowGo.transform.SetParent(content, false);
                 var rowRect = rowGo.AddComponent<RectTransform>();
-                rowRect.sizeDelta = new Vector2(0, 28);
+                rowRect.sizeDelta = new Vector2(0, 30);
                 var rowImg = rowGo.AddComponent<Image>();
-                rowImg.color = rank <= 3 ? new Color(0.8f, 0.6f, 0.2f, 0.3f) : new Color(0, 0, 0, 0.1f);
-                var textGo = new GameObject("Text");
-                textGo.transform.SetParent(rowGo.transform, false);
-                var textRect = textGo.AddComponent<RectTransform>();
+                if (rank <= 3)
+                    rowImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.2f);
+                else
+                    rowImg.sprite = rank % 2 == 0 ? SMUiSkin.RowEven : SMUiSkin.RowOdd;
+
+                var text = SMUiSkin.MakeText(rowGo.transform, "", 13, TextAnchor.MiddleLeft);
+                var textRect = text.GetComponent<RectTransform>();
                 textRect.anchorMin = Vector2.zero;
                 textRect.anchorMax = Vector2.one;
                 textRect.offsetMin = new Vector2(10, 0);
                 textRect.offsetMax = new Vector2(-10, 0);
-                var text = textGo.AddComponent<Text>();
-                text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                text.fontSize = 13;
-                text.color = new Color(0.1f, 0.15f, 0.25f);
-                text.alignment = TextAnchor.MiddleLeft;
+                if (rank <= 3) text.color = SMUiSkin.AccentColor;
                 string onarLabel = LocalizedTextManager.getText("sm_ui_onar_col");
                 text.text = $"#{rank}  {r.name}  -  {r.rankKey}  ({onarLabel}:{r.onar:F0})";
                 rank++;
@@ -133,20 +124,12 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            var textGo = new GameObject("Info");
-            textGo.transform.SetParent(transform, false);
-            var rect = textGo.AddComponent<RectTransform>();
+            var text = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_sanctuary_info"), 14, TextAnchor.UpperLeft);
+            var rect = text.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(15, 15);
-            rect.offsetMax = new Vector2(-15, -15);
-            var text = textGo.AddComponent<Text>();
-            text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            text.fontSize = 14;
-            text.color = new Color(0.1f, 0.15f, 0.25f);
-            text.alignment = TextAnchor.UpperLeft;
-            text.horizontalOverflow = HorizontalWrapMode.Wrap;
-            text.text = LocalizedTextManager.getText("sm_ui_sanctuary_info");
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
         }
     }
 }
