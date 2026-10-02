@@ -70,8 +70,8 @@ namespace SuperMech.Code
             {
                 if (a == null || !a.isAlive()) continue;
                 float onar = SuperMechAdvancement.CalcOnar(a);
-                if (onar <= 0) { zeroCount++; continue; }
-                if (SuperMechQi.GetQiMax(a) > 0) qiCount++; else crossCount++;
+                if (onar <= 0) zeroCount++;
+                if (SuperMechQi.GetQiMax(a) > 0) qiCount++; else if (onar > 0) crossCount++;
                 string rankKey = SuperMechRanks.GetRankName(a);
                 rankings.Add((a.name, rankKey, onar));
             }
