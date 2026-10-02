@@ -63,7 +63,7 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>检查是否已有同名同种族单位存活（唯一存在性）</summary>
+        /// <summary>检查原ID单位是否仍存活（唯一存在性：宇宙里只能同时存在一个你）</summary>
         private static bool IsAlreadyAlive(SuperMechInformationState.InformationStateRecord state)
         {
             if (state == null || World.world == null || World.world.units == null) return false;
@@ -72,7 +72,7 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (a.name == state.name && a.asset?.id == state.species)
+                if (a.data.id == state.actorId)
                     return true;
             }
             return false;
