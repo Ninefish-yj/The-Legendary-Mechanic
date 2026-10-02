@@ -163,6 +163,10 @@ namespace SuperMech.Code
                 new ItemInfo("spirit_pierce_ratio", "sm_config_624", "sm_config_625"),
                 new ItemInfo("fusion_single_mul_cap", "sm_config_626", "sm_config_627"),
                 new ItemInfo("fusion_total_mul_cap", "sm_config_628", "sm_config_629"),
+                new ItemInfo("qi_attribute_counter", "sm_config_630", "sm_config_631"),
+                new ItemInfo("qi_display_decimals", "sm_config_632", "sm_config_633"),
+                new ItemInfo("cross_mod_energy_sync", "sm_config_634", "sm_config_635"),
+                new ItemInfo("cross_mod_energy_ratio", "sm_config_636", "sm_config_637"),
             };
             foreach (var it in items)
             {
@@ -232,5 +236,9 @@ namespace SuperMech.Code
         public static void SetSpiritPierceRatio(float val) { SpiritPierceRatio = Mathf.Clamp01(val); }
         public static void SetFusionSingleMulCap(float val) { FusionSingleMulCap = Mathf.Max(1.0f, val); }
         public static void SetFusionTotalMulCap(float val) { FusionTotalMulCap = Mathf.Max(1.0f, val); }
+
+        public static void SetQiDisplayDecimals(int val) { QiDisplayDecimals = Mathf.Clamp(val, 0, 3); }
+        public static void SetCrossModEnergySync(bool val) { CrossModEnergySync = val; }
+        public static void SetCrossModEnergyRatio(float val) { CrossModEnergyRatio = Mathf.Clamp(val, 0.1f, 10f); }
     }
 }

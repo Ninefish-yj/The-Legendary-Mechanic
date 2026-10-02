@@ -37,7 +37,34 @@ namespace SuperMech.Code
                 return;
             }
 
-            // === 核心身份组 ===
+            long actorId = a.data.id;
+            System.Action rebuild = () => window.showInfo();
+
+            // === 核心档案组（默认展开）===
+            SMCollapsibleSection.BuildHeader(window, actorId, "core", "sm_ui_section_core", rebuild);
+            if (SMCollapsibleSection.IsExpanded(actorId, "core"))
+            {
+                ShowCoreInfo(window, a);
+            }
+
+            // === 战斗数值组（默认折叠）===
+            SMCollapsibleSection.BuildHeader(window, actorId, "combat", "sm_ui_section_combat", rebuild);
+            if (SMCollapsibleSection.IsExpanded(actorId, "combat"))
+            {
+                ShowCombatInfo(window, a);
+            }
+
+            // === 特殊信息与入口组（默认折叠）===
+            SMCollapsibleSection.BuildHeader(window, actorId, "special", "sm_ui_section_special", rebuild);
+            if (SMCollapsibleSection.IsExpanded(actorId, "special"))
+            {
+                ShowSpecialInfo(window, a);
+                ShowEntryButtons(window, a);
+            }
+        }
+
+        private static void ShowCoreInfo(UnitWindow window, Actor a)
+        {
             ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a), null, InfoColor);
 
             string talentText = GetTalentText(a);
@@ -55,13 +82,11 @@ namespace SuperMech.Code
                 string stage = SuperMechStage.GetStageName(a);
                 if (stage != "—" && stage != "sm_knowledgetab_829")
                 {
-                    // v0.26.0 UI完善：显示职业阶段等级上限进度
                     string progress = SuperMechStage.GetStageProgressText(a);
                     string stageText = string.IsNullOrEmpty(progress) ? stage : $"{stage}（{progress}）";
                     ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stageText, null, InfoColor);
                 }
 
-                // 机械师专精显示（只有机械师分支且解锁了专精才显示）
                 if (a.hasTrait(SuperMechBranch.BranchMech))
                 {
                     string specName = SuperMechSpecialization.GetSpecName(a);
@@ -69,7 +94,6 @@ namespace SuperMech.Code
                         ShowRow(window, LocalizedTextManager.getText("sm_ui_specialization"), specName, null, new Color(0.6f, 0.9f, 1f));
                 }
 
-                // 魔法系觉醒类型显示（天赋型/回路法师/魔网法师）
                 if (a.hasTrait(SuperMechTraits.ClassMage))
                 {
                     string mageType = SuperMechMageType.GetMageTypeName(a);
@@ -85,8 +109,10 @@ namespace SuperMech.Code
             {
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"), null, InfoColor);
             }
+        }
 
-            // === 数值组 ===
+        private static void ShowCombatInfo(UnitWindow window, Actor a)
+        {
             ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), SuperMechEnergyLevel.GetEvaluationText(a), null, InfoColor);
 
             float qi = SuperMechQi.GetQi(a);
@@ -97,7 +123,6 @@ namespace SuperMech.Code
             string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
             ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
 
-            // 气力层次
             int qiLayer = SuperMechQiLayer.GetLayer(a);
             if (qiLayer > 0)
             {
@@ -108,26 +133,24 @@ namespace SuperMech.Code
             int pot = SuperMechPotential.GetPotential(a);
             if (pot > 0)
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), null, InfoColor);
+        }
 
-            // === 特殊组 ===
-            bool hasSpecial = false;
+        private static void ShowSpecialInfo(UnitWindow window, Actor a)
+        {
             int divLayers = SuperMechDivinity.GetTotalLayers(a);
-            if (divLayers > 0) hasSpecial = true;
             string sanctuaryInfo = GetSanctuaryInfo(a);
-            if (!string.IsNullOrEmpty(sanctuaryInfo)) hasSpecial = true;
-            if (SuperMechAwakened.IsAwakened(a)) hasSpecial = true;
+            bool isAwakened = SuperMechAwakened.IsAwakened(a);
 
-            if (hasSpecial)
-            {
-                if (divLayers > 0)
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}", null, new Color(1f, 0.6f, 0.9f));
-                if (!string.IsNullOrEmpty(sanctuaryInfo))
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, null, new Color(0.7f, 0.9f, 1f));
-                if (SuperMechAwakened.IsAwakened(a))
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
-            }
+            if (divLayers > 0)
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}", null, new Color(1f, 0.6f, 0.9f));
+            if (!string.IsNullOrEmpty(sanctuaryInfo))
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, null, new Color(0.7f, 0.9f, 1f));
+            if (isAwakened)
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
+        }
 
-            // === 入口按钮组 ===
+        private static void ShowEntryButtons(UnitWindow window, Actor a)
+        {
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
                 new Color(0.5f, 0.35f, 0.7f), () => SMWindowManager.OpenKnowledge(a));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",

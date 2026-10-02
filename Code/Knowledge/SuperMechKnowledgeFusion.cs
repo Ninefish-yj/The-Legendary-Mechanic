@@ -185,6 +185,13 @@ namespace SuperMech.Code
 
                 if (recipe.qiBonus > 0) SuperMechQi.AddQi(a, recipe.qiBonus);
 
+                // v0.28.0 UI重构：推送融合成功事件到原生事件日志
+                string knowA = recipe.requiredKnowledge.Length > 0 ?
+                    LocalizedTextManager.getText(recipe.requiredKnowledge[0]) : "?";
+                string knowB = recipe.requiredKnowledge.Length > 1 ?
+                    LocalizedTextManager.getText(recipe.requiredKnowledge[1]) : "?";
+                string resultName = !string.IsNullOrEmpty(recipe.equipName) ? recipe.equipName : recipe.equipId;
+                SMEventLogger.LogFusion(a, knowA, knowB, resultName);
             }
             else
             {

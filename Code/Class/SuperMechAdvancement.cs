@@ -124,6 +124,11 @@ namespace SuperMech.Code
                 foreach (var t in talents)
                     talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
                     Debug.Log($"[超神机械师] {a.name}（{a.age}岁）激发潜能，天赋：{talentText.Trim()}");
+
+                // v0.28.0 UI重构：推送觉醒事件到原生事件日志
+                string className = SuperMechProfession.GetClass(a);
+                string talentRank = talents.Count > 0 ? SuperMechTalent.RatingNames[talents[0].rating] : "?";
+                SMEventLogger.LogAwakening(a, className, talentRank);
             }
         }
 
@@ -189,6 +194,7 @@ namespace SuperMech.Code
                 if (!SuperMechAwakened.IsAwakened(a) && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx > oldExact)
                 {
                     string rankName = LocalizedTextManager.getText(SuperMechRanks.All[targetIdx].name);
+                    string oldRankName = oldExact >= 0 ? LocalizedTextManager.getText(SuperMechRanks.All[oldExact].name) : "F";
                     int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(a));
                     if (targetIdx >= 10)
                         Debug.Log($"[超神机械师]【阶位突破】{a.name} 迈入{rankName}，气力Lv{qiLv}，能力产生质变，可掌握更高层次的技能与知识");
@@ -196,6 +202,9 @@ namespace SuperMech.Code
                         Debug.Log($"[超神机械师]【阶位突破】{a.name} 达到{rankName}（天灾级），气力Lv{qiLv}，破坏力可在行星地表掀起灾难");
                     else
                         Debug.Log($"[超神机械师]【阶位提升】{a.name} 晋升{rankName}，气力Lv{qiLv}，实力层次稳步提升");
+
+                    // v0.28.0 UI重构：推送阶位提升事件到原生事件日志
+                    SMEventLogger.LogPromotion(a, oldRankName, rankName, onar);
                 }
 
                 ApplyRankStats(a, targetIdx);

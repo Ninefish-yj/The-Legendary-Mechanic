@@ -4154,5 +4154,8 @@
   "sm_log_fusion_text": "【知识融合】{0}融合〖{1}〗，获得〖{2}〗图纸",
   "sm_log_sanctuary_text": "【圣所访问】{0}访问{1}，获得专属知识",
   "sm_log_iteration_text": "【宇宙迭代】第{0}轮大重启触发，遗产保留率{1}",
-  "sm_log_resurrection_text": "【超A复活】{0}通过圣所信息态复苏（第{1}次），丢失能力：{2}"
+  "sm_log_resurrection_text": "【超A复活】{0}通过圣所信息态复苏（第{1}次），丢失能力：{2}",
+  "sm_ui_section_core": "核心档案",
+  "sm_ui_section_combat": "战斗数值",
+  "sm_ui_section_special": "特殊与入口"
 }
