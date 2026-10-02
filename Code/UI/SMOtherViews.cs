@@ -58,19 +58,24 @@ namespace SuperMech.Code
             var units = World.world?.units?.units_only_alive;
             if (units == null)
             {
+                Debug.Log("[超神机械师] 排行榜: units为null");
                 ShowEmpty();
                 return;
             }
 
+            Debug.Log($"[超神机械师] 排行榜: 遍历{units.Count}个单位");
             var rankings = new System.Collections.Generic.List<(string name, string rankKey, float onar)>();
+            int qiCount = 0, crossCount = 0, zeroCount = 0;
             foreach (Actor a in units)
             {
                 if (a == null || !a.isAlive()) continue;
                 float onar = SuperMechAdvancement.CalcOnar(a);
-                if (onar <= 0) continue;
+                if (onar <= 0) { zeroCount++; continue; }
+                if (SuperMechQi.GetQiMax(a) > 0) qiCount++; else crossCount++;
                 string rankKey = SuperMechRanks.GetRankName(a);
                 rankings.Add((a.name, rankKey, onar));
             }
+            Debug.Log($"[超神机械师] 排行榜: 有气力{qiCount}个, 跨模组{crossCount}个, 零能级{zeroCount}个, 入榜{rankings.Count}个");
             rankings.Sort((x, y) => y.onar.CompareTo(x.onar));
             if (rankings.Count > 20) rankings.RemoveRange(20, rankings.Count - 20);
 
