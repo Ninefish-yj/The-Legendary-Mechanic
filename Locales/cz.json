@@ -4287,5 +4287,14 @@
   "sm_stage_need_level": "转职需总等级{0}",
   "sm_san_time_ratio": "圣所内1小时 = 外界{0}小时",
   "sm_res_partial_lost": "信息完整度{0}%，部分能力丢失",
-  "sm_res_full_keep": "信息完整，能力全部保留"
+  "sm_res_full_keep": "信息完整，能力全部保留",
+  "sm_ui_rank_filter": "筛选",
+  "sm_ui_rank_stats": "统计",
+  "sm_ui_rank_to_top": "到顶",
+  "sm_ui_rank_to_bottom": "到底",
+  "sm_ui_rank_count": "共 {0} 人",
+  "sm_ui_rank_distribution": "阶位分布",
+  "sm_ui_sys_distribution": "体系分布",
+  "sm_ui_awakened_count": "觉醒人数",
+  "sm_class_wudan": "武道系"
 }
