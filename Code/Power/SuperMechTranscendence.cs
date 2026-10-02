@@ -330,8 +330,7 @@ namespace SuperMech.Code
                     float deathChance = Mathf.Clamp01((finalDamage - currentHp) / Mathf.Max(1f, finalDamage) + 0.3f);
                     if (Random.value < deathChance)
                     {
-                        Debug.Log($"[超神机械师] {a.name} 承受{loadDesc}失败，被{source.sourceName}的遗力反噬而亡！残存意识体「{source.consciousnessName}」再度沉寂");
-                        GenerateLegacyOnDeath(a, "legacy_backlash");
+                        Debug.Log($"[超神机械师] {a.name} 承受{loadDesc}失败，被{source.sourceName}的遗力反噬而亡！残存意识体「{source.consciousnessName}」再度沉寂，遗力消散于宇宙");
                         a.dieSimpleNone();
                         _worldLegacyPool.RemoveAt(idx);
                         continue;
