@@ -76,6 +76,110 @@ namespace SuperMech.Code
 
         public static readonly float[] LevelQiBonus = { 10, 20, 50, 80, 120, 120, 150, 180, 200, 220, 300, 360, 450, 700 };
 
+        /// <summary>机械系各阶段等级上限（原著精确数据，未知项用合理估算标注）
+        /// 索引0=阶段1机械入门者，索引13=阶段14超神机械师
+        /// </summary>
+        public static readonly int[] MechStageLevelCaps =
+        {
+            10,    // 1.机械入门者（原著：上限10级）
+            10,    // 2.机械师学徒（原著：上限10级）
+            15,    // 3.见习机械师（原著：上限15级）
+            20,    // 4.磁环机械师（估算）
+            20,    // 5.数据机械师（估算）
+            20,    // 6.战争机械师（估算）
+            20,    // 7.虚拟机械师（估算）
+            25,    // 8.星海机械师（原著：上限25级，比前一阶段提高5级）
+            30,    // 9.真理机械师（估算，总等级180触发进阶任务）
+            30,    // 10.使徒机械师（估算，总等级200转职）
+            35,    // 11.帝皇机械师（原著：上限35级）
+            40,    // 12.主宰机械师（估算）
+            60,    // 13.神座机械师（原著：60级，总等级320触发神性）
+            999    // 14.超神机械师（无上限）
+        };
+
+        /// <summary>转职触发的总等级节点（原著精确数据）
+        /// 达到该总等级时触发对应阶段的进阶任务/转职
+        /// </summary>
+        public static readonly int[] AdvancementTotalLevelTriggers =
+        {
+            0,     // 阶段1：无
+            0,     // 阶段2：无
+            0,     // 阶段3：无
+            0,     // 阶段4：无
+            0,     // 阶段5：无
+            0,     // 阶段6：无
+            0,     // 阶段7：无
+            0,     // 阶段8：无
+            180,   // 阶段9真理机械师：总等级180触发进阶任务（原著精确）
+            200,   // 阶段10使徒机械师：总等级200转职（原著精确）
+            0,     // 阶段11：无
+            0,     // 阶段12：无
+            320,   // 阶段13神座机械师：总等级320触发神性（原著精确）
+            0      // 阶段14：无
+        };
+
+        /// <summary>获取当前阶段的等级上限</summary>
+        public static int GetStageLevelCap(Actor a)
+        {
+            if (a == null) return 999;
+            int stage = GetStage(a);
+            if (stage <= 0 || stage > MechStageLevelCaps.Length) return 999;
+            // 目前只有机械系有精确等级上限，其他体系用通用上限
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+                return MechStageLevelCaps[stage - 1];
+            return 999; // 其他体系暂不限制
+        }
+
+        /// <summary>检查单位是否达到当前阶段的等级上限</summary>
+        public static bool IsAtStageLevelCap(Actor a)
+        {
+            if (a == null) return false;
+            int cap = GetStageLevelCap(a);
+            if (cap >= 999) return false;
+            return a.data.level >= cap;
+        }
+
+        /// <summary>获取下一转职触发的总等级（0表示无特殊触发）</summary>
+        public static int GetNextAdvancementTrigger(Actor a)
+        {
+            if (a == null) return 0;
+            int stage = GetStage(a);
+            if (stage <= 0 || stage >= AdvancementTotalLevelTriggers.Length) return 0;
+            // 下一个阶段的触发等级
+            int nextStage = stage + 1;
+            if (nextStage <= AdvancementTotalLevelTriggers.Length)
+                return AdvancementTotalLevelTriggers[nextStage - 1];
+            return 0;
+        }
+
+        /// <summary>检查是否满足转职的总等级条件</summary>
+        public static bool CanAdvanceByTotalLevel(Actor a)
+        {
+            if (a == null) return false;
+            int trigger = GetNextAdvancementTrigger(a);
+            if (trigger <= 0) return true; // 无特殊触发要求
+            return a.data.level >= trigger;
+        }
+
+        /// <summary>获取阶段进度描述（用于UI显示）</summary>
+        public static string GetStageProgressText(Actor a)
+        {
+            if (a == null) return "";
+            int stage = GetStage(a);
+            if (stage <= 0) return "";
+            int cap = GetStageLevelCap(a);
+            int trigger = GetNextAdvancementTrigger(a);
+
+            if (cap >= 999 && trigger <= 0) return "";
+
+            string text = "";
+            if (cap < 999)
+                text += $"Lv{a.data.level}/{cap}";
+            if (trigger > 0)
+                text += (text.Length > 0 ? "，" : "") + $"转职需总等级{trigger}";
+            return text;
+        }
+
         private static readonly Dictionary<long, int> _stage = new Dictionary<long, int>();
 
         private static string[] GetStageArray(Actor a)
@@ -174,6 +278,26 @@ namespace SuperMech.Code
             if (!SuperMechAwakened.IsAwakened(a)) return false;
             int cur = GetStage(a);
             if (cur >= 14) return false;
+
+            // 原著等级上限检查：达到当前阶段等级上限才能进阶
+            if (a.hasTrait(SuperMechTraits.ClassMech) && cur > 0)
+            {
+                int cap = GetStageLevelCap(a);
+                if (cap < 999 && a.data.level < cap)
+                {
+                    Debug.Log($"[超神机械师] 进阶失败: {a.name} 等级{a.data.level}未达到阶段{cur}上限{cap}");
+                    return false;
+                }
+            }
+
+            // 原著转职总等级节点检查（真理180/使徒200/神座320）
+            if (!CanAdvanceByTotalLevel(a))
+            {
+                int trigger = GetNextAdvancementTrigger(a);
+                Debug.Log($"[超神机械师] 进阶失败: {a.name} 总等级{a.data.level}未达到转职要求{trigger}");
+                return false;
+            }
+
             string oldName = cur <= 0 ? "sm_stage_none" : GetStageName(a);
             SetStage(a, cur + 1);
             string newName = GetStageName(a);
