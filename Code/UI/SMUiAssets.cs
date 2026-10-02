@@ -3,12 +3,12 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// UI资源加载：面板背景纹理和9-slice精灵
-    /// 从GameResources/ui_panel.png加载，供UGUI窗口和按钮使用
+    /// UI资源加载：面板背景精灵
+    /// NML自动加载GameResources目录到Unity Resources系统，用Resources.Load访问
+    /// 9-slice border=42,50,42,50
     /// </summary>
     internal static class SMUiAssets
     {
-        private static Texture2D _panelTex;
         private static Sprite _panelSprite;
         private static bool _triedLoad;
 
@@ -17,36 +17,45 @@ namespace SuperMech.Code
         /// </summary>
         public static Sprite GetPanelSprite()
         {
-            EnsurePanelTexture();
-            if (_panelSprite == null && _panelTex != null)
+            if (_triedLoad) return _panelSprite;
+            _triedLoad = true;
+
+            // 标准方式：NML自动加载GameResources到Resources系统
+            _panelSprite = Resources.Load<Sprite>("ui_panel");
+
+            if (_panelSprite == null)
             {
-                _panelSprite = Sprite.Create(_panelTex,
-                    new Rect(0, 0, _panelTex.width, _panelTex.height),
-                    new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect,
-                    new Vector4(42, 50, 42, 50));
+                Debug.LogWarning("[超神机械师] Resources.Load<Sprite>(ui_panel)失败，尝试文件IO兜底");
+                _panelSprite = LoadFromFileFallback();
             }
+
             return _panelSprite;
         }
 
-        private static void EnsurePanelTexture()
+        /// <summary>
+        /// 文件IO兜底加载（Resources.Load失败时使用）
+        /// </summary>
+        private static Sprite LoadFromFileFallback()
         {
-            if (_triedLoad) return;
-            _triedLoad = true;
-
             try
             {
                 string path = System.IO.Path.Combine(Main.ModPath, "GameResources", "ui_panel.png");
-                if (System.IO.File.Exists(path))
-                {
-                    byte[] data = System.IO.File.ReadAllBytes(path);
-                    _panelTex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    _panelTex.LoadImage(data);
-                    _panelTex.wrapMode = TextureWrapMode.Clamp;
-                }
+                if (!System.IO.File.Exists(path)) return null;
+
+                byte[] data = System.IO.File.ReadAllBytes(path);
+                var tex = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                tex.LoadImage(data);
+                tex.wrapMode = TextureWrapMode.Clamp;
+
+                return Sprite.Create(tex,
+                    new Rect(0, 0, tex.width, tex.height),
+                    new Vector2(0.5f, 0.5f), 100f, 0, SpriteMeshType.FullRect,
+                    new Vector4(42, 50, 42, 50));
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning("[超神机械师] 加载UI面板纹理失败: " + e.Message);
+                Debug.LogWarning("[超神机械师] 文件IO加载UI面板失败: " + e.Message);
+                return null;
             }
         }
     }
