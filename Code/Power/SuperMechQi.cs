@@ -13,6 +13,7 @@ namespace SuperMech.Code
         // Lv10≈9000(ch539"突破9000大关进入下一等级")
         // Lv21=182075(ch1039"气力：182075【Lv21】")
         // Lv10~Lv21每级倍率≈1.32，Lv21以上每级倍率≈1.25
+        // 气力等级无上限，Lv31+按每级×1.25推算（原著"憋气力是超A级提升王道"）
         public static readonly float[] Thresholds = {
             10f, 50f, 100f, 200f, 400f, 1000f,
             1730f, 3000f, 5200f, 9000f,
@@ -20,6 +21,11 @@ namespace SuperMech.Code
             47600f, 62800f, 82900f, 109500f, 144500f,
             182075f, 227600f, 284500f, 355600f, 444500f,
             555600f, 694500f, 868100f, 1085100f, 1356400f,
+            // Lv31~Lv50：每级×1.25，高等级极难提升
+            1695500f, 2119375f, 2649219f, 3311524f, 4139405f,
+            5174256f, 6467820f, 8084775f, 10105969f, 12632461f,
+            15790576f, 19738220f, 24672775f, 30840969f, 38551211f,
+            48189014f, 60236267f, 75295334f, 94119167f, 117648959f,
         };
 
         public static readonly string[] LevelNames = {
@@ -29,6 +35,10 @@ namespace SuperMech.Code
             "Lv16", "Lv17", "Lv18", "Lv19", "Lv20",
             "Lv21", "Lv22", "Lv23", "Lv24", "Lv25",
             "Lv26", "Lv27", "Lv28", "Lv29", "Lv30",
+            "Lv31", "Lv32", "Lv33", "Lv34", "Lv35",
+            "Lv36", "Lv37", "Lv38", "Lv39", "Lv40",
+            "Lv41", "Lv42", "Lv43", "Lv44", "Lv45",
+            "Lv46", "Lv47", "Lv48", "Lv49", "Lv50",
         };
 
         private static readonly Dictionary<long, float> _qiMap = new Dictionary<long, float>();
@@ -127,13 +137,18 @@ namespace SuperMech.Code
             return v;
         }
 
+        // 原著：气力等级越高提升越难(ch51"每一层所需的气力都比上一层多得多")
+        // 高等级衰减极大，符合"憋气力是超A级提升自身的王道"
         public static float GetGrowthDecay(int level)
         {
             if (level <= 5) return 1.0f;
             if (level <= 10) return 0.7f;
             if (level <= 15) return 0.4f;
             if (level <= 20) return 0.2f;
-            return 0.1f;
+            if (level <= 25) return 0.1f;
+            if (level <= 30) return 0.05f;
+            if (level <= 40) return 0.02f;
+            return 0.01f;
         }
 
         public static void AddQi(Actor a, float amount)
