@@ -55,6 +55,14 @@ namespace SuperMech.Code
                 string stage = SuperMechStage.GetStageName(a);
                 if (stage != "—" && stage != "sm_knowledgetab_829")
                     ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stage, null, InfoColor);
+
+                // 机械师专精显示（只有机械师分支且解锁了专精才显示）
+                if (a.hasTrait(SuperMechBranch.BranchMech))
+                {
+                    string specName = SuperMechSpecialization.GetSpecName(a);
+                    if (specName != LocalizedTextManager.getText("sm_spec_none"))
+                        ShowRow(window, LocalizedTextManager.getText("sm_ui_specialization"), specName, null, new Color(0.6f, 0.9f, 1f));
+                }
             }
             else
             {

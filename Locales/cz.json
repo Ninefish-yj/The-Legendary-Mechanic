@@ -4009,5 +4009,19 @@
   "sm_blueprint_grade_2": "蓝色·进阶图纸",
   "sm_blueprint_grade_3": "紫色·高端图纸",
   "sm_blueprint_grade_4": "金色·尖端图纸",
-  "sm_blueprint_grade_5": "橙色·终极图纸"
+  "sm_blueprint_grade_5": "橙色·终极图纸",
+  "sm_spec_name_large": "大型机械",
+  "sm_spec_desc_large": "专精大型机械制造，擅长重武器与装甲，高阶形态为宇宙帝皇",
+  "sm_spec_name_micro": "微型机械",
+  "sm_spec_desc_micro": "专精微型机械制造，擅长高速与精密，高阶形态为起源神君",
+  "sm_spec_name_virtual": "虚拟技术",
+  "sm_spec_desc_virtual": "专精虚拟技术，擅长网络入侵与AI控制，高阶形态为至高天尊",
+  "sm_spec_none": "未解锁专精",
+  "sm_spec_form_emperor": "宇宙帝皇",
+  "sm_spec_form_origin": "起源神君",
+  "sm_spec_form_sovereign": "至高天尊",
+  "sm_spec_throne_emperor": "帝皇神座",
+  "sm_spec_throne_origin": "神君神座",
+  "sm_spec_throne_sovereign": "天尊神座",
+  "sm_ui_specialization": "专精"
 }

@@ -250,7 +250,13 @@ namespace SuperMech.Code
                 set = new HashSet<string>();
                 _unlocked[a.id] = set;
             }
-            return set.Add(knowledgeId);
+            bool added = set.Add(knowledgeId);
+            // 学习机械系知识后自动更新专精（只有机械师分支有专精）
+            if (added && knowledgeId.StartsWith("sm_know_mech_") && a.hasTrait(SuperMechBranch.BranchMech))
+            {
+                SuperMechSpecialization.UpdateSpec(a);
+            }
+            return added;
         }
 
         public static int GetUnlockedCount(Actor a, string prefix)
@@ -283,6 +289,32 @@ namespace SuperMech.Code
                 if (id.StartsWith(key) && _allKnowledge.TryGetValue(id, out var def)) list.Add(def);
             }
             return list;
+        }
+
+        /// <summary>
+        /// 获取单位所有已学知识的ID列表（不限体系）
+        /// </summary>
+        public static List<string> GetLearnedKnowledge(Actor a)
+        {
+            var list = new List<string>();
+            if (a == null || !_unlocked.TryGetValue(a.id, out var set)) return list;
+            list.AddRange(set);
+            return list;
+        }
+
+        /// <summary>
+        /// 获取知识所属分支：armed(武装)/energy(能量)/control(操控)
+        /// </summary>
+        public static string GetKnowledgeBranch(string knowledgeId)
+        {
+            if (string.IsNullOrEmpty(knowledgeId)) return "";
+            if (_allKnowledge.TryGetValue(knowledgeId, out var def))
+            {
+                if (def.branch == 0) return "armed";
+                if (def.branch == 1) return "energy";
+                if (def.branch == 2) return "control";
+            }
+            return "";
         }
 
         public static List<KnowledgeDef> GetAllByTier(string prefix, int tier)

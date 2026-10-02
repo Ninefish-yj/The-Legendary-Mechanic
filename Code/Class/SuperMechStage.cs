@@ -177,7 +177,18 @@ namespace SuperMech.Code
                 // 已选分支的机械系 + 其他体系：用对应阶段数组显示实际职业阶段名
                 string[] arr = GetStageArray(a);
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
-                result = arr[idx];
+
+                // 机械师高阶阶段（神座/超神）按专精显示不同形态名
+                if (a.hasTrait(SuperMechBranch.BranchMech) && SuperMechSpecialization.GetSpec(a) != null)
+                {
+                    if (s == 13) result = SuperMechSpecialization.GetThroneFormName(a);
+                    else if (s >= 14) result = SuperMechSpecialization.GetHighFormName(a);
+                    else result = arr[idx];
+                }
+                else
+                {
+                    result = arr[idx];
+                }
             }
             else
             {
@@ -186,7 +197,7 @@ namespace SuperMech.Code
                 string className = GetGenericClassName(a);
                 result = $"{rankName}{className}";
             }
-            if (result.StartsWith("sm_stage_") || result.StartsWith("sm_sub_"))
+            if (result.StartsWith("sm_stage_") || result.StartsWith("sm_sub_") || result.StartsWith("sm_spec_"))
                 return LocalizedTextManager.getText(result);
             return result;
         }
