@@ -71,6 +71,29 @@ namespace SuperMech.Code
         // 已融合记录：单位ID -> 已融合配方ID集合
         private static readonly Dictionary<long, HashSet<string>> _fusedByActor = new Dictionary<long, HashSet<string>>();
 
+        /// <summary>图纸等级（绿/蓝/紫/金/橙）</summary>
+        public enum BlueprintGrade
+        {
+            Green = 1,   // 基础图纸
+            Blue = 2,    // 进阶图纸
+            Purple = 3,  // 高端图纸
+            Gold = 4,    // 尖端图纸
+            Orange = 5   // 终极图纸
+        }
+
+        /// <summary>获取配方的图纸等级</summary>
+        public static BlueprintGrade GetBlueprintGrade(RecipeDef recipe)
+        {
+            if (recipe == null) return BlueprintGrade.Green;
+            return (BlueprintGrade)Mathf.Clamp(recipe.tier, 1, 5);
+        }
+
+        /// <summary>获取图纸等级名称（本地化）</summary>
+        public static string GetBlueprintGradeName(BlueprintGrade grade)
+        {
+            return LocalizedTextManager.getText($"sm_blueprint_grade_{(int)grade}");
+        }
+
         /// <summary>注册配方</summary>
         public static void Register(RecipeDef recipe)
         {

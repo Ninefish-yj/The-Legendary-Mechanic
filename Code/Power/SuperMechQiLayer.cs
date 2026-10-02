@@ -5,59 +5,75 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// 气力层次系统。
-    /// 气力从资源池变成有层次的成长轴。
-    /// Lv1~Lv10，每级被动加成，第六级为分水岭（质变）。
-    /// 层次与气力属性联动，不同属性的层次加成方向不同。
+    /// 原著精确阈值：Lv1=10, Lv2=50, Lv3=100, Lv4=200, Lv5=400,
+    /// Lv6=1000（分水岭）, Lv7=2000, Lv8=3000, Lv9=5000, Lv10=9000,
+    /// Lv11=1万, Lv12=2万, Lv13=3万, Lv14=4万, Lv15=5万, Lv16=6万,
+    /// Lv17=8万, Lv18=10万, Lv19=12万, Lv20=15万, Lv21=18万,
+    /// Lv25=29万, Lv29=48万
+    /// 第六级是分水岭，获得"气力属性强化"，属性作用变得突出。
+    /// 磁属性气力可以用在制造和使用机械上，加快速度、提高质量、强化威力。
     /// </summary>
     public static class SuperMechQiLayer
     {
-        /// <summary>最大层次等级</summary>
-        public const int MaxLayer = 10;
+        /// <summary>最大层次等级（原著到Lv29）</summary>
+        public const int MaxLayer = 29;
 
-        /// <summary>分水岭等级（达到此等级有质变）</summary>
+        /// <summary>分水岭等级（达到此等级有质变：气力属性强化）</summary>
         public const int BreakthroughLayer = 6;
 
-        /// <summary>层次提升所需的气力值阈值</summary>
+        /// <summary>层次提升所需的气力值阈值（原著精确数值）</summary>
         public static readonly float[] LayerQiThresholds =
         {
-            0f,       // Lv0（未入门）
-            50f,      // Lv1
-            200f,     // Lv2
-            500f,     // Lv3
-            1200f,    // Lv4
-            3000f,    // Lv5
-            8000f,    // Lv6（分水岭）
-            20000f,   // Lv7
-            50000f,   // Lv8
-            120000f,  // Lv9
-            300000f   // Lv10（圆满）
+            0f,        // Lv0（未入门）
+            10f,       // Lv1
+            50f,       // Lv2
+            100f,      // Lv3
+            200f,      // Lv4
+            400f,      // Lv5
+            1000f,     // Lv6（分水岭：气力属性强化）
+            2000f,     // Lv7
+            3000f,     // Lv8
+            5000f,     // Lv9
+            9000f,     // Lv10
+            10000f,    // Lv11
+            20000f,    // Lv12
+            30000f,    // Lv13
+            40000f,    // Lv14
+            50000f,    // Lv15
+            60000f,    // Lv16
+            80000f,    // Lv17
+            100000f,   // Lv18
+            120000f,   // Lv19
+            150000f,   // Lv20
+            180000f,   // Lv21
+            210000f,   // Lv22（插值）
+            250000f,   // Lv23（插值）
+            270000f,   // Lv24（插值）
+            290000f,   // Lv25
+            340000f,   // Lv26（插值）
+            390000f,   // Lv27（插值）
+            440000f,   // Lv28（插值）
+            480000f    // Lv29（圆满）
         };
 
-        /// <summary>层次被动加成（每级的基础倍率）</summary>
-        public static readonly float[] LayerDamageBonus =
-        {
-            1.00f, 1.05f, 1.12f, 1.20f, 1.30f, 1.42f,
-            1.60f, 1.80f, 2.05f, 2.35f, 2.70f  // Lv6起加成陡增
-        };
+        /// <summary>层次被动加成（每级的基础倍率，随等级非线性增长）</summary>
+        public static readonly float[] LayerDamageBonus = BuildBonusArray(1.00f, 0.05f, 0.08f, 6);
+        public static readonly float[] LayerHealthBonus = BuildBonusArray(1.00f, 0.08f, 0.10f, 6);
+        public static readonly float[] LayerSpeedBonus = BuildBonusArray(1.00f, 0.03f, 0.04f, 6);
+        public static readonly float[] LayerRegenBonus = BuildBonusArray(1.00f, 0.10f, 0.12f, 6);
 
-        public static readonly float[] LayerHealthBonus =
+        /// <summary>构建加成数组：Lv1~5线性增长，Lv6+分水岭后加速增长</summary>
+        private static float[] BuildBonusArray(float baseVal, float earlyStep, float lateStep, int breakthrough)
         {
-            1.00f, 1.08f, 1.18f, 1.30f, 1.45f, 1.62f,
-            1.85f, 2.10f, 2.40f, 2.75f, 3.15f
-        };
-
-        public static readonly float[] LayerSpeedBonus =
-        {
-            1.00f, 1.03f, 1.06f, 1.10f, 1.14f, 1.19f,
-            1.25f, 1.32f, 1.40f, 1.49f, 1.60f
-        };
-
-        /// <summary>层次气力恢复加成（每级恢复速度提升）</summary>
-        public static readonly float[] LayerRegenBonus =
-        {
-            1.00f, 1.10f, 1.22f, 1.35f, 1.50f, 1.68f,
-            1.90f, 2.15f, 2.45f, 2.80f, 3.20f
-        };
+            float[] arr = new float[MaxLayer + 1];
+            arr[0] = baseVal;
+            for (int i = 1; i <= MaxLayer; i++)
+            {
+                float step = (i < breakthrough) ? earlyStep : lateStep;
+                arr[i] = arr[i - 1] + step;
+            }
+            return arr;
+        }
 
         private static readonly Dictionary<long, int> _layer = new Dictionary<long, int>();
 
@@ -94,7 +110,7 @@ namespace SuperMech.Code
             return layer;
         }
 
-        /// <summary>是否达到分水岭（Lv6+）</summary>
+        /// <summary>是否达到分水岭（Lv6+，气力属性强化）</summary>
         public static bool IsBreakthrough(Actor a)
         {
             return GetLayer(a) >= BreakthroughLayer;
@@ -128,11 +144,24 @@ namespace SuperMech.Code
             return LayerRegenBonus[layer];
         }
 
+        /// <summary>
+        /// 磁属性气力对机械的加成（Lv6分水岭后生效）。
+        /// 磁属性气力可以用在制造和使用机械上，加快速度、提高质量、强化威力。
+        /// </summary>
+        public static float GetMagneticMechBonus(Actor a)
+        {
+            if (!IsBreakthrough(a)) return 1f;
+            if (SuperMechQiAttribute.GetAttribute(a) != SuperMechQiAttribute.AttrMagnetic) return 1f;
+            int layer = GetLayer(a);
+            // 每高于分水岭1级，机械威力+5%，制造速度+3%
+            return 1f + (layer - BreakthroughLayer) * 0.05f;
+        }
+
         /// <summary>获取层次名称（本地化）</summary>
         public static string GetLayerName(int layer)
         {
             if (layer <= 0) return LocalizedTextManager.getText("sm_qi_layer_0");
-            if (layer >= MaxLayer) return LocalizedTextManager.getText("sm_qi_layer_10");
+            if (layer >= MaxLayer) return LocalizedTextManager.getText($"sm_qi_layer_{MaxLayer}");
             return LocalizedTextManager.getText($"sm_qi_layer_{layer}");
         }
 
