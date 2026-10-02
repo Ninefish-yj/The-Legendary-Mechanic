@@ -6,11 +6,40 @@ namespace SuperMech.Code
     /// <summary>
     /// 宇宙迭代模拟系统：记录宇宙迭代次数，大重启时保留圣所遗产
     /// 原著中宇宙会经历多次迭代，圣所记录每轮文明的知识和信息态
+    /// 包含暗面宇宙子迭代、信息态剥离计划、世界树事件等原著设定
     /// </summary>
     public static class SuperMechCosmicIteration
     {
+        /// <summary>迭代阶段（原著宇宙演化阶段）</summary>
+        public enum IterationPhase
+        {
+            Initial = 0,           // 最初时空（终极文明将毁灭改为大重启）
+            Savior = 1,            // 救世主文明阶段（某个迭代的终极文明留下圣所）
+            ThreeCivilizations = 2, // 三大文明阶段（继承重启计划）
+            DarkUniverse = 3,      // 暗面宇宙阶段（信息态剥离计划，三次小重启）
+            PlayerUniverse = 4     // 玩家宇宙（当前迭代）
+        }
+
         /// <summary>当前宇宙迭代次数</summary>
         public static int CurrentIteration { get; private set; } = 0;
+
+        /// <summary>当前迭代阶段</summary>
+        public static IterationPhase CurrentPhase { get; private set; } = IterationPhase.PlayerUniverse;
+
+        /// <summary>暗面宇宙迭代次数（原著：三大文明在暗面经历三次迭代）</summary>
+        public static int DarkUniverseIteration { get; private set; } = 0;
+
+        /// <summary>暗面宇宙最大迭代次数</summary>
+        public const int MaxDarkUniverseIteration = 3;
+
+        /// <summary>信息态剥离计划是否已开启（原著：三大文明开启该计划进入暗面宇宙）</summary>
+        public static bool InformationStrippingPlanStarted { get; private set; } = false;
+
+        /// <summary>世界树是否已诞生（原著：暗面宇宙信息态技术创造的宇宙宝物）</summary>
+        public static bool WorldTreeCreated { get; private set; } = false;
+
+        /// <summary>世界树成长等级（0~10）</summary>
+        public static int WorldTreeLevel { get; private set; } = 0;
 
         /// <summary>遗产保留率基础值（0~1），实际保留率随机波动并受圣所权限影响</summary>
         public const float BaseHeritageRetentionRate = 0.3f;
@@ -32,9 +61,22 @@ namespace SuperMech.Code
             public int retainedAuthority;      // 保留的权限
             public List<string> retainedKnowledge; // 保留的知识ID
             public string summary;             // 上一轮文明总结
+            public bool fromDarkUniverse;      // 是否来自暗面宇宙
+        }
+
+        /// <summary>暗面宇宙文明记录</summary>
+        public class DarkUniverseCivilization
+        {
+            public int iteration;              // 暗面迭代次数（1~3）
+            public string civilizationName;    // 文明名称
+            public int totalAwakened;          // 觉醒数
+            public int maxRankReached;         // 最高阶位
+            public string summary;             // 文明总结
+            public bool worldTreeCreated;      // 本轮是否创造世界树
         }
 
         private static HeritageData _pendingHeritage;
+        private static readonly List<DarkUniverseCivilization> _darkUniverseHistory = new List<DarkUniverseCivilization>();
 
         /// <summary>初始化宇宙迭代系统（加载世界时调用）</summary>
         public static void Initialize(int savedIteration, string savedCivilizationJson)
@@ -52,6 +94,139 @@ namespace SuperMech.Code
             ApplyHeritage();
 
             Debug.Log($"[超神机械师] 宇宙迭代系统初始化: 第{CurrentIteration}轮，历史记录{SuperMechCivilizationData.GetHistory().Count}轮");
+        }
+
+        /// <summary>开启信息态剥离计划（原著：三大文明开启该计划进入暗面宇宙）
+        /// 触发条件：圣所权限达到阈值，且当前阶段为三大文明阶段
+        /// </summary>
+        public static bool StartInformationStrippingPlan()
+        {
+            if (InformationStrippingPlanStarted) return false;
+            if (SuperMechSanctuary.Data.total_permission < 10000)
+            {
+                Debug.Log("[超神机械师] 信息态剥离计划启动失败：圣所权限不足（需10000）");
+                return false;
+            }
+
+            InformationStrippingPlanStarted = true;
+            CurrentPhase = IterationPhase.DarkUniverse;
+            DarkUniverseIteration = 1;
+
+            // 记录暗面宇宙第一轮文明
+            _darkUniverseHistory.Add(new DarkUniverseCivilization
+            {
+                iteration = 1,
+                civilizationName = "三大文明暗面第一迭代",
+                totalAwakened = 0,
+                maxRankReached = 0,
+                summary = "三大文明开启信息态剥离计划，进入暗面宇宙",
+                worldTreeCreated = false
+            });
+
+            Debug.Log("[超神机械师] 信息态剥离计划启动！三大文明进入暗面宇宙，开始第一次暗面迭代");
+            return true;
+        }
+
+        /// <summary>触发暗面宇宙小重启（原著：暗面宇宙经历三次迭代）
+        /// 每次暗面重启有机会创造世界树
+        /// </summary>
+        public static bool TriggerDarkUniverseRestart()
+        {
+            if (!InformationStrippingPlanStarted) return false;
+            if (DarkUniverseIteration >= MaxDarkUniverseIteration)
+            {
+                Debug.Log("[超神机械师] 暗面宇宙已完成三次迭代，无法继续重启");
+                return false;
+            }
+
+            // 结束当前暗面文明记录
+            if (_darkUniverseHistory.Count > 0)
+            {
+                var last = _darkUniverseHistory[_darkUniverseHistory.Count - 1];
+                last.totalAwakened = SuperMechCivilizationData.GetHistory().Count > 0
+                    ? SuperMechCivilizationData.GetHistory()[SuperMechCivilizationData.GetHistory().Count - 1].totalAwakened
+                    : 0;
+                last.maxRankReached = SuperMechCivilizationData.GetHistory().Count > 0
+                    ? SuperMechCivilizationData.GetHistory()[SuperMechCivilizationData.GetHistory().Count - 1].maxRankReached
+                    : 0;
+            }
+
+            DarkUniverseIteration++;
+
+            // 第二次暗面迭代有30%概率创造世界树
+            if (DarkUniverseIteration == 2 && !WorldTreeCreated && Random.value < 0.3f)
+            {
+                CreateWorldTree();
+            }
+
+            // 记录新一轮暗面文明
+            _darkUniverseHistory.Add(new DarkUniverseCivilization
+            {
+                iteration = DarkUniverseIteration,
+                civilizationName = $"三大文明暗面第{DarkUniverseIteration}迭代",
+                totalAwakened = 0,
+                maxRankReached = 0,
+                summary = DarkUniverseIteration == MaxDarkUniverseIteration
+                    ? "暗面宇宙最终迭代，三大文明准备回归真实宇宙"
+                    : $"暗面宇宙第{DarkUniverseIteration}次迭代",
+                worldTreeCreated = WorldTreeCreated
+            });
+
+            Debug.Log($"[超神机械师] 暗面宇宙小重启！进入第{DarkUniverseIteration}次暗面迭代");
+            return true;
+        }
+
+        /// <summary>创造世界树（原著：暗面宇宙信息态技术创造的宇宙宝物）
+        /// 世界树可以加速信息态恢复，提升遗产保留率
+        /// </summary>
+        public static bool CreateWorldTree()
+        {
+            if (WorldTreeCreated) return false;
+            if (!InformationStrippingPlanStarted) return false;
+
+            WorldTreeCreated = true;
+            WorldTreeLevel = 1;
+
+            Debug.Log("[超神机械师] 世界树诞生！暗面宇宙信息态技术结晶，遗产保留率+10%");
+            return true;
+        }
+
+        /// <summary>世界树成长（消耗圣所权限，提升遗产保留率加成）</summary>
+        public static bool GrowWorldTree()
+        {
+            if (!WorldTreeCreated) return false;
+            if (WorldTreeLevel >= 10) return false;
+            if (SuperMechSanctuary.Data.total_permission < 5000 * WorldTreeLevel) return false;
+
+            SuperMechSanctuary.Data.total_permission -= 5000 * WorldTreeLevel;
+            WorldTreeLevel++;
+
+            Debug.Log($"[超神机械师] 世界树成长至Lv{WorldTreeLevel}，遗产保留率+{WorldTreeLevel * 2}%");
+            return true;
+        }
+
+        /// <summary>获取世界树对遗产保留率的加成</summary>
+        public static float GetWorldTreeRetentionBonus()
+        {
+            if (!WorldTreeCreated) return 0f;
+            return WorldTreeLevel * 0.02f; // 每级+2%
+        }
+
+        /// <summary>获取暗面宇宙历史记录</summary>
+        public static List<DarkUniverseCivilization> GetDarkUniverseHistory()
+        {
+            return _darkUniverseHistory;
+        }
+
+        /// <summary>完成暗面宇宙迭代，回归真实宇宙（原著：暗面三次迭代后真实宇宙进入新迭代）</summary>
+        public static bool CompleteDarkUniverseCycle()
+        {
+            if (!InformationStrippingPlanStarted) return false;
+            if (DarkUniverseIteration < MaxDarkUniverseIteration) return false;
+
+            CurrentPhase = IterationPhase.PlayerUniverse;
+            Debug.Log("[超神机械师] 暗面宇宙三次迭代完成，三大文明回归，真实宇宙进入新迭代");
+            return true;
         }
 
         /// <summary>触发大重启（世界重置时调用）</summary>
@@ -82,7 +257,9 @@ namespace SuperMech.Code
             float authorityBonus = SuperMechSanctuary.Data.total_permission * AuthorityRetentionBonus;
             // 迭代深度加成：迭代越深，圣所积累越多，保留率越高
             float iterationBonus = CurrentIteration * 0.01f;
-            return Mathf.Clamp01(BaseHeritageRetentionRate + randomFactor + authorityBonus + iterationBonus);
+            // 世界树加成：暗面宇宙信息态技术产物，每级+2%
+            float worldTreeBonus = GetWorldTreeRetentionBonus();
+            return Mathf.Clamp01(BaseHeritageRetentionRate + randomFactor + authorityBonus + iterationBonus + worldTreeBonus);
         }
 
         /// <summary>计算本轮遗产（大重启时保留的资源）</summary>
@@ -162,11 +339,35 @@ namespace SuperMech.Code
                 if (h.maxRankReached > maxRank) maxRank = h.maxRankReached;
             }
 
-            return $"当前迭代: 第{CurrentIteration}轮\n" +
+            string phaseText = CurrentPhase switch
+            {
+                IterationPhase.Initial => "最初时空",
+                IterationPhase.Savior => "救世主文明",
+                IterationPhase.ThreeCivilizations => "三大文明",
+                IterationPhase.DarkUniverse => "暗面宇宙",
+                IterationPhase.PlayerUniverse => "玩家宇宙",
+                _ => "未知"
+            };
+
+            string stats = $"当前迭代: 第{CurrentIteration}轮\n" +
+                $"当前阶段: {phaseText}\n" +
                 $"历史文明: {history.Count}轮\n" +
                 $"累计觉醒: {totalAwakened}人\n" +
                 $"历史最高阶位: {(maxRank >= 0 && maxRank < SuperMechRanks.All.Count ? LocalizedTextManager.getText(SuperMechRanks.All[maxRank].name) : "无")}\n" +
-                $"遗产保留率: 基础{BaseHeritageRetentionRate * 100:F0}%（随机波动+权限加成）";
+                $"遗产保留率: 基础{BaseHeritageRetentionRate * 100:F0}%（随机波动+权限加成{(WorldTreeCreated ? $"+世界树{GetWorldTreeRetentionBonus() * 100:F0}%" : "")}）";
+
+            if (InformationStrippingPlanStarted)
+            {
+                stats += $"\n信息态剥离计划: 已开启\n" +
+                    $"暗面宇宙迭代: {DarkUniverseIteration}/{MaxDarkUniverseIteration}\n" +
+                    $"暗面文明记录: {_darkUniverseHistory.Count}轮";
+            }
+            if (WorldTreeCreated)
+            {
+                stats += $"\n世界树: Lv{WorldTreeLevel}/10";
+            }
+
+            return stats;
         }
 
         /// <summary>重置系统（新世界创建时）</summary>
@@ -174,7 +375,13 @@ namespace SuperMech.Code
         {
             _initialized = false;
             CurrentIteration = 0;
+            CurrentPhase = IterationPhase.PlayerUniverse;
+            DarkUniverseIteration = 0;
+            InformationStrippingPlanStarted = false;
+            WorldTreeCreated = false;
+            WorldTreeLevel = 0;
             _pendingHeritage = null;
+            _darkUniverseHistory.Clear();
             SuperMechCivilizationData.Clear();
         }
 
