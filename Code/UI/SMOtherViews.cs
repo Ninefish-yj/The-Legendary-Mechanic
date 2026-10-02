@@ -48,21 +48,18 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // 直接用Content，不用ScrollArea（排行榜只显示前20名，不需要滚动）
-            var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(transform, false);
-            _content = contentGo.AddComponent<RectTransform>();
-            _content.anchorMin = Vector2.zero;
-            _content.anchorMax = Vector2.one;
-            _content.offsetMin = new Vector2(8, 8);
-            _content.offsetMax = new Vector2(-8, -8);
-            var layout = contentGo.AddComponent<VerticalLayoutGroup>();
+            // 使用滚动区域，支持20+条目的滚动查看
+            var (scroll, content) = SMUiSkin.CreateScrollArea(transform, "RankScroll");
+            _content = content;
+            var layout = content.gameObject.AddComponent<VerticalLayoutGroup>();
             layout.spacing = 2;
             layout.padding = new RectOffset(4, 4, 4, 4);
             layout.childControlHeight = true;
             layout.childControlWidth = true;
             layout.childForceExpandWidth = true;
             layout.childForceExpandHeight = false;
+            var fitter = content.gameObject.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
         }
 
         private void RefreshRank()

@@ -98,6 +98,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.32.3** | UI修复：超能者排行榜添加滚动功能。原实现错误地认为"只显示前20名不需要滚动"，但20行内容在窗口高度内显示不全，导致底部条目被截断。已改用SMUiSkin.CreateScrollArea创建滚动区域，并添加ContentSizeFitter自适应内容高度 |
 | **v0.32.2** | Bug修复：修复自动觉醒子系统"Value cannot be null. Parameter name: key"异常。原因是部分刚创建的单位id为null时，调用了用a.id作为字典key的方法（SetQi/SetPotential/GrantTalents/SetProfession等）。已在TickAutoAwakening入口和所有关键字典操作方法中添加a.id null防御性检查，涉及SuperMechQi、SuperMechPotential、SuperMechTalent、SuperMechProfession四个类 |
 | **v0.32.1** | Bug修复：修复自定义属性"时有时无"的问题。原因是TickSync()中存在不合理的性能限制逻辑——当世界中单位超过500个时，非觉醒且阶位低于A级的单位会被随机跳过不同步，导致打开单位面板时属性时有时无。已移除该限制，所有存活单位都会被同步自定义属性 |
 | **v0.32.0** | 魔法系法术学习系统（原著ch404还原）：新增SuperMechSpell.cs法术系统核心（7大分支：元素/秘术/庇护/时空/塑能/召唤/诅咒祈福，15个基础法术，每个法术分2-4个学习阶段）；学习成功率取决于智力和神秘属性（每点+0.5%），高阶法师学低级法术有加成；高阶法术有前置法术和属性要求；回路法师限制（非专精分支只能学tier1基础法术，专精分支威力+30%）；学习失败消耗经验不返还，分阶段逐步掌握；新增SMSpellView.cs法术学习UI面板（左列表按分支分组+右详情+学习按钮）；单位面板添加法术入口按钮（仅魔法系显示）；法术学习成功推送原生事件日志；新增50+条本地化文本 |
