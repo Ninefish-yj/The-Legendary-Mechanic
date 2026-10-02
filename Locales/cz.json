@@ -4315,5 +4315,21 @@
   "sm_ui_san_info_revive": "复活次数",
   "sm_legacy_sources": "遗力来源",
   "sm_legacy_debt_warn": "继承遗力需承担死者死亡之伤",
-  "sm_legacy_damage": "承伤"
+  "sm_legacy_damage": "承伤",
+  "sm_legacy_death_cosmic": "宇宙同化",
+  "sm_legacy_death_genome": "基因崩溃",
+  "sm_legacy_death_cell": "细胞独立",
+  "sm_legacy_death_prolif": "无限增殖",
+  "sm_legacy_death_other": "未知恶性变异",
+  "sm_legacy_load_mental": "精神负荷",
+  "sm_legacy_load_genetic": "基因负荷",
+  "sm_legacy_load_physical": "肉体负荷",
+  "sm_legacy_load_energy": "能量负荷",
+  "sm_legacy_unknown": "无名流浪者",
+  "sm_legacy_wish_nokindom": "宇宙深处",
+  "sm_legacy_wish_cosmic": "「{0}」死于宇宙同化，残存意识渴望回归故乡{1}，愿你替他看一眼那片星空。",
+  "sm_legacy_wish_genome": "「{0}」死于基因崩溃，残存意识希望自己的基因研究成果能被后人继承。",
+  "sm_legacy_wish_cell": "「{0}」死于细胞独立，残存意识的执念是找到让身体重新统一的方法。",
+  "sm_legacy_wish_prolif": "「{0}」死于无限增殖，残存意识渴望有人能控制那股失控的能量。",
+  "sm_legacy_wish_default": "「{0}」的残存意识留下遗言：若你继承了我的力量，请去{1}看看，那是我出发的地方。"
 }

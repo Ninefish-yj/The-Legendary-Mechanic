@@ -527,7 +527,11 @@ namespace SuperMech.Code
                     { "rank", s.sourceRank },
                     { "energy", s.sourceEnergy },
                     { "damage", s.deathDamage },
-                    { "type", s.deathType ?? "" }
+                    { "deathType", s.deathType ?? "" },
+                    { "loadType", s.loadType ?? "" },
+                    { "consciousness", s.consciousnessName ?? "" },
+                    { "wish", s.wishText ?? "" },
+                    { "gone", s.consciousnessGone }
                 });
             }
             return JsonConvert.SerializeObject(list);
@@ -549,7 +553,11 @@ namespace SuperMech.Code
                         sourceRank = d.ContainsKey("rank") ? System.Convert.ToInt32(d["rank"]) : 0,
                         sourceEnergy = d.ContainsKey("energy") ? System.Convert.ToSingle(d["energy"]) : 0f,
                         deathDamage = d.ContainsKey("damage") ? System.Convert.ToSingle(d["damage"]) : 0f,
-                        deathType = d.ContainsKey("type") ? d["type"].ToString() : ""
+                        deathType = d.ContainsKey("deathType") ? d["deathType"].ToString() : "other",
+                        loadType = d.ContainsKey("loadType") ? d["loadType"].ToString() : "physical",
+                        consciousnessName = d.ContainsKey("consciousness") ? d["consciousness"].ToString() : "",
+                        wishText = d.ContainsKey("wish") ? d["wish"].ToString() : "",
+                        consciousnessGone = d.ContainsKey("gone") && System.Convert.ToBoolean(d["gone"])
                     });
                 }
                 return result;

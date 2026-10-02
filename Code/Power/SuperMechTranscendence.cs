@@ -5,15 +5,79 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>超神遗力来源记录（原著还原：继承好处也要继承债务）
-    /// 拿到遗力者需承担死者死亡原因同等的伤害，体质/耐力高者才能扛住
+    /// 原著第1398章：超神遗力凝聚了死者进阶身亡时逸散的生命精华、灵魂意识、核心能量
+    /// 内部有残存意识体，继承者需承受与死者死因相同类型的负荷（弱化版恶性变异）
     /// </summary>
     public class LegacyPowerSource
     {
-        public string sourceName;
-        public int sourceRank;
-        public float sourceEnergy;
-        public float deathDamage;
-        public string deathType;
+        public string sourceName;        // 死者名字
+        public int sourceRank;           // 死者阶位
+        public float sourceEnergy;       // 死者能级
+        public float deathDamage;        // 承伤基准
+        public string deathType;         // 死因：cosmic_assimilation/genome_collapse/cell_independence/infinite_proliferation/other
+        public string loadType;          // 负荷类型：mental/genetic/physical/energy
+        public string consciousnessName; // 残存意识体称呼（如"提尔修斯"）
+        public string wishText;          // 遗愿文本
+        public bool consciousnessGone;   // 残存意识是否已消亡（继承成功后消亡）
+    }
+
+    /// <summary>死因→负荷类型映射（原著：经历弱化版恶性变异，与死者进阶时危机类型相同）
+    /// </summary>
+    public static class LegacyDeathTypes
+    {
+        public const string CosmicAssimilation = "cosmic_assimilation";  // 宇宙同化→精神负荷
+        public const string GenomeCollapse = "genome_collapse";          // 基因崩溃→基因负荷
+        public const string CellIndependence = "cell_independence";      // 细胞独立→肉体负荷
+        public const string InfiniteProliferation = "infinite_proliferation"; // 无限增殖→能量负荷
+        public const string Other = "other";                              // 其他→综合负荷
+
+        public static string GetLoadType(string deathType)
+        {
+            switch (deathType)
+            {
+                case CosmicAssimilation: return "mental";
+                case GenomeCollapse: return "genetic";
+                case CellIndependence: return "physical";
+                case InfiniteProliferation: return "energy";
+                default: return "physical";
+            }
+        }
+
+        public static string GetDeathTypeName(string deathType)
+        {
+            switch (deathType)
+            {
+                case CosmicAssimilation: return LocalizedTextManager.getText("sm_legacy_death_cosmic");
+                case GenomeCollapse: return LocalizedTextManager.getText("sm_legacy_death_genome");
+                case CellIndependence: return LocalizedTextManager.getText("sm_legacy_death_cell");
+                case InfiniteProliferation: return LocalizedTextManager.getText("sm_legacy_death_prolif");
+                default: return LocalizedTextManager.getText("sm_legacy_death_other");
+            }
+        }
+
+        public static string GetLoadTypeName(string loadType)
+        {
+            switch (loadType)
+            {
+                case "mental": return LocalizedTextManager.getText("sm_legacy_load_mental");
+                case "genetic": return LocalizedTextManager.getText("sm_legacy_load_genetic");
+                case "physical": return LocalizedTextManager.getText("sm_legacy_load_physical");
+                case "energy": return LocalizedTextManager.getText("sm_legacy_load_energy");
+                default: return LocalizedTextManager.getText("sm_legacy_load_physical");
+            }
+        }
+
+        /// <summary>随机一个死因（突破失败时恶性变异类型）
+        /// </summary>
+        public static string RandomDeathType()
+        {
+            float r = Random.value;
+            if (r < 0.3f) return CosmicAssimilation;
+            if (r < 0.55f) return GenomeCollapse;
+            if (r < 0.8f) return CellIndependence;
+            if (r < 0.95f) return InfiniteProliferation;
+            return Other;
+        }
     }
 
     public static class SuperMechTranscendence
@@ -26,11 +90,8 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, float> _advancementProgress = new Dictionary<long, float>();
         private static readonly Dictionary<long, int> _divineCatalyst = new Dictionary<long, int>();
 
-        // 世界中游离的超神遗力池（超神级死亡后生成，等待被感知吸收）
+        // 世界中游离的超神遗力池（冲击超神级失败后生成，等待被感知吸收）
         private static readonly List<LegacyPowerSource> _worldLegacyPool = new List<LegacyPowerSource>();
-
-        // SS级以上单位快照（用于死亡时生成遗力，因为死亡后对象已不存在）
-        private static readonly Dictionary<long, LegacyPowerSource> _ssUnitSnapshots = new Dictionary<long, LegacyPowerSource>();
 
         private static readonly List<WorldTile> _legacySpawns = new List<WorldTile>();
 
@@ -131,17 +192,28 @@ namespace SuperMech.Code
             List<LegacyPowerSource> v; _legacySources.TryGetValue(a.id, out v); return v;
         }
 
-        /// <summary>超神级死亡时生成游离遗力，加入世界遗力池等待被感知吸收
-        /// 原著：超神遗力是超神级强者死亡后留下的力量遗产
+        /// <summary>超神级冲击更高层次失败时生成遗力（原著还原）
+        /// 原著第1396章：完成神性蜕变的超能者冲击更高层次，因恶性变异身亡，
+        /// 逸散的生命精华、灵魂意识、核心能量凝聚为超神遗力
+        /// 原著第1398章：遗力内部有残存意识体，死因决定继承者承受的负荷类型
         /// </summary>
         public static void GenerateLegacyOnDeath(Actor deadActor, string deathType)
         {
             if (deadActor == null) return;
             int rank = SuperMechAdvancement.GetExactRankIndex(deadActor);
-            if (rank < 12) return; // 只有SS级以上死亡才产生遗力
+            if (rank < 12) return; // 只有SS级以上冲击超神级失败才产生遗力
+
+            // 如果死因未指定，随机一个恶性变异类型
+            if (string.IsNullOrEmpty(deathType) || deathType == "transcendence_failed" || deathType == "legacy_backlash")
+                deathType = LegacyDeathTypes.RandomDeathType();
 
             float energy = SuperMechEnergyLevel.Calculate(deadActor);
-            float deathDamage = Mathf.Max(500f, energy * 0.15f); // 承伤基准：死者能级15%，最低500
+            float deathDamage = Mathf.Max(500f, energy * 0.15f);
+            string loadType = LegacyDeathTypes.GetLoadType(deathType);
+
+            // 生成残存意识体（原著：死者的灵魂意识拼凑凝聚，有残缺记忆和人格）
+            string consciousnessName = deadActor.name ?? LocalizedTextManager.getText("sm_legacy_unknown");
+            string wishText = GenerateWishText(deadActor, deathType);
 
             var source = new LegacyPowerSource
             {
@@ -149,14 +221,45 @@ namespace SuperMech.Code
                 sourceRank = rank,
                 sourceEnergy = energy,
                 deathDamage = deathDamage,
-                deathType = deathType
+                deathType = deathType,
+                loadType = loadType,
+                consciousnessName = consciousnessName,
+                wishText = wishText,
+                consciousnessGone = false
             };
             _worldLegacyPool.Add(source);
-            Debug.Log($"[超神机械师] {deadActor.name}（{SuperMechRanks.GetRankName(deadActor)}）死亡，生成超神遗力（承伤{deathDamage:F0}），世界遗力池现有{_worldLegacyPool.Count}份");
+            Debug.Log($"[超神机械师] {deadActor.name}（{SuperMechRanks.GetRankName(deadActor)}）冲击超神级失败，死于{LegacyDeathTypes.GetDeathTypeName(deathType)}，生成超神遗力（负荷类型：{LegacyDeathTypes.GetLoadTypeName(loadType)}，承伤{deathDamage:F0}），残存意识体「{consciousnessName}」，世界遗力池现有{_worldLegacyPool.Count}份");
         }
 
-        /// <summary>原著还原：感知并吸收遗力需承担死者死亡同等伤害
-        /// 体质/耐力高者才能扛住，扛不住会受伤甚至死亡
+        /// <summary>生成残存意识体的遗愿文本（原著：提尔修斯请求继承者去看看家乡克里星）
+        /// </summary>
+        private static string GenerateWishText(Actor deadActor, string deathType)
+        {
+            string name = deadActor.name ?? "?";
+            string kingdom = "";
+            if (deadActor.kingdom != null) kingdom = deadActor.kingdom.data.name;
+            if (string.IsNullOrEmpty(kingdom)) kingdom = LocalizedTextManager.getText("sm_legacy_wish_nokindom");
+
+            // 按死因生成不同遗愿
+            switch (deathType)
+            {
+                case LegacyDeathTypes.CosmicAssimilation:
+                    return string.Format(LocalizedTextManager.getText("sm_legacy_wish_cosmic"), name, kingdom);
+                case LegacyDeathTypes.GenomeCollapse:
+                    return string.Format(LocalizedTextManager.getText("sm_legacy_wish_genome"), name);
+                case LegacyDeathTypes.CellIndependence:
+                    return string.Format(LocalizedTextManager.getText("sm_legacy_wish_cell"), name);
+                case LegacyDeathTypes.InfiniteProliferation:
+                    return string.Format(LocalizedTextManager.getText("sm_legacy_wish_prolif"), name);
+                default:
+                    return string.Format(LocalizedTextManager.getText("sm_legacy_wish_default"), name, kingdom);
+            }
+        }
+
+        /// <summary>原著还原：感知并吸收遗力需承受与死者死因相同类型的负荷
+        /// 原著第1398章：进入遗力异空间，残存意识体出现，承受弱化版恶性变异考验
+        /// 死因不同负荷类型不同：宇宙同化→精神冲击，基因崩溃→基因伤害，细胞独立→肉体失控，无限增殖→能量暴走
+        /// 扛住则残存意识消亡，遗力归继承者；扛不住则死亡
         /// </summary>
         public static void TickLegacySense()
         {
@@ -173,37 +276,61 @@ namespace SuperMech.Code
                 if (IsTranscended(a)) continue;
                 if (GetLegacyPower(a) >= 3) continue;
 
-                // 感知概率：基础1.5%，世界遗力池越多概率越高
+                // 感知概率
                 float senseChance = 0.015f + Mathf.Min(0.03f, _worldLegacyPool.Count * 0.005f);
                 if (Random.value >= senseChance) continue;
 
-                // 从池中随机取一份遗力
                 int idx = Random.Range(0, _worldLegacyPool.Count);
                 var source = _worldLegacyPool[idx];
 
-                // 承伤判定：基础伤害=死者死亡伤害，体质/耐力减免
+                // 按负荷类型计算伤害（原著：经历弱化版恶性变异，与死者进阶时危机类型相同）
                 float baseDamage = source.deathDamage;
                 var stats = SuperMechStats.Of(a);
                 float endurance = stats != null && stats["endurance"] > 0 ? stats["endurance"] : 5f;
-                float damageReduction = endurance * 15f; // 每点耐力减15伤害
+                float intelligence = stats != null && stats["intelligence"] > 0 ? stats["intelligence"] : 5f;
+
+                float damageReduction;
+                string loadDesc;
+                switch (source.loadType)
+                {
+                    case "mental":
+                        // 精神负荷：智力减免（原著：宇宙泛意识精神冲击）
+                        damageReduction = intelligence * 12f;
+                        loadDesc = LocalizedTextManager.getText("sm_legacy_load_mental");
+                        break;
+                    case "genetic":
+                        // 基因负荷：耐力+智力双减免
+                        damageReduction = endurance * 8f + intelligence * 5f;
+                        loadDesc = LocalizedTextManager.getText("sm_legacy_load_genetic");
+                        break;
+                    case "energy":
+                        // 能量负荷：耐力减免为主
+                        damageReduction = endurance * 18f;
+                        loadDesc = LocalizedTextManager.getText("sm_legacy_load_energy");
+                        break;
+                    default: // physical
+                        // 肉体负荷：耐力减免（原著：以肉度扛住）
+                        damageReduction = endurance * 15f;
+                        loadDesc = LocalizedTextManager.getText("sm_legacy_load_physical");
+                        break;
+                }
                 float finalDamage = Mathf.Max(50f, baseDamage - damageReduction);
 
                 float currentHp = a.data.health;
                 float maxHp = a.getMaxHealth();
 
-                Debug.Log($"[超神机械师] {a.name} 感知到{source.sourceName}的超神遗力（能级{source.sourceEnergy:F0}），承伤{finalDamage:F0}（基础{baseDamage:F0}-耐力减免{damageReduction:F0}），当前HP{currentHp:F0}/{maxHp:F0}");
+                Debug.Log($"[超神机械师] {a.name} 感知到{source.sourceName}的超神遗力（死于{LegacyDeathTypes.GetDeathTypeName(source.deathType)}），进入异空间遭遇残存意识体「{source.consciousnessName}」，承受{loadDesc}{finalDamage:F0}（基础{baseDamage:F0}-减免{damageReduction:F0}），当前HP{currentHp:F0}/{maxHp:F0}");
 
-                // 承受伤害
+                // 承受负荷伤害
                 a.data.health = Mathf.Max(1, (int)(currentHp - finalDamage));
 
-                // 扛不住：有概率死亡（继承债务）
+                // 扛不住：被遗力反噬死亡（继承债务）
                 if (finalDamage > currentHp * 0.9f)
                 {
                     float deathChance = Mathf.Clamp01((finalDamage - currentHp) / Mathf.Max(1f, finalDamage) + 0.3f);
                     if (Random.value < deathChance)
                     {
-                        Debug.Log($"[超神机械师] {a.name} 承受遗力债务失败，被{source.sourceName}的死亡之力反噬而亡！");
-                        // 死亡时也生成遗力（连锁）
+                        Debug.Log($"[超神机械师] {a.name} 承受{loadDesc}失败，被{source.sourceName}的遗力反噬而亡！残存意识体「{source.consciousnessName}」再度沉寂");
                         GenerateLegacyOnDeath(a, "legacy_backlash");
                         a.dieSimpleNone();
                         _worldLegacyPool.RemoveAt(idx);
@@ -211,14 +338,15 @@ namespace SuperMech.Code
                     }
                 }
 
-                // 扛住了：获得遗力
+                // 扛住了：残存意识消亡，遗力归继承者
+                source.consciousnessGone = true;
                 _legacyPower[a.id] = GetLegacyPower(a) + 1;
                 if (!_legacySources.ContainsKey(a.id))
                     _legacySources[a.id] = new List<LegacyPowerSource>();
                 _legacySources[a.id].Add(source);
                 _worldLegacyPool.RemoveAt(idx);
 
-                Debug.Log($"[超神机械师] {a.name} 扛住遗力债务，获得{source.sourceName}的超神遗力（共{GetLegacyPower(a)}份）");
+                Debug.Log($"[超神机械师] {a.name} 扛住{loadDesc}，残存意识体「{source.consciousnessName}」消亡，获得{source.sourceName}的超神遗力（共{GetLegacyPower(a)}份）。遗愿：{source.wishText}");
             }
         }
 
@@ -453,14 +581,17 @@ namespace SuperMech.Code
 
             string text = $"{LocalizedTextManager.getText("sm_transcendence_cond1")}{(cond1 ? "✓" : "✗")} {LocalizedTextManager.getText("sm_transcendence_cond2")}{assistants}/4{(cond2 ? "✓" : "✗")} {LocalizedTextManager.getText("sm_transcendence_cond3")}{legacy}{(cond3 ? "✓" : "✗")}";
 
-            // 显示遗力来源（原著还原：继承债务）
+            // 显示遗力来源（原著还原：残存意识体+死因+负荷类型）
             var sources = GetLegacySources(a);
             if (sources != null && sources.Count > 0)
             {
                 text += "\n" + LocalizedTextManager.getText("sm_legacy_sources") + "：";
                 for (int i = 0; i < Mathf.Min(sources.Count, 3); i++)
                 {
-                    text += $"\n  {sources[i].sourceName}（{SuperMechRanks.GetRankName(sources[i].sourceRank)}，{LocalizedTextManager.getText("sm_legacy_damage")}{sources[i].deathDamage:F0}）";
+                    var s = sources[i];
+                    string deathName = LegacyDeathTypes.GetDeathTypeName(s.deathType);
+                    string loadName = LegacyDeathTypes.GetLoadTypeName(s.loadType);
+                    text += $"\n  {s.sourceName}（{SuperMechRanks.GetRankName(s.sourceRank)}，{deathName}，{loadName}{s.deathDamage:F0}）";
                 }
                 if (sources.Count > 3)
                     text += $"\n  +{sources.Count - 3}";
@@ -487,45 +618,11 @@ namespace SuperMech.Code
 
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
-            // 检测刚死亡的SS级以上单位，生成遗力（原著还原：超神遗力）
-            foreach (var kvp in _ssUnitSnapshots)
-            {
-                if (!alive.Contains(kvp.Key))
-                {
-                    _worldLegacyPool.Add(kvp.Value);
-                    Debug.Log($"[超神机械师] {kvp.Value.sourceName}（阶位{kvp.Value.sourceRank}）死亡，生成超神遗力（承伤{kvp.Value.deathDamage:F0}），世界遗力池现有{_worldLegacyPool.Count}份");
-                }
-            }
-            _ssUnitSnapshots.Clear();
-
             int removed = 0;
             removed += SuperMechCleanup.CleanDict(_legacyPower, alive);
             removed += SuperMechCleanup.CleanDict(_legacySources, alive);
             removed += SuperMechCleanup.CleanDict(_transcended, alive);
             return removed;
-        }
-
-        /// <summary>更新SS级以上单位快照（每次tick调用，用于死亡时生成遗力）
-        /// </summary>
-        public static void UpdateSsSnapshots()
-        {
-            if (World.world == null || World.world.units == null) return;
-            _ssUnitSnapshots.Clear();
-            foreach (Actor a in World.world.units)
-            {
-                if (a == null || !a.isAlive()) continue;
-                int rank = SuperMechAdvancement.GetExactRankIndex(a);
-                if (rank < 12) continue;
-                float energy = SuperMechEnergyLevel.Calculate(a);
-                _ssUnitSnapshots[a.id] = new LegacyPowerSource
-                {
-                    sourceName = a.name ?? "",
-                    sourceRank = rank,
-                    sourceEnergy = energy,
-                    deathDamage = Mathf.Max(500f, energy * 0.15f),
-                    deathType = "combat_or_other"
-                };
-            }
         }
 
         public static void Clear(Actor a)
