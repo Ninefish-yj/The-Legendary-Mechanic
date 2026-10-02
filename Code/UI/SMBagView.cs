@@ -8,6 +8,9 @@ namespace SuperMech.Code
     {
         private RectTransform _gridPanel;
         private Text _detailText;
+        private Button _equipBtn;
+        private Button _unequipBtn;
+        private string _selectedItemId;
         // 可指定查看单位（从单位面板打开时设置），不指定则用全局选中
         public static Actor OverrideActor;
         private static Actor SelectedActor => OverrideActor != null ? OverrideActor : SelectedUnit.unit;
@@ -88,11 +91,12 @@ namespace SuperMech.Code
             detailRect.offsetMax = new Vector2(-8, -4);
             detailGo.AddComponent<Image>().color = new Color(0, 0, 0, 0.12f);
 
+            // 详情文本（左侧70%）
             var textGo = new GameObject("DetailText");
             textGo.transform.SetParent(detailGo.transform, false);
             var textRect = textGo.AddComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero; textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = new Vector2(8, 4); textRect.offsetMax = new Vector2(-8, -4);
+            textRect.anchorMin = Vector2.zero; textRect.anchorMax = new Vector2(0.7f, 1);
+            textRect.offsetMin = new Vector2(8, 4); textRect.offsetMax = new Vector2(-4, -4);
             _detailText = textGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _detailText.fontSize = 12; _detailText.color = SMUiSkin.TextColor;
@@ -100,6 +104,23 @@ namespace SuperMech.Code
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
             _detailText.text = LocalizedTextManager.getText("sm_ui_select_item");
+
+            // 按钮区域（右侧30%）
+            var btnGo = new GameObject("BtnArea");
+            btnGo.transform.SetParent(detailGo.transform, false);
+            var btnRect = btnGo.AddComponent<RectTransform>();
+            btnRect.anchorMin = new Vector2(0.7f, 0);
+            btnRect.anchorMax = Vector2.one;
+            btnRect.offsetMin = new Vector2(4, 4);
+            btnRect.offsetMax = new Vector2(-8, -4);
+            var btnLayout = btnGo.AddComponent<VerticalLayoutGroup>();
+            btnLayout.spacing = 4;
+            btnLayout.childControlHeight = true;
+            btnLayout.childControlWidth = true;
+
+            _equipBtn = SMUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_equip"), 11, OnEquipClick);
+            _unequipBtn = SMUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_unequip"), 11, OnUnequipClick);
+            UpdateButtonStates();
         }
 
         private void RefreshGrid()
@@ -164,6 +185,7 @@ namespace SuperMech.Code
 
         private void SelectItem(string id)
         {
+            _selectedItemId = id;
             var equip = AssetManager.items.get(id);
             if (equip == null) return;
             string name = LocalizedTextManager.getText(equip.getLocaleID());
@@ -171,6 +193,48 @@ namespace SuperMech.Code
             _detailText.text = $"<b>{name}</b>\n" +
                 $"{LocalizedTextManager.getText("sm_ui_rarity")}: {equip.rarity}\n" +
                 $"{desc}";
+            UpdateButtonStates();
+        }
+
+        private void OnEquipClick()
+        {
+            if (SelectedActor == null || string.IsNullOrEmpty(_selectedItemId)) return;
+            bool success = SuperMechEquipBag.EquipFromBag(SelectedActor, _selectedItemId);
+            RefreshGrid();
+            _selectedItemId = null;
+            _detailText.text = success
+                ? LocalizedTextManager.getText("sm_ui_equip_success")
+                : LocalizedTextManager.getText("sm_ui_equip_fail");
+            UpdateButtonStates();
+        }
+
+        private void OnUnequipClick()
+        {
+            if (SelectedActor == null) return;
+            bool success = SuperMechEquipBag.UnequipToBag(SelectedActor);
+            RefreshGrid();
+            _detailText.text = success
+                ? LocalizedTextManager.getText("sm_ui_unequip_success")
+                : LocalizedTextManager.getText("sm_ui_unequip_fail");
+            UpdateButtonStates();
+        }
+
+        private void UpdateButtonStates()
+        {
+            if (_equipBtn != null)
+            {
+                bool canEquip = !string.IsNullOrEmpty(_selectedItemId) && SelectedActor != null;
+                _equipBtn.interactable = canEquip;
+                var img = _equipBtn.GetComponent<Image>();
+                if (img != null) img.color = canEquip ? new Color(0.2f, 0.5f, 0.3f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+            }
+            if (_unequipBtn != null)
+            {
+                bool canUnequip = SelectedActor != null && SuperMechRelic.GetCurrentEquipIndex(SelectedActor) >= 0;
+                _unequipBtn.interactable = canUnequip;
+                var img = _unequipBtn.GetComponent<Image>();
+                if (img != null) img.color = canUnequip ? new Color(0.5f, 0.3f, 0.2f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+            }
         }
     }
 }
