@@ -14,13 +14,13 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            var (scroll, content) = SMUiSkin.CreateScrollArea(transform, "Scroll");
-            var text = SMUiSkin.MakeText(content, LocalizedTextManager.getText("sm_ui_craft_info"), 14, TextAnchor.UpperLeft);
+            // 不用ScrollArea，直接用Text填满窗口
+            var text = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_craft_info"), 14, TextAnchor.UpperLeft);
             var rect = text.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(8, 4);
-            rect.offsetMax = new Vector2(-8, -4);
+            rect.offsetMin = new Vector2(12, 12);
+            rect.offsetMax = new Vector2(-12, -12);
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
         }
@@ -161,13 +161,13 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            var (scroll, content) = SMUiSkin.CreateScrollArea(transform, "Scroll");
-            var text = SMUiSkin.MakeText(content, LocalizedTextManager.getText("sm_ui_sanctuary_info"), 14, TextAnchor.UpperLeft);
+            // 不用ScrollArea，直接用Text填满窗口
+            var text = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_sanctuary_info"), 14, TextAnchor.UpperLeft);
             var rect = text.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
-            rect.offsetMin = new Vector2(8, 4);
-            rect.offsetMax = new Vector2(-8, -4);
+            rect.offsetMin = new Vector2(12, 12);
+            rect.offsetMax = new Vector2(-12, -12);
             text.horizontalOverflow = HorizontalWrapMode.Wrap;
             text.verticalOverflow = VerticalWrapMode.Truncate;
         }
