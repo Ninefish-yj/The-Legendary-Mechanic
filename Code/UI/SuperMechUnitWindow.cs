@@ -107,6 +107,8 @@ namespace SuperMech.Code
                 new Color(0.5f, 0.35f, 0.7f), () => SMWindowManager.OpenKnowledge(a));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
                 new Color(0.9f, 0.7f, 0.3f), () => SMWindowManager.OpenBag(a));
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_fusion"), "iconSkills",
+                new Color(0.3f, 0.7f, 0.9f), () => SMWindowManager.OpenFusion(a));
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {

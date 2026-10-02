@@ -68,6 +68,8 @@ namespace SuperMech.Code
         private static readonly List<RecipeDef> _recipes = new List<RecipeDef>();
         private static readonly Dictionary<string, RecipeDef> _recipeById = new Dictionary<string, RecipeDef>();
         private static readonly Dictionary<FusionBranch, List<RecipeDef>> _recipesByBranch = new Dictionary<FusionBranch, List<RecipeDef>>();
+        // 已融合记录：单位ID -> 已融合配方ID集合
+        private static readonly Dictionary<long, HashSet<string>> _fusedByActor = new Dictionary<long, HashSet<string>>();
 
         /// <summary>注册配方</summary>
         public static void Register(RecipeDef recipe)
@@ -118,19 +120,6 @@ namespace SuperMech.Code
                 }
             }
             return result;
-        }
-
-        /// <summary>检查单位是否满足配方条件</summary>
-        public static bool CanFuse(Actor a, RecipeDef recipe)
-        {
-            if (a == null || recipe == null) return false;
-            if (recipe.requiredKnowledge == null || recipe.requiredKnowledge.Length == 0) return false;
-
-            foreach (string kid in recipe.requiredKnowledge)
-            {
-                if (!SuperMechKnowledge.IsUnlocked(a, kid)) return false;
-            }
-            return true;
         }
 
         /// <summary>获取单位可融合的配方列表</summary>
@@ -240,6 +229,74 @@ namespace SuperMech.Code
                     icon = "ui/Icons/actor_traits/iconBlessing"
                 });
             }
+        }
+
+        /// <summary>检查单位是否拥有配方所需的全部知识</summary>
+        public static bool HasRequiredKnowledge(Actor a, RecipeDef recipe)
+        {
+            if (a == null || recipe == null) return false;
+            foreach (var kid in recipe.requiredKnowledge)
+            {
+                if (!SuperMechKnowledge.IsUnlocked(a, kid)) return false;
+            }
+            return true;
+        }
+
+        /// <summary>检查单位是否已融合过该配方</summary>
+        public static bool HasFusion(Actor a, string recipeId)
+        {
+            if (a == null || string.IsNullOrEmpty(recipeId)) return false;
+            if (_fusedByActor.TryGetValue(a.data.id, out var set))
+                return set.Contains(recipeId);
+            return false;
+        }
+
+        /// <summary>检查单位是否可以执行融合（知识+气力+未融合）</summary>
+        public static bool CanFuse(Actor a, RecipeDef recipe)
+        {
+            if (a == null || recipe == null) return false;
+            if (!HasRequiredKnowledge(a, recipe)) return false;
+            if (HasFusion(a, recipe.id)) return false;
+            // 气力消耗：配方qiBonus的50%（至少10）
+            float cost = Mathf.Max(10, recipe.qiBonus * 0.5f);
+            return SuperMechQi.GetQi(a) >= cost;
+        }
+
+        /// <summary>执行融合，返回是否成功</summary>
+        public static bool TryFuse(Actor a, RecipeDef recipe)
+        {
+            if (!CanFuse(a, recipe)) return false;
+
+            // 消耗气力
+            float cost = Mathf.Max(10, recipe.qiBonus * 0.5f);
+            SuperMechQi.AddQi(a, -cost);
+
+            // 成功率判定
+            bool success = Random.value < recipe.successRate;
+            if (success)
+            {
+                // 记录融合结果
+                if (!_fusedByActor.ContainsKey(a.data.id))
+                    _fusedByActor[a.data.id] = new HashSet<string>();
+                _fusedByActor[a.data.id].Add(recipe.id);
+                // 气力奖励
+                SuperMechQi.AddQi(a, recipe.qiBonus);
+                Debug.Log($"[超神机械师] 融合成功: {a.name} → {recipe.id}");
+            }
+            else
+            {
+                Debug.Log($"[超神机械师] 融合失败: {a.name} → {recipe.id}");
+            }
+            return success;
+        }
+
+        /// <summary>获取单位已融合的配方数量</summary>
+        public static int GetFusionCount(Actor a)
+        {
+            if (a == null) return 0;
+            if (_fusedByActor.TryGetValue(a.data.id, out var set))
+                return set.Count;
+            return 0;
         }
 
         public static void Clear()

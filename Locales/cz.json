@@ -3954,5 +3954,16 @@
   "sm_recipe_c_t5_0_name": "宇宙级AI",
   "sm_recipe_c_t5_0_desc": "终极智能，可管理整个文明的超级AI",
   "sm_recipe_c_t5_1_name": "现实扭曲",
-  "sm_recipe_c_t5_1_desc": "终极操控，直接改写物理法则的能力"
+  "sm_recipe_c_t5_1_desc": "终极操控，直接改写物理法则的能力",
+  "sm_ui_select_recipe": "← 选择一个配方查看详情",
+  "sm_ui_qi_cost": "气力消耗",
+  "sm_ui_success_rate": "成功率",
+  "sm_ui_result": "融合结果",
+  "sm_ui_can_fuse": "可以融合",
+  "sm_ui_no_qi": "气力不足",
+  "sm_ui_fuse_success": "融合成功！",
+  "sm_ui_fuse_fail": "融合失败...",
+  "sm_ui_required_knowledge": "所需知识",
+  "sm_ui_fuse": "融合",
+  "sm_ui_no_xp": "气力不足"
 }
