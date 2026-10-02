@@ -108,13 +108,20 @@ namespace SuperMech.Code
 
                 // 能级差分级压制（原著：能级差距影响伤害/命中/闪避/抗性多维度）
                 // 1.1-1.5轻微压制，1.5-2明显压制，2-5强烈压制，5-10碾压，>10秒杀级
-                if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
+                // 支持跨模组：超神机械师单位用CalcOnar，其他模组用ConvertModToOnar
+                if (attacker != null && attacker.isAlive() && target != null && target.isAlive())
                 {
-                    float atkEnergy = SuperMechAdvancement.CalcOnar(attacker);
-                    float defEnergy = SuperMechAdvancement.CalcOnar(target);
+                    float atkEnergy = SuperMechAwakened.IsAwakened(attacker)
+                        ? SuperMechAdvancement.CalcOnar(attacker)
+                        : SuperMechModAdapters.ConvertModToOnar(attacker);
+                    float defEnergy = SuperMechAwakened.IsAwakened(target)
+                        ? SuperMechAdvancement.CalcOnar(target)
+                        : SuperMechModAdapters.ConvertModToOnar(target);
                     if (defEnergy > 0 && atkEnergy > defEnergy)
                     {
                         float ratio = atkEnergy / defEnergy;
+
+                        // 维度1：伤害加成
                         float dmgBonus = 0f;
                         if (ratio >= 10f) dmgBonus = 2.0f;        // 秒杀级：伤害+200%
                         else if (ratio >= 5f) dmgBonus = 1.0f;    // 碾压：伤害+100%
@@ -125,6 +132,47 @@ namespace SuperMech.Code
                         {
                             float suppressDamage = pDamage * dmgBonus;
                             target.data.health -= (int)suppressDamage;
+                        }
+
+                        // 维度2：命中压制（高能级攻击低能级时，低能级闪避率降低）
+                        // 通过概率性强制命中（跳过原版闪避判定）实现
+                        float hitOverrideChance = 0f;
+                        if (ratio >= 10f) hitOverrideChance = 0.6f;    // 秒杀级：60%强制命中
+                        else if (ratio >= 5f) hitOverrideChance = 0.4f; // 碾压：40%强制命中
+                        else if (ratio >= 2f) hitOverrideChance = 0.2f; // 强烈压制：20%强制命中
+                        else if (ratio >= 1.5f) hitOverrideChance = 0.1f; // 明显压制：10%强制命中
+                        if (hitOverrideChance > 0 && Random.value < hitOverrideChance)
+                        {
+                            // 强制命中：直接造成基础伤害（跳过原版闪避/护甲减免的一部分）
+                            float forcedHitDamage = pDamage * 0.5f;
+                            target.data.health -= (int)forcedHitDamage;
+                        }
+
+                        // 维度3：暴击压制（高能级对低能级暴击率提升）
+                        float critChance = 0f;
+                        if (ratio >= 5f) critChance = 0.25f;    // 碾压：25%暴击
+                        else if (ratio >= 2f) critChance = 0.15f; // 强烈压制：15%暴击
+                        else if (ratio >= 1.5f) critChance = 0.08f; // 明显压制：8%暴击
+                        if (critChance > 0 && Random.value < critChance)
+                        {
+                            float critDamage = pDamage * 0.5f; // 暴击额外50%伤害
+                            target.data.health -= (int)critDamage;
+                        }
+                    }
+                    else if (atkEnergy > 0 && defEnergy > atkEnergy)
+                    {
+                        // 维度4：抗性压制（高能级受到低能级攻击时，伤害减免）
+                        float defRatio = defEnergy / atkEnergy;
+                        float damageReduction = 0f;
+                        if (defRatio >= 10f) damageReduction = 0.5f;    // 秒杀级差距：减免50%
+                        else if (defRatio >= 5f) damageReduction = 0.35f; // 碾压差距：减免35%
+                        else if (defRatio >= 2f) damageReduction = 0.20f; // 强烈差距：减免20%
+                        else if (defRatio >= 1.5f) damageReduction = 0.10f; // 明显差距：减免10%
+                        if (damageReduction > 0)
+                        {
+                            // 抗性：恢复一部分即将受到的伤害（通过加血实现，因为pDamage已经在原版逻辑中应用）
+                            float reducedDamage = pDamage * damageReduction;
+                            target.data.health += (int)reducedDamage;
                         }
                     }
                 }
