@@ -3849,5 +3849,12 @@
   "sm_class_power": "异能",
   "sm_class_magic": "魔法",
   "sm_tab_title": "超神机械师",
-  "sm_tab_desc": "超能者的成长之路，星海征途"
+  "sm_tab_desc": "超能者的成长之路，星海征途",
+  "sm_ui_sanctuary": "圣所",
+  "sm_ui_key_fragment": "钥匙碎片",
+  "sm_ui_enter_sanctuary": "进入圣所",
+  "sm_ui_resurrect": "复活",
+  "sm_ui_knowledge_transfer": "知识传承",
+  "sm_ui_permission": "权限",
+  "sm_ui_message_board": "留言板"
 }

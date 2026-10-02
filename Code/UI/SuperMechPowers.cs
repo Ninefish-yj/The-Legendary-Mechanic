@@ -61,13 +61,15 @@ namespace SuperMech.Code
                 }
             }
 
-            if (created > 0)
+            if (created > 0 && _modTab != null)
             {
-                _modTab.findNeighbours();
+                try { _modTab.findNeighbours(); }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] findNeighbours失败: {e.Message}"); }
             }
 
             // 运行时断言：验证所有按钮都在Tab列表中
-            VerifyButtonsInTab();
+            try { VerifyButtonsInTab(); }
+            catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 按钮验证失败: {e.Message}"); }
 
             _buttonsCreated = true;
         }
