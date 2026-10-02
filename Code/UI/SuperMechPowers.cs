@@ -55,12 +55,6 @@ namespace SuperMech.Code
                 var pb = PowerButtonCreator.CreateGodPowerButton(id, icon, _modTab.transform);
                 if (pb != null)
                 {
-                    // 运行时验证：按钮关键字段不为null（防止findNeighbours内部NullReferenceException）
-                    if (!VerifyButtonFields(pb, id))
-                    {
-                        Debug.LogWarning($"[超神机械师] 按钮{id}字段验证失败，跳过");
-                        continue;
-                    }
                     // 手动加入Tab的内部按钮列表
                     AddButtonToTab(_modTab, pb);
                     created++;
@@ -120,39 +114,6 @@ namespace SuperMech.Code
             {
                 list.Add(button);
             }
-        }
-
-        /// <summary>
-        /// 运行时验证按钮关键字段不为null（防止findNeighbours内部NullReferenceException）
-        /// </summary>
-        private static bool VerifyButtonFields(PowerButton button, string id)
-        {
-            if (button == null)
-            {
-                Debug.LogWarning($"[超神机械师] 按钮{id}为null");
-                return false;
-            }
-            if (button.gameObject == null)
-            {
-                Debug.LogWarning($"[超神机械师] 按钮{id}.gameObject为null");
-                return false;
-            }
-            if (button.rect_transform == null)
-            {
-                Debug.LogWarning($"[超神机械师] 按钮{id}.rect_transform为null，尝试修复");
-                // 尝试获取RectTransform
-                button.rect_transform = button.GetComponent<UnityEngine.RectTransform>();
-                if (button.rect_transform == null)
-                {
-                    Debug.LogWarning($"[超神机械师] 按钮{id}无法获取RectTransform");
-                    return false;
-                }
-            }
-            if (button.icon == null)
-            {
-                Debug.LogWarning($"[超神机械师] 按钮{id}.icon为null（不影响功能，仅图标不显示）");
-            }
-            return true;
         }
 
         private static void AddAwakenedPower(string id, string name, string icon)
