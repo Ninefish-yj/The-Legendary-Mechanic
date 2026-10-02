@@ -66,6 +66,7 @@ namespace SuperMech
         private void Update()
         {
             SuperMechPowers.TryCreateButtons();
+            SMEventLogger.TryInit();
 
             if (!SuperMechConfig.ModEnabled) return;
 

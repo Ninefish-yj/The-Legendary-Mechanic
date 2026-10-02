@@ -10,13 +10,23 @@ namespace SuperMech.Code
     public static class SMEventLogger
     {
         private static bool _initialized;
+        private static bool _initFailed;
         private static readonly Dictionary<string, WorldLogAsset> _logAssets = new Dictionary<string, WorldLogAsset>();
 
         /// <summary>初始化：注册自定义WorldLogAsset到原生日志库</summary>
         public static void Init()
         {
             if (_initialized) return;
+
+            if (AssetManager.world_log_library == null)
+            {
+                _initFailed = true;
+                Debug.LogWarning("[超神机械师] world_log_library未初始化，将延迟注册日志资产");
+                return;
+            }
+
             _initialized = true;
+            _initFailed = false;
 
             RegisterLogAsset("sm_log_awaken", "sm_log_awaken_text", new Color(0.3f, 0.8f, 1f));
             RegisterLogAsset("sm_log_promotion", "sm_log_promotion_text", new Color(1f, 0.8f, 0.2f));
@@ -27,6 +37,17 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f));
 
             Debug.Log("[超神机械师] 事件日志系统初始化完成，注册7类日志资产");
+        }
+
+        /// <summary>延迟初始化：在Update中调用，确保world_log_library已就绪</summary>
+        public static void TryInit()
+        {
+            if (_initialized || !_initFailed) return;
+            if (AssetManager.world_log_library != null)
+            {
+                Debug.Log("[超神机械师] world_log_library已就绪，执行延迟初始化");
+                Init();
+            }
         }
 
         /// <summary>注册自定义WorldLogAsset</summary>
@@ -51,99 +72,155 @@ namespace SuperMech.Code
         /// <summary>推送觉醒事件日志</summary>
         public static void LogAwakening(Actor a, string className, string talentRank)
         {
+            TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_awaken");
             if (asset == null) return;
 
-            new WorldLogMessage(asset, a.getName(), className, talentRank)
+            try
             {
-                unit = a,
-                location = a.current_position
-            }.add();
+                new WorldLogMessage(asset, a.getName(), className, talentRank)
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送觉醒日志失败: {e.Message}");
+            }
         }
 
         /// <summary>推送阶位提升事件日志</summary>
         public static void LogPromotion(Actor a, string oldRank, string newRank, float onar)
         {
+            TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_promotion");
             if (asset == null) return;
 
-            new WorldLogMessage(asset, a.getName(), newRank, onar.ToString("0"))
+            try
             {
-                unit = a,
-                location = a.current_position
-            }.add();
+                new WorldLogMessage(asset, a.getName(), newRank, onar.ToString("0"))
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送晋升日志失败: {e.Message}");
+            }
         }
 
         /// <summary>推送知识融合事件日志</summary>
         public static void LogFusion(Actor a, string knowledgeA, string knowledgeB, string result)
         {
+            TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_fusion");
             if (asset == null) return;
 
-            new WorldLogMessage(asset, a.getName(), knowledgeA, result)
+            try
             {
-                unit = a,
-                location = a.current_position
-            }.add();
+                new WorldLogMessage(asset, a.getName(), knowledgeA, result)
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送融合日志失败: {e.Message}");
+            }
         }
 
         /// <summary>推送圣所访问事件日志</summary>
         public static void LogSanctuaryVisit(Actor a, int sanctuaryIndex, string sanctuaryName)
         {
+            TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_sanctuary");
             if (asset == null) return;
 
-            new WorldLogMessage(asset, a.getName(), sanctuaryName, "")
+            try
             {
-                unit = a,
-                location = a.current_position
-            }.add();
+                new WorldLogMessage(asset, a.getName(), sanctuaryName, "")
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送圣所日志失败: {e.Message}");
+            }
         }
 
         /// <summary>推送宇宙迭代事件日志</summary>
         public static void LogIteration(int iterationCount, float heritageRate)
         {
+            TryInit();
             if (!_initialized) return;
             var asset = GetAsset("sm_log_iteration");
             if (asset == null) return;
 
-            new WorldLogMessage(asset, iterationCount.ToString(), heritageRate.ToString("0%"), "")
+            try
             {
-                // 宇宙迭代是全局事件，不绑定特定位置
-            }.add();
+                new WorldLogMessage(asset, iterationCount.ToString(), heritageRate.ToString("0%"), "")
+                {
+                    // 宇宙迭代是全局事件，不绑定特定位置
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送迭代日志失败: {e.Message}");
+            }
         }
 
         /// <summary>推送超A复活事件日志</summary>
         public static void LogResurrection(Actor a, int reviveCount, string lostAbilities)
         {
+            TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_resurrection");
             if (asset == null) return;
 
-            new WorldLogMessage(asset, a.getName(), reviveCount.ToString(), lostAbilities)
+            try
             {
-                unit = a,
-                location = a.current_position
-            }.add();
+                new WorldLogMessage(asset, a.getName(), reviveCount.ToString(), lostAbilities)
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送复活日志失败: {e.Message}");
+            }
         }
 
         /// <summary>推送法术学习成功事件日志</summary>
         public static void LogSpellLearned(Actor a, string spellNameKey)
         {
+            TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_spell");
             if (asset == null) return;
 
-            string spellName = LocalizedTextManager.getText(spellNameKey);
-            new WorldLogMessage(asset, a.getName(), spellName, "")
+            try
             {
-                unit = a,
-                location = a.current_position
-            }.add();
+                string spellName = LocalizedTextManager.getText(spellNameKey);
+                new WorldLogMessage(asset, a.getName(), spellName, "")
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送法术日志失败: {e.Message}");
+            }
         }
 
         private static WorldLogAsset GetAsset(string assetId)
