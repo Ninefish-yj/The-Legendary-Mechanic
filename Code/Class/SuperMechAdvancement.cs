@@ -110,6 +110,10 @@ namespace SuperMech.Code
                     SuperMechProfession.SetProfession(a, pType);
                 }
 
+                // 魔法系觉醒时分配类型（天赋/回路/魔网）
+                if (a.hasTrait(SuperMechTraits.ClassMage))
+                    SuperMechMageType.AssignMageType(a);
+
                 SuperMechQi.SetQi(a, 100f);
                 SuperMechQi.SetQiMax(a, 100f);
                 SuperMechPotential.SetPotential(a, Random.Range(3, 6));

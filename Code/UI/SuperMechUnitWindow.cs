@@ -63,6 +63,18 @@ namespace SuperMech.Code
                     if (specName != LocalizedTextManager.getText("sm_spec_none"))
                         ShowRow(window, LocalizedTextManager.getText("sm_ui_specialization"), specName, null, new Color(0.6f, 0.9f, 1f));
                 }
+
+                // 魔法系觉醒类型显示（天赋型/回路法师/魔网法师）
+                if (a.hasTrait(SuperMechTraits.ClassMage))
+                {
+                    string mageType = SuperMechMageType.GetMageTypeName(a);
+                    if (!string.IsNullOrEmpty(mageType))
+                    {
+                        string mageSpec = SuperMechMageType.GetSpecName(a);
+                        string displayText = string.IsNullOrEmpty(mageSpec) ? mageType : $"{mageType}（{mageSpec}）";
+                        ShowRow(window, LocalizedTextManager.getText("sm_ui_mage_type"), displayText, null, new Color(0.8f, 0.6f, 1f));
+                    }
+                }
             }
             else
             {
