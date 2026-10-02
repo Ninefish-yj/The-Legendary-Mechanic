@@ -48,8 +48,21 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            var (scroll, content) = SMUiSkin.CreateScrollArea(transform, "Scroll");
-            _content = content;
+            // 直接用Content，不用ScrollArea（排行榜只显示前20名，不需要滚动）
+            var contentGo = new GameObject("Content");
+            contentGo.transform.SetParent(transform, false);
+            _content = contentGo.AddComponent<RectTransform>();
+            _content.anchorMin = Vector2.zero;
+            _content.anchorMax = Vector2.one;
+            _content.offsetMin = new Vector2(8, 8);
+            _content.offsetMax = new Vector2(-8, -8);
+            var layout = contentGo.AddComponent<VerticalLayoutGroup>();
+            layout.spacing = 2;
+            layout.padding = new RectOffset(4, 4, 4, 4);
+            layout.childControlHeight = true;
+            layout.childControlWidth = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
         }
 
         private void RefreshRank()
@@ -74,13 +87,13 @@ namespace SuperMech.Code
                 var rowGo = new GameObject($"Row_{rank}");
                 rowGo.transform.SetParent(_content, false);
                 var layout = rowGo.AddComponent<LayoutElement>();
-                layout.preferredHeight = 30;
-                layout.minHeight = 30;
+                layout.preferredHeight = 28;
+                layout.minHeight = 28;
                 var rowImg = rowGo.AddComponent<Image>();
                 if (rank <= 3)
-                    rowImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.2f);
+                    rowImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.15f);
                 else
-                    rowImg.color = rank % 2 == 0 ? new Color(1, 1, 1, 0.04f) : new Color(1, 1, 1, 0.02f);
+                    rowImg.color = rank % 2 == 0 ? new Color(1, 1, 1, 0.03f) : new Color(1, 1, 1, 0.015f);
 
                 var text = SMUiSkin.MakeText(rowGo.transform, "", 13, TextAnchor.MiddleLeft);
                 var textRect = text.GetComponent<RectTransform>();
