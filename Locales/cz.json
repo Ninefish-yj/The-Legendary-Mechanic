@@ -3856,5 +3856,7 @@
   "sm_ui_resurrect": "复活",
   "sm_ui_knowledge_transfer": "知识传承",
   "sm_ui_permission": "权限",
-  "sm_ui_message_board": "留言板"
+  "sm_ui_message_board": "留言板",
+  "sm_sanctuary_974_description": "进入圣所，获取知识传承和神性蜕变",
+  "sm_rank_title_description": "查看超能者能级排行榜"
 }
