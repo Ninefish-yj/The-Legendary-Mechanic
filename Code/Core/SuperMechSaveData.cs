@@ -10,7 +10,7 @@ namespace SuperMech.Code
     {
         private const string SaveDirName = "Saves";
         private const string FileExt = ".json";
-        private const int CurrentSaveVersion = 2;
+        private const int CurrentSaveVersion = 3;
 
         /// <summary>
         /// 存档迁移：将旧版本存档数据迁移到当前版本。
@@ -24,9 +24,8 @@ namespace SuperMech.Code
             int fromVersion = data.version;
 
             // v1 → v2：无字段变化，仅版本号升级
-            // 未来有实际迁移时在此添加逻辑，例如：
-            // if (fromVersion < 2) { /* v1到v2的迁移 */ }
-            // if (fromVersion < 3) { /* v2到v3的迁移 */ }
+            // v2 → v3：新增气力层次/属性/能级峰值/融合历史/宇宙迭代/文明数据预留字段
+            // 缺失字段自动使用类定义中的默认值（0/null/空列表）
 
             data.version = CurrentSaveVersion;
             if (fromVersion < CurrentSaveVersion)
@@ -44,6 +43,10 @@ namespace SuperMech.Code
             public SanctuarySaveData sanctuary = new SanctuarySaveData();
             public string worldSeed = "";
             public long savedAt = 0;
+            // === v0.31.0 预留字段 ===
+            public int cosmicIteration = 0;       // 宇宙迭代次数
+            public string civilizationData = "";  // 文明数据（JSON序列化）
+            public List<string> unlockedRecipes = new List<string>(); // 已解锁融合配方
         }
 
         [Serializable]
@@ -111,6 +114,11 @@ namespace SuperMech.Code
             public string subXpData;
             public string subLevelData;
             public int craftCount;
+            // === v0.31.0 预留字段 ===
+            public int qiLayer;              // 气力层次（Lv1~Lv10）
+            public float energyPeak;         // 能级峰值记录
+            public List<string> fusionHistory; // 知识融合历史
+            public string informationState;  // 信息态记录（预留）
         }
 
         [Serializable]
