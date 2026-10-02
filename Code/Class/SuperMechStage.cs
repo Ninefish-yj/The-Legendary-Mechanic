@@ -14,7 +14,7 @@ namespace SuperMech.Code
         };
         private static readonly string[] Stage_Mech =
         {
-            "sm_stage_016", "sm_stage_017", "sm_stage_018",
+            "sm_stage_002", "sm_stage_017", "sm_stage_018",
             "sm_stage_019", "sm_stage_020", "sm_stage_021", "sm_stage_022",
             "sm_stage_023", "sm_stage_024", "sm_stage_025", "sm_stage_026", "sm_stage_027", "sm_stage_028", "sm_stage_029"
         };
@@ -159,22 +159,14 @@ namespace SuperMech.Code
             int s = GetStage(a);
             string result;
             if (s <= 0) { result = "sm_stage_none"; }
-            else if (a.hasTrait(SuperMechTraits.ClassMech) &&
-                     !(a.hasTrait(SuperMechBranch.BranchMech) ||
-                       a.hasTrait(SuperMechBranch.BranchGunner) ||
-                       a.hasTrait(SuperMechBranch.BranchMartial)))
-            {
-                // 机械系未选分支：第一阶段显示"机械系入门者"，第二阶段起提示需选择分支
-                if (s <= 1) result = "sm_stage_002";
-                else result = "sm_stage_161";
-            }
             else if (a.hasTrait(SuperMechTraits.ClassMech) ||
                      a.hasTrait(SuperMechTraits.ClassMartial) ||
                      a.hasTrait(SuperMechTraits.ClassPsi) ||
                      a.hasTrait(SuperMechTraits.ClassMage) ||
                      a.hasTrait(SuperMechTraits.ClassMind))
             {
-                // 已选分支的机械系 + 其他体系：用对应阶段数组显示实际职业阶段名
+                // 所有超神机械师体系：用对应阶段数组显示实际职业阶段名
+                // 机械系未选分支时默认用机械师分支阶段（Stage_Mech）作为通用阶段名
                 string[] arr = GetStageArray(a);
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
                 result = arr[idx];
