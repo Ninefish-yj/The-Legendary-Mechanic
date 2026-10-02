@@ -49,7 +49,7 @@ namespace SuperMech.Code
             detailRect.offsetMin = new Vector2(210, 0);
             detailRect.offsetMax = Vector2.zero;
 
-            // 详情卡片背景（纯色，不用9-slice）
+            // 详情卡片背景（纯色）
             var cardGo = new GameObject("Card");
             cardGo.transform.SetParent(detailGo.transform, false);
             var cardRect = cardGo.AddComponent<RectTransform>();
@@ -61,14 +61,39 @@ namespace SuperMech.Code
             cardImg.color = SMUiSkin.CardBg;
             _detailContent = cardRect;
 
+            // 详情滚动区
+            var detailScrollGo = new GameObject("DetailScroll");
+            detailScrollGo.transform.SetParent(cardGo.transform, false);
+            var detailScrollRect = detailScrollGo.AddComponent<ScrollRect>();
+            var dsr = detailScrollGo.GetComponent<RectTransform>();
+            dsr.anchorMin = Vector2.zero; dsr.anchorMax = Vector2.one;
+            dsr.offsetMin = new Vector2(8, 8); dsr.offsetMax = new Vector2(-8, -8);
+            var detailMask = detailScrollGo.AddComponent<Mask>();
+            detailMask.showMaskGraphic = false;
+            detailScrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+
+            var detailContentGo = new GameObject("Content");
+            detailContentGo.transform.SetParent(detailScrollGo.transform, false);
+            var detailContentRect = detailContentGo.AddComponent<RectTransform>();
+            detailContentRect.anchorMin = new Vector2(0, 1);
+            detailContentRect.anchorMax = new Vector2(1, 1);
+            detailContentRect.pivot = new Vector2(0.5f, 1);
+            detailContentRect.sizeDelta = new Vector2(0, 100);
+            var detailFitter = detailContentGo.AddComponent<ContentSizeFitter>();
+            detailFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            detailScrollRect.content = detailContentRect;
+            detailScrollRect.viewport = dsr;
+            detailScrollRect.vertical = true;
+            detailScrollRect.horizontal = false;
+
             // 详情文字
             var textGo = new GameObject("DetailText");
-            textGo.transform.SetParent(cardGo.transform, false);
+            textGo.transform.SetParent(detailContentGo.transform, false);
             var textRect = textGo.AddComponent<RectTransform>();
             textRect.anchorMin = Vector2.zero;
             textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = new Vector2(12, 12);
-            textRect.offsetMax = new Vector2(-12, -12);
+            textRect.offsetMin = Vector2.zero;
+            textRect.offsetMax = Vector2.zero;
             _detailText = textGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _detailText.fontSize = 13;
