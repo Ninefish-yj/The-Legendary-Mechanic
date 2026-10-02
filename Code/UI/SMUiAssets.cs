@@ -12,8 +12,8 @@ namespace SuperMech.Code
         private static Sprite _panelSprite;
         private static bool _triedLoad;
 
-        // 9-slice border：左42, 下50, 右42, 上50（对应Sprite.Create的Vector4(x,y,z,w)）
-        private static readonly Vector4 PanelBorder = new Vector4(42f, 50f, 42f, 50f);
+        // 9-slice border：左57, 下36, 右54, 上42（根据ui_panel.png实际不透明区域计算）
+        private static readonly Vector4 PanelBorder = new Vector4(57f, 36f, 54f, 42f);
 
         /// <summary>
         /// 获取面板背景精灵（9-slice，border=42,50,42,50）

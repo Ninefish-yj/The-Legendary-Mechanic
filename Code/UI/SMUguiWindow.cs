@@ -74,8 +74,8 @@ namespace SuperMech.Code
             titleRect.anchorMin = new Vector2(0, 1);
             titleRect.anchorMax = new Vector2(1, 1);
             titleRect.pivot = new Vector2(0.5f, 1);
-            titleRect.sizeDelta = new Vector2(-80, 40);
-            titleRect.anchoredPosition = new Vector2(0, -8);
+            titleRect.sizeDelta = new Vector2(-120, 36);
+            titleRect.anchoredPosition = new Vector2(0, -42);
             _titleText = titleGo.AddComponent<Text>();
             _titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _titleText.fontSize = 18;
@@ -91,8 +91,8 @@ namespace SuperMech.Code
             closeRect.anchorMin = new Vector2(1, 1);
             closeRect.anchorMax = new Vector2(1, 1);
             closeRect.pivot = new Vector2(1, 1);
-            closeRect.sizeDelta = new Vector2(32, 32);
-            closeRect.anchoredPosition = new Vector2(-10, -8);
+            closeRect.sizeDelta = new Vector2(30, 30);
+            closeRect.anchoredPosition = new Vector2(-57, -45);
             _closeBtn = closeGo.AddComponent<Button>();
             var closeImg = closeGo.AddComponent<Image>();
             closeImg.color = new Color(1f, 0.3f, 0.3f, 0.8f);
@@ -115,8 +115,9 @@ namespace SuperMech.Code
             Content.anchorMin = Vector2.zero;
             Content.anchorMax = Vector2.one;
             Content.pivot = new Vector2(0.5f, 0.5f);
-            Content.offsetMin = new Vector2(20, 20);
-            Content.offsetMax = new Vector2(-20, -50);
+            // 背景图实际边框：左57/下36/右54/上42，标题栏高40，内容留10px边距
+            Content.offsetMin = new Vector2(67, 46);
+            Content.offsetMax = new Vector2(-64, -92);
         }
 
         public void OnPointerDown(PointerEventData e)
