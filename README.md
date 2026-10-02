@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.16.0-alpha**（Alpha内测阶段）
+**v0.34.1-alpha**（Alpha内测阶段）
 
 > 版本号说明：从0.0.0开始按实际功能里程碑重新计算，合并了历史中大量无意义的patch版本（原v0.42.0 → 现v0.16.0）。
 
@@ -98,6 +98,12 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.35.0** | 圣所独立空间视图重构：圣所从普通窗口列表改造为全屏"圣所空间"视图（深空背景+50星点+6大圣所星图节点+信息流连线），符合原著"圣所不在地图上、是独立维度"的设定；新建SMSanctuaryNode.cs节点组件（6色发光节点，未解锁灰色+碎片进度）；新建SMSanctuaryView.cs空间视图主类（返回世界按钮/星图区域/右侧详情面板/信息态库切换/底部状态栏）；信息态记录并入圣所视图（死亡单位列表含名称/阶位/等级/气力/复活次数）；从SMOtherViews.cs移除旧SMSanctuaryView类（319行）；神权栏圣所按钮改为打开空间视图；新增10条本地化文本 |
+| **v0.34.1** | 背包装备/卸下功能：背包详情区域添加装备/卸下按钮，调用数据层已有的EquipFromBag/UnequipToBag方法；按钮状态智能禁用（未选物品/未装备）；装备品质低于当前装备时失败提示；新增6条本地化文本 |
+| **v0.34.0** | 窗口伸缩功能+标准尺寸统一：SMUguiWindow新增右下角伸缩手柄（SMResizeHandler），拖拽可调整窗口大小（最小400x300，最大1200x800）；统一窗口标准尺寸为三档（大窗口680x500/中窗口620x460/小窗口560x420）；移除排行榜内部硬编码背景尺寸 |
+| **v0.33.2** | 排行榜卡片紧凑化：卡片高度从40px缩小到30px（-25%），头像24px→20px，名称+信息从两行合并为单行，一屏显示数量从~7张提升到~10张（+43%），名称超8字符自动截断 |
+| **v0.33.1** | 排行榜完善：添加阶位筛选下拉（全部/F/E/D/C/B/A/S/X共9档）；添加清除筛选按钮（一键重置所有筛选）；修复体系筛选按钮选中状态不更新的问题（添加_systemButtons列表缓存和UpdateSystemButtonColors方法）；新增2条本地化文本 |
+| **v0.33.0** | 超能者排行榜三栏布局重构：新增SMRankCard.cs卡片组件（头像+排名+名称+阶位+体系+能级）；重写SMRankView为三栏布局（左栏体系筛选/中栏卡片列表/右栏统计面板）；支持5种排序（能级/气力/阶位/知识/职业）；点击卡片打开单位信息面板；前三名特殊高亮；虚拟滚动优化；右栏阶位/体系分布统计；到顶/到底导航；新增10条本地化文本 |
 | **v0.32.7** | 本地化全面修复：扫描并修复113处UI硬编码中文。涉及SMOtherViews（圣所统计/详情）、SMResurrectionView（复活面板）、SMFusionView（融合详情）、SMSpellView（法术详情）、SuperMechCombatPatches（压制等级描述）、SuperMechCosmicIteration（迭代阶段/统计）、SuperMechCivilizationData（文明摘要）、SuperMechStage（转职提示）、SuperMechSanctuary（时间比例）、SuperMechResurrection（复活描述）等10个文件，新增80+条本地化文本 |
 | **v0.32.6** | Bug修复：修复配置项名称显示错误。原因是v0.28.0新增的4个配置项（qi_attribute_counter/qi_display_decimals/cross_mod_energy_sync/cross_mod_energy_ratio）使用了sm_config_630~637作为本地化key，但这些key已被其他配置项占用，导致显示为"X(无上限)"等错误文本。已将key重新分配为sm_config_657~664，并添加正确的中文本地化文本 |
 | **v0.32.5** | Bug修复：修复历史系统（事件日志）不运作的问题。添加延迟初始化机制（TryInit）：OnModLoad时若world_log_library未就绪则标记延迟，在Update中持续重试直到注册成功；所有7类Log方法添加try-catch异常保护，防止HistoryHud.instance为null时抛异常；在Main.cs Update中调用TryInit() |

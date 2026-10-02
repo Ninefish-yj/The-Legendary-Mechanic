@@ -39,7 +39,7 @@ namespace SuperMech.Code
             _buttons["rank"] = btn4;
 
             var btn5 = SMDraggableButton.Create("sanctuary", "sm_ui_sanctuary", "ui/Icons/iconBlessing", startX + spacing * 4, startY);
-            btn5.OnClick = () => ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 460, DrawSanctuaryContent);
+            btn5.OnClick = () => SMSanctuaryView.Toggle();
             _buttons["sanctuary"] = btn5;
         }
 
@@ -53,7 +53,7 @@ namespace SuperMech.Code
         public static void OpenSpell(Actor a) { SMSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
         public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 560, 420, DrawCraftContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 620, 460, DrawRankContent); }
-        public static void OpenSanctuary() { ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 460, DrawSanctuaryContent); }
+        public static void OpenSanctuary() { SMSanctuaryView.Toggle(); }
         public static void OpenResurrection() { ToggleWindow("resurrection", "sm_ui_resurrection", 620, 460, DrawResurrectionContent); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
@@ -139,18 +139,6 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SMRankView>();
-        }
-
-        private static void DrawSanctuaryContent(RectTransform content)
-        {
-            var go = new GameObject("SanctuaryView");
-            go.transform.SetParent(content, false);
-            var rect = go.AddComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            go.AddComponent<SMSanctuaryView>();
         }
 
         private static void DrawResurrectionContent(RectTransform content)
