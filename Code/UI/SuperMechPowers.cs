@@ -1,5 +1,6 @@
 using NeoModLoader.api;
 using NeoModLoader.services;
+using NeoModLoader.General;
 using UnityEngine;
 
 namespace SuperMech.Code
@@ -27,45 +28,14 @@ namespace SuperMech.Code
         {
             if (_buttonsCreated) return;
             if (PowerButtonSelector.instance == null) return;
-            if (PowerButtonSelector.instance.buttons == null) return;
 
-            PowerButton template = null;
-            foreach (Transform child in PowerButtonSelector.instance.buttons.transform)
+            // 找到主Tab（世界塑造Tab）
+            PowersTab mainTab = GetMainTab();
+            if (mainTab == null)
             {
-                var pb = child.GetComponent<PowerButton>();
-                if (pb != null && pb.type == PowerButtonType.Active)
-                {
-                    template = pb;
-                    break;
-                }
-            }
-
-            if (template == null)
-            {
-                foreach (Transform child in PowerButtonSelector.instance.buttons.transform)
-                {
-                    var pb = child.GetComponent<PowerButton>();
-                    if (pb != null)
-                    {
-                        template = pb;
-                        break;
-                    }
-                }
-            }
-
-            if (template == null)
-            {
-                Debug.LogWarning("[超神机械师] 未找到PowerButton模板，稍后重试");
+                Debug.LogWarning("[超神机械师] 未找到PowersTab，稍后重试");
                 return;
             }
-
-            var initField = typeof(PowerButton).GetField("_initialized",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-
-            var viewer = PowerButtonSelector.instance.buttons.GetComponent<ButtonsViewer>();
-            var viewerButtonsField = viewer != null ? typeof(ButtonsViewer).GetField("buttons",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance) : null;
-            var viewerButtons = viewerButtonsField?.GetValue(viewer) as System.Collections.IList;
 
             int created = 0;
             foreach (string id in PowerIds)
@@ -74,29 +44,60 @@ namespace SuperMech.Code
                 GodPower godPower = AssetManager.powers.get(id);
                 if (godPower == null) continue;
 
-                var go = Object.Instantiate(template.gameObject, PowerButtonSelector.instance.buttons.transform);
-                go.name = id;
-                var pb = go.GetComponent<PowerButton>();
+                // 用NML的PowerButtonCreator创建按钮，parent设为主Tab的transform
+                Sprite icon = Resources.Load<Sprite>(godPower.path_icon);
+                var pb = PowerButtonCreator.CreateGodPowerButton(id, icon, mainTab.transform);
                 if (pb != null)
                 {
-                    pb.type = PowerButtonType.Active;
-                    if (initField != null) initField.SetValue(pb, false);
-                    go.SetActive(false);
-                    go.SetActive(true);
-                    if (viewerButtons != null && !viewerButtons.Contains(pb))
-                        viewerButtons.Add(pb);
+                    // 手动加入PowersTab的内部按钮列表
+                    AddButtonToTab(mainTab, pb);
                     created++;
                 }
             }
 
             if (created > 0)
             {
-                var rt = PowerButtonSelector.instance.buttons.GetComponent<RectTransform>();
-                if (rt != null) UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(rt);
+                // 重新计算按钮邻居关系
+                mainTab.findNeighbours();
+                Debug.Log($"[超神机械师] 神权按钮创建完成：{created}个新按钮（添加到主Tab）");
             }
 
             _buttonsCreated = true;
-            Debug.Log($"[超神机械师] 神权按钮创建完成：{created}个新按钮");
+        }
+
+        /// <summary>
+        /// 获取主Tab（世界塑造Tab）
+        /// </summary>
+        private static PowersTab GetMainTab()
+        {
+            // 用反射获取PowersTab._main_tab
+            var mainTabField = typeof(PowersTab).GetField("_main_tab",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+            if (mainTabField != null)
+            {
+                var mainTab = mainTabField.GetValue(null) as PowersTab;
+                if (mainTab != null) return mainTab;
+            }
+
+            // 兜底：找第一个PowersTab
+            var tabs = Object.FindObjectsOfType<PowersTab>();
+            if (tabs != null && tabs.Length > 0) return tabs[0];
+            return null;
+        }
+
+        /// <summary>
+        /// 手动把按钮加入PowersTab的内部列表（_power_buttons是private，Start后不会自动收集）
+        /// </summary>
+        private static void AddButtonToTab(PowersTab tab, PowerButton button)
+        {
+            var field = typeof(PowersTab).GetField("_power_buttons",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (field == null) return;
+            var list = field.GetValue(tab) as System.Collections.Generic.List<PowerButton>;
+            if (list != null && !list.Contains(button))
+            {
+                list.Add(button);
+            }
         }
 
         private static void AddAwakenedPower(string id, string name, string icon)
