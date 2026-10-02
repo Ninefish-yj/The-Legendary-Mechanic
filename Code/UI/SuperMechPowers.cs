@@ -1,6 +1,7 @@
 using NeoModLoader.api;
 using NeoModLoader.services;
 using NeoModLoader.General;
+using NeoModLoader.General.UI.Tab;
 using UnityEngine;
 
 namespace SuperMech.Code
@@ -12,7 +13,9 @@ namespace SuperMech.Code
         public const string OpenSanctuary = "sm_open_sanctuary";
         public const string OpenRank = "sm_open_rank";
 
+        public const string TabName = "SuperMech";
         private static bool _buttonsCreated;
+        private static PowersTab _modTab;
         private static readonly string[] PowerIds = { SummonAwakened, DisasterAlien, OpenSanctuary, OpenRank };
 
         public static void Register()
@@ -29,12 +32,17 @@ namespace SuperMech.Code
             if (_buttonsCreated) return;
             if (PowerButtonSelector.instance == null) return;
 
-            // 找到主Tab（世界塑造Tab）
-            PowersTab mainTab = GetMainTab();
-            if (mainTab == null)
+            // 创建独立的"超神机械师"Tab
+            if (_modTab == null)
             {
-                Debug.LogWarning("[超神机械师] 未找到PowersTab，稍后重试");
-                return;
+                Sprite tabIcon = Resources.Load<Sprite>("iconDivineLight");
+                _modTab = TabManager.CreateTab(TabName, "sm_tab_title", "sm_tab_desc", tabIcon);
+                if (_modTab == null)
+                {
+                    Debug.LogWarning("[超神机械师] 创建Tab失败，稍后重试");
+                    return;
+                }
+                Debug.Log("[超神机械师] 独立Tab创建成功");
             }
 
             int created = 0;
@@ -44,45 +52,23 @@ namespace SuperMech.Code
                 GodPower godPower = AssetManager.powers.get(id);
                 if (godPower == null) continue;
 
-                // 用NML的PowerButtonCreator创建按钮，parent设为主Tab的transform
                 Sprite icon = Resources.Load<Sprite>(godPower.path_icon);
-                var pb = PowerButtonCreator.CreateGodPowerButton(id, icon, mainTab.transform);
+                var pb = PowerButtonCreator.CreateGodPowerButton(id, icon, _modTab.transform);
                 if (pb != null)
                 {
-                    // 手动加入PowersTab的内部按钮列表
-                    AddButtonToTab(mainTab, pb);
+                    // 手动加入Tab的内部按钮列表
+                    AddButtonToTab(_modTab, pb);
                     created++;
                 }
             }
 
             if (created > 0)
             {
-                // 重新计算按钮邻居关系
-                mainTab.findNeighbours();
-                Debug.Log($"[超神机械师] 神权按钮创建完成：{created}个新按钮（添加到主Tab）");
+                _modTab.findNeighbours();
+                Debug.Log($"[超神机械师] 神权按钮创建完成：{created}个（独立Tab）");
             }
 
             _buttonsCreated = true;
-        }
-
-        /// <summary>
-        /// 获取主Tab（世界塑造Tab）
-        /// </summary>
-        private static PowersTab GetMainTab()
-        {
-            // 用反射获取PowersTab._main_tab
-            var mainTabField = typeof(PowersTab).GetField("_main_tab",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            if (mainTabField != null)
-            {
-                var mainTab = mainTabField.GetValue(null) as PowersTab;
-                if (mainTab != null) return mainTab;
-            }
-
-            // 兜底：找第一个PowersTab
-            var tabs = Object.FindObjectsOfType<PowersTab>();
-            if (tabs != null && tabs.Length > 0) return tabs[0];
-            return null;
         }
 
         /// <summary>
