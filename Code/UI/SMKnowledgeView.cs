@@ -70,23 +70,47 @@ namespace SuperMech.Code
             var dsr = detailScrollGo.GetComponent<RectTransform>();
             dsr.anchorMin = Vector2.zero; dsr.anchorMax = Vector2.one;
             dsr.offsetMin = new Vector2(8, 8); dsr.offsetMax = new Vector2(-8, -8);
+            // Mask的Image必须用极小非零alpha（0.01），alpha=0会导致Mask模板区域为空，内容被整体裁剪
+            var detailMaskImg = detailScrollGo.AddComponent<Image>();
+            detailMaskImg.color = new Color(0f, 0f, 0f, 0.01f);
+            detailMaskImg.raycastTarget = false;
             var detailMask = detailScrollGo.AddComponent<Mask>();
-            detailMask.showMaskGraphic = false;
-            detailScrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+            detailMask.showMaskGraphic = true;
+
+            // 独立Viewport
+            var detailViewportGo = new GameObject("Viewport");
+            detailViewportGo.transform.SetParent(detailScrollGo.transform, false);
+            var detailViewportRt = detailViewportGo.AddComponent<RectTransform>();
+            detailViewportRt.anchorMin = Vector2.zero;
+            detailViewportRt.anchorMax = Vector2.one;
+            detailViewportRt.offsetMin = Vector2.zero;
+            detailViewportRt.offsetMax = Vector2.zero;
 
             var detailContentGo = new GameObject("Content");
-            detailContentGo.transform.SetParent(detailScrollGo.transform, false);
+            detailContentGo.transform.SetParent(detailViewportGo.transform, false);
             var detailContentRect = detailContentGo.AddComponent<RectTransform>();
             detailContentRect.anchorMin = new Vector2(0, 1);
-            detailContentRect.anchorMax = new Vector2(1, 1);
-            detailContentRect.pivot = new Vector2(0.5f, 1);
-            detailContentRect.sizeDelta = new Vector2(0, 100);
+            detailContentRect.anchorMax = new Vector2(0, 1);
+            detailContentRect.pivot = new Vector2(0, 1);
+            detailContentRect.sizeDelta = new Vector2(0, 0);
+            // Content透明命中兜底层
+            var detailContentHit = detailContentGo.AddComponent<Image>();
+            detailContentHit.color = new Color(0f, 0f, 0f, 0f);
+            detailContentHit.raycastTarget = true;
+            var detailVlg = detailContentGo.AddComponent<VerticalLayoutGroup>();
+            detailVlg.spacing = 4;
+            detailVlg.padding = new RectOffset(6, 6, 6, 6);
+            detailVlg.childControlHeight = true;
+            detailVlg.childControlWidth = true;
+            detailVlg.childForceExpandWidth = true;
+            detailVlg.childForceExpandHeight = false;
             var detailFitter = detailContentGo.AddComponent<ContentSizeFitter>();
             detailFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             detailScrollRect.content = detailContentRect;
-            detailScrollRect.viewport = dsr;
+            detailScrollRect.viewport = detailViewportRt;
             detailScrollRect.vertical = true;
             detailScrollRect.horizontal = false;
+            detailScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
             // 详情文字
             var textGo = new GameObject("DetailText");

@@ -203,6 +203,7 @@ namespace SuperMech.Code
         /// <summary>创建滚动区（Mask + VLG + ContentSizeFitter + 冰蓝滚动条）</summary>
         public static (ScrollRect scroll, RectTransform content) CreateScrollArea(Transform parent, string name)
         {
+            // ScrollRect + Mask 容器
             var scrollGo = new GameObject(name);
             scrollGo.transform.SetParent(parent, false);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
@@ -210,31 +211,53 @@ namespace SuperMech.Code
             sr.anchorMin = Vector2.zero; sr.anchorMax = Vector2.one;
             sr.offsetMin = Vector2.zero; sr.offsetMax = Vector2.zero;
 
-            // Mask
+            // Mask的Image必须用极小非零alpha（0.01），alpha=0会导致Mask模板区域为空，内容被整体裁剪
+            var maskImg = scrollGo.AddComponent<Image>();
+            maskImg.color = new Color(0f, 0f, 0f, 0.01f);
+            maskImg.raycastTarget = false;
             var mask = scrollGo.AddComponent<Mask>();
-            mask.showMaskGraphic = false;
-            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+            mask.showMaskGraphic = true;
 
-            // Content
+            // 独立Viewport
+            var viewportGo = new GameObject("Viewport");
+            viewportGo.transform.SetParent(scrollGo.transform, false);
+            var viewportRt = viewportGo.AddComponent<RectTransform>();
+            viewportRt.anchorMin = Vector2.zero;
+            viewportRt.anchorMax = Vector2.one;
+            viewportRt.offsetMin = Vector2.zero;
+            viewportRt.offsetMax = Vector2.zero;
+
+            // Content（左上角锚定，高度由ContentSizeFitter决定）
             var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(scrollGo.transform, false);
+            contentGo.transform.SetParent(viewportGo.transform, false);
             var contentRect = contentGo.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 1);
-            contentRect.anchorMax = new Vector2(1, 1);
-            contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.sizeDelta = new Vector2(0, 100);
+            contentRect.anchorMin = new Vector2(0f, 1f);
+            contentRect.anchorMax = new Vector2(0f, 1f);
+            contentRect.pivot = new Vector2(0f, 1f);
+            contentRect.anchoredPosition = Vector2.zero;
+            contentRect.sizeDelta = new Vector2(0f, 0f);
+
+            // Content透明命中兜底层：纯文本行raycastTarget=false时，ScrollRect收不到拖动事件
+            var contentHit = contentGo.AddComponent<Image>();
+            contentHit.color = new Color(0f, 0f, 0f, 0f);
+            contentHit.raycastTarget = true;
+
             var layout = contentGo.AddComponent<VerticalLayoutGroup>();
             layout.spacing = 2;
-            layout.padding = new RectOffset(4, 4, 4, 4);
+            layout.padding = new RectOffset(6, 6, 4, 4);
             layout.childControlHeight = true;
             layout.childControlWidth = true;
+            layout.childForceExpandWidth = true;
+            layout.childForceExpandHeight = false;
             var fitter = contentGo.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             scrollRect.content = contentRect;
+            scrollRect.viewport = viewportRt;
             scrollRect.vertical = true;
             scrollRect.horizontal = false;
-            scrollRect.viewport = sr;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.scrollSensitivity = 25f;
 
             return (scrollRect, contentRect);
         }

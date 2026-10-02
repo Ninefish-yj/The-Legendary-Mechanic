@@ -36,16 +36,32 @@ namespace SuperMech.Code
             var sr = scrollGo.GetComponent<RectTransform>();
             sr.anchorMin = Vector2.zero; sr.anchorMax = Vector2.one;
             sr.offsetMin = Vector2.zero; sr.offsetMax = Vector2.zero;
+            // Mask的Image必须用极小非零alpha（0.01），alpha=0会导致Mask模板区域为空，内容被整体裁剪
+            var maskImg = scrollGo.AddComponent<Image>();
+            maskImg.color = new Color(0f, 0f, 0f, 0.01f);
+            maskImg.raycastTarget = false;
             var mask = scrollGo.AddComponent<Mask>();
-            mask.showMaskGraphic = false;
-            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+            mask.showMaskGraphic = true;
 
-            // Content（GridLayoutGroup）
+            // 独立Viewport
+            var viewportGo = new GameObject("Viewport");
+            viewportGo.transform.SetParent(scrollGo.transform, false);
+            var viewportRt = viewportGo.AddComponent<RectTransform>();
+            viewportRt.anchorMin = Vector2.zero;
+            viewportRt.anchorMax = Vector2.one;
+            viewportRt.offsetMin = Vector2.zero;
+            viewportRt.offsetMax = Vector2.zero;
+
+            // Content（GridLayoutGroup，左上角锚定）
             var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(scrollGo.transform, false);
+            contentGo.transform.SetParent(viewportGo.transform, false);
             var contentRect = contentGo.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 1); contentRect.anchorMax = new Vector2(1, 1);
-            contentRect.pivot = new Vector2(0.5f, 1); contentRect.sizeDelta = new Vector2(0, 600);
+            contentRect.anchorMin = new Vector2(0, 1); contentRect.anchorMax = new Vector2(0, 1);
+            contentRect.pivot = new Vector2(0, 1); contentRect.sizeDelta = new Vector2(0, 0);
+            // Content透明命中兜底层
+            var contentHit = contentGo.AddComponent<Image>();
+            contentHit.color = new Color(0f, 0f, 0f, 0f);
+            contentHit.raycastTarget = true;
             var grid = contentGo.AddComponent<GridLayoutGroup>();
             grid.cellSize = new Vector2(56, 56);
             grid.spacing = new Vector2(5, 5);
@@ -55,7 +71,10 @@ namespace SuperMech.Code
             var fitter = contentGo.AddComponent<ContentSizeFitter>();
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             scrollRect.content = contentRect;
-            scrollRect.viewport = sr;
+            scrollRect.viewport = viewportRt;
+            scrollRect.vertical = true;
+            scrollRect.horizontal = false;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
             scrollRect.vertical = true;
             scrollRect.horizontal = false;
 
