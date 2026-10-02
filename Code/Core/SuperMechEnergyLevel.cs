@@ -199,6 +199,15 @@ namespace SuperMech.Code
             return $"{energy:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}（{gradeName}·{desc}）";
         }
 
+        /// <summary>获取短评估文本："1071欧纳（C阶）"，用于单位面板等空间有限的地方</summary>
+        public static string GetShortText(Actor a)
+        {
+            float energy = Calculate(a);
+            EnergyGrade grade = Evaluate(energy);
+            string gradeName = GetGradeName(grade);
+            return $"{energy:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}（{gradeName}）";
+        }
+
         /// <summary>获取能级在当前等级中的进度（0~1）</summary>
         public static float GetGradeProgress(float energy)
         {

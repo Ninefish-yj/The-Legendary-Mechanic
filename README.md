@@ -98,6 +98,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.28.1** | UI优化：能级行显示缩短为"数值+阶位"短格式（如"24000欧纳（A级）"），移除过长的战力描述；新增GetShortText方法，原GetEvaluationText保留用于tooltip等需要详细描述的场景 |
 | **v0.28.0** | UI重构第二阶段：修复4个配置项注册缺失（qi_attribute_counter/qi_display_decimals/cross_mod_energy_sync/cross_mod_energy_ratio）及3个缺失setter；新增SMCollapsibleSection.cs折叠组件（静态字典状态持久化+标题行点击切换）；重构SuperMechUnitWindow.cs使用折叠组件分组显示（核心档案默认展开/战斗数值默认折叠/特殊与入口默认折叠）；将觉醒/阶位提升/知识融合三个核心事件接入SMEventLogger推送原生事件日志；新增3条折叠组标题本地化文本 |
 | **v0.27.0** | UI重构启动版：完成阶段一反编译对照（UnitWindow/StatsWindow/WorldLog原生结构确认）；新增SMEventLogger.cs事件日志封装（6类日志资产：觉醒/晋升/融合/圣所/迭代/复活，推送到原生事件日志）；在Main.cs初始化事件日志系统；新增6条事件日志本地化文本；现有Tab栏（SuperMechPowers.cs）已符合原生融合架构 |
 | **v0.26.0** | 配置化补齐+UI完善：战斗压制全部参数可配置（5档阈值+伤害/命中/暴击/抗性/闪避倍率+精神穿甲比例+融合上限）；新增Combat配置分类和4个配置项；战斗补丁所有硬编码替换为配置值；知识融合单配方/总倍率上限可配置；单位面板职业阶段显示等级上限进度（如"见习机械师（Lv12/15）"） |

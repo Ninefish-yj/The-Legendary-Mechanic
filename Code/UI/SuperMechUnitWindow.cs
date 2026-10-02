@@ -113,7 +113,7 @@ namespace SuperMech.Code
 
         private static void ShowCombatInfo(UnitWindow window, Actor a)
         {
-            ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), SuperMechEnergyLevel.GetEvaluationText(a), null, InfoColor);
+            ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), SuperMechEnergyLevel.GetShortText(a), null, InfoColor);
 
             float qi = SuperMechQi.GetQi(a);
             float qiMax = SuperMechQi.GetQiMax(a);
