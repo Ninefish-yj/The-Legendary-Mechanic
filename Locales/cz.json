@@ -3965,5 +3965,11 @@
   "sm_ui_fuse_fail": "融合失败...",
   "sm_ui_required_knowledge": "所需知识",
   "sm_ui_fuse": "融合",
-  "sm_ui_no_xp": "气力不足"
+  "sm_ui_no_xp": "气力不足",
+  "sm_ui_resurrection": "圣所复活",
+  "sm_ui_open_resurrection": "打开复活面板",
+  "sm_ui_no_dead": "暂无死亡单位记录",
+  "sm_ui_resurrect_rank_low": "阶位不足（需S阶以上）",
+  "sm_ui_resurrect_max_count": "已达复活次数上限",
+  "sm_ui_resurrect_no_fragment": "钥匙碎片不足"
 }

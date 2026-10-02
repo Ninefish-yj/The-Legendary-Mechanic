@@ -368,6 +368,28 @@ namespace SuperMech.Code
             AddDetailLine($"<color=#6ab7ff>解锁条件</color>", 13);
             AddDetailLine($"收集 {SuperMechSanctuary.FragmentsToUnlock} 个钥匙碎片", 12);
             AddDetailLine($"碎片可通过神性蜕变和高阶单位掉落获得", 12);
+            AddDetailLine("", 8);
+
+            // 复活按钮
+            var btnGo = new GameObject("ResurrectBtn");
+            btnGo.transform.SetParent(_detailContent, false);
+            var btnRect = btnGo.AddComponent<RectTransform>();
+            btnRect.anchorMin = new Vector2(0, 1);
+            btnRect.anchorMax = new Vector2(1, 1);
+            btnRect.pivot = new Vector2(0, 1);
+            btnRect.sizeDelta = new Vector2(0, 32);
+            var btnImg = btnGo.AddComponent<Image>();
+            btnImg.color = new Color(0.2f, 0.4f, 0.6f, 0.9f);
+            var btn = btnGo.AddComponent<Button>();
+            var btnText = SMUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_open_resurrection"), 13, TextAnchor.MiddleCenter);
+            btnText.color = Color.white;
+            btnText.fontStyle = FontStyle.Bold;
+            var btnTextRect = btnText.GetComponent<RectTransform>();
+            btnTextRect.anchorMin = Vector2.zero;
+            btnTextRect.anchorMax = Vector2.one;
+            btnTextRect.offsetMin = Vector2.zero;
+            btnTextRect.offsetMax = Vector2.zero;
+            btn.onClick.AddListener(() => SMWindowManager.OpenResurrection());
         }
 
         private void AddDetailLine(string text, int size)

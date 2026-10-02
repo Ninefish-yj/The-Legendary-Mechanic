@@ -77,6 +77,7 @@ namespace SuperMech.Code
                 SafeRun("神化任务", () => SuperMechTranscendence.TickAdvancementTask());
                 SafeRun("自动神化尝试", () => SuperMechTranscendence.TickAutoAttempt());
                 SafeRun("信息状态", () => SuperMechInfoState.TickInfoState());
+                SafeRun("信息态记录", () => SuperMechInformationState.Tick(1.25f));
             }
             else
             {

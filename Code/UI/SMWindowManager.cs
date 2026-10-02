@@ -52,6 +52,7 @@ namespace SuperMech.Code
         public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 600, 460, DrawRankContent); }
         public static void OpenSanctuary() { ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 480, DrawSanctuaryContent); }
+        public static void OpenResurrection() { ToggleWindow("resurrection", "sm_ui_resurrection", 600, 500, DrawResurrectionContent); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
         {
@@ -136,6 +137,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SMSanctuaryView>();
+        }
+
+        private static void DrawResurrectionContent(RectTransform content)
+        {
+            var go = new GameObject("ResurrectionView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SMResurrectionView>();
         }
 
         public static void CloseAll()
