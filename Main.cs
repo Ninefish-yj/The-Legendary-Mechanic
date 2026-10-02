@@ -22,6 +22,7 @@ namespace SuperMech
             ModPath = GetDeclaration().FolderPath;
             Debug.Log("[超神机械师] 模组加载: " + ModPath);
             SuperMechConfig.Init();
+            SMEventLogger.Init();
             SuperMechTraitGroups.Register();
             SuperMechCustomStats.Register();
             SuperMechTraits.Register();
