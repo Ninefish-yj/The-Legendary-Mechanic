@@ -76,6 +76,20 @@ namespace SuperMech.Code
                     }
                 }
 
+                // 气力属性克制：原著五属性克制环（金→磁→念→灵→暗→金）
+                // 克制+30%（第六级后+40%），被克-20%（第六级后-25%）
+                if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
+                {
+                    float attrCounter = SuperMechQiAttribute.GetCounterMultiplier(attacker, target);
+                    float classCounter = SuperMechQiAttribute.GetClassCounterMultiplier(attacker, target);
+                    float totalCounter = attrCounter * classCounter;
+                    if (totalCounter != 1f)
+                    {
+                        float counterDamage = pDamage * (totalCounter - 1f);
+                        target.data.health -= (int)counterDamage;
+                    }
+                }
+
                 // 能级压制：攻击者能级远高于目标时，造成额外伤害
                 if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
                 {

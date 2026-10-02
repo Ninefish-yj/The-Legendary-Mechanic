@@ -16,6 +16,73 @@ namespace SuperMech.Code
         public const string AttrLight    = "sm_qiattribute_946";
         public const string AttrNone     = "sm_qiattribute_947";
 
+        /// <summary>
+        /// 原著五属性克制环：金→磁→念→灵→暗→金
+        /// 克制方伤害+30%，被克制方伤害-20%
+        /// 机械系磁属性，精神系（念力/异能）念/灵属性
+        /// </summary>
+        private static readonly Dictionary<string, string> CounterTable = new Dictionary<string, string>
+        {
+            { AttrIron, AttrMagnetic },       // 金克磁（金属屏蔽磁场）
+            { AttrMagnetic, AttrSpirit },     // 磁克念（磁场干扰精神）
+            { AttrSpirit, AttrLight },        // 念克灵（念力压制灵魂）
+            { AttrLight, AttrDark },          // 灵克暗（光明驱散黑暗）
+            { AttrDark, AttrIron },           // 暗克金（暗蚀金属）
+            // 元素属性扩展克制
+            { AttrFire, AttrIron },           // 火克金
+            { AttrWater, AttrFire },          // 水克火
+            { AttrLightning, AttrWater },     // 雷克水
+            { AttrWind, AttrLightning },      // 风克雷
+        };
+
+        /// <summary>克制伤害加成（原著：属性克制时威力显著提升）</summary>
+        public const float CounterDamageBonus = 0.30f;
+        /// <summary>被克制伤害减免</summary>
+        public const float CounterDamagePenalty = 0.20f;
+
+        /// <summary>
+        /// 获取气力属性克制伤害倍率。
+        /// 攻击者属性克制防御者时+30%，被克制时-20%，无克制关系1.0。
+        /// 第六级分水岭后克制效果增强（+40%/-25%）。
+        /// </summary>
+        public static float GetCounterMultiplier(Actor attacker, Actor defender)
+        {
+            if (attacker == null || defender == null) return 1f;
+            string atkAttr = GetAttribute(attacker);
+            string defAttr = GetAttribute(defender);
+            if (atkAttr == AttrNone || defAttr == AttrNone) return 1f;
+            if (atkAttr == defAttr) return 1f;
+
+            bool atkCounters = CounterTable.TryGetValue(atkAttr, out string atkCountersAttr) && atkCountersAttr == defAttr;
+            bool defCounters = CounterTable.TryGetValue(defAttr, out string defCountersAttr) && defCountersAttr == atkAttr;
+
+            // 第六级分水岭后克制效果增强
+            bool tier6Boost = SuperMechQiLayer.IsBreakthrough(attacker);
+            float bonus = tier6Boost ? 0.40f : CounterDamageBonus;
+            float penalty = tier6Boost ? 0.25f : CounterDamagePenalty;
+
+            if (atkCounters) return 1f + bonus;
+            if (defCounters) return 1f - penalty;
+            return 1f;
+        }
+
+        /// <summary>职业间克制：机械系对精神系（念力/异能）的攻防修正</summary>
+        public static float GetClassCounterMultiplier(Actor attacker, Actor defender)
+        {
+            if (attacker == null || defender == null) return 1f;
+            bool atkMech = attacker.hasTrait(SuperMechTraits.ClassMech);
+            bool defMech = defender.hasTrait(SuperMechTraits.ClassMech);
+            bool atkPsi = attacker.hasTrait(SuperMechTraits.ClassPsi) || attacker.hasTrait(SuperMechTraits.ClassMind);
+            bool defPsi = defender.hasTrait(SuperMechTraits.ClassPsi) || defender.hasTrait(SuperMechTraits.ClassMind);
+
+            // 原著：机械没有灵魂免疫精神伤害，但机械师智力较高幻术影响大幅减弱
+            // 机械系攻击精神系：+15%（机械对精神体的物理压制）
+            // 精神系攻击机械系：-25%（机械无灵魂，精神攻击效果衰减但非免疫）
+            if (atkMech && defPsi) return 1.15f;
+            if (atkPsi && defMech) return 0.75f;
+            return 1f;
+        }
+
         public static readonly Dictionary<string, string> AttrDesc = new Dictionary<string, string>
         {
             { AttrMagnetic, "sm_qiattribute_948" },
