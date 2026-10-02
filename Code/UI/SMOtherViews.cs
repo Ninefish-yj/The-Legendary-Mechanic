@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,6 +29,10 @@ namespace SuperMech.Code
     public class SMRankView : MonoBehaviour
     {
         private RectTransform _content;
+        // 排行榜缓存：避免频繁打开关闭窗口时重复计算
+        private static List<(string name, string rankKey, float onar)> _cachedRankings;
+        private static float _cacheTime;
+        private const float CacheDuration = 3f;
 
         void Awake()
         {
@@ -55,31 +60,9 @@ namespace SuperMech.Code
             for (int i = _content.childCount - 1; i >= 0; i--)
                 Object.Destroy(_content.GetChild(i).gameObject);
 
-            var units = World.world?.units?.units_only_alive;
-            if (units == null)
-            {
-                Debug.Log("[超神机械师] 排行榜: units为null");
-                ShowEmpty();
-                return;
-            }
-
-            Debug.Log($"[超神机械师] 排行榜: 遍历{units.Count}个单位");
-            var rankings = new System.Collections.Generic.List<(string name, string rankKey, float onar)>();
-            int qiCount = 0, crossCount = 0, zeroCount = 0;
-            foreach (Actor a in units)
-            {
-                if (a == null || !a.isAlive()) continue;
-                float onar = SuperMechAdvancement.CalcOnar(a);
-                if (onar <= 0) zeroCount++;
-                if (SuperMechQi.GetQiMax(a) > 0) qiCount++; else if (onar > 0) crossCount++;
-                string rankKey = SuperMechRanks.GetRankName(a);
-                rankings.Add((a.name, rankKey, onar));
-            }
-            Debug.Log($"[超神机械师] 排行榜: 有气力{qiCount}个, 跨模组{crossCount}个, 零能级{zeroCount}个, 入榜{rankings.Count}个");
-            rankings.Sort((x, y) => y.onar.CompareTo(x.onar));
-            if (rankings.Count > 20) rankings.RemoveRange(20, rankings.Count - 20);
-
-            if (rankings.Count == 0)
+            // 用缓存（3秒内有效），避免重复计算
+            var rankings = GetCachedRankings();
+            if (rankings == null || rankings.Count == 0)
             {
                 ShowEmpty();
                 return;
@@ -111,6 +94,34 @@ namespace SuperMech.Code
                 rank++;
             }
         }
+
+        private static List<(string name, string rankKey, float onar)> GetCachedRankings()
+        {
+            // 缓存有效，直接返回
+            if (_cachedRankings != null && Time.realtimeSinceStartup - _cacheTime < CacheDuration)
+                return _cachedRankings;
+
+            // 重新计算
+            var units = World.world?.units?.units_only_alive;
+            if (units == null) return null;
+
+            var rankings = new List<(string name, string rankKey, float onar)>();
+            foreach (Actor a in units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                float onar = SuperMechAdvancement.CalcOnar(a);
+                string rankKey = SuperMechRanks.GetRankName(a);
+                rankings.Add((a.name, rankKey, onar));
+            }
+            rankings.Sort((x, y) => y.onar.CompareTo(x.onar));
+            if (rankings.Count > 20) rankings.RemoveRange(20, rankings.Count - 20);
+
+            _cachedRankings = rankings;
+            _cacheTime = Time.realtimeSinceStartup;
+            return rankings;
+        }
+
+        public static void InvalidateCache() { _cachedRankings = null; }
 
         private void ShowEmpty()
         {
