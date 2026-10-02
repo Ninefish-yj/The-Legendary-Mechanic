@@ -41,6 +41,8 @@ namespace SuperMech.Code
                     Debug.LogWarning("[超神机械师] 创建Tab失败，稍后重试");
                     return;
                 }
+                // NML标准流程：SetLayout → AddPowerButton → UpdateLayout
+                _modTab.SetLayout(new System.Collections.Generic.List<string> { "main" });
                 Debug.Log("[超神机械师] 独立Tab创建成功");
             }
 
@@ -51,69 +53,29 @@ namespace SuperMech.Code
                 GodPower godPower = AssetManager.powers.get(id);
                 if (godPower == null) continue;
 
-                Sprite icon = Resources.Load<Sprite>(godPower.path_icon);
-                var pb = PowerButtonCreator.CreateGodPowerButton(id, icon, _modTab.transform);
-                if (pb != null)
+                try
                 {
-                    // 手动加入Tab的内部按钮列表
-                    AddButtonToTab(_modTab, pb);
-                    created++;
+                    Sprite icon = Resources.Load<Sprite>(godPower.path_icon);
+                    // NML标准：CreateGodPowerButton只传id和icon，parent由AddPowerButton处理
+                    var pb = PowerButtonCreator.CreateGodPowerButton(id, icon);
+                    if (pb != null)
+                    {
+                        _modTab.AddPowerButton("main", pb);
+                        created++;
+                    }
+                }
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"[超神机械师] 创建按钮{id}失败: {e.Message}");
                 }
             }
 
-            if (created > 0 && _modTab != null)
+            if (created > 0)
             {
-                try { _modTab.findNeighbours(); }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] findNeighbours失败: {e.Message}"); }
+                _modTab.UpdateLayout();
             }
-
-            // 运行时断言：验证所有按钮都在Tab列表中
-            try { VerifyButtonsInTab(); }
-            catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 按钮验证失败: {e.Message}"); }
 
             _buttonsCreated = true;
-        }
-
-        /// <summary>
-        /// 运行时断言：验证所有按钮都正确加入Tab的_power_buttons列表
-        /// </summary>
-        private static void VerifyButtonsInTab()
-        {
-            if (_modTab == null) return;
-            var field = typeof(PowersTab).GetField("_power_buttons",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (field == null) return;
-            var list = field.GetValue(_modTab) as System.Collections.Generic.List<PowerButton>;
-            if (list == null) return;
-
-            foreach (string id in PowerIds)
-            {
-                var pb = PowerButton.get(id);
-                if (pb == null)
-                {
-                    Debug.LogError($"[超神机械师] 运行时断言失败：按钮{id}未创建！");
-                    continue;
-                }
-                if (!list.Contains(pb))
-                {
-                    Debug.LogError($"[超神机械师] 运行时断言失败：按钮{id}未加入Tab列表！");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 手动把按钮加入PowersTab的内部列表（_power_buttons是private，Start后不会自动收集）
-        /// </summary>
-        private static void AddButtonToTab(PowersTab tab, PowerButton button)
-        {
-            var field = typeof(PowersTab).GetField("_power_buttons",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            if (field == null) return;
-            var list = field.GetValue(tab) as System.Collections.Generic.List<PowerButton>;
-            if (list != null && !list.Contains(button))
-            {
-                list.Add(button);
-            }
         }
 
         private static void AddAwakenedPower(string id, string name, string icon)
