@@ -10,6 +10,10 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<long, int> _level = new Dictionary<long, int>();
         private static readonly Dictionary<long, float> _xp = new Dictionary<long, float>();
+        /// <summary>记录每个单位上次访问圣所的年龄（避免频繁访问）</summary>
+        private static readonly Dictionary<long, int> _lastSanctuaryVisitAge = new Dictionary<long, int>();
+        /// <summary>自动访问圣所的年龄间隔（每10岁访问一次）</summary>
+        private const int SanctuaryVisitAgeInterval = 10;
 
         public static readonly int[] StageLevelCaps = {
             20,
@@ -249,7 +253,62 @@ namespace SuperMech.Code
                         SuperMechTranscendence.AttemptTranscend(a);
                     }
                 }
+
+                // v0.31.0：单位自动访问圣所（原著：超A级强者主动进入圣所修炼）
+                AutoVisitSanctuary(a);
             }
+        }
+
+        /// <summary>单位自动访问圣所（v0.31.0）
+        /// A级及以上自动访问匹配体系的圣所，S级及以上有足够钥匙时自动进入圣所修炼
+        /// </summary>
+        private static void AutoVisitSanctuary(Actor a)
+        {
+            if (!SuperMechConfig.AutoVisitSanctuary) return;
+            if (!SuperMechConfig.SanctuaryEnabled) return;
+
+            int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
+            if (rankIdx < 8) return; // A级以下不自动访问
+
+            long actorId = a.data.id;
+            int currentAge = a.age;
+            if (_lastSanctuaryVisitAge.TryGetValue(actorId, out int lastAge))
+            {
+                if (currentAge - lastAge < SanctuaryVisitAgeInterval) return;
+            }
+            _lastSanctuaryVisitAge[actorId] = currentAge;
+
+            // 找到匹配体系的圣所（机械系→第一圣所，异能/念力→第三圣所，其他随机）
+            int sanctuaryIndex = FindMatchingSanctuary(a);
+            if (sanctuaryIndex < 0) return;
+
+            // 检查圣所是否已解锁
+            if ((SuperMechSanctuary.Data.unlocked_sanctuaries & (1 << sanctuaryIndex)) == 0) return;
+
+            // 自动访问圣所（获得知识和权限）
+            SuperMechSanctuary.VisitSanctuary(a, sanctuaryIndex);
+
+            // S级及以上且有足够钥匙时自动进入圣所修炼
+            if (SuperMechConfig.AutoEnterSanctuary && rankIdx >= 10 && SuperMechSanctuary.Data.key_fragments >= 3)
+            {
+                SuperMechSanctuary.EnterSanctuary(a, sanctuaryIndex);
+            }
+        }
+
+        /// <summary>找到匹配单位体系的圣所索引</summary>
+        private static int FindMatchingSanctuary(Actor a)
+        {
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return 0; // 机械系→第一圣所
+            if (a.hasTrait(SuperMechTraits.ClassMind) || a.hasTrait(SuperMechTraits.ClassPsi)) return 2; // 异能/念力→第三圣所
+            // 其他体系随机选择已解锁的圣所
+            var unlocked = new List<int>();
+            for (int i = 0; i < 6; i++)
+            {
+                if ((SuperMechSanctuary.Data.unlocked_sanctuaries & (1 << i)) != 0)
+                    unlocked.Add(i);
+            }
+            if (unlocked.Count == 0) return -1;
+            return unlocked[Random.Range(0, unlocked.Count)];
         }
 
         private static void AutoUnlockKnowledge(Actor a)

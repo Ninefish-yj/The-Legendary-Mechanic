@@ -37,6 +37,10 @@ namespace SuperMech.Code
 
         public static bool SanctuaryEnabled = true;
         public static bool SanctuaryAutoSave = true;
+        /// <summary>单位自动访问圣所（v0.31.0）：A级及以上超能者自动访问匹配体系的圣所</summary>
+        public static bool AutoVisitSanctuary = true;
+        /// <summary>单位自动进入圣所（v0.31.0）：S级及以上有足够钥匙时自动进入圣所修炼</summary>
+        public static bool AutoEnterSanctuary = true;
 
         public static bool MechSummonEnabled = true;
         public static int MaxSummonedUnits = 50;
@@ -151,6 +155,8 @@ namespace SuperMech.Code
                 new ItemInfo("auto_favorite_x", "sm_config_599", "sm_config_600"),
                 new ItemInfo("sanctuary_enabled", "sm_config_601", "sm_config_602"),
                 new ItemInfo("sanctuary_autosave", "sm_config_603", "sm_config_604"),
+                new ItemInfo("auto_visit_sanctuary", "sm_config_653", "sm_config_654"),
+                new ItemInfo("auto_enter_sanctuary", "sm_config_655", "sm_config_656"),
                 new ItemInfo("mech_summon_enabled", "sm_config_605", "sm_config_606"),
                 new ItemInfo("max_summoned_units", "sm_config_607", "sm_config_608"),
                 new ItemInfo("refinement_bonus", "sm_config_609", "sm_config_610"),
@@ -218,6 +224,8 @@ namespace SuperMech.Code
 
         public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; }
         public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; }
+        public static void SetAutoVisitSanctuary(bool val) { AutoVisitSanctuary = val; }
+        public static void SetAutoEnterSanctuary(bool val) { AutoEnterSanctuary = val; }
         public static void SetSanctuaryCount(int val) { }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }

@@ -338,6 +338,11 @@ namespace SuperMech.Code
             AddDetailLine($"<size=16><color=#6ab7ff>{name}</color></size>", 16);
             AddDetailLine($"职业分类: {cls}", 12);
             AddDetailLine($"碎片进度: {frags}/{SuperMechSanctuary.FragmentsToUnlock} {(unlocked ? "<color=#4f4>[已解锁]</color>" : "<color=#f84>[未解锁]</color>")}", 12);
+            AddDetailLine("", 4);
+
+            // 钥匙系统说明（v0.31.0：原著设定补充）
+            AddDetailLine($"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_sanctuary_key_title")}</color>", 12);
+            AddDetailLine($"<size=10><color=#aaa>{LocalizedTextManager.getText("sm_ui_sanctuary_key_desc")}</color></size>", 10);
             AddDetailLine("", 8);
 
             // 统计该圣所的权限拥有者
