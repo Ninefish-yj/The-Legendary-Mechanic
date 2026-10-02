@@ -9,7 +9,9 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechInformationState
     {
-        /// <summary>信息态记录</summary>
+        /// <summary>信息态记录（原著：以信息态形式完整记录文明数据，超A级可通过信息态复苏）
+        /// 复活时通过完整快照恢复，确保新单位尽可能接近原单位
+        /// </summary>
         public class InformationStateRecord
         {
             public long actorId;
@@ -31,7 +33,20 @@ namespace SuperMech.Code
             public int reviveCount;
             public long diedAt;
             public long worldAge;
-            public int iterationId;  // 所属迭代ID（仅能复苏同一迭代的个体）
+            public int iterationId;
+            // v0.38.2 完整信息态：神性、遗力、技能、进阶任务
+            public int divinityLevel;
+            public bool divinityAwakened;
+            public int legacyPower;
+            public List<string> legacySourceNames;
+            public List<int> legacySourceRanks;
+            public List<float> legacySourceDamages;
+            public List<string> legacyDeathTypes;
+            public bool advancementTaskDone;
+            public float advancementProgress;
+            public int subLevel;
+            public List<string> skills;
+            public List<string> traits;
         }
 
         private static readonly Dictionary<long, InformationStateRecord> _aliveSnapshot = new Dictionary<long, InformationStateRecord>();
@@ -111,7 +126,8 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>创建单位信息态快照</summary>
+        /// <summary>创建单位信息态快照（原著：信息态完整记录生命体的一切数据）
+        /// </summary>
         private static InformationStateRecord CreateSnapshot(Actor a)
         {
             var record = new InformationStateRecord
@@ -128,6 +144,13 @@ namespace SuperMech.Code
                 potential = SuperMechPotential.GetPotential(a),
                 reviveCount = SuperMechSanctuary.GetReviveCount(a),
                 iterationId = SuperMechCosmicIteration.CurrentIteration,
+                // v0.38.2 完整信息态
+                divinityLevel = SuperMechDivinity.GetTotalLayers(a),
+                divinityAwakened = SuperMechDivinity.IsDivineAwakened(a),
+                legacyPower = SuperMechTranscendence.GetLegacyPower(a),
+                advancementTaskDone = SuperMechTranscendence.IsAdvancementTaskDone(a),
+                advancementProgress = SuperMechTranscendence.GetAdvancementProgress(a),
+                subLevel = 0,
             };
 
             // 职业和分支
@@ -137,12 +160,50 @@ namespace SuperMech.Code
             else if (a.hasTrait(SuperMechTraits.ClassMage)) record.classTrait = "mage";
             else if (a.hasTrait(SuperMechTraits.ClassMind)) record.classTrait = "mind";
 
-            // 知识和装备
+            // 分支特质
+            record.branchTrait = SuperMechBranch.GetBranchTrait(a);
+
+            // 知识
             var unlockedKnowledge = SuperMechKnowledge.GetUnlockedList(a, "mech");
             record.knowledge = new List<string>();
             if (unlockedKnowledge != null)
             {
                 foreach (var k in unlockedKnowledge) record.knowledge.Add(k.id);
+            }
+
+            // 遗力来源
+            var legacySources = SuperMechTranscendence.GetLegacySources(a);
+            record.legacySourceNames = new List<string>();
+            record.legacySourceRanks = new List<int>();
+            record.legacySourceDamages = new List<float>();
+            record.legacyDeathTypes = new List<string>();
+            if (legacySources != null)
+            {
+                foreach (var s in legacySources)
+                {
+                    record.legacySourceNames.Add(s.sourceName ?? "");
+                    record.legacySourceRanks.Add(s.sourceRank);
+                    record.legacySourceDamages.Add(s.deathDamage);
+                    record.legacyDeathTypes.Add(s.deathType ?? "other");
+                }
+            }
+
+            // 技能
+            record.skills = new List<string>();
+            var learnedSkills = SuperMechSkills.GetLearned(a);
+            if (learnedSkills != null)
+            {
+                foreach (var s in learnedSkills) record.skills.Add(s.id);
+            }
+
+            // 特质（自定义特质）
+            record.traits = new List<string>();
+            if (a.data.traits != null)
+            {
+                foreach (var t in a.data.traits)
+                {
+                    if (t != null && t.id != null && t.id.StartsWith("sm_")) record.traits.Add(t.id);
+                }
             }
 
             // 圣所权限总和

@@ -87,12 +87,15 @@ namespace SuperMech.Code
             return BaseResurrectEnergyCost * rankMultiplier * reviveMultiplier;
         }
 
-        /// <summary>执行复活，返回复活的Actor，失败返回null</summary>
+        /// <summary>执行复活，返回复活的Actor，失败返回null
+        /// 原著：信息态重塑肉身与灵魂，复活的是同一个体（随机失去部分能力）
+        /// v0.38.2：完整恢复信息态快照中的所有数据（神性/遗力/技能/阶段/层次/分支）
+        /// </summary>
         public static Actor Resurrect(SuperMechInformationState.InformationStateRecord state)
         {
             if (!CanResurrect(state)) return null;
 
-            // 计算信息完整度
+            // 计算信息完整度（原著：生前越强复苏越完整，复苏次数越多信息丢失越严重）
             float integrity = CalculateInformationIntegrity(state);
 
             // 消耗圣所能量（媒介）
@@ -109,7 +112,7 @@ namespace SuperMech.Code
                 return null;
             }
 
-            // 创建新单位（用原种族）
+            // 创建新单位（用原种族）——WorldBox中单位死亡后对象销毁，只能创建新单位+完整恢复数据
             string speciesId = string.IsNullOrEmpty(state.species) ? "human" : state.species;
             Actor newActor = World.world.units.spawnNewUnit(speciesId, tile, false, true, 6f, null, false, true);
             if (newActor == null)
@@ -118,44 +121,128 @@ namespace SuperMech.Code
                 return null;
             }
 
-            // 恢复名字
-            if (!string.IsNullOrEmpty(state.name))
-            {
-                newActor.name = state.name;
-            }
+            // === 完整恢复信息态数据 ===
 
-            // 恢复职业
+            // 1. 名字
+            if (!string.IsNullOrEmpty(state.name))
+                newActor.name = state.name;
+
+            // 2. 职业特质
             RestoreClass(newActor, state.classTrait);
 
-            // 按信息完整度恢复阶位和气力（原著：随机失去能力，完整度决定保留比例）
+            // 3. 分支特质
+            if (!string.IsNullOrEmpty(state.branchTrait))
+            {
+                var branchTrait = AssetManager.traits.get(state.branchTrait);
+                if (branchTrait != null) newActor.addTrait(branchTrait);
+            }
+
+            // 4. 阶位（按完整度）
             int restoredRank = Mathf.RoundToInt(state.rankIndex * integrity);
             SuperMechAdvancement.SetExactRank(newActor, Mathf.Max(0, restoredRank));
+
+            // 5. 职业阶段（按完整度）
+            int restoredStage = Mathf.RoundToInt(state.stage * integrity);
+            SuperMechStage.SetStage(newActor, Mathf.Max(0, restoredStage));
+
+            // 6. 气力（按完整度）
             SuperMechQi.SetQi(newActor, state.qi * integrity);
 
-            // 恢复潜能（按完整度）
+            // 7. 气力层次（气力恢复后自动计算，无需单独设置）
+
+            // 8. 潜能（按完整度）
             SuperMechPotential.SetPotential(newActor, Mathf.Max(1, Mathf.RoundToInt(state.potential * integrity)));
 
-            // 随机恢复知识（按完整度，随机选择保留哪些）
+            // 9. 知识（随机按完整度保留）
             if (state.knowledge != null && state.knowledge.Count > 0)
             {
                 int restoreCount = Mathf.RoundToInt(state.knowledge.Count * integrity);
                 var shuffled = new List<string>(state.knowledge);
                 ShuffleList(shuffled);
                 for (int i = 0; i < restoreCount && i < shuffled.Count; i++)
-                {
                     SuperMechKnowledge.Unlock(newActor, shuffled[i]);
+            }
+
+            // 10. 神性（等级+觉醒状态，按完整度）
+            if (state.divinityAwakened && integrity > 0.5f)
+            {
+                SuperMechDivinity._awakened[newActor.id] = true;
+                int restoredDivinity = Mathf.RoundToInt(state.divinityLevel * integrity);
+                SuperMechDivinity.SetPoints(newActor, restoredDivinity);
+            }
+
+            // 11. 遗力（数量+来源，按完整度）
+            if (state.legacyPower > 0 && state.legacySourceNames != null)
+            {
+                int restoreLegacyCount = Mathf.RoundToInt(state.legacyPower * integrity);
+                var sources = new List<LegacyPowerSource>();
+                for (int i = 0; i < restoreLegacyCount && i < state.legacySourceNames.Count; i++)
+                {
+                    sources.Add(new LegacyPowerSource
+                    {
+                        sourceName = state.legacySourceNames[i],
+                        sourceRank = i < state.legacySourceRanks.Count ? state.legacySourceRanks[i] : 12,
+                        sourceEnergy = 0,
+                        deathDamage = i < state.legacySourceDamages.Count ? state.legacySourceDamages[i] : 500,
+                        deathType = i < state.legacyDeathTypes.Count ? state.legacyDeathTypes[i] : "other",
+                        loadType = "physical",
+                        consciousnessName = state.legacySourceNames[i],
+                        wishText = "",
+                        consciousnessGone = true
+                    });
+                }
+                if (sources.Count > 0)
+                {
+                    SuperMechTranscendence.SetLegacyPower(newActor, sources.Count);
+                    SuperMechTranscendence.SetLegacySources(newActor, sources);
                 }
             }
 
-            // 记录复活次数
+            // 12. 进阶任务状态
+            if (state.advancementTaskDone)
+                SuperMechTranscendence.SetAdvancementTaskDone(newActor);
+
+            // 13. 技能（按完整度随机保留）
+            if (state.skills != null && state.skills.Count > 0)
+            {
+                int restoreSkillCount = Mathf.RoundToInt(state.skills.Count * integrity);
+                var shuffledSkills = new List<string>(state.skills);
+                ShuffleList(shuffledSkills);
+                for (int i = 0; i < restoreSkillCount && i < shuffledSkills.Count; i++)
+                    SuperMechSkills.LearnSkill(newActor, shuffledSkills[i]);
+            }
+
+            // 14. 圣所权限（按完整度，平均分配到6圣所）
+            if (state.sanctuaryAuthority > 0)
+            {
+                int restoredAuth = Mathf.RoundToInt(state.sanctuaryAuthority * integrity);
+                int perSanctuary = Mathf.Max(0, restoredAuth / 6);
+                for (int i = 0; i < 6; i++)
+                    SuperMechSanctuary.AddAuthority(newActor, i, perSanctuary);
+            }
+
+            // 15. 自定义特质（按完整度随机保留）
+            if (state.traits != null && state.traits.Count > 0)
+            {
+                int restoreTraitCount = Mathf.RoundToInt(state.traits.Count * integrity);
+                var shuffledTraits = new List<string>(state.traits);
+                ShuffleList(shuffledTraits);
+                for (int i = 0; i < restoreTraitCount && i < shuffledTraits.Count; i++)
+                {
+                    var trait = AssetManager.traits.get(shuffledTraits[i]);
+                    if (trait != null) newActor.addTrait(trait);
+                }
+            }
+
+            // 16. 复活次数
             SuperMechSanctuary.SetReviveCount(newActor, state.reviveCount + 1);
 
             // 从信息态列表中移除（已复活）
             SuperMechInformationState.RemoveDeadState(state.actorId);
 
-            Debug.Log($"[超神机械师] 复活成功: {state.name} (信息完整度{integrity:F0%}, 原阶位{state.rankIndex}→{restoredRank}, 消耗能量{cost:F0})");
+            Debug.Log($"[超神机械师] 复活成功: {state.name} (完整度{integrity:F0%}, 原阶位{state.rankIndex}→{restoredRank}, 神性{state.divinityLevel}, 遗力{state.legacyPower}, 技能{state.skills?.Count ?? 0}, 消耗能量{cost:F0})");
 
-            // v0.29.0 UI重构：推送复活事件到原生事件日志
+            // 推送复活事件到原生事件日志
             int reviveCount = state.reviveCount + 1;
             string tPartial = LocalizedTextManager.getText("sm_res_partial_lost");
             string tFull = LocalizedTextManager.getText("sm_res_full_keep");
