@@ -9,6 +9,19 @@ namespace SuperMech.Code
     {
         private static int _tickCounter = 0;
         private static float _lastSaveTime = 0f;
+        private static readonly System.Collections.Generic.Dictionary<string, int> _failCount = new();
+
+        private static void SafeRun(string name, System.Action action)
+        {
+            try { action(); }
+            catch (System.Exception e)
+            {
+                _failCount.TryGetValue(name, out int c);
+                _failCount[name] = c + 1;
+                if (c < 5 || c % 50 == 0)
+                    Debug.LogError($"[超神机械师] 子系统[{name}]异常(第{c + 1}次): {e.Message}");
+            }
+        }
 
         public static void Tick()
         {
@@ -17,63 +30,54 @@ namespace SuperMech.Code
             _tickCounter++;
             int group = _tickCounter % 4;
 
-            try
+            if (group == 0)
             {
-                if (group == 0)
-                {
-                    SuperMechQi.TickQiLevels();
-                    SuperMechCorePower.TickCorePowers();
-                    SuperMechQiAttribute.TickAutoAssign();
-                    SuperMechRefinement.TickRefinement();
-                    SuperMechRefinement.TickCultivation();
-                    SuperMechCustomStats.TickSync();
-                    SuperMechCrossMod.TickEnergySync();
-                }
-                else if (group == 1)
-                {
-                    SuperMechAdvancement.TickAutoAwakening();
-                    SuperMechAdvancement.TickPromotions();
-                    SuperMechPotential.TickPotential();
-                    SuperMechSubClass.TickSubLevels();
-                    SuperMechAwakened.TickXp();
-                    SuperMechAwakened.TickAutoPlay();
-                    SuperMechAdvancementTask.TickTasks();
-                    SuperMechHeritage.TickHeritage();
-                    SuperMechKnowledgeSynergy.TickSynergy();
-                    SuperMechMechFusion.TickFusion();
-                    SuperMechSkills.TickAutoLearnAll();
-                }
-                else if (group == 2)
-                {
-                    SuperMechIntuition.TickIntuition();
-                    SuperMechDivinity.TickNativeInsight();
-                    SuperMechTranscendence.TickLegacySense();
-                    SuperMechTranscendence.TickAdvancementTask();
-                    SuperMechTranscendence.TickAutoAttempt();
-                    SuperMechInfoState.TickInfoState();
-                }
-                else
-                {
-                    SuperMechMageTower.TickMageTowers();
-                    SuperMechRelic.TickRelicDrops();
-                    SuperMechFavorite.TickAutoFavorite();
-                    SuperMechAura.TickAura();
-                    SuperMechDimension.TickDimensionBuffs();
-                }
+                SafeRun("气力等级", () => SuperMechQi.TickQiLevels());
+                SafeRun("核心神力", () => SuperMechCorePower.TickCorePowers());
+                SafeRun("属性自动分配", () => SuperMechQiAttribute.TickAutoAssign());
+                SafeRun("精炼", () => SuperMechRefinement.TickRefinement());
+                SafeRun("修炼", () => SuperMechRefinement.TickCultivation());
+                SafeRun("自定义属性同步", () => SuperMechCustomStats.TickSync());
+                SafeRun("跨模组能量同步", () => SuperMechCrossMod.TickEnergySync());
             }
-            catch (System.Exception e)
+            else if (group == 1)
             {
-                Debug.LogError($"[超神机械师] 统一tick异常(group={group}): {e.Message}\n{e.StackTrace}");
+                SafeRun("自动觉醒", () => SuperMechAdvancement.TickAutoAwakening());
+                SafeRun("阶位晋升", () => SuperMechAdvancement.TickPromotions());
+                SafeRun("潜能", () => SuperMechPotential.TickPotential());
+                SafeRun("职业子等级", () => SuperMechSubClass.TickSubLevels());
+                SafeRun("觉醒经验", () => SuperMechAwakened.TickXp());
+                SafeRun("自动玩法", () => SuperMechAwakened.TickAutoPlay());
+                SafeRun("进阶任务", () => SuperMechAdvancementTask.TickTasks());
+                SafeRun("传承", () => SuperMechHeritage.TickHeritage());
+                SafeRun("知识协同", () => SuperMechKnowledgeSynergy.TickSynergy());
+                SafeRun("机械融合", () => SuperMechMechFusion.TickFusion());
+                SafeRun("技能自动学习", () => SuperMechSkills.TickAutoLearnAll());
+            }
+            else if (group == 2)
+            {
+                SafeRun("直觉", () => SuperMechIntuition.TickIntuition());
+                SafeRun("神性洞察", () => SuperMechDivinity.TickNativeInsight());
+                SafeRun("传承感知", () => SuperMechTranscendence.TickLegacySense());
+                SafeRun("神化任务", () => SuperMechTranscendence.TickAdvancementTask());
+                SafeRun("自动神化尝试", () => SuperMechTranscendence.TickAutoAttempt());
+                SafeRun("信息状态", () => SuperMechInfoState.TickInfoState());
+            }
+            else
+            {
+                SafeRun("法师塔", () => SuperMechMageTower.TickMageTowers());
+                SafeRun("遗物掉落", () => SuperMechRelic.TickRelicDrops());
+                SafeRun("自动收藏", () => SuperMechFavorite.TickAutoFavorite());
+                SafeRun("光环", () => SuperMechAura.TickAura());
+                SafeRun("维度增益", () => SuperMechDimension.TickDimensionBuffs());
             }
 
             float now = Time.time;
             if (now - _lastSaveTime >= 60f)
             {
                 _lastSaveTime = now;
-                try { SuperMechSaveData.Save(); }
-                catch (System.Exception e) { Debug.LogError($"[超神机械师] 自动存档异常: {e.Message}"); }
-                try { CleanupDeadActors(); }
-                catch (System.Exception e) { Debug.LogError($"[超神机械师] 死单位清理异常: {e.Message}"); }
+                SafeRun("自动存档", () => SuperMechSaveData.Save());
+                SafeRun("死单位清理", () => CleanupDeadActors());
             }
         }
 

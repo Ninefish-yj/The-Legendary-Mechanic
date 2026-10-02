@@ -3860,5 +3860,6 @@
   "sm_ui_permission": "权限",
   "sm_ui_message_board": "留言板",
   "sm_sanctuary_974_description": "进入圣所，获取知识传承和神性蜕变",
-  "sm_rank_title_description": "查看超能者能级排行榜"
+  "sm_rank_title_description": "查看超能者能级排行榜",
+  "sm_ui_select_sanctuary": "← 选择一个圣所查看详情"
 }
