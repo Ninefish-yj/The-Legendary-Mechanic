@@ -80,6 +80,7 @@ namespace SuperMech.Code
                 {
                     if (SuperMechInfoState.TryShield(target))
                     {
+                        SMCombatFeedback.OnInfoShield(target);
                         return false;
                     }
                 }
@@ -127,6 +128,7 @@ namespace SuperMech.Code
                         // 精神攻击穿甲：忽略目标护甲，直接造成伤害（比例可配置）
                         float armorPierceDamage = pDamage * SuperMechConfig.SpiritPierceRatio;
                         target.data.health -= (int)armorPierceDamage;
+                        SMCombatFeedback.OnSpiritPierce(target);
                     }
                 }
 
@@ -141,6 +143,7 @@ namespace SuperMech.Code
                     {
                         float counterDamage = pDamage * (totalCounter - 1f);
                         target.data.health -= (int)counterDamage;
+                        SMCombatFeedback.OnAttributeCounter(target, totalCounter > 1f);
                     }
                 }
 
@@ -172,6 +175,7 @@ namespace SuperMech.Code
                         {
                             float suppressDamage = pDamage * dmgBonus;
                             target.data.health -= (int)suppressDamage;
+                            SMCombatFeedback.OnSuppression(target, ratio);
                         }
 
                         // 维度2：命中压制（高能级攻击低能级时，低能级闪避率降低）
@@ -226,6 +230,7 @@ namespace SuperMech.Code
                         {
                             // 完全闪避：恢复全部伤害并跳过后续处理
                             target.data.health += (int)pDamage;
+                            SMCombatFeedback.OnDodge(target);
                             return true; // 继续执行原版逻辑（伤害已被恢复）
                         }
                     }

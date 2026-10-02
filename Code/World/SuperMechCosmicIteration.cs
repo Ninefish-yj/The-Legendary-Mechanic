@@ -244,6 +244,10 @@ namespace SuperMech.Code
             CurrentIteration++;
 
             Debug.Log($"[超神机械师] 宇宙大重启! 进入第{CurrentIteration}轮迭代，遗产碎片{_pendingHeritage.retainedFragments}");
+
+            // v0.29.0 UI重构：推送宇宙迭代事件到原生事件日志
+            float retentionRate = CalculateRetentionRate();
+            SMEventLogger.LogIteration(CurrentIteration, retentionRate);
         }
 
         /// <summary>计算实际遗产保留率（随机波动+圣所权限加成）

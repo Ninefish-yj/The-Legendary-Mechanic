@@ -98,6 +98,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.29.0** | UI重构第三阶段：新增SMCombatFeedback.cs战斗视觉反馈封装类（6种特效：能级压制/精神穿甲/属性克制/闪避/信息态护盾，调用EffectsLibrary.spawnAtTileRandomScale生成原生特效）；在SuperMechCombatPatches.cs的5个触发点添加特效调用（信息态护盾格挡/精神攻击穿甲/气力属性克制/能级差分级压制/闪避压制）；将圣所访问/宇宙迭代大重启/超A复活三个剩余事件接入SMEventLogger推送原生事件日志；圣所地图标记暂不实现（原著中圣所是信息态存在，非物理建筑，需进一步研究地图标记方案） |
 | **v0.28.1** | UI优化：能级行显示缩短为"数值+阶位"短格式（如"24000欧纳（A级）"），移除过长的战力描述；新增GetShortText方法，原GetEvaluationText保留用于tooltip等需要详细描述的场景 |
 | **v0.28.0** | UI重构第二阶段：修复4个配置项注册缺失（qi_attribute_counter/qi_display_decimals/cross_mod_energy_sync/cross_mod_energy_ratio）及3个缺失setter；新增SMCollapsibleSection.cs折叠组件（静态字典状态持久化+标题行点击切换）；重构SuperMechUnitWindow.cs使用折叠组件分组显示（核心档案默认展开/战斗数值默认折叠/特殊与入口默认折叠）；将觉醒/阶位提升/知识融合三个核心事件接入SMEventLogger推送原生事件日志；新增3条折叠组标题本地化文本 |
 | **v0.27.0** | UI重构启动版：完成阶段一反编译对照（UnitWindow/StatsWindow/WorldLog原生结构确认）；新增SMEventLogger.cs事件日志封装（6类日志资产：觉醒/晋升/融合/圣所/迭代/复活，推送到原生事件日志）；在Main.cs初始化事件日志系统；新增6条事件日志本地化文本；现有Tab栏（SuperMechPowers.cs）已符合原生融合架构 |

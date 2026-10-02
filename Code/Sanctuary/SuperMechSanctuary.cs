@@ -415,6 +415,10 @@ namespace SuperMech.Code
                 Debug.Log($"[超神机械师] {a.name} 访问第{sanctuaryIndex + 1}圣所（{GetSanctuaryTypeName(sanctuaryIndex)}）");
             }
 
+            // v0.29.0 UI重构：推送圣所访问事件到原生事件日志
+            string sanctuaryName = GetSanctuaryTypeName(sanctuaryIndex);
+            SMEventLogger.LogSanctuaryVisit(a, sanctuaryIndex, sanctuaryName);
+
             Save();
             return true;
         }

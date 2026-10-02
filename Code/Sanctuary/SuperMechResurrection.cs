@@ -154,6 +154,12 @@ namespace SuperMech.Code
             SuperMechInformationState.RemoveDeadState(state.actorId);
 
             Debug.Log($"[超神机械师] 复活成功: {state.name} (信息完整度{integrity:F0%}, 原阶位{state.rankIndex}→{restoredRank}, 消耗能量{cost:F0})");
+
+            // v0.29.0 UI重构：推送复活事件到原生事件日志
+            int reviveCount = state.reviveCount + 1;
+            string lostAbilities = integrity < 1f ? $"信息完整度{integrity:F0%}，部分能力丢失" : "信息完整，能力全部保留";
+            SMEventLogger.LogResurrection(newActor, reviveCount, lostAbilities);
+
             return newActor;
         }
 
