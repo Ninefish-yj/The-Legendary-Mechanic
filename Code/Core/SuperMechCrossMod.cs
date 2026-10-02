@@ -254,22 +254,25 @@ namespace SuperMech.Code
             }
         }
 
-        // 原著能级公式(ch3/ch51/ch1039/ch1203/ch1402)：
-        // "气力是超能者的基础，很大部分决定了能级与位阶"
-        // 三点回归拟合：能级 = 22 × 气力^0.67 + 身体素质×0.15，全局误差±5.7%
-        // Lv21: 气力182075→能级78000(ch1039), Lv25: 293475→98510(ch1203), Lv29: 481200→148800(ch1402)
-        // 气力边际效益递减（高等级时技能/知识/装备贡献增大）
-        // 技能/知识/装备/职业的加成已包含在damage/health等属性中
+        // 原著能级公式(ch3)：气力为核心，技能/知识/装备综合加成，曲线上升
+        // 统一逻辑：能级 = 基础能级 × (1 + 综合加成率)
+        // 基础能级 = 18 × 能量^0.67（和超神机械师一致）
+        // 综合加成率通过damage/health/speed/armor等属性估算（技能/装备加成已反映在属性中）
         public static float GetUniversalPowerLevel(Actor a)
         {
             if (a == null || a.stats == null) return 0f;
 
             float energyStrength = GetEnergyStrength(a);
-            float bodyPower = GetBodyCombatPower(a);
+            if (energyStrength <= 0f) return 0f;
 
-            // 幂函数拟合：气力^0.67，高等级边际效益递减
-            float qiOnar = 22f * Mathf.Pow(Mathf.Max(1f, energyStrength), 0.67f);
-            return qiOnar + bodyPower * 0.15f;
+            // 基础能级（幂函数，曲线上升）
+            float baseOnar = 18f * Mathf.Pow(Mathf.Max(1f, energyStrength), 0.67f);
+
+            // 综合加成率：通过身体素质属性估算（技能/知识/装备加成已反映在属性中）
+            float bodyPower = GetBodyCombatPower(a);
+            float bonusRate = Mathf.Min(0.5f, bodyPower * 0.15f / Mathf.Max(1f, baseOnar));
+
+            return baseOnar * (1f + bonusRate);
         }
 
         // 气力强度：优先用本模组气力，其次用其他模组能量
