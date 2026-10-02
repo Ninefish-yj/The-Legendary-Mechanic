@@ -64,11 +64,15 @@ namespace SuperMech.Code
 
         private void BuildUI(string titleKey)
         {
-            // 背景：程序化9-slice面板（半透明深灰蓝+冰蓝细边框+切角）
+            // 背景：纯色半透明深灰蓝
             _bgImage = gameObject.AddComponent<Image>();
-            _bgImage.sprite = SMUiSkin.Panel;
-            _bgImage.type = Image.Type.Sliced;
-            _bgImage.fillCenter = true;
+            _bgImage.color = SMUiSkin.BgColor;
+
+            // 边框：4个冰蓝细边
+            AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, 1), new Vector2(0, -1));
+            AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, 1), new Vector2(0, 0));
+            AddBorder("LeftBorder", new Vector2(0, 0), new Vector2(0, 1), new Vector2(0, 0.5f), new Vector2(1, 0), new Vector2(0, 0));
+            AddBorder("RightBorder", new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(1, 0), new Vector2(-1, 0));
 
             // 标题栏背景
             var titleBarGo = new GameObject("TitleBar");
@@ -78,10 +82,9 @@ namespace SuperMech.Code
             titleBarRect.anchorMax = new Vector2(1, 1);
             titleBarRect.pivot = new Vector2(0.5f, 1);
             titleBarRect.sizeDelta = new Vector2(0, TitleBarHeight);
-            titleBarRect.anchoredPosition = new Vector2(0, -2);
+            titleBarRect.anchoredPosition = new Vector2(0, -1);
             var titleBarImg = titleBarGo.AddComponent<Image>();
-            titleBarImg.sprite = SMUiSkin.TitleBar;
-            titleBarImg.type = Image.Type.Sliced;
+            titleBarImg.color = new Color(0.05f, 0.07f, 0.10f, 0.95f);
             var titleDrag = titleBarGo.AddComponent<SMDragHandler>();
             titleDrag.Target = this;
 
@@ -103,8 +106,7 @@ namespace SuperMech.Code
             closeRect.sizeDelta = new Vector2(CloseBtnSize, CloseBtnSize);
             closeRect.anchoredPosition = new Vector2(-CloseBtnMargin, -2);
             var closeImg = closeGo.AddComponent<Image>();
-            closeImg.sprite = SMUiSkin.ButtonNormalSprite;
-            closeImg.type = Image.Type.Sliced;
+            closeImg.color = SMUiSkin.ButtonNormal;
             _closeBtn = closeGo.AddComponent<Button>();
             var closeColors = _closeBtn.colors;
             closeColors.normalColor = Color.white;
@@ -151,6 +153,20 @@ namespace SuperMech.Code
             {
                 Rect.anchoredPosition = localPos - _dragOffset;
             }
+        }
+
+        private void AddBorder(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPos)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = pivot;
+            rect.sizeDelta = sizeDelta;
+            rect.anchoredPosition = anchoredPos;
+            var img = go.AddComponent<Image>();
+            img.color = SMUiSkin.BorderColor;
         }
 
         public void Close()
