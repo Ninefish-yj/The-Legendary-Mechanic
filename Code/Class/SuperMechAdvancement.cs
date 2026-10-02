@@ -10,13 +10,59 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _exactRank = new Dictionary<long, int>();
         private static readonly Dictionary<long, int> _appliedRankIdx = new Dictionary<long, int>();
 
-        // 原著能级(ch3)：气力为核心，身体素质为辅助，技能/知识/装备通过属性间接体现
+        // 原著能级(ch3)：欧纳博士开创，气力为核心+技能/知识/装备/专长综合加成，曲线上升
+        // 原著数据点：Lv21气力182075→能级78000, Lv25气力293475→98510, Lv29气力481200→148800
         public static float CalcOnar(Actor a)
         {
             if (a == null) return 0;
-            float power = SuperMechCrossMod.GetUniversalPowerLevel(a);
-            if (power <= 0) return 0;
-            return power * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
+
+            // 优先用超神机械师自己的气力体系
+            float qi = SuperMechQi.GetQiMax(a);
+            if (qi <= 0f)
+            {
+                // 没有超神机械师气力的单位，用跨模组通用能量
+                float power = SuperMechCrossMod.GetUniversalPowerLevel(a);
+                if (power <= 0) return 0;
+                return power * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
+            }
+
+            // 气力能级（核心，幂函数曲线上升）
+            float baseOnar = 18f * Mathf.Pow(Mathf.Max(1f, qi), 0.67f);
+
+            // 技能加成率：已学技能的倍率加成
+            float skillBonus = 0f;
+            var skills = SuperMechSkills.GetLearned(a);
+            if (skills != null)
+            {
+                foreach (var s in skills)
+                {
+                    skillBonus += (s.dmgMul - 1f) + (s.hpMul - 1f) + (s.speedMul - 1f);
+                }
+                skillBonus *= 0.06f;
+            }
+
+            // 知识加成率：已学知识数量
+            float knowledgeBonus = 0f;
+            string[] prefixes = { "mech", "martial", "power", "magic", "mind" };
+            int knowledgeCount = 0;
+            foreach (var p in prefixes)
+                knowledgeCount += SuperMechKnowledge.GetUnlockedCount(a, p);
+            knowledgeBonus = knowledgeCount * 0.003f;
+
+            // 装备加成率：背包装备数量
+            float equipBonus = 0f;
+            var bag = SuperMechEquipBag.GetBag(a);
+            if (bag != null) equipBonus = bag.Count * 0.01f;
+
+            // 专长加成率：专长数量
+            float perkBonus = 0f;
+            var perks = SuperMechPerks.GetPerks(a);
+            if (perks != null) perkBonus = perks.Count * 0.005f;
+
+            // 综合加成率（上限50%，避免膨胀）
+            float totalBonus = Mathf.Min(0.5f, skillBonus + knowledgeBonus + equipBonus + perkBonus);
+
+            return baseOnar * (1f + totalBonus) * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
         }
 
         public static void TickAutoAwakening()
