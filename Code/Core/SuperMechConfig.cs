@@ -169,10 +169,10 @@ namespace SuperMech.Code
                 new ItemInfo("spirit_pierce_ratio", "sm_config_624", "sm_config_625"),
                 new ItemInfo("fusion_single_mul_cap", "sm_config_626", "sm_config_627"),
                 new ItemInfo("fusion_total_mul_cap", "sm_config_628", "sm_config_629"),
-                new ItemInfo("qi_attribute_counter", "sm_config_630", "sm_config_631"),
-                new ItemInfo("qi_display_decimals", "sm_config_632", "sm_config_633"),
-                new ItemInfo("cross_mod_energy_sync", "sm_config_634", "sm_config_635"),
-                new ItemInfo("cross_mod_energy_ratio", "sm_config_636", "sm_config_637"),
+                new ItemInfo("qi_attribute_counter", "sm_config_657", "sm_config_658"),
+                new ItemInfo("qi_display_decimals", "sm_config_659", "sm_config_660"),
+                new ItemInfo("cross_mod_energy_sync", "sm_config_661", "sm_config_662"),
+                new ItemInfo("cross_mod_energy_ratio", "sm_config_663", "sm_config_664"),
             };
             foreach (var it in items)
             {
