@@ -77,13 +77,7 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // 窗口背景
-            var bg = transform.Find("Background");
-            if (bg != null)
-            {
-                var bgRect = bg.GetComponent<RectTransform>();
-                if (bgRect != null) bgRect.sizeDelta = new Vector2(580, 420);
-            }
+            // 窗口背景由SMUguiWindow统一控制，不在此设置尺寸
 
             // === 左栏：筛选（宽度120）===
             var leftGo = new GameObject("LeftPanel");

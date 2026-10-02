@@ -24,6 +24,11 @@ namespace SuperMech.Code
         private const int CloseBtnSize = 26;
         private const int CloseBtnMargin = 6;
         private const int BorderWidth = 2;
+        private const int ResizeHandleSize = 16;
+
+        // 伸缩限制
+        public Vector2 MinSize = new Vector2(400, 300);
+        public Vector2 MaxSize = new Vector2(1200, 800);
 
         public static Canvas GetCanvas()
         {
@@ -134,6 +139,28 @@ namespace SuperMech.Code
             Content.pivot = new Vector2(0.5f, 0.5f);
             Content.offsetMin = new Vector2(ContentMargin + BorderWidth, ContentMargin + BorderWidth);
             Content.offsetMax = new Vector2(-(ContentMargin + BorderWidth), -(TitleBarHeight + ContentMargin + BorderWidth));
+
+            // 右下角伸缩手柄
+            var resizeGo = new GameObject("ResizeHandle");
+            resizeGo.transform.SetParent(transform, false);
+            var resizeRect = resizeGo.AddComponent<RectTransform>();
+            resizeRect.anchorMin = new Vector2(1, 0);
+            resizeRect.anchorMax = new Vector2(1, 0);
+            resizeRect.pivot = new Vector2(1, 0);
+            resizeRect.sizeDelta = new Vector2(ResizeHandleSize, ResizeHandleSize);
+            resizeRect.anchoredPosition = Vector2.zero;
+            var resizeImg = resizeGo.AddComponent<Image>();
+            resizeImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.3f);
+            var resizeHandler = resizeGo.AddComponent<SMResizeHandler>();
+            resizeHandler.Target = this;
+            // 伸缩手柄上的斜线纹理（用三条线表示）
+            var resizeText = SMUiSkin.MakeText(resizeGo.transform, "⤡", 12, TextAnchor.MiddleCenter);
+            resizeText.color = new Color(1, 1, 1, 0.6f);
+            var resizeTextRect = resizeText.GetComponent<RectTransform>();
+            resizeTextRect.anchorMin = Vector2.zero;
+            resizeTextRect.anchorMax = Vector2.one;
+            resizeTextRect.offsetMin = Vector2.zero;
+            resizeTextRect.offsetMax = Vector2.zero;
         }
 
         public void OnPointerDown(PointerEventData e)
@@ -172,6 +199,15 @@ namespace SuperMech.Code
             Destroy(gameObject);
         }
 
+        public void Resize(Vector2 delta)
+        {
+            if (Rect == null) return;
+            Vector2 newSize = Rect.sizeDelta + delta;
+            newSize.x = Mathf.Clamp(newSize.x, MinSize.x, MaxSize.x);
+            newSize.y = Mathf.Clamp(newSize.y, MinSize.y, MaxSize.y);
+            Rect.sizeDelta = newSize;
+        }
+
         public void SetTitle(string text)
         {
             if (_titleText != null) _titleText.text = text;
@@ -190,6 +226,27 @@ namespace SuperMech.Code
         public void OnDrag(PointerEventData e)
         {
             if (Target != null) Target.OnDrag(e);
+        }
+    }
+
+    public class SMResizeHandler : MonoBehaviour, IDragHandler, IPointerDownHandler
+    {
+        public SMUguiWindow Target;
+        private Vector2 _lastMousePos;
+
+        public void OnPointerDown(PointerEventData e)
+        {
+            _lastMousePos = e.position;
+            if (Target != null) Target.transform.SetAsLastSibling();
+        }
+
+        public void OnDrag(PointerEventData e)
+        {
+            if (Target == null) return;
+            Vector2 delta = e.position - _lastMousePos;
+            _lastMousePos = e.position;
+            // 只在右下角拖拽时生效，x增加、y减少（屏幕坐标y向下为正）
+            Target.Resize(new Vector2(delta.x, -delta.y));
         }
     }
 }

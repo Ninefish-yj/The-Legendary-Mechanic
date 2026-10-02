@@ -23,7 +23,7 @@ namespace SuperMech.Code
             float spacing = 74;
 
             var btn1 = SMDraggableButton.Create("knowledge", "sm_ui_knowledge", "ui/Icons/iconBook", startX, startY);
-            btn1.OnClick = () => ToggleWindow("knowledge", "sm_ui_knowledge", 720, 520, DrawKnowledgeContent);
+            btn1.OnClick = () => ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent);
             _buttons["knowledge"] = btn1;
 
             var btn2 = SMDraggableButton.Create("bag", "sm_ui_bag", "ui/Icons/iconBackpack", startX + spacing, startY);
@@ -31,30 +31,30 @@ namespace SuperMech.Code
             _buttons["bag"] = btn2;
 
             var btn3 = SMDraggableButton.Create("craft", "sm_ui_craft", "ui/Icons/iconHammer", startX + spacing * 2, startY);
-            btn3.OnClick = () => ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent);
+            btn3.OnClick = () => ToggleWindow("craft", "sm_ui_craft", 560, 420, DrawCraftContent);
             _buttons["craft"] = btn3;
 
             var btn4 = SMDraggableButton.Create("rank", "sm_ui_rank", "ui/Icons/iconCrown", startX + spacing * 3, startY);
-            btn4.OnClick = () => ToggleWindow("rank", "sm_ui_rank_window_title", 600, 460, DrawRankContent);
+            btn4.OnClick = () => ToggleWindow("rank", "sm_ui_rank_window_title", 620, 460, DrawRankContent);
             _buttons["rank"] = btn4;
 
             var btn5 = SMDraggableButton.Create("sanctuary", "sm_ui_sanctuary", "ui/Icons/iconBlessing", startX + spacing * 4, startY);
-            btn5.OnClick = () => ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 480, DrawSanctuaryContent);
+            btn5.OnClick = () => ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 460, DrawSanctuaryContent);
             _buttons["sanctuary"] = btn5;
         }
 
-        public static void OpenKnowledge() { SMKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 720, 520, DrawKnowledgeContent); }
-        public static void OpenKnowledge(Actor a) { SMKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 720, 520, DrawKnowledgeContent); }
+        public static void OpenKnowledge() { SMKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
+        public static void OpenKnowledge(Actor a) { SMKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
         public static void OpenBag() { SMBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
         public static void OpenBag(Actor a) { SMBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
-        public static void OpenFusion() { SMFusionView.OverrideActor = null; ToggleWindow("fusion", "sm_ui_fusion", 720, 520, DrawFusionContent); }
-        public static void OpenFusion(Actor a) { SMFusionView.OverrideActor = a; ToggleWindow("fusion", "sm_ui_fusion", 720, 520, DrawFusionContent); }
-        public static void OpenSpell() { SMSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 720, 520, DrawSpellContent); }
-        public static void OpenSpell(Actor a) { SMSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 720, 520, DrawSpellContent); }
-        public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
-        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 600, 460, DrawRankContent); }
-        public static void OpenSanctuary() { ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 480, DrawSanctuaryContent); }
-        public static void OpenResurrection() { ToggleWindow("resurrection", "sm_ui_resurrection", 600, 500, DrawResurrectionContent); }
+        public static void OpenFusion() { SMFusionView.OverrideActor = null; ToggleWindow("fusion", "sm_ui_fusion", 680, 500, DrawFusionContent); }
+        public static void OpenFusion(Actor a) { SMFusionView.OverrideActor = a; ToggleWindow("fusion", "sm_ui_fusion", 680, 500, DrawFusionContent); }
+        public static void OpenSpell() { SMSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
+        public static void OpenSpell(Actor a) { SMSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
+        public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 560, 420, DrawCraftContent); }
+        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 620, 460, DrawRankContent); }
+        public static void OpenSanctuary() { ToggleWindow("sanctuary", "sm_ui_sanctuary", 620, 460, DrawSanctuaryContent); }
+        public static void OpenResurrection() { ToggleWindow("resurrection", "sm_ui_resurrection", 620, 460, DrawResurrectionContent); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
         {
