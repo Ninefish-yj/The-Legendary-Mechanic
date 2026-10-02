@@ -171,10 +171,10 @@ namespace SuperMech.Code
                 new[] { Mage, MageAdv, MageHigh, MageTop, MageUlt });
             count += RegisterTree("mind", "sm_tree_mind",
                 new[] { "sm_know_258", "sm_know_259", "sm_know_260" },
-                new[] { Mind, MindAdv, MindHigh, MindTop, MindUlt });
+                new[] { Psi, PsiAdv, PsiHigh, PsiTop, PsiUlt });
             count += RegisterTree("psi", "sm_tree_psi",
                 new[] { "sm_know_261", "sm_know_262", "sm_know_263" },
-                new[] { Psi, PsiAdv, PsiHigh, PsiTop, PsiUlt });
+                new[] { Mind, MindAdv, MindHigh, MindTop, MindUlt });
 
         }
 
