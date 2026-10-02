@@ -90,7 +90,8 @@
 
 | 版本 | 主要更新 |
 |---|---|
-| **v0.30.0** | 里程碑版本：P0-P5全部完成。文档口径统一（25机制全完成/0待修复）；存档迁移框架（CurrentSaveVersion 1→2，MigrateSaveData）；跨模组适配版本检测（IsAvailable，目标模组未加载自动禁用）；Tick连续失败5次自动禁用；Harmony补丁评估（3个补丁均不适合迁移，空catch改为首次异常记录） |
+| **v0.31.0** | 世界引擎基础数据层：能级体系重构（SuperMechEnergyLevel，14阶阈值+评估描述）；气力层次系统（SuperMechQiLayer，Lv1~Lv10第六级分水岭）；知识融合配方三支五层（SuperMechKnowledgeRecipe，武装/能量/操控）；存档迁移v2→v3预留字段；新增33条本地化 |
+| **v0.30.0** | 里程碑版本：P0-P5全部完成。文档口径统一（25机制全完成）；存档迁移框架（MigrateSaveData）；跨模组适配版本检测（IsAvailable）；Tick连续失败5次自动禁用；Harmony补丁评估（3个均不适合迁移） |
 | **v0.29.2** | P5 Harmony补丁迁移评估完成：3个补丁均不适合迁移（UI扩展+战斗核心），Combat补丁空catch改为首次异常记录 |
 | **v0.29.1** | P0-P3完成：文档口径统一；存档版本号与兼容（MigrateSaveData）；跨模组适配版本检测（IsAvailable）；Tick失败计数与自动禁用（5次阈值） |
 | **v0.29.0** | UI根本修复：Mask alpha=0导致内容不显示（参考凡人修仙传UiKit，alpha=0.01）；神权栏按钮重写（CreateSimpleButton+tools layout，删除Harmony补丁）；圣所UI完善（顶部统计+左6圣所列表+右详情）；Tick异常隔离（SafeRun，单个子系统崩不影响全局）；废弃文件清理 |

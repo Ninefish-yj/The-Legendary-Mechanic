@@ -62,8 +62,7 @@ namespace SuperMech.Code
             }
 
             // === 数值组 ===
-            float onar = SuperMechAdvancement.CalcOnar(a);
-            ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), $"{onar:F0}{LocalizedTextManager.getText("sm_ui_onar_unit")}", null, InfoColor);
+            ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), SuperMechEnergyLevel.GetEvaluationText(a), null, InfoColor);
 
             float qi = SuperMechQi.GetQi(a);
             float qiMax = SuperMechQi.GetQiMax(a);
@@ -72,6 +71,14 @@ namespace SuperMech.Code
             string qiName = GetQiDisplayName(a);
             string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
             ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
+
+            // 气力层次
+            int qiLayer = SuperMechQiLayer.GetLayer(a);
+            if (qiLayer > 0)
+            {
+                string layerText = SuperMechQiLayer.GetLayerText(a);
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_qi_layer"), layerText, null, new Color(0.7f, 0.85f, 1f));
+            }
 
             int pot = SuperMechPotential.GetPotential(a);
             if (pot > 0)
