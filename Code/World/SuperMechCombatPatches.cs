@@ -7,6 +7,8 @@ namespace SuperMech.Code
     [HarmonyPatch]
     public static class SuperMechCombatPatches
     {
+        private static bool _prefixErrorLogged;
+        private static bool _postfixErrorLogged;
         private static readonly HashSet<AttackType> PhysicalAttacks = new HashSet<AttackType>
         {
             AttackType.Weapon,
@@ -74,8 +76,13 @@ namespace SuperMech.Code
                     }
                 }
             }
-            catch
+            catch (System.Exception e)
             {
+                if (!_prefixErrorLogged)
+                {
+                    _prefixErrorLogged = true;
+                    Debug.LogWarning($"[超神机械师] 战斗Prefix异常(仅记录首次): {e.Message}");
+                }
             }
 
             return true;
@@ -137,8 +144,13 @@ namespace SuperMech.Code
                     }
                 }
             }
-            catch
+            catch (System.Exception e)
             {
+                if (!_postfixErrorLogged)
+                {
+                    _postfixErrorLogged = true;
+                    Debug.LogWarning($"[超神机械师] 战斗Postfix异常(仅记录首次): {e.Message}");
+                }
             }
         }
     }
