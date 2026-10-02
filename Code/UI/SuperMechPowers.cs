@@ -65,18 +65,10 @@ namespace SuperMech.Code
                     var pb = PowerButtonCreator.CreateGodPowerButton(id, icon);
                     if (pb != null)
                     {
-                        // 窗口按钮：点击直接打开UGUI窗口，不需要再点地图
+                        // 窗口按钮：Window类型，点击直接开窗（由Harmony补丁SMPowerButtonWindowPatch处理）
                         if (id == OpenSanctuary || id == OpenRank)
                         {
                             pb.type = PowerButtonType.Window;
-                            var btn = pb.GetComponent<UnityEngine.UI.Button>();
-                            if (btn != null)
-                            {
-                                if (id == OpenSanctuary)
-                                    btn.onClick.AddListener(() => SMWindowManager.OpenSanctuary());
-                                else if (id == OpenRank)
-                                    btn.onClick.AddListener(() => SMWindowManager.OpenRank());
-                            }
                         }
                         _modTab.AddPowerButton("main", pb);
                         created++;
