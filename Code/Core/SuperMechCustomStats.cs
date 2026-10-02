@@ -76,19 +76,11 @@ namespace SuperMech.Code
         {
             var units = World.world.units.units_only_alive;
             if (units == null) return;
-            int processed = 0;
-            int maxTracked = SuperMechConfig.MaxTrackedActors;
             int errors = 0;
 
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                bool isAwakened = SuperMechTalent.HasTalent(a);
-                if (!isAwakened && processed >= maxTracked)
-                {
-                    if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue;
-                }
-                processed++;
                 try { SyncStats(a); }
                 catch (System.Exception e)
                 {
