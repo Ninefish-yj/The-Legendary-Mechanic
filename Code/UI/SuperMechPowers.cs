@@ -16,14 +16,12 @@ namespace SuperMech.Code
         public const string TabName = "SuperMech";
         private static bool _buttonsCreated;
         private static PowersTab _modTab;
-        private static readonly string[] PowerIds = { SummonAwakened, DisasterAlien, OpenSanctuary, OpenRank };
 
         public static void Register()
         {
+            // 只有需要点击地图的神力才注册GodPower
             AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");
             AddDisaster(DisasterAlien, "sm_powers_924");
-            AddSanctuaryPower(OpenSanctuary, "sm_sanctuary_974", "actor_traits/iconBlessing");
-            AddWindowPower(OpenRank, "sm_rank_title", "iconDivineLight", () => SMWindowManager.OpenRank());
         }
 
         public static void TryCreateButtons()
@@ -34,7 +32,6 @@ namespace SuperMech.Code
             // 创建独立的"超神机械师"Tab
             if (_modTab == null)
             {
-                // 用原版图标加载方式
                 Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight");
                 _modTab = TabManager.CreateTab(TabName, "sm_tab_title", "sm_tab_desc", tabIcon);
                 if (_modTab == null)
@@ -42,50 +39,89 @@ namespace SuperMech.Code
                     Debug.LogWarning("[超神机械师] 创建Tab失败，稍后重试");
                     return;
                 }
-                // NML标准流程：SetLayout → AddPowerButton → UpdateLayout
-                _modTab.SetLayout(new System.Collections.Generic.List<string> { "main" });
+                _modTab.SetLayout(new System.Collections.Generic.List<string> { "tools" });
+                _modTab.UpdateLayout();
                 Debug.Log("[超神机械师] 独立Tab创建成功");
             }
 
             int created = 0;
-            foreach (string id in PowerIds)
-            {
-                if (PowerButton.get(id) != null) continue;
-                GodPower godPower = AssetManager.powers.get(id);
-                if (godPower == null) continue;
 
+            // 1. 召唤降临者（需要点击地图，用GodPower按钮）
+            if (PowerButton.get(SummonAwakened) == null && AssetManager.powers.get(SummonAwakened) != null)
+            {
                 try
                 {
-                    // 用原版GodPower的图标加载方式
-                    Sprite icon = godPower.getIconSprite();
-                    if (icon == null)
-                    {
-                        icon = SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    }
-                    var pb = PowerButtonCreator.CreateGodPowerButton(id, icon);
+                    Sprite icon = AssetManager.powers.get(SummonAwakened).getIconSprite()
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateGodPowerButton(SummonAwakened, icon);
+                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
+            }
+
+            // 2. 异化之灾（需要点击地图，用GodPower按钮）
+            if (PowerButton.get(DisasterAlien) == null && AssetManager.powers.get(DisasterAlien) != null)
+            {
+                try
+                {
+                    Sprite icon = AssetManager.powers.get(DisasterAlien).getIconSprite()
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateGodPowerButton(DisasterAlien, icon);
+                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异化按钮失败: {e.Message}"); }
+            }
+
+            // 3. 圣所（窗口按钮，用SimpleButton直接绑定Action）
+            if (PowerButton.get(OpenSanctuary) == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("actor_traits/iconBlessing")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton(OpenSanctuary, () => SMWindowManager.OpenSanctuary(), icon);
                     if (pb != null)
                     {
-                        // 窗口按钮：Window类型，点击直接开窗（由Harmony补丁SMPowerButtonWindowPatch处理）
-                        if (id == OpenSanctuary || id == OpenRank)
-                        {
-                            pb.type = PowerButtonType.Window;
-                        }
-                        _modTab.AddPowerButton("main", pb);
-                        created++;
+                        SetupTooltip(pb, "sm_sanctuary_974", "sm_sanctuary_975");
+                        _modTab.AddPowerButton("tools", pb); created++;
                     }
                 }
-                catch (System.Exception e)
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 圣所按钮失败: {e.Message}"); }
+            }
+
+            // 4. 阶位排行榜（窗口按钮，用SimpleButton直接绑定Action）
+            if (PowerButton.get(OpenRank) == null)
+            {
+                try
                 {
-                    Debug.LogWarning($"[超神机械师] 创建按钮{id}失败: {e.Message}");
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton(OpenRank, () => SMWindowManager.OpenRank(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_rank_title", "sm_rank_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
                 }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 阶位按钮失败: {e.Message}"); }
             }
 
             if (created > 0)
             {
                 _modTab.UpdateLayout();
+                Debug.Log($"[超神机械师] 神权栏按钮创建完成: {created}个");
             }
 
             _buttonsCreated = true;
+        }
+
+        private static void SetupTooltip(PowerButton btn, string nameKey, string descKey)
+        {
+            if (btn == null) return;
+            LocalizedTextManager.add("power_" + btn.gameObject.name,
+                LocalizedTextManager.getText(nameKey), pReplace: true);
+            LocalizedTextManager.add("power_" + btn.gameObject.name + "_desc",
+                LocalizedTextManager.getText(descKey), pReplace: true);
         }
 
         private static void AddAwakenedPower(string id, string name, string icon)
@@ -110,6 +146,8 @@ namespace SuperMech.Code
                         a.addTrait("sm_rank_00_f");
                     SuperMechAdvancement.SetExactRank(a, 0);
                     SuperMechSpecialty.AssignRandomSpecialty(a);
+                    SuperMechQi.SetQi(a, 100f);
+                    SuperMechQi.SetQiMax(a, 100f);
                     Debug.Log($"[超神机械师] 召唤降临者：{a.name}（机械系Lv1）");
                 }
                 return true;
@@ -143,56 +181,6 @@ namespace SuperMech.Code
                 return true;
             };
             AssetManager.powers.add(p);
-        }
-
-        private static void AddSanctuaryPower(string id, string name, string icon)
-        {
-            var p = new GodPower
-            {
-                id = id,
-                name = name,
-                path_icon = icon,
-                rank = PowerRank.Rank1_common,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = true
-            };
-            p.click_action += (tile, powerId) =>
-            {
-                SMWindowManager.OpenSanctuary();
-                return true;
-            };
-            AssetManager.powers.add(p);
-            LocalizedTextManager.add("power_" + id, LocalizedTextManager.getText(name), pReplace: true);
-            LocalizedTextManager.add("power_" + id + "_desc",
-                LocalizedTextManager.getText("sm_sanctuary_975"), pReplace: true);
-        }
-
-        private static void AddWindowPower(string id, string name, string icon, System.Action onOpen)
-        {
-            var p = new GodPower
-            {
-                id = id,
-                name = name,
-                path_icon = icon,
-                rank = PowerRank.Rank1_common,
-                force_map_mode = MetaType.None,
-                ignore_fast_spawn = true,
-                hold_action = false,
-                unselect_when_window = true,
-                requires_premium = true
-            };
-            p.click_action += (tile, powerId) =>
-            {
-                onOpen?.Invoke();
-                return true;
-            };
-            AssetManager.powers.add(p);
-            LocalizedTextManager.add("power_" + id, LocalizedTextManager.getText(name), pReplace: true);
-            LocalizedTextManager.add("power_" + id + "_desc",
-                LocalizedTextManager.getText("sm_rank_subtitle"), pReplace: true);
         }
     }
 }
