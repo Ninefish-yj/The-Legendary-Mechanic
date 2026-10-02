@@ -13,8 +13,15 @@ namespace SuperMech.Code
 
         void Awake()
         {
-            BuildLayout();
-            RefreshList();
+            try
+            {
+                BuildLayout();
+                RefreshList();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] SMKnowledgeView初始化失败: " + e);
+            }
         }
 
         private void BuildLayout()

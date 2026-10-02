@@ -7,7 +7,8 @@ namespace SuperMech.Code
     {
         void Awake()
         {
-            BuildLayout();
+            try { BuildLayout(); }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] View初始化失败: " + e); }
         }
 
         private void BuildLayout()
@@ -33,8 +34,8 @@ namespace SuperMech.Code
     {
         void Awake()
         {
-            BuildLayout();
-            RefreshRank();
+            try { BuildLayout(); RefreshRank(); }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] RankView初始化失败: " + e); }
         }
 
         private void BuildLayout()
@@ -116,7 +117,8 @@ namespace SuperMech.Code
     {
         void Awake()
         {
-            BuildLayout();
+            try { BuildLayout(); }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] View初始化失败: " + e); }
         }
 
         private void BuildLayout()

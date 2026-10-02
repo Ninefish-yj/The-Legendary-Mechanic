@@ -23,12 +23,7 @@ namespace SuperMech.Code
         public static Canvas GetCanvas()
         {
             if (_canvas != null) return _canvas;
-            var existing = FindObjectOfType<Canvas>();
-            if (existing != null && existing.renderMode == RenderMode.ScreenSpaceOverlay)
-            {
-                _canvas = existing;
-                return _canvas;
-            }
+            // 总是创建独立Canvas，确保sortingOrder最高，不依赖WorldBox的Canvas
             var go = new GameObject("SM_Canvas");
             _canvas = go.AddComponent<Canvas>();
             _canvas.renderMode = RenderMode.ScreenSpaceOverlay;
