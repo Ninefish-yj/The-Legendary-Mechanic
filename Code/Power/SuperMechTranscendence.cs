@@ -230,14 +230,14 @@ namespace SuperMech.Code
                     SuperMechAdvancement.SetExactRank(a, 13);
                     // 原著ch1401-1402：神化进阶时吸收四位帮手气力+超神遗力燃烧，
                     // 触发两次种族进化，气力境界加成属性变更，气力境界直接跃升
-                    // 突破时气力等级直接+1（设置到下一级阈值以上），模拟境界跃升
+                    // 突破时气力至少+70000（原著明确加了70900），且确保达到下一级阈值
                     float curQi = SuperMechQi.GetQi(a);
                     int curLv = SuperMechQi.GetLevel(curQi);
                     int nextLv = Mathf.Min(curLv + 1, SuperMechQi.Thresholds.Length - 1);
                     float nextThreshold = SuperMechQi.Thresholds[nextLv];
-                    float targetQi = nextThreshold + 1000f; // 超过下一级阈值，确保升级
+                    float targetQi = Mathf.Max(curQi + 70000f, nextThreshold + 1000f);
                     SuperMechQi.SetQi(a, targetQi);
-                    SuperMechQi.AddQiMax(a, targetQi - curQi + 50000f); // 上限同步提升
+                    SuperMechQi.AddQiMax(a, targetQi - curQi + 50000f);
                     var stats = SuperMechStats.Of(a);
                     if (stats != null)
                     {
@@ -246,7 +246,7 @@ namespace SuperMech.Code
                         stats["health"] = (stats["health"]) + 5000f;
                         stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) + 0.5f;
                     }
-                    Debug.Log($"[超神机械师] {a.name} 神化进阶成功！气力境界从Lv{curLv}跃升至Lv{nextLv}，突破超神级！！！");
+                    Debug.Log($"[超神机械师] {a.name} 神化进阶成功！气力从{curQi:F0}(Lv{curLv})增至{targetQi:F0}(Lv{nextLv})，突破超神级！！！");
                     return true;
                 }
                 else
