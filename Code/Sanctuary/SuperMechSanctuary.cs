@@ -425,7 +425,8 @@ namespace SuperMech.Code
         {
             float ratio = GetSanctuaryTimeRatio(a, sanctuaryIndex);
             int outsideTime = Mathf.RoundToInt(1f / ratio);
-            return $"圣所内1小时 = 外界{outsideTime}小时";
+            string tTimeRatio = LocalizedTextManager.getText("sm_san_time_ratio");
+            return string.Format(tTimeRatio, outsideTime);
         }
 
         public static void Register()

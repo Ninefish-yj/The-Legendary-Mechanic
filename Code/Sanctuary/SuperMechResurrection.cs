@@ -157,7 +157,9 @@ namespace SuperMech.Code
 
             // v0.29.0 UI重构：推送复活事件到原生事件日志
             int reviveCount = state.reviveCount + 1;
-            string lostAbilities = integrity < 1f ? $"信息完整度{integrity:F0%}，部分能力丢失" : "信息完整，能力全部保留";
+            string tPartial = LocalizedTextManager.getText("sm_res_partial_lost");
+            string tFull = LocalizedTextManager.getText("sm_res_full_keep");
+            string lostAbilities = integrity < 1f ? string.Format(tPartial, integrity * 100) : tFull;
             SMEventLogger.LogResurrection(newActor, reviveCount, lostAbilities);
 
             return newActor;

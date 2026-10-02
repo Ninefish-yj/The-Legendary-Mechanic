@@ -176,7 +176,10 @@ namespace SuperMech.Code
             if (cap < 999)
                 text += $"Lv{a.data.level}/{cap}";
             if (trigger > 0)
-                text += (text.Length > 0 ? "，" : "") + $"转职需总等级{trigger}";
+            {
+                string tNeedLevel = LocalizedTextManager.getText("sm_stage_need_level");
+                text += (text.Length > 0 ? "，" : "") + string.Format(tNeedLevel, trigger);
+            }
             return text;
         }
 

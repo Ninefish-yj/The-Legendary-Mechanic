@@ -98,6 +98,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.32.7** | 本地化全面修复：扫描并修复113处UI硬编码中文。涉及SMOtherViews（圣所统计/详情）、SMResurrectionView（复活面板）、SMFusionView（融合详情）、SMSpellView（法术详情）、SuperMechCombatPatches（压制等级描述）、SuperMechCosmicIteration（迭代阶段/统计）、SuperMechCivilizationData（文明摘要）、SuperMechStage（转职提示）、SuperMechSanctuary（时间比例）、SuperMechResurrection（复活描述）等10个文件，新增80+条本地化文本 |
 | **v0.32.6** | Bug修复：修复配置项名称显示错误。原因是v0.28.0新增的4个配置项（qi_attribute_counter/qi_display_decimals/cross_mod_energy_sync/cross_mod_energy_ratio）使用了sm_config_630~637作为本地化key，但这些key已被其他配置项占用，导致显示为"X(无上限)"等错误文本。已将key重新分配为sm_config_657~664，并添加正确的中文本地化文本 |
 | **v0.32.5** | Bug修复：修复历史系统（事件日志）不运作的问题。添加延迟初始化机制（TryInit）：OnModLoad时若world_log_library未就绪则标记延迟，在Update中持续重试直到注册成功；所有7类Log方法添加try-catch异常保护，防止HistoryHud.instance为null时抛异常；在Main.cs Update中调用TryInit() |
 | **v0.32.4** | UI修复：修复单位面板折叠功能点击无效的问题。原因是KeyValueField.OnDisable()会清空on_click_value事件，而StatsRowsContainer使用对象池复用行对象，导致设置的点击事件被清空。改用直接给Button组件添加onClick事件（不受OnDisable影响），同时保留on_click_value作为移动端备份 |

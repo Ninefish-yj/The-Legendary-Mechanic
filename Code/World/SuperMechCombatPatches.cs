@@ -47,12 +47,12 @@ namespace SuperMech.Code
         {
             switch (level)
             {
-                case SuppressionLevel.Minor: return "轻微压制";
-                case SuppressionLevel.Moderate: return "明显压制";
-                case SuppressionLevel.Strong: return "强烈压制";
-                case SuppressionLevel.Overwhelm: return "碾压";
-                case SuppressionLevel.Annihilate: return "秒杀级差距";
-                default: return "无压制";
+                case SuppressionLevel.Minor: return LocalizedTextManager.getText("sm_combat_suppress_minor");
+                case SuppressionLevel.Moderate: return LocalizedTextManager.getText("sm_combat_suppress_moderate");
+                case SuppressionLevel.Strong: return LocalizedTextManager.getText("sm_combat_suppress_strong");
+                case SuppressionLevel.Overwhelm: return LocalizedTextManager.getText("sm_combat_suppress_overwhelm");
+                case SuppressionLevel.Annihilate: return LocalizedTextManager.getText("sm_combat_suppress_annihilate");
+                default: return LocalizedTextManager.getText("sm_combat_suppress_none");
             }
         }
 

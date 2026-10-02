@@ -265,18 +265,23 @@ namespace SuperMech.Code
                 reqKnowText += $"  {(unlocked ? "✓" : "✗")} {knName}\n";
             }
 
+            string tCurrent = LocalizedTextManager.getText("sm_ui_fusion_current");
+            string tDamage = LocalizedTextManager.getText("sm_ui_fusion_damage");
+            string tHealth = LocalizedTextManager.getText("sm_ui_fusion_health");
+            string tSpeed = LocalizedTextManager.getText("sm_ui_fusion_speed");
+            string tQi = LocalizedTextManager.getText("sm_ui_fusion_qi");
             _detailText.text = $"<b><size=16><color=#59a5ff>{LocalizedTextManager.getText(recipe.nameKey)}</color></size></b>\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText(recipe.descKey)}</color>\n\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_branch")}:</color> {SuperMechKnowledgeRecipe.GetBranchName(recipe.branch)}\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {recipe.tier}\n\n" +
                 $"<b>{LocalizedTextManager.getText("sm_ui_required_knowledge")}</b>\n{reqKnowText}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_qi_cost")}:</color> {qiCost:F0} (当前: {qi:F0})\n" +
+                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_qi_cost")}:</color> {qiCost:F0} ({tCurrent}: {qi:F0})\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_success_rate")}:</color> {(recipe.successRate * 100):F0}%\n\n" +
                 $"<b>{LocalizedTextManager.getText("sm_ui_result")}</b>\n" +
-                $"  伤害 ×{recipe.dmgMul:F1}\n" +
-                $"  生命 ×{recipe.hpMul:F1}\n" +
-                $"  速度 ×{recipe.speedMul:F1}\n" +
-                $"  气力 +{recipe.qiBonus}\n\n" +
+                $"  {tDamage} ×{recipe.dmgMul:F1}\n" +
+                $"  {tHealth} ×{recipe.hpMul:F1}\n" +
+                $"  {tSpeed} ×{recipe.speedMul:F1}\n" +
+                $"  {tQi} +{recipe.qiBonus}\n\n" +
                 $"<color={(canFuse ? "#66ff99" : "#ff9966")}>{(canFuse ? LocalizedTextManager.getText("sm_ui_can_fuse") : (hasKnowledge ? LocalizedTextManager.getText("sm_ui_no_xp") : LocalizedTextManager.getText("sm_ui_no_knowledge")))}</color>";
 
             _fuseBtn.interactable = canFuse;

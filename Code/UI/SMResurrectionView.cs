@@ -64,9 +64,13 @@ namespace SuperMech.Code
             int resurrectable = 0;
 
             // 更新信息栏（原著设定：圣所能量媒介，信息完整度决定复苏质量）
-            _infoText.text = $"<color=#6ab7ff>圣所能量:</color> {SuperMechSanctuary.Data.sanctuary_energy:F0}  " +
-                $"<color=#6ab7ff>条件:</color> S阶(超A)以上，信息完整度>20%\n" +
-                $"<color=#8fa8c8>死亡记录: {deadStates.Count}条 | 可复活: {SuperMechResurrection.GetResurrectableStates().Count}个</color>";
+            string tEnergy = LocalizedTextManager.getText("sm_ui_res_energy");
+            string tCond = LocalizedTextManager.getText("sm_ui_res_cond");
+            string tDeadRecord = LocalizedTextManager.getText("sm_ui_res_dead_record");
+            string tResurrectable = LocalizedTextManager.getText("sm_ui_res_resurrectable");
+            _infoText.text = $"<color=#6ab7ff>{tEnergy}:</color> {SuperMechSanctuary.Data.sanctuary_energy:F0}  " +
+                $"<color=#6ab7ff>{tCond}:</color> S+ 20%\n" +
+                $"<color=#8fa8c8>{tDeadRecord}: {deadStates.Count} | {tResurrectable}: {SuperMechResurrection.GetResurrectableStates().Count}</color>";
 
             if (deadStates.Count == 0)
             {
@@ -109,8 +113,11 @@ namespace SuperMech.Code
                     : "?";
                 string reason = canRes ? "" : GetCannotReason(state);
                 float integrity = SuperMechResurrection.CalculateInformationIntegrity(state);
+                string tQi = LocalizedTextManager.getText("sm_ui_res_qi");
+                string tIntegrity = LocalizedTextManager.getText("sm_ui_res_integrity");
+                string tReviveCount = LocalizedTextManager.getText("sm_ui_res_revive_count");
                 text.text = $"<b>{state.name}</b>  <color=#8fa8c8>{rankName}</color>\n" +
-                    $"<color=#8fa8c8>气力:{state.qi:F0} 完整度:{integrity:F0%} 复活:{state.reviveCount}次</color>" +
+                    $"<color=#8fa8c8>{tQi}:{state.qi:F0} {tIntegrity}:{integrity:F0%} {tReviveCount}:{state.reviveCount}</color>" +
                     (string.IsNullOrEmpty(reason) ? "" : $"\n<color=#ff9966>{reason}</color>");
 
                 // 复活按钮
@@ -153,12 +160,15 @@ namespace SuperMech.Code
                 return LocalizedTextManager.getText("sm_ui_resurrect_rank_low");
             float integrity = SuperMechResurrection.CalculateInformationIntegrity(state);
             if (integrity < SuperMechResurrection.MinInformationIntegrity)
-                return "信息完整度过低，无法复苏";
+                return LocalizedTextManager.getText("sm_ui_res_integrity_low");
             if (state.iterationId != SuperMechCosmicIteration.CurrentIteration)
-                return "跨迭代个体无法复苏";
+                return LocalizedTextManager.getText("sm_ui_res_cross_iteration");
             float cost = SuperMechResurrection.GetResurrectCost(state);
             if (SuperMechSanctuary.Data.sanctuary_energy < cost)
-                return $"圣所能量不足（需{cost:F0}）";
+            {
+                string tEnergyLow = LocalizedTextManager.getText("sm_ui_res_energy_low");
+                return $"{tEnergyLow}（{cost:F0}）";
+            }
             return "";
         }
     }

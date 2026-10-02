@@ -165,11 +165,15 @@ namespace SuperMech.Code
             text += $"{LocalizedTextManager.getText("sm_ui_spell_phase")}: {phase}/{spell.totalPhases}\n";
             text += $"{LocalizedTextManager.getText("sm_ui_spell_success_rate")}: {rate:F0%}\n";
             if (!learned)
-                text += $"{LocalizedTextManager.getText("sm_ui_spell_xp_cost")}: {xpCost}（当前{currentXp}）\n";
+            {
+                string tCurrent = LocalizedTextManager.getText("sm_ui_spell_current");
+                text += $"{LocalizedTextManager.getText("sm_ui_spell_xp_cost")}: {xpCost}（{tCurrent}{currentXp}）\n";
+            }
 
             if (spell.prerequisites.Length > 0)
             {
-                text += "\n前置法术:\n";
+                string tPrereq = LocalizedTextManager.getText("sm_ui_spell_prereq");
+                text += $"\n{tPrereq}:\n";
                 foreach (var pre in spell.prerequisites)
                 {
                     var preSpell = SuperMechSpell.GetSpell(pre);

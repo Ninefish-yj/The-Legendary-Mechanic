@@ -345,30 +345,43 @@ namespace SuperMech.Code
 
             string phaseText = CurrentPhase switch
             {
-                IterationPhase.Initial => "最初时空",
-                IterationPhase.Savior => "救世主文明",
-                IterationPhase.ThreeCivilizations => "三大文明",
-                IterationPhase.DarkUniverse => "暗面宇宙",
-                IterationPhase.PlayerUniverse => "玩家宇宙",
-                _ => "未知"
+                IterationPhase.Initial => LocalizedTextManager.getText("sm_iter_phase_initial"),
+                IterationPhase.Savior => LocalizedTextManager.getText("sm_iter_phase_savior"),
+                IterationPhase.ThreeCivilizations => LocalizedTextManager.getText("sm_iter_phase_three"),
+                IterationPhase.DarkUniverse => LocalizedTextManager.getText("sm_iter_phase_dark"),
+                IterationPhase.PlayerUniverse => LocalizedTextManager.getText("sm_iter_phase_player"),
+                _ => LocalizedTextManager.getText("sm_iter_phase_unknown")
             };
 
-            string stats = $"当前迭代: 第{CurrentIteration}轮\n" +
-                $"当前阶段: {phaseText}\n" +
-                $"历史文明: {history.Count}轮\n" +
-                $"累计觉醒: {totalAwakened}人\n" +
-                $"历史最高阶位: {(maxRank >= 0 && maxRank < SuperMechRanks.All.Count ? LocalizedTextManager.getText(SuperMechRanks.All[maxRank].name) : "无")}\n" +
-                $"遗产保留率: 基础{BaseHeritageRetentionRate * 100:F0}%（随机波动+权限加成{(WorldTreeCreated ? $"+世界树{GetWorldTreeRetentionBonus() * 100:F0}%" : "")}）";
+            string tCurIter = LocalizedTextManager.getText("sm_iter_cur_iteration");
+            string tCurPhase = LocalizedTextManager.getText("sm_iter_cur_phase");
+            string tHistory = LocalizedTextManager.getText("sm_iter_history");
+            string tTotalAwakened = LocalizedTextManager.getText("sm_iter_total_awakened");
+            string tMaxRank = LocalizedTextManager.getText("sm_iter_max_rank");
+            string tNone = LocalizedTextManager.getText("sm_iter_none");
+            string tHeritage = LocalizedTextManager.getText("sm_iter_heritage");
+            string tWorldTree = LocalizedTextManager.getText("sm_iter_world_tree");
+
+            string stats = $"{tCurIter}: {CurrentIteration}\n" +
+                $"{tCurPhase}: {phaseText}\n" +
+                $"{tHistory}: {history.Count}\n" +
+                $"{tTotalAwakened}: {totalAwakened}\n" +
+                $"{tMaxRank}: {(maxRank >= 0 && maxRank < SuperMechRanks.All.Count ? LocalizedTextManager.getText(SuperMechRanks.All[maxRank].name) : tNone)}\n" +
+                $"{tHeritage}: {BaseHeritageRetentionRate * 100:F0}%{(WorldTreeCreated ? $"+{tWorldTree}{GetWorldTreeRetentionBonus() * 100:F0}%" : "")}";
 
             if (InformationStrippingPlanStarted)
             {
-                stats += $"\n信息态剥离计划: 已开启\n" +
-                    $"暗面宇宙迭代: {DarkUniverseIteration}/{MaxDarkUniverseIteration}\n" +
-                    $"暗面文明记录: {_darkUniverseHistory.Count}轮";
+                string tStripping = LocalizedTextManager.getText("sm_iter_stripping");
+                string tDarkIter = LocalizedTextManager.getText("sm_iter_dark_iteration");
+                string tDarkHistory = LocalizedTextManager.getText("sm_iter_dark_history");
+                stats += $"\n{tStripping}\n" +
+                    $"{tDarkIter}: {DarkUniverseIteration}/{MaxDarkUniverseIteration}\n" +
+                    $"{tDarkHistory}: {_darkUniverseHistory.Count}";
             }
             if (WorldTreeCreated)
             {
-                stats += $"\n世界树: Lv{WorldTreeLevel}/10";
+                string tTreeLevel = LocalizedTextManager.getText("sm_iter_tree_level");
+                stats += $"\n{tTreeLevel}: Lv{WorldTreeLevel}/10";
             }
 
             return stats;

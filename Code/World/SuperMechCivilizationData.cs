@@ -114,8 +114,9 @@ namespace SuperMech.Code
             if (snap == null) return "";
             string rankName = (snap.maxRankReached >= 0 && snap.maxRankReached < SuperMechRanks.All.Count)
                 ? LocalizedTextManager.getText(SuperMechRanks.All[snap.maxRankReached].name)
-                : "无";
-            return $"第{snap.iteration}轮文明：觉醒{snap.totalAwakened}人，最高阶位{rankName}，解锁知识{snap.totalKnowledgeUnlocked}条，复活{snap.totalResurrections}次";
+                : LocalizedTextManager.getText("sm_civ_none");
+            string tSummary = LocalizedTextManager.getText("sm_civ_summary");
+            return string.Format(tSummary, snap.iteration, snap.totalAwakened, rankName, snap.totalKnowledgeUnlocked, snap.totalResurrections);
         }
 
         /// <summary>序列化为JSON（用于存档）</summary>

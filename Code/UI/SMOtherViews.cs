@@ -184,14 +184,22 @@ namespace SuperMech.Code
             statsText.horizontalOverflow = HorizontalWrapMode.Wrap;
             statsText.supportRichText = true;
             var data = SuperMechSanctuary.Data;
-            statsText.text = $"<color=#6ab7ff>已解锁圣所:</color> {data.unlocked_sanctuaries}/6  " +
-                $"<color=#6ab7ff>钥匙碎片:</color> {data.key_fragments}  " +
-                $"<color=#6ab7ff>总权限:</color> {data.total_permission}\n" +
-                $"<color=#6ab7ff>总访问:</color> {data.total_visits}  " +
-                $"<color=#6ab7ff>神性蜕变:</color> {data.total_divinity_ascensions}  " +
-                $"<color=#6ab7ff>复活次数:</color> {data.total_resurrections}\n" +
-                $"<color=#ffd700>宇宙迭代:</color> 第{SuperMechCosmicIteration.CurrentIteration}轮  " +
-                $"<color=#ffd700>历史文明:</color> {SuperMechCivilizationData.GetHistory().Count}轮";
+            string tUnlocked = LocalizedTextManager.getText("sm_ui_san_unlocked");
+            string tFragments = LocalizedTextManager.getText("sm_ui_san_fragments");
+            string tTotalAuth = LocalizedTextManager.getText("sm_ui_san_total_auth");
+            string tTotalVisits = LocalizedTextManager.getText("sm_ui_san_total_visits");
+            string tDivinity = LocalizedTextManager.getText("sm_ui_san_divinity");
+            string tReviveCount = LocalizedTextManager.getText("sm_ui_san_revive_count");
+            string tIteration = LocalizedTextManager.getText("sm_ui_san_iteration");
+            string tHistory = LocalizedTextManager.getText("sm_ui_san_history");
+            statsText.text = $"<color=#6ab7ff>{tUnlocked}:</color> {data.unlocked_sanctuaries}/6  " +
+                $"<color=#6ab7ff>{tFragments}:</color> {data.key_fragments}  " +
+                $"<color=#6ab7ff>{tTotalAuth}:</color> {data.total_permission}\n" +
+                $"<color=#6ab7ff>{tTotalVisits}:</color> {data.total_visits}  " +
+                $"<color=#6ab7ff>{tDivinity}:</color> {data.total_divinity_ascensions}  " +
+                $"<color=#6ab7ff>{tReviveCount}:</color> {data.total_resurrections}\n" +
+                $"<color=#ffd700>{tIteration}:</color> {SuperMechCosmicIteration.CurrentIteration}  " +
+                $"<color=#ffd700>{tHistory}:</color> {SuperMechCivilizationData.GetHistory().Count}";
 
             // 左侧列表面板（宽度180px，从顶部60px开始）
             var listGo = new GameObject("ListPanel");
@@ -333,8 +341,12 @@ namespace SuperMech.Code
             bool unlocked = frags >= SuperMechSanctuary.FragmentsToUnlock;
 
             AddDetailLine($"<size=16><color=#6ab7ff>{name}</color></size>", 16);
-            AddDetailLine($"职业分类: {cls}", 12);
-            AddDetailLine($"碎片进度: {frags}/{SuperMechSanctuary.FragmentsToUnlock} {(unlocked ? "<color=#4f4>[已解锁]</color>" : "<color=#f84>[未解锁]</color>")}", 12);
+            string tClass = LocalizedTextManager.getText("sm_ui_san_class");
+            string tFragProgress = LocalizedTextManager.getText("sm_ui_san_frag_progress");
+            string tUnlocked = LocalizedTextManager.getText("sm_ui_san_unlocked_tag");
+            string tLocked = LocalizedTextManager.getText("sm_ui_san_locked_tag");
+            AddDetailLine($"{tClass}: {cls}", 12);
+            AddDetailLine($"{tFragProgress}: {frags}/{SuperMechSanctuary.FragmentsToUnlock} {(unlocked ? $"<color=#4f4>[{tUnlocked}]</color>" : $"<color=#f84>[{tLocked}]</color>")}", 12);
             AddDetailLine("", 4);
 
             // 钥匙系统说明（v0.31.0：原著设定补充）
@@ -365,13 +377,22 @@ namespace SuperMech.Code
                 }
             }
 
-            AddDetailLine($"<color=#6ab7ff>权限统计</color>", 13);
-            AddDetailLine($"拥有权限单位数: {(totalAuth > 0 ? "已记录" : "暂无")}", 12);
-            AddDetailLine($"最高权限等级: {maxAuth}", 12);
+            string tAuthStats = LocalizedTextManager.getText("sm_ui_san_auth_stats");
+            string tAuthUnits = LocalizedTextManager.getText("sm_ui_san_auth_units");
+            string tAuthRecorded = LocalizedTextManager.getText("sm_ui_san_auth_recorded");
+            string tAuthNone = LocalizedTextManager.getText("sm_ui_san_auth_none");
+            string tMaxAuth = LocalizedTextManager.getText("sm_ui_san_max_auth");
+            string tUnlockCond = LocalizedTextManager.getText("sm_ui_san_unlock_cond");
+            string tCollectFrags = LocalizedTextManager.getText("sm_ui_san_collect_frags");
+            string tFragSource = LocalizedTextManager.getText("sm_ui_san_frag_source");
+
+            AddDetailLine($"<color=#6ab7ff>{tAuthStats}</color>", 13);
+            AddDetailLine($"{tAuthUnits}: {(totalAuth > 0 ? tAuthRecorded : tAuthNone)}", 12);
+            AddDetailLine($"{tMaxAuth}: {maxAuth}", 12);
             AddDetailLine("", 8);
-            AddDetailLine($"<color=#6ab7ff>解锁条件</color>", 13);
-            AddDetailLine($"收集 {SuperMechSanctuary.FragmentsToUnlock} 个钥匙碎片", 12);
-            AddDetailLine($"碎片可通过神性蜕变和高阶单位掉落获得", 12);
+            AddDetailLine($"<color=#6ab7ff>{tUnlockCond}</color>", 13);
+            AddDetailLine($"{tCollectFrags} {SuperMechSanctuary.FragmentsToUnlock}", 12);
+            AddDetailLine(tFragSource, 12);
             AddDetailLine("", 8);
 
             // 访问圣所按钮（v0.30.0新增：选中单位后可访问圣所获得知识和权限）
