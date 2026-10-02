@@ -34,7 +34,8 @@ namespace SuperMech.Code
             // 创建独立的"超神机械师"Tab
             if (_modTab == null)
             {
-                Sprite tabIcon = Resources.Load<Sprite>("iconDivineLight");
+                // 用原版图标加载方式
+                Sprite tabIcon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight");
                 _modTab = TabManager.CreateTab(TabName, "sm_tab_title", "sm_tab_desc", tabIcon);
                 if (_modTab == null)
                 {
@@ -55,8 +56,13 @@ namespace SuperMech.Code
 
                 try
                 {
-                    Sprite icon = Resources.Load<Sprite>(godPower.path_icon);
-                    // NML标准：CreateGodPowerButton只传id和icon，parent由AddPowerButton处理
+                    // 用原版GodPower的图标加载方式：SpriteTextureLoader.getSprite("ui/Icons/" + path_icon)
+                    Sprite icon = godPower.getIconSprite();
+                    if (icon == null)
+                    {
+                        Debug.LogWarning($"[超神机械师] 按钮{id}图标加载失败，使用默认图标");
+                        icon = SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    }
                     var pb = PowerButtonCreator.CreateGodPowerButton(id, icon);
                     if (pb != null)
                     {

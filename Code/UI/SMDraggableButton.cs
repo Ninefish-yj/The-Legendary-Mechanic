@@ -49,7 +49,8 @@ namespace SuperMech.Code
                 iconRect.sizeDelta = new Vector2(36, 36);
                 iconRect.anchoredPosition = new Vector2(0, 4);
                 var iconImg = iconGo.AddComponent<Image>();
-                var sprite = Resources.Load<Sprite>(iconPath);
+                // 用原版图标加载方式
+                var sprite = SpriteTextureLoader.getSprite(iconPath);
                 if (sprite != null)
                 {
                     iconImg.sprite = sprite;
