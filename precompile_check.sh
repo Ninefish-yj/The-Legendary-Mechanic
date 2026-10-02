@@ -156,8 +156,168 @@ if [ "$API_WARNINGS" -eq 0 ]; then
 fi
 
 echo ""
+echo "[附加检查] 本地化/资源/配置/Harmony..."
+
+# 检查8: 本地化完整性 - 扫描所有getText调用，验证cz.json中有对应key
+LOCALE_WARNINGS=0
+export MOD_DIR
+MISSING_LOCALE=$(python3 << 'PYEOF'
+import json, re, os
+
+mod_dir = os.environ.get('MOD_DIR', '.')
+with open(f'{mod_dir}/Locales/cz.json', 'r', encoding='utf-8') as f:
+    locale = json.load(f)
+
+# 扫描所有C#文件中的getText调用
+missing = set()
+for root, dirs, files in os.walk(f'{mod_dir}/Code'):
+    for f in files:
+        if not f.endswith('.cs'): continue
+        with open(os.path.join(root, f), 'r', encoding='utf-8') as fh:
+            content = fh.read()
+        # 匹配 LocalizedTextManager.getText("xxx") 或 getText("xxx")
+        # 排除动态拼接的key（比如 "sm_icon_" + name）
+        for m in re.finditer(r'getText\s*\(\s*"([^"]+)"\s*\)', content):
+            key = m.group(1)
+            # 排除明显是前缀的key（太短或以下划线结尾）
+            if len(key) < 5 or key.endswith('_'):
+                continue
+            if key not in locale:
+                missing.add(key)
+
+for key in sorted(missing):
+    print(key)
+PYEOF
+)
+if [ -n "$MISSING_LOCALE" ]; then
+    echo "  ⚠️  发现本地化缺失key（cz.json中找不到）:"
+    echo "$MISSING_LOCALE" | head -10
+    LOCALE_WARNINGS=$(echo "$MISSING_LOCALE" | wc -l)
+else
+    echo "  ✅ 本地化完整性检查通过"
+fi
+
+# 检查9: 资源存在性 - 扫描所有Resources.Load调用，验证GameResources中有对应文件
+RESOURCE_WARNINGS=0
+MISSING_RESOURCE=$(python3 << 'PYEOF'
+import re, os
+
+mod_dir = os.environ.get('MOD_DIR', '.')
+res_dir = f'{mod_dir}/GameResources'
+
+# 获取所有资源文件（不含扩展名）
+existing = set()
+if os.path.exists(res_dir):
+    for f in os.listdir(res_dir):
+        name = os.path.splitext(f)[0]
+        existing.add(name)
+
+# 扫描所有C#文件中的Resources.Load调用
+missing = set()
+for root, dirs, files in os.walk(f'{mod_dir}/Code'):
+    for f in files:
+        if not f.endswith('.cs'): continue
+        with open(os.path.join(root, f), 'r', encoding='utf-8') as fh:
+            content = fh.read()
+        # 匹配 Resources.Load<Sprite>("xxx") 或 Resources.Load("xxx")
+        for m in re.finditer(r'Resources\.Load(?:<[^>]+>)?\s*\(\s*"([^"]+)"', content):
+            res = m.group(1)
+            if res not in existing and not res.startswith('actor_traits/') and not res.startswith('icon'):
+                # 排除原版资源路径
+                if '/' not in res:
+                    missing.add(res)
+
+for key in sorted(missing):
+    print(key)
+PYEOF
+)
+if [ -n "$MISSING_RESOURCE" ]; then
+    echo "  ⚠️  发现缺失资源文件（GameResources中找不到）:"
+    echo "$MISSING_RESOURCE" | head -10
+    RESOURCE_WARNINGS=$(echo "$MISSING_RESOURCE" | wc -l)
+else
+    echo "  ✅ 资源存在性检查通过"
+fi
+
+# 检查10: mod.json格式 - 验证必填字段
+CONFIG_WARNINGS=0
+python3 << PYEOF
+import json, os, sys, re
+
+mod_dir = os.environ.get('MOD_DIR', '.')
+try:
+    with open(f'{mod_dir}/mod.json', 'r', encoding='utf-8') as f:
+        mod = json.load(f)
+except Exception as e:
+    print(f"  ❌ mod.json解析失败: {e}")
+    sys.exit(1)
+
+required = ['name', 'version', 'author', 'entryPoint']
+missing = [k for k in required if k not in mod]
+if missing:
+    print(f"  ⚠️  mod.json缺少必填字段: {missing}")
+else:
+    print("  ✅ mod.json格式检查通过")
+
+# 检查版本号格式
+version = mod.get('version', '')
+if not re.match(r'^\d+\.\d+\.\d+-(alpha|beta|release)$', version):
+    print(f"  ⚠️  版本号格式异常: {version}（应为 x.y.z-alpha/beta/release）")
+PYEOF
+
+# 检查11: Harmony补丁目标 - 验证补丁目标类/方法存在于反编译文件
+HARMONY_WARNINGS=0
+MISSING_HARMONY=$(python3 << 'PYEOF'
+import re, os, glob
+
+mod_dir = os.environ.get('MOD_DIR', '.')
+ref_dir = '/home/user/Doubao/chats/38443538092133890/gz_ref'
+
+# 扫描所有HarmonyPatch
+patches = []
+for root, dirs, files in os.walk(f'{mod_dir}/Code'):
+    for f in files:
+        if not f.endswith('.cs'): continue
+        with open(os.path.join(root, f), 'r', encoding='utf-8') as fh:
+            content = fh.read()
+        # 匹配 [HarmonyPatch(typeof(ClassName), "MethodName")]
+        for m in re.finditer(r'HarmonyPatch\s*\(\s*typeof\s*\(\s*(\w+)\s*\)\s*,\s*"(\w+)"', content):
+            patches.append((m.group(1), m.group(2)))
+
+# 检查反编译文件中是否有对应类和方法
+missing = []
+for cls, method in patches:
+    # 查找类文件
+    class_files = glob.glob(f'{ref_dir}/**/{cls}.cs', recursive=True)
+    if not class_files:
+        missing.append(f"{cls}.{method} (类不存在)")
+        continue
+    # 检查方法是否存在
+    found = False
+    for cf in class_files:
+        with open(cf, 'r', encoding='utf-8', errors='ignore') as fh:
+            if f' {method}(' in fh.read():
+                found = True
+                break
+    if not found:
+        missing.append(f"{cls}.{method} (方法不存在)")
+
+for m in missing:
+    print(m)
+PYEOF
+)
+if [ -n "$MISSING_HARMONY" ]; then
+    echo "  ⚠️  发现Harmony补丁目标不存在:"
+    echo "$MISSING_HARMONY" | head -10
+    HARMONY_WARNINGS=$(echo "$MISSING_HARMONY" | wc -l)
+else
+    echo "  ✅ Harmony补丁目标检查通过"
+fi
+
+echo ""
 echo "=== 检查完成 ==="
 echo "代码错误: $ERROR_COUNT | 括号错误: $BRACKET_ERRORS | API警告: $API_WARNINGS | CS1069环境警告: $CS1069_COUNT"
+echo "本地化缺失: $LOCALE_WARNINGS | 资源缺失: $RESOURCE_WARNINGS | Harmony问题: $HARMONY_WARNINGS"
 if [ "$ERROR_COUNT" -eq 0 ] && [ "$BRACKET_ERRORS" -eq 0 ]; then
     echo "✅ 可以打包发布"
 else
