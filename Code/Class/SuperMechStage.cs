@@ -159,13 +159,9 @@ namespace SuperMech.Code
             int s = GetStage(a);
             string result;
             if (s <= 0) { result = "sm_stage_none"; }
-            else if (a.hasTrait(SuperMechTraits.ClassMech) &&
-                     !(a.hasTrait(SuperMechBranch.BranchMech) ||
-                       a.hasTrait(SuperMechBranch.BranchGunner) ||
-                       a.hasTrait(SuperMechBranch.BranchMartial)))
-            { result = "sm_stage_161"; }
-            else if (a.hasTrait(SuperMechBranch.BranchMech))
+            else if (a.hasTrait(SuperMechTraits.ClassMech))
             {
+                // 机械系：未选分支时用通用机械师阶段，选了分支后用分支-specific阶段
                 string[] arr = GetStageArray(a);
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
                 result = arr[idx];
