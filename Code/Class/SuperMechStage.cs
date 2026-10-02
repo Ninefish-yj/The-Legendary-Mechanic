@@ -134,7 +134,7 @@ namespace SuperMech.Code
 
         private static string[] GetStageArray(Actor a)
         {
-            if (a == null) return Stage_GenericMech;
+            if (a == null) return Stage_Mech;
             if (a.hasTrait(SuperMechBranch.BranchGunner)) return Stage_Gunner;
             if (a.hasTrait(SuperMechBranch.BranchMech)) return Stage_Mech;
             if (a.hasTrait(SuperMechBranch.BranchMartial)) return Stage_MechMartial;
@@ -142,8 +142,8 @@ namespace SuperMech.Code
             if (a.hasTrait(SuperMechTraits.ClassPsi)) return Stage_GenericPsi;
             if (a.hasTrait(SuperMechTraits.ClassMage)) return Stage_GenericMage;
             if (a.hasTrait(SuperMechTraits.ClassMind)) return Stage_GenericMind;
-            if (a.hasTrait(SuperMechTraits.ClassMech)) return Stage_GenericMech;
-            return Stage_GenericMech;
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return Stage_Mech;
+            return Stage_Mech;
         }
 
         public static int GetStage(Actor a)
@@ -159,13 +159,22 @@ namespace SuperMech.Code
             int s = GetStage(a);
             string result;
             if (s <= 0) { result = "sm_stage_none"; }
+            else if (a.hasTrait(SuperMechTraits.ClassMech) &&
+                     !(a.hasTrait(SuperMechBranch.BranchMech) ||
+                       a.hasTrait(SuperMechBranch.BranchGunner) ||
+                       a.hasTrait(SuperMechBranch.BranchMartial)))
+            {
+                // 机械系未选分支：第一阶段显示"机械系入门者"，第二阶段起提示需选择分支
+                if (s <= 1) result = "sm_stage_002";
+                else result = "sm_stage_161";
+            }
             else if (a.hasTrait(SuperMechTraits.ClassMech) ||
                      a.hasTrait(SuperMechTraits.ClassMartial) ||
                      a.hasTrait(SuperMechTraits.ClassPsi) ||
                      a.hasTrait(SuperMechTraits.ClassMage) ||
                      a.hasTrait(SuperMechTraits.ClassMind))
             {
-                // 所有超神机械师体系：用对应阶段数组显示实际职业阶段名
+                // 已选分支的机械系 + 其他体系：用对应阶段数组显示实际职业阶段名
                 string[] arr = GetStageArray(a);
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
                 result = arr[idx];
