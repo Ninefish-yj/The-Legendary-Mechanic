@@ -98,7 +98,7 @@ namespace SuperMech.Code
                 if (rank <= 3)
                     rowImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.2f);
                 else
-                    rowImg.sprite = rank % 2 == 0 ? SMUiSkin.RowEven : SMUiSkin.RowOdd;
+                    rowImg.sprite = rank % 2 == 0 ? SMUiSkin.RowEvenSprite : SMUiSkin.RowOddSprite;
 
                 var text = SMUiSkin.MakeText(rowGo.transform, "", 13, TextAnchor.MiddleLeft);
                 var textRect = text.GetComponent<RectTransform>();
