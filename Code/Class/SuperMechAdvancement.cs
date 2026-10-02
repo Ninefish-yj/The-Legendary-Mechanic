@@ -72,7 +72,7 @@ namespace SuperMech.Code
             if (list == null) return;
             foreach (Actor a in list)
             {
-                if (a == null) continue;
+                if (a == null || a.id == null) continue;
                 if (SuperMechTalent.HasTalent(a)) continue;
                 if (a.age < SuperMechConfig.AwakeningMinAge) continue;
                 if (Random.value > SuperMechConfig.AwakeningChance) continue;

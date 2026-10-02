@@ -120,7 +120,7 @@ namespace SuperMech.Code
 
         public static void GrantTalents(Actor a)
         {
-            if (a == null) return;
+            if (a == null || a.id == null) return;
             if (_talents.ContainsKey(a.id)) return;
             var talents = GenerateTalents();
             _talents[a.id] = talents;
@@ -133,14 +133,14 @@ namespace SuperMech.Code
 
         public static List<TalentInfo> GetTalents(Actor a)
         {
-            if (a == null) return new List<TalentInfo>();
+            if (a == null || a.id == null) return new List<TalentInfo>();
             if (_talents.TryGetValue(a.id, out var list)) return list;
             return new List<TalentInfo>();
         }
 
         public static bool HasTalent(Actor a)
         {
-            if (a == null) return false;
+            if (a == null || a.id == null) return false;
             return _talents.ContainsKey(a.id) && _talents[a.id].Count > 0;
         }
 

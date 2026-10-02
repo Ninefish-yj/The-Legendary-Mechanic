@@ -11,32 +11,32 @@ namespace SuperMech.Code
 
         public static int GetPotential(Actor a)
         {
-            if (a == null) return 0;
+            if (a == null || a.id == null) return 0;
             int v; _potentialMap.TryGetValue(a.id, out v); return v;
         }
 
         public static int GetAwakening(Actor a)
         {
-            if (a == null) return 0;
+            if (a == null || a.id == null) return 0;
             int v; _awakeningMap.TryGetValue(a.id, out v); return v;
         }
 
         public static void AddPotential(Actor a, int amount)
         {
-            if (a == null) return;
+            if (a == null || a.id == null) return;
             int cur = GetPotential(a);
             _potentialMap[a.id] = cur + amount;
         }
 
         public static void SetPotential(Actor a, int amount)
         {
-            if (a == null) return;
+            if (a == null || a.id == null) return;
             _potentialMap[a.id] = Mathf.Max(0, amount);
         }
 
         public static bool SpendPotential(Actor a, int amount)
         {
-            if (a == null) return false;
+            if (a == null || a.id == null) return false;
             int cur = GetPotential(a);
             if (cur < amount) return false;
             _potentialMap[a.id] = cur - amount;

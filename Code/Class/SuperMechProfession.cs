@@ -59,7 +59,7 @@ namespace SuperMech.Code
 
         public static void SetProfession(Actor a, ProfessionType type)
         {
-            if (a == null || type == ProfessionType.None) return;
+            if (a == null || a.id == null || type == ProfessionType.None) return;
 
             if (HasProfession(a) && GetProfession(a) != type)
             {

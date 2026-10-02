@@ -153,7 +153,7 @@ namespace SuperMech.Code
 
         public static void AddQi(Actor a, float amount)
         {
-            if (a == null) return;
+            if (a == null || a.id == null) return;
             float cur = GetQi(a);
             float max = GetQiMax(a);
             if (max <= 0) max = cur + amount;
@@ -162,7 +162,7 @@ namespace SuperMech.Code
 
         public static void AddQiMax(Actor a, float amount)
         {
-            if (a == null) return;
+            if (a == null || a.id == null) return;
             float curMax = GetQiMax(a);
             float newMax = curMax + amount;
             if (!SuperMechConfig.QiUnlimited && Thresholds.Length > 0)
@@ -174,13 +174,13 @@ namespace SuperMech.Code
 
         public static void SetQiMax(Actor a, float value)
         {
-            if (a == null) return;
+            if (a == null || a.id == null) return;
             _qiMaxMap[a.id] = Mathf.Max(0, value);
         }
 
         public static void SetQi(Actor a, float value)
         {
-            if (a == null) return;
+            if (a == null || a.id == null) return;
             _qiMap[a.id] = Mathf.Max(0, value);
             if (GetQiMax(a) < value) _qiMaxMap[a.id] = value;
         }
