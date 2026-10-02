@@ -39,6 +39,11 @@ namespace SuperMech.Code
 
             ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a), null, InfoColor);
 
+            // 天赋倾向
+            string talentText = GetTalentText(a);
+            if (!string.IsNullOrEmpty(talentText))
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_talent_tendency"), talentText, null, InfoColor);
+
             bool hasProfession = SuperMechProfession.HasProfession(a);
             if (hasProfession)
             {
@@ -158,6 +163,20 @@ namespace SuperMech.Code
                 case "sm_unitwindow_1147": return LocalizedTextManager.getText("sm_tree_mind");
                 default: return LocalizedTextManager.getText("sm_tree_mech");
             }
+        }
+
+        private static string GetTalentText(Actor a)
+        {
+            var talents = SuperMechTalent.GetTalents(a);
+            if (talents == null || talents.Count == 0) return "";
+            var parts = new System.Collections.Generic.List<string>();
+            foreach (var t in talents)
+            {
+                string name = SuperMechTalent.GetTalentName(t.type);
+                string rating = SuperMechTalent.RatingNames[Mathf.Clamp(t.rating, 0, SuperMechTalent.RatingNames.Length - 1)];
+                parts.Add($"{name}({rating})");
+            }
+            return string.Join(" ", parts);
         }
 
         private static string GetSanctuaryInfo(Actor a)
