@@ -12,6 +12,9 @@ namespace SuperMech.Code
             public double onarFloor;
             public float damageMul;
             public float healthMul;
+            public float aoe;        // 范围攻击
+            public float targets;    // 最大目标数
+            public float range;      // 攻击射程
             public string nextRank;
         }
 
@@ -19,23 +22,22 @@ namespace SuperMech.Code
         {
             // 原著能级依据：F=凡人, E=100(ch3), C=2000(ch237), B=10000(ch476),
             // A=17810(ch671), S≈43000(ch864), SS=82600(ch1040), X=148800(ch1402)
-            // 原著：能级决定阶位(ch3)，阶位只是分类标签，本身不直接加属性
-            // 折中方案：阶位保留少量加成(象征生命层次提升)，主要战力靠气力
-            // X阶10x + 气力Lv30 10x + 知识2x = 200x总倍率，符合宇宙级但不膨胀
-            new RankDef { id="sm_rank_00_f",       name="sm_rank_name_00",            onarFloor=0,         damageMul=1.0f,  healthMul=1.0f },
-            new RankDef { id="sm_rank_01_e",       name="sm_rank_name_01",            onarFloor=100,       damageMul=1.3f,  healthMul=1.15f },
-            new RankDef { id="sm_rank_02_d",       name="sm_rank_name_02",            onarFloor=500,       damageMul=1.6f,  healthMul=1.3f },
-            new RankDef { id="sm_rank_03_d_plus",  name="sm_rank_name_03",           onarFloor=1000,      damageMul=2.0f,  healthMul=1.5f },
-            new RankDef { id="sm_rank_04_c",       name="sm_rank_name_04",            onarFloor=2000,      damageMul=2.5f,  healthMul=1.8f },
-            new RankDef { id="sm_rank_05_c_plus",  name="sm_rank_name_05",           onarFloor=5000,      damageMul=3.2f,  healthMul=2.2f },
-            new RankDef { id="sm_rank_06_b",       name="sm_rank_name_06",            onarFloor=10000,     damageMul=4.0f,  healthMul=2.7f },
-            new RankDef { id="sm_rank_07_b_plus",  name="sm_rank_name_07",           onarFloor=15000,     damageMul=5.0f,  healthMul=3.3f },
-            new RankDef { id="sm_rank_08_a",       name="sm_rank_name_08",    onarFloor=17810,     damageMul=6.5f,  healthMul=4.2f },
-            new RankDef { id="sm_rank_09_a_plus",  name="sm_rank_name_09",           onarFloor=30000,     damageMul=8.0f,  healthMul=5.2f },
-            new RankDef { id="sm_rank_10_s",       name="sm_rank_name_10",    onarFloor=43000,     damageMul=10.0f, healthMul=6.5f },
-            new RankDef { id="sm_rank_11_s_plus",  name="sm_rank_name_11",           onarFloor=65000,     damageMul=12.0f, healthMul=8.0f },
-            new RankDef { id="sm_rank_12_ss",      name="sm_rank_name_12", onarFloor=82600,     damageMul=15.0f, healthMul=10.0f },
-            new RankDef { id="sm_rank_13_x",       name="sm_rank_name_13",     onarFloor=148800,    damageMul=20.0f, healthMul=13.0f },
+            // v0.23.7调整：阶位加成提高+添加AOE属性，参考凡人修仙传真仙(生命500万/范围300/目标300)
+            // X阶25x伤害/20x生命/范围200/目标150，接近真仙水平
+            new RankDef { id="sm_rank_00_f",       name="sm_rank_name_00",            onarFloor=0,         damageMul=1.0f,  healthMul=1.0f,  aoe=0,    targets=0,   range=0 },
+            new RankDef { id="sm_rank_01_e",       name="sm_rank_name_01",            onarFloor=100,       damageMul=1.3f,  healthMul=1.15f, aoe=0,    targets=0,   range=0 },
+            new RankDef { id="sm_rank_02_d",       name="sm_rank_name_02",            onarFloor=500,       damageMul=1.6f,  healthMul=1.3f,  aoe=0,    targets=0,   range=0 },
+            new RankDef { id="sm_rank_03_d_plus",  name="sm_rank_name_03",           onarFloor=1000,      damageMul=2.0f,  healthMul=1.5f,  aoe=0,    targets=0,   range=0 },
+            new RankDef { id="sm_rank_04_c",       name="sm_rank_name_04",            onarFloor=2000,      damageMul=2.5f,  healthMul=1.8f,  aoe=0,    targets=0,   range=0 },
+            new RankDef { id="sm_rank_05_c_plus",  name="sm_rank_name_05",           onarFloor=5000,      damageMul=3.2f,  healthMul=2.2f,  aoe=2,    targets=1,   range=2 },
+            new RankDef { id="sm_rank_06_b",       name="sm_rank_name_06",            onarFloor=10000,     damageMul=4.0f,  healthMul=2.7f,  aoe=5,    targets=2,   range=5 },
+            new RankDef { id="sm_rank_07_b_plus",  name="sm_rank_name_07",           onarFloor=15000,     damageMul=5.0f,  healthMul=3.3f,  aoe=10,   targets=3,   range=8 },
+            new RankDef { id="sm_rank_08_a",       name="sm_rank_name_08",    onarFloor=17810,     damageMul=8.0f,  healthMul=5.0f,  aoe=20,   targets=5,   range=15 },
+            new RankDef { id="sm_rank_09_a_plus",  name="sm_rank_name_09",           onarFloor=30000,     damageMul=10.0f, healthMul=6.5f,  aoe=30,   targets=10,  range=20 },
+            new RankDef { id="sm_rank_10_s",       name="sm_rank_name_10",    onarFloor=43000,     damageMul=12.0f, healthMul=8.0f,  aoe=50,   targets=20,  range=30 },
+            new RankDef { id="sm_rank_11_s_plus",  name="sm_rank_name_11",           onarFloor=65000,     damageMul=14.0f, healthMul=10.0f, aoe=75,   targets=30,  range=40 },
+            new RankDef { id="sm_rank_12_ss",      name="sm_rank_name_12", onarFloor=82600,     damageMul=18.0f, healthMul=14.0f, aoe=100,  targets=50,  range=50 },
+            new RankDef { id="sm_rank_13_x",       name="sm_rank_name_13",     onarFloor=148800,    damageMul=25.0f, healthMul=20.0f, aoe=200,  targets=150, range=100 },
         };
 
         static SuperMechRanks()

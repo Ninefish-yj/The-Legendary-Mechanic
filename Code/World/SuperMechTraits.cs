@@ -58,6 +58,9 @@ namespace SuperMech.Code
                 };
                 if (r.damageMul > 1f) t.base_stats["multiplier_damage"] = r.damageMul;
                 if (r.healthMul > 1f) t.base_stats["multiplier_health"] = r.healthMul;
+                if (r.aoe > 0f) t.base_stats["area_of_effect"] = r.aoe;
+                if (r.targets > 0f) t.base_stats["targets"] = r.targets;
+                if (r.range > 0f) t.base_stats["range"] = r.range;
                 if (rankIdx >= 4) t.addCombatAction("combat_dodge");
                 if (rankIdx >= 6) t.addCombatAction("combat_block");
                 if (rankIdx >= 8) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); }
