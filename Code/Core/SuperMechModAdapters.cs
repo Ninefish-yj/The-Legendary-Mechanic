@@ -18,6 +18,7 @@ namespace SuperMech.Code
             int GetRealmLevel(Actor a);
             float GetEnergyStrength(Actor a);
             float ConvertToQi(Actor a);
+            float ConvertToOnar(Actor a);  // 按原著欧纳校准
         }
 
         public static void Init()
@@ -46,6 +47,65 @@ namespace SuperMech.Code
         }
 
         public static IReadOnlyList<string> DisabledAdapters => _disabledAdapters;
+
+        /// <summary>原著欧纳能级映射表（按境界等级索引，0~20级）
+        /// 将各模组的境界/序列/神格等级统一映射到原著欧纳值
+        /// 原著阈值：F=1~2, E=100, D=800, C=2000, B=6000, A=10000~33000, S=星系级, X=148800+
+        /// </summary>
+        public static readonly float[] RealmToOnarTable =
+        {
+            10f,      // 0: 入门/练气1层（F级）
+            50f,      // 1: 初级/练气后期
+            100f,     // 2: 筑基/正式（E级，原著E=100）
+            300f,     // 3: 筑基后期
+            600f,     // 4: 金丹初期（E+级，原著E+=600）
+            800f,     // 5: 金丹圆满（D级，原著D=800）
+            1200f,    // 6: 元婴初期
+            1600f,    // 7: 元婴圆满（D+级，原著D+=1600）
+            2000f,    // 8: 化神（C级，原著C=2000）
+            4000f,    // 9: 炼虚
+            6000f,    // 10: 合体（B级，原著B=6000+）
+            10000f,   // 11: 大乘（A级下限，原著A=10000）
+            15000f,   // 12: 渡劫初期
+            20000f,   // 13: 渡劫中期（A+级下限，原著A+=20000）
+            25000f,   // 14: 渡劫后期
+            33000f,   // 15: 渡劫圆满/仙人（A级上限，原著A=33000）
+            50000f,   // 16: 真仙/地仙（S级下限，星系级）
+            80000f,   // 17: 金仙/天仙
+            100000f,  // 18: 太乙/大神
+            120000f,  // 19: 大罗/神王
+            148800f   // 20: 道祖/至高（X级，原著X=148800+）
+        };
+
+        /// <summary>将境界等级转换为原著欧纳值（统一校准）</summary>
+        public static float ConvertRealmToOnar(int realmLevel)
+        {
+            if (realmLevel <= 0) return 10f;
+            if (realmLevel >= RealmToOnarTable.Length) return RealmToOnarTable[RealmToOnarTable.Length - 1];
+            return RealmToOnarTable[realmLevel];
+        }
+
+        /// <summary>获取跨模组单位的原著欧纳能级（统一校准入口）</summary>
+        public static float GetCrossModOnar(Actor a)
+        {
+            if (a == null) return 0f;
+            var adapter = DetectAdapter(a);
+            if (adapter == null) return 0f;
+            int realmLevel = adapter.GetRealmLevel(a);
+            return ConvertRealmToOnar(realmLevel);
+        }
+
+        /// <summary>检测单位所属的跨模组适配器</summary>
+        public static IModAdapter DetectAdapter(Actor a)
+        {
+            if (a == null || _adapters == null) return null;
+            foreach (var adapter in _adapters)
+            {
+                if (!adapter.IsAvailable) continue;
+                if (adapter.Detect(a)) return adapter;
+            }
+            return null;
+        }
 
         private static void BuildVanillaBlacklist()
         {
@@ -121,6 +181,14 @@ namespace SuperMech.Code
             return 0f;
         }
 
+        /// <summary>将跨模组单位的能量转换为原著欧纳值（统一校准）</summary>
+        public static float ConvertModToOnar(Actor a)
+        {
+            var adapter = DetectMod(a);
+            if (adapter != null) return adapter.ConvertToOnar(a);
+            return 0f;
+        }
+
         public static string GetDetectedModName(Actor a)
         {
             var adapter = DetectMod(a);
@@ -179,6 +247,15 @@ namespace SuperMech.Code
         {
             return GetEnergyStrength(a);
         }
+
+        public float ConvertToOnar(Actor a)
+        {
+            int realm = GetRealmLevel(a);
+            // 凡人修仙传境界映射：练气=2, 筑基=4, 金丹=5, 元婴=7, 化神=8, 炼虚=9, 合体=10, 大乘=11, 渡劫=13, 真仙=16
+            int[] realmMap = { 0, 2, 4, 5, 7, 8, 9, 10, 11, 13, 16 };
+            int mappedLevel = realm < realmMap.Length ? realmMap[realm] : 20;
+            return SuperMechModAdapters.ConvertRealmToOnar(mappedLevel);
+        }
     }
 
     public class IncenseDivineAdapter : SuperMechModAdapters.IModAdapter
@@ -225,6 +302,15 @@ namespace SuperMech.Code
         public float ConvertToQi(Actor a)
         {
             return GetEnergyStrength(a);
+        }
+
+        public float ConvertToOnar(Actor a)
+        {
+            int realm = GetRealmLevel(a);
+            // 香火神道境界映射：凡神=4, 地神=6, 天神=8, 主神=11, 神王=14, 至高神=18
+            int[] realmMap = { 0, 4, 6, 8, 11, 14, 16, 18, 20 };
+            int mappedLevel = realm < realmMap.Length ? realmMap[realm] : 20;
+            return SuperMechModAdapters.ConvertRealmToOnar(mappedLevel);
         }
     }
 
@@ -292,6 +378,20 @@ namespace SuperMech.Code
         {
             return GetEnergyStrength(a);
         }
+
+        public float ConvertToOnar(Actor a)
+        {
+            int realm = GetRealmLevel(a);
+            // 西幻等级映射：1-5级=2, 6-10级=4, 11-15级=6, 16-20级=8, 传奇=11, 半神=14, 神=18
+            int mappedLevel = realm <= 0 ? 0 :
+                              realm <= 5 ? 2 :
+                              realm <= 10 ? 4 :
+                              realm <= 15 ? 6 :
+                              realm <= 20 ? 8 :
+                              realm <= 25 ? 11 :
+                              realm <= 30 ? 14 : 18;
+            return SuperMechModAdapters.ConvertRealmToOnar(mappedLevel);
+        }
     }
 
     public class ZhutianAdapter : SuperMechModAdapters.IModAdapter
@@ -338,6 +438,15 @@ namespace SuperMech.Code
         public float ConvertToQi(Actor a)
         {
             return GetEnergyStrength(a);
+        }
+
+        public float ConvertToOnar(Actor a)
+        {
+            int realm = GetRealmLevel(a);
+            // 诸天神座境界映射：凡人=2, 超凡=4, 圣域=6, 半神=8, 真神=11, 主神=14, 至高神=18
+            int[] realmMap = { 0, 2, 4, 6, 8, 11, 14, 16, 18, 20 };
+            int mappedLevel = realm < realmMap.Length ? realmMap[realm] : 20;
+            return SuperMechModAdapters.ConvertRealmToOnar(mappedLevel);
         }
     }
 
@@ -403,6 +512,17 @@ namespace SuperMech.Code
         public float ConvertToQi(Actor a)
         {
             return GetEnergyStrength(a);
+        }
+
+        public float ConvertToOnar(Actor a)
+        {
+            int level = GetRealmLevel(a);
+            if (level <= 0) return 10f;
+            // 诡秘之主序列映射：序列9=2, 序列8=3, 序列7=4, 序列6=5, 序列5=7, 序列4=9, 序列3=11, 序列2=14, 序列1=17, 序列0=19, 旧日=20
+            int[] sequenceMap = { 0, 20, 19, 17, 14, 11, 9, 7, 5, 4, 3, 2, 2, 2 };
+            int idx = SequenceTraits.Length - level;
+            int mappedLevel = idx >= 0 && idx < sequenceMap.Length ? sequenceMap[idx] : 20;
+            return SuperMechModAdapters.ConvertRealmToOnar(mappedLevel);
         }
     }
 }
