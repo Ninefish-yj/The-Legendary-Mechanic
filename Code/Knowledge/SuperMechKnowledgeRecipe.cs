@@ -49,6 +49,15 @@ namespace SuperMech.Code
             public string icon;                  // 图标路径
         }
 
+        /// <summary>融合配方总属性加成（图纸解锁模式）</summary>
+        public class FusionStats
+        {
+            public float dmgMul;    // 总伤害倍率
+            public float hpMul;     // 总生命倍率
+            public float speedMul;  // 总速度倍率
+            public int qiBonus;     // 总气力加成
+        }
+
         /// <summary>分支名称本地化key</summary>
         public static readonly Dictionary<FusionBranch, string> BranchNameKeys = new Dictionary<FusionBranch, string>
         {
@@ -367,6 +376,30 @@ namespace SuperMech.Code
             if (_fusedByActor.TryGetValue(a.data.id, out var set))
                 return set.Count;
             return 0;
+        }
+
+        /// <summary>获取单位已融合配方的总属性加成（图纸解锁模式，非直接伤害加成）</summary>
+        public static FusionStats GetFusionStats(Actor a)
+        {
+            var stats = new FusionStats { dmgMul = 1f, hpMul = 1f, speedMul = 1f, qiBonus = 0 };
+            if (a == null) return stats;
+            if (!_fusedByActor.TryGetValue(a.data.id, out var set)) return stats;
+            foreach (var recipeId in set)
+            {
+                if (_recipeById.TryGetValue(recipeId, out var recipe))
+                {
+                    // 每个配方的属性倍率叠加（乘法叠加，上限防止爆炸）
+                    stats.dmgMul *= Mathf.Min(recipe.dmgMul, 2.0f);
+                    stats.hpMul *= Mathf.Min(recipe.hpMul, 2.0f);
+                    stats.speedMul *= Mathf.Min(recipe.speedMul, 1.5f);
+                    stats.qiBonus += recipe.qiBonus;
+                }
+            }
+            // 总加成上限
+            stats.dmgMul = Mathf.Min(stats.dmgMul, 3.0f);
+            stats.hpMul = Mathf.Min(stats.hpMul, 3.0f);
+            stats.speedMul = Mathf.Min(stats.speedMul, 2.0f);
+            return stats;
         }
 
         public static void Clear()

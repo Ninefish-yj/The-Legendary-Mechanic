@@ -106,28 +106,38 @@ namespace SuperMech.Code
                     }
                 }
 
-                // 能级压制：攻击者能级远高于目标时，造成额外伤害
+                // 能级差分级压制（原著：能级差距影响伤害/命中/闪避/抗性多维度）
+                // 1.1-1.5轻微压制，1.5-2明显压制，2-5强烈压制，5-10碾压，>10秒杀级
                 if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
                 {
                     float atkEnergy = SuperMechAdvancement.CalcOnar(attacker);
                     float defEnergy = SuperMechAdvancement.CalcOnar(target);
-                    if (defEnergy > 0 && atkEnergy > defEnergy * 1.5f)
+                    if (defEnergy > 0 && atkEnergy > defEnergy)
                     {
                         float ratio = atkEnergy / defEnergy;
-                        float bonusDamage = pDamage * Mathf.Min(ratio - 1f, 3f) * 0.5f;
-                        target.data.health -= (int)bonusDamage;
+                        float dmgBonus = 0f;
+                        if (ratio >= 10f) dmgBonus = 2.0f;        // 秒杀级：伤害+200%
+                        else if (ratio >= 5f) dmgBonus = 1.0f;    // 碾压：伤害+100%
+                        else if (ratio >= 2f) dmgBonus = 0.5f;    // 强烈压制：伤害+50%
+                        else if (ratio >= 1.5f) dmgBonus = 0.25f; // 明显压制：伤害+25%
+                        else if (ratio >= 1.1f) dmgBonus = 0.10f; // 轻微压制：伤害+10%
+                        if (dmgBonus > 0)
+                        {
+                            float suppressDamage = pDamage * dmgBonus;
+                            target.data.health -= (int)suppressDamage;
+                        }
                     }
                 }
 
-                // 知识融合加成：已融合配方提供伤害加成
+                // 知识融合属性加成（图纸解锁模式：融合配方提供dmgMul/hpMul/speedMul属性倍率）
+                // 原著：知识融合产出图纸，图纸决定装备属性，而非直接加伤害
                 if (attacker != null && attacker.isAlive() && SuperMechAwakened.IsAwakened(attacker))
                 {
-                    int fusionCount = SuperMechKnowledgeRecipe.GetFusionCount(attacker);
-                    if (fusionCount > 0)
+                    var fusionStats = SuperMechKnowledgeRecipe.GetFusionStats(attacker);
+                    if (fusionStats.dmgMul > 1.01f)
                     {
-                        float fusionBonus = Mathf.Min(fusionCount * 0.05f, 0.5f);
-                        float bonusDamage = pDamage * fusionBonus;
-                        target.data.health -= (int)bonusDamage;
+                        float fusionDamage = pDamage * (fusionStats.dmgMul - 1f);
+                        target.data.health -= (int)fusionDamage;
                     }
                 }
             }
