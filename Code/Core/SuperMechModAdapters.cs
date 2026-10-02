@@ -37,7 +37,10 @@ namespace SuperMech.Code
                 {
                     if (asm.GetType(typeName) != null) return true;
                 }
-                catch { }
+                catch
+                {
+                    // 反射类型检测：类型不存在或加载失败时静默返回false，这是预期行为
+                }
             }
             return false;
         }
