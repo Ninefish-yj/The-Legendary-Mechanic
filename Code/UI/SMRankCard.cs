@@ -36,9 +36,9 @@ namespace SuperMech.Code
             rankRect.anchorMin = new Vector2(0, 0.5f);
             rankRect.anchorMax = new Vector2(0, 0.5f);
             rankRect.pivot = new Vector2(0, 0.5f);
-            rankRect.sizeDelta = new Vector2(30, 20);
+            rankRect.sizeDelta = new Vector2(26, 16);
             rankRect.anchoredPosition = new Vector2(4, 0);
-            _rankText = SMUiSkin.MakeText(rankGo.transform, $"#{rank}", 12, TextAnchor.MiddleCenter);
+            _rankText = SMUiSkin.MakeText(rankGo.transform, $"#{rank}", 10, TextAnchor.MiddleCenter);
             if (rank <= 3) _rankText.color = SMUiSkin.AccentColor;
 
             // 头像
@@ -48,8 +48,8 @@ namespace SuperMech.Code
             avatarRect.anchorMin = new Vector2(0, 0.5f);
             avatarRect.anchorMax = new Vector2(0, 0.5f);
             avatarRect.pivot = new Vector2(0, 0.5f);
-            avatarRect.sizeDelta = new Vector2(24, 24);
-            avatarRect.anchoredPosition = new Vector2(34, 0);
+            avatarRect.sizeDelta = new Vector2(20, 20);
+            avatarRect.anchoredPosition = new Vector2(30, 0);
             _avatar = avatarGo.AddComponent<Image>();
             _avatar.color = new Color(0.3f, 0.3f, 0.3f, 0.8f);
             // 尝试加载单位头像
@@ -63,32 +63,21 @@ namespace SuperMech.Code
             }
             catch { }
 
-            // 名称+信息
-            var infoGo = new GameObject("Info");
-            infoGo.transform.SetParent(transform, false);
-            var infoRect = infoGo.AddComponent<RectTransform>();
-            infoRect.anchorMin = Vector2.zero;
-            infoRect.anchorMax = Vector2.one;
-            infoRect.offsetMin = new Vector2(62, 0);
-            infoRect.offsetMax = new Vector2(-4, 0);
-
-            _nameText = SMUiSkin.MakeText(infoGo.transform, actor?.name ?? "?", 13, TextAnchor.MiddleLeft);
-            var nameRect = _nameText.GetComponent<RectTransform>();
-            nameRect.anchorMin = new Vector2(0, 0.5f);
-            nameRect.anchorMax = new Vector2(1, 1);
-            nameRect.offsetMin = Vector2.zero;
-            nameRect.offsetMax = Vector2.zero;
-
+            // 名称+信息（单行紧凑布局）
             string rankName = SuperMechRanks.GetRankName(actor);
             string className = GetClassName(actor);
-            string scoreText = sortLabel == null ? "" : $"{sortLabel}:{score:F0}";
-            _infoText = SMUiSkin.MakeText(infoGo.transform, $"{rankName} · {className} {scoreText}", 10, TextAnchor.MiddleLeft);
-            _infoText.color = new Color(0.7f, 0.7f, 0.7f);
-            var infoTextRect = _infoText.GetComponent<RectTransform>();
-            infoTextRect.anchorMin = new Vector2(0, 0);
-            infoTextRect.anchorMax = new Vector2(1, 0.5f);
-            infoTextRect.offsetMin = Vector2.zero;
-            infoTextRect.offsetMax = Vector2.zero;
+            string scoreText = sortLabel == null ? "" : $" {score:F0}";
+            string displayName = actor?.name ?? "?";
+            if (displayName.Length > 8) displayName = displayName.Substring(0, 8) + "..";
+
+            _nameText = SMUiSkin.MakeText(transform, $"{displayName}  {rankName}·{className}{scoreText}", 11, TextAnchor.MiddleLeft);
+            var nameRect = _nameText.GetComponent<RectTransform>();
+            nameRect.anchorMin = new Vector2(0, 0.5f);
+            nameRect.anchorMax = new Vector2(1, 0.5f);
+            nameRect.pivot = new Vector2(0, 0.5f);
+            nameRect.offsetMin = new Vector2(54, 0);
+            nameRect.offsetMax = new Vector2(-4, 0);
+            _nameText.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             // 点击按钮
             _button = gameObject.AddComponent<Button>();

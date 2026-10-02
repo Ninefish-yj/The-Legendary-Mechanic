@@ -379,7 +379,7 @@ namespace SuperMech.Code
 
             // 更新UI
             if (_listContent != null)
-                _listContent.sizeDelta = new Vector2(0, (_sortedList.Count + 1) * 44f);
+                _listContent.sizeDelta = new Vector2(0, (_sortedList.Count + 1) * 34f);
             if (_emptyText != null)
                 _emptyText.gameObject.SetActive(_sortedList.Count == 0);
             if (_countText != null)
@@ -506,8 +506,8 @@ namespace SuperMech.Code
 
             float scrollY = _listContent.anchoredPosition.y;
             float viewHeight = _scrollViewRect.rect.height > 0 ? _scrollViewRect.rect.height : 300f;
-            int startIdx = Mathf.Max(0, Mathf.FloorToInt(scrollY / 44f) - 1);
-            int endIdx = Mathf.Min(Mathf.CeilToInt((scrollY + viewHeight) / 44f) + 1, _sortedList.Count - 1);
+            int startIdx = Mathf.Max(0, Mathf.FloorToInt(scrollY / 34f) - 1);
+            int endIdx = Mathf.Min(Mathf.CeilToInt((scrollY + viewHeight) / 34f) + 1, _sortedList.Count - 1);
 
             if (startIdx == _lastViewStart && endIdx == _lastViewEnd) return;
 
@@ -541,7 +541,7 @@ namespace SuperMech.Code
         {
             if (_sortedList.Count <= 0) return;
             float viewHeight = _scrollViewRect != null && _scrollViewRect.rect.height > 0 ? _scrollViewRect.rect.height : 300f;
-            int visibleCount = Mathf.CeilToInt(viewHeight / 44f) + 2;
+            int visibleCount = Mathf.CeilToInt(viewHeight / 34f) + 2;
             int endIdx = Mathf.Min(visibleCount - 1, _sortedList.Count - 1);
             for (int i = 0; i <= endIdx; i++)
                 CreateCard(i);
@@ -562,8 +562,8 @@ namespace SuperMech.Code
             cardRect.anchorMin = new Vector2(0, 1);
             cardRect.anchorMax = new Vector2(1, 1);
             cardRect.pivot = new Vector2(0.5f, 1);
-            cardRect.sizeDelta = new Vector2(0, 40);
-            cardRect.anchoredPosition = new Vector2(0, -index * 44f - 2);
+            cardRect.sizeDelta = new Vector2(0, 30);
+            cardRect.anchoredPosition = new Vector2(0, -index * 34f - 2);
 
             var card = cardGo.AddComponent<SMRankCard>();
             float score = _scoreCache.TryGetValue(actor.getID(), out float s) ? s : 0;
