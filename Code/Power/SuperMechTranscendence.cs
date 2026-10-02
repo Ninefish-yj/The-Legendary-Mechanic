@@ -230,12 +230,14 @@ namespace SuperMech.Code
                     SuperMechAdvancement.SetExactRank(a, 13);
                     // 原著ch1401-1402：神化进阶时吸收四位帮手气力+超神遗力燃烧，
                     // 触发两次种族进化，气力境界加成属性变更，气力境界直接跃升
-                    // 突破时气力至少+70000（原著明确加了70900），且确保达到下一级阈值
+                    // 突破时气力增长与当前基数成正比（原著SS→X时42万→48万，增长约15%）
+                    // 低阶位突破增长少，高阶位突破增长多，同时确保达到下一级阈值
                     float curQi = SuperMechQi.GetQi(a);
                     int curLv = SuperMechQi.GetLevel(curQi);
                     int nextLv = Mathf.Min(curLv + 1, SuperMechQi.Thresholds.Length - 1);
                     float nextThreshold = SuperMechQi.Thresholds[nextLv];
-                    float targetQi = Mathf.Max(curQi + 70000f, nextThreshold + 1000f);
+                    float growth = curQi * 0.15f; // 突破增长15%，原著7万/42万≈16.7%
+                    float targetQi = Mathf.Max(curQi + growth, nextThreshold + 1000f);
                     SuperMechQi.SetQi(a, targetQi);
                     SuperMechQi.AddQiMax(a, targetQi - curQi + 50000f);
                     var stats = SuperMechStats.Of(a);
