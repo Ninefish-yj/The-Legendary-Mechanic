@@ -4289,6 +4289,8 @@
   "sm_res_partial_lost": "信息完整度{0}%，部分能力丢失",
   "sm_res_full_keep": "信息完整，能力全部保留",
   "sm_ui_rank_filter": "筛选",
+  "sm_ui_rank_rank_filter": "阶位筛选",
+  "sm_ui_rank_clear": "清除筛选",
   "sm_ui_rank_stats": "统计",
   "sm_ui_rank_to_top": "到顶",
   "sm_ui_rank_to_bottom": "到底",

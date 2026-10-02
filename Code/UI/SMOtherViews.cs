@@ -38,6 +38,7 @@ namespace SuperMech.Code
         private Text _statsText;
         private Dropdown _sortDropdown;
         private Dropdown _rankDropdown;
+        private List<GameObject> _systemButtons = new List<GameObject>();
 
         private static List<Actor> _candidatePool = new List<Actor>(512);
         private static List<Actor> _sortedList = new List<Actor>(512);
@@ -116,12 +117,14 @@ namespace SuperMech.Code
             sysLayout.childControlHeight = true;
             sysLayout.childControlWidth = true;
 
+            _systemButtons = new List<GameObject>();
             for (int i = 0; i < SystemNames.Length; i++)
             {
                 int idx = i - 1; // -1=全部, 0-4=体系
                 var btn = SMUiSkin.MakeButton(sysContainer.transform, SystemNames[i], 10, () =>
                 {
                     _currentSystemFilter = idx;
+                    UpdateSystemButtonColors();
                     RefreshList();
                 });
                 var btnImg = btn.GetComponent<Image>();
@@ -129,11 +132,36 @@ namespace SuperMech.Code
                     btnImg.color = _currentSystemFilter == idx ? new Color(0.3f, 0.5f, 0.8f, 0.8f) : new Color(0.2f, 0.2f, 0.2f, 0.8f);
                 var btnRect = btn.GetComponent<RectTransform>();
                 btnRect.sizeDelta = new Vector2(0, 18);
+                _systemButtons.Add(btn.gameObject);
             }
 
             // 阶位筛选下拉
-            SMUiSkin.MakeText(leftGo.transform, LocalizedTextManager.getText("sm_ui_rank_filter"), 11, TextAnchor.MiddleLeft)
-                .GetComponent<RectTransform>().anchoredPosition = new Vector2(4, -160);
+            var rankLabel = SMUiSkin.MakeText(leftGo.transform, LocalizedTextManager.getText("sm_ui_rank_rank_filter"), 11, TextAnchor.MiddleLeft);
+            var rankLabelRect = rankLabel.GetComponent<RectTransform>();
+            rankLabelRect.anchorMin = new Vector2(0, 1);
+            rankLabelRect.anchorMax = new Vector2(1, 1);
+            rankLabelRect.pivot = new Vector2(0.5f, 1);
+            rankLabelRect.sizeDelta = new Vector2(0, 18);
+            rankLabelRect.anchoredPosition = new Vector2(0, -158);
+
+            _rankDropdown = CreateSimpleDropdown(leftGo.transform, RankNames, OnRankChanged);
+            var rankDropRect = _rankDropdown.GetComponent<RectTransform>();
+            rankDropRect.anchorMin = new Vector2(0, 1);
+            rankDropRect.anchorMax = new Vector2(1, 1);
+            rankDropRect.pivot = new Vector2(0.5f, 1);
+            rankDropRect.sizeDelta = new Vector2(0, 22);
+            rankDropRect.anchoredPosition = new Vector2(0, -178);
+
+            // 清除筛选按钮
+            var clearBtn = SMUiSkin.MakeButton(leftGo.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 10, ClearAllFilters);
+            var clearBtnRect = clearBtn.GetComponent<RectTransform>();
+            clearBtnRect.anchorMin = new Vector2(0.5f, 0);
+            clearBtnRect.anchorMax = new Vector2(0.5f, 0);
+            clearBtnRect.pivot = new Vector2(0.5f, 0);
+            clearBtnRect.sizeDelta = new Vector2(80, 20);
+            clearBtnRect.anchoredPosition = new Vector2(0, 8);
+            var clearBtnImg = clearBtn.GetComponent<Image>();
+            if (clearBtnImg != null) clearBtnImg.color = new Color(0.5f, 0.2f, 0.2f, 0.8f);
 
             // === 中栏：列表（宽度340）===
             var centerGo = new GameObject("CenterPanel");
@@ -281,6 +309,37 @@ namespace SuperMech.Code
         private void OnSortChanged(int index)
         {
             _currentSortType = index;
+            RefreshList();
+        }
+
+        private void OnRankChanged(int index)
+        {
+            _currentRankFilter = index - 1; // -1=全部, 0-7=F~X
+            RefreshList();
+        }
+
+        private void UpdateSystemButtonColors()
+        {
+            if (_systemButtons == null) return;
+            for (int i = 0; i < _systemButtons.Count; i++)
+            {
+                var btn = _systemButtons[i];
+                if (btn == null) continue;
+                var img = btn.GetComponent<Image>();
+                if (img == null) continue;
+                int idx = i - 1;
+                img.color = _currentSystemFilter == idx
+                    ? new Color(0.3f, 0.5f, 0.8f, 0.8f)
+                    : new Color(0.2f, 0.2f, 0.2f, 0.8f);
+            }
+        }
+
+        private void ClearAllFilters()
+        {
+            _currentSystemFilter = -1;
+            _currentRankFilter = -1;
+            if (_rankDropdown != null) _rankDropdown.value = 0;
+            UpdateSystemButtonColors();
             RefreshList();
         }
 
