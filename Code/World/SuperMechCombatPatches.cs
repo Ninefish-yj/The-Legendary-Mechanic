@@ -18,6 +18,44 @@ namespace SuperMech.Code
             AttackType.None
         };
 
+        /// <summary>能级压制等级枚举（用于UI显示和日志）</summary>
+        public enum SuppressionLevel
+        {
+            None = 0,        // 无压制（能级比<1.1）
+            Minor = 1,       // 轻微压制（1.1~1.5）
+            Moderate = 2,    // 明显压制（1.5~2）
+            Strong = 3,      // 强烈压制（2~5）
+            Overwhelm = 4,   // 碾压（5~10）
+            Annihilate = 5   // 秒杀级（>10）
+        }
+
+        /// <summary>获取能级压制等级</summary>
+        public static SuppressionLevel GetSuppressionLevel(float attackerEnergy, float defenderEnergy)
+        {
+            if (attackerEnergy <= 0 || defenderEnergy <= 0) return SuppressionLevel.None;
+            float ratio = attackerEnergy / defenderEnergy;
+            if (ratio >= 10f) return SuppressionLevel.Annihilate;
+            if (ratio >= 5f) return SuppressionLevel.Overwhelm;
+            if (ratio >= 2f) return SuppressionLevel.Strong;
+            if (ratio >= 1.5f) return SuppressionLevel.Moderate;
+            if (ratio >= 1.1f) return SuppressionLevel.Minor;
+            return SuppressionLevel.None;
+        }
+
+        /// <summary>获取能级压制描述（用于UI/日志）</summary>
+        public static string GetSuppressionDescription(SuppressionLevel level)
+        {
+            switch (level)
+            {
+                case SuppressionLevel.Minor: return "轻微压制";
+                case SuppressionLevel.Moderate: return "明显压制";
+                case SuppressionLevel.Strong: return "强烈压制";
+                case SuppressionLevel.Overwhelm: return "碾压";
+                case SuppressionLevel.Annihilate: return "秒杀级差距";
+                default: return "无压制";
+            }
+        }
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Actor), nameof(Actor.getHit))]
         [HarmonyPriority(Priority.Low)]
@@ -173,6 +211,20 @@ namespace SuperMech.Code
                             // 抗性：恢复一部分即将受到的伤害（通过加血实现，因为pDamage已经在原版逻辑中应用）
                             float reducedDamage = pDamage * damageReduction;
                             target.data.health += (int)reducedDamage;
+                        }
+
+                        // 维度5：闪避压制（低能级攻击高能级时，高能级闪避率提升）
+                        // 原著：能级差距大时，低能级甚至无法触碰到高能级
+                        float dodgeChance = 0f;
+                        if (defRatio >= 10f) dodgeChance = 0.40f;    // 秒杀级差距：40%概率完全闪避
+                        else if (defRatio >= 5f) dodgeChance = 0.25f; // 碾压差距：25%概率闪避
+                        else if (defRatio >= 2f) dodgeChance = 0.12f; // 强烈差距：12%概率闪避
+                        else if (defRatio >= 1.5f) dodgeChance = 0.05f; // 明显差距：5%概率闪避
+                        if (dodgeChance > 0 && Random.value < dodgeChance)
+                        {
+                            // 完全闪避：恢复全部伤害并跳过后续处理
+                            target.data.health += (int)pDamage;
+                            return true; // 继续执行原版逻辑（伤害已被恢复）
                         }
                     }
                 }
