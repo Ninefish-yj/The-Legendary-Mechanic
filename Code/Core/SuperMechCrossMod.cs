@@ -261,8 +261,9 @@ namespace SuperMech.Code
         // 原著能级公式(ch3/ch51)：
         // "气力是超能者的基础，很大部分决定了能级与位阶"
         // "高级以后，技能给战斗力带来的增强甚至还超过升级的效果"
-        // 公式：欧纳 = 气力强度 + 身体素质 × 0.3
-        // 气力是核心(权重1.0)，身体素质是辅助(权重0.3)
+        // 公式：欧纳 = 气力强度 × 0.4 + 身体素质 × 0.3
+        // 原著ch1039查证：Lv21气力182075，能级78000+ → 气力权重≈0.43，取0.4
+        // 气力是核心(权重0.4)，身体素质是辅助(权重0.3)
         // 技能/知识/装备/职业的加成已包含在damage/health等属性中
         public static float GetUniversalPowerLevel(Actor a)
         {
@@ -271,7 +272,7 @@ namespace SuperMech.Code
             float energyStrength = GetEnergyStrength(a);
             float bodyPower = GetBodyCombatPower(a);
 
-            return energyStrength + bodyPower * 0.3f;
+            return energyStrength * 0.4f + bodyPower * 0.3f;
         }
 
         // 气力强度：优先用本模组气力，其次用其他模组能量
