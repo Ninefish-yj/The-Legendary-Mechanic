@@ -102,7 +102,10 @@ namespace SuperMech.Code
         {
             if (a == null) return AttrNone;
             if (_attr.TryGetValue(a.data.id, out string v)) return v;
+            // 未分配时按体系默认属性（用于战斗克制计算）
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return AttrMagnetic;
             if (a.hasTrait(SuperMechTraits.ClassMind)) return AttrSpirit;
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return AttrSpirit;
             return AttrNone;
         }
 
@@ -120,7 +123,9 @@ namespace SuperMech.Code
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
-                if (SuperMechStage.GetStage(a) >= 4) attr = AttrMagnetic;
+                // 原著：机械师气力属性为磁，从觉醒开始即有
+                // 磁属性可用于制造和使用机械，宛如肢体延伸
+                attr = AttrMagnetic;
             }
             else if (a.hasTrait(SuperMechTraits.ClassMind))
             {
