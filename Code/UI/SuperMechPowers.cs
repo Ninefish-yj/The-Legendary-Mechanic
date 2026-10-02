@@ -56,16 +56,28 @@ namespace SuperMech.Code
 
                 try
                 {
-                    // 用原版GodPower的图标加载方式：SpriteTextureLoader.getSprite("ui/Icons/" + path_icon)
+                    // 用原版GodPower的图标加载方式
                     Sprite icon = godPower.getIconSprite();
                     if (icon == null)
                     {
-                        Debug.LogWarning($"[超神机械师] 按钮{id}图标加载失败，使用默认图标");
                         icon = SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     }
                     var pb = PowerButtonCreator.CreateGodPowerButton(id, icon);
                     if (pb != null)
                     {
+                        // 窗口按钮：点击直接打开UGUI窗口，不需要再点地图
+                        if (id == OpenSanctuary || id == OpenRank)
+                        {
+                            pb.type = PowerButtonType.Window;
+                            var btn = pb.GetComponent<UnityEngine.UI.Button>();
+                            if (btn != null)
+                            {
+                                if (id == OpenSanctuary)
+                                    btn.onClick.AddListener(() => SMWindowManager.OpenSanctuary());
+                                else if (id == OpenRank)
+                                    btn.onClick.AddListener(() => SMWindowManager.OpenRank());
+                            }
+                        }
                         _modTab.AddPowerButton("main", pb);
                         created++;
                     }
