@@ -136,7 +136,7 @@ namespace SuperMech.Code
 
                 if (!SuperMechAwakened.IsAwakened(a) && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx > oldExact)
                 {
-                    string rankName = SuperMechRanks.All[targetIdx].name;
+                    string rankName = LocalizedTextManager.getText(SuperMechRanks.All[targetIdx].name);
                     int qiLv = SuperMechQi.GetLevel(SuperMechQi.GetQiMax(a));
                     if (targetIdx >= 10)
                         Debug.Log($"[超神机械师]【阶位突破】{a.name} 迈入{rankName}，气力Lv{qiLv}，能力产生质变，可掌握更高层次的技能与知识");

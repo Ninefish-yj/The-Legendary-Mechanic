@@ -95,7 +95,7 @@ namespace SuperMech.Code
             closeRect.anchoredPosition = new Vector2(-57, -45);
             _closeBtn = closeGo.AddComponent<Button>();
             var closeImg = closeGo.AddComponent<Image>();
-            closeImg.color = new Color(1f, 0.3f, 0.3f, 0.8f);
+            closeImg.color = new Color(0.9f, 0.95f, 1f, 0.2f);
             var closeTextGo = new GameObject("Text");
             closeTextGo.transform.SetParent(closeGo.transform, false);
             var closeTextRect = closeTextGo.AddComponent<RectTransform>();
@@ -104,7 +104,7 @@ namespace SuperMech.Code
             var closeText = closeTextGo.AddComponent<Text>();
             closeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             closeText.fontSize = 20;
-            closeText.color = Color.white;
+            closeText.color = new Color(0.9f, 0.95f, 1f, 0.9f);
             closeText.alignment = TextAnchor.MiddleCenter;
             closeText.text = "×";
             _closeBtn.onClick.AddListener(Close);

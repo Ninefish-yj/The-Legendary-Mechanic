@@ -48,6 +48,11 @@ namespace SuperMech.Code
             sr.anchorMax = Vector2.one;
             sr.offsetMin = new Vector2(10, 10);
             sr.offsetMax = new Vector2(-10, -10);
+            // 添加Mask裁剪内容，防止超出窗口边界
+            var mask = scrollGo.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            var maskImg = scrollGo.AddComponent<Image>();
+            maskImg.color = new Color(0, 0, 0, 0);
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);
@@ -61,8 +66,13 @@ namespace SuperMech.Code
             layout.padding = new RectOffset(4, 4, 4, 4);
             layout.childControlHeight = true;
             layout.childControlWidth = true;
+            // 自动适应内容高度
+            var fitter = contentGo.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             scrollRect.content = contentRect;
+            scrollRect.viewport = sr;
             scrollRect.vertical = true;
+            scrollRect.horizontal = false;
         }
 
         private void RefreshRank()
