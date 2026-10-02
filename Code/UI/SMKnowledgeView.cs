@@ -25,31 +25,31 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // 左侧列表面板（固定宽度220px）
+            // 左侧列表面板（固定宽度200px）
             var listGo = new GameObject("ListPanel");
             listGo.transform.SetParent(transform, false);
             var listRect = listGo.AddComponent<RectTransform>();
             listRect.anchorMin = new Vector2(0, 0);
             listRect.anchorMax = new Vector2(0, 1);
             listRect.pivot = new Vector2(0, 0.5f);
-            listRect.sizeDelta = new Vector2(220, 0);
+            listRect.sizeDelta = new Vector2(200, 0);
             listRect.anchoredPosition = Vector2.zero;
 
             // 列表滚动区
             var (scroll, content) = SMUiSkin.CreateScrollArea(listGo.transform, "Scroll");
             _listContent = content;
 
-            // 右侧详情面板
+            // 右侧详情面板（从左侧210px到右侧边缘）
             var detailGo = new GameObject("DetailPanel");
             detailGo.transform.SetParent(transform, false);
             var detailRect = detailGo.AddComponent<RectTransform>();
-            detailRect.anchorMin = new Vector2(1, 0);
-            detailRect.anchorMax = new Vector2(1, 1);
-            detailRect.pivot = new Vector2(1, 0.5f);
-            detailRect.sizeDelta = new Vector2(-230, 0);
-            detailRect.anchoredPosition = Vector2.zero;
+            detailRect.anchorMin = Vector2.zero;
+            detailRect.anchorMax = Vector2.one;
+            detailRect.pivot = new Vector2(0.5f, 0.5f);
+            detailRect.offsetMin = new Vector2(210, 0);
+            detailRect.offsetMax = Vector2.zero;
 
-            // 详情卡片背景
+            // 详情卡片背景（纯色，不用9-slice）
             var cardGo = new GameObject("Card");
             cardGo.transform.SetParent(detailGo.transform, false);
             var cardRect = cardGo.AddComponent<RectTransform>();
@@ -58,15 +58,7 @@ namespace SuperMech.Code
             cardRect.offsetMin = new Vector2(4, 4);
             cardRect.offsetMax = new Vector2(-4, -4);
             var cardImg = cardGo.AddComponent<Image>();
-            if (SMUiSkin.Card != null)
-            {
-                cardImg.sprite = SMUiSkin.Card;
-                cardImg.type = Image.Type.Sliced;
-            }
-            else
-            {
-                cardImg.color = SMUiSkin.CardBg;
-            }
+            cardImg.color = SMUiSkin.CardBg;
             _detailContent = cardRect;
 
             // 详情文字

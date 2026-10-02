@@ -19,11 +19,11 @@ namespace SuperMech.Code
         private Text _titleText;
         private Vector2 _dragOffset;
 
-        // 布局常量（9-slice边框8px，内容边距12px）
         private const int TitleBarHeight = 36;
-        private const int ContentMargin = 12;
-        private const int CloseBtnSize = 28;
+        private const int ContentMargin = 10;
+        private const int CloseBtnSize = 26;
         private const int CloseBtnMargin = 6;
+        private const int BorderWidth = 2;
 
         public static Canvas GetCanvas()
         {
@@ -64,20 +64,18 @@ namespace SuperMech.Code
 
         private void BuildUI(string titleKey)
         {
-            // 背景：9-slice面板（深灰蓝底+冰蓝边框+切角）
+            // 背景：纯色半透明深灰蓝
             _bgImage = gameObject.AddComponent<Image>();
-            if (SMUiSkin.Panel != null)
-            {
-                _bgImage.sprite = SMUiSkin.Panel;
-                _bgImage.type = Image.Type.Sliced;
-                _bgImage.fillCenter = true;
-            }
-            else
-            {
-                _bgImage.color = SMUiSkin.BgColor;
-            }
+            _bgImage.color = SMUiSkin.BgColor;
+            _bgImage.raycastTarget = true;
 
-            // 标题栏背景（9-slice）
+            // 边框：4个冰蓝细边
+            AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, BorderWidth), new Vector2(0, 0));
+            AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, BorderWidth), new Vector2(0, 0));
+            AddBorder("LeftBorder", new Vector2(0, 0), new Vector2(0, 1), new Vector2(0, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0));
+            AddBorder("RightBorder", new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0));
+
+            // 标题栏背景
             var titleBarGo = new GameObject("TitleBar");
             titleBarGo.transform.SetParent(transform, false);
             var titleBarRect = titleBarGo.AddComponent<RectTransform>();
@@ -85,17 +83,9 @@ namespace SuperMech.Code
             titleBarRect.anchorMax = new Vector2(1, 1);
             titleBarRect.pivot = new Vector2(0.5f, 1);
             titleBarRect.sizeDelta = new Vector2(0, TitleBarHeight);
-            titleBarRect.anchoredPosition = new Vector2(0, -4);
+            titleBarRect.anchoredPosition = new Vector2(0, -BorderWidth);
             var titleBarImg = titleBarGo.AddComponent<Image>();
-            if (SMUiSkin.TitleBar != null)
-            {
-                titleBarImg.sprite = SMUiSkin.TitleBar;
-                titleBarImg.type = Image.Type.Sliced;
-            }
-            else
-            {
-                titleBarImg.color = new Color(0.04f, 0.06f, 0.10f, 0.98f);
-            }
+            titleBarImg.color = new Color(0.04f, 0.06f, 0.10f, 0.98f);
             var titleDrag = titleBarGo.AddComponent<SMDragHandler>();
             titleDrag.Target = this;
 
@@ -109,7 +99,7 @@ namespace SuperMech.Code
             titleRect.offsetMin = new Vector2(CloseBtnSize + CloseBtnMargin * 2, 0);
             titleRect.offsetMax = new Vector2(-(CloseBtnSize + CloseBtnMargin * 2), 0);
 
-            // 关闭按钮（9-slice三态）
+            // 关闭按钮
             var closeGo = new GameObject("CloseBtn");
             closeGo.transform.SetParent(titleBarGo.transform, false);
             var closeRect = closeGo.AddComponent<RectTransform>();
@@ -117,25 +107,17 @@ namespace SuperMech.Code
             closeRect.anchorMax = new Vector2(1, 1);
             closeRect.pivot = new Vector2(1, 1);
             closeRect.sizeDelta = new Vector2(CloseBtnSize, CloseBtnSize);
-            closeRect.anchoredPosition = new Vector2(-CloseBtnMargin, -4);
+            closeRect.anchoredPosition = new Vector2(-CloseBtnMargin, -5);
             var closeImg = closeGo.AddComponent<Image>();
-            if (SMUiSkin.ButtonNormalSprite != null)
-            {
-                closeImg.sprite = SMUiSkin.ButtonNormalSprite;
-                closeImg.type = Image.Type.Sliced;
-            }
-            else
-            {
-                closeImg.color = SMUiSkin.CloseRed;
-            }
+            closeImg.color = SMUiSkin.CloseRed;
             _closeBtn = closeGo.AddComponent<Button>();
-            _closeBtn.transition = Selectable.Transition.SpriteSwap;
-            var spriteState = _closeBtn.spriteState;
-            spriteState.highlightedSprite = SMUiSkin.ButtonHoverSprite;
-            spriteState.pressedSprite = SMUiSkin.ButtonActiveSprite;
-            _closeBtn.spriteState = spriteState;
+            var closeColors = _closeBtn.colors;
+            closeColors.normalColor = Color.white;
+            closeColors.highlightedColor = new Color(1f, 0.4f, 0.4f, 1f);
+            closeColors.pressedColor = new Color(0.6f, 0.15f, 0.15f, 1f);
+            _closeBtn.colors = closeColors;
             var closeText = SMUiSkin.MakeText(closeGo.transform, "×", 18, TextAnchor.MiddleCenter);
-            closeText.color = SMUiSkin.TextColor;
+            closeText.color = Color.white;
             var closeTextRect = closeText.GetComponent<RectTransform>();
             closeTextRect.anchorMin = Vector2.zero;
             closeTextRect.anchorMax = Vector2.one;
@@ -143,15 +125,15 @@ namespace SuperMech.Code
             closeTextRect.offsetMax = Vector2.zero;
             _closeBtn.onClick.AddListener(Close);
 
-            // 内容区域（避开9-slice边框8px + 内容边距12px）
+            // 内容区域
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(transform, false);
             Content = contentGo.AddComponent<RectTransform>();
             Content.anchorMin = Vector2.zero;
             Content.anchorMax = Vector2.one;
             Content.pivot = new Vector2(0.5f, 0.5f);
-            Content.offsetMin = new Vector2(ContentMargin + 8, ContentMargin + 8);
-            Content.offsetMax = new Vector2(-(ContentMargin + 8), -(TitleBarHeight + ContentMargin + 8));
+            Content.offsetMin = new Vector2(ContentMargin + BorderWidth, ContentMargin + BorderWidth);
+            Content.offsetMax = new Vector2(-(ContentMargin + BorderWidth), -(TitleBarHeight + ContentMargin + BorderWidth));
         }
 
         public void OnPointerDown(PointerEventData e)
@@ -168,6 +150,20 @@ namespace SuperMech.Code
             {
                 Rect.anchoredPosition = localPos - _dragOffset;
             }
+        }
+
+        private void AddBorder(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPos)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(transform, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = anchorMin;
+            rect.anchorMax = anchorMax;
+            rect.pivot = pivot;
+            rect.sizeDelta = sizeDelta;
+            rect.anchoredPosition = anchoredPos;
+            var img = go.AddComponent<Image>();
+            img.color = SMUiSkin.BorderColor;
         }
 
         public void Close()
