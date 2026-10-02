@@ -165,7 +165,6 @@ namespace SuperMech.Code
             _buffEndTime[a.id] = now + System.TimeSpan.FromSeconds(BuffDurationSeconds).Ticks;
             _cooldown[a.id] = now + System.TimeSpan.FromSeconds(CooldownSeconds).Ticks;
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 进入{dim.name}，获得限时强化（{BuffDurationSeconds}秒）");
             return true;
         }
 
@@ -199,7 +198,6 @@ namespace SuperMech.Code
                     var stats = SuperMechStats.Of(a);
                     if (dim != null && stats != null) dim.removeBuff(stats);
                     if (SuperMechConfig.LogVerbose)
-                        Debug.Log($"[超神机械师] {a.name} 的{dim?.name ?? "维度"}buff已过期");
                 }
                 _activeDimension.Remove(id);
                 _buffEndTime.Remove(id);

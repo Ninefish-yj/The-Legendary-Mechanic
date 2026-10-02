@@ -27,7 +27,6 @@ namespace SuperMech.Code
             if (!string.IsNullOrEmpty(deed))
             {
                 _lastDeed[a.data.id] = deed;
-                Debug.Log($"[超神机械师]【传说度】{a.name} 因「{deed}」获得{amount}点传说度（当前{_legend[a.data.id]}）");
             }
         }
 

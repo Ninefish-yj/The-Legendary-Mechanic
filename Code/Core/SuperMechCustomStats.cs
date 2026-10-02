@@ -88,7 +88,6 @@ namespace SuperMech.Code
                 registered++;
             }
 
-            Debug.Log($"[超神机械师] 自定义属性注册完成：{registered}个（气力/气力上限/械感/魔感/神秘/魅力/幸运/职业等级/潜能点/神性蜕变/6圣所权限）");
         }
 
         public static void TickSync()

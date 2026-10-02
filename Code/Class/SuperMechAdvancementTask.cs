@@ -37,7 +37,6 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            Debug.Log("[超神机械师] 转职条件系统注册完成（原著ch50/ch107/ch269/ch626/ch1201）");
         }
 
         private static AdvanceReq GetReq(Actor a, int stage)
@@ -137,7 +136,6 @@ namespace SuperMech.Code
             if (!CheckReq(a, stage)) return false;
             bool ok = SuperMechAwakened.TryAdvanceStage(a);
             if (ok && SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 满足转职条件，转职到阶段{stage + 1}");
             return ok;
         }
 

@@ -48,7 +48,6 @@ namespace SuperMech.Code
                 }
             }
             if (favorited > 0 && SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] 自动收藏 {favorited} 个单位");
         }
     }
 }

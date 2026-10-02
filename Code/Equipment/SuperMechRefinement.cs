@@ -48,7 +48,6 @@ namespace SuperMech.Code
             AddVariantTrait(ManaMeditation, "sm_refinement_087", "sm_refinement_088");
             AddVariantTrait(MindTrain, "sm_refinement_089", "sm_refinement_090");
 
-            Debug.Log("[超神机械师] 提炼法系统注册完成（气力提炼法全系通用+电磁因子提炼法机械专属+三系变种）");
         }
 
         private static void AddVariantTrait(string id, string name, string desc)
@@ -139,7 +138,6 @@ namespace SuperMech.Code
             SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a));
 
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 提炼法锻炼：完美度{perfection:F0}%，气力+{qiGain}（{count + 1}/{MaxRefineCount}）");
 
             return true;
         }
@@ -163,7 +161,6 @@ namespace SuperMech.Code
             SuperMechQi.AddQiMax(a, qiGain);
 
             if (count + 1 >= MaxEmRefineCount && SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 电磁因子提炼法圆满！");
 
             return true;
         }

@@ -24,7 +24,6 @@ namespace SuperMech.Code
             AddDisaster(DisasterAlien, "sm_powers_924");
             AddSanctuaryPower(OpenSanctuary, "sm_sanctuary_974", "actor_traits/iconBlessing");
             AddWindowPower(OpenRank, "sm_rank_title", "iconDivineLight", () => SMWindowManager.OpenRank());
-            Debug.Log("[超神机械师] 神权数据注册完成：4个GodPower");
         }
 
         public static void TryCreateButtons()
@@ -65,7 +64,6 @@ namespace SuperMech.Code
             if (created > 0)
             {
                 _modTab.findNeighbours();
-                Debug.Log($"[超神机械师] 神权按钮创建完成：{created}个（独立Tab）");
             }
 
             // 运行时断言：验证所有按钮都在Tab列表中

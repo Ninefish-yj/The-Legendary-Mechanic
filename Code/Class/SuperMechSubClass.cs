@@ -40,7 +40,6 @@ namespace SuperMech.Code
             AddSubClass(SubScout,    "sm_subclass_078",   0, 2, 0.03f,    "sm_subclass_079");
 
 
-            Debug.Log("[超神机械师] 副职业系统注册完成：8个副职业（含等级系统，知识Tab学习）");
         }
 
         public static void TickSubLevels()
@@ -90,7 +89,6 @@ namespace SuperMech.Code
             {
                 SetSubLevel(a, subId, curLv + 1);
                 if (SuperMechConfig.LogVerbose)
-                    Debug.Log($"[超神机械师] {a.name} 副职业{subId}升级到Lv{curLv + 1}");
             }
         }
 

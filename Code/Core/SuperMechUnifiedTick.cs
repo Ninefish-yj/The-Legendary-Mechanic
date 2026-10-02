@@ -117,7 +117,6 @@ namespace SuperMech.Code
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechAdvancementTask.CleanupDead(alive);
             if (removed > 0 && SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] 清理{removed}条死亡单位数据");
         }
 
         public static void ClearAll()
@@ -157,7 +156,6 @@ namespace SuperMech.Code
             try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
             try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }
-            Debug.Log("[超神机械师] 所有系统数据已清空（世界切换）");
         }
     }
 }

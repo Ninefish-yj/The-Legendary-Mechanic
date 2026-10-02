@@ -24,7 +24,6 @@ namespace SuperMech.Code
             _initialized = true;
             BuildVanillaBlacklist();
             BuildAdapters();
-            Debug.Log("[超神机械师] 模组适配层初始化：" + _adapters.Count + "个适配器，" + _vanillaStats.Count + "个原版属性排除");
         }
 
         private static void BuildVanillaBlacklist()

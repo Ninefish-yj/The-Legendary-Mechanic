@@ -109,7 +109,6 @@ namespace SuperMech.Code
             AddSpec(MechSurge,    "sm_specialty_222", 6, 0.15f, 0.05f, "sm_specialty_223");
             AddSpec(MechWill,     "sm_specialty_224", 8, 0.25f, 0f,   "sm_specialty_225");
 
-            Debug.Log("[超神机械师] 五系特色专精注册完成：23个特色");
         }
 
         private static void AddSpec(string id, string name, int intell, float dmgMul, float hpMul, string desc)
@@ -164,7 +163,6 @@ namespace SuperMech.Code
             if (specId != null && !a.hasTrait(specId))
             {
                 a.addTrait(specId);
-                Debug.Log($"[超神机械师] {a.name} 选择分支后获得特色能力：{LocalizedTextManager.getText("trait_" + specId)}");
             }
         }
         public static List<string> GetSpecialties(Actor a)

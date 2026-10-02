@@ -89,7 +89,6 @@ namespace SuperMech.Code
                     {"mana", 40f}, {"multiplier_speed", 1.05f}, {"attack_speed", 1.03f} });
 
 
-            Debug.Log("[超神机械师] 特质注册完成：阶位9(主阶位) + 五系觉醒5");
         }
 
         private static void AddClassTrait(string id, string name, int intell, int str, int stam,

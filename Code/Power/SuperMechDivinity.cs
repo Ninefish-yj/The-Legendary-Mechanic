@@ -48,7 +48,6 @@ namespace SuperMech.Code
             if (a == null || amount <= 0) return;
             int cur = GetPoints(a);
             _points[a.id] = cur + amount;
-            Debug.Log($"[超神机械师] {a.name} 获得{amount}神性蜕变点数（共{cur + amount}）");
         }
 
         public static void SetPoints(Actor a, int amount)
@@ -113,7 +112,6 @@ namespace SuperMech.Code
             if (a.hasTrait("sm_cosmic_relic_owner")) points++;
 
             AddPoints(a, points);
-            Debug.Log($"[超神机械师] {a.name} 进阶获得{points}神性蜕变点数");
             return points;
         }
 
@@ -165,7 +163,6 @@ namespace SuperMech.Code
                             _speciesLayers[a.id] = spec + 1;
                             ApplySpeciesBonus(a, 1);
                         }
-                        Debug.Log($"[超神机械师] {a.name}（星海人）感悟转化为1层神性蜕变");
                     }
                 }
                 _insightProgress[a.id] = progress;

@@ -70,7 +70,6 @@ namespace SuperMech.Code
                 _target.addTrait("sm_rank_00_f");
             SuperMechAdvancement.SetExactRank(_target, 0);
 
-            Debug.Log($"[超神机械师] {_target.name} 觉醒为{className}，获得F阶");
             _window?.Hide();
         }
 

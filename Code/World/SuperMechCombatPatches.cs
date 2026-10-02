@@ -106,7 +106,6 @@ namespace SuperMech.Code
                     if (SuperMechInfoState.TryConvert(killer, target))
                     {
                         target.data.health = 1;
-                        Debug.Log($"[超神机械师] {killer.name} 信息态转化 {target.name}！");
                     }
                 }
 

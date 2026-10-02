@@ -51,7 +51,6 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            Debug.Log($"[超神机械师] 气力等级系统初始化：{Thresholds.Length} 级（纯内部数据，不注册特质）");
         }
 
         public static void ApplyQiStats(Actor a, int level)
@@ -218,7 +217,6 @@ namespace SuperMech.Code
                     a.data.health = (int)Mathf.Max(1f, a.data.health - healthCost);
                     spent += (stamina / 3f);
                     if (SuperMechConfig.LogVerbose)
-                        Debug.Log($"[超神机械师] {a.name} 气力体力双空，被异能榨干！扣生命{healthCost:F0}");
                 }
             }
             return spent;

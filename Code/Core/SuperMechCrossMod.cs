@@ -43,7 +43,6 @@ namespace SuperMech.Code
             _initialized = true;
             SuperMechModAdapters.Init();
             RebuildEnergyStatCache();
-            Debug.Log("[超神机械师] 跨模组适配层初始化：逐个模组适配 + 原版属性排除");
         }
 
         public static void RebuildEnergyStatCache()
@@ -62,7 +61,6 @@ namespace SuperMech.Code
                 }
             }
             _cacheDirty = false;
-            Debug.Log($"[超神机械师] 能量属性缓存重建：检测到{_cachedEnergyStats.Count}个非原版能量属性");
         }
 
         private static bool IsLikelyEnergyStat(string id)
@@ -237,7 +235,6 @@ namespace SuperMech.Code
                 {
                     SuperMechQi.SetQiMax(a, modQi);
                     SuperMechQi.SetQi(a, modQi);
-                    Debug.Log($"[超神机械师] 模组能量同步：{a.name} [{SuperMechModAdapters.GetDetectedModName(a)}] 转换为气力{modQi:F0}");
                 }
                 return;
             }
@@ -253,7 +250,6 @@ namespace SuperMech.Code
                 {
                     SuperMechQi.SetQiMax(a, converted);
                     SuperMechQi.SetQi(a, converted);
-                    Debug.Log($"[超神机械师] 通用能量同步：{a.name} 归一化能量{normalizedEnergy:F0}，转换为气力{converted:F0}");
                 }
             }
         }
@@ -367,7 +363,6 @@ namespace SuperMech.Code
             }
             if (synced > 0 && _tickCounter % 20 == 0)
             {
-                Debug.Log($"[超神机械师] 跨模组能量同步完成：{synced}个单位，检测到模组：{GetDetectedMods()}");
             }
             _tickCounter++;
         }

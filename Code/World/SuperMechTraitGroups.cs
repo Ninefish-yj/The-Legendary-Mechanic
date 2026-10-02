@@ -44,7 +44,6 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("trait_group_" + g.id, LocalizedTextManager.getText(g.name), pReplace: true);
             }
 
-            Debug.Log($"[超神机械师] 特质组注册完成：{Groups.Length} 个自定义组");
         }
     }
 }

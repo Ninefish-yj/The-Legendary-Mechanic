@@ -167,7 +167,6 @@ namespace SuperMech.Code
             }
             bool cross = IsCrossClass(a, nodeId);
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 解锁知识节点 {nodeId}（消耗{actualCost}潜能点{(cross ? "，跨系兼修×3" : "")}，剩余{GetPotential(a)}）");
             return true;
         }
 
@@ -194,13 +193,11 @@ namespace SuperMech.Code
                         int curAw = GetAwakening(a);
                         _awakeningMap[a.id] = curAw + gained;
                         if (SuperMechConfig.LogVerbose)
-                            Debug.Log($"[超神机械师] {a.name} 气力Lv{lastLv}→Lv{curLv}，获得{gained}觉醒点");
                     }
                     else
                     {
                         AddPotential(a, gained);
                         if (SuperMechConfig.LogVerbose)
-                            Debug.Log($"[超神机械师] {a.name} 气力Lv{lastLv}→Lv{curLv}，获得{gained}潜能点");
                     }
                     _lastQiLevel[a.id] = curLv;
                 }

@@ -121,12 +121,10 @@ namespace SuperMech.Code
                 rewardDivinity = 3 + Random.Range(0, 3)
             };
             _destinies[a.id] = d;
-            Debug.Log($"[超神机械师] {a.name}（{cls}）感应到冥冥中的使命：{d.name}——{d.description}");
         }
 
         private static void OnDestinyCompleted(Actor a, Destiny d)
         {
-            Debug.Log($"[超神机械师] {a.name} 完成使命【{d.name}】！获得{d.rewardDivinity}神性蜕变点");
             SuperMechQi.AddQiMax(a, 50000f);
             var stats = SuperMechStats.Of(a);
             if (stats != null)

@@ -41,7 +41,6 @@ namespace SuperMech.Code
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.05f;
                     s["intelligence"] = (s["intelligence"]) + 10f;
                 }
-                Debug.Log($"[超神机械师] {a.name} 信息态等级提升至Lv{lv + 1}");
             }
         }
 

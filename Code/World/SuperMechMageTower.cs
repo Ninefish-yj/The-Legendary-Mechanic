@@ -51,7 +51,6 @@ namespace SuperMech.Code
                 AssetManager.traits.add(t);
             }
 
-            Debug.Log("[超神机械师] 法师塔系统注册完成：5级（初级→秘法之殿）");
         }
 
         public static void TickMageTowers()
@@ -74,7 +73,6 @@ namespace SuperMech.Code
                 if (current < targetLevel)
                 {
                     SetTowerLevel(a, targetLevel);
-                    Debug.Log($"[超神机械师] {a.name} 法师塔升级：{TowerNames[current]} → {TowerNames[targetLevel - 1]}");
                 }
             }
         }

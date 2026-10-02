@@ -69,7 +69,6 @@ namespace SuperMech.Code
                 if (roll < acc) { result = r.rating; break; }
             }
             _ratings[a.data.id] = result;
-            Debug.Log($"[超神机械师] {a.name} 异能潜力评级：{result}");
             return result;
         }
 

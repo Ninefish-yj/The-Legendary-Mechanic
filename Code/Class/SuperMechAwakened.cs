@@ -70,7 +70,6 @@ namespace SuperMech.Code
             AssetManager.traits.add(t);
             LocalizedTextManager.add("trait_" + AwakenedTrait, LocalizedTextManager.getText("sm_awakened_505"), pReplace: true);
             LocalizedTextManager.add("trait_" + AwakenedTrait + "_info", LocalizedTextManager.getText("sm_awakened_506"), pReplace: true);
-            Debug.Log("[超神机械师] 降临者体系注册完成");
         }
 
         public static bool IsAwakened(Actor a)
@@ -146,7 +145,6 @@ namespace SuperMech.Code
                 SuperMechQi.AddQiMax(a, SuperMechStage.LevelQiBonus[idx]);
                 SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a));
                 SuperMechPotential.AddPotential(a, LevelPotentialPoints[idx]);
-                Debug.Log($"[超神机械师] {a.name} 升级到Lv{lv}（阶段{stage}，气力+{SuperMechStage.LevelQiBonus[idx]:F0}）");
             }
 
             if (lv >= cap)
@@ -174,7 +172,6 @@ namespace SuperMech.Code
             if (!SuperMechAdvancementTask.CheckReq(a, stage))
             {
                 if (SuperMechConfig.LogVerbose)
-                    Debug.Log($"[超神机械师] {a.name} 转职条件未满足：{SuperMechAdvancementTask.GetReqText(a)}");
                 return false;
             }
             SuperMechStage.Advance(a);
@@ -185,7 +182,6 @@ namespace SuperMech.Code
             {
                 AutoSelectBranch(a);
             }
-            Debug.Log($"[超神机械师] {a.name} 转职到阶段{newStage}：{SuperMechStage.GetStageName(a)}");
             return true;
         }
 
@@ -280,7 +276,6 @@ namespace SuperMech.Code
             var b = branches[Random.Range(0, branches.Count)];
             a.addTrait(b.traitId);
             SuperMechSpecialty.GrantBranchSpecialty(a, b.traitId);
-            Debug.Log($"[超神机械师] {a.name} 自动选择分支：{b.name}");
         }
 
         public static void TickXp()

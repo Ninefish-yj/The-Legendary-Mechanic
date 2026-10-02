@@ -64,7 +64,6 @@ namespace SuperMech.Code
             AddRankSpec(BornElite, "sm_rankspecialty_260", "sm_rankspecialty_261",
                 dmg: 0.10f, hp: 0.10f, intel: 10, exp: 1.5f);
 
-            Debug.Log("[超神机械师] 阶位专长注册完成：16个专长（含X阶超神级7个）");
         }
 
         private static void AddRankSpec(string id, string name, string desc,

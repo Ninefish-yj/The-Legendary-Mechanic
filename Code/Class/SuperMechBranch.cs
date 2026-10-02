@@ -74,7 +74,6 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("trait_" + b.traitId + "_info", LocalizedTextManager.getText(b.desc), pReplace: true);
             }
 
-            Debug.Log($"[超神机械师] 五系分支特质注册完成：{AllBranches.Count}个");
         }
 
         public static string GetClass(Actor a)

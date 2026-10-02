@@ -60,7 +60,6 @@ namespace SuperMech.Code
                         if (Random.value < stunChance * 0.1f)
                         {
                             _stunned[target.id] = Time.time + 2f;
-                            Debug.Log($"[超神机械师]【气势震慑】{source.name}({SuperMechRanks.All[sourceRank].name}) 震慑眩晕 {target.name}(阶位差{rankDiff})");
                         }
                     }
                 }

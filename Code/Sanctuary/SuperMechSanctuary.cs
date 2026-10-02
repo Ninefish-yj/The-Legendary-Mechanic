@@ -137,7 +137,6 @@ namespace SuperMech.Code
                     if (Data.sanctuary_fragments == null || Data.sanctuary_fragments.Length < 6)
                         Data.sanctuary_fragments = new int[6];
                 }
-                Debug.Log($"[超神机械师] 圣所数据加载：已解锁{Data.unlocked_sanctuaries}/6，碎片[{string.Join(",", Data.sanctuary_fragments)}]，权限Lv{Data.total_permission}");
             }
             catch (System.Exception e)
             {
@@ -172,7 +171,6 @@ namespace SuperMech.Code
             {
                 if ((Data.unlocked_sanctuaries & (1 << sanctuaryIndex)) == 0)
                 {
-                    Debug.Log($"[超神机械师] 圣所{sanctuaryIndex + 1}未解锁");
                     return false;
                 }
             }
@@ -192,7 +190,6 @@ namespace SuperMech.Code
             if (Random.value < 0.3f && sanctuaryIndex >= 0)
             {
                 AddAuthority(a, sanctuaryIndex, 1);
-                Debug.Log($"[超神机械师] {a.name} 在圣所中发现额外碎片！权限+1");
             }
 
             float buff = 1f + Data.total_visits * 0.02f;
@@ -214,7 +211,6 @@ namespace SuperMech.Code
 
             string className = SuperMechProfession.GetClass(a) ?? "sm_sanctuary_971";
             string sanctuaryName = sanctuaryIndex >= 0 ? $"sm_sanctuary_972" : "sm_sanctuary_973";
-            Debug.Log($"[超神机械师] {a.name} 进入{sanctuaryName}！获得{knowledgeGain}点知识（潜能点），进入次数={Data.total_visits}（权限等级），系别={className}");
             return true;
         }
 
@@ -312,7 +308,6 @@ namespace SuperMech.Code
         {
             Data.key_fragments++;
             Save();
-            Debug.Log($"[超神机械师] 获得圣所钥匙碎片（{Data.key_fragments}/3）");
         }
 
         public static void Register()
@@ -338,7 +333,6 @@ namespace SuperMech.Code
             LocalizedTextManager.add("trait_sm_divinity_ascended", LocalizedTextManager.getText("sm_sanctuary_976"), pReplace: true);
             LocalizedTextManager.add("trait_sm_divinity_ascended_info", LocalizedTextManager.getText("sm_sanctuary_977"), pReplace: true);
 
-            Debug.Log("[超神机械师] 圣所系统注册完成（6圣所+神性蜕变检测）");
         }
 
         public static void Clear()

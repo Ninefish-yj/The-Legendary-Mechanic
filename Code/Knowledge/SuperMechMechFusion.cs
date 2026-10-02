@@ -30,7 +30,6 @@ namespace SuperMech.Code
             _fusionLevel[a.id] = level;
             _fusedEquip[a.id] = SuperMechRelic.Equipments[eqIdx].id;
 
-            Debug.Log($"[超神机械师] {a.name} 完成械力融合！融合等级{level}，装备{SuperMechRelic.Equipments[eqIdx].name}");
             return true;
         }
 
@@ -60,7 +59,6 @@ namespace SuperMech.Code
                 if (SuperMechQi.GetQi(a) <= 0)
                 {
                     Unfuse(a);
-                    Debug.Log($"[超神机械师] {a.name} 气力耗尽，械力融合解除！");
                 }
             }
         }

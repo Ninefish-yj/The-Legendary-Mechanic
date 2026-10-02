@@ -134,7 +134,6 @@ namespace SuperMech.Code
                     }
                 }
 
-                Debug.Log($"[超神机械师] {a.name} 阶位变更 {SuperMechRanks.All[targetIdx].name}（欧纳≈{onar:F0}）");
 
                 if (!SuperMechAwakened.IsAwakened(a) && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx > oldExact)
                 {

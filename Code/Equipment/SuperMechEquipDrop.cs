@@ -53,7 +53,6 @@ namespace SuperMech.Code
             string equipId = SuperMechRelic.Equipments[quality].id;
             if (SuperMechEquipBag.AddToBag(killer, equipId))
             {
-                Debug.Log($"[超神机械师] {killer.name} 击杀 {target.name} 掉落 {SuperMechRelic.Equipments[quality].name}装备！");
             }
         }
 

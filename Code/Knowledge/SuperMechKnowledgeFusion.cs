@@ -88,7 +88,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_psi_0_0_0", "sm_know_mind_0_0_0" },
                 30000, 0.45f, 2.2f, 1.8f, 1.4f, 1000, "ui/Icons/actor_traits/iconChosenOne");
 
-            Debug.Log($"[超神机械师] 知识融合配方注册完成：{_recipes.Count}个独特图纸");
         }
 
         private static void Add(string id, string equipId, string equipName, string productType, string desc,
@@ -168,7 +167,6 @@ namespace SuperMech.Code
 
                 if (set.Contains(recipeId))
                 {
-                    Debug.Log($"[超神机械师] {a.name} 已学会{recipe.equipName}，融合无新收获");
                     return false;
                 }
 
@@ -177,11 +175,9 @@ namespace SuperMech.Code
 
                 if (recipe.qiBonus > 0) SuperMechQi.AddQi(a, recipe.qiBonus);
 
-                Debug.Log($"[超神机械师] {a.name} 知识融合成功！学会：{recipe.productType}·{recipe.equipName}");
             }
             else
             {
-                Debug.Log($"[超神机械师] {a.name} 知识融合失败，消耗{recipe.xpCost}经验");
             }
 
             return success;
@@ -252,7 +248,6 @@ namespace SuperMech.Code
 
             EquipCraftedItem(a, recipe.equipId);
 
-            Debug.Log($"[超神机械师] {a.name} 用图纸制造出：{recipe.equipName}（消耗{craftCost:0}气力）");
             return true;
         }
 

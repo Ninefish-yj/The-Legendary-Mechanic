@@ -188,7 +188,6 @@ namespace SuperMech.Code
             AddSubspeciesTrait(SubspeciesBornElite, "sm_race_352",
                 "sm_race_353", 5, 0.10f, 0.10f, 0f);
 
-            Debug.Log("[超神机械师] 种族系统注册完成：2标记特质 + 5专属种族天赋 + 2神化遗传天赋");
         }
 
         public static void AutoEvolve(Actor a, int rankIndex)
@@ -213,7 +212,6 @@ namespace SuperMech.Code
                         DetachSubspecies(a, divineName,
                             new[] { SubspeciesDivineGene, SubspeciesBornElite });
                     }
-                    Debug.Log($"[超神机械师] {a.name}({title}) 物种神化 → {divineName}");
                 }
                 return;
             }
@@ -228,7 +226,6 @@ namespace SuperMech.Code
                 talentIds.Add(PickUniversalTalent());
                 talentIds.Add(PickUniversalTalent());
                 DetachSubspecies(a, raceName, talentIds.ToArray());
-                Debug.Log($"[超神机械师] {a.name} 获得名号【{title}】，物种蜕变 → {raceName}（种族天赋：{string.Join(",", talentIds)}）");
             }
         }
 

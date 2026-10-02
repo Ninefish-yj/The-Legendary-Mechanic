@@ -78,7 +78,6 @@ namespace SuperMech.Code
                 registered++;
             }
 
-            Debug.Log($"[超神机械师] 装备系统注册完成：{registered}件装备（普通→金色，原版EquipmentAsset）");
         }
 
         public static void TickRelicDrops()
@@ -132,7 +131,6 @@ namespace SuperMech.Code
 
             EquipItem(a, quality);
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {a.name} 战斗掉落装备：{Equipments[quality].name}（掉落率{dropChance:F0%}）");
         }
 
         public static void EquipItem(Actor a, int qualityIndex)
@@ -282,7 +280,6 @@ namespace SuperMech.Code
 
 
             int wonderCount = Relics.FindAll(r => r.isWonder).Count;
-            Debug.Log($"[超神机械师] 宇宙宝物系统注册完成：{Relics.Count}件（人造{Relics.Count - wonderCount}件 + 宇宙奇观{wonderCount}件）");
         }
 
         public static void EquipCosmicRelic(Actor a, string relicId)

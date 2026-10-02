@@ -155,7 +155,6 @@ namespace SuperMech.Code
                 SuperMechDivinity.AwardCraftingPoints(maker);
 
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {maker.name} 制造{r.Value.name} 完美度{perfection:F0%} 气力+{qiGain:F1}");
 
             float cdTime = Mathf.Max(2f, 5f - intel * 0.2f);
             _cooldown[maker.id] = now + cdTime;
@@ -193,7 +192,6 @@ namespace SuperMech.Code
                 LocalizedTextManager.add(r.name + "_description", LocalizedTextManager.getText(r.desc), pReplace: true);
             }
 
-            Debug.Log($"[超神机械师] 制造系统注册完成：{Recipes.Length} 种制造配方（知识Tab操作）");
         }
 
         private static bool ConsumeMaterials(Actor maker, Dictionary<string, int> cost)
@@ -230,7 +228,6 @@ namespace SuperMech.Code
             SuperMechQi.AddQi(master, expShare * 0.1f);
 
             if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] {master.name} 的造兵 {minion.name} 击杀 {victim.name}，主人获得经验{expShare:F0}");
         }
 
         public static int GetMinionCount(Actor maker)

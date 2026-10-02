@@ -28,7 +28,6 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            Debug.Log("[超神机械师] 气力分系用途系统初始化：基因链/魔力池/精神力（独立修炼系统，原著ch49/ch50）");
         }
 
         public static void TickCorePowers()
@@ -85,7 +84,6 @@ namespace SuperMech.Code
                 stageDict[id] = stage + 1;
                 ApplyStageEffects(a);
                 if (SuperMechConfig.LogVerbose)
-                    Debug.Log($"[超神机械师] {a.name} {name}突破到{GetStageName(name, stage + 1)}！（气力Lv{qiLv}）");
             }
         }
 

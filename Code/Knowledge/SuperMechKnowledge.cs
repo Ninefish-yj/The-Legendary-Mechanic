@@ -176,7 +176,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_261", "sm_know_262", "sm_know_263" },
                 new[] { Psi, PsiAdv, PsiHigh, PsiTop, PsiUlt });
 
-            Debug.Log($"[超神机械师] 五系知识树注册完成，共 {count} 个知识节点（内部字典，不注册为特质）");
         }
 
         private static readonly string[] BookIconsByTier = {

@@ -88,7 +88,6 @@ namespace SuperMech.Code
                 new[] { "sm_know_mind_2_1_0", "sm_know_mind_3_1_0" },
                 dmgMul: 1.3f, hpMul: 1.2f, potentialBonus: 3);
 
-            Debug.Log($"[超神机械师] 知识协同效应注册完成：{_synergies.Count}个协同组合");
         }
 
         private static void Add(string id, string name, string desc, string prefix,

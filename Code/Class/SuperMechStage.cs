@@ -238,7 +238,6 @@ namespace SuperMech.Code
                 else if (a.hasTrait(SuperMechTraits.ClassMind))
                     SuperMechQiAttribute.SetAttribute(a, SuperMechQiAttribute.AttrDark);
             }
-            Debug.Log($"[超神机械师] {a.name} 职业晋升：{oldName} → {newName}");
             return true;
         }
 

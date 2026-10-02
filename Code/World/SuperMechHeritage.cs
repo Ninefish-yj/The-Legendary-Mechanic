@@ -80,7 +80,6 @@ namespace SuperMech.Code
                     _autoUnlocked[a.id] = unlocked;
                     cost = GetCost(unlocked);
                     if (SuperMechConfig.LogVerbose)
-                        Debug.Log($"[超神机械师] {a.name}（星海人）传承度突破，自动解锁知识{nodeId}（共{unlocked}个）");
                 }
             }
         }

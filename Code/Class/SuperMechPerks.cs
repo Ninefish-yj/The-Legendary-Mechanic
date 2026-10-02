@@ -89,7 +89,6 @@ namespace SuperMech.Code
             AddPerk(PerkMaterial,     "sm_perks_060",   6, 0, 0.10f, "sm_perks_061");
             AddPerk(PerkDimAdapt,     "sm_perks_062", 5, 0, 0.06f, "sm_perks_063");
 
-            Debug.Log("[超神机械师] 专长注册完成：32个");
         }
 
         private static void AddPerk(string id, string name, int intell, float dmgAdd, float dmgMul, string desc)

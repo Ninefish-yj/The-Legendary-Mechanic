@@ -149,7 +149,6 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            Debug.Log($"[超神机械师] 独立技能系统注册：{AllSkills.Count}个职业技能");
         }
 
         public static bool HasSkill(Actor a, string skillId)
@@ -174,7 +173,6 @@ namespace SuperMech.Code
             }
             if (set.Contains(skillId)) return false;
             set.Add(skillId);
-            Debug.Log($"[超神机械师] {a.name} 学会技能：{def.name}");
             return true;
         }
 

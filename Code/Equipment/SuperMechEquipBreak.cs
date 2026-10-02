@@ -61,7 +61,6 @@ namespace SuperMech.Code
 
             _breakCooldown[a.id] = Time.time + 30f;
 
-            Debug.Log($"[超神机械师] {a.name} 的{SuperMechRelic.Equipments[qualityIdx].name}装备被打掉了！");
         }
 
         public static void OnEquip(Actor a)
