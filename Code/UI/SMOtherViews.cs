@@ -68,7 +68,7 @@ namespace SuperMech.Code
                 if (a == null || !a.isAlive()) continue;
                 float onar = SuperMechAdvancement.CalcOnar(a);
                 if (onar <= 0) continue;
-                string rankKey = LocalizedTextManager.getText(SuperMechRanks.GetRankName(a));
+                string rankKey = SuperMechRanks.GetRankName(a);
                 rankings.Add((a.name, rankKey, onar));
             }
             rankings.Sort((x, y) => y.onar.CompareTo(x.onar));
