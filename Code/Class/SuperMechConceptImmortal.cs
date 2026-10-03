@@ -125,6 +125,13 @@ namespace SuperMech.Code
 
             try
             {
+                // 降临者（玩家）重生：死亡后立即复活，保留阶位和职业
+                if (__instance.hasTrait(SuperMechTraits.Descendant))
+                {
+                    RespawnDescendant(__instance);
+                    return false; // 阻止真正死亡
+                }
+
                 // 超神级资讯唯一·概念永生：普通死亡触发信息态扰动重塑
                 if (SuperMechConceptImmortal.CanReshape(__instance))
                 {
@@ -134,10 +141,26 @@ namespace SuperMech.Code
             }
             catch (System.Exception e)
             {
-                Debug.LogError($"[超神机械师] 概念永生补丁异常: {e.Message}");
+                Debug.LogError($"[超神机械师] 死亡补丁异常: {e.Message}");
             }
 
             return true; // 允许正常死亡
+        }
+
+        private static void RespawnDescendant(Actor a)
+        {
+            try
+            {
+                // 恢复生命值和状态
+                a.data.health = a.getMaxHealth();
+                a.data.stamina = a.getMaxStamina();
+                // 传送回出生点或当前位置
+                Debug.Log($"[超神机械师] 降临者 {a.name} 已重生");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 降临者重生异常: {e.Message}");
+            }
         }
     }
 }

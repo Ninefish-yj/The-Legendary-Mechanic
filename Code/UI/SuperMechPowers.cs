@@ -140,15 +140,35 @@ namespace SuperMech.Code
                 if (a != null)
                 {
                     SuperMechTalent.GrantTalents(a);
-                    SuperMechProfession.SetProfession(a, SuperMechProfession.ProfessionType.Mechanical);
+                    // 随机分配五系职业（原著：降临者=玩家，可选任意职业）
+                    var classes = new[] {
+                        SuperMechTraits.ClassMech, SuperMechTraits.ClassMind,
+                        SuperMechTraits.ClassPsi, SuperMechTraits.ClassMartial,
+                        SuperMechTraits.ClassMage
+                    };
+                    string chosenClass = classes[UnityEngine.Random.Range(0, classes.Length)];
+                    if (!a.hasTrait(chosenClass)) a.addTrait(chosenClass);
+                    SuperMechProfession.ProfessionType pType = chosenClass switch
+                    {
+                        SuperMechTraits.ClassMech => SuperMechProfession.ProfessionType.Mechanical,
+                        SuperMechTraits.ClassMartial => SuperMechProfession.ProfessionType.Martial,
+                        SuperMechTraits.ClassPsi => SuperMechProfession.ProfessionType.Psi,
+                        SuperMechTraits.ClassMage => SuperMechProfession.ProfessionType.Mage,
+                        _ => SuperMechProfession.ProfessionType.Mind
+                    };
+                    SuperMechProfession.SetProfession(a, pType);
+                    // 魔法系分配法师类型
+                    if (chosenClass == SuperMechTraits.ClassMage)
+                        SuperMechMageType.AssignMageType(a);
                     a.addTrait(SuperMechAwakened.AwakenedTrait);
+                    a.addTrait(SuperMechTraits.Descendant); // 降临者特质
                     if (!a.hasTrait("sm_rank_00_f"))
                         a.addTrait("sm_rank_00_f");
                     SuperMechAdvancement.SetExactRank(a, 0);
                     SuperMechSpecialty.AssignRandomSpecialty(a);
                     SuperMechQi.SetQi(a, 100f);
                     SuperMechQi.SetQiMax(a, 100f);
-                    Debug.Log($"[超神机械师] 召唤降临者：{a.name}（机械系Lv1）");
+                    Debug.Log($"[超神机械师] 召唤降临者：{a.name}（{pType}）");
                 }
                 return true;
             };

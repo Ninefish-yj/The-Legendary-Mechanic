@@ -36,6 +36,7 @@ namespace SuperMech.Code
         public const string ClassMech    = "sm_class_mech";
         public const string ClassMage    = "sm_class_mage";
         public const string ClassMind    = "sm_class_mind";
+        public const string Descendant   = "sm_descendant"; // 降临者（玩家）特质
 
 
         public const string SkillQiMod          = "sm_skill_qimod";
@@ -88,7 +89,19 @@ namespace SuperMech.Code
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"mana", 40f}, {"multiplier_speed", 1.05f}, {"attack_speed", 1.03f} });
 
-
+            // 降临者（玩家）特质：快速成长+重生
+            var descendant = new ActorTrait
+            {
+                id = Descendant, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_special",
+                needs_to_be_explored = false, rate_inherit = 0, rate_birth = 0,
+                base_stats = new BaseStats()
+            };
+            descendant.base_stats["intelligence"] = 2;
+            descendant.base_stats["multiplier_speed"] = 1.1f;
+            descendant.base_stats["attack_speed"] = 1.05f;
+            LocalizedTextManager.add("trait_" + Descendant, "降临者", pReplace: true);
+            LocalizedTextManager.add("trait_" + Descendant + "_info", "玩家化身，成长速度+50%，死亡后可重生", pReplace: true);
+            AssetManager.traits.add(descendant);
         }
 
         private static void AddClassTrait(string id, string name, int intell, int str, int stam,
