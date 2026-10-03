@@ -136,6 +136,11 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (techBonus - 1f));
                     }
+                    // v0.52.0 文明守护者伤害加成
+                    if (SuperMechCivilization.IsGuardian(attacker))
+                    {
+                        target.data.health -= (int)(pDamage * 0.10f);
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))

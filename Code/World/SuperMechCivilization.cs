@@ -24,6 +24,7 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, CivLevel> _kingdomLevel = new Dictionary<long, CivLevel>();
         private static readonly Dictionary<long, float> _kingdomTechPoints = new Dictionary<long, float>();
         private static readonly Dictionary<long, int> _kingdomTechLevel = new Dictionary<long, int>();
+        private static readonly Dictionary<long, long> _kingdomGuardian = new Dictionary<long, long>(); // kingdomId -> guardianActorId
 
         private const float TechBaseGain = 0.1f;     // 每tick基础科技增长
         private const float TechLevelThreshold = 100f; // 每级科技需要的点数
@@ -71,6 +72,9 @@ namespace SuperMech.Code
                     _kingdomTechLevel[kid] = currentLevel + 1;
                     Debug.Log($"[超神机械师] 文明科技突破：{k.name} 科技Lv{currentLevel + 1}");
                 }
+
+                // 4. 更新文明守护者（王国内最强超能者，原著：超A级是文明的战略武器）
+                UpdateGuardian(k, units);
             }
         }
 
@@ -166,6 +170,69 @@ namespace SuperMech.Code
         public static float GetTechSpeedBonus(int techLevel)
         {
             return 1f + techLevel * 0.01f;
+        }
+
+        /// <summary>更新文明守护者：王国内阶位最高的超能者</summary>
+        private static void UpdateGuardian(Kingdom k, List<Actor> units)
+        {
+            long kid = k.getID();
+            Actor best = null;
+            int bestRank = -1;
+
+            if (units != null)
+            {
+                foreach (var a in units)
+                {
+                    if (a == null || !a.isAlive() || a.kingdom != k) continue;
+                    int rank = SuperMechAdvancement.GetExactRankIndex(a);
+                    if (rank >= 8 && rank > bestRank) // A阶以上才能成为守护者
+                    {
+                        bestRank = rank;
+                        best = a;
+                    }
+                }
+            }
+
+            if (best != null)
+            {
+                if (!_kingdomGuardian.ContainsKey(kid) || _kingdomGuardian[kid] != best.id)
+                {
+                    _kingdomGuardian[kid] = best.id;
+                }
+            }
+            else
+            {
+                _kingdomGuardian.Remove(kid);
+            }
+        }
+
+        /// <summary>判断单位是否是其文明的守护者</summary>
+        public static bool IsGuardian(Actor a)
+        {
+            if (a == null || a.kingdom == null) return false;
+            long kid = a.kingdom.getID();
+            return _kingdomGuardian.TryGetValue(kid, out var gid) && gid == a.id;
+        }
+
+        /// <summary>守护者加成：伤害+10%/生命+10%/攻速+5%（原著：超A级是文明战略武器）</summary>
+        public static float GetGuardianDamageBonus() => 1.10f;
+        public static float GetGuardianHealthBonus() => 1.10f;
+        public static float GetGuardianSpeedBonus() => 1.05f;
+
+        /// <summary>守护者死亡时文明科技值损失20%（原著：文明失去战略武器）</summary>
+        public static void OnGuardianDeath(Actor a)
+        {
+            if (a == null || a.kingdom == null) return;
+            long kid = a.kingdom.getID();
+            if (_kingdomGuardian.TryGetValue(kid, out var gid) && gid == a.id)
+            {
+                if (_kingdomTechPoints.TryGetValue(kid, out var pts))
+                {
+                    _kingdomTechPoints[kid] = pts * 0.8f;
+                    Debug.Log($"[超神机械师] 文明守护者陨落：{a.name}，{a.kingdom.name}科技值损失20%");
+                }
+                _kingdomGuardian.Remove(kid);
+            }
         }
 
         /// <summary>宇宙迭代时清零科技（原著：文明毁灭后科技丢失）</summary>

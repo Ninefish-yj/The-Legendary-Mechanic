@@ -46,7 +46,35 @@ namespace SuperMech.Code
                         "科技等级", $"Lv{techLevel}", MetaType.None, -1L, "iconAge"
                     });
                 }
+                // v0.52.0 文明守护者
+                var guardian = GetGuardian(kingdom);
+                if (guardian != null)
+                {
+                    _showStatRow.Invoke(__instance, new object[] {
+                        "文明守护者", guardian.name, MetaType.None, -1L, "iconKings"
+                    });
+                }
             }
+        }
+
+        /// <summary>获取王国守护者</summary>
+        private static Actor GetGuardian(Kingdom kingdom)
+        {
+            var units = World.world.units?.units_only_alive;
+            if (units == null) return null;
+            Actor best = null;
+            int bestRank = -1;
+            foreach (var a in units)
+            {
+                if (a == null || !a.isAlive() || a.kingdom != kingdom) continue;
+                int rank = SuperMechAdvancement.GetExactRankIndex(a);
+                if (rank >= 8 && rank > bestRank)
+                {
+                    bestRank = rank;
+                    best = a;
+                }
+            }
+            return best;
         }
 
         /// <summary>从王国直接计算文明等级（不依赖单位查询）</summary>

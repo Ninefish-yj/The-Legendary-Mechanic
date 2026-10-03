@@ -568,6 +568,8 @@ namespace SuperMech.Code
         {
             if (__instance == null || __instance.isAlive()) return;
             SuperMechEventBus.Publish("ActorDied", new ActorDiedEvent { actor = __instance, cause = AttackType.None });
+            // v0.52.0 文明守护者陨落处理
+            SuperMechCivilization.OnGuardianDeath(__instance);
             if (!SuperMechConfig.SanctuaryKeyDropEnabled) return;
 
             try

@@ -105,6 +105,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.52.0** | 文明守护者机制（原著还原）：①每个文明中A阶以上最强超能者自动成为守护者，获得+10%伤害/+10%生命/+5%攻速加成；②守护者死亡时文明科技值损失20%（原著：文明失去战略武器）；③王国信息面板显示守护者姓名；修改SuperMechCivilization.cs/CombatPatches.cs/Sanctuary.cs/KingdomWindowPatch.cs |
 | **v0.51.1** | 文明科技发展+王国面板注入：①每个文明有科技值，每tick自动增长，高阶超能者加速（A+1/S+3/SS+5/X+10），科技等级0~10级，每级+2%伤害/+2%生命/+1%攻速；②文明等级和科技等级注入原版王国信息面板（KingdomWindow.showStatsRows postfix），不在单位面板显示；③宇宙迭代时科技清零；新建SuperMechKingdomWindowPatch.cs，修改SuperMechCivilization.cs/CombatPatches.cs/UnitWindow.cs |
 | **v0.51.0** | 文明系统（原著还原）：文明=原版王国，按王国内高阶超能者实力划分5级（普通/星际/星团/超星团/宇宙级），对应原著"低级文明→星际文明→星团级→超星团级→宇宙级文明（三大文明）"；文明等级越高王国单位伤害加成越大（星际+5%/星团+10%/超星团+15%/宇宙级+25%），对应原著"文明本身才是宇宙的主角"；单位面板显示文明等级；新建SuperMechCivilization.cs，修改UnifiedTick/CombatPatches/UnitWindow |
 | **v0.50.1** | 势力系统深化：①势力战争接入原生日志（红色"势力战争"事件）；②领袖死亡后最强成员继承（不再直接解散势力）；③势力联盟机制——战力比超3倍的邻近势力，强者3%概率联盟弱者，联盟后不互攻；④联盟势力战斗补丁不互攻；修改SuperMechFaction.cs/SuperMechEventLogger.cs/SuperMechCombatPatches.cs，新增1条本地化 |
