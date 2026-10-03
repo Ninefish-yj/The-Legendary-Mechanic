@@ -186,7 +186,7 @@ namespace SuperMech.Code
             _scrollViewRect = scrollGo.AddComponent<RectTransform>();
             _scrollViewRect.anchorMin = Vector2.zero;
             _scrollViewRect.anchorMax = Vector2.one;
-            _scrollViewRect.offsetMin = new Vector2(4, 28);
+            _scrollViewRect.offsetMin = new Vector2(4, 36);
             _scrollViewRect.offsetMax = new Vector2(-4, -60);
 
             var scrollImg = scrollGo.AddComponent<Image>();
@@ -217,30 +217,29 @@ namespace SuperMech.Code
             scroll.viewport = viewportRect;
             scroll.content = _listContent;
 
-            // === 底部导航 ===
+            // === 底部导航（混合锚点+anchoredPosition精确定位，避免越界）===
             var bottomBar = new GameObject("BottomBar");
             bottomBar.transform.SetParent(transform, false);
             var bottomRect = bottomBar.AddComponent<RectTransform>();
             bottomRect.anchorMin = new Vector2(0, 0);
             bottomRect.anchorMax = new Vector2(1, 0);
-            bottomRect.pivot = new Vector2(0.5f, 0);
+            bottomRect.pivot = new Vector2(0.5f, 0f);
             bottomRect.sizeDelta = new Vector2(0, 24);
-            bottomRect.offsetMin = new Vector2(4, 0);
-            bottomRect.offsetMax = new Vector2(-4, 0);
+            bottomRect.anchoredPosition = new Vector2(0, 6);
 
             var topBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_top"), 9, ToTop);
             var topBtnRect = topBtn.GetComponent<RectTransform>();
             topBtnRect.anchorMin = new Vector2(0, 0.5f);
             topBtnRect.anchorMax = new Vector2(0, 0.5f);
             topBtnRect.sizeDelta = new Vector2(60, 20);
-            topBtnRect.anchoredPosition = new Vector2(0, 0);
+            topBtnRect.anchoredPosition = new Vector2(34, 0);
 
             var bottomBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_bottom"), 9, ToBottom);
             var bottomBtnRect = bottomBtn.GetComponent<RectTransform>();
             bottomBtnRect.anchorMin = new Vector2(1, 0.5f);
             bottomBtnRect.anchorMax = new Vector2(1, 0.5f);
             bottomBtnRect.sizeDelta = new Vector2(60, 20);
-            bottomBtnRect.anchoredPosition = new Vector2(0, 0);
+            bottomBtnRect.anchoredPosition = new Vector2(-34, 0);
 
             _emptyText = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
             var emptyRect = _emptyText.GetComponent<RectTransform>();
