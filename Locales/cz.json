@@ -4350,5 +4350,8 @@
   "sm_config_726": "超A级圣所复苏是否写入历史",
   "sm_config_727": "概念重塑日志",
   "sm_config_728": "超神级信息态重塑是否写入历史",
-  "EventLog": "事件日志"
+  "EventLog": "事件日志",
+  "sm_ui_knowledge_desc": "知识树与知识融合，查看已解锁知识并融合配方",
+  "sm_ui_bag_desc": "查看选中单位的装备与物品",
+  "sm_ui_craft_desc": "使用图纸制造装备"
 }
