@@ -33,11 +33,10 @@ namespace SuperMech.Code
                 return;
             }
 
-            // 按阶位计算放出概率：S=30%, SS=50%, X=80%
-            float chance = 0.3f;
-            if (rank >= 13) chance = 0.8f;
+            // 按阶位计算放出概率：X阶100%（原著超神级可随意放出内空间），SS=50%
+            float chance = 0.5f;
+            if (rank >= 13) chance = 1.0f;
             else if (rank >= 12) chance = 0.5f;
-            else if (rank >= 11) chance = 0.35f;
 
             if (Random.value > chance) return;
 
@@ -48,7 +47,8 @@ namespace SuperMech.Code
                 activateCount = (existing?.activateCount ?? 0) + 1
             };
 
-            Debug.Log($"[超神机械师] {a.name} 放出内空间！阶位{rank}，持续{SuperMechConfig.InnerSpaceDuration}秒");
+            string spaceName = GetInnerSpaceName(a);
+            Debug.Log($"[超神机械师] {a.name} 放出{spaceName}！阶位{rank}，持续{SuperMechConfig.InnerSpaceDuration}秒");
         }
 
         /// <summary>获取攻击者在内空间中的伤害倍率</summary>
@@ -68,12 +68,12 @@ namespace SuperMech.Code
                 if (atkRank > defRank)
                 {
                     // 攻击者内空间压制：获得伤害加成
-                    return 1f + GetDomainDamageBonus(atkRank) * 0.5f;
+                    return 1f + GetDomainDamageBonus(atkRank, attacker) * 0.5f;
                 }
                 else if (atkRank < defRank)
                 {
                     // 防御者内空间压制：攻击者伤害降低
-                    return 1f - GetDomainDamagePenalty(defRank) * 0.5f;
+                    return 1f - GetDomainDamagePenalty(defRank, target) * 0.5f;
                 }
                 // 同阶：内空间互相抵消，无加成
                 return 1f;
@@ -82,13 +82,13 @@ namespace SuperMech.Code
             // 只有攻击者有内空间
             if (atkDomain)
             {
-                return 1f + GetDomainDamageBonus(_activeDomains[attacker.id].rank);
+                return 1f + GetDomainDamageBonus(_activeDomains[attacker.id].rank, attacker);
             }
 
             // 只有防御者有内空间：攻击者伤害降低
             if (defDomain)
             {
-                return 1f - GetDomainDamagePenalty(_activeDomains[target.id].rank);
+                return 1f - GetDomainDamagePenalty(_activeDomains[target.id].rank, target);
             }
 
             return 1f;
@@ -110,44 +110,73 @@ namespace SuperMech.Code
                 if (defRank > atkRank)
                 {
                     // 防御者内空间压制：获得减伤
-                    return 1f - GetDomainDamageReduction(defRank) * 0.5f;
+                    return 1f - GetDomainDamageReduction(defRank, target) * 0.5f;
                 }
                 return 1f; // 同阶或被压制，无减伤
             }
 
             if (defDomain)
             {
-                return 1f - GetDomainDamageReduction(_activeDomains[target.id].rank);
+                return 1f - GetDomainDamageReduction(_activeDomains[target.id].rank, target);
             }
 
             return 1f;
         }
 
-        /// <summary>内空间伤害加成（按阶位）</summary>
-        private static float GetDomainDamageBonus(int rank)
+        /// <summary>内空间伤害加成（按阶位+职业差异化，原著：每个人内空间属性不同）</summary>
+        private static float GetDomainDamageBonus(int rank, Actor a = null)
         {
             float baseVal = SuperMechConfig.InnerSpaceDamageBonus;
-            if (rank >= 13) return baseVal * 2f;   // X阶：双倍
-            if (rank >= 12) return baseVal * 1.5f; // SS阶：1.5倍
-            return baseVal;                         // S/S+阶：基础
+            if (rank >= 13) baseVal *= 2f;   // X阶：双倍
+            else if (rank >= 12) baseVal *= 1.5f; // SS阶：1.5倍
+            // 职业差异化：机械系/魔法师偏伤害，武道系偏穿透
+            if (a != null)
+            {
+                if (a.hasTrait(SuperMechTraits.ClassMech)) baseVal *= 1.3f;   // 虚空内空间：高伤害
+                else if (a.hasTrait(SuperMechTraits.ClassMage)) baseVal *= 1.2f; // 元素内空间：法术伤害
+                else if (a.hasTrait(SuperMechTraits.ClassMartial)) baseVal *= 1.15f; // 武道内空间
+            }
+            return baseVal;
         }
 
-        /// <summary>内空间对敌人的伤害惩罚（按阶位）</summary>
-        private static float GetDomainDamagePenalty(int rank)
+        /// <summary>内空间对敌人的伤害惩罚（按阶位+职业差异化）</summary>
+        private static float GetDomainDamagePenalty(int rank, Actor a = null)
         {
             float baseVal = SuperMechConfig.InnerSpaceEnemyPenalty;
-            if (rank >= 13) return Mathf.Min(baseVal * 2f, 0.5f);
-            if (rank >= 12) return baseVal * 1.5f;
+            if (rank >= 13) baseVal = Mathf.Min(baseVal * 2f, 0.5f);
+            else if (rank >= 12) baseVal *= 1.5f;
+            // 职业差异化：念力系偏压制敌人
+            if (a != null)
+            {
+                if (a.hasTrait(SuperMechTraits.ClassMind)) baseVal *= 1.3f; // 精神内空间：强压制
+            }
             return baseVal;
         }
 
-        /// <summary>内空间减伤（按阶位）</summary>
-        private static float GetDomainDamageReduction(int rank)
+        /// <summary>内空间减伤（按阶位+职业差异化）</summary>
+        private static float GetDomainDamageReduction(int rank, Actor a = null)
         {
             float baseVal = SuperMechConfig.InnerSpaceDamageReduction;
-            if (rank >= 13) return Mathf.Min(baseVal * 2f, 0.5f);
-            if (rank >= 12) return baseVal * 1.5f;
+            if (rank >= 13) baseVal = Mathf.Min(baseVal * 2f, 0.5f);
+            else if (rank >= 12) baseVal *= 1.5f;
+            // 职业差异化：异能系偏生存减伤
+            if (a != null)
+            {
+                if (a.hasTrait(SuperMechTraits.ClassPsi)) baseVal *= 1.3f; // 基因内空间：强减伤
+            }
             return baseVal;
+        }
+
+        /// <summary>获取职业对应的内空间名称（原著：每个人内空间属性不同）</summary>
+        public static string GetInnerSpaceName(Actor a)
+        {
+            if (a == null) return "内空间";
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return "虚空内空间";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "精神内空间";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "基因内空间";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道内空间";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "元素内空间";
+            return "内空间";
         }
 
         /// <summary>单位是否有活跃内空间</summary>
