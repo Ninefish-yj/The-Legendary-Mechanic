@@ -178,14 +178,13 @@ namespace SuperMech.Code
                 string valueText = "▸ " + LocalizedTextManager.getText("sm_ui_open");
                 var row = window.showStatRow(label, valueText,
                     colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
-                if (row != null)
+                if (row != null && row.value != null)
                 {
-                    // 用Button.onClick而非on_click_value（后者会在OnDisable时被原生清空）
-                    var btn = row.value.GetComponent<UnityEngine.UI.Button>();
-                    if (btn != null)
-                    {
-                        btn.onClick.AddListener(() => onClick?.Invoke());
-                    }
+                    // 用自定义IPointerClickHandler组件，避免对象池复用导致Button.onClick监听器累积
+                    var handler = row.value.GetComponent<SMRowClickHandler>();
+                    if (handler == null)
+                        handler = row.value.gameObject.AddComponent<SMRowClickHandler>();
+                    handler.Init(onClick);
                 }
             }
             catch (System.Exception e)

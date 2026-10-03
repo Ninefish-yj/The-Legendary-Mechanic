@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace SuperMech.Code
 {
-    /// <summary>单位面板折叠区块组件（v0.27.0 UI重构第二阶段）
+    /// <summary>单位面板折叠区块组件（v0.40.0修复：用IPointerClickHandler替代Button.onClick）
     /// 提供折叠状态管理和标题行构建，点击标题行切换展开/折叠
     /// </summary>
     public static class SMCollapsibleSection
@@ -60,7 +61,6 @@ namespace SuperMech.Code
                 {
                     _showStatsRowsMethod.Invoke(window, null);
                 }
-                // showStatsRows是internal方法，反射必须能找到；找不到则无法重建
             }
             catch (System.Exception e)
             {
@@ -69,11 +69,8 @@ namespace SuperMech.Code
         }
 
         /// <summary>构建折叠标题行
+        /// 用自定义IPointerClickHandler组件处理点击，不依赖Button.onClick（对象池复用会导致监听器累积）
         /// </summary>
-        /// <param name="window">StatsWindow实例，用于调用showStatRow</param>
-        /// <param name="actorId">单位ID</param>
-        /// <param name="sectionId">区块ID</param>
-        /// <param name="titleKey">标题本地化key</param>
         public static void BuildHeader(StatsWindow window, long actorId, string sectionId, string titleKey)
         {
             bool expanded = IsExpanded(actorId, sectionId);
@@ -83,19 +80,13 @@ namespace SuperMech.Code
             var row = window.showStatRow(title, "", null, MetaType.None, -1L,
                 pColorText: false, pIconPath: null, pTooltipId: null, pTooltipData: null, pLocalize: false);
 
-            if (row != null)
+            if (row != null && row.value != null)
             {
-                // 注意：不能同时设置 on_click_value 和 btn.onClick，否则一次点击触发两次Toggle（先展开再折叠）
-                // on_click_value 在 OnDisable 时会被原生清空，不可靠；用 Button.onClick 持久监听
-                var btn = row.value.GetComponent<UnityEngine.UI.Button>();
-                if (btn != null)
-                {
-                    btn.onClick.AddListener(() =>
-                    {
-                        Toggle(actorId, sectionId);
-                        RebuildPanel(window);
-                    });
-                }
+                // 用自定义组件处理点击，挂在row.value上（那里有Graphic能接收点击）
+                var header = row.value.GetComponent<SMCollapsibleHeader>();
+                if (header == null)
+                    header = row.value.gameObject.AddComponent<SMCollapsibleHeader>();
+                header.Init(actorId, sectionId, window);
             }
         }
 
@@ -109,6 +100,47 @@ namespace SuperMech.Code
         public static void ClearAll()
         {
             _expandState.Clear();
+        }
+    }
+
+    /// <summary>折叠标题行点击组件（挂在row.value上，实现IPointerClickHandler）
+    /// 不依赖Button.onClick，避免对象池复用导致监听器累积和双重触发
+    /// </summary>
+    public class SMCollapsibleHeader : MonoBehaviour, IPointerClickHandler
+    {
+        private long _actorId;
+        private string _sectionId;
+        private StatsWindow _window;
+
+        public void Init(long actorId, string sectionId, StatsWindow window)
+        {
+            _actorId = actorId;
+            _sectionId = sectionId;
+            _window = window;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            SMCollapsibleSection.Toggle(_actorId, _sectionId);
+            SMCollapsibleSection.RebuildPanel(_window);
+        }
+    }
+
+    /// <summary>通用行点击组件（用于入口按钮等，挂在row.value上）
+    /// 不依赖Button.onClick，避免对象池复用导致监听器累积
+    /// </summary>
+    public class SMRowClickHandler : MonoBehaviour, IPointerClickHandler
+    {
+        private System.Action _onClick;
+
+        public void Init(System.Action onClick)
+        {
+            _onClick = onClick;
+        }
+
+        public void OnPointerClick(PointerEventData eventData)
+        {
+            _onClick?.Invoke();
         }
     }
 }
