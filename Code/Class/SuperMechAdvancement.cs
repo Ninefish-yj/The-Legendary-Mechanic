@@ -157,7 +157,12 @@ namespace SuperMech.Code
                 int targetIdx = -1;
                 for (int i = SuperMechRanks.All.Count - 1; i >= 0; i--)
                 {
-                    if (onar >= SuperMechRanks.All[i].onarFloor) { targetIdx = i; break; }
+                    // v0.39.7 先行者指引：原著第564章"第一个超A级打破了某种极限，给后来者指引了道路"
+                    // 该阶位已被首破后，后续单位突破阈值降低15%
+                    double threshold = SuperMechRanks.All[i].onarFloor;
+                    if (SuperMechSaveData.FirstBreakthroughRanks.Contains(SuperMechRanks.All[i].name))
+                        threshold = threshold * 0.85;
+                    if (onar >= threshold) { targetIdx = i; break; }
                 }
                 if (targetIdx < 0) continue;
                 if (targetIdx > SuperMechConfig.AutoPromotionMaxRank) continue;
