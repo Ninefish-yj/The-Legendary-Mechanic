@@ -299,7 +299,6 @@ namespace SuperMech.Code
                     float combatGrowth = 0.15f * tickInterval * GetGrowthDecay(curLv2);
                     if (a.hasTrait("sm_refinement")) combatGrowth *= 1.5f;
                     if (a.hasTrait("sm_divinity_ascended")) combatGrowth *= 1.5f;
-                    if (a.hasTrait(SuperMechTraits.Descendant)) combatGrowth *= 1.5f; // 降临者快速成长
                     AddQiMax(a, combatGrowth);
                 }
                 else
@@ -317,7 +316,6 @@ namespace SuperMech.Code
                     if (a.hasTrait("sm_refinement")) recovery *= SuperMechConfig.RefinementBonus;
                     if (a.hasTrait(SuperMechTraits.ClassPsi))
                         recovery *= SuperMechPotentialRating.GetQiGrowthMult(a);
-                    if (a.hasTrait(SuperMechTraits.Descendant)) recovery *= 1.5f; // 降临者快速成长
 
                     float stam = a.getStamina();
                     float stamMax = a.getMaxStamina();

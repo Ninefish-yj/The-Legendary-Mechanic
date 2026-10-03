@@ -89,18 +89,17 @@ namespace SuperMech.Code
                 new System.Collections.Generic.Dictionary<string, float> {
                     {"mana", 40f}, {"multiplier_speed", 1.05f}, {"attack_speed", 1.03f} });
 
-            // 降临者（玩家）特质：快速成长+重生
+            // 降临者（玩家）特质：经验值加成+重生（原著：玩家靠经验值升级）
             var descendant = new ActorTrait
             {
                 id = Descendant, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_special",
                 needs_to_be_explored = false, rate_inherit = 0, rate_birth = 0,
                 base_stats = new BaseStats()
             };
+            descendant.base_stats["experience"] = 2.0f; // 经验值获取翻倍
             descendant.base_stats["intelligence"] = 2;
-            descendant.base_stats["multiplier_speed"] = 1.1f;
-            descendant.base_stats["attack_speed"] = 1.05f;
             LocalizedTextManager.add("trait_" + Descendant, "降临者", pReplace: true);
-            LocalizedTextManager.add("trait_" + Descendant + "_info", "玩家化身，成长速度+50%，死亡后可重生", pReplace: true);
+            LocalizedTextManager.add("trait_" + Descendant + "_info", "玩家化身，经验值获取翻倍，死亡后可重生", pReplace: true);
             AssetManager.traits.add(descendant);
         }
 
