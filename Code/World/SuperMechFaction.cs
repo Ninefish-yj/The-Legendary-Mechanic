@@ -181,9 +181,7 @@ namespace SuperMech.Code
         {
             var f = GetFaction(a);
             if (f == null) return 1f;
-            int memberCount = f.memberIds.Count;
-            // 每多10个成员+5%经验，最多+30%
-            return 1f + Mathf.Min(memberCount * 0.005f, 0.3f);
+            return SuperMechFormulas.FactionExpBonus(f.memberIds.Count);
         }
 
         /// <summary>势力领袖加成</summary>

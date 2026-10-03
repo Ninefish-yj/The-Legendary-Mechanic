@@ -174,15 +174,12 @@ namespace SuperMech.Code
         }
 
         /// <summary>范围脉冲：放出内空间展开领域，将周围区域变作内维度环境，范围内敌人持续受压制伤害（原著第1430章）</summary>
-        private const int PulseInterval = 60;   // 约1秒
-        private const int PulseRadius = 10;     // 格
-        private const float PulseDamageFraction = 0.05f; // 攻击者最大生命5%
         private static int _pulseTickCounter = 0;
         public static void TickPulse()
         {
             if (!SuperMechConfig.InnerSpaceEnabled) return;
             _pulseTickCounter++;
-            if (_pulseTickCounter < PulseInterval) return;
+            if (_pulseTickCounter < SuperMechFormulas.InnerSpacePulseInterval) return;
             _pulseTickCounter = 0;
 
             CleanExpired();
@@ -204,7 +201,7 @@ namespace SuperMech.Code
                 try { maxHp = caster.getMaxHealth(); } catch { }
                 if (maxHp <= 0f) continue;
 
-                float dmg = maxHp * PulseDamageFraction;
+                float dmg = maxHp * SuperMechFormulas.InnerSpacePulseFraction;
                 if (kv.Value.rank >= 13) dmg *= 1.5f;
                 else if (kv.Value.rank >= 12) dmg *= 1.2f;
                 if (dmg <= 0f) continue;
@@ -215,7 +212,7 @@ namespace SuperMech.Code
                     if (enemy.id == caster.id) continue;
                     if (enemy.kingdom != null && caster.kingdom != null && enemy.kingdom.id == caster.kingdom.id) continue;
                     int dist = Mathf.Abs(enemy.current_tile.x - cx) + Mathf.Abs(enemy.current_tile.y - cy);
-                    if (dist > PulseRadius) continue;
+                    if (dist > SuperMechFormulas.InnerSpacePulseRange) continue;
                     try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch { }
                     // 标记敌人处于领域内，施加负面效果（原著：领域带来负面影响）
                     _domainSuppressed[enemy.id] = Time.time + 2f;
@@ -243,8 +240,8 @@ namespace SuperMech.Code
                 if (!_domainSuppressed.ContainsKey(actor.id)) continue;
                 try
                 {
-                    actor.stats["speed"] *= 0.7f;
-                    actor.stats["attack_speed"] *= 0.8f;
+                    actor.stats["speed"] *= SuperMechFormulas.InnerSpaceEnemySpeedMul;
+                    actor.stats["attack_speed"] *= SuperMechFormulas.InnerSpaceEnemyAttackSpeedMul;
                 } catch { }
             }
         }

@@ -7,8 +7,6 @@ namespace SuperMech.Code
     {
         private static readonly Dictionary<long, float> _suppressed = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _stunned = new Dictionary<long, float>();
-        private const float AuraRange = 4f;
-        private const float SuppressDuration = 5f;
 
         public static void TickAura()
         {
@@ -42,7 +40,7 @@ namespace SuperMech.Code
 
                     float dist = Mathf.Abs(target.current_tile.x - source.current_tile.x)
                                + Mathf.Abs(target.current_tile.y - source.current_tile.y);
-                    if (dist > AuraRange) continue;
+                    if (dist > SuperMechFormulas.AuraRange) continue;
 
                     int targetRank = SuperMechActorContextRegistry.GetRank(target);
                     int rankDiff = sourceRank - targetRank;
@@ -51,7 +49,7 @@ namespace SuperMech.Code
 
                     if (rankDiff >= 2)
                     {
-                        _suppressed[target.id] = Time.time + SuppressDuration;
+                        _suppressed[target.id] = Time.time + SuperMechFormulas.AuraSuppressDuration;
                     }
 
                     if (rankDiff >= 4)

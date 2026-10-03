@@ -69,17 +69,15 @@ namespace SuperMech.Code
             if (stats == null) return;
 
             int stage = SuperMechActorContextRegistry.GetStage(a);
-            float stageMul = 1f + stage * 0.1f;
 
             // 原著气力系统(ch51/ch539/ch1039/ch1203/ch1402)：
             // 统一气力常数：属性 = 0.000921 × level^4.9 × 属性系数
-            // 气力常数用力量4个原著数据点最小二乘拟合，无基准无(level/10)
-            // 各属性系数按Lv10原著比例：力1.000/敏1.366/耐1.521/智1.718/神秘1.085
-            float qiBase = 0.000921f * Mathf.Pow(level, 4.9f) * stageMul;
-            float strength = qiBase * 1.000f;   // 力量
-            float agility = qiBase * 1.366f;    // 敏捷
-            float endurance = qiBase * 1.521f;  // 耐力
-            float intel = qiBase * 1.718f;      // 智力
+            // 公式已抽取到SuperMechFormulas.QiStats
+            var qiStats = SuperMechFormulas.QiStats(level, stage);
+            float strength = qiStats.strength;
+            float agility = qiStats.agility;
+            float endurance = qiStats.endurance;
+            float intel = qiStats.intelligence;
 
             // 知识/技能/融合加成（保留倍率，这些是额外加成不是气力本身）
             var synBonus = SuperMechKnowledgeSynergy.GetBonus(a);
