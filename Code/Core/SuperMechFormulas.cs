@@ -32,6 +32,24 @@ namespace SuperMech.Code
             return 18f * Mathf.Pow(Mathf.Max(1f, qi), 0.67f);
         }
 
+        /// <summary>
+        /// ONAR综合加成率（上限50%）。
+        /// 输入各系统的计数，输出总加成率。纯计算，不依赖游戏对象。
+        /// </summary>
+        public static float OnarBonus(int skillCount, int knowledgeCount, int equipCount, int perkCount,
+            float skillDmgMulSum, float skillHpMulSum, float skillSpeedMulSum)
+        {
+            // 技能加成：已学技能倍率偏差之和 × 0.06
+            float skillBonus = (skillDmgMulSum + skillHpMulSum + skillSpeedMulSum) * 0.06f;
+            // 知识加成：每知识+0.3%
+            float knowledgeBonus = knowledgeCount * 0.003f;
+            // 装备加成：每件+1%
+            float equipBonus = equipCount * 0.01f;
+            // 专长加成：每个+0.5%
+            float perkBonus = perkCount * 0.005f;
+            return Mathf.Min(0.5f, skillBonus + knowledgeBonus + equipBonus + perkBonus);
+        }
+
         // === 阶位公式 ===
 
         /// <summary>阶位是否为加号阶（D+, C+, B+, A+, S+）</summary>

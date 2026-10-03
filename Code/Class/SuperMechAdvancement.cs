@@ -28,43 +28,40 @@ namespace SuperMech.Code
                 return power * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
             }
 
-            // 气力能级（核心，幂函数曲线上升）
-            float baseOnar = 18f * Mathf.Pow(Mathf.Max(1f, qi), 0.67f);
-
-            // 技能加成率：已学技能的倍率加成
-            float skillBonus = 0f;
+            // === 收集各系统数据（Advancement只负责聚合，计算在Formulas）===
+            float skillDmgSum = 0f, skillHpSum = 0f, skillSpdSum = 0f;
+            int skillCount = 0;
             var skills = SuperMechSkills.GetLearned(a);
             if (skills != null)
             {
+                skillCount = skills.Count;
                 foreach (var s in skills)
                 {
-                    skillBonus += (s.dmgMul - 1f) + (s.hpMul - 1f) + (s.speedMul - 1f);
+                    skillDmgSum += s.dmgMul - 1f;
+                    skillHpSum += s.hpMul - 1f;
+                    skillSpdSum += s.speedMul - 1f;
                 }
-                skillBonus *= 0.06f;
             }
 
-            // 知识加成率：已学知识数量
-            float knowledgeBonus = 0f;
             string[] prefixes = { "mech", "martial", "power", "magic", "mind" };
             int knowledgeCount = 0;
             foreach (var p in prefixes)
                 knowledgeCount += SuperMechKnowledge.GetUnlockedCount(a, p);
-            knowledgeBonus = knowledgeCount * 0.003f;
 
-            // 装备加成率：背包装备数量
-            float equipBonus = 0f;
+            int equipCount = 0;
             var bag = SuperMechEquipBag.GetBag(a);
-            if (bag != null) equipBonus = bag.Count * 0.01f;
+            if (bag != null) equipCount = bag.Count;
 
-            // 专长加成率：专长数量
-            float perkBonus = 0f;
+            int perkCount = 0;
             var perks = SuperMechPerks.GetPerks(a);
-            if (perks != null) perkBonus = perks.Count * 0.005f;
+            if (perks != null) perkCount = perks.Count;
 
-            // 综合加成率（上限50%，避免膨胀）
-            float totalBonus = Mathf.Min(0.5f, skillBonus + knowledgeBonus + equipBonus + perkBonus);
+            // === 纯公式计算 ===
+            float baseOnar = SuperMechFormulas.OnarBase(qi);
+            float bonus = SuperMechFormulas.OnarBonus(skillCount, knowledgeCount, equipCount, perkCount,
+                skillDmgSum, skillHpSum, skillSpdSum);
 
-            return baseOnar * (1f + totalBonus) * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
+            return baseOnar * (1f + bonus) * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
         }
 
         public static void TickAutoAwakening()

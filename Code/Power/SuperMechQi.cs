@@ -139,6 +139,8 @@ namespace SuperMech.Code
         public static float GetQi(Actor a)
         {
             if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.qiCurrent > 0f) return ctx.qiCurrent;
             float v;
             _qiMap.TryGetValue(a.id, out v);
             return v;
@@ -147,6 +149,8 @@ namespace SuperMech.Code
         public static float GetQiMax(Actor a)
         {
             if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.qiMax > 0f) return ctx.qiMax;
             float v;
             _qiMaxMap.TryGetValue(a.id, out v);
             return v;
@@ -185,19 +189,28 @@ namespace SuperMech.Code
             _qiMaxMap[a.id] = newMax;
             float cur = GetQi(a);
             if (cur < newMax) _qiMap[a.id] = newMax;
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) { ctx.qiMax = newMax; ctx.qiCurrent = _qiMap[a.id]; }
         }
 
         public static void SetQiMax(Actor a, float value)
         {
             if (a == null || a.id == null) return;
-            _qiMaxMap[a.id] = Mathf.Max(0, value);
+            float clamped = Mathf.Max(0, value);
+            _qiMaxMap[a.id] = clamped;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.qiMax = clamped;
         }
 
         public static void SetQi(Actor a, float value)
         {
             if (a == null || a.id == null) return;
-            _qiMap[a.id] = Mathf.Max(0, value);
-            if (GetQiMax(a) < value) _qiMaxMap[a.id] = value;
+            float clamped = Mathf.Max(0, value);
+            _qiMap[a.id] = clamped;
+            if (GetQiMax(a) < clamped) _qiMaxMap[a.id] = clamped;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) { ctx.qiCurrent = clamped; ctx.qiMax = _qiMaxMap[a.id]; }
         }
 
         public static float SpendQi(Actor a, float amount)
