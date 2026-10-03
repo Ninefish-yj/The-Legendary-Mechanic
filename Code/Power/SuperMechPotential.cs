@@ -12,6 +12,9 @@ namespace SuperMech.Code
         public static int GetPotential(Actor a)
         {
             if (a == null || a.id == null) return 0;
+            // 优先从ActorContext读取
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.potential > 0) return ctx.potential;
             int v; _potentialMap.TryGetValue(a.id, out v); return v;
         }
 
@@ -25,13 +28,17 @@ namespace SuperMech.Code
         {
             if (a == null || a.id == null) return;
             int cur = GetPotential(a);
-            _potentialMap[a.id] = cur + amount;
+            SetPotential(a, cur + amount);
         }
 
         public static void SetPotential(Actor a, int amount)
         {
             if (a == null || a.id == null) return;
-            _potentialMap[a.id] = Mathf.Max(0, amount);
+            int clamped = Mathf.Max(0, amount);
+            _potentialMap[a.id] = clamped;
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.potential = clamped;
         }
 
         public static bool SpendPotential(Actor a, int amount)
@@ -39,7 +46,7 @@ namespace SuperMech.Code
             if (a == null || a.id == null) return false;
             int cur = GetPotential(a);
             if (cur < amount) return false;
-            _potentialMap[a.id] = cur - amount;
+            SetPotential(a, cur - amount);
             return true;
         }
 

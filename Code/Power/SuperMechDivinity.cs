@@ -17,18 +17,24 @@ namespace SuperMech.Code
         public static int GetPoints(Actor a)
         {
             if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.divinityPoints > 0) return ctx.divinityPoints;
             int v; _points.TryGetValue(a.id, out v); return v;
         }
 
         public static int GetProfLayers(Actor a)
         {
             if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.divinityProfLayers > 0) return ctx.divinityProfLayers;
             int v; _profLayers.TryGetValue(a.id, out v); return v;
         }
 
         public static int GetSpeciesLayers(Actor a)
         {
             if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.divinitySpeciesLayers > 0) return ctx.divinitySpeciesLayers;
             int v; _speciesLayers.TryGetValue(a.id, out v); return v;
         }
 
@@ -40,6 +46,8 @@ namespace SuperMech.Code
         public static bool IsDivineAwakened(Actor a)
         {
             if (a == null) return false;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null) return ctx.divinityTriggered;
             bool v; _awakened.TryGetValue(a.id, out v); return v;
         }
 
@@ -47,20 +55,27 @@ namespace SuperMech.Code
         {
             if (a == null || amount <= 0) return;
             int cur = GetPoints(a);
-            _points[a.id] = cur + amount;
+            SetPoints(a, cur + amount);
         }
 
         public static void SetPoints(Actor a, int amount)
         {
             if (a == null) return;
-            _points[a.id] = Mathf.Max(0, amount);
+            int clamped = Mathf.Max(0, amount);
+            _points[a.id] = clamped;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.divinityPoints = clamped;
         }
 
         public static void SetLayers(Actor a, int profLayers, int speciesLayers)
         {
             if (a == null) return;
-            _profLayers[a.id] = Mathf.Clamp(profLayers, 0, MaxLayers);
-            _speciesLayers[a.id] = Mathf.Clamp(speciesLayers, 0, MaxLayers);
+            int p = Mathf.Clamp(profLayers, 0, MaxLayers);
+            int s = Mathf.Clamp(speciesLayers, 0, MaxLayers);
+            _profLayers[a.id] = p;
+            _speciesLayers[a.id] = s;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) { ctx.divinityProfLayers = p; ctx.divinitySpeciesLayers = s; }
         }
 
         public static bool SpendPoints(Actor a, string route, int layers = 1)
@@ -174,6 +189,8 @@ namespace SuperMech.Code
             if (a == null) return;
             if (IsDivineAwakened(a)) return;
             _awakened[a.id] = true;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.divinityTriggered = true;
             a.addTrait("sm_divinity_ascended");
             AddPoints(a, 2);
             // v0.46.0：神性蜕变获得圣所碎片（权限），原著第1039章
