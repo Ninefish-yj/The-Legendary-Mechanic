@@ -42,6 +42,7 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f));
             RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f));
             RegisterLogAsset("sm_log_key", "sm_log_key_text", new Color(0.4f, 0.7f, 1f));
+            RegisterLogAsset("sm_log_faction_war", "sm_log_faction_war_text", new Color(1f, 0.4f, 0.4f));
 
             Debug.Log("[超神机械师] 事件日志系统初始化完成，注册10类日志资产+1历史分类");
         }
@@ -383,6 +384,25 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 推送钥匙日志失败: {e.Message}");
+            }
+        }
+
+        /// <summary>v0.50.1：势力战争事件日志</summary>
+        public static void LogFactionWar(string factionA, string factionB)
+        {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            TryInit();
+            if (!_initialized) return;
+            var asset = GetAsset("sm_log_faction_war");
+            if (asset == null) return;
+
+            try
+            {
+                new WorldLogMessage(asset, SafeStr(factionA), SafeStr(factionB)).add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送势力战争日志失败: {e.Message}");
             }
         }
 

@@ -110,6 +110,9 @@ namespace SuperMech.Code
 
             // 4. 自动宣战（邻近势力竞争）
             AutoDeclareWar(allUnits);
+
+            // 5. 自动联盟（强者保护弱者）
+            AutoAlliance(allUnits);
         }
 
         /// <summary>更新所有势力的等级和总战力</summary>
@@ -160,7 +163,34 @@ namespace SuperMech.Code
 
                     SetRelation(fa.id, fb.id, FactionRelation.Hostile);
                     SuperMechEventBus.Publish("FactionWarDeclared", new FactionWarEvent { factionA = fa.name, factionB = fb.name });
+                    SuperMechEventLogger.LogFactionWar(fa.name, fb.name);
                     Debug.Log($"[超神机械师] 势力战争：{fa.name} ↔ {fb.name}");
+                }
+            }
+        }
+
+        /// <summary>自动联盟：战力差距大的邻近势力，强者有概率保护弱者</summary>
+        private static void AutoAlliance(List<Actor> units)
+        {
+            if (_factions.Count < 2) return;
+            var list = new List<FactionData>(_factions.Values);
+            for (int i = 0; i < list.Count; i++)
+            {
+                for (int j = i + 1; j < list.Count; j++)
+                {
+                    var fa = list[i];
+                    var fb = list[j];
+                    if (GetRelation(fa.id, fb.id) != FactionRelation.Neutral) continue;
+
+                    // 战力比超过3倍时，强者3%概率联盟弱者（保护关系）
+                    float powerRatio = fa.totalPower > 0 && fb.totalPower > 0
+                        ? Mathf.Max(fa.totalPower, fb.totalPower) / Mathf.Min(fa.totalPower, fb.totalPower)
+                        : 1f;
+                    if (powerRatio < 3f) continue;
+                    if (Random.value > 0.03f) continue;
+
+                    SetRelation(fa.id, fb.id, FactionRelation.Allied);
+                    Debug.Log($"[超神机械师] 势力联盟：{fa.name} ↔ {fb.name}");
                 }
             }
         }
@@ -169,6 +199,28 @@ namespace SuperMech.Code
         {
             foreach (var u in units) if (u != null && u.id == id) return u;
             return null;
+        }
+
+        /// <summary>找到势力中最强的存活成员（按阶位+能级）</summary>
+        private static long FindStrongestMember(FactionData f, HashSet<long> alive)
+        {
+            long best = 0;
+            float bestPower = -1f;
+            var allUnits = World.world?.units?.units_only_alive;
+            if (allUnits == null) return 0;
+            foreach (var mid in f.memberIds)
+            {
+                if (!alive.Contains(mid)) continue;
+                Actor m = FindActor(mid, allUnits);
+                if (m == null || !m.isAlive()) continue;
+                float power = SuperMechAdvancement.CalcOnar(m);
+                if (power > bestPower)
+                {
+                    bestPower = power;
+                    best = mid;
+                }
+            }
+            return best;
         }
 
         private static void CreateFaction(Actor leader)
@@ -398,12 +450,30 @@ namespace SuperMech.Code
                     if (_factions.TryGetValue(fid, out var f))
                     {
                         f.memberIds.Remove(id);
-                        // 如果领袖死亡，解散势力
+                        // v0.50.1 领袖死亡：最强成员继承，无成员则解散
                         if (f.leaderId == id)
                         {
-                            foreach (var mid in f.memberIds)
-                                _actorFaction.Remove(mid);
-                            _factions.Remove(fid);
+                            if (f.memberIds.Count > 0)
+                            {
+                                long newLeader = FindStrongestMember(f, alive);
+                                if (newLeader > 0)
+                                {
+                                    f.leaderId = newLeader;
+                                    var ctx = SuperMechActorContextRegistry.TryGet(newLeader);
+                                    if (ctx != null) ctx.isFactionLeader = true;
+                                    Debug.Log($"[超神机械师] {f.name} 领袖陨落，新领袖继承");
+                                }
+                                else
+                                {
+                                    // 所有成员都死了，解散
+                                    foreach (var mid in f.memberIds) _actorFaction.Remove(mid);
+                                    _factions.Remove(fid);
+                                }
+                            }
+                            else
+                            {
+                                _factions.Remove(fid);
+                            }
                         }
                     }
                     _actorFaction.Remove(id);

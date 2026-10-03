@@ -76,8 +76,12 @@ namespace SuperMech.Code
             {
                 Actor attacker = pAttacker as Actor;
 
-                // v0.48.0 同势力不互攻
-                if (attacker != null && SuperMechConfig.FactionEnabled && SuperMechFaction.IsSameFaction(attacker, target))
+                // v0.48.0 同势力不互攻，v0.50.1 联盟势力不互攻
+                if (attacker != null && SuperMechConfig.FactionEnabled &&
+                    (SuperMechFaction.IsSameFaction(attacker, target) ||
+                     SuperMechFaction.GetRelation(
+                         SuperMechFaction.GetFaction(attacker)?.id,
+                         SuperMechFaction.GetFaction(target)?.id) == SuperMechFaction.FactionRelation.Allied))
                     return false;
 
                 // v0.44.0 技能释放：攻击者攻击时有概率触发主动技能
