@@ -94,10 +94,14 @@ namespace SuperMech.Code
                 if (a == null || a.data == null) continue;
                 aliveIds.Add(a.data.id);
 
-                // 更新存活快照
-                if (!_aliveSnapshot.ContainsKey(a.data.id) || Random.value < 0.1f)
+                // 更新存活快照（原著：圣所只记录超A级及以上个体）
+                int rankIdx = SuperMechAdvancement.GetRankIndex(a);
+                if (rankIdx >= SuperMechResurrection.MinRankForResurrect)
                 {
-                    _aliveSnapshot[a.data.id] = CreateSnapshot(a);
+                    if (!_aliveSnapshot.ContainsKey(a.data.id) || Random.value < 0.1f)
+                    {
+                        _aliveSnapshot[a.data.id] = CreateSnapshot(a);
+                    }
                 }
             }
 
