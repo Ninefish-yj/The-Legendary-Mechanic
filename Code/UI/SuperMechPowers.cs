@@ -12,6 +12,7 @@ namespace SuperMech.Code
         public const string DisasterAlien = "sm_disaster_alien";
         public const string OpenSanctuary = "sm_open_sanctuary";
         public const string OpenRank = "sm_open_rank";
+        public const string OpenFaction = "sm_open_faction";
 
         public const string TabName = "SuperMech";
         private static bool _buttonsCreated;
@@ -106,7 +107,24 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 阶位按钮失败: {e.Message}"); }
             }
 
-            // 5. 宇宙迭代（大重启）
+            // 5. 势力列表（窗口按钮）
+            if (PowerButton.get(OpenFaction) == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconKingdomList")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton(OpenFaction, () => SuperMechWindowManager.OpenFaction(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_faction_title", "sm_faction_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 势力按钮失败: {e.Message}"); }
+            }
+
+            // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {
                 try

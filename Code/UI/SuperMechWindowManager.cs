@@ -24,6 +24,7 @@ namespace SuperMech.Code
         public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
         public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 560, 420, DrawCraftContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 620, 460, DrawRankContent); }
+        public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 620, 500, DrawFactionContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
@@ -97,6 +98,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechRankView>();
+        }
+
+        private static void DrawFactionContent(RectTransform content)
+        {
+            var go = new GameObject("FactionView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechFactionView>();
         }
 
         public static void CloseAll()

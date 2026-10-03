@@ -284,6 +284,14 @@ namespace SuperMech.Code
             return f;
         }
 
+        /// <summary>获取所有势力（按战力降序）</summary>
+        public static List<FactionData> GetAllFactions()
+        {
+            var list = new List<FactionData>(_factions.Values);
+            list.Sort((a, b) => b.totalPower.CompareTo(a.totalPower));
+            return list;
+        }
+
         /// <summary>两单位是否同势力</summary>
         public static bool IsSameFaction(Actor a, Actor b)
         {
