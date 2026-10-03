@@ -180,7 +180,12 @@ namespace SuperMech.Code
                     colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
                 if (row != null)
                 {
-                    row.on_click_value = () => onClick?.Invoke();
+                    // 用Button.onClick而非on_click_value（后者会在OnDisable时被原生清空）
+                    var btn = row.value.GetComponent<UnityEngine.UI.Button>();
+                    if (btn != null)
+                    {
+                        btn.onClick.AddListener(() => onClick?.Invoke());
+                    }
                 }
             }
             catch (System.Exception e)

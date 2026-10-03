@@ -85,19 +85,11 @@ namespace SuperMech.Code
 
             if (row != null)
             {
-                // 用on_click_value设置点击事件（原生支持，每次showStatsRows都会重新设置）
-                row.on_click_value = () =>
-                {
-                    Toggle(actorId, sectionId);
-                    RebuildPanel(window);
-                };
-
-                // 同时给Button组件添加持久监听器（on_click_value会被OnDisable清空，这是备份）
+                // 注意：不能同时设置 on_click_value 和 btn.onClick，否则一次点击触发两次Toggle（先展开再折叠）
+                // on_click_value 在 OnDisable 时会被原生清空，不可靠；用 Button.onClick 持久监听
                 var btn = row.value.GetComponent<UnityEngine.UI.Button>();
                 if (btn != null)
                 {
-                    // 先移除旧的监听器（避免重复添加），用私有字段无法直接移除，所以只添加一次
-                    // 实际上每次showStatsRows都会创建新的row对象，所以不会重复
                     btn.onClick.AddListener(() =>
                     {
                         Toggle(actorId, sectionId);
