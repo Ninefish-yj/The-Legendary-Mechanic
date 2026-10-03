@@ -161,7 +161,7 @@ namespace SuperMech.Code
 
             try
             {
-                // 降临者（玩家）重生：死亡后立即复活，60秒内最多3次
+                // 降临者（玩家）重生：死亡后立即复活，60秒内最多3次，超过则进入濒死保护等待刷新
                 if (__instance.hasTrait(SuperMechTraits.Descendant))
                 {
                     if (CanRespawn(__instance.id))
@@ -170,7 +170,9 @@ namespace SuperMech.Code
                         RecordRespawn(__instance.id);
                         return false; // 阻止真正死亡
                     }
-                    Debug.Log($"[超神机械师] 降临者 {__instance.name} 重生次数已达上限（60秒内3次），允许死亡");
+                    // 超过次数：进入濒死保护，等窗口刷新后恢复正常重生
+                    EnterGracePeriod(__instance);
+                    return false; // 阻止真正死亡
                 }
 
                 // 超神级资讯唯一·概念永生：普通死亡触发信息态扰动重塑
@@ -195,12 +197,28 @@ namespace SuperMech.Code
                 // 恢复生命值和状态
                 a.data.health = a.getMaxHealth();
                 a.data.stamina = a.getMaxStamina();
-                // 传送回出生点或当前位置
                 Debug.Log($"[超神机械师] 降临者 {a.name} 已重生");
             }
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 降临者重生异常: {e.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 濒死保护：超过重生次数后，恢复10%生命值等待窗口刷新
+        /// </summary>
+        private static void EnterGracePeriod(Actor a)
+        {
+            try
+            {
+                a.data.health = Mathf.Max(1f, a.getMaxHealth() * 0.1f);
+                a.data.stamina = a.getMaxStamina();
+                Debug.Log($"[超神机械师] 降临者 {a.name} 重生次数已达上限，进入濒死保护（10%血量），等待60秒窗口刷新");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 濒死保护异常: {e.Message}");
             }
         }
     }
