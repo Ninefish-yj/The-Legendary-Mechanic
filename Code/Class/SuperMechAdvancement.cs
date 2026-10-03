@@ -130,7 +130,7 @@ namespace SuperMech.Code
                 // v0.28.0 UI重构：推送觉醒事件到原生事件日志
                 string className = SuperMechProfession.GetClass(a);
                 string talentRank = talents.Count > 0 ? SuperMechTalent.RatingNames[talents[0].rating] : "?";
-                SMEventLogger.LogAwakening(a, className, talentRank);
+                SuperMechEventLogger.LogAwakening(a, className, talentRank);
                 // 发布觉醒事件
                 SuperMechEventBus.Publish("ActorAwakened", new ActorAwakenedEvent
                 {
@@ -232,7 +232,7 @@ namespace SuperMech.Code
                     if (isFirstBreakthrough)
                     {
                         SuperMechSaveData.FirstBreakthroughRanks.Add(rankName);
-                        SMEventLogger.LogPromotion(a, oldRankName, rankName, onar, targetIdx);
+                        SuperMechEventLogger.LogPromotion(a, oldRankName, rankName, onar, targetIdx);
                         ApplyFirstBreakthroughBonus(a, targetIdx);
                         Debug.Log($"[超神机械师]【首位突破】{a.name} 是全图第一个突破到{rankName}的单位！");
                     }

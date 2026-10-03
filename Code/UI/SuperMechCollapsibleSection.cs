@@ -7,7 +7,7 @@ namespace SuperMech.Code
     /// <summary>单位面板折叠区块组件
     /// 提供折叠状态管理和标题行构建，点击标题行切换展开/折叠
     /// </summary>
-    public static class SMCollapsibleSection
+    public static class SuperMechCollapsibleSection
     {
         /// <summary>折叠状态缓存：actorId -> sectionId -> isExpanded</summary>
         private static readonly Dictionary<long, Dictionary<string, bool>> _expandState =

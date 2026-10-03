@@ -8,7 +8,7 @@ namespace SuperMech.Code
     /// 顶部标签页切换：知识树 / 知识融合
     /// 融合标签页内嵌SMFusionView组件，减少独立窗口数量
     /// </summary>
-    public class SMKnowledgeView : MonoBehaviour
+    public class SuperMechKnowledgeView : MonoBehaviour
     {
         private RectTransform _listContent;
         private RectTransform _detailContent;
@@ -77,9 +77,9 @@ namespace SuperMech.Code
             int tabIdx = index;
             btn.onClick.AddListener(() => SwitchTab(tabIdx));
 
-            var txt = SMUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText(textKey), 13, TextAnchor.MiddleCenter);
+            var txt = SuperMechUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText(textKey), 13, TextAnchor.MiddleCenter);
             txt.fontStyle = FontStyle.Bold;
-            txt.color = SMUiSkin.TextDim;
+            txt.color = SuperMechUiSkin.TextDim;
             var txtRect = txt.GetComponent<RectTransform>();
             txtRect.anchorMin = Vector2.zero;
             txtRect.anchorMax = Vector2.one;
@@ -101,13 +101,13 @@ namespace SuperMech.Code
             // 标签高亮
             if (_tabKnowledgeText != null)
             {
-                _tabKnowledgeText.color = isKnowledge ? SMUiSkin.TextColor : SMUiSkin.TextDim;
+                _tabKnowledgeText.color = isKnowledge ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                 var img = _tabKnowledge.GetComponent<Image>();
                 img.color = isKnowledge ? new Color(0.2f, 0.35f, 0.55f, 0.9f) : new Color(0.15f, 0.2f, 0.3f, 0.8f);
             }
             if (_tabFusionText != null)
             {
-                _tabFusionText.color = !isKnowledge ? SMUiSkin.TextColor : SMUiSkin.TextDim;
+                _tabFusionText.color = !isKnowledge ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                 var img = _tabFusion.GetComponent<Image>();
                 img.color = !isKnowledge ? new Color(0.2f, 0.35f, 0.55f, 0.9f) : new Color(0.15f, 0.2f, 0.3f, 0.8f);
             }
@@ -134,7 +134,7 @@ namespace SuperMech.Code
             listRect.sizeDelta = new Vector2(200, 0);
             listRect.anchoredPosition = Vector2.zero;
 
-            var (scroll, content) = SMUiSkin.CreateScrollArea(listGo.transform, "Scroll");
+            var (scroll, content) = SuperMechUiSkin.CreateScrollArea(listGo.transform, "Scroll");
             _listContent = content;
 
             // 右侧详情面板
@@ -155,7 +155,7 @@ namespace SuperMech.Code
             cardRect.offsetMin = new Vector2(4, 4);
             cardRect.offsetMax = new Vector2(-4, -4);
             var cardImg = cardGo.AddComponent<Image>();
-            cardImg.color = SMUiSkin.CardBg;
+            cardImg.color = SuperMechUiSkin.CardBg;
             _detailContent = cardRect;
 
             // 详情滚动区
@@ -214,7 +214,7 @@ namespace SuperMech.Code
             _detailText = textGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _detailText.fontSize = 13;
-            _detailText.color = SMUiSkin.TextColor;
+            _detailText.color = SuperMechUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -242,7 +242,7 @@ namespace SuperMech.Code
             fusionRect.anchorMax = Vector2.one;
             fusionRect.offsetMin = Vector2.zero;
             fusionRect.offsetMax = Vector2.zero;
-            fusionGo.AddComponent<SMFusionView>();
+            fusionGo.AddComponent<SuperMechFusionView>();
         }
 
         private void RefreshList()
@@ -269,14 +269,14 @@ namespace SuperMech.Code
                 catGo.transform.SetParent(_listContent, false);
                 catGo.AddComponent<RectTransform>().sizeDelta = new Vector2(0, 28);
                 var catImg = catGo.AddComponent<Image>();
-                if (SMUiSkin.Section != null)
+                if (SuperMechUiSkin.Section != null)
                 {
-                    catImg.sprite = SMUiSkin.Section;
+                    catImg.sprite = SuperMechUiSkin.Section;
                     catImg.type = Image.Type.Sliced;
                 }
                 else
                 {
-                    catImg.color = SMUiSkin.SectionBg;
+                    catImg.color = SuperMechUiSkin.SectionBg;
                 }
                 var catBtn = catGo.AddComponent<Button>();
                 string p = prefix;
@@ -293,7 +293,7 @@ namespace SuperMech.Code
                 catText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 catText.fontSize = 13;
                 catText.fontStyle = FontStyle.Bold;
-                catText.color = SMUiSkin.TextColor;
+                catText.color = SuperMechUiSkin.TextColor;
                 catText.alignment = TextAnchor.MiddleLeft;
                 catText.text = (_folded[prefix] ? "▶ " : "▼ ") + LocalizedTextManager.getText(prefixNames[prefix]);
 
@@ -308,8 +308,8 @@ namespace SuperMech.Code
                         var knImg = knGo.AddComponent<Image>();
                         bool unlocked = SelectedActor != null && SuperMechKnowledge.IsUnlocked(SelectedActor, kn.id);
                         bool selected = _selectedId == kn.id;
-                        knImg.color = selected ? SMUiSkin.AccentDim :
-                                      (unlocked ? SMUiSkin.RowEven : SMUiSkin.RowOdd);
+                        knImg.color = selected ? SuperMechUiSkin.AccentDim :
+                                      (unlocked ? SuperMechUiSkin.RowEven : SuperMechUiSkin.RowOdd);
                         var textGo = new GameObject("Text");
                         textGo.transform.SetParent(knGo.transform, false);
                         var tr = textGo.AddComponent<RectTransform>();
@@ -318,7 +318,7 @@ namespace SuperMech.Code
                         var kt = textGo.AddComponent<Text>();
                         kt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                         kt.fontSize = 12;
-                        kt.color = unlocked ? SMUiSkin.TextColor : SMUiSkin.TextDim;
+                        kt.color = unlocked ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                         kt.alignment = TextAnchor.MiddleLeft;
                         kt.text = (unlocked ? "✓ " : "○ ") + kn.name;
                         string kid = kn.id;

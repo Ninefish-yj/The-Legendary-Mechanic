@@ -83,7 +83,7 @@ namespace SuperMech.Code
                 // v0.44.0 技能释放：攻击者攻击时有概率触发主动技能
                 if (attacker != null && attacker.isAlive() && Random.value < 0.3f)
                 {
-                    try { SMSkillRuntime.TryCastSkill(attacker, target); } catch { }
+                    try { SuperMechSkillRuntime.TryCastSkill(attacker, target); } catch { }
                 }
 
                 // v0.47.0 超神内空间：X阶单位战斗时放出内空间
@@ -120,7 +120,7 @@ namespace SuperMech.Code
                 {
                     if (SuperMechInfoState.TryShield(target))
                     {
-                        SMCombatFeedback.OnInfoShield(target);
+                        SuperMechCombatFeedback.OnInfoShield(target);
                         return false;
                     }
                 }
@@ -138,7 +138,7 @@ namespace SuperMech.Code
                     if (atkRank >= 13 && Random.value < 0.05f)
                     {
                         SuperMechConceptImmortal.MarkInformationErased(target);
-                        SMCombatFeedback.OnInfoErase(target);
+                        SuperMechCombatFeedback.OnInfoErase(target);
                     }
                 }
 
@@ -176,7 +176,7 @@ namespace SuperMech.Code
                         // 精神攻击穿甲：忽略目标护甲，直接造成伤害（比例可配置）
                         float armorPierceDamage = pDamage * SuperMechConfig.SpiritPierceRatio;
                         target.data.health -= (int)armorPierceDamage;
-                        SMCombatFeedback.OnSpiritPierce(target);
+                        SuperMechCombatFeedback.OnSpiritPierce(target);
                     }
                 }
 
@@ -191,7 +191,7 @@ namespace SuperMech.Code
                     {
                         float counterDamage = pDamage * (totalCounter - 1f);
                         target.data.health -= (int)counterDamage;
-                        SMCombatFeedback.OnAttributeCounter(target, totalCounter > 1f);
+                        SuperMechCombatFeedback.OnAttributeCounter(target, totalCounter > 1f);
                     }
                 }
 
@@ -225,7 +225,7 @@ namespace SuperMech.Code
                         {
                             float suppressDamage = pDamage * dmgBonus * intensity;
                             target.data.health -= (int)suppressDamage;
-                            SMCombatFeedback.OnSuppression(target, ratio);
+                            SuperMechCombatFeedback.OnSuppression(target, ratio);
                         }
 
                         // 维度2：命中压制（高能级攻击低能级时，低能级闪避率降低）
@@ -281,7 +281,7 @@ namespace SuperMech.Code
                         {
                             // 完全闪避：恢复全部伤害并跳过后续处理
                             target.data.health += (int)pDamage;
-                            SMCombatFeedback.OnDodge(target);
+                            SuperMechCombatFeedback.OnDodge(target);
                             return true; // 继续执行原版逻辑（伤害已被恢复）
                         }
                     }

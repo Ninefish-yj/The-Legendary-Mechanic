@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>技能运行时：冷却管理、战斗中自动触发、效果执行</summary>
-    public static class SMSkillRuntime
+    public static class SuperMechSkillRuntime
     {
         private static readonly Dictionary<long, Dictionary<string, float>> _cooldowns = new Dictionary<long, Dictionary<string, float>>();
         private static readonly Dictionary<long, Dictionary<string, float>> _activeBuffs = new Dictionary<long, Dictionary<string, float>>();
@@ -33,7 +33,7 @@ namespace SuperMech.Code
                 ExecuteEffect(attacker, target, def);
 
                 // 事件日志
-                SMEventLogger.LogSkillCast(attacker, def);
+                SuperMechEventLogger.LogSkillCast(attacker, def);
 
                 return true;
             }

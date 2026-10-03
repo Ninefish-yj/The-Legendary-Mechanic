@@ -6,7 +6,7 @@ namespace SuperMech.Code
     /// 在能级压制/精神穿甲/属性克制等触发时，调用WorldBox原生特效
     /// 参考现代战争M5模组的EffectsLibrary.spawnAtTileRandomScale用法
     /// </summary>
-    public static class SMCombatFeedback
+    public static class SuperMechCombatFeedback
     {
         /// <summary>在目标单位所在tile生成特效</summary>
         private static void SpawnAtActor(Actor a, string effectId, float minScale = 0.8f, float maxScale = 1.2f)

@@ -264,7 +264,7 @@ namespace SuperMech.Code
             string tPartial = LocalizedTextManager.getText("sm_res_partial_lost");
             string tFull = LocalizedTextManager.getText("sm_res_full_keep");
             string lostAbilities = integrity < 1f ? string.Format(tPartial, integrity * 100) : tFull;
-            SMEventLogger.LogResurrection(newActor, reviveCount, lostAbilities);
+            SuperMechEventLogger.LogResurrection(newActor, reviveCount, lostAbilities);
 
             return newActor;
         }

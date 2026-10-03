@@ -365,7 +365,7 @@ namespace SuperMech.Code
             Save();
             if (crafted > 0)
             {
-                SMEventLogger.LogKeyAcquired(null, crafted, source + "合成");
+                SuperMechEventLogger.LogKeyAcquired(null, crafted, source + "合成");
                 Debug.Log($"[超神机械师] 获得{amount}钥匙材料（来源：{source}），自动合成{crafted}把圣所钥匙，材料剩余{Data.key_materials}");
             }
             else
@@ -483,7 +483,7 @@ namespace SuperMech.Code
 
             // v0.29.0 UI重构：推送圣所访问事件到原生事件日志
             string sanctuaryName = GetSanctuaryTypeName(sanctuaryIndex);
-            SMEventLogger.LogSanctuaryVisit(a, sanctuaryIndex, sanctuaryName);
+            SuperMechEventLogger.LogSanctuaryVisit(a, sanctuaryIndex, sanctuaryName);
             // 发布圣所进入事件
             SuperMechEventBus.Publish("SanctuaryEntered", new SanctuaryEnteredEvent
             {

@@ -191,7 +191,7 @@ namespace SuperMech.Code
                 string knowB = recipe.requiredKnowledge.Length > 1 ?
                     LocalizedTextManager.getText(recipe.requiredKnowledge[1]) : "?";
                 string resultName = !string.IsNullOrEmpty(recipe.equipName) ? recipe.equipName : recipe.equipId;
-                SMEventLogger.LogFusion(a, knowA, knowB, resultName);
+                SuperMechEventLogger.LogFusion(a, knowA, knowB, resultName);
             }
             else
             {

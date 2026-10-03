@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    public class SMBagView : MonoBehaviour
+    public class SuperMechBagView : MonoBehaviour
     {
         private RectTransform _gridPanel;
         private Text _detailText;
@@ -99,7 +99,7 @@ namespace SuperMech.Code
             textRect.offsetMin = new Vector2(8, 4); textRect.offsetMax = new Vector2(-4, -4);
             _detailText = textGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _detailText.fontSize = 12; _detailText.color = SMUiSkin.TextColor;
+            _detailText.fontSize = 12; _detailText.color = SuperMechUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -118,8 +118,8 @@ namespace SuperMech.Code
             btnLayout.childControlHeight = true;
             btnLayout.childControlWidth = true;
 
-            _equipBtn = SMUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_equip"), 11, OnEquipClick);
-            _unequipBtn = SMUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_unequip"), 11, OnUnequipClick);
+            _equipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_equip"), 11, OnEquipClick);
+            _unequipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_unequip"), 11, OnUnequipClick);
             UpdateButtonStates();
         }
 

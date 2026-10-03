@@ -7,7 +7,7 @@ namespace SuperMech.Code
     /// <summary>超能者事件日志封装（v0.27.0 UI重构）
     /// 将觉醒/晋升/融合/迭代/复活等事件推送到WorldBox原生事件日志
     /// </summary>
-    public static class SMEventLogger
+    public static class SuperMechEventLogger
     {
         private static bool _initialized;
         private static bool _initFailed;

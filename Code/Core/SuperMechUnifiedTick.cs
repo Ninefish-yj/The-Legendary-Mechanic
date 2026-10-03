@@ -68,7 +68,7 @@ namespace SuperMech.Code
                 SafeRun("知识协同", () => SuperMechKnowledgeSynergy.TickSynergy());
                 SafeRun("机械融合", () => SuperMechMechFusion.TickFusion());
                 SafeRun("技能自动学习", () => SuperMechSkills.TickAutoLearnAll());
-                SafeRun("技能运行时", () => SMSkillRuntime.Tick());
+                SafeRun("技能运行时", () => SuperMechSkillRuntime.Tick());
                 SafeRun("降临者濒死保护", () => SuperMechConceptImmortal.TickGracePeriod());
                 SafeRun("超能者竞争", () => SuperMechAI.TickCompetition());
                 SafeRun("NPC自动修炼", () => SuperMechAI.TickNpcKnowledge());
@@ -142,7 +142,7 @@ namespace SuperMech.Code
             removed += SuperMechCosmicRelic.CleanupDead(alive);
             removed += SuperMechSanctuary.CleanupDead(alive);
             removed += SuperMechSkills.CleanupDead(alive);
-            removed += SMSkillRuntime.CleanupDead(alive);
+            removed += SuperMechSkillRuntime.CleanupDead(alive);
             removed += SuperMechPotentialRating.CleanupDead(alive);
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechAdvancementTask.CleanupDead(alive);
@@ -183,7 +183,7 @@ namespace SuperMech.Code
             try { SuperMechAura.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAura"); }
             try { SuperMechCrafting.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCrafting"); }
             try { SuperMechPotentialRating.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPotentialRating"); }
-            try { SMWindowFrame.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理WindowFrame失败"); }
+            try { SuperMechWindowFrameInner.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理WindowFrame失败"); }
             try { SuperMechCleanup.ClearUiStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理AwakenWindow失败"); }
             try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }

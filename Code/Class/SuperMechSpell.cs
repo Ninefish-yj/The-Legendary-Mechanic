@@ -314,7 +314,7 @@ namespace SuperMech.Code
                 progress.learned = true;
                 Debug.Log($"[超神机械师] {a.name} 学会了法术 {spell.nameKey}");
                 // 推送事件日志
-                SMEventLogger.LogSpellLearned(a, spell.nameKey);
+                SuperMechEventLogger.LogSpellLearned(a, spell.nameKey);
             }
             return true;
         }

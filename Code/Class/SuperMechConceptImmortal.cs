@@ -166,7 +166,7 @@ namespace SuperMech.Code
             _informationErased.Remove(a.data.id);
             Debug.Log($"[超神机械师] {a.name} 触发资讯唯一·概念永生，信息态扰动重塑完成，进入稳定期");
             // 推送事件日志
-            SMEventLogger.LogConceptReshape(a);
+            SuperMechEventLogger.LogConceptReshape(a);
         }
 
         /// <summary>清理死亡单位的数据</summary>

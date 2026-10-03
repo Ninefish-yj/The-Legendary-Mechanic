@@ -22,7 +22,7 @@ namespace SuperMech
             ModPath = GetDeclaration().FolderPath;
             Debug.Log("[超神机械师] 模组加载: " + ModPath);
             SuperMechConfig.Init();
-            SMEventLogger.Init();
+            SuperMechEventLogger.Init();
             SuperMechTraitGroups.Register();
             SuperMechCustomStats.Register();
             SuperMechTraits.Register();
@@ -61,7 +61,7 @@ namespace SuperMech
             Debug.Log("[超神机械师] Harmony Patch 完成（单位面板注入+战斗挂钩）");
 
             SuperMechSaveData.Load();
-            SMWindowManager.Init();
+            SuperMechWindowManager.Init();
 
             Debug.Log("[超神机械师] Phase 1 系统注册完成");
         }
@@ -69,7 +69,7 @@ namespace SuperMech
         private void Update()
         {
             SuperMechPowers.TryCreateButtons();
-            SMEventLogger.TryInit();
+            SuperMechEventLogger.TryInit();
 
             if (!SuperMechConfig.ModEnabled) return;
 
@@ -118,7 +118,7 @@ namespace SuperMech
                     ? LocalizedTextManager.getText(SuperMechRanks.All[evt.oldRank].name) : "?";
                 string newName = evt.newRank >= 0 && evt.newRank < SuperMechRanks.All.Count
                     ? LocalizedTextManager.getText(SuperMechRanks.All[evt.newRank].name) : "?";
-                SMEventLogger.LogPromotion(evt.actor, oldName, newName, 0f, evt.newRank);
+                SuperMechEventLogger.LogPromotion(evt.actor, oldName, newName, 0f, evt.newRank);
             });
 
             // 势力创建 → 事件日志

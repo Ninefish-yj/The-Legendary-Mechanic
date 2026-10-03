@@ -79,7 +79,7 @@ namespace SuperMech.Code
                 {
                     Sprite icon = SpriteTextureLoader.getSprite("actor_traits/iconBlessing")
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton(OpenSanctuary, () => SMWindowManager.OpenSanctuary(), icon);
+                    var pb = PowerButtonCreator.CreateSimpleButton(OpenSanctuary, () => SuperMechWindowManager.OpenSanctuary(), icon);
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_sanctuary_974", "sm_sanctuary_975");
@@ -96,7 +96,7 @@ namespace SuperMech.Code
                 {
                     Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight")
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton(OpenRank, () => SMWindowManager.OpenRank(), icon);
+                    var pb = PowerButtonCreator.CreateSimpleButton(OpenRank, () => SuperMechWindowManager.OpenRank(), icon);
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_rank_title", "sm_rank_subtitle");

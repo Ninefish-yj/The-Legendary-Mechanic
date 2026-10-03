@@ -7,7 +7,7 @@ namespace SuperMech.Code
     /// <summary>
     /// 圣所复活窗口：显示可复活的死亡单位列表，点击复活
     /// </summary>
-    public class SMResurrectionView : MonoBehaviour
+    public class SuperMechResurrectionView : MonoBehaviour
     {
         private RectTransform _listContent;
         private Text _infoText;
@@ -32,7 +32,7 @@ namespace SuperMech.Code
             var topImg = topGo.AddComponent<Image>();
             topImg.color = new Color(0.1f, 0.15f, 0.22f, 0.9f);
 
-            _infoText = SMUiSkin.MakeText(topGo.transform, "", 12, TextAnchor.UpperLeft);
+            _infoText = SuperMechUiSkin.MakeText(topGo.transform, "", 12, TextAnchor.UpperLeft);
             var infoRect = _infoText.GetComponent<RectTransform>();
             infoRect.anchorMin = Vector2.zero;
             infoRect.anchorMax = Vector2.one;
@@ -51,7 +51,7 @@ namespace SuperMech.Code
             listRect.offsetMin = new Vector2(0, 0);
             listRect.offsetMax = new Vector2(0, -50);
 
-            var (scroll, content) = SMUiSkin.CreateScrollArea(listGo.transform, "Scroll");
+            var (scroll, content) = SuperMechUiSkin.CreateScrollArea(listGo.transform, "Scroll");
             _listContent = content;
         }
 
@@ -77,8 +77,8 @@ namespace SuperMech.Code
                 var emptyGo = new GameObject("Empty");
                 emptyGo.transform.SetParent(_listContent, false);
                 emptyGo.AddComponent<RectTransform>().sizeDelta = new Vector2(0, 40);
-                var emptyText = SMUiSkin.MakeText(emptyGo.transform, LocalizedTextManager.getText("sm_ui_no_dead"), 13, TextAnchor.MiddleCenter);
-                emptyText.color = SMUiSkin.TextDim;
+                var emptyText = SuperMechUiSkin.MakeText(emptyGo.transform, LocalizedTextManager.getText("sm_ui_no_dead"), 13, TextAnchor.MiddleCenter);
+                emptyText.color = SuperMechUiSkin.TextDim;
                 return;
             }
 
@@ -91,7 +91,7 @@ namespace SuperMech.Code
                 itemGo.transform.SetParent(_listContent, false);
                 itemGo.AddComponent<RectTransform>().sizeDelta = new Vector2(0, 60);
                 var itemImg = itemGo.AddComponent<Image>();
-                itemImg.color = canRes ? SMUiSkin.RowEven : SMUiSkin.RowOdd;
+                itemImg.color = canRes ? SuperMechUiSkin.RowEven : SuperMechUiSkin.RowOdd;
 
                 // 信息文字
                 var textGo = new GameObject("Text");
@@ -104,7 +104,7 @@ namespace SuperMech.Code
                 var text = textGo.AddComponent<Text>();
                 text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 text.fontSize = 12;
-                text.color = canRes ? SMUiSkin.TextColor : SMUiSkin.TextDim;
+                text.color = canRes ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                 text.alignment = TextAnchor.MiddleLeft;
                 text.horizontalOverflow = HorizontalWrapMode.Wrap;
                 text.supportRichText = true;
@@ -133,8 +133,8 @@ namespace SuperMech.Code
                 btnImg.color = canRes ? new Color(0.2f, 0.5f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
                 var btn = btnGo.AddComponent<Button>();
                 btn.interactable = canRes;
-                var btnText = SMUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_resurrect"), 12, TextAnchor.MiddleCenter);
-                btnText.color = canRes ? Color.white : SMUiSkin.TextDim;
+                var btnText = SuperMechUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_resurrect"), 12, TextAnchor.MiddleCenter);
+                btnText.color = canRes ? Color.white : SuperMechUiSkin.TextDim;
                 var btnTextRect = btnText.GetComponent<RectTransform>();
                 btnTextRect.anchorMin = Vector2.zero;
                 btnTextRect.anchorMax = Vector2.one;

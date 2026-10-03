@@ -8,7 +8,7 @@ namespace SuperMech.Code
     /// 知识融合窗口：左配方列表（按分支分组）+ 右详情 + 融合按钮
     /// 从单位面板打开时查看指定单位，否则查看全局选中单位
     /// </summary>
-    public class SMFusionView : MonoBehaviour
+    public class SuperMechFusionView : MonoBehaviour
     {
         private RectTransform _listContent;
         private RectTransform _detailContent;
@@ -43,7 +43,7 @@ namespace SuperMech.Code
             listRect.sizeDelta = new Vector2(200, 0);
             listRect.anchoredPosition = Vector2.zero;
 
-            var (scroll, content) = SMUiSkin.CreateScrollArea(listGo.transform, "Scroll");
+            var (scroll, content) = SuperMechUiSkin.CreateScrollArea(listGo.transform, "Scroll");
             _listContent = content;
 
             // 右侧详情面板
@@ -65,7 +65,7 @@ namespace SuperMech.Code
             cardRect.offsetMin = new Vector2(4, 4);
             cardRect.offsetMax = new Vector2(-4, -4);
             var cardImg = cardGo.AddComponent<Image>();
-            cardImg.color = SMUiSkin.CardBg;
+            cardImg.color = SuperMechUiSkin.CardBg;
             _detailContent = cardRect;
 
             // 详情滚动区
@@ -125,7 +125,7 @@ namespace SuperMech.Code
             _detailText = textGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _detailText.fontSize = 13;
-            _detailText.color = SMUiSkin.TextColor;
+            _detailText.color = SuperMechUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -152,7 +152,7 @@ namespace SuperMech.Code
             _fuseBtn.onClick.AddListener(OnFuseClick);
             _fuseBtn.interactable = false;
 
-            _fuseBtnText = SMUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_fuse"), 14, TextAnchor.MiddleCenter);
+            _fuseBtnText = SuperMechUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_fuse"), 14, TextAnchor.MiddleCenter);
             _fuseBtnText.fontStyle = FontStyle.Bold;
             _fuseBtnText.color = Color.white;
             var btnTextRect = _fuseBtnText.GetComponent<RectTransform>();
@@ -188,7 +188,7 @@ namespace SuperMech.Code
                 catGo.transform.SetParent(_listContent, false);
                 catGo.AddComponent<RectTransform>().sizeDelta = new Vector2(0, 28);
                 var catImg = catGo.AddComponent<Image>();
-                catImg.color = SMUiSkin.SectionBg;
+                catImg.color = SuperMechUiSkin.SectionBg;
                 var catBtn = catGo.AddComponent<Button>();
                 string bk = bKey;
                 catBtn.onClick.AddListener(() => ToggleCategory(bk));
@@ -204,7 +204,7 @@ namespace SuperMech.Code
                 catText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 catText.fontSize = 13;
                 catText.fontStyle = FontStyle.Bold;
-                catText.color = SMUiSkin.TextColor;
+                catText.color = SuperMechUiSkin.TextColor;
                 catText.alignment = TextAnchor.MiddleLeft;
                 catText.text = (_folded[bKey] ? "▶ " : "▼ ") + LocalizedTextManager.getText(branchNames[branch]);
 
@@ -219,8 +219,8 @@ namespace SuperMech.Code
                         var rImg = rGo.AddComponent<Image>();
                         bool canFuse = SelectedActor != null && SuperMechKnowledgeRecipe.CanFuse(SelectedActor, recipe);
                         bool selected = _selectedId == recipe.id;
-                        rImg.color = selected ? SMUiSkin.AccentDim :
-                                      (canFuse ? SMUiSkin.RowEven : SMUiSkin.RowOdd);
+                        rImg.color = selected ? SuperMechUiSkin.AccentDim :
+                                      (canFuse ? SuperMechUiSkin.RowEven : SuperMechUiSkin.RowOdd);
                         var textGo = new GameObject("Text");
                         textGo.transform.SetParent(rGo.transform, false);
                         var tr = textGo.AddComponent<RectTransform>();
@@ -229,7 +229,7 @@ namespace SuperMech.Code
                         var rt = textGo.AddComponent<Text>();
                         rt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                         rt.fontSize = 12;
-                        rt.color = canFuse ? SMUiSkin.TextColor : SMUiSkin.TextDim;
+                        rt.color = canFuse ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                         rt.alignment = TextAnchor.MiddleLeft;
                         rt.text = (canFuse ? "● " : "○ ") + LocalizedTextManager.getText(recipe.nameKey) + $" (T{recipe.tier})";
                         string rid = recipe.id;

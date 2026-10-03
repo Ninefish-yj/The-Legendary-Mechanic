@@ -6,9 +6,9 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    public class SMWindowFrame
+    public class SuperMechWindowFrameInner
     {
-        private static readonly List<SMWindowFrame> AllFrames = new List<SMWindowFrame>(8);
+        private static readonly List<SuperMechWindowFrameInner> AllFrames = new List<SuperMechWindowFrameInner>(8);
         private static Canvas _canvas;
 
         public GameObject Root;
@@ -16,9 +16,9 @@ namespace SuperMech.Code
         public RectTransform ContentParent;
         public Text TitleText;
 
-        public static SMWindowFrame Create(string title, float width, float height)
+        public static SuperMechWindowFrameInner Create(string title, float width, float height)
         {
-            var frame = new SMWindowFrame();
+            var frame = new SuperMechWindowFrameInner();
             AllFrames.Add(frame);
             Canvas canvas = GetCanvas();
 
@@ -45,7 +45,7 @@ namespace SuperMech.Code
             tbRt.offsetMax = Vector2.zero;
             titleBar.GetComponent<Image>().color = new Color(0.02f, 0.04f, 0.07f, 1f);
 
-            var drag = titleBar.AddComponent<SMWindowDrag>();
+            var drag = titleBar.AddComponent<SuperMechWindowDrag>();
             drag.WindowRect = frame.RootRt;
 
             var titleGo = new GameObject("Title", typeof(RectTransform), typeof(Text));
@@ -215,7 +215,7 @@ namespace SuperMech.Code
         }
     }
 
-    public class SMWindowDrag : MonoBehaviour, UnityEngine.EventSystems.IBeginDragHandler, UnityEngine.EventSystems.IDragHandler
+    public class SuperMechWindowDrag : MonoBehaviour, UnityEngine.EventSystems.IBeginDragHandler, UnityEngine.EventSystems.IDragHandler
     {
         public RectTransform WindowRect;
         private Vector2 _offset;

@@ -143,7 +143,7 @@ namespace SuperMech.Code
                 int maxRank = Mathf.Max(rankW, rankL);
                 if (maxRank >= SuperMechConfig.EventLogPromotionMinRank)
                 {
-                    SMEventLogger.LogCompetition(winner, loser, result);
+                    SuperMechEventLogger.LogCompetition(winner, loser, result);
                 }
 
                 if (SuperMechConfig.LogVerbose)

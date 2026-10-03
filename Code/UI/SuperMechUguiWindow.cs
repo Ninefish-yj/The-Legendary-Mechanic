@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    public class SMUguiWindow : MonoBehaviour, IDragHandler, IPointerDownHandler
+    public class SuperMechUguiWindow : MonoBehaviour, IDragHandler, IPointerDownHandler
     {
         public string WindowId { get; private set; }
         public RectTransform Rect { get; private set; }
@@ -48,7 +48,7 @@ namespace SuperMech.Code
             return _canvas;
         }
 
-        public static SMUguiWindow Create(string id, string titleKey, float width, float height)
+        public static SuperMechUguiWindow Create(string id, string titleKey, float width, float height)
         {
             var canvas = GetCanvas();
             var go = new GameObject($"SM_Window_{id}");
@@ -59,7 +59,7 @@ namespace SuperMech.Code
                 (Screen.width - width) / 2f,
                 (Screen.height - height) / 2f);
 
-            var window = go.AddComponent<SMUguiWindow>();
+            var window = go.AddComponent<SuperMechUguiWindow>();
             window.WindowId = id;
             window.Rect = rect;
             window.BuildUI(titleKey);
@@ -71,7 +71,7 @@ namespace SuperMech.Code
         {
             // 背景：纯色半透明深灰蓝
             _bgImage = gameObject.AddComponent<Image>();
-            _bgImage.color = SMUiSkin.BgColor;
+            _bgImage.color = SuperMechUiSkin.BgColor;
             _bgImage.raycastTarget = true;
 
             // 边框：4个冰蓝细边
@@ -91,13 +91,13 @@ namespace SuperMech.Code
             titleBarRect.anchoredPosition = new Vector2(0, -BorderWidth);
             var titleBarImg = titleBarGo.AddComponent<Image>();
             titleBarImg.color = new Color(0.04f, 0.06f, 0.10f, 0.98f);
-            var titleDrag = titleBarGo.AddComponent<SMDragHandler>();
+            var titleDrag = titleBarGo.AddComponent<SuperMechDragHandler>();
             titleDrag.Target = this;
 
             // 标题文字
-            _titleText = SMUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), 16, TextAnchor.MiddleCenter);
+            _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), 16, TextAnchor.MiddleCenter);
             _titleText.fontStyle = FontStyle.Bold;
-            _titleText.color = SMUiSkin.AccentColor;
+            _titleText.color = SuperMechUiSkin.AccentColor;
             var titleRect = _titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = Vector2.zero;
             titleRect.anchorMax = Vector2.one;
@@ -114,14 +114,14 @@ namespace SuperMech.Code
             closeRect.sizeDelta = new Vector2(CloseBtnSize, CloseBtnSize);
             closeRect.anchoredPosition = new Vector2(-CloseBtnMargin, -5);
             var closeImg = closeGo.AddComponent<Image>();
-            closeImg.color = SMUiSkin.CloseRed;
+            closeImg.color = SuperMechUiSkin.CloseRed;
             _closeBtn = closeGo.AddComponent<Button>();
             var closeColors = _closeBtn.colors;
             closeColors.normalColor = Color.white;
             closeColors.highlightedColor = new Color(1f, 0.4f, 0.4f, 1f);
             closeColors.pressedColor = new Color(0.6f, 0.15f, 0.15f, 1f);
             _closeBtn.colors = closeColors;
-            var closeText = SMUiSkin.MakeText(closeGo.transform, "×", 18, TextAnchor.MiddleCenter);
+            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", 18, TextAnchor.MiddleCenter);
             closeText.color = Color.white;
             var closeTextRect = closeText.GetComponent<RectTransform>();
             closeTextRect.anchorMin = Vector2.zero;
@@ -150,11 +150,11 @@ namespace SuperMech.Code
             resizeRect.sizeDelta = new Vector2(ResizeHandleSize, ResizeHandleSize);
             resizeRect.anchoredPosition = Vector2.zero;
             var resizeImg = resizeGo.AddComponent<Image>();
-            resizeImg.color = new Color(SMUiSkin.AccentColor.r, SMUiSkin.AccentColor.g, SMUiSkin.AccentColor.b, 0.3f);
-            var resizeHandler = resizeGo.AddComponent<SMResizeHandler>();
+            resizeImg.color = new Color(SuperMechUiSkin.AccentColor.r, SuperMechUiSkin.AccentColor.g, SuperMechUiSkin.AccentColor.b, 0.3f);
+            var resizeHandler = resizeGo.AddComponent<SuperMechResizeHandler>();
             resizeHandler.Target = this;
             // 伸缩手柄上的斜线纹理（用三条线表示）
-            var resizeText = SMUiSkin.MakeText(resizeGo.transform, "⤡", 12, TextAnchor.MiddleCenter);
+            var resizeText = SuperMechUiSkin.MakeText(resizeGo.transform, "⤡", 12, TextAnchor.MiddleCenter);
             resizeText.color = new Color(1, 1, 1, 0.6f);
             var resizeTextRect = resizeText.GetComponent<RectTransform>();
             resizeTextRect.anchorMin = Vector2.zero;
@@ -190,7 +190,7 @@ namespace SuperMech.Code
             rect.sizeDelta = sizeDelta;
             rect.anchoredPosition = anchoredPos;
             var img = go.AddComponent<Image>();
-            img.color = SMUiSkin.BorderColor;
+            img.color = SuperMechUiSkin.BorderColor;
         }
 
         public void Close()
@@ -214,9 +214,9 @@ namespace SuperMech.Code
         }
     }
 
-    public class SMDragHandler : MonoBehaviour, IDragHandler, IPointerDownHandler
+    public class SuperMechDragHandler : MonoBehaviour, IDragHandler, IPointerDownHandler
     {
-        public SMUguiWindow Target;
+        public SuperMechUguiWindow Target;
 
         public void OnPointerDown(PointerEventData e)
         {
@@ -229,9 +229,9 @@ namespace SuperMech.Code
         }
     }
 
-    public class SMResizeHandler : MonoBehaviour, IDragHandler, IPointerDownHandler
+    public class SuperMechResizeHandler : MonoBehaviour, IDragHandler, IPointerDownHandler
     {
-        public SMUguiWindow Target;
+        public SuperMechUguiWindow Target;
         private Vector2 _lastMousePos;
 
         public void OnPointerDown(PointerEventData e)

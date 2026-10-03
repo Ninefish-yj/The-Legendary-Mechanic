@@ -259,7 +259,7 @@ namespace SuperMech.Code
                 civSummary = string.Format(LocalizedTextManager.getText("sm_event_civ_reset"),
                     last.iteration, last.totalAwakened, rankName);
             }
-            SMEventLogger.LogIteration(CurrentIteration, retentionRate, civSummary);
+            SuperMechEventLogger.LogIteration(CurrentIteration, retentionRate, civSummary);
 
             // 清除世界单位（保留降临者）
             ResetWorldForNewIteration();

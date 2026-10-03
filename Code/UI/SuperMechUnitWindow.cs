@@ -40,22 +40,22 @@ namespace SuperMech.Code
             long actorId = a.data.id;
 
             // === 核心档案组（默认展开）===
-            SMCollapsibleSection.BuildHeader(window, actorId, "core", "sm_ui_section_core");
-            if (SMCollapsibleSection.IsExpanded(actorId, "core"))
+            SuperMechCollapsibleSection.BuildHeader(window, actorId, "core", "sm_ui_section_core");
+            if (SuperMechCollapsibleSection.IsExpanded(actorId, "core"))
             {
                 ShowCoreInfo(window, a);
             }
 
             // === 战斗数值组（默认折叠）===
-            SMCollapsibleSection.BuildHeader(window, actorId, "combat", "sm_ui_section_combat");
-            if (SMCollapsibleSection.IsExpanded(actorId, "combat"))
+            SuperMechCollapsibleSection.BuildHeader(window, actorId, "combat", "sm_ui_section_combat");
+            if (SuperMechCollapsibleSection.IsExpanded(actorId, "combat"))
             {
                 ShowCombatInfo(window, a);
             }
 
             // === 特殊信息与入口组（默认折叠）===
-            SMCollapsibleSection.BuildHeader(window, actorId, "special", "sm_ui_section_special");
-            if (SMCollapsibleSection.IsExpanded(actorId, "special"))
+            SuperMechCollapsibleSection.BuildHeader(window, actorId, "special", "sm_ui_section_special");
+            if (SuperMechCollapsibleSection.IsExpanded(actorId, "special"))
             {
                 ShowSpecialInfo(window, a);
                 ShowEntryButtons(window, a);
@@ -151,20 +151,20 @@ namespace SuperMech.Code
         private static void ShowEntryButtons(UnitWindow window, Actor a)
         {
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
-                new Color(0.5f, 0.35f, 0.7f), () => SMWindowManager.OpenKnowledge(a));
+                new Color(0.5f, 0.35f, 0.7f), () => SuperMechWindowManager.OpenKnowledge(a));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
-                new Color(0.9f, 0.7f, 0.3f), () => SMWindowManager.OpenBag(a));
+                new Color(0.9f, 0.7f, 0.3f), () => SuperMechWindowManager.OpenBag(a));
 
             if (a.hasTrait(SuperMechTraits.ClassMage))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_spell_entry"), "iconPurpleBook",
-                    new Color(0.6f, 0.4f, 1f), () => SMWindowManager.OpenSpell(a));
+                    new Color(0.6f, 0.4f, 1f), () => SuperMechWindowManager.OpenSpell(a));
             }
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
-                    new Color(0.6f, 0.8f, 0.4f), () => SMWindowManager.OpenCraft());
+                    new Color(0.6f, 0.8f, 0.4f), () => SuperMechWindowManager.OpenCraft());
             }
         }
 

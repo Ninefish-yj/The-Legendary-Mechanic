@@ -8,7 +8,7 @@ namespace SuperMech.Code
     /// 配色：深灰棕半透明底 + 金色强调 + 米白文字 + 石质描边
     /// 9-slice pixelsPerUnit=100（关键：NML环境下必须用100，否则边框塌缩）
     /// </summary>
-    public static class SMUiSkin
+    public static class SuperMechUiSkin
     {
         private static bool _initialized;
         private static Sprite _panelSprite;

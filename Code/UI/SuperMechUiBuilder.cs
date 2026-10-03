@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    public static class SMUiBuilder
+    public static class SuperMechUiBuilder
     {
         private static Font _font;
         private static Font GetFont()

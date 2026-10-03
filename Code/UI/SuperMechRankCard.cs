@@ -7,7 +7,7 @@ namespace SuperMech.Code
     /// 布局：[排名徽章] [头像] [名称·阶位·体系] [能级]
     /// 点击选中单位，前三名高亮
     /// </summary>
-    public class SMRankCard : MonoBehaviour
+    public class SuperMechRankCard : MonoBehaviour
     {
         private Actor _actor;
         private Button _button;
@@ -53,7 +53,7 @@ namespace SuperMech.Code
             rankRect.sizeDelta = new Vector2(30, cardH);
             rankRect.anchoredPosition = new Vector2(2, 0);
             var rankText = rankGo.AddComponent<Text>();
-            rankText.font = SMUiSkin.DefaultFont;
+            rankText.font = SuperMechUiSkin.DefaultFont;
             rankText.fontSize = 12;
             rankText.alignment = TextAnchor.MiddleCenter;
             rankText.text = $"#{rank}";
@@ -90,7 +90,7 @@ namespace SuperMech.Code
             infoRect.sizeDelta = new Vector2(-100, cardH);
             infoRect.anchoredPosition = new Vector2(58, 0);
             var infoText = infoGo.AddComponent<Text>();
-            infoText.font = SMUiSkin.DefaultFont;
+            infoText.font = SuperMechUiSkin.DefaultFont;
             infoText.fontSize = 12;
             infoText.alignment = TextAnchor.MiddleLeft;
             infoText.horizontalOverflow = HorizontalWrapMode.Overflow;
@@ -108,7 +108,7 @@ namespace SuperMech.Code
             onarRect.sizeDelta = new Vector2(70, cardH);
             onarRect.anchoredPosition = new Vector2(-4, 0);
             var onarText = onarGo.AddComponent<Text>();
-            onarText.font = SMUiSkin.DefaultFont;
+            onarText.font = SuperMechUiSkin.DefaultFont;
             onarText.fontSize = 11;
             onarText.alignment = TextAnchor.MiddleRight;
             onarText.text = onar >= 10000 ? $"{onar / 10000f:F1}w" : $"{onar:F0}";

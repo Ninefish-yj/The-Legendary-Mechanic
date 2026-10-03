@@ -9,9 +9,9 @@ namespace SuperMech.Code
     /// 两层结构：圣所选择层（6个入口）→ 圣所内部层（白茫茫空间+飘浮光球）
     /// 玩家是上帝视角，可直接查看所有圣所；游戏内单位需要超A级+钥匙才能进入
     /// </summary>
-    public class SMSanctuaryView : MonoBehaviour
+    public class SuperMechSanctuaryView : MonoBehaviour
     {
-        private static SMSanctuaryView _instance;
+        private static SuperMechSanctuaryView _instance;
         public static bool IsOpen => _instance != null;
 
         private RectTransform _rootRect;
@@ -43,7 +43,7 @@ namespace SuperMech.Code
         public static void Open()
         {
             if (_instance != null) return;
-            var canvas = SMUguiWindow.GetCanvas();
+            var canvas = SuperMechUguiWindow.GetCanvas();
             var go = new GameObject("SMSanctuarySpaceView");
             go.transform.SetParent(canvas.transform, false);
             var rect = go.AddComponent<RectTransform>();
@@ -52,7 +52,7 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
 
-            _instance = go.AddComponent<SMSanctuaryView>();
+            _instance = go.AddComponent<SuperMechSanctuaryView>();
             _instance.Build();
         }
 
@@ -121,7 +121,7 @@ namespace SuperMech.Code
             var backImg = backGo.AddComponent<Image>();
             backImg.color = new Color(0.2f, 0.3f, 0.5f, 0.9f);
             var backBtn = backGo.AddComponent<Button>();
-            var backText = SMUiSkin.MakeText(backGo.transform,
+            var backText = SuperMechUiSkin.MakeText(backGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_back_world"), 13, TextAnchor.MiddleCenter);
             backText.color = Color.white;
             backText.fontStyle = FontStyle.Bold;
@@ -133,7 +133,7 @@ namespace SuperMech.Code
             backBtn.onClick.AddListener(Close);
 
             // 标题
-            var titleText = SMUiSkin.MakeText(topGo.transform,
+            var titleText = SuperMechUiSkin.MakeText(topGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_space_title"), 18, TextAnchor.MiddleCenter);
             titleText.color = new Color(0.4f, 0.7f, 1.0f);
             titleText.fontStyle = FontStyle.Bold;
@@ -155,7 +155,7 @@ namespace SuperMech.Code
             var infoImg = infoGo.AddComponent<Image>();
             infoImg.color = new Color(0.3f, 0.2f, 0.4f, 0.9f);
             var infoBtn = infoGo.AddComponent<Button>();
-            var infoText = SMUiSkin.MakeText(infoGo.transform,
+            var infoText = SuperMechUiSkin.MakeText(infoGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_info_library"), 13, TextAnchor.MiddleCenter);
             infoText.color = Color.white;
             var infoTextRect = infoText.GetComponent<RectTransform>();
@@ -177,7 +177,7 @@ namespace SuperMech.Code
             rect.offsetMax = new Vector2(0, -60);
 
             // 提示文字
-            var hintText = SMUiSkin.MakeText(_selectLayer.transform,
+            var hintText = SuperMechUiSkin.MakeText(_selectLayer.transform,
                 LocalizedTextManager.getText("sm_ui_san_select_hint"), 14, TextAnchor.UpperCenter);
             hintText.color = new Color(0.6f, 0.8f, 1.0f);
             var hintRect = hintText.GetComponent<RectTransform>();
@@ -237,7 +237,7 @@ namespace SuperMech.Code
                 _sanctuaryButtons.Add(btn);
 
                 // 圣所名称
-                var nameText = SMUiSkin.MakeText(entryGo.transform,
+                var nameText = SuperMechUiSkin.MakeText(entryGo.transform,
                     $"<color={colors[i]}>{name}</color>", 15, TextAnchor.UpperCenter);
                 nameText.fontStyle = FontStyle.Bold;
                 var nameRect = nameText.GetComponent<RectTransform>();
@@ -248,7 +248,7 @@ namespace SuperMech.Code
                 nameRect.anchoredPosition = new Vector2(0, -10);
 
                 // 知识方向
-                var classText = SMUiSkin.MakeText(entryGo.transform, cls, 11, TextAnchor.UpperCenter);
+                var classText = SuperMechUiSkin.MakeText(entryGo.transform, cls, 11, TextAnchor.UpperCenter);
                 classText.color = new Color(0.8f, 0.8f, 0.8f);
                 var classRect = classText.GetComponent<RectTransform>();
                 classRect.anchorMin = new Vector2(0, 1);
@@ -258,7 +258,7 @@ namespace SuperMech.Code
                 classRect.anchoredPosition = new Vector2(0, -38);
 
                 // 类型
-                var typeText = SMUiSkin.MakeText(entryGo.transform, typeName, 10, TextAnchor.UpperCenter);
+                var typeText = SuperMechUiSkin.MakeText(entryGo.transform, typeName, 10, TextAnchor.UpperCenter);
                 typeText.color = new Color(0.6f, 0.6f, 0.6f);
                 var typeRect = typeText.GetComponent<RectTransform>();
                 typeRect.anchorMin = new Vector2(0, 1);
@@ -268,7 +268,7 @@ namespace SuperMech.Code
                 typeRect.anchoredPosition = new Vector2(0, -58);
 
                 // 进入按钮文字
-                var enterText = SMUiSkin.MakeText(entryGo.transform,
+                var enterText = SuperMechUiSkin.MakeText(entryGo.transform,
                     LocalizedTextManager.getText("sm_ui_san_enter"), 12, TextAnchor.LowerCenter);
                 enterText.color = new Color(0.4f, 0.7f, 1.0f);
                 enterText.fontStyle = FontStyle.Bold;
@@ -297,7 +297,7 @@ namespace SuperMech.Code
             interiorBg.raycastTarget = true;
 
             // 标题
-            _interiorTitle = SMUiSkin.MakeText(_interiorLayer.transform, "", 16, TextAnchor.UpperCenter);
+            _interiorTitle = SuperMechUiSkin.MakeText(_interiorLayer.transform, "", 16, TextAnchor.UpperCenter);
             _interiorTitle.color = new Color(0.2f, 0.3f, 0.5f);
             _interiorTitle.fontStyle = FontStyle.Bold;
             var titleRect = _interiorTitle.GetComponent<RectTransform>();
@@ -342,7 +342,7 @@ namespace SuperMech.Code
             detailBorderImg.raycastTarget = false;
 
             // 详情文本
-            _orbDetailText = SMUiSkin.MakeText(_orbDetailPanel.transform,
+            _orbDetailText = SuperMechUiSkin.MakeText(_orbDetailPanel.transform,
                 LocalizedTextManager.getText("sm_ui_san_orb_hint"), 12, TextAnchor.UpperLeft);
             _orbDetailText.supportRichText = true;
             _orbDetailText.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -366,7 +366,7 @@ namespace SuperMech.Code
             var gateImg = gateGo.AddComponent<Image>();
             gateImg.color = new Color(0.3f, 0.4f, 0.6f, 0.9f);
             var gateBtn = gateGo.AddComponent<Button>();
-            var gateText = SMUiSkin.MakeText(gateGo.transform,
+            var gateText = SuperMechUiSkin.MakeText(gateGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_gate_return"), 13, TextAnchor.MiddleCenter);
             gateText.color = Color.white;
             gateText.fontStyle = FontStyle.Bold;
@@ -547,7 +547,7 @@ namespace SuperMech.Code
             bgImg.raycastTarget = true;
 
             // 标题
-            var titleText = SMUiSkin.MakeText(_resurrectionLayer.transform,
+            var titleText = SuperMechUiSkin.MakeText(_resurrectionLayer.transform,
                 LocalizedTextManager.getText("sm_ui_san_info_library"), 16, TextAnchor.UpperCenter);
             titleText.color = new Color(0.6f, 0.8f, 1.0f);
             titleText.fontStyle = FontStyle.Bold;
@@ -570,7 +570,7 @@ namespace SuperMech.Code
             var backImg = backGo.AddComponent<Image>();
             backImg.color = new Color(0.2f, 0.15f, 0.3f, 0.9f);
             var backBtn = backGo.AddComponent<Button>();
-            var backText = SMUiSkin.MakeText(backGo.transform,
+            var backText = SuperMechUiSkin.MakeText(backGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_back"), 12, TextAnchor.MiddleCenter);
             backText.color = Color.white;
             var backTextRect = backText.GetComponent<RectTransform>();
@@ -588,7 +588,7 @@ namespace SuperMech.Code
             listRect.anchorMax = Vector2.one;
             listRect.offsetMin = new Vector2(20, 20);
             listRect.offsetMax = new Vector2(-20, -50);
-            listGo.AddComponent<SMResurrectionView>();
+            listGo.AddComponent<SuperMechResurrectionView>();
 
             _resurrectionLayer.SetActive(false);
         }
@@ -614,7 +614,7 @@ namespace SuperMech.Code
             var barImg = barGo.AddComponent<Image>();
             barImg.color = new Color(0.05f, 0.08f, 0.15f, 0.9f);
 
-            _statusText = SMUiSkin.MakeText(barGo.transform, "", 11, TextAnchor.MiddleCenter);
+            _statusText = SuperMechUiSkin.MakeText(barGo.transform, "", 11, TextAnchor.MiddleCenter);
             _statusText.supportRichText = true;
             _statusText.horizontalOverflow = HorizontalWrapMode.Wrap;
             var statusRect = _statusText.GetComponent<RectTransform>();

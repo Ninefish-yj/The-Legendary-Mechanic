@@ -8,7 +8,7 @@ namespace SuperMech.Code
     /// 法术学习窗口：左法术列表（按分支分组）+ 右详情 + 学习按钮
     /// 原著ch404：法术分阶段学习，成功率取决于智力和神秘属性
     /// </summary>
-    public class SMSpellView : MonoBehaviour
+    public class SuperMechSpellView : MonoBehaviour
     {
         private RectTransform _listContent;
         private RectTransform _detailContent;
@@ -43,7 +43,7 @@ namespace SuperMech.Code
             listRect.sizeDelta = new Vector2(200, 0);
             listRect.anchoredPosition = Vector2.zero;
 
-            var (scroll, content) = SMUiSkin.CreateScrollArea(listGo.transform, "Scroll");
+            var (scroll, content) = SuperMechUiSkin.CreateScrollArea(listGo.transform, "Scroll");
             _listContent = content;
 
             // 右侧详情面板
@@ -56,10 +56,10 @@ namespace SuperMech.Code
             detailRect.offsetMin = new Vector2(210, 0);
             detailRect.offsetMax = Vector2.zero;
 
-            var (dScroll, dContent) = SMUiSkin.CreateScrollArea(detailGo.transform, "DetailScroll");
+            var (dScroll, dContent) = SuperMechUiSkin.CreateScrollArea(detailGo.transform, "DetailScroll");
             _detailContent = dContent;
 
-            _detailText = SMUiSkin.MakeText(dContent, "", 14, TextAnchor.UpperLeft);
+            _detailText = SuperMechUiSkin.MakeText(dContent, "", 14, TextAnchor.UpperLeft);
             var dtRect = _detailText.rectTransform;
             dtRect.anchorMin = Vector2.zero;
             dtRect.anchorMax = Vector2.one;
@@ -77,7 +77,7 @@ namespace SuperMech.Code
             btnRect.anchoredPosition = new Vector2(0, 10);
 
             _learnBtn = btnGo.AddComponent<Button>();
-            _learnBtnText = SMUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_spell_entry"), 14, TextAnchor.MiddleCenter);
+            _learnBtnText = SuperMechUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_spell_entry"), 14, TextAnchor.MiddleCenter);
             _learnBtnText.color = Color.white;
             var btnImg = btnGo.AddComponent<Image>();
             btnImg.color = new Color(0.3f, 0.5f, 0.8f);
@@ -94,7 +94,7 @@ namespace SuperMech.Code
             var actor = SelectedActor;
             if (actor == null || !actor.hasTrait(SuperMechTraits.ClassMage))
             {
-                SMUiSkin.MakeText(_listContent, LocalizedTextManager.getText("sm_ui_wild"), 14, TextAnchor.MiddleCenter);
+                SuperMechUiSkin.MakeText(_listContent, LocalizedTextManager.getText("sm_ui_wild"), 14, TextAnchor.MiddleCenter);
                 return;
             }
 
@@ -108,7 +108,7 @@ namespace SuperMech.Code
                 string branchName = LocalizedTextManager.getText(SuperMechSpell.BranchNameKeys[b]);
                 _folded[branchName] = false;
 
-                var header = SMUiSkin.MakeButton(_listContent, "▼ " + branchName, 13, () => {
+                var header = SuperMechUiSkin.MakeButton(_listContent, "▼ " + branchName, 13, () => {
                     _folded[branchName] = !_folded[branchName];
                     RefreshList();
                 });
@@ -123,7 +123,7 @@ namespace SuperMech.Code
                         string status = learned ? "✓" : (phase > 0 ? $"{phase}/{spell.totalPhases}" : "");
                         string label = $"  {LocalizedTextManager.getText(spell.nameKey)} {status}";
 
-                        var btn = SMUiSkin.MakeButton(_listContent, label, 12, () => {
+                        var btn = SuperMechUiSkin.MakeButton(_listContent, label, 12, () => {
                             _selectedId = spell.id;
                             RefreshDetail();
                         });

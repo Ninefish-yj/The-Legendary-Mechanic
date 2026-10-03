@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    public class SMCraftView : MonoBehaviour
+    public class SuperMechCraftView : MonoBehaviour
     {
         void Awake()
         {
@@ -15,7 +15,7 @@ namespace SuperMech.Code
         private void BuildLayout()
         {
             // 不用ScrollArea，直接用Text填满窗口
-            var text = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_craft_info"), 14, TextAnchor.UpperLeft);
+            var text = SuperMechUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_craft_info"), 14, TextAnchor.UpperLeft);
             var rect = text.GetComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
@@ -29,7 +29,7 @@ namespace SuperMech.Code
     /// <summary>超能者排行榜（v0.33.0重构：三栏布局+筛选+排序+统计）
     /// 左栏：体系/阶位筛选；中栏：排序列表+卡片；右栏：阶位/体系统计
     /// </summary>
-    public class SMRankView : MonoBehaviour
+    public class SuperMechRankView : MonoBehaviour
     {
         private RectTransform _listContent;
         private RectTransform _scrollViewRect;
@@ -110,7 +110,7 @@ namespace SuperMech.Code
             for (int i = 0; i < SystemNames.Length; i++)
             {
                 int idx = i - 1;
-                var btn = SMUiSkin.MakeButton(sysRow.transform, SystemNames[i], 9, () =>
+                var btn = SuperMechUiSkin.MakeButton(sysRow.transform, SystemNames[i], 9, () =>
                 {
                     _currentSystemFilter = idx;
                     UpdateSystemButtonColors();
@@ -151,7 +151,7 @@ namespace SuperMech.Code
             rankDropRect.anchoredPosition = new Vector2(98, 0);
 
             // 清除筛选按钮（左）
-            var clearBtn = SMUiSkin.MakeButton(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 9, ClearAllFilters);
+            var clearBtn = SuperMechUiSkin.MakeButton(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 9, ClearAllFilters);
             var clearBtnRect = clearBtn.GetComponent<RectTransform>();
             clearBtnRect.anchorMin = new Vector2(0, 0.5f);
             clearBtnRect.anchorMax = new Vector2(0, 0.5f);
@@ -162,7 +162,7 @@ namespace SuperMech.Code
             if (clearBtnImg != null) clearBtnImg.color = new Color(0.5f, 0.2f, 0.2f, 0.8f);
 
             // 统计文字（右）
-            _countText = SMUiSkin.MakeText(ctrlRow.transform, "共 0 人", 10, TextAnchor.MiddleRight);
+            _countText = SuperMechUiSkin.MakeText(ctrlRow.transform, "共 0 人", 10, TextAnchor.MiddleRight);
             var countRect = _countText.GetComponent<RectTransform>();
             countRect.anchorMin = new Vector2(1, 0.5f);
             countRect.anchorMax = new Vector2(1, 0.5f);
@@ -171,7 +171,7 @@ namespace SuperMech.Code
             countRect.anchoredPosition = new Vector2(-4, 0);
 
             // 阶位分布统计（右，统计文字左侧）
-            _statsText = SMUiSkin.MakeText(ctrlRow.transform, "", 9, TextAnchor.MiddleRight);
+            _statsText = SuperMechUiSkin.MakeText(ctrlRow.transform, "", 9, TextAnchor.MiddleRight);
             var statsRect = _statsText.GetComponent<RectTransform>();
             statsRect.anchorMin = new Vector2(1, 0.5f);
             statsRect.anchorMax = new Vector2(1, 0.5f);
@@ -236,15 +236,15 @@ namespace SuperMech.Code
             bottomLayout.childForceExpandWidth = false;
             bottomLayout.childForceExpandHeight = false;
 
-            var topBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_top"), 9, ToTop);
+            var topBtn = SuperMechUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_top"), 9, ToTop);
             var topBtnRect = topBtn.GetComponent<RectTransform>();
             topBtnRect.sizeDelta = new Vector2(70, 20);
 
-            var bottomBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_bottom"), 9, ToBottom);
+            var bottomBtn = SuperMechUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_bottom"), 9, ToBottom);
             var bottomBtnRect = bottomBtn.GetComponent<RectTransform>();
             bottomBtnRect.sizeDelta = new Vector2(70, 20);
 
-            _emptyText = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
+            _emptyText = SuperMechUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
             var emptyRect = _emptyText.GetComponent<RectTransform>();
             emptyRect.anchorMin = new Vector2(0.5f, 0.5f);
             emptyRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -507,7 +507,7 @@ namespace SuperMech.Code
             cardRect.sizeDelta = new Vector2(0, 34);
             cardRect.anchoredPosition = new Vector2(0, -index * 38f - 2);
 
-            var card = cardGo.AddComponent<SMRankCard>();
+            var card = cardGo.AddComponent<SuperMechRankCard>();
             float onar = SuperMechEnergyLevel.Calculate(actor);
             string className = GetRankClassName(actor);
             card.Build(actor, index + 1, onar, className);
