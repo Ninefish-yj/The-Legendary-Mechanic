@@ -24,8 +24,11 @@ namespace SuperMech.Code
 
         // 内部层光球
         private readonly List<GameObject> _lightOrbs = new();
+        private readonly List<OrbInfo> _orbInfos = new();
         private RectTransform _orbContainer;
         private Text _interiorTitle;
+        private GameObject _orbDetailPanel;
+        private Text _orbDetailText;
 
         // 选择层圣所入口按钮
         private readonly List<Button> _sanctuaryButtons = new();
@@ -300,14 +303,52 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 30);
             titleRect.anchoredPosition = new Vector2(0, -15);
 
-            // 光球容器
+            // 光球容器（左侧70%区域）
             var orbContainerGo = new GameObject("OrbContainer");
             orbContainerGo.transform.SetParent(_interiorLayer.transform, false);
             _orbContainer = orbContainerGo.AddComponent<RectTransform>();
             _orbContainer.anchorMin = Vector2.zero;
-            _orbContainer.anchorMax = Vector2.one;
+            _orbContainer.anchorMax = new Vector2(0.7f, 1);
             _orbContainer.offsetMin = new Vector2(20, 60);
-            _orbContainer.offsetMax = new Vector2(-20, -20);
+            _orbContainer.offsetMax = new Vector2(-10, -20);
+
+            // 光球详情面板（右侧30%区域）
+            _orbDetailPanel = new GameObject("OrbDetailPanel");
+            _orbDetailPanel.transform.SetParent(_interiorLayer.transform, false);
+            var detailRect = _orbDetailPanel.AddComponent<RectTransform>();
+            detailRect.anchorMin = new Vector2(0.7f, 0);
+            detailRect.anchorMax = Vector2.one;
+            detailRect.offsetMin = new Vector2(10, 60);
+            detailRect.offsetMax = new Vector2(-20, -20);
+            var detailBg = _orbDetailPanel.AddComponent<Image>();
+            detailBg.color = new Color(0.95f, 0.96f, 0.98f, 0.9f);
+            detailBg.raycastTarget = true;
+
+            // 详情面板边框
+            var detailBorderGo = new GameObject("Border");
+            detailBorderGo.transform.SetParent(_orbDetailPanel.transform, false);
+            detailBorderGo.transform.SetAsFirstSibling();
+            var detailBorderRect = detailBorderGo.AddComponent<RectTransform>();
+            detailBorderRect.anchorMin = Vector2.zero;
+            detailBorderRect.anchorMax = Vector2.one;
+            detailBorderRect.offsetMin = new Vector2(-1, -1);
+            detailBorderRect.offsetMax = new Vector2(1, 1);
+            var detailBorderImg = detailBorderGo.AddComponent<Image>();
+            detailBorderImg.color = new Color(0.3f, 0.4f, 0.6f, 0.5f);
+            detailBorderImg.raycastTarget = false;
+
+            // 详情文本
+            _orbDetailText = SMUiSkin.MakeText(_orbDetailPanel.transform,
+                LocalizedTextManager.getText("sm_ui_san_orb_hint"), 12, TextAnchor.UpperLeft);
+            _orbDetailText.supportRichText = true;
+            _orbDetailText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _orbDetailText.verticalOverflow = VerticalWrapMode.Truncate;
+            _orbDetailText.color = new Color(0.2f, 0.25f, 0.35f);
+            var detailTextRect = _orbDetailText.GetComponent<RectTransform>();
+            detailTextRect.anchorMin = Vector2.zero;
+            detailTextRect.anchorMax = Vector2.one;
+            detailTextRect.offsetMin = new Vector2(12, 12);
+            detailTextRect.offsetMax = new Vector2(-12, -12);
 
             // 返回选择层按钮（光门通道）
             var gateGo = new GameObject("GateBtn");
@@ -353,11 +394,31 @@ namespace SuperMech.Code
             // 清除旧光球
             foreach (var orb in _lightOrbs) if (orb != null) Destroy(orb);
             _lightOrbs.Clear();
+            _orbInfos.Clear();
+
+            // 文明名称随机词库
+            string[] namePrefixes = { "星灵", "泰坦", "虚空", "永恒", "混沌", "曙光", "深渊", "苍穹", "寂灭", "轮回", "鸿蒙", "太虚" };
+            string[] nameSuffixes = { "文明", "帝国", "联邦", "王朝", "议会", "教廷", "联盟", "共和国" };
+            string[] destructionCauses = { "大重启", "宇宙热寂", "维度崩塌", "内战毁灭", "外敌入侵", "技术失控", "时空悖论", "未知灾难" };
+            string[] achievements = { "掌握了空间折叠技术", "突破了光速限制", "创造了人工生命", "发现了信息态本质", "统一了四大基本力", "实现了意识上传", "建造了戴森球", "掌握了维度穿梭" };
+
+            string[] branches = SuperMechSanctuary.GetSanctuaryKnowledgeBranches(sanctuaryIndex);
 
             // 生成12-20个随机大小的白色光球
             int orbCount = Random.Range(12, 20);
             for (int i = 0; i < orbCount; i++)
             {
+                // 生成该光球的文明信息
+                var info = new OrbInfo
+                {
+                    civilizationName = namePrefixes[Random.Range(0, namePrefixes.Length)] + nameSuffixes[Random.Range(0, nameSuffixes.Length)],
+                    domain = branches.Length > 0 ? branches[Random.Range(0, branches.Length)] : "未知领域",
+                    iteration = Random.Range(1, 8),
+                    achievement = achievements[Random.Range(0, achievements.Length)],
+                    destructionCause = destructionCauses[Random.Range(0, destructionCauses.Length)]
+                };
+                _orbInfos.Add(info);
+
                 var orbGo = new GameObject($"LightOrb_{i}");
                 orbGo.transform.SetParent(_orbContainer, false);
                 var orbRect = orbGo.AddComponent<RectTransform>();
@@ -388,38 +449,38 @@ namespace SuperMech.Code
                 glowImg.color = new Color(1f, 1f, 1f, 0.15f);
                 glowImg.raycastTarget = false;
 
-                // 点击光球读取信息
+                // 点击光球查看文明信息（玩家观察模式）
                 var orbBtn = orbGo.AddComponent<Button>();
                 orbBtn.targetGraphic = orbImg;
                 int orbIdx = i;
-                int sanIdx = sanctuaryIndex;
-                orbBtn.onClick.AddListener(() => OnOrbClick(orbIdx, sanIdx));
+                orbBtn.onClick.AddListener(() => OnOrbClick(orbIdx));
 
                 _lightOrbs.Add(orbGo);
             }
         }
 
-        private void OnOrbClick(int orbIndex, int sanctuaryIndex)
+        private void OnOrbClick(int orbIndex)
         {
-            // 触碰光球→获得该圣所领域的随机知识
-            Actor selected = SelectedUnit.unit;
-            if (selected != null && selected.isAlive())
-            {
-                // 给选中单位添加随机知识
-                string[] branches = SuperMechSanctuary.GetSanctuaryKnowledgeBranches(sanctuaryIndex);
-                if (branches.Length > 0)
-                {
-                    string branch = branches[Random.Range(0, branches.Length)];
-                    // 记录日志
-                    Debug.Log($"[超神机械师] {selected.name} 触碰圣所光球，获得{branch}相关知识");
-                }
-            }
+            // 玩家观察模式：点击光球查看该文明的信息态记录
+            if (orbIndex >= _orbInfos.Count) return;
+            var info = _orbInfos[orbIndex];
 
-            // 光球被触碰后变淡（模拟信息被读取）
+            // 显示详情面板
+            if (_orbDetailPanel != null) _orbDetailPanel.SetActive(true);
+            _orbDetailText.text =
+                $"【文明记录】\n\n" +
+                $"<color=#3366cc>名称：</color>{info.civilizationName}\n" +
+                $"<color=#3366cc>领域：</color>{info.domain}\n" +
+                $"<color=#3366cc>迭代：</color>第{info.iteration}轮\n" +
+                $"<color=#3366cc>成就：</color>{info.achievement}\n" +
+                $"<color=#cc3333>毁灭：</color>{info.destructionCause}\n\n" +
+                $"<color=#888><size=10>信息态记录 · 触碰光球可读取</size></color>";
+
+            // 光球被查看后变淡（模拟信息已读取）
             if (orbIndex < _lightOrbs.Count && _lightOrbs[orbIndex] != null)
             {
                 var img = _lightOrbs[orbIndex].GetComponent<Image>();
-                if (img != null) img.color = new Color(1f, 1f, 1f, 0.1f);
+                if (img != null) img.color = new Color(1f, 1f, 1f, 0.15f);
             }
         }
 
@@ -485,6 +546,16 @@ namespace SuperMech.Code
                 c = new Color(r, g, b);
             }
             return c;
+        }
+
+        /// <summary>光球记录的文明信息</summary>
+        private class OrbInfo
+        {
+            public string civilizationName;
+            public string domain;
+            public int iteration;
+            public string achievement;
+            public string destructionCause;
         }
     }
 }

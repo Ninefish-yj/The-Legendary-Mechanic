@@ -4339,5 +4339,6 @@
   "sm_config_703": "念力/异能系对机械系的精神攻击穿甲（原著设定），默认开启",
   "sm_ui_san_select_hint": "选择一个圣所进入（玩家可直接查看所有圣所）",
   "sm_ui_san_enter": "▶ 进入圣所",
-  "sm_ui_san_gate_return": "◈ 光门通道 · 返回"
+  "sm_ui_san_gate_return": "◈ 光门通道 · 返回",
+  "sm_ui_san_orb_hint": "点击左侧光球查看该迭代文明的信息态记录\n\n每个光球代表一个曾经存在过的文明\n触碰光球可读取其记忆碎片"
 }
