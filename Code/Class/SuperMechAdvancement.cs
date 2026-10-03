@@ -9,6 +9,8 @@ namespace SuperMech.Code
     {
         private static readonly Dictionary<long, int> _exactRank = new Dictionary<long, int>();
         private static readonly Dictionary<long, int> _appliedRankIdx = new Dictionary<long, int>();
+        private static readonly Dictionary<long, float> _onarDmgBonus = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _onarHpBonus = new Dictionary<long, float>();
 
         // 原著能级(ch3)：欧纳博士开创，气力为核心+技能/知识/装备/专长综合加成，曲线上升
         // 原著数据点：Lv21气力182075→能级78000, Lv25气力293475→98510, Lv29气力481200→148800
@@ -157,12 +159,7 @@ namespace SuperMech.Code
                 int targetIdx = -1;
                 for (int i = SuperMechRanks.All.Count - 1; i >= 0; i--)
                 {
-                    // v0.39.7 先行者指引：原著第564章"第一个超A级打破了某种极限，给后来者指引了道路"
-                    // 该阶位已被首破后，后续单位突破阈值降低15%
-                    double threshold = SuperMechRanks.All[i].onarFloor;
-                    if (SuperMechSaveData.FirstBreakthroughRanks.Contains(SuperMechRanks.All[i].name))
-                        threshold = threshold * 0.85;
-                    if (onar >= threshold) { targetIdx = i; break; }
+                    if (onar >= SuperMechRanks.All[i].onarFloor) { targetIdx = i; break; }
                 }
                 if (targetIdx < 0) continue;
                 if (targetIdx > SuperMechConfig.AutoPromotionMaxRank) continue;
@@ -174,7 +171,24 @@ namespace SuperMech.Code
                 }
 
                 int oldExact = GetExactRankIndex(a);
+
+                // v0.39.7 能级战力非线性：同一阶位内能级越高战力越强，高阶位阶内差距更大
+                UpdateOnarBonus(a, onar, targetIdx);
+
                 if (oldExact == targetIdx) continue;
+
+                // v0.39.7 先行者指引：原著第564章"第一个超A级打破了某种极限，给后来者指引了道路"
+                // 首破前：达到阈值也只有5%概率突破（没人知道方法，卡在瓶颈）
+                // 首破后：达到阈值100%自动突破（先行者经验传播，接二连三突破）
+                string targetRankName = LocalizedTextManager.getText(SuperMechRanks.All[targetIdx].name);
+                bool rankBroken = SuperMechSaveData.FirstBreakthroughRanks.Contains(targetRankName);
+                if (!rankBroken && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx))
+                {
+                    // 低阶位（D以下）不卡瓶颈，高阶位才需要先行者指引
+                    if (targetIdx >= 2 && UnityEngine.Random.value > 0.05f)
+                        continue;
+                }
+
                 _exactRank[a.id] = targetIdx;
 
                 if (!SuperMechRanks.IsPlusRank(targetIdx))
@@ -230,6 +244,49 @@ namespace SuperMech.Code
                         SuperMechDivinity.AwardAdvancementPoints(a);
                 }
             }
+        }
+
+        /// <summary>能级战力非线性：同一阶位内能级越高战力越强，高阶位阶内差距更大</summary>
+        private static void UpdateOnarBonus(Actor a, float onar, int rankIdx)
+        {
+            if (a == null || rankIdx < 0) return;
+            var s = SuperMechStats.Of(a);
+            if (s == null) return;
+
+            // 移除之前的能级额外加成
+            if (_onarDmgBonus.TryGetValue(a.id, out float oldDmg) && oldDmg > 0f)
+                s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / (1f + oldDmg);
+            if (_onarHpBonus.TryGetValue(a.id, out float oldHp) && oldHp > 0f)
+                s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / (1f + oldHp);
+
+            // 计算当前阶位内的能级进度
+            double currentFloor = SuperMechRanks.All[rankIdx].onarFloor;
+            double nextFloor = rankIdx + 1 < SuperMechRanks.All.Count ? SuperMechRanks.All[rankIdx + 1].onarFloor : currentFloor * 1.5;
+            float progress = nextFloor > currentFloor ? (float)((onar - currentFloor) / (nextFloor - currentFloor)) : 0f;
+            progress = Mathf.Clamp01(progress);
+
+            // 阶内加成率随阶位递增（越到后面，1能级的战力差距越大）
+            float bonusRate = rankIdx switch
+            {
+                >= 13 => 0.6f,   // X阶
+                >= 10 => 0.45f,  // S阶以上
+                >= 8 => 0.35f,   // A阶以上
+                >= 6 => 0.25f,   // B阶以上
+                >= 4 => 0.18f,   // C阶以上
+                >= 2 => 0.12f,   // D阶以上
+                _ => 0.08f       // E/F阶
+            };
+
+            float dmgBonus = progress * bonusRate;
+            float hpBonus = progress * bonusRate * 0.7f;
+
+            if (dmgBonus > 0f)
+                s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * (1f + dmgBonus);
+            if (hpBonus > 0f)
+                s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * (1f + hpBonus);
+
+            _onarDmgBonus[a.id] = dmgBonus;
+            _onarHpBonus[a.id] = hpBonus;
         }
 
         /// <summary>首位突破奖励（参考西幻mod：全图第一个突破到该阶位的单位获得额外加成）</summary>
