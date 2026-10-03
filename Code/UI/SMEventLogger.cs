@@ -70,6 +70,17 @@ namespace SuperMech.Code
             _logAssets[assetId] = asset;
         }
 
+        /// <summary>安全获取单位名称，null时回退</summary>
+        private static string SafeName(Actor a)
+        {
+            if (a == null) return "?";
+            string name = a.getName();
+            return string.IsNullOrEmpty(name) ? "?" : name;
+        }
+
+        /// <summary>安全字符串，null回退为空串</summary>
+        private static string SafeStr(string s) => s ?? string.Empty;
+
         /// <summary>推送觉醒事件日志</summary>
         public static void LogAwakening(Actor a, string className, string talentRank)
         {
@@ -80,7 +91,7 @@ namespace SuperMech.Code
 
             try
             {
-                new WorldLogMessage(asset, a.getName(), className, talentRank)
+                new WorldLogMessage(asset, SafeName(a), SafeStr(className), SafeStr(talentRank))
                 {
                     unit = a,
                     location = a.current_position
@@ -102,7 +113,7 @@ namespace SuperMech.Code
 
             try
             {
-                new WorldLogMessage(asset, a.getName(), newRank, onar.ToString("0"))
+                new WorldLogMessage(asset, SafeName(a), SafeStr(newRank), onar.ToString("0"))
                 {
                     unit = a,
                     location = a.current_position
@@ -124,7 +135,7 @@ namespace SuperMech.Code
 
             try
             {
-                new WorldLogMessage(asset, a.getName(), knowledgeA, result)
+                new WorldLogMessage(asset, SafeName(a), SafeStr(knowledgeA), SafeStr(result))
                 {
                     unit = a,
                     location = a.current_position
@@ -146,7 +157,7 @@ namespace SuperMech.Code
 
             try
             {
-                new WorldLogMessage(asset, a.getName(), sanctuaryName, "")
+                new WorldLogMessage(asset, SafeName(a), SafeStr(sanctuaryName), "")
                 {
                     unit = a,
                     location = a.current_position
@@ -189,7 +200,7 @@ namespace SuperMech.Code
 
             try
             {
-                new WorldLogMessage(asset, a.getName(), reviveCount.ToString(), lostAbilities)
+                new WorldLogMessage(asset, SafeName(a), reviveCount.ToString(), SafeStr(lostAbilities))
                 {
                     unit = a,
                     location = a.current_position
@@ -211,7 +222,7 @@ namespace SuperMech.Code
 
             try
             {
-                new WorldLogMessage(asset, a.getName())
+                new WorldLogMessage(asset, SafeName(a))
                 {
                     unit = a,
                     location = a.current_position
@@ -234,7 +245,7 @@ namespace SuperMech.Code
             try
             {
                 string spellName = LocalizedTextManager.getText(spellNameKey);
-                new WorldLogMessage(asset, a.getName(), spellName, "")
+                new WorldLogMessage(asset, SafeName(a), SafeStr(spellName), "")
                 {
                     unit = a,
                     location = a.current_position
