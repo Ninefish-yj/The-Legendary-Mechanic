@@ -33,12 +33,13 @@ namespace SuperMech.Code
         private static Transform _contentTransform;
         private static readonly List<StatsIconData> IconDatas = new List<StatsIconData>
         {
-            new StatsIconData("sm_divine", "ui/Icons/iconDivine", true),
-            new StatsIconData("sm_sanctuary", "ui/Icons/iconSanctuary", true),
+            new StatsIconData("sm_strength", "ui/Icons/actor_traits/iconBlessing", true),
+            new StatsIconData("sm_agility", "ui/Icons/actor_traits/iconBlessing", true),
+            new StatsIconData("sm_endurance", "ui/Icons/actor_traits/iconBlessing", true),
+            new StatsIconData("sm_intelligence", "ui/Icons/actor_traits/iconBlessing", true),
             new StatsIconData("sm_mech_affinity", "ui/Icons/iconMechAffinity", true),
             new StatsIconData("sm_magic_affinity", "ui/Icons/iconMagicAffinity", true),
             new StatsIconData("sm_mystery", "ui/Icons/iconMystery", true),
-            new StatsIconData("sm_charm", "ui/Icons/iconCharm", true),
             new StatsIconData("sm_luck", "ui/Icons/iconLuck", true),
         };
 
@@ -161,24 +162,22 @@ namespace SuperMech.Code
         {
             if (!_initialized || _contentTransform == null) return;
 
-            // 神性蜕变和圣所权限直接从各自系统获取（v0.31.1：不再通过自定义属性中转）
-            float divine = SuperMechDivinity.GetTotalLayers(actor);
-            float sanctuary = 0f;
-            for (int i = 0; i < 6; i++)
-                sanctuary += SuperMechSanctuary.GetAuthority(actor, i);
+            float strength = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatStrength);
+            float agility = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatAgility);
+            float endurance = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatEndurance);
+            float intelligence = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatIntelligence);
             float mechAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMechAffinity);
             float mageAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMageAffinity);
             float mystery = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMystery);
-            int effLayer = SuperMechQiLayer.GetEffectiveLayer(actor);
-            float charm = effLayer * effLayer * 5.7f;
             float luck = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatLuck);
 
-            CallSetIconValue(window, "sm_divine", divine);
-            CallSetIconValue(window, "sm_sanctuary", sanctuary);
+            CallSetIconValue(window, "sm_strength", strength);
+            CallSetIconValue(window, "sm_agility", agility);
+            CallSetIconValue(window, "sm_endurance", endurance);
+            CallSetIconValue(window, "sm_intelligence", intelligence);
             CallSetIconValue(window, "sm_mech_affinity", mechAff);
             CallSetIconValue(window, "sm_magic_affinity", mageAff);
             CallSetIconValue(window, "sm_mystery", mystery);
-            CallSetIconValue(window, "sm_charm", charm);
             CallSetIconValue(window, "sm_luck", luck);
         }
 

@@ -4358,5 +4358,9 @@
   "spirit_pierce_ratio Description": "精神穿甲比例（0~1），穿透护甲造成直接伤害的比例",
   "fusion_single_mul_cap Description": "单配方融合倍率上限，单个知识配方最多提供的伤害倍率",
   "event_log_awaken_min_talent Description": "觉醒事件日志的最低天赋评级（0=D, 1=C, 2=B, 3=A, 4=S），达到及以上才记录",
-  "event_log_promotion_min_rank Description": "晋升事件日志的最低阶位（0=F...13=X），达到及以上才记录"
+  "event_log_promotion_min_rank Description": "晋升事件日志的最低阶位（0=F...13=X），达到及以上才记录",
+  "sm_icon_sm_strength": "力量",
+  "sm_icon_sm_agility": "敏捷",
+  "sm_icon_sm_endurance": "耐力",
+  "sm_icon_sm_intelligence": "智力"
 }
