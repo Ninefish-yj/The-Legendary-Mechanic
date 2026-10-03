@@ -4149,7 +4149,7 @@
   "sm_log_promotion_text": "【阶位提升】{0}能级突破，晋升{1}（{2}欧纳）",
   "sm_log_fusion_text": "【知识融合】{0}融合〖{1}〗，获得〖{2}〗图纸",
   "sm_log_sanctuary_text": "【圣所访问】{0}访问{1}，获得专属知识",
-  "sm_log_iteration_text": "【宇宙迭代】第{0}轮大重启触发，遗产保留率{1}",
+  "sm_log_iteration_text": "【宇宙迭代】第{0}轮大重启触发，遗产保留率{1}。{2}",
   "sm_log_resurrection_text": "【超A复活】{0}通过圣所信息态复苏（第{1}次），丢失能力：{2}",
   "sm_ui_section_core": "核心档案",
   "sm_ui_section_combat": "战斗数值",
@@ -4362,5 +4362,12 @@
   "sm_icon_sm_strength": "力量",
   "sm_icon_sm_agility": "敏捷",
   "sm_icon_sm_endurance": "耐力",
-  "sm_icon_sm_intelligence": "智力"
+  "sm_icon_sm_intelligence": "智力",
+  "sm_san_civ_era": "时代",
+  "sm_san_civ_iteration": "第{0}轮文明",
+  "sm_san_civ_current": "本轮文明（进行中）",
+  "sm_san_civ_achievement": "觉醒{0}人，最高阶位{1}，解锁知识{2}项",
+  "sm_san_civ_ongoing": "进行中",
+  "sm_san_civ_reset": "大重启",
+  "sm_event_civ_reset": "【宇宙迭代】第{0}轮文明终结，觉醒{1}人，最高阶位{2}。文明记录已归档至圣所。"
 }

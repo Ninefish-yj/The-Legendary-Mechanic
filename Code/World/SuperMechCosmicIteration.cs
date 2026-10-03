@@ -247,7 +247,19 @@ namespace SuperMech.Code
 
             // v0.29.0 UI重构：推送宇宙迭代事件到原生事件日志
             float retentionRate = CalculateRetentionRate();
-            SMEventLogger.LogIteration(CurrentIteration, retentionRate);
+            // 获取刚结束的文明记录摘要，推送到历史系统
+            string civSummary = "";
+            var history = SuperMechCivilizationData.GetHistory();
+            if (history.Count > 0)
+            {
+                var last = history[history.Count - 1];
+                string rankName = (last.maxRankReached >= 0 && last.maxRankReached < SuperMechRanks.All.Count)
+                    ? LocalizedTextManager.getText(SuperMechRanks.All[last.maxRankReached].name)
+                    : LocalizedTextManager.getText("sm_civ_none");
+                civSummary = string.Format(LocalizedTextManager.getText("sm_event_civ_reset"),
+                    last.iteration, last.totalAwakened, rankName);
+            }
+            SMEventLogger.LogIteration(CurrentIteration, retentionRate, civSummary);
         }
 
         /// <summary>计算实际遗产保留率（随机波动+圣所权限加成）

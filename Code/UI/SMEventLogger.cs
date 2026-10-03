@@ -221,7 +221,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>推送宇宙迭代事件日志</summary>
-        public static void LogIteration(int iterationCount, float heritageRate)
+        public static void LogIteration(int iterationCount, float heritageRate, string civilizationSummary = "")
         {
             if (!SuperMechConfig.EventLogEnabled || !SuperMechConfig.EventLogIterationEnabled) return;
             TryInit();
@@ -231,7 +231,7 @@ namespace SuperMech.Code
 
             try
             {
-                new WorldLogMessage(asset, iterationCount.ToString(), heritageRate.ToString("0%"), "")
+                new WorldLogMessage(asset, iterationCount.ToString(), heritageRate.ToString("0%"), civilizationSummary)
                 {
                 }.add();
             }

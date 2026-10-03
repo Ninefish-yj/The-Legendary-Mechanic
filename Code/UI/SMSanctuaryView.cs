@@ -400,26 +400,54 @@ namespace SuperMech.Code
             _lightOrbs.Clear();
             _orbInfos.Clear();
 
-            // 文明名称随机词库
-            string[] namePrefixes = { "星灵", "泰坦", "虚空", "永恒", "混沌", "曙光", "深渊", "苍穹", "寂灭", "轮回", "鸿蒙", "太虚" };
-            string[] nameSuffixes = { "文明", "帝国", "联邦", "王朝", "议会", "教廷", "联盟", "共和国" };
-            string[] destructionCauses = { "大重启", "宇宙热寂", "维度崩塌", "内战毁灭", "外敌入侵", "技术失控", "时空悖论", "未知灾难" };
-            string[] achievements = { "掌握了空间折叠技术", "突破了光速限制", "创造了人工生命", "发现了信息态本质", "统一了四大基本力", "实现了意识上传", "建造了戴森球", "掌握了维度穿梭" };
-
             string[] branches = SuperMechSanctuary.GetSanctuaryKnowledgeBranches(sanctuaryIndex);
 
-            // 生成12-20个随机大小的白色光球
-            int orbCount = Random.Range(12, 20);
+            // 基于真实迭代历史生成光球——迭代几轮就有几个记录
+            var history = SuperMechCivilizationData.GetHistory();
+            int orbCount = Mathf.Max(history.Count, 1);
+
             for (int i = 0; i < orbCount; i++)
             {
-                // 生成该光球的文明信息
+                var snap = (i < history.Count) ? history[i] : SuperMechCivilizationData.GetCurrent();
+                int iter = (snap != null) ? snap.iteration : SuperMechCosmicIteration.CurrentIteration;
+                bool isCurrent = (i >= history.Count);
+
+                // 文明名称：真实记录用著名单位或迭代编号
+                string civName;
+                if (snap != null && snap.notableUnits != null && snap.notableUnits.Count > 0)
+                    civName = snap.notableUnits[0] + LocalizedTextManager.getText("sm_san_civ_era");
+                else if (snap != null)
+                    civName = string.Format(LocalizedTextManager.getText("sm_san_civ_iteration"), iter);
+                else
+                    civName = LocalizedTextManager.getText("sm_san_civ_current");
+
+                // 成就：基于真实数据
+                string achievement;
+                if (snap != null)
+                {
+                    string rankName = (snap.maxRankReached >= 0 && snap.maxRankReached < SuperMechRanks.All.Count)
+                        ? LocalizedTextManager.getText(SuperMechRanks.All[snap.maxRankReached].name)
+                        : LocalizedTextManager.getText("sm_civ_none");
+                    achievement = string.Format(LocalizedTextManager.getText("sm_san_civ_achievement"),
+                        snap.totalAwakened, rankName, snap.totalKnowledgeUnlocked);
+                }
+                else
+                {
+                    achievement = LocalizedTextManager.getText("sm_san_civ_ongoing");
+                }
+
+                string destruction = isCurrent
+                    ? LocalizedTextManager.getText("sm_san_civ_ongoing")
+                    : LocalizedTextManager.getText("sm_san_civ_reset");
+
                 var info = new OrbInfo
                 {
-                    civilizationName = namePrefixes[Random.Range(0, namePrefixes.Length)] + nameSuffixes[Random.Range(0, nameSuffixes.Length)],
+                    civilizationName = civName,
                     domain = branches.Length > 0 ? branches[Random.Range(0, branches.Length)] : "未知领域",
-                    iteration = Random.Range(1, 8),
-                    achievement = achievements[Random.Range(0, achievements.Length)],
-                    destructionCause = destructionCauses[Random.Range(0, destructionCauses.Length)]
+                    iteration = iter,
+                    achievement = achievement,
+                    destructionCause = destruction,
+                    snapshot = snap
                 };
                 _orbInfos.Add(info);
 
@@ -429,19 +457,21 @@ namespace SuperMech.Code
                 orbRect.anchorMin = new Vector2(0.5f, 0.5f);
                 orbRect.anchorMax = new Vector2(0.5f, 0.5f);
                 orbRect.pivot = new Vector2(0.5f, 0.5f);
-                float size = Random.Range(30, 70);
+                // 越古老的迭代光球越小越暗，越近的越大越亮
+                float ageFactor = 1f - (float)i / Mathf.Max(1, orbCount);
+                float size = 30f + ageFactor * 40f;
                 orbRect.sizeDelta = new Vector2(size, size);
-                // 随机位置
-                float x = Random.Range(-0.4f, 0.4f) * _orbContainer.rect.width;
-                float y = Random.Range(-0.35f, 0.35f) * _orbContainer.rect.height;
+                // 环形分布避免重叠
+                float angle = (i / (float)orbCount) * Mathf.PI * 2f;
+                float radius = 0.15f + ageFactor * 0.25f;
+                float x = Mathf.Cos(angle) * radius * _orbContainer.rect.width;
+                float y = Mathf.Sin(angle) * radius * _orbContainer.rect.height;
                 orbRect.anchoredPosition = new Vector2(x, y);
 
-                // 光球（白色半透明渐变效果用多层Image模拟）
                 var orbImg = orbGo.AddComponent<Image>();
-                orbImg.color = new Color(1f, 1f, 1f, Random.Range(0.3f, 0.7f));
+                orbImg.color = new Color(1f, 1f, 1f, 0.3f + ageFactor * 0.4f);
                 orbImg.raycastTarget = true;
 
-                // 光晕
                 var glowGo = new GameObject("Glow");
                 glowGo.transform.SetParent(orbGo.transform, false);
                 var glowRect = glowGo.AddComponent<RectTransform>();
@@ -450,10 +480,9 @@ namespace SuperMech.Code
                 glowRect.offsetMin = new Vector2(-size * 0.3f, -size * 0.3f);
                 glowRect.offsetMax = new Vector2(size * 0.3f, size * 0.3f);
                 var glowImg = glowGo.AddComponent<Image>();
-                glowImg.color = new Color(1f, 1f, 1f, 0.15f);
+                glowImg.color = new Color(1f, 1f, 1f, 0.1f + ageFactor * 0.15f);
                 glowImg.raycastTarget = false;
 
-                // 点击光球查看文明信息（玩家观察模式）
                 var orbBtn = orbGo.AddComponent<Button>();
                 orbBtn.targetGraphic = orbImg;
                 int orbIdx = i;
@@ -638,6 +667,7 @@ namespace SuperMech.Code
             public int iteration;
             public string achievement;
             public string destructionCause;
+            public SuperMechCivilizationData.CivilizationSnapshot snapshot; // 真实迭代快照
         }
     }
 }
