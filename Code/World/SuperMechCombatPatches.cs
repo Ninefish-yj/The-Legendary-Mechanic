@@ -124,6 +124,12 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (hostileBonus - 1f));
                     }
+                    // v0.51.0 文明伤害加成（原著：文明本身才是主角）
+                    float civBonus = SuperMechCivilization.GetDamageBonus(SuperMechCivilization.GetCivLevel(attacker));
+                    if (civBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (civBonus - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))

@@ -105,6 +105,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.51.0** | 文明系统（原著还原）：文明=原版王国，按王国内高阶超能者实力划分5级（普通/星际/星团/超星团/宇宙级），对应原著"低级文明→星际文明→星团级→超星团级→宇宙级文明（三大文明）"；文明等级越高王国单位伤害加成越大（星际+5%/星团+10%/超星团+15%/宇宙级+25%），对应原著"文明本身才是宇宙的主角"；单位面板显示文明等级；新建SuperMechCivilization.cs，修改UnifiedTick/CombatPatches/UnitWindow |
 | **v0.50.1** | 势力系统深化：①势力战争接入原生日志（红色"势力战争"事件）；②领袖死亡后最强成员继承（不再直接解散势力）；③势力联盟机制——战力比超3倍的邻近势力，强者3%概率联盟弱者，联盟后不互攻；④联盟势力战斗补丁不互攻；修改SuperMechFaction.cs/SuperMechEventLogger.cs/SuperMechCombatPatches.cs，新增1条本地化 |
 | **v0.50.0** | 势力系统增强：①势力间关系（中立/联盟/敌对），邻近且战力相近的势力自动宣战（5%概率，50格内，战力比≤3倍）；②势力等级1~10级（按成员数+总战力计算，Formulas.CalcFactionLevel）；③单位面板显示势力名称+等级+领袖/成员身份；④敌对势力战斗伤害+15%；⑤势力关系/等级持久化到存档；新增FactionWarEvent事件；修改SuperMechFaction.cs/SuperMechFormulas.cs/SuperMechCombatPatches.cs/SuperMechUnitWindow.cs |
 | **v0.49.9** | 命名统一：全部SM前缀类名改为SuperMech前缀（15个UI文件+SkillRuntime+6个内部类），全模组91文件命名规范一致；大整理全阶段完成 |
