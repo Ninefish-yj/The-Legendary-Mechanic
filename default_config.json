@@ -109,7 +109,7 @@
       "Type": "SLIDER",
       "FloatVal": 9.0,
       "MinVal": 0.0,
-      "MaxVal": 14.0,
+      "MaxVal": 13.0,
       "Step": 1.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteMinRank"
     }
@@ -271,7 +271,7 @@
       "Type": "SLIDER",
       "FloatVal": 7.0,
       "MinVal": 0.0,
-      "MaxVal": 14.0,
+      "MaxVal": 13.0,
       "Step": 1.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogPromotionMinRank"
     },

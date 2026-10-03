@@ -196,7 +196,7 @@ namespace SuperMech.Code
         public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; }
 
         public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; }
-        public static void SetAutoFavoriteMinRank(float val) { AutoFavoriteMinRank = Mathf.Clamp((int)val, 0, 14); }
+        public static void SetAutoFavoriteMinRank(float val) { AutoFavoriteMinRank = Mathf.Clamp((int)val, 0, 13); }
 
         public static bool ShouldFavoriteRank(int rankIdx)
         {
@@ -254,7 +254,7 @@ namespace SuperMech.Code
 
         public static void SetEventLogEnabled(bool val) { EventLogEnabled = val; }
         public static void SetEventLogAwakenMinTalent(float val) { EventLogAwakenMinTalent = Mathf.Clamp((int)val, 0, 6); }
-        public static void SetEventLogPromotionMinRank(float val) { EventLogPromotionMinRank = Mathf.Clamp((int)val, 0, 14); }
+        public static void SetEventLogPromotionMinRank(float val) { EventLogPromotionMinRank = Mathf.Clamp((int)val, 0, 13); }
         public static void SetEventLogFusionEnabled(bool val) { EventLogFusionEnabled = val; }
         public static void SetEventLogSpellEnabled(bool val) { EventLogSpellEnabled = val; }
         public static void SetEventLogSanctuaryEnabled(bool val) { EventLogSanctuaryEnabled = val; }
