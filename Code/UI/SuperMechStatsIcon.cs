@@ -120,7 +120,7 @@ namespace SuperMech.Code
                 TipButton tip = newIcon.GetComponent<TipButton>();
                 if (tip != null)
                 {
-                    tip.textOnClick = LocalizedTextManager.getText("sm_icon_" + data.name);
+                    tip.textOnClick = "sm_icon_" + data.name;
                 }
                 Image iconImage = icon.getIcon();
                 if (iconImage != null)

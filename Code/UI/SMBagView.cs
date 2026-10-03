@@ -125,7 +125,8 @@ namespace SuperMech.Code
 
         private void RefreshGrid()
         {
-            var content = _gridPanel.Find("Scroll/Content");
+            var content = _gridPanel.Find("Scroll/Viewport/Content");
+            if (content == null) return;
             foreach (Transform child in content) Destroy(child.gameObject);
 
             if (SelectedActor == null)

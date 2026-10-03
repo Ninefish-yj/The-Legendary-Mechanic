@@ -4351,5 +4351,12 @@
   "sm_config_727": "概念重塑日志",
   "sm_config_728": "超神级信息态重塑是否写入历史",
   "EventLog": "事件日志",
-  "sm_ui_san_back": "返回"
+  "sm_ui_san_back": "返回",
+  "combat_suppression_enabled Description": "能级压制总开关，开启后高能级对低能级有伤害/命中/闪避压制",
+  "combat_suppression_intensity Description": "能级压制强度倍率（0.5~2.0），乘在每档压制伤害/命中/暴击上",
+  "spirit_pierce_enabled Description": "精神穿甲总开关，开启后念力系/精神系攻击可穿透机械系护甲",
+  "spirit_pierce_ratio Description": "精神穿甲比例（0~1），穿透护甲造成直接伤害的比例",
+  "fusion_single_mul_cap Description": "单配方融合倍率上限，单个知识配方最多提供的伤害倍率",
+  "event_log_awaken_min_talent Description": "觉醒事件日志的最低天赋评级（0=D, 1=C, 2=B, 3=A, 4=S），达到及以上才记录",
+  "event_log_promotion_min_rank Description": "晋升事件日志的最低阶位（0=F...13=X），达到及以上才记录"
 }
