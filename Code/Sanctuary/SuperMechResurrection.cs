@@ -243,8 +243,9 @@ namespace SuperMech.Code
             SuperMechSanctuary.SetReviveCount(newActor, state.reviveCount + 1);
 
             // 17. 寿命重置（原著第1214章：借圣所重塑肉身与灵魂；第1274章：圣所复苏使预期寿命暴增）
-            // 重塑肉身=全新身体，年龄重置为年轻；信息完整度影响肉身完美度，完整度越低寿命越短
-            newActor.data.age = 18;
+            // 重塑肉身=恢复到巅峰状态，年龄重置为该阶位巅峰年龄（不是18岁）；信息完整度影响肉身完美度
+            int peakAge = GetPeakAgeForRank(restoredRank);
+            newActor.data.age = peakAge;
             float baseLifespan = 80f;
             float rankBonus = SuperMechAdvancement.GetLifespanBonus(restoredRank);
             float newLifespan = baseLifespan + rankBonus * integrity;
@@ -278,6 +279,27 @@ namespace SuperMech.Code
                 list[i] = list[j];
                 list[j] = temp;
             }
+        }
+
+        /// <summary>获取该阶位的巅峰年龄（圣所重塑肉身恢复到巅峰状态，不是18岁）</summary>
+        private static int GetPeakAgeForRank(int rankIdx)
+        {
+            return rankIdx switch
+            {
+                >= 13 => 2000,   // Ss巅峰超A：巅峰约2000岁
+                >= 12 => 1200,   // S+
+                >= 11 => 800,    // S阶超A级
+                >= 10 => 500,    // A+
+                >= 9 => 300,     // A阶天灾级
+                >= 8 => 200,     // B+
+                >= 7 => 150,     // B阶
+                >= 6 => 100,     // C+
+                >= 5 => 80,      // C阶
+                >= 4 => 60,      // D+
+                >= 3 => 50,      // D阶
+                >= 1 => 30,      // E阶觉醒
+                _ => 25          // F
+            };
         }
 
         /// <summary>恢复职业特质</summary>
