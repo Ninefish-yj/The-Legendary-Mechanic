@@ -400,8 +400,6 @@ namespace SuperMech.Code
             _lightOrbs.Clear();
             _orbInfos.Clear();
 
-            string[] branches = SuperMechSanctuary.GetSanctuaryKnowledgeBranches(sanctuaryIndex);
-
             // 基于真实迭代历史生成光球——迭代几轮就有几个记录
             var history = SuperMechCivilizationData.GetHistory();
             int orbCount = Mathf.Max(history.Count, 1);
@@ -443,7 +441,7 @@ namespace SuperMech.Code
                 var info = new OrbInfo
                 {
                     civilizationName = civName,
-                    domain = branches.Length > 0 ? branches[Random.Range(0, branches.Length)] : "未知领域",
+                    domain = SuperMechSanctuary.GetSanctuaryTypeName(sanctuaryIndex),
                     iteration = iter,
                     achievement = achievement,
                     destructionCause = destruction,
