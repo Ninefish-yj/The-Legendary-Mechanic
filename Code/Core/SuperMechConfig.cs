@@ -47,17 +47,17 @@ namespace SuperMech.Code
         public static int SanctuaryKeyCostEnter = 3;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
-        /// <summary>超神内空间总开关（X阶放出内空间形成领域，原著第1430章）</summary>
+        /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
         public static bool InnerSpaceEnabled = true;
         /// <summary>放出内空间最低阶位（默认13=X阶/超神级）</summary>
         public static int InnerSpaceMinRank = 13;
         /// <summary>内空间持续时间（秒）</summary>
         public static float InnerSpaceDuration = 8f;
-        /// <summary>内空间领域内主人伤害加成（默认0.15=15%）</summary>
+        /// <summary>内空间内主人伤害加成（默认0.15=15%）</summary>
         public static float InnerSpaceDamageBonus = 0.15f;
-        /// <summary>内空间领域内敌人伤害惩罚（默认0.10=10%）</summary>
+        /// <summary>内空间内敌人伤害惩罚（默认0.10=10%）</summary>
         public static float InnerSpaceEnemyPenalty = 0.10f;
-        /// <summary>内空间领域内主人减伤（默认0.10=10%）</summary>
+        /// <summary>内空间内主人减伤（默认0.10=10%）</summary>
         public static float InnerSpaceDamageReduction = 0.10f;
 
         public static bool MechSummonEnabled = true;

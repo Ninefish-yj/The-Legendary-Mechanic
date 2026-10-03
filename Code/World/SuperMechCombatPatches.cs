@@ -82,7 +82,7 @@ namespace SuperMech.Code
                     try { SMSkillRuntime.TryCastSkill(attacker, target); } catch { }
                 }
 
-                // v0.47.0 超神领域：X阶单位战斗时放出内空间形成领域
+                // v0.47.0 超神内空间：X阶单位战斗时放出内空间
                 if (SuperMechConfig.InnerSpaceEnabled)
                 {
                     if (attacker != null && attacker.isAlive()) SuperMechInnerSpace.TryActivate(attacker);

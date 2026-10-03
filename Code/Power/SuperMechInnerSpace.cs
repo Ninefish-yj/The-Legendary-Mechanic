@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>v0.47.0 超神领域机制（原著第1430章：超神级放出内空间形成领域）
-    /// 原著：超神级（X阶）体内形成内空间，战斗时放出内空间投影形成领域，内空间领域内主人拥有绝对优势
+    /// <summary>v0.47.0 超神内空间机制（原著第1430章：超神级放出内空间）
+    /// 原著：超神级（X阶）体内形成内空间，战斗时放出内空间投影，内空间内主人拥有绝对优势
     /// 高阶内空间压制低阶内空间，同阶内空间互相抵消
     /// </summary>
     public static class SuperMechInnerSpace
