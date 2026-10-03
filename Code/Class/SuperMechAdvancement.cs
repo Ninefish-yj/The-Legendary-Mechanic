@@ -425,7 +425,7 @@ namespace SuperMech.Code
             _appliedLifespanRank[a.id] = rankIdx;
         }
 
-        private static float GetLifespanBonus(int rankIdx)
+        public static float GetLifespanBonus(int rankIdx)
         {
             return rankIdx switch
             {
