@@ -141,6 +141,14 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * 0.10f);
                     }
+                    // v0.59.0 文明等级差异加成（高级文明打低级文明，原著：文明代差碾压）
+                    int atkCiv = (int)SuperMechCivilization.GetCivLevel(attacker);
+                    int defCiv = (int)SuperMechCivilization.GetCivLevel(target);
+                    if (atkCiv > defCiv)
+                    {
+                        float diffBonus = 1f + (atkCiv - defCiv) * 0.08f; // 每级差+8%
+                        target.data.health -= (int)(pDamage * (diffBonus - 1f));
+                    }
                     // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
                     float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
                     if (proxyBonus != 1f)

@@ -22,6 +22,7 @@ namespace SuperMech.Code
         }
 
         private static readonly Dictionary<long, CivLevel> _kingdomLevel = new Dictionary<long, CivLevel>();
+        private static readonly Dictionary<long, CivLevel> _lastKingdomLevel = new Dictionary<long, CivLevel>(); // v0.59.0 上一帧等级
         private static readonly Dictionary<long, float> _kingdomTechPoints = new Dictionary<long, float>();
         private static readonly Dictionary<long, int> _kingdomTechLevel = new Dictionary<long, int>();
         private static readonly Dictionary<long, long> _kingdomGuardian = new Dictionary<long, long>(); // kingdomId -> guardianActorId
@@ -45,6 +46,17 @@ namespace SuperMech.Code
 
                 // 1. 计算文明等级
                 var level = CalculateLevel(k, units);
+                // v0.59.0 文明等级下降检测（失去高阶超能者导致文明衰退）
+                if (_lastKingdomLevel.TryGetValue(kid, out var lastLevel) && level < lastLevel)
+                {
+                    // 文明衰退：科技值损失30%，输出日志
+                    if (_kingdomTechPoints.TryGetValue(kid, out var tech))
+                    {
+                        _kingdomTechPoints[kid] = tech * 0.7f;
+                    }
+                    Debug.Log($"[超神机械师] 文明衰退：{k.name} {GetLevelName(lastLevel)}→{GetLevelName(level)}，科技值损失30%");
+                }
+                _lastKingdomLevel[kid] = level;
                 _kingdomLevel[kid] = level;
 
                 // 2. 积累科技值（原著：超能者带来技术突破）
