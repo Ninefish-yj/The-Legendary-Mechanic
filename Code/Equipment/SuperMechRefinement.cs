@@ -221,15 +221,15 @@ namespace SuperMech.Code
             {
                 int c = GetRefineCount(a);
                 float bonus = GetRefineQiBonus(a);
-                text += $"sm_refinement_091";
-                if (c >= MaxRefineCount) text += "sm_refinement_092";
+                text += $"提炼法 {c}/{MaxRefineCount}（气力+{bonus:F0}）";
+                if (c >= MaxRefineCount) text += " 圆满";
             }
             if (hasEm)
             {
                 int c = GetEmRefineCount(a);
                 if (text.Length > 0) text += " | ";
-                text += $"sm_refinement_093";
-                if (c >= MaxEmRefineCount) text += "sm_refinement_092";
+                text += $"电磁因子 {c}/{MaxEmRefineCount}";
+                if (c >= MaxEmRefineCount) text += " 圆满";
             }
             return text;
         }
