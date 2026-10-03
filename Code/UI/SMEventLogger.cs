@@ -28,6 +28,9 @@ namespace SuperMech.Code
             _initialized = true;
             _initFailed = false;
 
+            // 注册历史分类（让模组事件在历史窗口有独立分类按钮）
+            RegisterHistoryGroup();
+
             RegisterLogAsset("sm_log_awaken", "sm_log_awaken_text", new Color(0.3f, 0.8f, 1f));
             RegisterLogAsset("sm_log_promotion", "sm_log_promotion_text", new Color(1f, 0.8f, 0.2f));
             RegisterLogAsset("sm_log_fusion", "sm_log_fusion_text", new Color(0.5f, 1f, 0.5f));
@@ -37,7 +40,22 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f));
             RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f));
 
-            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册7类日志资产");
+            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册8类日志资产+1历史分类");
+        }
+
+        /// <summary>注册历史分类Asset</summary>
+        private static void RegisterHistoryGroup()
+        {
+            if (AssetManager.history_groups == null) return;
+            if (AssetManager.history_groups.get("super_mech") != null) return;
+
+            var group = new HistoryGroupAsset
+            {
+                id = "super_mech",
+                icon_path = "ui/Icons/iconPurpleBook"
+            };
+            AssetManager.history_groups.add(group);
+            LocalizedTextManager.add("history_group_super_mech", "超能者", pReplace: true);
         }
 
         /// <summary>延迟初始化：在Update中调用，确保world_log_library已就绪</summary>
@@ -61,6 +79,7 @@ namespace SuperMech.Code
             }
 
             // 必须设置path_icon为空字符串而非null，否则setMessage中null != ""会进入sprite加载分支
+            // 必须设置text_replacer，否则{0}{1}{2}占位符不会被替换
             var asset = new WorldLogAsset
             {
                 id = assetId,
@@ -69,7 +88,12 @@ namespace SuperMech.Code
                 group = "super_mech",
                 path_icon = "",
                 random_ids = 0,
-                text_replacer = null
+                text_replacer = delegate(WorldLogMessage msg, ref string text)
+                {
+                    text = text.Replace("{0}", msg.getSpecial(1))
+                               .Replace("{1}", msg.getSpecial(2))
+                               .Replace("{2}", msg.getSpecial(3));
+                }
             };
             AssetManager.world_log_library.add(asset);
             _logAssets[assetId] = asset;
