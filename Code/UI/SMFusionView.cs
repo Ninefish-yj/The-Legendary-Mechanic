@@ -93,7 +93,7 @@ namespace SuperMech.Code
             detailContentGo.transform.SetParent(detailViewportGo.transform, false);
             var detailContentRect = detailContentGo.AddComponent<RectTransform>();
             detailContentRect.anchorMin = new Vector2(0, 1);
-            detailContentRect.anchorMax = new Vector2(0, 1);
+            detailContentRect.anchorMax = new Vector2(1, 1);
             detailContentRect.pivot = new Vector2(0, 1);
             detailContentRect.sizeDelta = new Vector2(0, 0);
             var detailContentHit = detailContentGo.AddComponent<Image>();

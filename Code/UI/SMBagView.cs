@@ -59,7 +59,7 @@ namespace SuperMech.Code
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(viewportGo.transform, false);
             var contentRect = contentGo.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 1); contentRect.anchorMax = new Vector2(0, 1);
+            contentRect.anchorMin = new Vector2(0, 1); contentRect.anchorMax = new Vector2(1, 1);
             contentRect.pivot = new Vector2(0, 1); contentRect.sizeDelta = new Vector2(0, 0);
             // Content透明命中兜底层
             var contentHit = contentGo.AddComponent<Image>();
