@@ -47,8 +47,8 @@ namespace SuperMech.Code
                 activateCount = (existing?.activateCount ?? 0) + 1
             };
 
-            string spaceName = GetInnerSpaceName(a);
-            Debug.Log($"[超神机械师] {a.name} 放出{spaceName}！阶位{rank}，持续{SuperMechConfig.InnerSpaceDuration}秒");
+            /* 内空间名称不按职业区分（原著：韩萧虚空内空间是因为虚空真灵身份，非职业）*/
+            Debug.Log($"[超神机械师] {a.name} 放出内空间！阶位{rank}，持续{SuperMechConfig.InnerSpaceDuration}秒");
         }
 
         /// <summary>获取攻击者在内空间中的伤害倍率</summary>
@@ -68,12 +68,12 @@ namespace SuperMech.Code
                 if (atkRank > defRank)
                 {
                     // 攻击者内空间压制：获得伤害加成
-                    return 1f + GetDomainDamageBonus(atkRank, attacker) * 0.5f;
+                    return 1f + GetDomainDamageBonus(atkRank) * 0.5f;
                 }
                 else if (atkRank < defRank)
                 {
                     // 防御者内空间压制：攻击者伤害降低
-                    return 1f - GetDomainDamagePenalty(defRank, target) * 0.5f;
+                    return 1f - GetDomainDamagePenalty(defRank) * 0.5f;
                 }
                 // 同阶：内空间互相抵消，无加成
                 return 1f;
@@ -82,13 +82,13 @@ namespace SuperMech.Code
             // 只有攻击者有内空间
             if (atkDomain)
             {
-                return 1f + GetDomainDamageBonus(_activeDomains[attacker.id].rank, attacker);
+                return 1f + GetDomainDamageBonus(_activeDomains[attacker.id].rank);
             }
 
             // 只有防御者有内空间：攻击者伤害降低
             if (defDomain)
             {
-                return 1f - GetDomainDamagePenalty(_activeDomains[target.id].rank, target);
+                return 1f - GetDomainDamagePenalty(_activeDomains[target.id].rank);
             }
 
             return 1f;
@@ -110,73 +110,44 @@ namespace SuperMech.Code
                 if (defRank > atkRank)
                 {
                     // 防御者内空间压制：获得减伤
-                    return 1f - GetDomainDamageReduction(defRank, target) * 0.5f;
+                    return 1f - GetDomainDamageReduction(defRank) * 0.5f;
                 }
                 return 1f; // 同阶或被压制，无减伤
             }
 
             if (defDomain)
             {
-                return 1f - GetDomainDamageReduction(_activeDomains[target.id].rank, target);
+                return 1f - GetDomainDamageReduction(_activeDomains[target.id].rank);
             }
 
             return 1f;
         }
 
-        /// <summary>内空间伤害加成（按阶位+职业差异化，原著：每个人内空间属性不同）</summary>
-        private static float GetDomainDamageBonus(int rank, Actor a = null)
+        /// <summary>内空间伤害加成（按阶位，原著：内空间内主人获得主场优势）</summary>
+        private static float GetDomainDamageBonus(int rank)
         {
             float baseVal = SuperMechConfig.InnerSpaceDamageBonus;
-            if (rank >= 13) baseVal *= 2f;   // X阶：双倍
-            else if (rank >= 12) baseVal *= 1.5f; // SS阶：1.5倍
-            // 职业差异化：机械系/魔法师偏伤害，武道系偏穿透
-            if (a != null)
-            {
-                if (a.hasTrait(SuperMechTraits.ClassMech)) baseVal *= 1.3f;   // 虚空内空间：高伤害
-                else if (a.hasTrait(SuperMechTraits.ClassMage)) baseVal *= 1.2f; // 元素内空间：法术伤害
-                else if (a.hasTrait(SuperMechTraits.ClassMartial)) baseVal *= 1.15f; // 武道内空间
-            }
+            if (rank >= 13) return baseVal * 2f;   // X阶：双倍
+            if (rank >= 12) return baseVal * 1.5f; // SS阶：1.5倍
             return baseVal;
         }
 
-        /// <summary>内空间对敌人的伤害惩罚（按阶位+职业差异化）</summary>
-        private static float GetDomainDamagePenalty(int rank, Actor a = null)
+        /// <summary>内空间对敌人的伤害惩罚（按阶位，原著：内空间压制对手）</summary>
+        private static float GetDomainDamagePenalty(int rank)
         {
             float baseVal = SuperMechConfig.InnerSpaceEnemyPenalty;
-            if (rank >= 13) baseVal = Mathf.Min(baseVal * 2f, 0.5f);
-            else if (rank >= 12) baseVal *= 1.5f;
-            // 职业差异化：念力系偏压制敌人
-            if (a != null)
-            {
-                if (a.hasTrait(SuperMechTraits.ClassMind)) baseVal *= 1.3f; // 精神内空间：强压制
-            }
+            if (rank >= 13) return Mathf.Min(baseVal * 2f, 0.5f);
+            if (rank >= 12) return baseVal * 1.5f;
             return baseVal;
         }
 
-        /// <summary>内空间减伤（按阶位+职业差异化）</summary>
-        private static float GetDomainDamageReduction(int rank, Actor a = null)
+        /// <summary>内空间减伤（按阶位，原著：内空间内主人减伤）</summary>
+        private static float GetDomainDamageReduction(int rank)
         {
             float baseVal = SuperMechConfig.InnerSpaceDamageReduction;
-            if (rank >= 13) baseVal = Mathf.Min(baseVal * 2f, 0.5f);
-            else if (rank >= 12) baseVal *= 1.5f;
-            // 职业差异化：异能系偏生存减伤
-            if (a != null)
-            {
-                if (a.hasTrait(SuperMechTraits.ClassPsi)) baseVal *= 1.3f; // 基因内空间：强减伤
-            }
+            if (rank >= 13) return Mathf.Min(baseVal * 2f, 0.5f);
+            if (rank >= 12) return baseVal * 1.5f;
             return baseVal;
-        }
-
-        /// <summary>获取职业对应的内空间名称（原著：每个人内空间属性不同）</summary>
-        public static string GetInnerSpaceName(Actor a)
-        {
-            if (a == null) return "内空间";
-            if (a.hasTrait(SuperMechTraits.ClassMech)) return "虚空内空间";
-            if (a.hasTrait(SuperMechTraits.ClassMind)) return "精神内空间";
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "基因内空间";
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "武道内空间";
-            if (a.hasTrait(SuperMechTraits.ClassMage)) return "元素内空间";
-            return "内空间";
         }
 
         /// <summary>单位是否有活跃内空间</summary>
@@ -202,20 +173,22 @@ namespace SuperMech.Code
             foreach (var id in toRemove) _activeDomains.Remove(id);
         }
 
-        /// <summary>范围脉冲：对所有活跃内空间，脉冲范围内敌人（参考天人武道领域系统，原著：内空间将周围区域变作内维度环境）</summary>
+        /// <summary>范围脉冲：内空间将周围区域变作内维度环境，范围内敌人持续受压制伤害（原著第1430章）</summary>
+        private const int PulseInterval = 60;   // 约1秒
+        private const int PulseRadius = 10;     // 格
+        private const float PulseDamageFraction = 0.05f; // 攻击者最大生命5%
         private static int _pulseTickCounter = 0;
         public static void TickPulse()
         {
             if (!SuperMechConfig.InnerSpaceEnabled) return;
             _pulseTickCounter++;
-            if (_pulseTickCounter < SuperMechConfig.InnerSpacePulseInterval) return;
+            if (_pulseTickCounter < PulseInterval) return;
             _pulseTickCounter = 0;
 
             CleanExpired();
             if (_activeDomains.Count == 0) return;
             if (World.world == null || World.world.units == null) return;
 
-            int radius = SuperMechConfig.InnerSpacePulseRadius;
             var allUnits = World.world.units.units_only_alive;
             if (allUnits == null) return;
 
@@ -227,70 +200,25 @@ namespace SuperMech.Code
 
                 int cx = caster.current_tile.x;
                 int cy = caster.current_tile.y;
+                float maxHp = 0f;
+                try { maxHp = caster.getMaxHealth(); } catch { }
+                if (maxHp <= 0f) continue;
+
+                float dmg = maxHp * PulseDamageFraction;
+                if (kv.Value.rank >= 13) dmg *= 1.5f;
+                else if (kv.Value.rank >= 12) dmg *= 1.2f;
+                if (dmg <= 0f) continue;
 
                 foreach (var enemy in allUnits)
                 {
                     if (enemy == null || !enemy.isAlive() || enemy.current_tile == null) continue;
                     if (enemy.id == caster.id) continue;
                     if (enemy.kingdom != null && caster.kingdom != null && enemy.kingdom.id == caster.kingdom.id) continue;
-
                     int dist = Mathf.Abs(enemy.current_tile.x - cx) + Mathf.Abs(enemy.current_tile.y - cy);
-                    if (dist > radius) continue;
-
-                    PulseEnemy(caster, enemy, kv.Value.rank);
+                    if (dist > PulseRadius) continue;
+                    try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch { }
                 }
             }
-        }
-
-        /// <summary>脉冲单个敌人：按职业差异化效果</summary>
-        private static void PulseEnemy(Actor caster, Actor enemy, int rank)
-        {
-            if (enemy == null || !enemy.isAlive()) return;
-
-            // 基础脉冲伤害：攻击者最大生命的比例
-            float maxHp = 0f;
-            try { maxHp = caster.getMaxHealth(); } catch { }
-            if (maxHp <= 0f) return;
-
-            float dmg = maxHp * SuperMechConfig.InnerSpacePulseDamageFraction;
-            // 阶位加成
-            if (rank >= 13) dmg *= 1.5f;
-            else if (rank >= 12) dmg *= 1.2f;
-
-            // 职业差异化脉冲效果
-            if (caster.hasTrait(SuperMechTraits.ClassMech))
-            {
-                // 虚空内空间：高伤害脉冲
-                dmg *= 1.3f;
-            }
-            else if (caster.hasTrait(SuperMechTraits.ClassMind))
-            {
-                // 精神内空间：伤害+降低敌人智力
-                try { enemy.stats["intelligence"] = Mathf.Max(0f, enemy.stats["intelligence"] - 1f); } catch { }
-            }
-            else if (caster.hasTrait(SuperMechTraits.ClassPsi))
-            {
-                // 基因内空间：伤害+吸血
-                dmg *= 1.1f;
-                if (caster.isAlive() && caster.data != null)
-                {
-                    try { caster.data.health = Mathf.Min(caster.getMaxHealth(), caster.data.health + (int)(dmg * 0.3f)); } catch { }
-                }
-            }
-            else if (caster.hasTrait(SuperMechTraits.ClassMage))
-            {
-                // 元素内空间：伤害+抽蓝
-                dmg *= 1.2f;
-                try { int mana = enemy.getMana(); enemy.data.mana = Mathf.Max(0, mana - (int)(dmg * 0.5f)); } catch { }
-            }
-            else if (caster.hasTrait(SuperMechTraits.ClassMartial))
-            {
-                // 武道内空间：纯伤害
-                dmg *= 1.15f;
-            }
-
-            if (dmg <= 0f) return;
-            try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch { }
         }
 
         public static void Clear(Actor a)
