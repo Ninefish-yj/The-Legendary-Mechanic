@@ -162,6 +162,7 @@ namespace SuperMech.Code
                         SuperMechMageType.AssignMageType(a);
                     a.addTrait(SuperMechAwakened.AwakenedTrait);
                     a.addTrait(SuperMechTraits.Descendant); // 降临者特质
+                    if (!a.data.favorite) a.switchFavorite(); // 玩家标记：自动收藏（金色名字）
                     if (!a.hasTrait("sm_rank_00_f"))
                         a.addTrait("sm_rank_00_f");
                     SuperMechAdvancement.SetExactRank(a, 0);

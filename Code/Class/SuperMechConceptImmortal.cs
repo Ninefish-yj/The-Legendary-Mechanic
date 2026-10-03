@@ -245,7 +245,8 @@ namespace SuperMech.Code
                 // 恢复生命值和状态
                 a.data.health = a.getMaxHealth();
                 a.data.stamina = (int)a.getMaxStamina();
-                Debug.Log($"[超神机械师] 降临者 {a.name} 已重生");
+                a.addStatusEffect("stunned", 2f); // 复活硬直：短暂眩晕
+                Debug.Log($"[超神机械师] 降临者 {a.name} 已重生（复活硬直2秒）");
             }
             catch (System.Exception e)
             {
