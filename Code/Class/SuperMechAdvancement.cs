@@ -180,12 +180,11 @@ namespace SuperMech.Code
 
                 if (oldExact == targetIdx) continue;
 
-                // v0.39.8 先行者指引：原著第564章"第一个超A级打破了某种极限，给后来者指引了道路"
-                // 首破前：能级够了但不知道方法，需要满足知识/任务条件才能突破（或极低概率顿悟）
-                // 首破后：先行者经验传播，达到阈值100%自动突破
+                // 原著：探索纪战争后期"第一个超A级的出现仿佛打破了某种极限"
+                // 仅针对S阶（超A级）：首破前无人知道突破方法，天灾级卡在瓶颈；首破后先行者指引道路，达到阈值即可突破
                 string targetRankName = LocalizedTextManager.getText(SuperMechRanks.All[targetIdx].name);
                 bool rankBroken = SuperMechSaveData.FirstBreakthroughRanks.Contains(targetRankName);
-                if (!rankBroken && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx >= 2)
+                if (!rankBroken && targetIdx > oldExact && targetIdx == 10) // 仅S阶（超A级）有首破机制
                 {
                     if (!CanBreakthrough(a, targetIdx))
                         continue;
@@ -360,32 +359,16 @@ namespace SuperMech.Code
             ApplyLifespanBonus(a, newRankIdx);
         }
 
-        /// <summary>首破前突破条件检查：原著中先行者出现前，即使能级够了也需要找到突破方法</summary>
+        /// <summary>超A级首破前突破检查：原著中第一个超A级出现前，天灾级即使达到瓶颈也不知道突破方法
+        /// 只有极低概率的天才能自行摸索出道路（顿悟）</summary>
         private static bool CanBreakthrough(Actor a, int targetIdx)
         {
-            if (a == null || targetIdx < 2) return true;
+            if (a == null || targetIdx != 10) return true; // 仅S阶有首破限制
 
-            // 条件1：完成进阶任务（最可靠的突破方法）
-            if (SuperMechAdvancementTask.CheckReq(a, targetIdx))
-                return true;
-
-            // 条件2：学习足够多的知识（从知识中领悟突破方法）
-            int knowledgeCount = SuperMechKnowledge.GetUnlockedCount(a, "sm_knowledge_");
-            int requiredKnowledge = targetIdx switch
+            // 首破前：无人知道超A级的突破方法，只有0.05%概率的天才能自行顿悟
+            if (UnityEngine.Random.value < 0.0005f)
             {
-                >= 10 => 20,  // S阶以上：20个知识
-                >= 8 => 15,   // A阶：15个知识
-                >= 6 => 10,   // B阶：10个知识
-                >= 4 => 5,    // C阶：5个知识
-                _ => 2        // D阶：2个知识
-            };
-            if (knowledgeCount >= requiredKnowledge)
-                return true;
-
-            // 条件3：1%概率顿悟（天才自行领悟突破方法）
-            if (UnityEngine.Random.value < 0.01f)
-            {
-                Debug.Log($"[超神机械师]【顿悟突破】{a.name} 自行领悟了突破方法！");
+                Debug.Log($"[超神机械师]【首位顿悟】{a.name} 自行摸索出了超A级的突破道路！");
                 return true;
             }
 
