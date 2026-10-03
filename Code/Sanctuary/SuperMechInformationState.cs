@@ -152,7 +152,7 @@ namespace SuperMech.Code
                 advancementTaskDone = SuperMechTranscendence.IsAdvancementTaskDone(a),
                 advancementProgress = SuperMechTranscendence.GetAdvancementProgress(a),
                 subLevel = 0,
-                deathAge = a.data.age,
+                deathAge = a.age,
             };
 
             // 职业和分支
