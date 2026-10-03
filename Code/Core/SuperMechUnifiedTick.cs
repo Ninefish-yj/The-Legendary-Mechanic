@@ -68,6 +68,7 @@ namespace SuperMech.Code
                 SafeRun("知识协同", () => SuperMechKnowledgeSynergy.TickSynergy());
                 SafeRun("机械融合", () => SuperMechMechFusion.TickFusion());
                 SafeRun("技能自动学习", () => SuperMechSkills.TickAutoLearnAll());
+                SafeRun("降临者濒死保护", () => SuperMechConceptImmortal.TickGracePeriod());
             }
             else if (group == 2)
             {
