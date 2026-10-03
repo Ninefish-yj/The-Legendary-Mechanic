@@ -141,6 +141,12 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * 0.10f);
                     }
+                    // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
+                    float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
+                    if (proxyBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (proxyBonus - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))

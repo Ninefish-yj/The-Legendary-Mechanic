@@ -105,6 +105,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.54.0** | 代理战争（原著还原）：①势力自动隶属于领袖所在文明（王国），不同文明势力间伤害+5%；②若两文明正在交战（原版War系统），代理战争升级，伤害+15%；③击杀敌对文明势力成员后，所属文明获得科技值奖励（按目标阶位2~20点）；④文明本身不直接开战，通过代理人（势力）博弈——符合原著"高级文明通过代理战争控制宇宙格局"；修改SuperMechFaction.cs/CombatPatches.cs/Civilization.cs/Legend.cs |
 | **v0.53.0** | 势力列表窗口：①神权栏新增"势力列表"按钮，打开独立窗口显示所有超能者势力；②每个势力显示等级/名称/成员数/领袖/总战力，按战力降序；③点击势力展开成员列表（姓名/阶位/领袖或成员）；④底部详情面板显示选中势力成员；新增SuperMechFactionView类，修改SuperMechFaction.cs/GetAllFactions/WindowManager/Powers/OtherViews，新增3条本地化 |
 | **v0.52.0** | 文明守护者机制（原著还原）：①每个文明中A阶以上最强超能者自动成为守护者，获得+10%伤害/+10%生命/+5%攻速加成；②守护者死亡时文明科技值损失20%（原著：文明失去战略武器）；③王国信息面板显示守护者姓名；修改SuperMechCivilization.cs/CombatPatches.cs/Sanctuary.cs/KingdomWindowPatch.cs |
 | **v0.51.1** | 文明科技发展+王国面板注入：①每个文明有科技值，每tick自动增长，高阶超能者加速（A+1/S+3/SS+5/X+10），科技等级0~10级，每级+2%伤害/+2%生命/+1%攻速；②文明等级和科技等级注入原版王国信息面板（KingdomWindow.showStatsRows postfix），不在单位面板显示；③宇宙迭代时科技清零；新建SuperMechKingdomWindowPatch.cs，修改SuperMechCivilization.cs/CombatPatches.cs/UnitWindow.cs |

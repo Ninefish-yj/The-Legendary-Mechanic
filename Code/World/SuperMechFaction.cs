@@ -351,6 +351,71 @@ namespace SuperMech.Code
             return IsHostile(attacker, target) ? 1.15f : 1f;
         }
 
+        /// <summary>v0.54.0 代理战争：不同文明势力间伤害+5%，文明交战时额外+10%</summary>
+        public static float GetProxyWarBonus(Actor attacker, Actor target)
+        {
+            var fa = GetFaction(attacker);
+            var fb = GetFaction(target);
+            if (fa == null || fb == null) return 1f;
+            if (fa.id == fb.id) return 1f; // 同势力不触发
+
+            Kingdom civA = GetFactionCivilization(fa);
+            Kingdom civB = GetFactionCivilization(fb);
+            if (civA == null || civB == null || civA == civB) return 1f; // 同文明不触发
+
+            float bonus = 1.05f; // 不同文明势力间基础代理战争加成
+            // 检查两个文明是否正在战争（原版War系统）
+            if (IsKingdomsAtWar(civA, civB))
+            {
+                bonus = 1.15f; // 文明交战时代理战争升级
+            }
+            return bonus;
+        }
+
+        /// <summary>获取势力所属文明（领袖所在王国）</summary>
+        public static Kingdom GetFactionCivilization(FactionData f)
+        {
+            if (f == null) return null;
+            var units = World.world.units?.units_only_alive;
+            if (units == null) return null;
+            foreach (var a in units)
+            {
+                if (a != null && a.id == f.leaderId) return a.kingdom;
+            }
+            return null;
+        }
+
+        /// <summary>检查两个王国是否正在战争</summary>
+        private static bool IsKingdomsAtWar(Kingdom a, Kingdom b)
+        {
+            if (a == null || b == null || World.world?.wars == null) return false;
+            foreach (var war in World.world.wars)
+            {
+                if (war == null || war.isRekt()) continue;
+                if (war.isInWarWith(a, b)) return true;
+            }
+            return false;
+        }
+
+        /// <summary>v0.54.0 代理战争击杀奖励：击杀敌对文明势力成员后，所属文明获得科技值</summary>
+        public static void OnProxyKill(Actor killer, Actor victim)
+        {
+            if (killer == null || victim == null) return;
+            var fk = GetFaction(killer);
+            var fv = GetFaction(victim);
+            if (fk == null || fv == null || fk.id == fv.id) return;
+
+            Kingdom civK = GetFactionCivilization(fk);
+            Kingdom civV = GetFactionCivilization(fv);
+            if (civK == null || civV == null || civK == civV) return;
+
+            // 击杀敌对文明势力成员，所属文明获得科技值
+            int victimRank = SuperMechAdvancement.GetExactRankIndex(victim);
+            float techReward = victimRank >= 13 ? 20f : victimRank >= 12 ? 10f : victimRank >= 10 ? 5f : 2f;
+            SuperMechCivilization.AddTechPoints(civK, techReward);
+            Debug.Log($"[超神机械师] 代理战争：{killer.name}({fk.name})击杀{victim.name}({fv.name})，{civK.name}获得{techReward}科技值");
+        }
+
         /// <summary>获取势力等级</summary>
         public static int GetFactionLevel(Actor a)
         {

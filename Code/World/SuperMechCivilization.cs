@@ -129,6 +129,15 @@ namespace SuperMech.Code
             return 0;
         }
 
+        /// <summary>v0.54.0 给文明增加科技值（代理战争击杀奖励等）</summary>
+        public static void AddTechPoints(Kingdom k, float amount)
+        {
+            if (k == null || amount <= 0) return;
+            long kid = k.getID();
+            if (!_kingdomTechPoints.ContainsKey(kid)) _kingdomTechPoints[kid] = 0f;
+            _kingdomTechPoints[kid] += amount;
+        }
+
         /// <summary>文明等级名称</summary>
         public static string GetLevelName(CivLevel level)
         {

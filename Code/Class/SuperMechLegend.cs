@@ -61,6 +61,9 @@ namespace SuperMech.Code
         public static void OnKill(Actor killer, Actor victim)
         {
             if (killer == null || victim == null) return;
+            // v0.54.0 代理战争击杀奖励
+            SuperMechFaction.OnProxyKill(killer, victim);
+
             int victimRank = SuperMechAdvancement.GetExactRankIndex(victim);
             if (victimRank < 6) return;
 
