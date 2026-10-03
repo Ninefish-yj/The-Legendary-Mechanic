@@ -160,6 +160,13 @@ namespace SuperMech.Code
                     }
                 }
 
+                // v0.58.0 技能护盾吸收（在原版伤害应用前，把吸收量加回health）
+                float absorbed = pDamage - SuperMechSkillRuntime.AbsorbShield(target, pDamage);
+                if (absorbed > 0 && target.data != null)
+                {
+                    target.data.health = Mathf.Min(target.getMaxHealth(), target.data.health + (int)absorbed);
+                }
+
                 int targetRank = SuperMechAdvancement.GetExactRankIndex(target);
                 if (targetRank >= 13 && attacker != null && attacker.isAlive())
                 {

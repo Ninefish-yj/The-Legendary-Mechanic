@@ -8,6 +8,8 @@ namespace SuperMech.Code
     {
         private static readonly Dictionary<long, Dictionary<string, float>> _cooldowns = new Dictionary<long, Dictionary<string, float>>();
         private static readonly Dictionary<long, Dictionary<string, float>> _activeBuffs = new Dictionary<long, Dictionary<string, float>>();
+        private static readonly Dictionary<long, Dictionary<string, float>> _dotEffects = new Dictionary<long, Dictionary<string, float>>(); // v0.58.0 持续伤害
+        private static readonly Dictionary<long, float> _shields = new Dictionary<long, float>(); // v0.58.0 护盾值
 
         /// <summary>战斗中尝试释放技能，返回是否释放了技能</summary>
         public static bool TryCastSkill(Actor attacker, Actor target)
@@ -73,6 +75,28 @@ namespace SuperMech.Code
                 int rankIdx = SuperMechActorContextRegistry.GetRank(caster);
                 float baseDamage = (10f + rankIdx * 20f) * def.effectValue;
                 target.getHit(baseDamage, false, AttackType.None, caster);
+
+                // v0.58.0 高阶技能范围伤害（effectValue>=3时，50%概率溅射周围敌人）
+                if (def.effectValue >= 3f && Random.value < 0.5f && target.current_tile != null)
+                {
+                    var units = World.world.units?.units_only_alive;
+                    if (units != null)
+                    {
+                        foreach (var nearby in units)
+                        {
+                            if (nearby == null || !nearby.isAlive() || nearby == target || nearby == caster) continue;
+                            if (nearby.kingdom == caster.kingdom) continue; // 不打友军
+                            if (nearby.current_tile == null) continue;
+                            float dist = Vector2.Distance(
+                                new Vector2(nearby.current_tile.x, nearby.current_tile.y),
+                                new Vector2(target.current_tile.x, target.current_tile.y));
+                            if (dist <= 2f)
+                            {
+                                nearby.getHit(baseDamage * 0.5f, false, AttackType.None, caster);
+                            }
+                        }
+                    }
+                }
             }
             catch { }
         }
@@ -86,6 +110,37 @@ namespace SuperMech.Code
                 _activeBuffs[target.id] = buffs;
             }
             buffs[def.id] = Time.time + def.effectDuration;
+
+            // v0.58.0 防御型Buff提供护盾
+            if (IsDefensiveBuff(def.id))
+            {
+                int rankIdx = SuperMechActorContextRegistry.GetRank(target);
+                float shield = (20f + rankIdx * 15f) * def.effectValue;
+                if (!_shields.TryGetValue(target.id, out var current)) current = 0f;
+                _shields[target.id] = current + shield;
+            }
+        }
+
+        /// <summary>v0.58.0 防御型Buff判断（金刚身/魔法护盾/精神屏障）</summary>
+        private static bool IsDefensiveBuff(string skillId)
+        {
+            return skillId == "sm_skill_vajra_body" ||
+                   skillId == "sm_skill_magic_shield" ||
+                   skillId == "sm_skill_mental_barrier";
+        }
+
+        /// <summary>v0.58.0 护盾吸收伤害，返回剩余伤害</summary>
+        public static float AbsorbShield(Actor target, float damage)
+        {
+            if (target == null || damage <= 0) return damage;
+            if (!_shields.TryGetValue(target.id, out var shield) || shield <= 0) return damage;
+            if (shield >= damage)
+            {
+                _shields[target.id] = shield - damage;
+                return 0f;
+            }
+            _shields[target.id] = 0f;
+            return damage - shield;
         }
 
         private static void ApplyDebuff(Actor target, SuperMechSkills.SkillDef def)
@@ -94,9 +149,22 @@ namespace SuperMech.Code
             try
             {
                 target.addStatusEffect("stunned", def.effectDuration);
+                // v0.58.0 持续伤害：眩晕期间每秒造成伤害
+                int rankIdx = SuperMechActorContextRegistry.GetRank(target);
+                float dotDamage = (5f + rankIdx * 5f) * def.effectValue;
+                if (!_dotEffects.TryGetValue(target.id, out var dots))
+                {
+                    dots = new Dictionary<string, float>();
+                    _dotEffects[target.id] = dots;
+                }
+                dots[def.id] = Time.time + def.effectDuration;
+                // 存储伤害值（用skillId映射）
+                if (!_dotDamageValues.ContainsKey(def.id)) _dotDamageValues[def.id] = dotDamage;
             }
             catch { }
         }
+
+        private static readonly Dictionary<string, float> _dotDamageValues = new Dictionary<string, float>();
 
         private static void HealTarget(Actor target, SuperMechSkills.SkillDef def)
         {
@@ -224,6 +292,29 @@ namespace SuperMech.Code
                 if (kvp.Value.Count == 0) deadUnits.Add(kvp.Key);
             }
             foreach (var id in deadUnits) _activeBuffs.Remove(id);
+
+            // v0.58.0 持续伤害处理
+            var dotDead = new List<long>();
+            foreach (var kvp in _dotEffects)
+            {
+                var expired = new List<string>();
+                foreach (var dot in kvp.Value)
+                {
+                    if (now >= dot.Value) { expired.Add(dot.Key); continue; }
+                    // 每秒造成伤害（用时间差简化为每tick一次）
+                    if (World.world != null && World.world.units != null)
+                    {
+                        var target = World.world.units.get(kvp.Key);
+                        if (target != null && target.isAlive() && _dotDamageValues.TryGetValue(dot.Key, out var dmg))
+                        {
+                            target.getHit(dmg * 0.1f, false, AttackType.None, null); // 每tick10%伤害
+                        }
+                    }
+                }
+                foreach (var id in expired) kvp.Value.Remove(id);
+                if (kvp.Value.Count == 0) dotDead.Add(kvp.Key);
+            }
+            foreach (var id in dotDead) _dotEffects.Remove(id);
         }
 
         public static int CleanupDead(HashSet<long> alive)
