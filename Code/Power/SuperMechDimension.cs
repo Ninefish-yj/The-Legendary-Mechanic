@@ -146,7 +146,7 @@ namespace SuperMech.Code
             if (a == null || dim == null) return false;
             if (_activeDimension.ContainsKey(a.id)) return false;
             if (dim.classTrait != null && !a.hasTrait(dim.classTrait)) return false;
-            if (SuperMechAdvancement.GetRankIndex(a) < dim.minRankIndex) return false;
+            if (SuperMechActorContextRegistry.GetRank(a) < dim.minRankIndex) return false;
             if (_cooldown.TryGetValue(a.id, out long cdEnd))
             {
                 long now = System.DateTime.Now.Ticks;

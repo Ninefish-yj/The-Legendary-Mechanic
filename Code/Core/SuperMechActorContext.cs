@@ -105,5 +105,43 @@ namespace SuperMech.Code
         }
 
         public static int Count => _contexts.Count;
+
+        // === 通用判断（避免Power层反向依赖Class层）===
+
+        /// <summary>是否超能者单位（有天赋或职业特质）</summary>
+        public static bool IsSuperMech(Actor a)
+        {
+            if (a == null) return false;
+            return a.hasTrait(SuperMechTraits.ClassMech)
+                || a.hasTrait(SuperMechTraits.ClassPsi)
+                || a.hasTrait(SuperMechTraits.ClassMind)
+                || a.hasTrait(SuperMechTraits.ClassMartial)
+                || a.hasTrait(SuperMechTraits.ClassMage)
+                || a.hasTrait("sm_talent");
+        }
+
+        /// <summary>是否已觉醒</summary>
+        public static bool IsAwakened(Actor a)
+        {
+            return a != null && a.hasTrait("sm_awakened");
+        }
+
+        /// <summary>从ActorContext读取阶位（无Context返回0）</summary>
+        public static int GetRank(Actor a)
+        {
+            if (a == null) return 0;
+            var ctx = TryGet(a.id);
+            if (ctx != null && ctx.exactRank >= 0) return ctx.exactRank;
+            return 0;
+        }
+
+        /// <summary>从ActorContext读取职业阶段（无Context返回0）</summary>
+        public static int GetStage(Actor a)
+        {
+            if (a == null) return 0;
+            var ctx = TryGet(a.data.id);
+            if (ctx != null && ctx.stage > 0) return ctx.stage;
+            return 0;
+        }
     }
 }

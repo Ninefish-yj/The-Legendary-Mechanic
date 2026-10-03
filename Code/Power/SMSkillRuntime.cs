@@ -70,7 +70,7 @@ namespace SuperMech.Code
             try
             {
                 // 基于阶位计算基础伤害
-                int rankIdx = SuperMechAdvancement.GetExactRankIndex(caster);
+                int rankIdx = SuperMechActorContextRegistry.GetRank(caster);
                 float baseDamage = (10f + rankIdx * 20f) * def.effectValue;
                 target.getHit(baseDamage, false, AttackType.None, caster);
             }
@@ -116,7 +116,7 @@ namespace SuperMech.Code
             {
                 if (World.world == null || World.world.units == null || caster == null) return;
                 int count = Mathf.Clamp(Mathf.FloorToInt(def.effectValue), 1, 5);
-                int rankIdx = SuperMechAdvancement.GetExactRankIndex(caster);
+                int rankIdx = SuperMechActorContextRegistry.GetRank(caster);
                 for (int i = 0; i < count; i++)
                 {
                     WorldTile tile = caster.current_tile;

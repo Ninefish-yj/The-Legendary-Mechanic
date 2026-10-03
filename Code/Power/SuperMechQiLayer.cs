@@ -279,7 +279,7 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                if (!SuperMechActorContextRegistry.IsSuperMech(a)) continue;
                 CalculateLayer(a);
             }
         }

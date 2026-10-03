@@ -46,12 +46,12 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
-                if (SuperMechAwakened.IsAwakened(a)) continue;
+                if (!SuperMechActorContextRegistry.IsSuperMech(a)) continue;
+                if (SuperMechActorContextRegistry.IsAwakened(a)) continue;
 
                 float growth = 0.5f * tickInterval;
 
-                int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
+                int rankIdx = SuperMechActorContextRegistry.GetRank(a);
                 growth *= (1f + rankIdx * 0.15f);
 
                 if (SuperMechQi.IsInCombat(a)) growth *= 3f;

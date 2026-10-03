@@ -18,7 +18,7 @@ namespace SuperMech.Code
             foreach (var actor in World.world.units)
             {
                 if (actor == null || !actor.isAlive()) continue;
-                int rank = SuperMechAdvancement.GetExactRankIndex(actor);
+                int rank = SuperMechActorContextRegistry.GetRank(actor);
                 if (rank >= 8)
                     auraSources.Add(actor);
             }
@@ -31,7 +31,7 @@ namespace SuperMech.Code
 
             foreach (var source in auraSources)
             {
-                int sourceRank = SuperMechAdvancement.GetExactRankIndex(source);
+                int sourceRank = SuperMechActorContextRegistry.GetRank(source);
                 if (source.current_tile == null) continue;
 
                 foreach (var target in World.world.units)
@@ -44,7 +44,7 @@ namespace SuperMech.Code
                                + Mathf.Abs(target.current_tile.y - source.current_tile.y);
                     if (dist > AuraRange) continue;
 
-                    int targetRank = SuperMechAdvancement.GetExactRankIndex(target);
+                    int targetRank = SuperMechActorContextRegistry.GetRank(target);
                     int rankDiff = sourceRank - targetRank;
 
                     if (rankDiff <= 0) continue;

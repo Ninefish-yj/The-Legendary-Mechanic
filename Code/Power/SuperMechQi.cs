@@ -68,7 +68,7 @@ namespace SuperMech.Code
             var stats = SuperMechStats.Of(a);
             if (stats == null) return;
 
-            int stage = SuperMechStage.GetStage(a);
+            int stage = SuperMechActorContextRegistry.GetStage(a);
             float stageMul = 1f + stage * 0.1f;
 
             // 原著气力系统(ch51/ch539/ch1039/ch1203/ch1402)：
@@ -266,11 +266,11 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                if (!SuperMechActorContextRegistry.IsSuperMech(a)) continue;
 
                 if (processed >= maxTracked)
                 {
-                    if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue;
+                    if (SuperMechActorContextRegistry.GetRank(a) < 8) continue;
                 }
                 processed++;
 

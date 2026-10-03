@@ -81,7 +81,7 @@ namespace SuperMech.Code
         public static bool SpendPoints(Actor a, string route, int layers = 1)
         {
             if (a == null) return false;
-            if (!SuperMechAwakened.IsAwakened(a)) return false;
+            if (!SuperMechActorContextRegistry.IsAwakened(a)) return false;
             int cost = layers * PointsPerLayer;
             int cur = GetPoints(a);
             if (cur < cost) return false;
@@ -133,7 +133,7 @@ namespace SuperMech.Code
         public static bool AwardCraftingPoints(Actor a)
         {
             if (a == null) return false;
-            if (!SuperMechAwakened.IsAwakened(a)) return false;
+            if (!SuperMechActorContextRegistry.IsAwakened(a)) return false;
             AddPoints(a, 1);
             return true;
         }
@@ -148,7 +148,7 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 if (!IsDivineAwakened(a)) continue;
-                if (SuperMechAwakened.IsAwakened(a)) continue;
+                if (SuperMechActorContextRegistry.IsAwakened(a)) continue;
 
                 int pts = GetPoints(a);
                 if (pts <= 0) continue;

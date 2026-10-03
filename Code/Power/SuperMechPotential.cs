@@ -168,7 +168,7 @@ namespace SuperMech.Code
             int actualCost = GetActualCost(a, nodeId, cost);
             if (!SpendPotential(a, actualCost)) return false;
             SuperMechKnowledge.Unlock(a, nodeId);
-            if (SuperMechAwakened.IsAwakened(a))
+            if (SuperMechActorContextRegistry.IsAwakened(a))
             {
                 SuperMechAwakened.AddXp(a, 1000f);
             }
@@ -183,7 +183,7 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                if (!SuperMechActorContextRegistry.IsSuperMech(a)) continue;
                 // v0.45.0：不再限制降临者——NPC超能者也积累潜能（半速率），支撑自动修炼闭环
 
                 float qi = SuperMechQi.GetQi(a);
@@ -194,7 +194,7 @@ namespace SuperMech.Code
                 if (curLv > lastLv)
                 {
                     int gained = curLv - lastLv;
-                    if (SuperMechAwakened.IsAwakened(a))
+                    if (SuperMechActorContextRegistry.IsAwakened(a))
                     {
                         if (a.hasTrait("sm_rank_10_s") || a.hasTrait("sm_rank_11_s_plus") || a.hasTrait("sm_rank_12_ss") || a.hasTrait("sm_rank_13_x"))
                         {

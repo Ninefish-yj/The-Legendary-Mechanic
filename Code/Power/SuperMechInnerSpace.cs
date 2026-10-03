@@ -23,7 +23,7 @@ namespace SuperMech.Code
         {
             if (!SuperMechConfig.InnerSpaceEnabled) return;
             if (a == null || !a.isAlive()) return;
-            int rank = SuperMechAdvancement.GetExactRankIndex(a);
+            int rank = SuperMechActorContextRegistry.GetRank(a);
             if (rank < SuperMechConfig.InnerSpaceMinRank) return;
 
             // 已有活跃内空间则刷新持续时间

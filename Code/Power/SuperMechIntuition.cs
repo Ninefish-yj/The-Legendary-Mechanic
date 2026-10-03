@@ -67,9 +67,9 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
+                if (!SuperMechActorContextRegistry.IsSuperMech(a)) continue;
 
-                int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
+                int rankIdx = SuperMechActorContextRegistry.GetRank(a);
                 if (rankIdx < 10) continue;
 
                 if (!_destinies.ContainsKey(a.id))
