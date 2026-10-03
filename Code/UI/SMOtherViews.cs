@@ -186,7 +186,7 @@ namespace SuperMech.Code
             _scrollViewRect = scrollGo.AddComponent<RectTransform>();
             _scrollViewRect.anchorMin = Vector2.zero;
             _scrollViewRect.anchorMax = Vector2.one;
-            _scrollViewRect.offsetMin = new Vector2(4, 36);
+            _scrollViewRect.offsetMin = new Vector2(4, 28);
             _scrollViewRect.offsetMax = new Vector2(-4, -60);
 
             var scrollImg = scrollGo.AddComponent<Image>();
@@ -225,7 +225,7 @@ namespace SuperMech.Code
             bottomRect.anchorMax = new Vector2(1, 0);
             bottomRect.pivot = new Vector2(0.5f, 0);
             bottomRect.sizeDelta = new Vector2(0, 24);
-            bottomRect.offsetMin = new Vector2(4, 10);
+            bottomRect.offsetMin = new Vector2(4, 0);
             bottomRect.offsetMax = new Vector2(-4, 0);
 
             var topBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_top"), 9, ToTop);
