@@ -204,7 +204,7 @@ namespace SuperMech.Code
                         Debug.Log($"[超神机械师]【阶位提升】{a.name} 晋升{rankName}，气力Lv{qiLv}，实力层次稳步提升");
 
                     // v0.28.0 UI重构：推送阶位提升事件到原生事件日志
-                    SMEventLogger.LogPromotion(a, oldRankName, rankName, onar);
+                    SMEventLogger.LogPromotion(a, oldRankName, rankName, onar, targetIdx);
                 }
 
                 ApplyRankStats(a, targetIdx);

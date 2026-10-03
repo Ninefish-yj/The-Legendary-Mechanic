@@ -110,9 +110,27 @@ namespace SuperMech.Code
         /// <summary>安全字符串，null回退为空串</summary>
         private static string SafeStr(string s) => s ?? string.Empty;
 
-        /// <summary>推送觉醒事件日志</summary>
+        /// <summary>天赋评级字符串转等级（F=0~S=6）</summary>
+        private static int TalentRankToIndex(string rank)
+        {
+            switch (rank?.Trim().ToUpper())
+            {
+                case "F": return 0;
+                case "E": return 1;
+                case "D": return 2;
+                case "C": return 3;
+                case "B": return 4;
+                case "A": return 5;
+                case "S": return 6;
+                default: return 0;
+            }
+        }
+
+        /// <summary>推送觉醒事件日志（阈值过滤：天赋评级>=配置值才记录）</summary>
         public static void LogAwakening(Actor a, string className, string talentRank)
         {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            if (TalentRankToIndex(talentRank) < SuperMechConfig.EventLogAwakenMinTalent) return;
             TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_awaken");
@@ -132,9 +150,11 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>推送阶位提升事件日志</summary>
-        public static void LogPromotion(Actor a, string oldRank, string newRank, float onar)
+        /// <summary>推送阶位提升事件日志（阈值过滤：新阶位>=配置值才记录）</summary>
+        public static void LogPromotion(Actor a, string oldRank, string newRank, float onar, int newRankIndex = -1)
         {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            if (newRankIndex >= 0 && newRankIndex < SuperMechConfig.EventLogPromotionMinRank) return;
             TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_promotion");
@@ -154,9 +174,10 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>推送知识融合事件日志</summary>
+        /// <summary>推送知识融合事件日志（默认关闭，避免刷屏）</summary>
         public static void LogFusion(Actor a, string knowledgeA, string knowledgeB, string result)
         {
+            if (!SuperMechConfig.EventLogEnabled || !SuperMechConfig.EventLogFusionEnabled) return;
             TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_fusion");
@@ -179,6 +200,7 @@ namespace SuperMech.Code
         /// <summary>推送圣所访问事件日志</summary>
         public static void LogSanctuaryVisit(Actor a, int sanctuaryIndex, string sanctuaryName)
         {
+            if (!SuperMechConfig.EventLogEnabled || !SuperMechConfig.EventLogSanctuaryEnabled) return;
             TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_sanctuary");
@@ -201,6 +223,7 @@ namespace SuperMech.Code
         /// <summary>推送宇宙迭代事件日志</summary>
         public static void LogIteration(int iterationCount, float heritageRate)
         {
+            if (!SuperMechConfig.EventLogEnabled || !SuperMechConfig.EventLogIterationEnabled) return;
             TryInit();
             if (!_initialized) return;
             var asset = GetAsset("sm_log_iteration");
@@ -210,7 +233,6 @@ namespace SuperMech.Code
             {
                 new WorldLogMessage(asset, iterationCount.ToString(), heritageRate.ToString("0%"), "")
                 {
-                    // 宇宙迭代是全局事件，不绑定特定位置
                 }.add();
             }
             catch (System.Exception e)
@@ -222,6 +244,7 @@ namespace SuperMech.Code
         /// <summary>推送超A复活事件日志</summary>
         public static void LogResurrection(Actor a, int reviveCount, string lostAbilities)
         {
+            if (!SuperMechConfig.EventLogEnabled || !SuperMechConfig.EventLogResurrectionEnabled) return;
             TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_resurrection");
@@ -244,6 +267,7 @@ namespace SuperMech.Code
         /// <summary>推送超神级概念重塑事件日志（原著：超神级普通死亡后信息态重塑）</summary>
         public static void LogConceptReshape(Actor a)
         {
+            if (!SuperMechConfig.EventLogEnabled || !SuperMechConfig.EventLogConceptReshapeEnabled) return;
             TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_concept_reshape");
@@ -263,9 +287,10 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>推送法术学习成功事件日志</summary>
+        /// <summary>推送法术学习成功事件日志（默认关闭，避免刷屏）</summary>
         public static void LogSpellLearned(Actor a, string spellNameKey)
         {
+            if (!SuperMechConfig.EventLogEnabled || !SuperMechConfig.EventLogSpellEnabled) return;
             TryInit();
             if (!_initialized || a == null) return;
             var asset = GetAsset("sm_log_spell");

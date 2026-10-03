@@ -119,6 +119,7 @@ namespace SuperMech.Code
                 new CatInfo("Relic", "sm_config_557"),
                 new CatInfo("Performance", "sm_config_558"),
                 new CatInfo("Combat", "sm_config_621"),
+                new CatInfo("EventLog", "sm_config_710"),
             };
             foreach (var c in categories)
                 LocalizedTextManager.add(c.key, LocalizedTextManager.getText(c.name), pReplace: true);
@@ -160,6 +161,15 @@ namespace SuperMech.Code
                 new ItemInfo("qi_display_decimals", "sm_config_659", "sm_config_660"),
                 new ItemInfo("cross_mod_energy_sync", "sm_config_661", "sm_config_662"),
                 new ItemInfo("cross_mod_energy_ratio", "sm_config_663", "sm_config_664"),
+                new ItemInfo("event_log_enabled", "sm_config_711", "sm_config_712"),
+                new ItemInfo("event_log_awaken_min_talent", "sm_config_713", "sm_config_714"),
+                new ItemInfo("event_log_promotion_min_rank", "sm_config_715", "sm_config_716"),
+                new ItemInfo("event_log_fusion_enabled", "sm_config_717", "sm_config_718"),
+                new ItemInfo("event_log_spell_enabled", "sm_config_719", "sm_config_720"),
+                new ItemInfo("event_log_sanctuary_enabled", "sm_config_721", "sm_config_722"),
+                new ItemInfo("event_log_iteration_enabled", "sm_config_723", "sm_config_724"),
+                new ItemInfo("event_log_resurrection_enabled", "sm_config_725", "sm_config_726"),
+                new ItemInfo("event_log_concept_reshape_enabled", "sm_config_727", "sm_config_728"),
             };
             foreach (var it in items)
             {
@@ -221,5 +231,35 @@ namespace SuperMech.Code
         public static void SetQiDisplayDecimals(int val) { QiDisplayDecimals = Mathf.Clamp(val, 0, 3); }
         public static void SetCrossModEnergySync(bool val) { CrossModEnergySync = val; }
         public static void SetCrossModEnergyRatio(float val) { CrossModEnergyRatio = Mathf.Clamp(val, 0.1f, 10f); }
+
+        // === 事件日志配置（v0.39.6：阈值过滤，避免后期刷屏）===
+        /// <summary>事件日志总开关</summary>
+        public static bool EventLogEnabled = true;
+        /// <summary>觉醒日志最低天赋评级（0=F,1=E,2=D,3=C,4=B,5=A,6=S），默认3=C级以上才记录</summary>
+        public static int EventLogAwakenMinTalent = 3;
+        /// <summary>晋升日志最低阶位（0=F~14=X），默认7=B阶以上才记录</summary>
+        public static int EventLogPromotionMinRank = 7;
+        /// <summary>知识融合日志开关（默认关，基础融合太频繁）</summary>
+        public static bool EventLogFusionEnabled = false;
+        /// <summary>法术习得日志开关（默认关）</summary>
+        public static bool EventLogSpellEnabled = false;
+        /// <summary>圣所访问日志开关（默认开，稀有事件）</summary>
+        public static bool EventLogSanctuaryEnabled = true;
+        /// <summary>宇宙迭代日志开关（默认开，全局大事件）</summary>
+        public static bool EventLogIterationEnabled = true;
+        /// <summary>超A复活日志开关（默认开，稀有事件）</summary>
+        public static bool EventLogResurrectionEnabled = true;
+        /// <summary>概念重塑日志开关（默认开，极稀有）</summary>
+        public static bool EventLogConceptReshapeEnabled = true;
+
+        public static void SetEventLogEnabled(bool val) { EventLogEnabled = val; }
+        public static void SetEventLogAwakenMinTalent(int val) { EventLogAwakenMinTalent = Mathf.Clamp(val, 0, 6); }
+        public static void SetEventLogPromotionMinRank(int val) { EventLogPromotionMinRank = Mathf.Clamp(val, 0, 14); }
+        public static void SetEventLogFusionEnabled(bool val) { EventLogFusionEnabled = val; }
+        public static void SetEventLogSpellEnabled(bool val) { EventLogSpellEnabled = val; }
+        public static void SetEventLogSanctuaryEnabled(bool val) { EventLogSanctuaryEnabled = val; }
+        public static void SetEventLogIterationEnabled(bool val) { EventLogIterationEnabled = val; }
+        public static void SetEventLogResurrectionEnabled(bool val) { EventLogResurrectionEnabled = val; }
+        public static void SetEventLogConceptReshapeEnabled(bool val) { EventLogConceptReshapeEnabled = val; }
     }
 }

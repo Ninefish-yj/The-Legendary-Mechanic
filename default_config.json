@@ -250,5 +250,56 @@
       "Step": 0.5,
       "Callback": "SuperMech.Code.SuperMechConfig:SetFusionTotalMulCap"
     }
+  ],
+  "EventLog": [
+    {
+      "Id": "event_log_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true
+    },
+    {
+      "Id": "event_log_awaken_min_talent",
+      "Type": "SLIDER",
+      "FloatVal": 3.0,
+      "MinValue": 0,
+      "MaxValue": 6
+    },
+    {
+      "Id": "event_log_promotion_min_rank",
+      "Type": "SLIDER",
+      "FloatVal": 7.0,
+      "MinValue": 0,
+      "MaxValue": 14
+    },
+    {
+      "Id": "event_log_fusion_enabled",
+      "Type": "SWITCH",
+      "BoolVal": false
+    },
+    {
+      "Id": "event_log_spell_enabled",
+      "Type": "SWITCH",
+      "BoolVal": false
+    },
+    {
+      "Id": "event_log_sanctuary_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true
+    },
+    {
+      "Id": "event_log_iteration_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true
+    },
+    {
+      "Id": "event_log_resurrection_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true
+    },
+    {
+      "Id": "event_log_concept_reshape_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true
+    }
   ]
 }
