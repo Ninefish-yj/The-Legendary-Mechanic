@@ -194,6 +194,27 @@ namespace SuperMech.Code
                 LocalizedTextManager.add(it.id, LocalizedTextManager.getText(it.name), pReplace: true);
                 LocalizedTextManager.add(it.id + " Description", LocalizedTextManager.getText(it.desc), pReplace: true);
             }
+
+            // SELECT阶位下拉框选项标签：{configId}_{index} → 阶位名称
+            string[] rankSelectConfigs = {
+                "auto_promotion_max_rank",   // 0~12 (F~SS)
+                "auto_favorite_min_rank",    // 0~13 (F~X)
+                "event_log_promotion_min_rank",
+                "competition_min_rank",
+            };
+            string[] rankNameKeys = {
+                "sm_rank_name_00", "sm_rank_name_01", "sm_rank_name_02", "sm_rank_name_03",
+                "sm_rank_name_04", "sm_rank_name_05", "sm_rank_name_06", "sm_rank_name_07",
+                "sm_rank_name_08", "sm_rank_name_09", "sm_rank_name_10", "sm_rank_name_11",
+                "sm_rank_name_12", "sm_rank_name_13",
+            };
+            foreach (var cfgId in rankSelectConfigs)
+            {
+                for (int i = 0; i < rankNameKeys.Length; i++)
+                {
+                    LocalizedTextManager.add($"{cfgId}_{i}", LocalizedTextManager.getText(rankNameKeys[i]), pReplace: true);
+                }
+            }
         }
 
 
@@ -201,7 +222,7 @@ namespace SuperMech.Code
 
         public static void SetAutoAwakening(bool val) { AutoAwakening = val; }
         public static void SetAwakeningChance(float val) { AwakeningChance = Mathf.Clamp01(val); }
-        public static void SetAwakeningMinAge(float val) { AwakeningMinAge = Mathf.Max(0, (int)val); }
+        public static void SetAwakeningMinAge(int val) { AwakeningMinAge = Mathf.Max(0, val); }
 
         public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); }
         public static void SetQiUnlimited(bool val) { QiUnlimited = val; }
@@ -210,11 +231,11 @@ namespace SuperMech.Code
         public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); }
         public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); }
         public static void SetAutoPromotion(bool val) { AutoPromotion = val; }
-        public static void SetAutoPromotionMaxRank(float val) { AutoPromotionMaxRank = Mathf.Clamp((int)val, 0, 12); }
+        public static void SetAutoPromotionMaxRank(int val) { AutoPromotionMaxRank = Mathf.Clamp(val, 0, 12); }
         public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; }
 
         public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; }
-        public static void SetAutoFavoriteMinRank(float val) { AutoFavoriteMinRank = Mathf.Clamp((int)val, 0, 13); }
+        public static void SetAutoFavoriteMinRank(int val) { AutoFavoriteMinRank = Mathf.Clamp(val, 0, 13); }
 
         public static bool ShouldFavoriteRank(int rankIdx)
         {
@@ -227,16 +248,16 @@ namespace SuperMech.Code
         public static void SetAutoEnterSanctuary(bool val) { AutoEnterSanctuary = val; }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
-        public static void SetMaxSummonedUnits(float val) { MaxSummonedUnits = Mathf.Clamp((int)val, 0, 500); }
+        public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); }
 
         public static void SetAutoCompetition(bool val) { AutoCompetition = val; }
-        public static void SetCompetitionMinRank(float val) { CompetitionMinRank = Mathf.Clamp((int)val, 0, 13); }
-        public static void SetCompetitionInterval(float val) { CompetitionInterval = Mathf.Clamp((int)val, 1, 50); }
+        public static void SetCompetitionMinRank(int val) { CompetitionMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetCompetitionInterval(int val) { CompetitionInterval = Mathf.Clamp(val, 1, 50); }
         public static void SetNpcAutoKnowledge(bool val) { NpcAutoKnowledge = val; }
-        public static void SetNpcKnowledgeInterval(float val) { NpcKnowledgeInterval = Mathf.Clamp((int)val, 1, 50); }
+        public static void SetNpcKnowledgeInterval(int val) { NpcKnowledgeInterval = Mathf.Clamp(val, 1, 50); }
 
         public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); }
-        public static void SetMaxTrackedActors(float val) { MaxTrackedActors = Mathf.Clamp((int)val, 50, 5000); }
+        public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); }
         public static void SetLogVerbose(bool val) { LogVerbose = val; }
 
         public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; }
@@ -276,8 +297,8 @@ namespace SuperMech.Code
         public static bool EventLogConceptReshapeEnabled = true;
 
         public static void SetEventLogEnabled(bool val) { EventLogEnabled = val; }
-        public static void SetEventLogAwakenMinTalent(float val) { EventLogAwakenMinTalent = Mathf.Clamp((int)val, 0, 6); }
-        public static void SetEventLogPromotionMinRank(float val) { EventLogPromotionMinRank = Mathf.Clamp((int)val, 0, 13); }
+        public static void SetEventLogAwakenMinTalent(int val) { EventLogAwakenMinTalent = Mathf.Clamp(val, 0, 6); }
+        public static void SetEventLogPromotionMinRank(int val) { EventLogPromotionMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetEventLogFusionEnabled(bool val) { EventLogFusionEnabled = val; }
         public static void SetEventLogSpellEnabled(bool val) { EventLogSpellEnabled = val; }
         public static void SetEventLogSanctuaryEnabled(bool val) { EventLogSanctuaryEnabled = val; }

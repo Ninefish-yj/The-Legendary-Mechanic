@@ -58,11 +58,18 @@ namespace SuperMech.Code
                 if (method != null)
                 {
                     method.Invoke(window, null);
+                    return;
                 }
-                else
+                // 回退：直接找到 stats_rows_container 切换显隐
+                var containerField = window.GetType().GetField("stats_rows_container",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (containerField != null && containerField.GetValue(window) is GameObject container)
                 {
-                    Debug.LogWarning("[超神机械师] 未找到updateStatsRows方法，类型: " + window.GetType().Name);
+                    container.SetActive(false);
+                    container.SetActive(true);
+                    return;
                 }
+                Debug.LogWarning("[超神机械师] 未找到updateStatsRows方法和stats_rows_container，类型: " + window.GetType().Name);
             }
             catch (System.Exception e)
             {
@@ -92,6 +99,10 @@ namespace SuperMech.Code
                     Toggle(actorId, sectionId);
                     RebuildPanel(window);
                 };
+            }
+            else
+            {
+                Debug.LogWarning($"[超神机械师] 折叠标题行创建失败: section={sectionId}, actor={actorId}");
             }
         }
 
