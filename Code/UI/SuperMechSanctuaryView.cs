@@ -279,6 +279,42 @@ namespace SuperMech.Code
                 enterRect.sizeDelta = new Vector2(0, 25);
                 enterRect.anchoredPosition = new Vector2(0, 8);
             }
+
+            // v0.56.0 留言板按钮（原著经典留言）
+            var msgBtnGo = new GameObject("MessageBoardBtn");
+            msgBtnGo.transform.SetParent(_selectLayer.transform, false);
+            var msgBtnRect = msgBtnGo.AddComponent<RectTransform>();
+            msgBtnRect.anchorMin = new Vector2(0.5f, 0);
+            msgBtnRect.anchorMax = new Vector2(0.5f, 0);
+            msgBtnRect.pivot = new Vector2(0.5f, 0);
+            msgBtnRect.sizeDelta = new Vector2(140, 36);
+            msgBtnRect.anchoredPosition = new Vector2(-80, 50);
+            var msgBtnBg = msgBtnGo.AddComponent<Image>();
+            msgBtnBg.color = new Color(0.15f, 0.1f, 0.25f, 0.9f);
+            var msgBtn = msgBtnGo.AddComponent<Button>();
+            msgBtn.targetGraphic = msgBtnBg;
+            msgBtn.onClick.AddListener(ShowMessageBoard);
+            var msgBtnText = SuperMechUiSkin.MakeText(msgBtnGo.transform, "留言板", 13, TextAnchor.MiddleCenter);
+            msgBtnText.color = new Color(0.8f, 0.6f, 1f);
+            msgBtnText.fontStyle = FontStyle.Bold;
+
+            // v0.56.0 文明名录按钮（原著文明记录）
+            var civBtnGo = new GameObject("CivListBtn");
+            civBtnGo.transform.SetParent(_selectLayer.transform, false);
+            var civBtnRect = civBtnGo.AddComponent<RectTransform>();
+            civBtnRect.anchorMin = new Vector2(0.5f, 0);
+            civBtnRect.anchorMax = new Vector2(0.5f, 0);
+            civBtnRect.pivot = new Vector2(0.5f, 0);
+            civBtnRect.sizeDelta = new Vector2(140, 36);
+            civBtnRect.anchoredPosition = new Vector2(80, 50);
+            var civBtnBg = civBtnGo.AddComponent<Image>();
+            civBtnBg.color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
+            var civBtn = civBtnGo.AddComponent<Button>();
+            civBtn.targetGraphic = civBtnBg;
+            civBtn.onClick.AddListener(ShowCivRegistry);
+            var civBtnText = SuperMechUiSkin.MakeText(civBtnGo.transform, "文明名录", 13, TextAnchor.MiddleCenter);
+            civBtnText.color = new Color(0.6f, 0.8f, 1f);
+            civBtnText.fontStyle = FontStyle.Bold;
         }
 
         private void BuildInteriorLayer()
@@ -656,6 +692,105 @@ namespace SuperMech.Code
                 c = new Color(r, g, b);
             }
             return c;
+        }
+
+        /// <summary>v0.56.0 显示留言板（原著经典留言）</summary>
+        private void ShowMessageBoard()
+        {
+            var panel = CreateInfoPanel("留言板", new Color(0.3f, 0.2f, 0.5f, 0.95f));
+            var text = panel.transform.Find("ContentText").GetComponent<Text>();
+            text.text = "【原著经典留言】\n\n" +
+                "1.「对于高级文明来说，超A级只是争斗工具，文明本身才是宇宙的主角」\n\n" +
+                "2.「机械师总有提高实力的途径」\n\n" +
+                "3.「魔法师对于各类法术的渴望，就像机械师对科技的好奇一样」\n\n" +
+                "4.「异能者向来是奇迹的创造者，多少特殊技术都是异能者带来的」\n\n" +
+                "5.「进化方块是进化者文明举族之力打造的技术核心」\n\n" +
+                "6.「时空剪切技术将会是一个研究时空理论的新方向，能够衍生出极强的应用技术」\n\n" +
+                "7.「黑星能活很久，我们没有那么多时间等待，原始异能体是开启第三圣所的钥匙」\n\n" +
+                "<color=#888><size=10>—— 信息态空间残留的历史留言</size></color>";
+        }
+
+        /// <summary>v0.56.0 显示文明名录（原著出现过的文明）</summary>
+        private void ShowCivRegistry()
+        {
+            var panel = CreateInfoPanel("文明名录", new Color(0.2f, 0.3f, 0.5f, 0.95f));
+            var text = panel.transform.Find("ContentText").GetComponent<Text>();
+            text.text = "【原著文明名录】\n\n" +
+                "<color=#ffd700>【宇宙级文明】</color>\n" +
+                "• 赤色帝国 — 三大文明之一，掌控帝国科学院，研究时空剪切技术\n" +
+                "• 光辉联邦 — 三大文明之一，拥有高维天启传送器等战略级技术\n" +
+                "• 虚灵教派 — 三大文明之一，神秘主义文明\n\n" +
+                "<color=#87ceeb>【超星团级文明】</color>\n" +
+                "• 摩多文明 — 超星团级，昆德族事件幕后策划者\n" +
+                "• 银影文明 — 变异宇宙宝物文明，防御力极强\n\n" +
+                "<color=#90ee90>【星团级/星际文明】</color>\n" +
+                "• 机械文明 — 韩萧帮助发展的机械生命文明\n" +
+                "• 昆德族 — 土著文明，拥有时空剪切技术\n\n" +
+                "<color=#ff6b6b>【已灭亡文明】</color>\n" +
+                "• 进化者文明 — 举族之力打造进化方块，已灭亡\n\n" +
+                "<color=#888><size=10>—— 信息态空间记录的已知文明</size></color>";
+        }
+
+        /// <summary>创建信息面板（留言板/文明名录共用）</summary>
+        private GameObject CreateInfoPanel(string title, Color bgColor)
+        {
+            var panel = new GameObject($"InfoPanel_{title}");
+            panel.transform.SetParent(transform, false);
+            panel.transform.SetAsLastSibling();
+            var rect = panel.AddComponent<RectTransform>();
+            rect.anchorMin = new Vector2(0.5f, 0.5f);
+            rect.anchorMax = new Vector2(0.5f, 0.5f);
+            rect.pivot = new Vector2(0.5f, 0.5f);
+            rect.sizeDelta = new Vector2(520, 480);
+            var bg = panel.AddComponent<Image>();
+            bg.color = bgColor;
+            bg.raycastTarget = true;
+
+            // 标题
+            var titleText = SuperMechUiSkin.MakeText(panel.transform, title, 18, TextAnchor.UpperCenter);
+            titleText.color = Color.white;
+            titleText.fontStyle = FontStyle.Bold;
+            var titleRect = titleText.GetComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0, 1);
+            titleRect.anchorMax = new Vector2(1, 1);
+            titleRect.pivot = new Vector2(0.5f, 1);
+            titleRect.sizeDelta = new Vector2(0, 35);
+            titleRect.anchoredPosition = new Vector2(0, -10);
+
+            // 内容文本
+            var contentGo = new GameObject("ContentText");
+            contentGo.transform.SetParent(panel.transform, false);
+            var contentRect = contentGo.AddComponent<RectTransform>();
+            contentRect.anchorMin = Vector2.zero;
+            contentRect.anchorMax = Vector2.one;
+            contentRect.offsetMin = new Vector2(20, 50);
+            contentRect.offsetMax = new Vector2(-20, -50);
+            var contentText = contentGo.AddComponent<Text>();
+            contentText.font = titleText.font;
+            contentText.fontSize = 13;
+            contentText.color = new Color(0.9f, 0.9f, 0.9f);
+            contentText.alignment = TextAnchor.UpperLeft;
+            contentText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            contentText.verticalOverflow = VerticalWrapMode.Truncate;
+
+            // 关闭按钮
+            var closeBtnGo = new GameObject("CloseBtn");
+            closeBtnGo.transform.SetParent(panel.transform, false);
+            var closeRect = closeBtnGo.AddComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(0.5f, 0);
+            closeRect.anchorMax = new Vector2(0.5f, 0);
+            closeRect.pivot = new Vector2(0.5f, 0);
+            closeRect.sizeDelta = new Vector2(100, 32);
+            closeRect.anchoredPosition = new Vector2(0, 12);
+            var closeBg = closeBtnGo.AddComponent<Image>();
+            closeBg.color = new Color(0.2f, 0.2f, 0.3f, 0.9f);
+            var closeBtn = closeBtnGo.AddComponent<Button>();
+            closeBtn.targetGraphic = closeBg;
+            closeBtn.onClick.AddListener(() => Destroy(panel));
+            var closeText = SuperMechUiSkin.MakeText(closeBtnGo.transform, "关闭", 13, TextAnchor.MiddleCenter);
+            closeText.color = Color.white;
+
+            return panel;
         }
 
         /// <summary>光球记录的文明信息</summary>

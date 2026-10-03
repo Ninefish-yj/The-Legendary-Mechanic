@@ -147,6 +147,8 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (proxyBonus - 1f));
                     }
+                    // v0.56.0 法术实际战斗效果
+                    ApplySpellCombatEffects(attacker, target, pDamage);
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
@@ -406,6 +408,52 @@ namespace SuperMech.Code
                 {
                     _postfixErrorLogged = true;
                     Debug.LogWarning($"[超神机械师] 战斗Postfix异常(仅记录首次): {e.Message}");
+                }
+            }
+        }
+
+        /// <summary>v0.56.0 法术实际战斗效果</summary>
+        private static void ApplySpellCombatEffects(Actor attacker, Actor target, float pDamage)
+        {
+            if (attacker == null || target == null) return;
+            if (!attacker.hasTrait(SuperMechTraits.ClassMage)) return;
+
+            // 攻击型法术：20%概率释放，造成额外伤害
+            if (Random.value < 0.20f)
+            {
+                string[] attackSpells = {
+                    "sm_spell_fireball", "sm_spell_lightning_storm", "sm_spell_meteor_swarm",
+                    "sm_spell_arcane_blast", "sm_spell_energy_beam", "sm_spell_evocation_storm",
+                    "sm_spell_death_curse", "sm_spell_energy_bolt", "sm_spell_fire_bolt"
+                };
+                foreach (var sid in attackSpells)
+                {
+                    if (SuperMechSpell.IsLearned(attacker, sid))
+                    {
+                        var spell = SuperMechSpell.GetSpell(sid);
+                        float bonus = spell != null ? 0.1f + spell.tier * 0.05f : 0.15f;
+                        target.data.health -= (int)(pDamage * bonus);
+                        break;
+                    }
+                }
+            }
+
+            // 防御型法术：目标学会后有概率减伤
+            if (target.hasTrait(SuperMechTraits.ClassMage) && Random.value < 0.15f)
+            {
+                string[] defenseSpells = {
+                    "sm_spell_minor_ward", "sm_spell_mage_armor", "sm_spell_antimagic_field",
+                    "sm_spell_ice_shield"
+                };
+                foreach (var sid in defenseSpells)
+                {
+                    if (SuperMechSpell.IsLearned(target, sid))
+                    {
+                        var spell = SuperMechSpell.GetSpell(sid);
+                        float reduce = spell != null ? 0.05f + spell.tier * 0.03f : 0.1f;
+                        target.data.health += (int)(pDamage * reduce); // 回血=减伤
+                        break;
+                    }
                 }
             }
         }
