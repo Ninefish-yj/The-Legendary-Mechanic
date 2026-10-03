@@ -30,7 +30,7 @@ namespace SuperMech.Code
             Mechanical = 0,    // 第一圣所：机械师（原著）
             Psi = 1,           // 第二圣所：念力师
             Biological = 2,    // 第三圣所：异能者（生物基因/异能，原著）
-            Martial = 3,       // 第四圣所：武道师
+            Martial = 3,       // 第四圣所：武道家
             Mage = 4,          // 第五圣所：魔法师
             Information = 5    // 第六圣所：信息态（原著，额外）
         }
@@ -41,7 +41,7 @@ namespace SuperMech.Code
             SanctuaryType.Mechanical,    // 第一圣所：机械师
             SanctuaryType.Psi,           // 第二圣所：念力师
             SanctuaryType.Biological,    // 第三圣所：异能者
-            SanctuaryType.Martial,       // 第四圣所：武道师
+            SanctuaryType.Martial,       // 第四圣所：武道家
             SanctuaryType.Mage,          // 第五圣所：魔法师
             SanctuaryType.Information    // 第六圣所：信息态
         };
@@ -54,7 +54,7 @@ namespace SuperMech.Code
             new[] { "mech_weapon", "mech_energy", "mech_control" },  // 第一圣所：机械师
             new[] { "psi_mind", "psi_kinesis", "psi_sense" },        // 第二圣所：念力师
             new[] { "bio_gene", "bio_ability", "bio_evolution" },    // 第三圣所：异能者（生物基因/异能）
-            new[] { "martial_breath", "martial_flurry", "martial_body" }, // 第四圣所：武道师
+            new[] { "martial_breath", "martial_flurry", "martial_body" }, // 第四圣所：武道家
             new[] { "spell_element", "spell_arcane", "spell_summon" }, // 第五圣所：魔法师
             new[] { "info_state", "info_virtual", "info_resurrect" } // 第六圣所：信息态
         };
