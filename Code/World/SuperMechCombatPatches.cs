@@ -114,6 +114,12 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (leaderBonus - 1f));
                     }
+                    // v0.50.0 敌对势力伤害加成
+                    float hostileBonus = SuperMechFaction.GetHostileBonus(attacker, target);
+                    if (hostileBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (hostileBonus - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))

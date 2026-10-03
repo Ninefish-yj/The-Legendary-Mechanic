@@ -86,6 +86,18 @@ namespace SuperMech.Code
                     ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stageText, null, InfoColor);
                 }
 
+                // v0.50.0 势力显示
+                if (SuperMechConfig.FactionEnabled)
+                {
+                    var faction = SuperMechFaction.GetFaction(a);
+                    if (faction != null)
+                    {
+                        bool isLeader = faction.leaderId == a.id;
+                        string factionText = isLeader ? $"{faction.name}（领袖·Lv{faction.level}）" : $"{faction.name}（成员·Lv{faction.level}）";
+                        ShowRow(window, "势力", factionText, null, new Color(1f, 0.85f, 0.5f));
+                    }
+                }
+
                 if (a.hasTrait(SuperMechBranch.BranchMech))
                 {
                     string specName = SuperMechSpecialization.GetSpecName(a);

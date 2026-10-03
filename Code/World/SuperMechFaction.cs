@@ -5,10 +5,13 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// v0.48.0 势力/组织系统（原著：超能者组建势力，如韩萧的龙坦）
+    /// v0.50.0 增强：势力间关系（敌对/中立/联盟）、势力等级、敌对战斗加成
     /// A阶及以上超能者可创建势力，低阶超能者可加入，成员获得加成，同势力不互相攻击
     /// </summary>
     public static class SuperMechFaction
     {
+        public enum FactionRelation { Neutral = 0, Allied = 1, Hostile = 2 }
+
         public class FactionData
         {
             public string id;
@@ -16,6 +19,9 @@ namespace SuperMech.Code
             public long leaderId;
             public List<long> memberIds = new List<long>();
             public int creationTick;
+            public int level = 1;                     // 势力等级（按成员数+总能级计算）
+            public float totalPower = 0f;             // 势力总战力（缓存，每tick更新）
+            public Dictionary<string, FactionRelation> relations = new Dictionary<string, FactionRelation>();
         }
 
         private static readonly Dictionary<string, FactionData> _factions = new Dictionary<string, FactionData>();
@@ -97,6 +103,65 @@ namespace SuperMech.Code
                     }
                 }
                 if (best != null) JoinFaction(a, best.id);
+            }
+
+            // 3. 更新势力等级和总战力
+            UpdateFactionPower(allUnits);
+
+            // 4. 自动宣战（邻近势力竞争）
+            AutoDeclareWar(allUnits);
+        }
+
+        /// <summary>更新所有势力的等级和总战力</summary>
+        private static void UpdateFactionPower(List<Actor> units)
+        {
+            foreach (var f in _factions.Values)
+            {
+                float power = 0f;
+                int aliveCount = 0;
+                foreach (var mid in f.memberIds)
+                {
+                    Actor m = FindActor(mid, units);
+                    if (m == null || !m.isAlive()) continue;
+                    aliveCount++;
+                    power += SuperMechAdvancement.CalcOnar(m);
+                }
+                f.totalPower = power;
+                // 势力等级：成员数+总战力综合计算
+                f.level = SuperMechFormulas.CalcFactionLevel(aliveCount, power);
+            }
+        }
+
+        /// <summary>自动宣战：邻近且战力相近的势力有概率敌对</summary>
+        private static void AutoDeclareWar(List<Actor> units)
+        {
+            if (_factions.Count < 2) return;
+            var list = new List<FactionData>(_factions.Values);
+            for (int i = 0; i < list.Count; i++)
+            {
+                for (int j = i + 1; j < list.Count; j++)
+                {
+                    var fa = list[i];
+                    var fb = list[j];
+                    if (GetRelation(fa.id, fb.id) != FactionRelation.Neutral) continue;
+
+                    // 领袖距离近（50格内）且战力比不超过3倍时，5%概率宣战
+                    Actor la = FindActor(fa.leaderId, units);
+                    Actor lb = FindActor(fb.leaderId, units);
+                    if (la == null || lb == null || !la.isAlive() || !lb.isAlive()) continue;
+                    if (la.current_tile == null || lb.current_tile == null) continue;
+                    float dist = Mathf.Abs(la.current_tile.x - lb.current_tile.x)
+                               + Mathf.Abs(la.current_tile.y - lb.current_tile.y);
+                    if (dist > 50f) continue;
+
+                    float powerRatio = fa.totalPower > 0 ? Mathf.Max(fa.totalPower, fb.totalPower) / Mathf.Max(1f, Mathf.Min(fa.totalPower, fb.totalPower)) : 1f;
+                    if (powerRatio > 3f) continue;
+                    if (Random.value > 0.05f) continue;
+
+                    SetRelation(fa.id, fb.id, FactionRelation.Hostile);
+                    SuperMechEventBus.Publish("FactionWarDeclared", new FactionWarEvent { factionA = fa.name, factionB = fb.name });
+                    Debug.Log($"[超神机械师] 势力战争：{fa.name} ↔ {fb.name}");
+                }
             }
         }
 
@@ -192,6 +257,47 @@ namespace SuperMech.Code
             return 1.1f; // 领袖伤害+10%
         }
 
+        /// <summary>获取两势力关系</summary>
+        public static FactionRelation GetRelation(string factionA, string factionB)
+        {
+            if (string.IsNullOrEmpty(factionA) || string.IsNullOrEmpty(factionB)) return FactionRelation.Neutral;
+            if (factionA == factionB) return FactionRelation.Allied;
+            if (_factions.TryGetValue(factionA, out var fa) && fa.relations.TryGetValue(factionB, out var r))
+                return r;
+            return FactionRelation.Neutral;
+        }
+
+        /// <summary>设置两势力关系（双向）</summary>
+        public static void SetRelation(string factionA, string factionB, FactionRelation relation)
+        {
+            if (!_factions.ContainsKey(factionA) || !_factions.ContainsKey(factionB)) return;
+            _factions[factionA].relations[factionB] = relation;
+            _factions[factionB].relations[factionA] = relation;
+        }
+
+        /// <summary>两单位所属势力是否敌对</summary>
+        public static bool IsHostile(Actor a, Actor b)
+        {
+            if (a == null || b == null) return false;
+            string fa = GetActorFactionId(a);
+            string fb = GetActorFactionId(b);
+            if (fa == null || fb == null) return false;
+            return GetRelation(fa, fb) == FactionRelation.Hostile;
+        }
+
+        /// <summary>敌对势力战斗加成（攻击方伤害+15%）</summary>
+        public static float GetHostileBonus(Actor attacker, Actor target)
+        {
+            return IsHostile(attacker, target) ? 1.15f : 1f;
+        }
+
+        /// <summary>获取势力等级</summary>
+        public static int GetFactionLevel(Actor a)
+        {
+            var f = GetFaction(a);
+            return f != null ? f.level : 0;
+        }
+
         public static void Clear()
         {
             _factions.Clear();
@@ -199,6 +305,13 @@ namespace SuperMech.Code
         }
 
         public static int FactionCount => _factions.Count;
+
+        /// <summary>势力战争事件数据</summary>
+        public struct FactionWarEvent
+        {
+            public string factionA;
+            public string factionB;
+        }
 
         // === 存档 ===
         [System.Serializable]
@@ -215,6 +328,9 @@ namespace SuperMech.Code
             public long leaderId;
             public List<long> memberIds = new List<long>();
             public int creationTick;
+            public int level = 1;
+            public List<string> relationKeys = new List<string>();
+            public List<int> relationValues = new List<int>();
         }
 
         public static FactionSaveData Save()
@@ -222,14 +338,21 @@ namespace SuperMech.Code
             var data = new FactionSaveData();
             foreach (var f in _factions.Values)
             {
-                data.factions.Add(new FactionEntry
+                var entry = new FactionEntry
                 {
                     id = f.id,
                     name = f.name,
                     leaderId = f.leaderId,
                     memberIds = new List<long>(f.memberIds),
-                    creationTick = f.creationTick
-                });
+                    creationTick = f.creationTick,
+                    level = f.level
+                };
+                foreach (var kv in f.relations)
+                {
+                    entry.relationKeys.Add(kv.Key);
+                    entry.relationValues.Add((int)kv.Value);
+                }
+                data.factions.Add(entry);
             }
             return data;
         }
@@ -246,8 +369,11 @@ namespace SuperMech.Code
                     name = e.name,
                     leaderId = e.leaderId,
                     memberIds = new List<long>(e.memberIds),
-                    creationTick = e.creationTick
+                    creationTick = e.creationTick,
+                    level = e.level > 0 ? e.level : 1
                 };
+                for (int i = 0; i < e.relationKeys.Count && i < e.relationValues.Count; i++)
+                    f.relations[e.relationKeys[i]] = (FactionRelation)e.relationValues[i];
                 _factions[f.id] = f;
                 foreach (var mid in f.memberIds)
                     _actorFaction[mid] = f.id;

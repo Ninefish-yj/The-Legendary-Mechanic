@@ -118,6 +118,16 @@ namespace SuperMech.Code
         /// <summary>最大势力数量</summary>
         public const int MaxFactions = 20;
 
+        /// <summary>势力等级：按成员数和总战力综合计算，1~10级</summary>
+        public static int CalcFactionLevel(int memberCount, float totalPower)
+        {
+            // 成员数贡献：每5人+1级，最多+4
+            int memberLevel = Mathf.Min(memberCount / 5, 4);
+            // 战力贡献：每50000欧纳+1级，最多+6
+            int powerLevel = Mathf.Min((int)(totalPower / 50000f), 6);
+            return Mathf.Clamp(1 + memberLevel + powerLevel, 1, 10);
+        }
+
         // === 神性公式 ===
 
         /// <summary>每层神性需要的点数</summary>
