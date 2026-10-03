@@ -4139,11 +4139,8 @@
   "sm_recipe_ec_t4_desc": "能量+操控跨分支融合，产出时间能量装置",
   "sm_recipe_ec_t5_name": "创世AI图纸",
   "sm_recipe_ec_t5_desc": "能量+操控终极融合，产出创世AI",
-  "sm_sanctuary_type_mech": "机械系圣所",
-  "sm_sanctuary_type_energy": "能量圣所",
-  "sm_sanctuary_type_bio": "生物基因圣所",
-  "sm_sanctuary_type_spatial": "时空圣所",
-  "sm_sanctuary_type_dimensional": "维度圣所",
+  "sm_sanctuary_type_mech": "机械师圣所",
+  "sm_sanctuary_type_bio": "异能者圣所",
   "sm_sanctuary_type_info": "信息态圣所",
   "sm_log_awaken_text": "【超能觉醒】{0}觉醒了{1}体系，天赋评级{2}",
   "sm_log_promotion_text": "【阶位提升】{0}能级突破，晋升{1}（{2}欧纳）",
@@ -4380,5 +4377,8 @@
   "event_log_resurrection_enabled Description": "圣所复活事件日志开关，超A级复活时推送记录",
   "event_log_concept_reshape_enabled Description": "概念重塑事件日志开关，超神级概念永生触发时推送记录",
   "Combat": "战斗",
-  "Fusion": "融合"
+  "Fusion": "融合",
+  "sm_sanctuary_type_psi": "念力师圣所",
+  "sm_sanctuary_type_martial": "武道师圣所",
+  "sm_sanctuary_type_mage": "魔法师圣所"
 }

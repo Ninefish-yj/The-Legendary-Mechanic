@@ -24,36 +24,38 @@ namespace SuperMech.Code
         public const int DivinityQiLevel = 21;
         public const int FragmentsToUnlock = 3;
 
-        /// <summary>圣所类型（原著差异化设定）</summary>
+        /// <summary>圣所类型（原著：五个超能职业分别对应一个圣所，第六圣所为信息态）</summary>
         public enum SanctuaryType
         {
-            Mechanical = 0,    // 第一圣所：机械系技术（原著）
-            Energy = 1,        // 第二圣所：能量/能源技术
-            Biological = 2,    // 第三圣所：生物/基因/异能知识（原著）
-            Spatial = 3,       // 第四圣所：时空/维度技术
-            Dimensional = 4,   // 第五圣所：维度/虚空技术
-            Information = 5    // 第六圣所：信息态技术（原著）
+            Mechanical = 0,    // 第一圣所：机械师（原著）
+            Psi = 1,           // 第二圣所：念力师
+            Biological = 2,    // 第三圣所：异能者（生物基因/异能，原著）
+            Martial = 3,       // 第四圣所：武道师
+            Mage = 4,          // 第五圣所：魔法师
+            Information = 5    // 第六圣所：信息态（原著，额外）
         }
 
         /// <summary>各圣所类型（索引0~5对应第一~第六圣所）</summary>
         public static readonly SanctuaryType[] SanctuaryTypes =
         {
-            SanctuaryType.Mechanical,    // 第一圣所：机械系
-            SanctuaryType.Energy,        // 第二圣所：能量
-            SanctuaryType.Biological,    // 第三圣所：生物/基因/异能
-            SanctuaryType.Spatial,       // 第四圣所：时空
-            SanctuaryType.Dimensional,   // 第五圣所：维度
+            SanctuaryType.Mechanical,    // 第一圣所：机械师
+            SanctuaryType.Psi,           // 第二圣所：念力师
+            SanctuaryType.Biological,    // 第三圣所：异能者
+            SanctuaryType.Martial,       // 第四圣所：武道师
+            SanctuaryType.Mage,          // 第五圣所：魔法师
             SanctuaryType.Information    // 第六圣所：信息态
         };
 
-        /// <summary>圣所专属知识分支（访问时产出对应知识）</summary>
+        /// <summary>圣所专属知识分支（访问时产出对应知识）
+        /// 原著：五个超能职业分别对应一个圣所，第六圣所为信息态（额外）
+        /// </summary>
         public static readonly string[][] SanctuaryKnowledgeBranches =
         {
-            new[] { "mech_weapon", "mech_energy", "mech_control" },  // 第一圣所：机械系三支
-            new[] { "mech_energy" },                                  // 第二圣所：能量
-            new[] { "bio_gene", "bio_ability", "bio_evolution" },    // 第三圣所：生物/基因/异能
-            new[] { "space_time", "space_warp", "space_navigation" },// 第四圣所：时空
-            new[] { "dim_void", "dim_voidwalk", "dim_phase" },       // 第五圣所：维度
+            new[] { "mech_weapon", "mech_energy", "mech_control" },  // 第一圣所：机械师
+            new[] { "psi_mind", "psi_kinesis", "psi_sense" },        // 第二圣所：念力师
+            new[] { "bio_gene", "bio_ability", "bio_evolution" },    // 第三圣所：异能者（生物基因/异能）
+            new[] { "martial_breath", "martial_flurry", "martial_body" }, // 第四圣所：武道师
+            new[] { "spell_element", "spell_arcane", "spell_summon" }, // 第五圣所：魔法师
             new[] { "info_state", "info_virtual", "info_resurrect" } // 第六圣所：信息态
         };
 
@@ -61,10 +63,10 @@ namespace SuperMech.Code
         public static readonly string[] SanctuaryTypeNames =
         {
             "sm_sanctuary_type_mech",
-            "sm_sanctuary_type_energy",
+            "sm_sanctuary_type_psi",
             "sm_sanctuary_type_bio",
-            "sm_sanctuary_type_spatial",
-            "sm_sanctuary_type_dimensional",
+            "sm_sanctuary_type_martial",
+            "sm_sanctuary_type_mage",
             "sm_sanctuary_type_info"
         };
 
@@ -374,7 +376,7 @@ namespace SuperMech.Code
             Data.total_visits++;
             AddAuthority(a, sanctuaryIndex, 10);
 
-            // 根据圣所类型产出专属知识（机械系单位访问第一圣所有额外加成）
+            // 根据圣所类型判断体系匹配（原著：五个超能职业分别对应一个圣所）
             var type = GetSanctuaryType(sanctuaryIndex);
             bool isMatchingClass = false;
             switch (type)
@@ -382,11 +384,20 @@ namespace SuperMech.Code
                 case SanctuaryType.Mechanical:
                     isMatchingClass = a.hasTrait(SuperMechTraits.ClassMech);
                     break;
+                case SanctuaryType.Psi:
+                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMind);
+                    break;
                 case SanctuaryType.Biological:
-                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMind) || a.hasTrait(SuperMechTraits.ClassPsi);
+                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassPsi);
+                    break;
+                case SanctuaryType.Martial:
+                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMartial);
+                    break;
+                case SanctuaryType.Mage:
+                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMage);
                     break;
                 case SanctuaryType.Information:
-                    isMatchingClass = a.hasTrait(SuperMechTraits.ClassMech) || a.hasTrait(SuperMechTraits.ClassPsi);
+                    isMatchingClass = true; // 信息态圣所不限制职业
                     break;
             }
 
