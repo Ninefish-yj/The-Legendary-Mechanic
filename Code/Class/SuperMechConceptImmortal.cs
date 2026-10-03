@@ -17,15 +17,15 @@ namespace SuperMech.Code
     public static class SuperMechConceptImmortal
     {
         // 降临者重生频率限制：60秒内最多3次
-        private static readonly System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<float>> _respawnTimestamps
-            = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<float>>();
+        private static readonly System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<float>> _respawnTimestamps
+            = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<float>>();
         private const float RespawnWindow = 60f; // 时间窗口（秒）
         private const int MaxRespawnPerWindow = 3; // 窗口内最大重生次数
 
         /// <summary>
         /// 检查降临者是否可以重生（60秒内最多3次）
         /// </summary>
-        private static bool CanRespawn(string actorId)
+        internal static bool CanRespawn(long actorId)
         {
             float now = UnityEngine.Time.time;
             System.Collections.Generic.List<float> timestamps;
@@ -42,7 +42,7 @@ namespace SuperMech.Code
         /// <summary>
         /// 记录一次重生
         /// </summary>
-        private static void RecordRespawn(string actorId)
+        internal static void RecordRespawn(long actorId)
         {
             System.Collections.Generic.List<float> timestamps;
             if (!_respawnTimestamps.TryGetValue(actorId, out timestamps))
@@ -164,10 +164,10 @@ namespace SuperMech.Code
                 // 降临者（玩家）重生：死亡后立即复活，60秒内最多3次，超过则进入濒死保护等待刷新
                 if (__instance.hasTrait(SuperMechTraits.Descendant))
                 {
-                    if (CanRespawn(__instance.id))
+                    if (SuperMechConceptImmortal.CanRespawn(__instance.id))
                     {
                         RespawnDescendant(__instance);
-                        RecordRespawn(__instance.id);
+                        SuperMechConceptImmortal.RecordRespawn(__instance.id);
                         return false; // 阻止真正死亡
                     }
                     // 超过次数：进入濒死保护，等窗口刷新后恢复正常重生
@@ -212,8 +212,8 @@ namespace SuperMech.Code
         {
             try
             {
-                a.data.health = Mathf.Max(1f, a.getMaxHealth() * 0.1f);
-                a.data.stamina = a.getMaxStamina();
+                a.data.health = Mathf.Max(1, (int)(a.getMaxHealth() * 0.1f));
+                a.data.stamina = (int)a.getMaxStamina();
                 Debug.Log($"[超神机械师] 降临者 {a.name} 重生次数已达上限，进入濒死保护（10%血量），等待60秒窗口刷新");
             }
             catch (System.Exception e)
