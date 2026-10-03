@@ -359,5 +359,53 @@
       "MinIntVal": 1,
       "MaxIntVal": 50
     }
+  ],
+  "Domain": [
+    {
+      "Id": "domain_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainEnabled"
+    },
+    {
+      "Id": "domain_min_rank",
+      "Type": "INT_SLIDER",
+      "IntVal": 10,
+      "MinIntVal": 0,
+      "MaxIntVal": 13,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainMinRank"
+    },
+    {
+      "Id": "domain_duration",
+      "Type": "SLIDER",
+      "FloatVal": 8.0,
+      "MinFloatVal": 1.0,
+      "MaxFloatVal": 30.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainDuration"
+    },
+    {
+      "Id": "domain_damage_bonus",
+      "Type": "SLIDER",
+      "FloatVal": 0.15,
+      "MinFloatVal": 0.0,
+      "MaxFloatVal": 0.5,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainDamageBonus"
+    },
+    {
+      "Id": "domain_enemy_penalty",
+      "Type": "SLIDER",
+      "FloatVal": 0.1,
+      "MinFloatVal": 0.0,
+      "MaxFloatVal": 0.5,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainEnemyPenalty"
+    },
+    {
+      "Id": "domain_damage_reduction",
+      "Type": "SLIDER",
+      "FloatVal": 0.1,
+      "MinFloatVal": 0.0,
+      "MaxFloatVal": 0.5,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainDamageReduction"
+    }
   ]
 }

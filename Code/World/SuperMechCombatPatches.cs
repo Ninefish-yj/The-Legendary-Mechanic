@@ -82,6 +82,26 @@ namespace SuperMech.Code
                     try { SMSkillRuntime.TryCastSkill(attacker, target); } catch { }
                 }
 
+                // v0.47.0 超A领域：战斗时双方尝试展开领域
+                if (SuperMechConfig.DomainEnabled)
+                {
+                    if (attacker != null && attacker.isAlive()) SuperMechDomain.TryActivate(attacker);
+                    SuperMechDomain.TryActivate(target);
+
+                    // 领域伤害修正：攻击者领域加伤，防御者领域减伤
+                    if (attacker != null && attacker.isAlive())
+                    {
+                        float atkMul = SuperMechDomain.GetAttackMultiplier(attacker, target);
+                        float defMul = SuperMechDomain.GetDefenseMultiplier(target, attacker);
+                        float domainMod = atkMul * defMul;
+                        if (domainMod != 1f)
+                        {
+                            float domainDamage = pDamage * (domainMod - 1f);
+                            target.data.health -= (int)domainDamage;
+                        }
+                    }
+                }
+
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
                 {
                     if (SuperMechInfoState.TryShield(target))
