@@ -105,58 +105,13 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled"
     },
     {
-      "Id": "auto_favorite_f",
-      "Type": "SWITCH",
-      "BoolVal": false,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteF"
-    },
-    {
-      "Id": "auto_favorite_e",
-      "Type": "SWITCH",
-      "BoolVal": false,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteE"
-    },
-    {
-      "Id": "auto_favorite_d",
-      "Type": "SWITCH",
-      "BoolVal": false,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteD"
-    },
-    {
-      "Id": "auto_favorite_c",
-      "Type": "SWITCH",
-      "BoolVal": false,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteC"
-    },
-    {
-      "Id": "auto_favorite_b",
-      "Type": "SWITCH",
-      "BoolVal": false,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteB"
-    },
-    {
-      "Id": "auto_favorite_a",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteA"
-    },
-    {
-      "Id": "auto_favorite_s",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteS"
-    },
-    {
-      "Id": "auto_favorite_ss",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteSS"
-    },
-    {
-      "Id": "auto_favorite_x",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteX"
+      "Id": "auto_favorite_min_rank",
+      "Type": "SLIDER",
+      "FloatVal": 9.0,
+      "MinVal": 0.0,
+      "MaxVal": 14.0,
+      "Step": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteMinRank"
     }
   ],
   "Sanctuary": [
@@ -252,6 +207,21 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetCombatSuppressionEnabled"
     },
     {
+      "Id": "combat_suppression_intensity",
+      "Type": "SLIDER",
+      "FloatVal": 1.0,
+      "MinVal": 0.1,
+      "MaxVal": 3.0,
+      "Step": 0.1,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressIntensity"
+    },
+    {
+      "Id": "spirit_pierce_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceEnabled"
+    },
+    {
       "Id": "spirit_pierce_ratio",
       "Type": "SLIDER",
       "FloatVal": 0.3,
@@ -259,132 +229,6 @@
       "MaxVal": 1.0,
       "Step": 0.05,
       "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceRatio"
-    },
-    {
-      "Id": "suppress_threshold_minor",
-      "Type": "SLIDER",
-      "FloatVal": 1.1,
-      "MinVal": 1.0,
-      "MaxVal": 3.0,
-      "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressThresholdMinor"
-    },
-    {
-      "Id": "suppress_threshold_moderate",
-      "Type": "SLIDER",
-      "FloatVal": 1.5,
-      "MinVal": 1.0,
-      "MaxVal": 5.0,
-      "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressThresholdModerate"
-    },
-    {
-      "Id": "suppress_threshold_strong",
-      "Type": "SLIDER",
-      "FloatVal": 2.0,
-      "MinVal": 1.0,
-      "MaxVal": 8.0,
-      "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressThresholdStrong"
-    },
-    {
-      "Id": "suppress_threshold_overwhelm",
-      "Type": "SLIDER",
-      "FloatVal": 5.0,
-      "MinVal": 2.0,
-      "MaxVal": 15.0,
-      "Step": 0.5,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressThresholdOverwhelm"
-    },
-    {
-      "Id": "suppress_threshold_annihilate",
-      "Type": "SLIDER",
-      "FloatVal": 10.0,
-      "MinVal": 3.0,
-      "MaxVal": 30.0,
-      "Step": 1.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressThresholdAnnihilate"
-    },
-    {
-      "Id": "suppress_dmg_minor",
-      "Type": "SLIDER",
-      "FloatVal": 0.1,
-      "MinVal": 0.0,
-      "MaxVal": 1.0,
-      "Step": 0.05,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressDmgMinor"
-    },
-    {
-      "Id": "suppress_dmg_moderate",
-      "Type": "SLIDER",
-      "FloatVal": 0.25,
-      "MinVal": 0.0,
-      "MaxVal": 2.0,
-      "Step": 0.05,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressDmgModerate"
-    },
-    {
-      "Id": "suppress_dmg_strong",
-      "Type": "SLIDER",
-      "FloatVal": 0.5,
-      "MinVal": 0.0,
-      "MaxVal": 3.0,
-      "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressDmgStrong"
-    },
-    {
-      "Id": "suppress_dmg_overwhelm",
-      "Type": "SLIDER",
-      "FloatVal": 1.0,
-      "MinVal": 0.0,
-      "MaxVal": 5.0,
-      "Step": 0.1,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressDmgOverwhelm"
-    },
-    {
-      "Id": "suppress_dmg_annihilate",
-      "Type": "SLIDER",
-      "FloatVal": 2.0,
-      "MinVal": 0.0,
-      "MaxVal": 10.0,
-      "Step": 0.5,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressDmgAnnihilate"
-    },
-    {
-      "Id": "suppress_hit_moderate",
-      "Type": "SLIDER",
-      "FloatVal": 0.1,
-      "MinVal": 0.0,
-      "MaxVal": 1.0,
-      "Step": 0.05,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressHitModerate"
-    },
-    {
-      "Id": "suppress_hit_strong",
-      "Type": "SLIDER",
-      "FloatVal": 0.2,
-      "MinVal": 0.0,
-      "MaxVal": 1.0,
-      "Step": 0.05,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressHitStrong"
-    },
-    {
-      "Id": "suppress_hit_overwhelm",
-      "Type": "SLIDER",
-      "FloatVal": 0.4,
-      "MinVal": 0.0,
-      "MaxVal": 1.0,
-      "Step": 0.05,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressHitOverwhelm"
-    },
-    {
-      "Id": "suppress_hit_annihilate",
-      "Type": "SLIDER",
-      "FloatVal": 0.6,
-      "MinVal": 0.0,
-      "MaxVal": 1.0,
-      "Step": 0.05,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressHitAnnihilate"
     }
   ],
   "Fusion": [

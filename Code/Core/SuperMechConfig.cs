@@ -25,15 +25,8 @@ namespace SuperMech.Code
         public static bool ShowRankInPanel = true;
 
         public static bool AutoFavoriteEnabled = true;
-        public static bool AutoFavoriteF = false;
-        public static bool AutoFavoriteE = false;
-        public static bool AutoFavoriteD = false;
-        public static bool AutoFavoriteC = false;
-        public static bool AutoFavoriteB = false;
-        public static bool AutoFavoriteA = true;
-        public static bool AutoFavoriteS = true;
-        public static bool AutoFavoriteSS = true;
-        public static bool AutoFavoriteX = true;
+        /// <summary>自动收藏最低阶位（0=F,1=E,3=D,5=C,7=B,9=A,11=S,12=SS,13=X），默认9=A阶</summary>
+        public static int AutoFavoriteMinRank = 9;
 
         public static bool SanctuaryEnabled = true;
         public static bool SanctuaryAutoSave = true;
@@ -57,42 +50,42 @@ namespace SuperMech.Code
         public static bool CrossModEnergySync = true;
         public static float CrossModEnergyRatio = 1.0f;
 
-        // === 战斗压制配置（v0.26.0配置化补齐）===
-        /// <summary>能级压制开关</summary>
+        // === 战斗压制配置（精简版：只暴露总控，内部参数锁死原著默认值）===
+        /// <summary>能级压制总开关</summary>
         public static bool CombatSuppressionEnabled = true;
-        /// <summary>能级压制阈值：轻微/明显/强烈/碾压/秒杀级</summary>
+        /// <summary>压制强度倍率（0.5~2.0），乘在每档伤害/命中上</summary>
+        public static float SuppressIntensity = 1.0f;
+        /// <summary>精神穿甲总开关</summary>
+        public static bool SpiritPierceEnabled = true;
+        /// <summary>精神攻击穿甲比例（念力/异能对机械系）</summary>
+        public static float SpiritPierceRatio = 0.30f;
+
+        // === 内部参数（不暴露配置，锁死原著默认值）===
         public static float SuppressThresholdMinor = 1.1f;
         public static float SuppressThresholdModerate = 1.5f;
         public static float SuppressThresholdStrong = 2.0f;
         public static float SuppressThresholdOverwhelm = 5.0f;
         public static float SuppressThresholdAnnihilate = 10.0f;
-        /// <summary>伤害加成倍率（对应5档）</summary>
         public static float SuppressDmgMinor = 0.10f;
         public static float SuppressDmgModerate = 0.25f;
         public static float SuppressDmgStrong = 0.50f;
         public static float SuppressDmgOverwhelm = 1.00f;
         public static float SuppressDmgAnnihilate = 2.00f;
-        /// <summary>强制命中概率（对应4档，轻微无强制命中）</summary>
         public static float SuppressHitModerate = 0.10f;
         public static float SuppressHitStrong = 0.20f;
         public static float SuppressHitOverwhelm = 0.40f;
         public static float SuppressHitAnnihilate = 0.60f;
-        /// <summary>暴击率（对应3档）</summary>
         public static float SuppressCritModerate = 0.08f;
         public static float SuppressCritStrong = 0.15f;
         public static float SuppressCritOverwhelm = 0.25f;
-        /// <summary>抗性减免（对应4档，防守方高能级时）</summary>
         public static float SuppressDefModerate = 0.10f;
         public static float SuppressDefStrong = 0.20f;
         public static float SuppressDefOverwhelm = 0.35f;
         public static float SuppressDefAnnihilate = 0.50f;
-        /// <summary>闪避率（对应4档，防守方高能级时）</summary>
         public static float SuppressDodgeModerate = 0.05f;
         public static float SuppressDodgeStrong = 0.12f;
         public static float SuppressDodgeOverwhelm = 0.25f;
         public static float SuppressDodgeAnnihilate = 0.40f;
-        /// <summary>精神攻击穿甲比例（念力/异能对机械系）</summary>
-        public static float SpiritPierceRatio = 0.30f;
         /// <summary>知识融合属性加成上限（单配方和总上限）</summary>
         public static float FusionSingleMulCap = 2.0f;
         public static float FusionTotalMulCap = 3.0f;
@@ -144,15 +137,7 @@ namespace SuperMech.Code
                 new ItemInfo("ona_multiplier", "sm_config_577", "sm_config_578"),
                 new ItemInfo("show_rank_in_panel", "sm_config_579", "sm_config_580"),
                 new ItemInfo("auto_favorite_enabled", "sm_config_581", "sm_config_582"),
-                new ItemInfo("auto_favorite_f", "sm_config_583", "sm_config_584"),
-                new ItemInfo("auto_favorite_e", "sm_config_585", "sm_config_586"),
-                new ItemInfo("auto_favorite_d", "sm_config_587", "sm_config_588"),
-                new ItemInfo("auto_favorite_c", "sm_config_589", "sm_config_590"),
-                new ItemInfo("auto_favorite_b", "sm_config_591", "sm_config_592"),
-                new ItemInfo("auto_favorite_a", "sm_config_593", "sm_config_594"),
-                new ItemInfo("auto_favorite_s", "sm_config_595", "sm_config_596"),
-                new ItemInfo("auto_favorite_ss", "sm_config_597", "sm_config_598"),
-                new ItemInfo("auto_favorite_x", "sm_config_599", "sm_config_600"),
+                new ItemInfo("auto_favorite_min_rank", "sm_config_583", "sm_config_584"),
                 new ItemInfo("sanctuary_enabled", "sm_config_601", "sm_config_602"),
                 new ItemInfo("sanctuary_autosave", "sm_config_603", "sm_config_604"),
                 new ItemInfo("auto_visit_sanctuary", "sm_config_653", "sm_config_654"),
@@ -166,21 +151,9 @@ namespace SuperMech.Code
                 new ItemInfo("max_tracked_actors", "sm_config_617", "sm_config_618"),
                 new ItemInfo("log_verbose", "sm_config_619", "sm_config_620"),
                 new ItemInfo("combat_suppression_enabled", "sm_config_622", "sm_config_623"),
+                new ItemInfo("combat_suppression_intensity", "sm_config_700", "sm_config_701"),
+                new ItemInfo("spirit_pierce_enabled", "sm_config_702", "sm_config_703"),
                 new ItemInfo("spirit_pierce_ratio", "sm_config_624", "sm_config_625"),
-                new ItemInfo("suppress_threshold_minor", "sm_config_700", "sm_config_701"),
-                new ItemInfo("suppress_threshold_moderate", "sm_config_702", "sm_config_703"),
-                new ItemInfo("suppress_threshold_strong", "sm_config_704", "sm_config_705"),
-                new ItemInfo("suppress_threshold_overwhelm", "sm_config_706", "sm_config_707"),
-                new ItemInfo("suppress_threshold_annihilate", "sm_config_708", "sm_config_709"),
-                new ItemInfo("suppress_dmg_minor", "sm_config_710", "sm_config_711"),
-                new ItemInfo("suppress_dmg_moderate", "sm_config_712", "sm_config_713"),
-                new ItemInfo("suppress_dmg_strong", "sm_config_714", "sm_config_715"),
-                new ItemInfo("suppress_dmg_overwhelm", "sm_config_716", "sm_config_717"),
-                new ItemInfo("suppress_dmg_annihilate", "sm_config_718", "sm_config_719"),
-                new ItemInfo("suppress_hit_moderate", "sm_config_720", "sm_config_721"),
-                new ItemInfo("suppress_hit_strong", "sm_config_722", "sm_config_723"),
-                new ItemInfo("suppress_hit_overwhelm", "sm_config_724", "sm_config_725"),
-                new ItemInfo("suppress_hit_annihilate", "sm_config_726", "sm_config_727"),
                 new ItemInfo("fusion_single_mul_cap", "sm_config_626", "sm_config_627"),
                 new ItemInfo("fusion_total_mul_cap", "sm_config_628", "sm_config_629"),
                 new ItemInfo("qi_attribute_counter", "sm_config_657", "sm_config_658"),
@@ -213,27 +186,11 @@ namespace SuperMech.Code
         public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; }
 
         public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; }
-        public static void SetAutoFavoriteF(bool val) { AutoFavoriteF = val; }
-        public static void SetAutoFavoriteE(bool val) { AutoFavoriteE = val; }
-        public static void SetAutoFavoriteD(bool val) { AutoFavoriteD = val; }
-        public static void SetAutoFavoriteC(bool val) { AutoFavoriteC = val; }
-        public static void SetAutoFavoriteB(bool val) { AutoFavoriteB = val; }
-        public static void SetAutoFavoriteA(bool val) { AutoFavoriteA = val; }
-        public static void SetAutoFavoriteS(bool val) { AutoFavoriteS = val; }
-        public static void SetAutoFavoriteSS(bool val) { AutoFavoriteSS = val; }
-        public static void SetAutoFavoriteX(bool val) { AutoFavoriteX = val; }
+        public static void SetAutoFavoriteMinRank(int val) { AutoFavoriteMinRank = Mathf.Clamp(val, 0, 14); }
 
         public static bool ShouldFavoriteRank(int rankIdx)
         {
-            if (rankIdx <= 0) return AutoFavoriteF;
-            if (rankIdx <= 1) return AutoFavoriteE;
-            if (rankIdx <= 3) return AutoFavoriteD;
-            if (rankIdx <= 5) return AutoFavoriteC;
-            if (rankIdx <= 7) return AutoFavoriteB;
-            if (rankIdx <= 9) return AutoFavoriteA;
-            if (rankIdx <= 11) return AutoFavoriteS;
-            if (rankIdx <= 12) return AutoFavoriteSS;
-            return AutoFavoriteX;
+            return rankIdx >= AutoFavoriteMinRank;
         }
 
         public static void SetSanctuaryEnabled(bool val) { SanctuaryEnabled = val; }
@@ -255,32 +212,9 @@ namespace SuperMech.Code
         public static void SetRefinementBonus(float val) { RefinementBonus = Mathf.Max(0f, val); }
 
         public static void SetCombatSuppressionEnabled(bool val) { CombatSuppressionEnabled = val; }
+        public static void SetSuppressIntensity(float val) { SuppressIntensity = Mathf.Clamp(val, 0.1f, 3.0f); }
+        public static void SetSpiritPierceEnabled(bool val) { SpiritPierceEnabled = val; }
         public static void SetSpiritPierceRatio(float val) { SpiritPierceRatio = Mathf.Clamp01(val); }
-        public static void SetSuppressThresholdMinor(float val) { SuppressThresholdMinor = Mathf.Max(1.0f, val); }
-        public static void SetSuppressThresholdModerate(float val) { SuppressThresholdModerate = Mathf.Max(1.0f, val); }
-        public static void SetSuppressThresholdStrong(float val) { SuppressThresholdStrong = Mathf.Max(1.0f, val); }
-        public static void SetSuppressThresholdOverwhelm(float val) { SuppressThresholdOverwhelm = Mathf.Max(1.0f, val); }
-        public static void SetSuppressThresholdAnnihilate(float val) { SuppressThresholdAnnihilate = Mathf.Max(1.0f, val); }
-        public static void SetSuppressDmgMinor(float val) { SuppressDmgMinor = Mathf.Max(0f, val); }
-        public static void SetSuppressDmgModerate(float val) { SuppressDmgModerate = Mathf.Max(0f, val); }
-        public static void SetSuppressDmgStrong(float val) { SuppressDmgStrong = Mathf.Max(0f, val); }
-        public static void SetSuppressDmgOverwhelm(float val) { SuppressDmgOverwhelm = Mathf.Max(0f, val); }
-        public static void SetSuppressDmgAnnihilate(float val) { SuppressDmgAnnihilate = Mathf.Max(0f, val); }
-        public static void SetSuppressHitModerate(float val) { SuppressHitModerate = Mathf.Clamp01(val); }
-        public static void SetSuppressHitStrong(float val) { SuppressHitStrong = Mathf.Clamp01(val); }
-        public static void SetSuppressHitOverwhelm(float val) { SuppressHitOverwhelm = Mathf.Clamp01(val); }
-        public static void SetSuppressHitAnnihilate(float val) { SuppressHitAnnihilate = Mathf.Clamp01(val); }
-        public static void SetSuppressCritModerate(float val) { SuppressCritModerate = Mathf.Clamp01(val); }
-        public static void SetSuppressCritStrong(float val) { SuppressCritStrong = Mathf.Clamp01(val); }
-        public static void SetSuppressCritOverwhelm(float val) { SuppressCritOverwhelm = Mathf.Clamp01(val); }
-        public static void SetSuppressDefModerate(float val) { SuppressDefModerate = Mathf.Clamp01(val); }
-        public static void SetSuppressDefStrong(float val) { SuppressDefStrong = Mathf.Clamp01(val); }
-        public static void SetSuppressDefOverwhelm(float val) { SuppressDefOverwhelm = Mathf.Clamp01(val); }
-        public static void SetSuppressDefAnnihilate(float val) { SuppressDefAnnihilate = Mathf.Clamp01(val); }
-        public static void SetSuppressDodgeModerate(float val) { SuppressDodgeModerate = Mathf.Clamp01(val); }
-        public static void SetSuppressDodgeStrong(float val) { SuppressDodgeStrong = Mathf.Clamp01(val); }
-        public static void SetSuppressDodgeOverwhelm(float val) { SuppressDodgeOverwhelm = Mathf.Clamp01(val); }
-        public static void SetSuppressDodgeAnnihilate(float val) { SuppressDodgeAnnihilate = Mathf.Clamp01(val); }
         public static void SetFusionSingleMulCap(float val) { FusionSingleMulCap = Mathf.Max(1.0f, val); }
         public static void SetFusionTotalMulCap(float val) { FusionTotalMulCap = Mathf.Max(1.0f, val); }
 

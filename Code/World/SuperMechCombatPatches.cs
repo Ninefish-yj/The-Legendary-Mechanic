@@ -125,7 +125,8 @@ namespace SuperMech.Code
                 // 原著职业克制：精神攻击穿甲
                 // 念力系/异能系的精神打击可穿透护甲直接伤害本体
                 // 机械系智力高幻术影响减弱，但无精神防御能力（除超A级虚拟机械师）
-                if (attacker != null && attacker.isAlive() && target != null && target.isAlive()
+                if (SuperMechConfig.SpiritPierceEnabled
+                    && attacker != null && attacker.isAlive() && target != null && target.isAlive()
                     && SuperMechAwakened.IsAwakened(attacker) && SuperMechAwakened.IsAwakened(target))
                 {
                     bool atkPsi = attacker.hasTrait(SuperMechTraits.ClassPsi) || attacker.hasTrait(SuperMechTraits.ClassMind);
@@ -171,6 +172,8 @@ namespace SuperMech.Code
                     {
                         float ratio = atkEnergy / defEnergy;
 
+                        float intensity = SuperMechConfig.SuppressIntensity;
+
                         // 维度1：伤害加成
                         float dmgBonus = 0f;
                         if (ratio >= SuperMechConfig.SuppressThresholdAnnihilate) dmgBonus = SuperMechConfig.SuppressDmgAnnihilate;
@@ -180,7 +183,7 @@ namespace SuperMech.Code
                         else if (ratio >= SuperMechConfig.SuppressThresholdMinor) dmgBonus = SuperMechConfig.SuppressDmgMinor;
                         if (dmgBonus > 0)
                         {
-                            float suppressDamage = pDamage * dmgBonus;
+                            float suppressDamage = pDamage * dmgBonus * intensity;
                             target.data.health -= (int)suppressDamage;
                             SMCombatFeedback.OnSuppression(target, ratio);
                         }
@@ -192,6 +195,7 @@ namespace SuperMech.Code
                         else if (ratio >= SuperMechConfig.SuppressThresholdOverwhelm) hitOverrideChance = SuperMechConfig.SuppressHitOverwhelm;
                         else if (ratio >= SuperMechConfig.SuppressThresholdStrong) hitOverrideChance = SuperMechConfig.SuppressHitStrong;
                         else if (ratio >= SuperMechConfig.SuppressThresholdModerate) hitOverrideChance = SuperMechConfig.SuppressHitModerate;
+                        hitOverrideChance = Mathf.Clamp01(hitOverrideChance * intensity);
                         if (hitOverrideChance > 0 && Random.value < hitOverrideChance)
                         {
                             // 强制命中：直接造成基础伤害（跳过原版闪避/护甲减免的一部分）
