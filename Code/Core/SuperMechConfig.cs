@@ -166,26 +166,15 @@ namespace SuperMech.Code
             {
                 new ItemInfo("mod_enabled", "sm_config_559", "sm_config_560"),
                 new ItemInfo("auto_awakening", "sm_config_561", "sm_config_562"),
-                new ItemInfo("awakening_chance", "sm_config_563", "sm_config_564"),
-                new ItemInfo("awakening_min_age", "sm_config_565", "sm_config_566"),
                 new ItemInfo("qi_growth_rate", "sm_config_567", "sm_config_568"),
                 new ItemInfo("qi_unlimited", "sm_config_569", "sm_config_570"),
                 new ItemInfo("auto_promotion", "sm_config_571", "sm_config_572"),
-                new ItemInfo("auto_promotion_max_rank", "sm_config_573", "sm_config_574"),
-                new ItemInfo("promotion_speed", "sm_config_575", "sm_config_576"),
-                new ItemInfo("ona_multiplier", "sm_config_577", "sm_config_578"),
-                new ItemInfo("show_rank_in_panel", "sm_config_579", "sm_config_580"),
                 new ItemInfo("auto_favorite_enabled", "sm_config_581", "sm_config_582"),
-                new ItemInfo("auto_favorite_min_rank", "sm_config_583", "sm_config_584"),
                 new ItemInfo("sanctuary_enabled", "sm_config_601", "sm_config_602"),
                 new ItemInfo("sanctuary_autosave", "sm_config_603", "sm_config_604"),
                 new ItemInfo("auto_visit_sanctuary", "sm_config_653", "sm_config_654"),
                 new ItemInfo("auto_enter_sanctuary", "sm_config_655", "sm_config_656"),
                 new ItemInfo("sanctuary_key_drop_enabled", "sm_config_740", "sm_config_741"),
-                new ItemInfo("key_drop_min_rank", "sm_config_742", "sm_config_743"),
-                new ItemInfo("key_materials_per_key", "sm_config_744", "sm_config_745"),
-                new ItemInfo("psionic_key_material_bonus", "sm_config_746", "sm_config_747"),
-                new ItemInfo("sanctuary_key_cost_enter", "sm_config_750", "sm_config_751"),
                 new ItemInfo("inner_space_enabled", "sm_config_752", "sm_config_753"),
                 new ItemInfo("inner_space_min_rank", "sm_config_754", "sm_config_755"),
                 new ItemInfo("inner_space_duration", "sm_config_756", "sm_config_757"),
@@ -194,36 +183,12 @@ namespace SuperMech.Code
                 new ItemInfo("inner_space_damage_reduction", "sm_config_762", "sm_config_763"),
                 new ItemInfo("mech_summon_enabled", "sm_config_605", "sm_config_606"),
                 new ItemInfo("max_summoned_units", "sm_config_607", "sm_config_608"),
-                new ItemInfo("refinement_bonus", "sm_config_609", "sm_config_610"),
                 new ItemInfo("relic_drop_enabled", "sm_config_611", "sm_config_612"),
-                new ItemInfo("relic_drop_rate", "sm_config_613", "sm_config_614"),
-                new ItemInfo("tick_interval", "sm_config_615", "sm_config_616"),
-                new ItemInfo("max_tracked_actors", "sm_config_617", "sm_config_618"),
-                new ItemInfo("log_verbose", "sm_config_619", "sm_config_620"),
                 new ItemInfo("combat_suppression_enabled", "sm_config_622", "sm_config_623"),
-                new ItemInfo("combat_suppression_intensity", "sm_config_700", "sm_config_701"),
                 new ItemInfo("spirit_pierce_enabled", "sm_config_702", "sm_config_703"),
-                new ItemInfo("spirit_pierce_ratio", "sm_config_624", "sm_config_625"),
-                new ItemInfo("fusion_single_mul_cap", "sm_config_626", "sm_config_627"),
-                new ItemInfo("fusion_total_mul_cap", "sm_config_628", "sm_config_629"),
-                new ItemInfo("qi_attribute_counter", "sm_config_657", "sm_config_658"),
-                new ItemInfo("qi_display_decimals", "sm_config_659", "sm_config_660"),
-                new ItemInfo("cross_mod_energy_sync", "sm_config_661", "sm_config_662"),
-                new ItemInfo("cross_mod_energy_ratio", "sm_config_663", "sm_config_664"),
                 new ItemInfo("event_log_enabled", "sm_config_711", "sm_config_712"),
-                new ItemInfo("event_log_awaken_min_talent", "sm_config_713", "sm_config_714"),
-                new ItemInfo("event_log_promotion_min_rank", "sm_config_715", "sm_config_716"),
-                new ItemInfo("event_log_fusion_enabled", "sm_config_717", "sm_config_718"),
-                new ItemInfo("event_log_spell_enabled", "sm_config_719", "sm_config_720"),
-                new ItemInfo("event_log_sanctuary_enabled", "sm_config_721", "sm_config_722"),
-                new ItemInfo("event_log_iteration_enabled", "sm_config_723", "sm_config_724"),
-                new ItemInfo("event_log_resurrection_enabled", "sm_config_725", "sm_config_726"),
-                new ItemInfo("event_log_concept_reshape_enabled", "sm_config_727", "sm_config_728"),
                 new ItemInfo("auto_competition", "sm_config_730", "sm_config_731"),
-                new ItemInfo("competition_min_rank", "sm_config_732", "sm_config_733"),
-                new ItemInfo("competition_interval", "sm_config_734", "sm_config_735"),
                 new ItemInfo("npc_auto_knowledge", "sm_config_736", "sm_config_737"),
-                new ItemInfo("npc_knowledge_interval", "sm_config_738", "sm_config_739"),
             };
             foreach (var it in items)
             {
@@ -231,26 +196,6 @@ namespace SuperMech.Code
                 LocalizedTextManager.add(it.id + " Description", LocalizedTextManager.getText(it.desc), pReplace: true);
             }
 
-            // SELECT阶位下拉框选项标签：{configId}_{index} → 阶位名称
-            string[] rankSelectConfigs = {
-                "auto_promotion_max_rank",   // 0~12 (F~SS)
-                "auto_favorite_min_rank",    // 0~13 (F~X)
-                "event_log_promotion_min_rank",
-                "competition_min_rank",
-            };
-            string[] rankNameKeys = {
-                "sm_rank_name_00", "sm_rank_name_01", "sm_rank_name_02", "sm_rank_name_03",
-                "sm_rank_name_04", "sm_rank_name_05", "sm_rank_name_06", "sm_rank_name_07",
-                "sm_rank_name_08", "sm_rank_name_09", "sm_rank_name_10", "sm_rank_name_11",
-                "sm_rank_name_12", "sm_rank_name_13",
-            };
-            foreach (var cfgId in rankSelectConfigs)
-            {
-                for (int i = 0; i < rankNameKeys.Length; i++)
-                {
-                    LocalizedTextManager.add($"{cfgId}_{i}", LocalizedTextManager.getText(rankNameKeys[i]), pReplace: true);
-                }
-            }
         }
 
 
