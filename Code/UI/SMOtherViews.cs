@@ -556,13 +556,13 @@ namespace SuperMech.Code
             cardRect.anchorMin = new Vector2(0, 1);
             cardRect.anchorMax = new Vector2(1, 1);
             cardRect.pivot = new Vector2(0.5f, 1);
-            cardRect.sizeDelta = new Vector2(0, 30);
-            cardRect.anchoredPosition = new Vector2(0, -index * 34f - 2);
+            cardRect.sizeDelta = new Vector2(0, 34);
+            cardRect.anchoredPosition = new Vector2(0, -index * 38f - 2);
 
             var card = cardGo.AddComponent<SMRankCard>();
-            float score = _scoreCache.TryGetValue(actor.getID(), out float s) ? s : 0;
-            string sortLabel = SortNames[_currentSortType].Replace("排序", "");
-            card.Build(actor, index + 1, score, sortLabel);
+            float onar = SuperMechEnergyLevel.Calculate(actor);
+            string className = GetRankClassName(actor);
+            card.Build(actor, index + 1, onar, className);
 
             _cardInstances.Add(cardGo);
             _cardByIndex[index] = cardGo;
@@ -589,6 +589,17 @@ namespace SuperMech.Code
             if (_listContent == null || _scrollViewRect == null) return;
             float maxY = _listContent.sizeDelta.y - _scrollViewRect.rect.height;
             _listContent.anchoredPosition = new Vector2(0, Mathf.Max(0, maxY));
+        }
+
+        private static string GetRankClassName(Actor a)
+        {
+            if (a == null) return "?";
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return LocalizedTextManager.getText("sm_class_mech");
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return LocalizedTextManager.getText("sm_class_mage");
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return LocalizedTextManager.getText("sm_class_power");
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return LocalizedTextManager.getText("sm_class_wudan");
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return LocalizedTextManager.getText("sm_class_psi");
+            return LocalizedTextManager.getText("sm_ui_wild");
         }
 
         public static void InvalidateCache()
