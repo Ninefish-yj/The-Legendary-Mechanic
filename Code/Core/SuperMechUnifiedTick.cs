@@ -92,6 +92,7 @@ namespace SuperMech.Code
                 SafeRun("维度增益", () => SuperMechDimension.TickDimensionBuffs());
                 SafeRun("内空间脉冲", () => SuperMechInnerSpace.TickPulse());
                 SafeRun("领域负面效果", () => SuperMechInnerSpace.TickDomainEffects());
+                SafeRun("势力系统", () => SuperMechFaction.TickFactions());
             }
 
             float now = Time.time;
@@ -146,6 +147,7 @@ namespace SuperMech.Code
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechAdvancementTask.CleanupDead(alive);
             removed += SuperMechAI.CleanupDead(alive);
+            removed += SuperMechFaction.CleanupDead(alive);
         }
 
         public static void ClearAll()

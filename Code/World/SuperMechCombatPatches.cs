@@ -76,6 +76,10 @@ namespace SuperMech.Code
             {
                 Actor attacker = pAttacker as Actor;
 
+                // v0.48.0 同势力不互攻
+                if (attacker != null && SuperMechConfig.FactionEnabled && SuperMechFaction.IsSameFaction(attacker, target))
+                    return false;
+
                 // v0.44.0 技能释放：攻击者攻击时有概率触发主动技能
                 if (attacker != null && attacker.isAlive() && Random.value < 0.3f)
                 {
@@ -99,6 +103,16 @@ namespace SuperMech.Code
                             float domainDamage = pDamage * (domainMod - 1f);
                             target.data.health -= (int)domainDamage;
                         }
+                    }
+                }
+
+                // v0.48.0 势力领袖伤害加成
+                if (attacker != null && attacker.isAlive() && SuperMechConfig.FactionEnabled)
+                {
+                    float leaderBonus = SuperMechFaction.GetLeaderBonus(attacker);
+                    if (leaderBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (leaderBonus - 1f));
                     }
                 }
 

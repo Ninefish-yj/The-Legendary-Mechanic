@@ -44,6 +44,7 @@ namespace SuperMech.Code
             public int version = CurrentSaveVersion;
             public Dictionary<string, ActorSaveData> actors = new Dictionary<string, ActorSaveData>();
             public SanctuarySaveData sanctuary = new SanctuarySaveData();
+            public SuperMechFaction.FactionSaveData faction = new SuperMechFaction.FactionSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -266,6 +267,8 @@ namespace SuperMech.Code
                 data.worldLegacyPool = SerializeWorldLegacyPool();
                 // 保存首位突破记录（v0.39.7）
                 data.firstBreakthroughRanks = new List<string>(FirstBreakthroughRanks);
+                // 保存势力数据（v0.48.0）
+                data.faction = SuperMechFaction.Save();
 
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
@@ -305,6 +308,9 @@ namespace SuperMech.Code
                 SuperMechSanctuary.Data.message_board_unlocked = data.sanctuary.messageBoardUnlocked;
                 SuperMechSanctuary.Data.total_divinity_ascensions = data.sanctuary.totalDivinityAscensions;
                 SuperMechSanctuary.Data.total_resurrections = data.sanctuary.totalResurrections;
+
+                // 加载势力数据（v0.48.0）
+                SuperMechFaction.Load(data.faction);
 
                 _pendingLoad = data;
                 _loadPending = true;

@@ -49,6 +49,8 @@ namespace SuperMech.Code
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
         public static bool InnerSpaceEnabled = true;
+        /// <summary>势力/组织系统总开关（v0.48.0）</summary>
+        public static bool FactionEnabled = true;
         /// <summary>放出内空间最低阶位（默认13=X阶/超神级）</summary>
         public static int InnerSpaceMinRank = 13;
         /// <summary>内空间持续时间（秒）</summary>
@@ -181,6 +183,7 @@ namespace SuperMech.Code
                 new ItemInfo("inner_space_damage_bonus", "sm_config_758", "sm_config_759"),
                 new ItemInfo("inner_space_enemy_penalty", "sm_config_760", "sm_config_761"),
                 new ItemInfo("inner_space_damage_reduction", "sm_config_762", "sm_config_763"),
+                new ItemInfo("faction_enabled", "sm_config_770", "sm_config_771"),
                 new ItemInfo("mech_summon_enabled", "sm_config_605", "sm_config_606"),
                 new ItemInfo("max_summoned_units", "sm_config_607", "sm_config_608"),
                 new ItemInfo("relic_drop_enabled", "sm_config_611", "sm_config_612"),
@@ -238,6 +241,7 @@ namespace SuperMech.Code
         public static void SetInnerSpaceDamageBonus(float val) { InnerSpaceDamageBonus = Mathf.Clamp01(val); }
         public static void SetInnerSpaceEnemyPenalty(float val) { InnerSpaceEnemyPenalty = Mathf.Clamp01(val); }
         public static void SetInnerSpaceDamageReduction(float val) { InnerSpaceDamageReduction = Mathf.Clamp01(val); }
+        public static void SetFactionEnabled(bool val) { FactionEnabled = val; }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
         public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); }
