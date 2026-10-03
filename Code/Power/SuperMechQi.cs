@@ -61,6 +61,10 @@ namespace SuperMech.Code
             int last;
             if (_appliedLevel.TryGetValue(a.id, out last) && last == level) return;
 
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.qiLevel = level;
+
             var stats = SuperMechStats.Of(a);
             if (stats == null) return;
 

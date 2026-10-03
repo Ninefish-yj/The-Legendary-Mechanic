@@ -428,6 +428,10 @@ namespace SuperMech.Code
         public static int GetExactRankIndex(Actor a)
         {
             if (a == null) return 0;
+            // 优先从ActorContext读取（运行时主数据源）
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.exactRank >= 0) return ctx.exactRank;
+            // 回退到旧字典
             if (_exactRank.TryGetValue(a.id, out int idx)) return idx;
             for (int i = SuperMechRanks.All.Count - 1; i >= 0; i--)
             {
@@ -448,6 +452,9 @@ namespace SuperMech.Code
             int oldRank = _exactRank.TryGetValue(a.id, out var o) ? o : -1;
             if (oldRank == index) return;
             _exactRank[a.id] = index;
+            // 同步到ActorContext（运行时主数据源）
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.exactRank = index;
             // 发布阶位变化事件（事件总线，解耦下游系统）
             if (oldRank >= 0 && oldRank != index)
             {

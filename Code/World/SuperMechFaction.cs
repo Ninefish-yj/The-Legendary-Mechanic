@@ -128,6 +128,9 @@ namespace SuperMech.Code
             f.memberIds.Add(leader.id);
             _factions[id] = f;
             _actorFaction[leader.id] = id;
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(leader);
+            if (ctx != null) { ctx.factionId = id; ctx.isFactionLeader = true; }
 
             SuperMechEventBus.Publish("FactionCreated", new FactionCreatedEvent { leader = leader, factionName = name });
             Debug.Log($"[超神机械师] {leader.name} 创建势力[{name}]");
@@ -138,13 +141,28 @@ namespace SuperMech.Code
             if (!_factions.TryGetValue(factionId, out var f)) return;
             f.memberIds.Add(actor.id);
             _actorFaction[actor.id] = factionId;
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(actor);
+            if (ctx != null) { ctx.factionId = factionId; ctx.isFactionLeader = false; }
+        }
+
+        /// <summary>从ActorContext读取势力ID（运行时主数据源）</summary>
+        private static string GetActorFactionId(Actor a)
+        {
+            if (a == null) return null;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && !string.IsNullOrEmpty(ctx.factionId)) return ctx.factionId;
+            // 回退到旧字典（兼容存档加载后尚未同步的情况）
+            _actorFaction.TryGetValue(a.id, out var fid);
+            return fid;
         }
 
         /// <summary>获取单位所属势力</summary>
         public static FactionData GetFaction(Actor a)
         {
             if (a == null) return null;
-            if (!_actorFaction.TryGetValue(a.id, out var fid)) return null;
+            string fid = GetActorFactionId(a);
+            if (fid == null) return null;
             if (!_factions.TryGetValue(fid, out var f)) return null;
             return f;
         }
@@ -153,9 +171,9 @@ namespace SuperMech.Code
         public static bool IsSameFaction(Actor a, Actor b)
         {
             if (a == null || b == null) return false;
-            if (!_actorFaction.TryGetValue(a.id, out var fa)) return false;
-            if (!_actorFaction.TryGetValue(b.id, out var fb)) return false;
-            return fa == fb;
+            string fa = GetActorFactionId(a);
+            string fb = GetActorFactionId(b);
+            return fa != null && fa == fb;
         }
 
         /// <summary>势力成员加成（经验获取）</summary>
@@ -239,6 +257,8 @@ namespace SuperMech.Code
                 if (int.TryParse(e.id.Replace("faction_", ""), out var n) && n > _nameCounter)
                     _nameCounter = n;
             }
+            // 注：加载时Actor可能尚未恢复，不强制同步到ActorContext。
+            // GetActorFactionId有回退到_actorFaction的逻辑，运行时首次访问会自动填充。
         }
 
         public static int CleanupDead(HashSet<long> alive)
