@@ -198,6 +198,109 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>v0.57.0 机械军团AI：召唤单位跟随主人、集火、护主</summary>
+        public static void TickMechLegion()
+        {
+            if (World.world == null || World.world.units == null) return;
+            var units = World.world.units.units_only_alive;
+            if (units == null) return;
+
+            // 反射获取 attack_target 字段（internal）
+            var attackTargetField = typeof(Actor).GetField("attack_target",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+
+            foreach (var a in units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                if (!a.hasTrait("sm_summoned")) continue;
+
+                var ctx = SuperMechActorContextRegistry.Get(a);
+                if (ctx == null || ctx.summonerId <= 0) continue;
+
+                // 找到召唤者
+                Actor summoner = null;
+                foreach (var s in units)
+                {
+                    if (s != null && s.isAlive() && s.id == ctx.summonerId) { summoner = s; break; }
+                }
+
+                if (summoner == null || !summoner.isAlive())
+                {
+                    // 召唤者死亡：召唤物狂暴
+                    if (!a.hasTrait("sm_berserk")) a.addTrait("sm_berserk");
+                    continue;
+                }
+
+                // 1. 护主：召唤者正在被攻击时，优先攻击攻击者
+                Actor attacker = FindAttacker(summoner, units, attackTargetField);
+                if (attacker != null && attacker.isAlive())
+                {
+                    SetAttackTarget(a, attacker, attackTargetField);
+                    MoveToNear(a, attacker);
+                    continue;
+                }
+
+                // 2. 集火：召唤者有目标时，一起攻击
+                Actor sumTarget = GetAttackTarget(summoner, attackTargetField) as Actor;
+                if (sumTarget != null && sumTarget.isAlive())
+                {
+                    SetAttackTarget(a, sumTarget, attackTargetField);
+                    MoveToNear(a, sumTarget);
+                    continue;
+                }
+
+                // 3. 跟随：距离主人超过3格时跟随
+                if (summoner.current_tile != null && a.current_tile != null)
+                {
+                    float dist = Vector2.Distance(
+                        new Vector2(a.current_tile.x, a.current_tile.y),
+                        new Vector2(summoner.current_tile.x, summoner.current_tile.y));
+                    if (dist > 3f)
+                    {
+                        MoveToNear(a, summoner);
+                    }
+                }
+            }
+        }
+
+        private static void SetAttackTarget(Actor a, BaseSimObject target, System.Reflection.FieldInfo field)
+        {
+            if (field == null || a == null || target == null) return;
+            try { field.SetValue(a, target); } catch { }
+        }
+
+        private static object GetAttackTarget(Actor a, System.Reflection.FieldInfo field)
+        {
+            if (field == null || a == null) return null;
+            try { return field.GetValue(a); } catch { return null; }
+        }
+
+        private static void MoveToNear(Actor a, Actor target)
+        {
+            if (a == null || target == null || target.current_tile == null) return;
+            try
+            {
+                if (target.current_tile.neighbours != null && target.current_tile.neighbours.Length > 0)
+                {
+                    var tile = target.current_tile.neighbours[Random.Range(0, target.current_tile.neighbours.Length)];
+                    a.moveTo(tile);
+                }
+            } catch { }
+        }
+
+        /// <summary>查找正在攻击目标的单位</summary>
+        private static Actor FindAttacker(Actor target, List<Actor> units, System.Reflection.FieldInfo field)
+        {
+            if (target == null || units == null) return null;
+            foreach (var a in units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                var atkTarget = GetAttackTarget(a, field) as Actor;
+                if (atkTarget == target) return a;
+            }
+            return null;
+        }
+
         public static void Clear()
         {
             _lastCompetitionAge.Clear();

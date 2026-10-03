@@ -128,9 +128,13 @@ namespace SuperMech.Code
                     Actor summoned = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
                     if (summoned == null) continue;
 
-                    // 召唤物：机械系特质 + 战斗倾向
+                    // 召唤物：机械系特质 + 战斗倾向 + 召唤物标记
                     summoned.addTrait(SuperMechTraits.ClassMech);
                     summoned.addTrait("aggressive");
+                    summoned.addTrait("sm_summoned"); // v0.57.0 召唤物标记
+                    // 记录召唤者ID（用ActorContext）
+                    var ctx = SuperMechActorContextRegistry.Get(summoned);
+                    if (ctx != null) ctx.summonerId = caster.id;
                     // 阶位约低一阶（使徒级机械，非独立超能者）
                     int minionRank = Mathf.Max(0, rankIdx - 1);
                     if (minionRank < SuperMechRanks.All.Count)

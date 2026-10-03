@@ -72,6 +72,7 @@ namespace SuperMech.Code
                 SafeRun("降临者濒死保护", () => SuperMechConceptImmortal.TickGracePeriod());
                 SafeRun("超能者竞争", () => SuperMechAI.TickCompetition());
                 SafeRun("NPC自动修炼", () => SuperMechAI.TickNpcKnowledge());
+                SafeRun("机械军团AI", () => SuperMechAI.TickMechLegion());
             }
             else if (group == 2)
             {
