@@ -129,6 +129,7 @@ namespace SuperMech.Code
             _factions[id] = f;
             _actorFaction[leader.id] = id;
 
+            SuperMechEventBus.Publish("FactionCreated", new FactionCreatedEvent { leader = leader, factionName = name });
             Debug.Log($"[超神机械师] {leader.name} 创建势力[{name}]");
         }
 

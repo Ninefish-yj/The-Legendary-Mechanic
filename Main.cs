@@ -53,6 +53,9 @@ namespace SuperMech
             SuperMechPowers.Register();
             SuperMechCrossMod.Init();
 
+            // 事件总线订阅：解耦系统间直接调用
+            RegisterEventSubscriptions();
+
             var harmony = new Harmony("SuperMech");
             harmony.PatchAll();
             Debug.Log("[超神机械师] Harmony Patch 完成（单位面板注入+战斗挂钩）");
@@ -99,6 +102,33 @@ namespace SuperMech
                 try { SuperMechUnifiedTick.Tick(); }
                 catch (System.Exception e) { Debug.LogError("[超神机械师] 统一tick异常: " + e.Message); }
             }
+        }
+
+        /// <summary>
+        /// 事件总线订阅注册：系统间通过事件通信，不直接调用。
+        /// 新系统接入时在此添加订阅，逐步替代直接调用。
+        /// </summary>
+        private static void RegisterEventSubscriptions()
+        {
+            // 阶位变化 → 事件日志
+            SuperMechEventBus.Subscribe<ActorRankChangedEvent>("ActorRankChanged", evt =>
+            {
+                if (evt.actor == null) return;
+                string oldName = evt.oldRank >= 0 && evt.oldRank < SuperMechRanks.All.Count
+                    ? LocalizedTextManager.getText(SuperMechRanks.All[evt.oldRank].name) : "?";
+                string newName = evt.newRank >= 0 && evt.newRank < SuperMechRanks.All.Count
+                    ? LocalizedTextManager.getText(SuperMechRanks.All[evt.newRank].name) : "?";
+                SMEventLogger.LogPromotion(evt.actor, oldName, newName, 0f, evt.newRank);
+            });
+
+            // 势力创建 → 事件日志
+            SuperMechEventBus.Subscribe<FactionCreatedEvent>("FactionCreated", evt =>
+            {
+                if (evt.leader == null) return;
+                Debug.Log($"[超神机械师] 势力创建事件: {evt.leader.name} 创建了{evt.factionName}");
+            });
+
+            Debug.Log("[超神机械师] 事件总线订阅注册完成");
         }
     }
 }

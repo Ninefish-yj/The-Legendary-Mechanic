@@ -148,6 +148,7 @@ namespace SuperMech.Code
             removed += SuperMechAdvancementTask.CleanupDead(alive);
             removed += SuperMechAI.CleanupDead(alive);
             removed += SuperMechFaction.CleanupDead(alive);
+            removed += SuperMechActorContextRegistry.CleanupDead(alive);
         }
 
         public static void ClearAll()

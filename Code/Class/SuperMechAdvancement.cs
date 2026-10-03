@@ -445,7 +445,17 @@ namespace SuperMech.Code
         public static void SetExactRank(Actor a, int index)
         {
             if (a == null || index < 0 || index >= SuperMechRanks.All.Count) return;
+            int oldRank = _exactRank.TryGetValue(a.id, out var o) ? o : -1;
+            if (oldRank == index) return;
             _exactRank[a.id] = index;
+            // 发布阶位变化事件（事件总线，解耦下游系统）
+            if (oldRank >= 0 && oldRank != index)
+            {
+                SuperMechEventBus.Publish("ActorRankChanged", new ActorRankChangedEvent
+                {
+                    actor = a, oldRank = oldRank, newRank = index
+                });
+            }
             if (!SuperMechRanks.IsPlusRank(index))
             {
                 string id = SuperMechRanks.All[index].id;

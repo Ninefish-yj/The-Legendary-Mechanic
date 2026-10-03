@@ -558,6 +558,7 @@ namespace SuperMech.Code
         public static void DiePostfix(Actor __instance)
         {
             if (__instance == null || __instance.isAlive()) return;
+            SuperMechEventBus.Publish("ActorDied", new ActorDiedEvent { actor = __instance, cause = AttackType.None });
             if (!SuperMechConfig.SanctuaryKeyDropEnabled) return;
 
             try
