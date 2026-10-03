@@ -3,8 +3,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>v0.47.0 超A领域机制
-    /// 原著：超A级（S阶）及以上战斗时可展开领域，领域内主人拥有绝对优势
+    /// <summary>v0.47.0 超神领域机制（原著第1430章：超神级放出内空间形成领域）
+    /// 原著：超神级（X阶）体内形成内空间，战斗时放出内空间投影形成领域，领域内主人拥有绝对优势
     /// 高阶领域压制低阶领域，同阶领域互相抵消
     /// </summary>
     public static class SuperMechDomain

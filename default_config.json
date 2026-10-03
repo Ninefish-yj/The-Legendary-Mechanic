@@ -370,7 +370,7 @@
     {
       "Id": "domain_min_rank",
       "Type": "INT_SLIDER",
-      "IntVal": 10,
+      "IntVal": 13,
       "MinIntVal": 0,
       "MaxIntVal": 13,
       "Callback": "SuperMech.Code.SuperMechConfig:SetDomainMinRank"

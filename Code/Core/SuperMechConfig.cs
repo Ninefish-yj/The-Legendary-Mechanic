@@ -50,7 +50,7 @@ namespace SuperMech.Code
         /// <summary>超A领域总开关</summary>
         public static bool DomainEnabled = true;
         /// <summary>展开领域最低阶位（默认10=S阶/超A级）</summary>
-        public static int DomainMinRank = 10;
+        public static int DomainMinRank = 13;
         /// <summary>领域持续时间（秒）</summary>
         public static float DomainDuration = 8f;
         /// <summary>领域内主人伤害加成（默认0.15=15%）</summary>
