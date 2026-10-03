@@ -77,45 +77,40 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // 窗口背景由SMUguiWindow统一控制，不在此设置尺寸
+            // === 顶部工具栏（高度56）===
+            var topBar = new GameObject("TopBar");
+            topBar.transform.SetParent(transform, false);
+            var topRect = topBar.AddComponent<RectTransform>();
+            topRect.anchorMin = new Vector2(0, 1);
+            topRect.anchorMax = new Vector2(1, 1);
+            topRect.pivot = new Vector2(0.5f, 1);
+            topRect.sizeDelta = new Vector2(0, 56);
+            topRect.offsetMin = new Vector2(4, 0);
+            topRect.offsetMax = new Vector2(-4, 0);
+            var topBg = topBar.AddComponent<Image>();
+            topBg.color = new Color(0, 0, 0, 0.2f);
 
-            // === 左栏：筛选（宽度120）===
-            var leftGo = new GameObject("LeftPanel");
-            leftGo.transform.SetParent(transform, false);
-            var leftRect = leftGo.AddComponent<RectTransform>();
-            leftRect.anchorMin = new Vector2(0, 0);
-            leftRect.anchorMax = new Vector2(0, 1);
-            leftRect.pivot = new Vector2(0, 0.5f);
-            leftRect.sizeDelta = new Vector2(120, 0);
-            leftRect.offsetMin = new Vector2(4, 30);
-            leftRect.offsetMax = new Vector2(0, -8);
-
-            var leftBg = leftGo.AddComponent<Image>();
-            leftBg.color = new Color(0, 0, 0, 0.15f);
-
-            SMUiSkin.MakeText(leftGo.transform, LocalizedTextManager.getText("sm_ui_rank_filter"), 12, TextAnchor.UpperCenter)
-                .GetComponent<RectTransform>().sizeDelta = new Vector2(110, 20);
-
-            // 体系筛选按钮
-            var sysContainer = new GameObject("SysFilter");
-            sysContainer.transform.SetParent(leftGo.transform, false);
-            var sysRect = sysContainer.AddComponent<RectTransform>();
-            sysRect.anchorMin = new Vector2(0, 1);
-            sysRect.anchorMax = new Vector2(1, 1);
-            sysRect.pivot = new Vector2(0.5f, 1);
-            sysRect.sizeDelta = new Vector2(0, 130);
-            sysRect.anchoredPosition = new Vector2(0, -24);
-            var sysLayout = sysContainer.AddComponent<VerticalLayoutGroup>();
-            sysLayout.spacing = 2;
+            // 第一行：体系筛选按钮（横向）
+            var sysRow = new GameObject("SysRow");
+            sysRow.transform.SetParent(topBar.transform, false);
+            var sysRowRect = sysRow.AddComponent<RectTransform>();
+            sysRowRect.anchorMin = new Vector2(0, 1);
+            sysRowRect.anchorMax = new Vector2(1, 1);
+            sysRowRect.pivot = new Vector2(0.5f, 1);
+            sysRowRect.sizeDelta = new Vector2(0, 24);
+            sysRowRect.anchoredPosition = new Vector2(0, -4);
+            var sysLayout = sysRow.AddComponent<HorizontalLayoutGroup>();
+            sysLayout.spacing = 3;
             sysLayout.padding = new RectOffset(4, 4, 0, 0);
             sysLayout.childControlHeight = true;
             sysLayout.childControlWidth = true;
+            sysLayout.childForceExpandWidth = true;
 
             _systemButtons = new List<GameObject>();
             for (int i = 0; i < SystemNames.Length; i++)
             {
-                int idx = i - 1; // -1=全部, 0-4=体系
-                var btn = SMUiSkin.MakeButton(sysContainer.transform, SystemNames[i], 10, () =>
+                int idx = i - 1;
+                var btn = SMUiSkin.MakeButton(sysRow.transform, SystemNames[i], 9, () =>
                 {
                     _currentSystemFilter = idx;
                     UpdateSystemButtonColors();
@@ -124,84 +119,78 @@ namespace SuperMech.Code
                 var btnImg = btn.GetComponent<Image>();
                 if (btnImg != null)
                     btnImg.color = _currentSystemFilter == idx ? new Color(0.3f, 0.5f, 0.8f, 0.8f) : new Color(0.2f, 0.2f, 0.2f, 0.8f);
-                var btnRect = btn.GetComponent<RectTransform>();
-                btnRect.sizeDelta = new Vector2(0, 18);
                 _systemButtons.Add(btn.gameObject);
             }
 
-            // 阶位筛选下拉
-            var rankLabel = SMUiSkin.MakeText(leftGo.transform, LocalizedTextManager.getText("sm_ui_rank_rank_filter"), 11, TextAnchor.MiddleLeft);
-            var rankLabelRect = rankLabel.GetComponent<RectTransform>();
-            rankLabelRect.anchorMin = new Vector2(0, 1);
-            rankLabelRect.anchorMax = new Vector2(1, 1);
-            rankLabelRect.pivot = new Vector2(0.5f, 1);
-            rankLabelRect.sizeDelta = new Vector2(0, 18);
-            rankLabelRect.anchoredPosition = new Vector2(0, -158);
+            // 第二行：排序下拉 + 阶位筛选 + 统计 + 清除筛选
+            var ctrlRow = new GameObject("CtrlRow");
+            ctrlRow.transform.SetParent(topBar.transform, false);
+            var ctrlRect = ctrlRow.AddComponent<RectTransform>();
+            ctrlRect.anchorMin = new Vector2(0, 1);
+            ctrlRect.anchorMax = new Vector2(1, 1);
+            ctrlRect.pivot = new Vector2(0.5f, 1);
+            ctrlRect.sizeDelta = new Vector2(0, 24);
+            ctrlRect.anchoredPosition = new Vector2(0, -30);
 
-            _rankDropdown = CreateSimpleDropdown(leftGo.transform, RankNames, OnRankChanged);
-            var rankDropRect = _rankDropdown.GetComponent<RectTransform>();
-            rankDropRect.anchorMin = new Vector2(0, 1);
-            rankDropRect.anchorMax = new Vector2(1, 1);
-            rankDropRect.pivot = new Vector2(0.5f, 1);
-            rankDropRect.sizeDelta = new Vector2(0, 22);
-            rankDropRect.anchoredPosition = new Vector2(0, -178);
-
-            // 清除筛选按钮
-            var clearBtn = SMUiSkin.MakeButton(leftGo.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 10, ClearAllFilters);
-            var clearBtnRect = clearBtn.GetComponent<RectTransform>();
-            clearBtnRect.anchorMin = new Vector2(0.5f, 0);
-            clearBtnRect.anchorMax = new Vector2(0.5f, 0);
-            clearBtnRect.pivot = new Vector2(0.5f, 0);
-            clearBtnRect.sizeDelta = new Vector2(80, 20);
-            clearBtnRect.anchoredPosition = new Vector2(0, 8);
-            var clearBtnImg = clearBtn.GetComponent<Image>();
-            if (clearBtnImg != null) clearBtnImg.color = new Color(0.5f, 0.2f, 0.2f, 0.8f);
-
-            // === 中栏：列表（宽度340）===
-            var centerGo = new GameObject("CenterPanel");
-            centerGo.transform.SetParent(transform, false);
-            var centerRect = centerGo.AddComponent<RectTransform>();
-            centerRect.anchorMin = new Vector2(0, 0);
-            centerRect.anchorMax = new Vector2(1, 1);
-            centerRect.offsetMin = new Vector2(128, 30);
-            centerRect.offsetMax = new Vector2(-130, -8);
-
-            // 顶部排序栏
-            var topBar = new GameObject("TopBar");
-            topBar.transform.SetParent(centerGo.transform, false);
-            var topRect = topBar.AddComponent<RectTransform>();
-            topRect.anchorMin = new Vector2(0, 1);
-            topRect.anchorMax = new Vector2(1, 1);
-            topRect.pivot = new Vector2(0.5f, 1);
-            topRect.sizeDelta = new Vector2(0, 26);
-
-            _sortDropdown = CreateSimpleDropdown(topBar.transform, SortNames, OnSortChanged);
+            // 排序下拉（左）
+            _sortDropdown = CreateSimpleDropdown(ctrlRow.transform, SortNames, OnSortChanged);
             var sortRect = _sortDropdown.GetComponent<RectTransform>();
             sortRect.anchorMin = new Vector2(0, 0.5f);
             sortRect.anchorMax = new Vector2(0, 0.5f);
             sortRect.pivot = new Vector2(0, 0.5f);
-            sortRect.sizeDelta = new Vector2(120, 22);
+            sortRect.sizeDelta = new Vector2(90, 20);
             sortRect.anchoredPosition = new Vector2(4, 0);
 
-            _countText = SMUiSkin.MakeText(topBar.transform, "共 0 人", 10, TextAnchor.MiddleRight);
+            // 阶位筛选下拉（左，排序右侧）
+            _rankDropdown = CreateSimpleDropdown(ctrlRow.transform, RankNames, OnRankChanged);
+            var rankDropRect = _rankDropdown.GetComponent<RectTransform>();
+            rankDropRect.anchorMin = new Vector2(0, 0.5f);
+            rankDropRect.anchorMax = new Vector2(0, 0.5f);
+            rankDropRect.pivot = new Vector2(0, 0.5f);
+            rankDropRect.sizeDelta = new Vector2(60, 20);
+            rankDropRect.anchoredPosition = new Vector2(98, 0);
+
+            // 清除筛选按钮（左）
+            var clearBtn = SMUiSkin.MakeButton(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 9, ClearAllFilters);
+            var clearBtnRect = clearBtn.GetComponent<RectTransform>();
+            clearBtnRect.anchorMin = new Vector2(0, 0.5f);
+            clearBtnRect.anchorMax = new Vector2(0, 0.5f);
+            clearBtnRect.pivot = new Vector2(0, 0.5f);
+            clearBtnRect.sizeDelta = new Vector2(60, 20);
+            clearBtnRect.anchoredPosition = new Vector2(162, 0);
+            var clearBtnImg = clearBtn.GetComponent<Image>();
+            if (clearBtnImg != null) clearBtnImg.color = new Color(0.5f, 0.2f, 0.2f, 0.8f);
+
+            // 统计文字（右）
+            _countText = SMUiSkin.MakeText(ctrlRow.transform, "共 0 人", 10, TextAnchor.MiddleRight);
             var countRect = _countText.GetComponent<RectTransform>();
             countRect.anchorMin = new Vector2(1, 0.5f);
             countRect.anchorMax = new Vector2(1, 0.5f);
             countRect.pivot = new Vector2(1, 0.5f);
-            countRect.sizeDelta = new Vector2(80, 20);
+            countRect.sizeDelta = new Vector2(100, 20);
             countRect.anchoredPosition = new Vector2(-4, 0);
 
-            // 滚动列表
+            // 阶位分布统计（右，统计文字左侧）
+            _statsText = SMUiSkin.MakeText(ctrlRow.transform, "", 9, TextAnchor.MiddleRight);
+            var statsRect = _statsText.GetComponent<RectTransform>();
+            statsRect.anchorMin = new Vector2(1, 0.5f);
+            statsRect.anchorMax = new Vector2(1, 0.5f);
+            statsRect.pivot = new Vector2(1, 0.5f);
+            statsRect.sizeDelta = new Vector2(200, 20);
+            statsRect.anchoredPosition = new Vector2(-106, 0);
+            _statsText.horizontalOverflow = HorizontalWrapMode.Overflow;
+
+            // === 中间：全宽滚动列表 ===
             var scrollGo = new GameObject("ScrollView");
-            scrollGo.transform.SetParent(centerGo.transform, false);
+            scrollGo.transform.SetParent(transform, false);
             _scrollViewRect = scrollGo.AddComponent<RectTransform>();
             _scrollViewRect.anchorMin = Vector2.zero;
             _scrollViewRect.anchorMax = Vector2.one;
-            _scrollViewRect.offsetMin = new Vector2(0, 28);
-            _scrollViewRect.offsetMax = new Vector2(0, 28);
+            _scrollViewRect.offsetMin = new Vector2(4, 28);
+            _scrollViewRect.offsetMax = new Vector2(-4, -60);
 
             var scrollImg = scrollGo.AddComponent<Image>();
-            scrollImg.color = new Color(0, 0, 0, 0.2f);
+            scrollImg.color = new Color(0, 0, 0, 0.15f);
             scrollGo.AddComponent<Mask>().showMaskGraphic = true;
             var scroll = scrollGo.AddComponent<ScrollRect>();
             scroll.horizontal = false;
@@ -228,61 +217,37 @@ namespace SuperMech.Code
             scroll.viewport = viewportRect;
             scroll.content = _listContent;
 
-            // 底部导航
+            // === 底部导航 ===
             var bottomBar = new GameObject("BottomBar");
-            bottomBar.transform.SetParent(centerGo.transform, false);
+            bottomBar.transform.SetParent(transform, false);
             var bottomRect = bottomBar.AddComponent<RectTransform>();
             bottomRect.anchorMin = new Vector2(0, 0);
             bottomRect.anchorMax = new Vector2(1, 0);
             bottomRect.pivot = new Vector2(0.5f, 0);
             bottomRect.sizeDelta = new Vector2(0, 24);
+            bottomRect.offsetMin = new Vector2(4, 4);
+            bottomRect.offsetMax = new Vector2(-4, 0);
 
-            var topBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_top"), 10, ToTop);
+            var topBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_top"), 9, ToTop);
             var topBtnRect = topBtn.GetComponent<RectTransform>();
             topBtnRect.anchorMin = new Vector2(0, 0.5f);
             topBtnRect.anchorMax = new Vector2(0, 0.5f);
             topBtnRect.sizeDelta = new Vector2(60, 20);
-            topBtnRect.anchoredPosition = new Vector2(4, 0);
+            topBtnRect.anchoredPosition = new Vector2(0, 0);
 
-            var bottomBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_bottom"), 10, ToBottom);
+            var bottomBtn = SMUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_bottom"), 9, ToBottom);
             var bottomBtnRect = bottomBtn.GetComponent<RectTransform>();
             bottomBtnRect.anchorMin = new Vector2(1, 0.5f);
             bottomBtnRect.anchorMax = new Vector2(1, 0.5f);
             bottomBtnRect.sizeDelta = new Vector2(60, 20);
-            bottomBtnRect.anchoredPosition = new Vector2(-4, 0);
+            bottomBtnRect.anchoredPosition = new Vector2(0, 0);
 
-            _emptyText = SMUiSkin.MakeText(centerGo.transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
+            _emptyText = SMUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
             var emptyRect = _emptyText.GetComponent<RectTransform>();
             emptyRect.anchorMin = new Vector2(0.5f, 0.5f);
             emptyRect.anchorMax = new Vector2(0.5f, 0.5f);
             emptyRect.sizeDelta = new Vector2(200, 40);
             _emptyText.gameObject.SetActive(false);
-
-            // === 右栏：统计（宽度120）===
-            var rightGo = new GameObject("RightPanel");
-            rightGo.transform.SetParent(transform, false);
-            var rightRect = rightGo.AddComponent<RectTransform>();
-            rightRect.anchorMin = new Vector2(1, 0);
-            rightRect.anchorMax = new Vector2(1, 1);
-            rightRect.pivot = new Vector2(1, 0.5f);
-            rightRect.sizeDelta = new Vector2(120, 0);
-            rightRect.offsetMin = new Vector2(0, 30);
-            rightRect.offsetMax = new Vector2(-4, -8);
-
-            var rightBg = rightGo.AddComponent<Image>();
-            rightBg.color = new Color(0, 0, 0, 0.15f);
-
-            SMUiSkin.MakeText(rightGo.transform, LocalizedTextManager.getText("sm_ui_rank_stats"), 12, TextAnchor.UpperCenter)
-                .GetComponent<RectTransform>().sizeDelta = new Vector2(110, 20);
-
-            _statsText = SMUiSkin.MakeText(rightGo.transform, "", 9, TextAnchor.UpperLeft);
-            var statsRect = _statsText.GetComponent<RectTransform>();
-            statsRect.anchorMin = new Vector2(0, 0);
-            statsRect.anchorMax = new Vector2(1, 1);
-            statsRect.offsetMin = new Vector2(6, 28);
-            statsRect.offsetMax = new Vector2(-6, -6);
-            _statsText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            _statsText.verticalOverflow = VerticalWrapMode.Overflow;
         }
 
         private static Dropdown CreateSimpleDropdown(Transform parent, string[] options, System.Action<int> onChanged)
@@ -451,46 +416,27 @@ namespace SuperMech.Code
         {
             if (_statsText == null) return;
 
-            // 阶位分布
-            int[] rankCount = new int[9]; // F,E,D,C,B,A,S,X,其他
-            int[] sysCount = new int[5];  // 机械,魔法,异能,武道,念力
-            int awakened = 0;
-
+            // 阶位分布（单行摘要，适配顶部工具栏）
+            int[] rankCount = new int[8]; // F,E,D,C,B,A,S,X
             foreach (var a in _candidatePool)
             {
-                awakened++;
                 int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
                 int tier = rankIdx switch
                 {
                     0 => 0, 1 or 2 => 1, 3 or 4 => 2, 5 or 6 => 3,
                     7 => 4, 8 or 9 => 5, 10 or 11 or 12 => 6, 13 => 7,
-                    _ => 8
+                    _ => -1
                 };
-                rankCount[tier]++;
-
-                int sysIdx = GetSystemIndex(a);
-                if (sysIdx >= 0) sysCount[sysIdx]++;
+                if (tier >= 0) rankCount[tier]++;
             }
 
-            string tRankDist = LocalizedTextManager.getText("sm_ui_rank_distribution");
-            string tSysDist = LocalizedTextManager.getText("sm_ui_sys_distribution");
-            string tAwakened = LocalizedTextManager.getText("sm_ui_awakened_count");
-
-            string stats = $"<b>{tRankDist}</b>\n";
             string[] rankLabels = { "F", "E", "D", "C", "B", "A", "S", "X" };
+            string stats = "";
             for (int i = 0; i < 8; i++)
             {
                 if (rankCount[i] > 0)
-                    stats += $"{rankLabels[i]}: {rankCount[i]}  ";
+                    stats += $"{rankLabels[i]}:{rankCount[i]} ";
             }
-            stats += $"\n\n<b>{tSysDist}</b>\n";
-            for (int i = 0; i < 5; i++)
-            {
-                if (sysCount[i] > 0)
-                    stats += $"{SystemNames[i + 1]}: {sysCount[i]}\n";
-            }
-            stats += $"\n<b>{tAwakened}</b>: {awakened}";
-
             _statsText.text = stats;
         }
 
