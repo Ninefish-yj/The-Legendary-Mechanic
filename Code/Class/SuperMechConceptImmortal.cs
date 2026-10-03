@@ -16,6 +16,42 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechConceptImmortal
     {
+        // 降临者重生频率限制：60秒内最多3次
+        private static readonly System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<float>> _respawnTimestamps
+            = new System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<float>>();
+        private const float RespawnWindow = 60f; // 时间窗口（秒）
+        private const int MaxRespawnPerWindow = 3; // 窗口内最大重生次数
+
+        /// <summary>
+        /// 检查降临者是否可以重生（60秒内最多3次）
+        /// </summary>
+        private static bool CanRespawn(string actorId)
+        {
+            float now = UnityEngine.Time.time;
+            System.Collections.Generic.List<float> timestamps;
+            if (!_respawnTimestamps.TryGetValue(actorId, out timestamps))
+            {
+                timestamps = new System.Collections.Generic.List<float>();
+                _respawnTimestamps[actorId] = timestamps;
+            }
+            // 移除超过窗口的旧记录
+            timestamps.RemoveAll(t => now - t > RespawnWindow);
+            return timestamps.Count < MaxRespawnPerWindow;
+        }
+
+        /// <summary>
+        /// 记录一次重生
+        /// </summary>
+        private static void RecordRespawn(string actorId)
+        {
+            System.Collections.Generic.List<float> timestamps;
+            if (!_respawnTimestamps.TryGetValue(actorId, out timestamps))
+            {
+                timestamps = new System.Collections.Generic.List<float>();
+                _respawnTimestamps[actorId] = timestamps;
+            }
+            timestamps.Add(UnityEngine.Time.time);
+        }
         /// <summary>信息态抹杀标记：被标记的单位死亡时不会触发概念重塑（真正死亡）</summary>
         private static readonly HashSet<long> _informationErased = new HashSet<long>();
 
@@ -125,11 +161,16 @@ namespace SuperMech.Code
 
             try
             {
-                // 降临者（玩家）重生：死亡后立即复活，保留阶位和职业
+                // 降临者（玩家）重生：死亡后立即复活，60秒内最多3次
                 if (__instance.hasTrait(SuperMechTraits.Descendant))
                 {
-                    RespawnDescendant(__instance);
-                    return false; // 阻止真正死亡
+                    if (CanRespawn(__instance.id))
+                    {
+                        RespawnDescendant(__instance);
+                        RecordRespawn(__instance.id);
+                        return false; // 阻止真正死亡
+                    }
+                    Debug.Log($"[超神机械师] 降临者 {__instance.name} 重生次数已达上限（60秒内3次），允许死亡");
                 }
 
                 // 超神级资讯唯一·概念永生：普通死亡触发信息态扰动重塑
