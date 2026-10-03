@@ -4154,6 +4154,7 @@
   "sm_ui_section_combat": "战斗数值",
   "sm_ui_section_special": "特殊与入口",
   "sm_log_spell_text": "【法术习得】{0}学会了法术〖{1}〗",
+  "sm_log_skill_text": "【技能释放】{0}释放了〖{1}〗",
   "sm_spell_bran_element": "元素",
   "sm_spell_bran_arcane": "秘术",
   "sm_spell_bran_abjuration": "庇护",

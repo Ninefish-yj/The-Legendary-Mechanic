@@ -38,6 +38,7 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_iteration", "sm_log_iteration_text", new Color(1f, 0.5f, 0.5f));
             RegisterLogAsset("sm_log_resurrection", "sm_log_resurrection_text", new Color(1f, 0.3f, 0.8f));
             RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f));
+            RegisterLogAsset("sm_log_skill", "sm_log_skill_text", new Color(0.4f, 0.8f, 0.6f));
             RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f));
 
             Debug.Log("[超神机械师] 事件日志系统初始化完成，注册8类日志资产+1历史分类");
@@ -308,6 +309,30 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 推送法术日志失败: {e.Message}");
+            }
+        }
+
+        /// <summary>推送技能释放事件日志（默认关闭，避免刷屏）</summary>
+        public static void LogSkillCast(Actor a, SuperMechSkills.SkillDef def)
+        {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            TryInit();
+            if (!_initialized || a == null || def == null) return;
+            var asset = GetAsset("sm_log_skill");
+            if (asset == null) return;
+
+            try
+            {
+                string skillName = LocalizedTextManager.getText(def.name);
+                new WorldLogMessage(asset, SafeName(a), SafeStr(skillName), "")
+                {
+                    unit = a,
+                    location = a.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送技能日志失败: {e.Message}");
             }
         }
 

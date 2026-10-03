@@ -76,6 +76,12 @@ namespace SuperMech.Code
             {
                 Actor attacker = pAttacker as Actor;
 
+                // v0.44.0 技能释放：攻击者攻击时有概率触发主动技能
+                if (attacker != null && attacker.isAlive() && Random.value < 0.3f)
+                {
+                    try { SMSkillRuntime.TryCastSkill(attacker, target); } catch { }
+                }
+
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
                 {
                     if (SuperMechInfoState.TryShield(target))

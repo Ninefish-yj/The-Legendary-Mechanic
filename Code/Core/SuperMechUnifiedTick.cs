@@ -68,6 +68,7 @@ namespace SuperMech.Code
                 SafeRun("知识协同", () => SuperMechKnowledgeSynergy.TickSynergy());
                 SafeRun("机械融合", () => SuperMechMechFusion.TickFusion());
                 SafeRun("技能自动学习", () => SuperMechSkills.TickAutoLearnAll());
+                SafeRun("技能运行时", () => SMSkillRuntime.Tick());
                 SafeRun("降临者濒死保护", () => SuperMechConceptImmortal.TickGracePeriod());
             }
             else if (group == 2)
@@ -135,6 +136,7 @@ namespace SuperMech.Code
             removed += SuperMechCosmicRelic.CleanupDead(alive);
             removed += SuperMechSanctuary.CleanupDead(alive);
             removed += SuperMechSkills.CleanupDead(alive);
+            removed += SMSkillRuntime.CleanupDead(alive);
             removed += SuperMechPotentialRating.CleanupDead(alive);
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechAdvancementTask.CleanupDead(alive);
