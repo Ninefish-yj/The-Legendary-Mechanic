@@ -202,6 +202,97 @@ namespace SuperMech.Code
             foreach (var id in toRemove) _activeDomains.Remove(id);
         }
 
+        /// <summary>范围脉冲：对所有活跃内空间，脉冲范围内敌人（参考天人武道领域系统，原著：内空间将周围区域变作内维度环境）</summary>
+        private static int _pulseTickCounter = 0;
+        public static void TickPulse()
+        {
+            if (!SuperMechConfig.InnerSpaceEnabled) return;
+            _pulseTickCounter++;
+            if (_pulseTickCounter < SuperMechConfig.InnerSpacePulseInterval) return;
+            _pulseTickCounter = 0;
+
+            CleanExpired();
+            if (_activeDomains.Count == 0) return;
+            if (World.world == null || World.world.units == null) return;
+
+            int radius = SuperMechConfig.InnerSpacePulseRadius;
+            var allUnits = World.world.units.units_only_alive;
+            if (allUnits == null) return;
+
+            foreach (var kv in _activeDomains)
+            {
+                Actor caster = null;
+                foreach (var u in allUnits) if (u != null && u.id == kv.Key) { caster = u; break; }
+                if (caster == null || !caster.isAlive() || caster.current_tile == null) continue;
+
+                int cx = caster.current_tile.x;
+                int cy = caster.current_tile.y;
+
+                foreach (var enemy in allUnits)
+                {
+                    if (enemy == null || !enemy.isAlive() || enemy.current_tile == null) continue;
+                    if (enemy.id == caster.id) continue;
+                    if (enemy.kingdom != null && caster.kingdom != null && enemy.kingdom.id == caster.kingdom.id) continue;
+
+                    int dist = Mathf.Abs(enemy.current_tile.x - cx) + Mathf.Abs(enemy.current_tile.y - cy);
+                    if (dist > radius) continue;
+
+                    PulseEnemy(caster, enemy, kv.Value.rank);
+                }
+            }
+        }
+
+        /// <summary>脉冲单个敌人：按职业差异化效果</summary>
+        private static void PulseEnemy(Actor caster, Actor enemy, int rank)
+        {
+            if (enemy == null || !enemy.isAlive()) return;
+
+            // 基础脉冲伤害：攻击者最大生命的比例
+            float maxHp = 0f;
+            try { maxHp = caster.getMaxHealth(); } catch { }
+            if (maxHp <= 0f) return;
+
+            float dmg = maxHp * SuperMechConfig.InnerSpacePulseDamageFraction;
+            // 阶位加成
+            if (rank >= 13) dmg *= 1.5f;
+            else if (rank >= 12) dmg *= 1.2f;
+
+            // 职业差异化脉冲效果
+            if (caster.hasTrait(SuperMechTraits.ClassMech))
+            {
+                // 虚空内空间：高伤害脉冲
+                dmg *= 1.3f;
+            }
+            else if (caster.hasTrait(SuperMechTraits.ClassMind))
+            {
+                // 精神内空间：伤害+降低敌人智力
+                try { enemy.stats["intelligence"] = Mathf.Max(0f, enemy.stats["intelligence"] - 1f); } catch { }
+            }
+            else if (caster.hasTrait(SuperMechTraits.ClassPsi))
+            {
+                // 基因内空间：伤害+吸血
+                dmg *= 1.1f;
+                if (caster.isAlive() && caster.data != null)
+                {
+                    try { caster.data.health = Mathf.Min(caster.getMaxHealth(), caster.data.health + (int)(dmg * 0.3f)); } catch { }
+                }
+            }
+            else if (caster.hasTrait(SuperMechTraits.ClassMage))
+            {
+                // 元素内空间：伤害+抽蓝
+                dmg *= 1.2f;
+                try { int mana = enemy.getMana(); enemy.data.mana = Mathf.Max(0, mana - (int)(dmg * 0.5f)); } catch { }
+            }
+            else if (caster.hasTrait(SuperMechTraits.ClassMartial))
+            {
+                // 武道内空间：纯伤害
+                dmg *= 1.15f;
+            }
+
+            if (dmg <= 0f) return;
+            try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch { }
+        }
+
         public static void Clear(Actor a)
         {
             if (a == null) return;

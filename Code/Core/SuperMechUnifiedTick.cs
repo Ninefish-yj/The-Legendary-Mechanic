@@ -90,6 +90,7 @@ namespace SuperMech.Code
                 SafeRun("自动收藏", () => SuperMechFavorite.TickAutoFavorite());
                 SafeRun("光环", () => SuperMechAura.TickAura());
                 SafeRun("维度增益", () => SuperMechDimension.TickDimensionBuffs());
+                SafeRun("内空间脉冲", () => SuperMechInnerSpace.TickPulse());
             }
 
             float now = Time.time;

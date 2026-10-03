@@ -59,6 +59,12 @@ namespace SuperMech.Code
         public static float InnerSpaceEnemyPenalty = 0.10f;
         /// <summary>内空间内主人减伤（默认0.10=10%）</summary>
         public static float InnerSpaceDamageReduction = 0.10f;
+        /// <summary>内空间脉冲间隔（tick，默认60=约1秒）</summary>
+        public static int InnerSpacePulseInterval = 60;
+        /// <summary>内空间脉冲范围（格，默认10）</summary>
+        public static int InnerSpacePulseRadius = 10;
+        /// <summary>内空间脉冲伤害占攻击者最大生命比例（默认0.05=5%）</summary>
+        public static float InnerSpacePulseDamageFraction = 0.05f;
 
         public static bool MechSummonEnabled = true;
         public static int MaxSummonedUnits = 50;
