@@ -30,63 +30,63 @@ namespace SuperMech.Code
         {
             new CraftRecipe {
                 id = "sm_craft_ranger", name = "sm_crafting_677", desc = "sm_crafting_678",
-                creatureId = "bandit", minStage = 1, requiredKnowledge = "",
+                creatureId = "bandit", minStage = 1, requiredKnowledge = "sm_know_mech_0_0_0",
                 qiBase = 5f, expBase = 10f,
                 traits = new[] { "strong", "tough" },
                 cost = new Dictionary<string, int> { {"common_metals", 5} }
             },
             new CraftRecipe {
                 id = "sm_craft_drone", name = "sm_crafting_679", desc = "sm_crafting_680",
-                creatureId = "alien", minStage = 2, requiredKnowledge = "",
+                creatureId = "alien", minStage = 2, requiredKnowledge = "sm_know_mech_0_1_0",
                 qiBase = 8f, expBase = 15f,
                 traits = new[] { "fast", "genius" },
                 cost = new Dictionary<string, int> { {"common_metals", 8}, {"gems", 2} }
             },
             new CraftRecipe {
                 id = "sm_craft_sentry", name = "sm_crafting_681", desc = "sm_crafting_682",
-                creatureId = "civ_crystal_golem", minStage = 3, requiredKnowledge = "",
+                creatureId = "civ_crystal_golem", minStage = 3, requiredKnowledge = "sm_know_mech_1_0_0",
                 qiBase = 12f, expBase = 25f,
                 traits = new[] { "tough", "immortal" },
                 cost = new Dictionary<string, int> { {"common_metals", 15}, {"stone", 10} }
             },
             new CraftRecipe {
                 id = "sm_craft_mech", name = "sm_crafting_683", desc = "sm_crafting_684",
-                creatureId = "crabzilla", minStage = 4, requiredKnowledge = "",
+                creatureId = "crabzilla", minStage = 4, requiredKnowledge = "sm_know_mech_1_1_0",
                 qiBase = 20f, expBase = 40f,
                 traits = new[] { "strong", "tough" },
                 cost = new Dictionary<string, int> { {"common_metals", 25}, {"gems", 5} }
             },
             new CraftRecipe {
                 id = "sm_craft_carrier", name = "sm_crafting_685", desc = "sm_crafting_686",
-                creatureId = "dragon", minStage = 5, requiredKnowledge = "",
+                creatureId = "dragon", minStage = 5, requiredKnowledge = "sm_know_mech_2_0_0",
                 qiBase = 30f, expBase = 60f,
                 traits = new[] { "fast", "strong" },
                 cost = new Dictionary<string, int> { {"common_metals", 30}, {"wood", 20} }
             },
             new CraftRecipe {
                 id = "sm_craft_fortress", name = "sm_crafting_687", desc = "sm_crafting_688",
-                creatureId = "civ_crystal_golem", minStage = 6, requiredKnowledge = "",
+                creatureId = "civ_crystal_golem", minStage = 6, requiredKnowledge = "sm_know_mech_2_1_0",
                 qiBase = 50f, expBase = 100f,
                 traits = new[] { "strong", "tough", "regeneration" },
                 cost = new Dictionary<string, int> { {"adamantine", 10}, {"gems", 10} }
             },
             new CraftRecipe {
                 id = "sm_craft_virtual", name = "sm_crafting_689", desc = "sm_crafting_690",
-                creatureId = "human", minStage = 7, requiredKnowledge = "",
+                creatureId = "human", minStage = 7, requiredKnowledge = "sm_know_mech_3_0_0",
                 qiBase = 80f, expBase = 150f,
                 traits = new[] { "immortal", "genius", "fast" },
                 cost = new Dictionary<string, int> { {"gold", 20}, {"gems", 15} }
             },
             new CraftRecipe {
                 id = "sm_craft_cruiser", name = "sm_crafting_691", desc = "sm_crafting_692",
-                creatureId = "dragon", minStage = 8, requiredKnowledge = "",
+                creatureId = "dragon", minStage = 8, requiredKnowledge = "sm_know_mech_3_1_0",
                 qiBase = 120f, expBase = 250f,
                 traits = new[] { "strong", "tough", "fast" },
                 cost = new Dictionary<string, int> { {"adamantine", 20}, {"dragon_scales", 5} }
             },
             new CraftRecipe {
                 id = "sm_craft_apostle", name = "sm_crafting_693", desc = "sm_crafting_694",
-                creatureId = "crabzilla", minStage = 10, requiredKnowledge = "",
+                creatureId = "crabzilla", minStage = 10, requiredKnowledge = "sm_know_mech_4_0_0",
                 qiBase = 200f, expBase = 500f,
                 traits = new[] { "strong", "tough", "immortal", "regeneration" },
                 cost = new Dictionary<string, int> { {"adamantine", 30}, {"gold", 30}, {"gems", 20} }

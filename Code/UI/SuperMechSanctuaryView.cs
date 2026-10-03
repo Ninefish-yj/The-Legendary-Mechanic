@@ -523,7 +523,7 @@ namespace SuperMech.Code
             _orbDetailText.text =
                 $"【文明记录】\n\n" +
                 $"<color=#3366cc>名称：</color>{info.civilizationName}\n" +
-                $"<color=#3366cc>领域：</color>{info.domain}\n" +
+                $"<color=#3366cc>内空间：</color>{info.domain}\n" +
                 $"<color=#3366cc>迭代：</color>第{info.iteration}轮\n" +
                 $"<color=#3366cc>成就：</color>{info.achievement}\n" +
                 $"<color=#cc3333>毁灭：</color>{info.destructionCause}\n\n" +
