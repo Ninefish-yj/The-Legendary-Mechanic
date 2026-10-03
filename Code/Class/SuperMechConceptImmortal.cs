@@ -57,7 +57,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>
-        /// 濒死保护：超过重生次数后，恢复10%生命值，冻结行动，等待窗口刷新
+        /// 濒死保护：超过重生次数后，恢复10%生命值，冻结行动+无敌，等待窗口刷新
         /// </summary>
         internal static void EnterGracePeriod(Actor a)
         {
@@ -66,8 +66,9 @@ namespace SuperMech.Code
                 a.data.health = Mathf.Max(1, (int)(a.getMaxHealth() * 0.1f));
                 a.data.stamina = (int)a.getMaxStamina();
                 a.is_ai_frozen = true; // 冻结AI，不能行动
+                a.addStatusEffect("invincible", RespawnWindow); // 无敌，其他单位不能攻击
                 _gracePeriodUnits[a.data.id] = UnityEngine.Time.time + RespawnWindow;
-                Debug.Log($"[超神机械师] 降临者 {a.name} 重生次数已达上限，进入濒死保护（冻结行动，60秒后恢复）");
+                Debug.Log($"[超神机械师] 降临者 {a.name} 重生次数已达上限，进入濒死保护（冻结+无敌，60秒后恢复）");
             }
             catch (System.Exception e)
             {

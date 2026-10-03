@@ -99,7 +99,7 @@ namespace SuperMech.Code
             descendant.base_stats["experience"] = 2.0f; // 经验值获取翻倍
             descendant.base_stats["intelligence"] = 2;
             LocalizedTextManager.add("trait_" + Descendant, "降临者", pReplace: true);
-            LocalizedTextManager.add("trait_" + Descendant + "_info", "玩家化身，经验值获取翻倍，死亡后可重生（60秒内最多3次，超过则进入濒死保护）", pReplace: true);
+            LocalizedTextManager.add("trait_" + Descendant + "_info", "玩家化身，经验值获取翻倍，死亡后可重生（60秒内最多3次，超过则冻结+无敌等待刷新）", pReplace: true);
             AssetManager.traits.add(descendant);
         }
 
