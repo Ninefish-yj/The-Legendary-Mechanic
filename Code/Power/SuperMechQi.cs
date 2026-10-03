@@ -48,6 +48,8 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _combatTimer = new Dictionary<long, float>();
         private static readonly Dictionary<long, int> _appliedLevel = new Dictionary<long, int>();
+        private static readonly Dictionary<long, float> _qiDmgMul = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _qiHpMul = new Dictionary<long, float>();
 
         public static void Register()
         {
@@ -97,8 +99,19 @@ namespace SuperMech.Code
             stats["lifespan"] = endurance * 0.5f;
 
             // 倍率加成（知识/技能/融合，这些是额外加成）
-            stats["multiplier_damage"] = dmgMul;
-            stats["multiplier_health"] = hpMul * 1.2f;
+            // 必须先除旧再乘新，避免重复叠加；且不能直接覆盖，否则会覆盖阶位/能级/神性/维度等系统的加成
+            float newDmgMul = dmgMul;
+            float newHpMul = hpMul * 1.2f;
+            // 移除旧的气力倍率加成
+            if (_qiDmgMul.TryGetValue(a.id, out float oldDmg) && oldDmg > 0f)
+                stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) / oldDmg;
+            if (_qiHpMul.TryGetValue(a.id, out float oldHp) && oldHp > 0f)
+                stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) / oldHp;
+            // 添加新的气力倍率加成
+            stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) * newDmgMul;
+            stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) * newHpMul;
+            _qiDmgMul[a.id] = newDmgMul;
+            _qiHpMul[a.id] = newHpMul;
             stats["multiplier_stamina"] = 1.1f;
             stats["multiplier_speed"] = spdMul;
             stats["multiplier_crit"] = 1f + level * 0.01f;

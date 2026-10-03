@@ -26,6 +26,9 @@ namespace SuperMech.Code
         public static readonly Dictionary<long, int> _manaProgress = new Dictionary<long, int>();
         public static readonly Dictionary<long, int> _mindProgress = new Dictionary<long, int>();
 
+        // 追踪旧倍率加成，避免重复叠加
+        private static readonly Dictionary<long, float> _coreDmgMul = new Dictionary<long, float>();
+
         public static void Register()
         {
         }
@@ -100,29 +103,34 @@ namespace SuperMech.Code
             var stats = a.stats;
             if (stats == null) return;
 
+            // 先移除旧的核心能力倍率加成
+            if (_coreDmgMul.TryGetValue(a.id, out float oldDmg) && oldDmg > 0f)
+                stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) / oldDmg;
+
+            float newDmgMul = 1f;
+
             if (a.hasTrait(SuperMechTraits.ClassPsi) && _geneStage.TryGetValue(a.id, out int geneLv))
             {
-                float dmgBonus = 1f + geneLv * 0.10f;
-                float spdBonus = geneLv * 0.05f;
-                stats["multiplier_damage"] = dmgBonus;
-                stats["attack_speed"] = spdBonus;
+                newDmgMul *= 1f + geneLv * 0.10f;
+                stats["attack_speed"] = geneLv * 0.05f;
             }
 
             if (a.hasTrait(SuperMechTraits.ClassMage) && _manaStage.TryGetValue(a.id, out int manaLv))
             {
-                float dmgBonus = 1f + manaLv * 0.12f;
-                float manaBonus = manaLv * 20f;
-                stats["multiplier_damage"] = dmgBonus;
-                stats["mana"] = manaBonus;
+                newDmgMul *= 1f + manaLv * 0.12f;
+                stats["mana"] = manaLv * 20f;
             }
 
             if (a.hasTrait(SuperMechTraits.ClassMind) && _mindStage.TryGetValue(a.id, out int mindLv))
             {
-                float dmgBonus = 1f + mindLv * 0.10f;
-                float intBonus = mindLv * 3f;
-                stats["multiplier_damage"] = dmgBonus;
-                stats["intelligence"] = intBonus;
+                newDmgMul *= 1f + mindLv * 0.10f;
+                stats["intelligence"] = mindLv * 3f;
             }
+
+            // 添加新的核心能力倍率加成
+            if (newDmgMul > 1f)
+                stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) * newDmgMul;
+            _coreDmgMul[a.id] = newDmgMul;
         }
 
         public static string GetGeneStageName(Actor a)
