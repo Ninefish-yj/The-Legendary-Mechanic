@@ -47,8 +47,8 @@ namespace SuperMech.Code
                 activateCount = (existing?.activateCount ?? 0) + 1
             };
 
-            /* 内空间名称不按职业区分（原著：韩萧虚空内空间是因为虚空真灵身份，非职业）*/
-            Debug.Log($"[超神机械师] {a.name} 放出内空间！阶位{rank}，持续{SuperMechConfig.InnerSpaceDuration}秒");
+            // 内空间名称不按职业区分（原著：韩萧的虚空领域是个人特殊属性，非职业共性）
+            Debug.Log($"[超神机械师] {a.name} 放出内空间，展开领域！阶位{rank}，持续{SuperMechConfig.InnerSpaceDuration}秒");
         }
 
         /// <summary>获取攻击者在内空间中的伤害倍率</summary>
@@ -173,7 +173,7 @@ namespace SuperMech.Code
             foreach (var id in toRemove) _activeDomains.Remove(id);
         }
 
-        /// <summary>范围脉冲：内空间将周围区域变作内维度环境，范围内敌人持续受压制伤害（原著第1430章）</summary>
+        /// <summary>范围脉冲：放出内空间展开领域，将周围区域变作内维度环境，范围内敌人持续受压制伤害（原著第1430章）</summary>
         private const int PulseInterval = 60;   // 约1秒
         private const int PulseRadius = 10;     // 格
         private const float PulseDamageFraction = 0.05f; // 攻击者最大生命5%
@@ -217,7 +217,35 @@ namespace SuperMech.Code
                     int dist = Mathf.Abs(enemy.current_tile.x - cx) + Mathf.Abs(enemy.current_tile.y - cy);
                     if (dist > PulseRadius) continue;
                     try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch { }
+                    // 标记敌人处于领域内，施加负面效果（原著：领域带来负面影响）
+                    _domainSuppressed[enemy.id] = Time.time + 2f;
                 }
+            }
+        }
+
+        /// <summary>领域内敌人的负面效果（减速+减攻速），每tick调用</summary>
+        private static readonly Dictionary<long, float> _domainSuppressed = new Dictionary<long, float>();
+        public static void TickDomainEffects()
+        {
+            if (_domainSuppressed.Count == 0) return;
+            if (World.world == null || World.world.units == null) return;
+
+            float now = Time.time;
+            var toRemove = new List<long>();
+            foreach (var kv in _domainSuppressed)
+                if (kv.Value < now) toRemove.Add(kv.Key);
+            foreach (var id in toRemove) _domainSuppressed.Remove(id);
+            if (_domainSuppressed.Count == 0) return;
+
+            foreach (var actor in World.world.units)
+            {
+                if (actor == null || !actor.isAlive()) continue;
+                if (!_domainSuppressed.ContainsKey(actor.id)) continue;
+                try
+                {
+                    actor.stats["speed"] *= 0.7f;
+                    actor.stats["attack_speed"] *= 0.8f;
+                } catch { }
             }
         }
 
@@ -225,16 +253,20 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             _activeDomains.Remove(a.id);
+            _domainSuppressed.Remove(a.id);
         }
 
         public static void Clear()
         {
             _activeDomains.Clear();
+            _domainSuppressed.Clear();
         }
 
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
-            return SuperMechCleanup.CleanDict(_activeDomains, alive);
+            int removed = SuperMechCleanup.CleanDict(_activeDomains, alive);
+            removed += SuperMechCleanup.CleanDict(_domainSuppressed, alive);
+            return removed;
         }
     }
 }
