@@ -50,6 +50,18 @@ namespace SuperMech.Code
             int maxQ = _qualityMaxByRank[rankIdx];
             int quality = UnityEngine.Random.Range(minQ, maxQ + 1);
 
+            // v0.63.0 独特装备掉落：SS阶以上死亡时5%概率掉落独特装备
+            if (rankIdx >= 12 && UnityEngine.Random.value < 0.05f)
+            {
+                string[] uniqueIds = { "sm_eq_void_armor", "sm_eq_evolution_cube", "sm_eq_timespace_cutter" };
+                string uniqueId = uniqueIds[UnityEngine.Random.Range(0, uniqueIds.Length)];
+                if (SuperMechEquipBag.AddToBag(killer, uniqueId))
+                {
+                    Debug.Log($"[超神机械师] 独特装备掉落：{killer.name} 获得 {uniqueId}");
+                    return;
+                }
+            }
+
             string equipId = SuperMechRelic.Equipments[quality].id;
             if (SuperMechEquipBag.AddToBag(killer, equipId))
             {

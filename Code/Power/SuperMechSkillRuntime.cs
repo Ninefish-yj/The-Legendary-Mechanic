@@ -205,6 +205,11 @@ namespace SuperMech.Code
                     summoned.addTrait(SuperMechTraits.ClassMech);
                     summoned.addTrait("aggressive");
                     summoned.addTrait("sm_summoned"); // v0.57.0 召唤物标记
+                    // v0.63.0 虚空暗能机甲：召唤物伤害+50%
+                    if (SuperMechRelic.GetCurrentSpecialEffect(caster) == "void_mech")
+                    {
+                        summoned.addTrait("sm_void_boost");
+                    }
                     // 记录召唤者ID（用ActorContext）
                     var ctx = SuperMechActorContextRegistry.Get(summoned);
                     if (ctx != null) ctx.summonerId = caster.id;

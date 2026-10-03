@@ -154,6 +154,16 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * 0.5f); // 额外50%伤害
                     }
+                    // v0.63.0 独特装备：时空剪切器10%概率眩晕
+                    if (SuperMechRelic.GetCurrentSpecialEffect(attacker) == "timespace_cutter" && Random.value < 0.10f)
+                    {
+                        target.addStatusEffect("stunned", 2f);
+                    }
+                    // v0.63.0 虚空暗能机甲召唤物：伤害+50%
+                    if (attacker.hasTrait("sm_void_boost"))
+                    {
+                        target.data.health -= (int)(pDamage * 0.5f);
+                    }
                     // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
                     float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
                     if (proxyBonus != 1f)

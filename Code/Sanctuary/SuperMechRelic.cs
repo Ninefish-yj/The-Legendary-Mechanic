@@ -17,6 +17,7 @@ namespace SuperMech.Code
             public float dmgMul;
             public float hpMul;
             public EquipmentType slotType;
+            public string specialEffect = null; // v0.63.0 独特装备特殊效果ID
         }
 
         public static readonly List<EquipDef> Equipments = new List<EquipDef>
@@ -30,6 +31,10 @@ namespace SuperMech.Code
             new EquipDef { id="sm_eq_orange_weapon",name="sm_relic_100", qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f, slotType=EquipmentType.Weapon },
             new EquipDef { id="sm_eq_so_armor",     name="sm_relic_101", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f, slotType=EquipmentType.Armor },
             new EquipDef { id="sm_eq_gold_amulet",  name="sm_relic_102", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f, slotType=EquipmentType.Amulet },
+            // v0.63.0 独特装备（原著风格，固定属性+特殊效果，仅高阶掉落）
+            new EquipDef { id="sm_eq_void_armor",   name="sm_relic_103", qualityLevel=9,  rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=15.0f, hpMul=10.0f, slotType=EquipmentType.Armor,  specialEffect="void_mech" },
+            new EquipDef { id="sm_eq_evolution_cube",name="sm_relic_104", qualityLevel=10, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconGenius",    dmgMul=8.0f,  hpMul=8.0f,  slotType=EquipmentType.Amulet, specialEffect="evolution_cube" },
+            new EquipDef { id="sm_eq_timespace_cutter",name="sm_relic_105", qualityLevel=11, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconRage",    dmgMul=20.0f, hpMul=6.0f,  slotType=EquipmentType.Weapon, specialEffect="timespace_cutter" },
         };
 
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
@@ -210,6 +215,14 @@ namespace SuperMech.Code
         {
             int idx = GetCurrentEquipIndex(a);
             return idx >= 0 ? Equipments[idx].id : null;
+        }
+
+        /// <summary>v0.63.0 获取当前装备的特殊效果ID</summary>
+        public static string GetCurrentSpecialEffect(Actor a)
+        {
+            int idx = GetCurrentEquipIndex(a);
+            if (idx < 0 || idx >= Equipments.Count) return null;
+            return Equipments[idx].specialEffect;
         }
 
         public static void Clear()
