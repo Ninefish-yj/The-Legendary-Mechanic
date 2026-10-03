@@ -126,7 +126,7 @@ namespace SuperMech.Code
             removed += SuperMechInfoState.CleanupDead(alive);
             removed += SuperMechEquipBag.CleanupDead(alive);
             removed += SuperMechAura.CleanupDead(alive);
-            removed += SuperMechDomain.CleanupDead(alive);
+            removed += SuperMechInnerSpace.CleanupDead(alive);
             removed += SuperMechCrafting.CleanupDead(alive);
             removed += SuperMechRefinement.CleanupDead(alive);
             removed += SuperMechSubClass.CleanupDead(alive);

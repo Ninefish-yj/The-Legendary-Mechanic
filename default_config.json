@@ -360,52 +360,52 @@
       "MaxIntVal": 50
     }
   ],
-  "Domain": [
+  "InnerSpace": [
     {
-      "Id": "domain_enabled",
+      "Id": "inner_space_enabled",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainEnabled"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetInnerSpaceEnabled"
     },
     {
-      "Id": "domain_min_rank",
+      "Id": "inner_space_min_rank",
       "Type": "INT_SLIDER",
       "IntVal": 13,
       "MinIntVal": 0,
       "MaxIntVal": 13,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainMinRank"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetInnerSpaceMinRank"
     },
     {
-      "Id": "domain_duration",
+      "Id": "inner_space_duration",
       "Type": "SLIDER",
       "FloatVal": 8.0,
       "MinFloatVal": 1.0,
       "MaxFloatVal": 30.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainDuration"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetInnerSpaceDuration"
     },
     {
-      "Id": "domain_damage_bonus",
+      "Id": "inner_space_damage_bonus",
       "Type": "SLIDER",
       "FloatVal": 0.15,
       "MinFloatVal": 0.0,
       "MaxFloatVal": 0.5,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainDamageBonus"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetInnerSpaceDamageBonus"
     },
     {
-      "Id": "domain_enemy_penalty",
+      "Id": "inner_space_enemy_penalty",
       "Type": "SLIDER",
       "FloatVal": 0.1,
       "MinFloatVal": 0.0,
       "MaxFloatVal": 0.5,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainEnemyPenalty"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetInnerSpaceEnemyPenalty"
     },
     {
-      "Id": "domain_damage_reduction",
+      "Id": "inner_space_damage_reduction",
       "Type": "SLIDER",
       "FloatVal": 0.1,
       "MinFloatVal": 0.0,
       "MaxFloatVal": 0.5,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetDomainDamageReduction"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetInnerSpaceDamageReduction"
     }
   ]
 }

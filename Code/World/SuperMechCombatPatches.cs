@@ -82,17 +82,17 @@ namespace SuperMech.Code
                     try { SMSkillRuntime.TryCastSkill(attacker, target); } catch { }
                 }
 
-                // v0.47.0 超A领域：战斗时双方尝试展开领域
-                if (SuperMechConfig.DomainEnabled)
+                // v0.47.0 超神领域：X阶单位战斗时放出内空间形成领域
+                if (SuperMechConfig.InnerSpaceEnabled)
                 {
-                    if (attacker != null && attacker.isAlive()) SuperMechDomain.TryActivate(attacker);
-                    SuperMechDomain.TryActivate(target);
+                    if (attacker != null && attacker.isAlive()) SuperMechInnerSpace.TryActivate(attacker);
+                    SuperMechInnerSpace.TryActivate(target);
 
                     // 领域伤害修正：攻击者领域加伤，防御者领域减伤
                     if (attacker != null && attacker.isAlive())
                     {
-                        float atkMul = SuperMechDomain.GetAttackMultiplier(attacker, target);
-                        float defMul = SuperMechDomain.GetDefenseMultiplier(target, attacker);
+                        float atkMul = SuperMechInnerSpace.GetAttackMultiplier(attacker, target);
+                        float defMul = SuperMechInnerSpace.GetDefenseMultiplier(target, attacker);
                         float domainMod = atkMul * defMul;
                         if (domainMod != 1f)
                         {

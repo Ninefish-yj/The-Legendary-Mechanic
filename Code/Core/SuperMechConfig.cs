@@ -46,19 +46,19 @@ namespace SuperMech.Code
         /// <summary>每次进入圣所消耗钥匙数</summary>
         public static int SanctuaryKeyCostEnter = 3;
 
-        // === 超A领域（v0.47.0）===
-        /// <summary>超A领域总开关</summary>
-        public static bool DomainEnabled = true;
+        // === 超神领域（v0.47.0，原著第1430章）===
+        /// <summary>超神领域总开关（X阶放出内空间形成领域，原著第1430章）</summary>
+        public static bool InnerSpaceEnabled = true;
         /// <summary>展开领域最低阶位（默认10=S阶/超A级）</summary>
-        public static int DomainMinRank = 13;
+        public static int InnerSpaceMinRank = 13;
         /// <summary>领域持续时间（秒）</summary>
-        public static float DomainDuration = 8f;
+        public static float InnerSpaceDuration = 8f;
         /// <summary>领域内主人伤害加成（默认0.15=15%）</summary>
-        public static float DomainDamageBonus = 0.15f;
+        public static float InnerSpaceDamageBonus = 0.15f;
         /// <summary>领域内敌人伤害惩罚（默认0.10=10%）</summary>
-        public static float DomainEnemyPenalty = 0.10f;
+        public static float InnerSpaceEnemyPenalty = 0.10f;
         /// <summary>领域内主人减伤（默认0.10=10%）</summary>
-        public static float DomainDamageReduction = 0.10f;
+        public static float InnerSpaceDamageReduction = 0.10f;
 
         public static bool MechSummonEnabled = true;
         public static int MaxSummonedUnits = 50;
@@ -186,12 +186,12 @@ namespace SuperMech.Code
                 new ItemInfo("key_materials_per_key", "sm_config_744", "sm_config_745"),
                 new ItemInfo("psionic_key_material_bonus", "sm_config_746", "sm_config_747"),
                 new ItemInfo("sanctuary_key_cost_enter", "sm_config_750", "sm_config_751"),
-                new ItemInfo("domain_enabled", "sm_config_752", "sm_config_753"),
-                new ItemInfo("domain_min_rank", "sm_config_754", "sm_config_755"),
-                new ItemInfo("domain_duration", "sm_config_756", "sm_config_757"),
-                new ItemInfo("domain_damage_bonus", "sm_config_758", "sm_config_759"),
-                new ItemInfo("domain_enemy_penalty", "sm_config_760", "sm_config_761"),
-                new ItemInfo("domain_damage_reduction", "sm_config_762", "sm_config_763"),
+                new ItemInfo("inner_space_enabled", "sm_config_752", "sm_config_753"),
+                new ItemInfo("inner_space_min_rank", "sm_config_754", "sm_config_755"),
+                new ItemInfo("inner_space_duration", "sm_config_756", "sm_config_757"),
+                new ItemInfo("inner_space_damage_bonus", "sm_config_758", "sm_config_759"),
+                new ItemInfo("inner_space_enemy_penalty", "sm_config_760", "sm_config_761"),
+                new ItemInfo("inner_space_damage_reduction", "sm_config_762", "sm_config_763"),
                 new ItemInfo("mech_summon_enabled", "sm_config_605", "sm_config_606"),
                 new ItemInfo("max_summoned_units", "sm_config_607", "sm_config_608"),
                 new ItemInfo("refinement_bonus", "sm_config_609", "sm_config_610"),
@@ -287,12 +287,12 @@ namespace SuperMech.Code
         public static void SetKeyMaterialsPerKey(int val) { KeyMaterialsPerKey = Mathf.Clamp(val, 1, 10); }
         public static void SetPsionicKeyMaterialBonus(int val) { PsionicKeyMaterialBonus = Mathf.Clamp(val, 0, 10); }
         public static void SetSanctuaryKeyCostEnter(int val) { SanctuaryKeyCostEnter = Mathf.Clamp(val, 1, 10); }
-        public static void SetDomainEnabled(bool val) { DomainEnabled = val; }
-        public static void SetDomainMinRank(int val) { DomainMinRank = Mathf.Clamp(val, 0, 13); }
-        public static void SetDomainDuration(float val) { DomainDuration = Mathf.Clamp(val, 1f, 30f); }
-        public static void SetDomainDamageBonus(float val) { DomainDamageBonus = Mathf.Clamp01(val); }
-        public static void SetDomainEnemyPenalty(float val) { DomainEnemyPenalty = Mathf.Clamp01(val); }
-        public static void SetDomainDamageReduction(float val) { DomainDamageReduction = Mathf.Clamp01(val); }
+        public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
+        public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }
+        public static void SetInnerSpaceDamageBonus(float val) { InnerSpaceDamageBonus = Mathf.Clamp01(val); }
+        public static void SetInnerSpaceEnemyPenalty(float val) { InnerSpaceEnemyPenalty = Mathf.Clamp01(val); }
+        public static void SetInnerSpaceDamageReduction(float val) { InnerSpaceDamageReduction = Mathf.Clamp01(val); }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
         public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); }
