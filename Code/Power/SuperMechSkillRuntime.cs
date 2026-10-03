@@ -148,7 +148,10 @@ namespace SuperMech.Code
             if (target == null) return;
             try
             {
-                target.addStatusEffect("stunned", def.effectDuration);
+                // v0.62.0 精神系终极知识：控制效果持续时间+50%
+                float duration = def.effectDuration;
+                if (SuperMechKnowledge.HasUltimateKnowledge(target, "mind")) duration *= 1.5f;
+                target.addStatusEffect("stunned", duration);
                 // v0.58.0 持续伤害：眩晕期间每秒造成伤害
                 int rankIdx = SuperMechActorContextRegistry.GetRank(target);
                 float dotDamage = (5f + rankIdx * 5f) * def.effectValue;
@@ -157,7 +160,7 @@ namespace SuperMech.Code
                     dots = new Dictionary<string, float>();
                     _dotEffects[target.id] = dots;
                 }
-                dots[def.id] = Time.time + def.effectDuration;
+                dots[def.id] = Time.time + duration;
                 // 存储伤害值（用skillId映射）
                 if (!_dotDamageValues.ContainsKey(def.id)) _dotDamageValues[def.id] = dotDamage;
             }
@@ -184,6 +187,8 @@ namespace SuperMech.Code
             {
                 if (World.world == null || World.world.units == null || caster == null) return;
                 int count = Mathf.Clamp(Mathf.FloorToInt(def.effectValue), 1, 5);
+                // v0.62.0 机械系终极知识：召唤物数量+1
+                if (SuperMechKnowledge.HasUltimateKnowledge(caster, "mech")) count = Mathf.Min(count + 1, 6);
                 int rankIdx = SuperMechActorContextRegistry.GetRank(caster);
                 for (int i = 0; i < count; i++)
                 {
@@ -236,7 +241,10 @@ namespace SuperMech.Code
                 {
                     caster.moveTo(caster.current_tile.neighbours[Random.Range(0, caster.current_tile.neighbours.Length)]);
                 }
-                caster.addStatusEffect("invincible", def.effectDuration);
+                // v0.62.0 异能系终极知识：瞬移后无敌时间+50%
+                float invincibleDur = def.effectDuration;
+                if (SuperMechKnowledge.HasUltimateKnowledge(caster, "psi")) invincibleDur *= 1.5f;
+                caster.addStatusEffect("invincible", invincibleDur);
             }
             catch (System.Exception e)
             {

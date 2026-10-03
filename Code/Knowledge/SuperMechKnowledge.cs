@@ -242,6 +242,18 @@ namespace SuperMech.Code
             return false;
         }
 
+        /// <summary>v0.62.0 是否学习了某分支的终极知识（tier 4），用于触发特殊被动效果</summary>
+        public static bool HasUltimateKnowledge(Actor a, string prefix)
+        {
+            if (a == null || !_unlocked.TryGetValue(a.id, out var set)) return false;
+            foreach (var kid in set)
+            {
+                if (!_allKnowledge.TryGetValue(kid, out var def)) continue;
+                if (def.prefix == prefix && def.tier >= 4) return true;
+            }
+            return false;
+        }
+
         public static bool Unlock(Actor a, string knowledgeId)
         {
             if (a == null || !_allKnowledge.ContainsKey(knowledgeId)) return false;

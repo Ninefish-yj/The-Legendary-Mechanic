@@ -149,6 +149,11 @@ namespace SuperMech.Code
                         float diffBonus = 1f + (atkCiv - defCiv) * 0.08f; // 每级差+8%
                         target.data.health -= (int)(pDamage * (diffBonus - 1f));
                     }
+                    // v0.62.0 武道系终极知识：10%概率暴击（1.5倍伤害）
+                    if (SuperMechKnowledge.HasUltimateKnowledge(attacker, "martial") && Random.value < 0.10f)
+                    {
+                        target.data.health -= (int)(pDamage * 0.5f); // 额外50%伤害
+                    }
                     // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
                     float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
                     if (proxyBonus != 1f)
@@ -447,6 +452,8 @@ namespace SuperMech.Code
                     {
                         var spell = SuperMechSpell.GetSpell(sid);
                         float bonus = spell != null ? 0.1f + spell.tier * 0.05f : 0.15f;
+                        // v0.62.0 魔法系终极知识：法术伤害+20%
+                        if (SuperMechKnowledge.HasUltimateKnowledge(attacker, "mage")) bonus *= 1.2f;
                         target.data.health -= (int)(pDamage * bonus);
                         break;
                     }
