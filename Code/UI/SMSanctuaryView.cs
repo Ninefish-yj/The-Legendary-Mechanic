@@ -4,9 +4,10 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>圣所独立空间视图（v0.35.0 UI重构）
+    /// <summary>圣所独立空间视图（v0.39.0 原著还原版）
     /// 圣所不在地图上，是独立于宇宙的信息态空间。
-    /// 点击入口后整个UI切换为圣所视图：深空背景 + 星图节点 + 详情面板 + 信息态库
+    /// 两层结构：圣所选择层（6个入口）→ 圣所内部层（白茫茫空间+飘浮光球）
+    /// 玩家是上帝视角，可直接查看所有圣所；游戏内单位需要超A级+钥匙才能进入
     /// </summary>
     public class SMSanctuaryView : MonoBehaviour
     {
@@ -14,38 +15,25 @@ namespace SuperMech.Code
         public static bool IsOpen => _instance != null;
 
         private RectTransform _rootRect;
-        private RectTransform _starMapContent;
-        private RectTransform _detailContent;
-        private RectTransform _infoStateContent;
         private Text _statusText;
-        private Text _detailTitle;
-        private readonly List<SMSanctuaryNode> _nodes = new();
-        private readonly List<GameObject> _detailItems = new();
-        private readonly List<GameObject> _infoItems = new();
-        private int _selectedIndex = -1;
-        private bool _showInfoState = false;
 
-        // 星图节点位置（6个圣所按紧凑排列）
-        private static readonly Vector2[] NodePositions =
-        {
-            new Vector2(-160, 100),   // 第一圣所：左上
-            new Vector2(0, 130),      // 第二圣所：上中
-            new Vector2(160, 100),    // 第三圣所：右上
-            new Vector2(-160, -60),   // 第四圣所：左下
-            new Vector2(0, -90),      // 第五圣所：下中
-            new Vector2(160, -60),    // 第六圣所：右下
-        };
+        // 两层视图
+        private GameObject _selectLayer;    // 圣所选择层
+        private GameObject _interiorLayer;  // 圣所内部层
+        private int _currentSanctuary = -1; // 当前进入的圣所
+
+        // 内部层光球
+        private readonly List<GameObject> _lightOrbs = new();
+        private RectTransform _orbContainer;
+        private Text _interiorTitle;
+
+        // 选择层圣所入口按钮
+        private readonly List<Button> _sanctuaryButtons = new();
 
         public static void Toggle()
         {
-            if (_instance != null)
-            {
-                _instance.Close();
-            }
-            else
-            {
-                Open();
-            }
+            if (_instance != null) _instance.Close();
+            else Open();
         }
 
         public static void Open()
@@ -74,8 +62,8 @@ namespace SuperMech.Code
         {
             _rootRect = GetComponent<RectTransform>();
 
-            // 深空背景
-            var bgGo = new GameObject("SpaceBg");
+            // 深空背景（选择层用）
+            var bgGo = new GameObject("Bg");
             bgGo.transform.SetParent(transform, false);
             var bgRect = bgGo.AddComponent<RectTransform>();
             bgRect.anchorMin = Vector2.zero;
@@ -86,88 +74,19 @@ namespace SuperMech.Code
             bgImg.color = new Color(0.02f, 0.02f, 0.06f, 0.96f);
             bgImg.raycastTarget = true;
 
-            // 星点背景
-            BuildStars(bgGo.transform);
-
             // 顶部标题栏
             BuildTopBar();
 
-            // 中间星图区域
-            BuildStarMap();
+            // 圣所选择层
+            BuildSelectLayer();
 
-            // 右侧详情面板
-            BuildDetailPanel();
+            // 圣所内部层（默认隐藏）
+            BuildInteriorLayer();
 
             // 底部状态栏
             BuildStatusBar();
 
-            RefreshAll();
-        }
-
-        private void BuildStars(Transform parent)
-        {
-            // 网格背景（参考道途树样式）
-            var gridGo = new GameObject("GridBg");
-            gridGo.transform.SetParent(parent, false);
-            var gridRect = gridGo.AddComponent<RectTransform>();
-            gridRect.anchorMin = Vector2.zero;
-            gridRect.anchorMax = Vector2.one;
-            gridRect.offsetMin = Vector2.zero;
-            gridRect.offsetMax = Vector2.zero;
-            var gridImg = gridGo.AddComponent<Image>();
-            gridImg.color = new Color(0.03f, 0.05f, 0.1f, 0.5f);
-            gridImg.raycastTarget = false;
-
-            // 横向网格线
-            for (int y = -4; y <= 4; y++)
-            {
-                var lineGo = new GameObject($"HLine_{y}");
-                lineGo.transform.SetParent(gridGo.transform, false);
-                var lineRect = lineGo.AddComponent<RectTransform>();
-                lineRect.anchorMin = new Vector2(0, 0.5f);
-                lineRect.anchorMax = new Vector2(1, 0.5f);
-                lineRect.pivot = new Vector2(0.5f, 0.5f);
-                lineRect.sizeDelta = new Vector2(0, 1);
-                lineRect.anchoredPosition = new Vector2(0, y * 50);
-                var lineImg = lineGo.AddComponent<Image>();
-                lineImg.color = new Color(0.1f, 0.2f, 0.4f, 0.15f);
-                lineImg.raycastTarget = false;
-            }
-
-            // 纵向网格线
-            for (int x = -6; x <= 6; x++)
-            {
-                var lineGo = new GameObject($"VLine_{x}");
-                lineGo.transform.SetParent(gridGo.transform, false);
-                var lineRect = lineGo.AddComponent<RectTransform>();
-                lineRect.anchorMin = new Vector2(0.5f, 0);
-                lineRect.anchorMax = new Vector2(0.5f, 1);
-                lineRect.pivot = new Vector2(0.5f, 0.5f);
-                lineRect.sizeDelta = new Vector2(1, 0);
-                lineRect.anchoredPosition = new Vector2(x * 50, 0);
-                var lineImg = lineGo.AddComponent<Image>();
-                lineImg.color = new Color(0.1f, 0.2f, 0.4f, 0.15f);
-                lineImg.raycastTarget = false;
-            }
-
-            // 随机星点
-            for (int i = 0; i < 30; i++)
-            {
-                var starGo = new GameObject($"Star_{i}");
-                starGo.transform.SetParent(parent, false);
-                var starRect = starGo.AddComponent<RectTransform>();
-                starRect.anchorMin = new Vector2(0, 0);
-                starRect.anchorMax = new Vector2(1, 1);
-                starRect.pivot = new Vector2(0.5f, 0.5f);
-                float x = Random.Range(-0.45f, 0.45f);
-                float y = Random.Range(-0.4f, 0.4f);
-                starRect.anchoredPosition = new Vector2(x * Screen.width, y * Screen.height);
-                float size = Random.Range(1, 2);
-                starRect.sizeDelta = new Vector2(size, size);
-                var starImg = starGo.AddComponent<Image>();
-                starImg.color = new Color(1, 1, 1, Random.Range(0.1f, 0.4f));
-                starImg.raycastTarget = false;
-            }
+            ShowSelectLayer();
         }
 
         private void BuildTopBar()
@@ -217,7 +136,7 @@ namespace SuperMech.Code
             titleRect.offsetMin = new Vector2(140, 0);
             titleRect.offsetMax = new Vector2(-140, 0);
 
-            // 信息态库切换按钮
+            // 信息态库按钮
             var infoGo = new GameObject("InfoStateBtn");
             infoGo.transform.SetParent(topGo.transform, false);
             var infoRect = infoGo.AddComponent<RectTransform>();
@@ -237,185 +156,279 @@ namespace SuperMech.Code
             infoTextRect.anchorMax = Vector2.one;
             infoTextRect.offsetMin = Vector2.zero;
             infoTextRect.offsetMax = Vector2.zero;
-            infoBtn.onClick.AddListener(ToggleInfoState);
+            infoBtn.onClick.AddListener(() => SMWindowManager.OpenResurrection());
         }
 
-        private void BuildStarMap()
+        private void BuildSelectLayer()
         {
-            var mapGo = new GameObject("StarMap");
-            mapGo.transform.SetParent(transform, false);
-            var mapRect = mapGo.AddComponent<RectTransform>();
-            mapRect.anchorMin = Vector2.zero;
-            mapRect.anchorMax = new Vector2(0.65f, 1);
-            mapRect.pivot = new Vector2(0.5f, 0.5f);
-            mapRect.offsetMin = new Vector2(0, 60);
-            mapRect.offsetMax = new Vector2(0, -50);
+            _selectLayer = new GameObject("SelectLayer");
+            _selectLayer.transform.SetParent(transform, false);
+            var rect = _selectLayer.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(0, 60);
+            rect.offsetMax = new Vector2(0, -60);
 
-            _starMapContent = mapRect;
+            // 提示文字
+            var hintText = SMUiSkin.MakeText(_selectLayer.transform,
+                LocalizedTextManager.getText("sm_ui_san_select_hint"), 14, TextAnchor.UpperCenter);
+            hintText.color = new Color(0.6f, 0.8f, 1.0f);
+            var hintRect = hintText.GetComponent<RectTransform>();
+            hintRect.anchorMin = new Vector2(0, 1);
+            hintRect.anchorMax = new Vector2(1, 1);
+            hintRect.pivot = new Vector2(0.5f, 1);
+            hintRect.sizeDelta = new Vector2(0, 30);
+            hintRect.anchoredPosition = new Vector2(0, -20);
 
-            // 圣所之间的信息流连线
-            BuildConnectionLines(mapGo.transform);
+            // 6个圣所入口（2行3列）
+            string[] colors = { "#4db8ff", "#ff9933", "#4dff88", "#b366ff", "#ff66b3", "#33e6e6" };
+            int[] positions = { -1, 0, 1, -1, 0, 1 }; // x位置
+            int[] rows = { 0, 0, 0, 1, 1, 1 }; // y行
 
-            // 创建6个节点
             for (int i = 0; i < SuperMechSanctuary.TotalSanctuaries; i++)
             {
                 int idx = i;
-                var node = SMSanctuaryNode.Create(mapGo.transform, i, NodePositions[i], OnNodeClick);
-                _nodes.Add(node);
+                string name = LocalizedTextManager.getText(SuperMechSanctuary.SanctuaryNames[i]);
+                string cls = LocalizedTextManager.getText(SuperMechSanctuary.SanctuaryClasses[i]);
+                string typeName = SuperMechSanctuary.GetSanctuaryTypeName(i);
+
+                var entryGo = new GameObject($"SanctuaryEntry_{i}");
+                entryGo.transform.SetParent(_selectLayer.transform, false);
+                var entryRect = entryGo.AddComponent<RectTransform>();
+                entryRect.anchorMin = new Vector2(0.5f, 0.5f);
+                entryRect.anchorMax = new Vector2(0.5f, 0.5f);
+                entryRect.pivot = new Vector2(0.5f, 0.5f);
+                entryRect.sizeDelta = new Vector2(220, 130);
+                float x = positions[i] * 250;
+                float y = (rows[i] == 0 ? 60 : -100);
+                entryRect.anchoredPosition = new Vector2(x, y);
+
+                // 背景
+                var entryBg = entryGo.AddComponent<Image>();
+                entryBg.color = new Color(0.08f, 0.1f, 0.18f, 0.9f);
+                entryBg.raycastTarget = true;
+
+                // 边框（用稍大的背景模拟）
+                var borderGo = new GameObject("Border");
+                borderGo.transform.SetParent(entryGo.transform, false);
+                borderGo.transform.SetAsFirstSibling();
+                var borderRect = borderGo.AddComponent<RectTransform>();
+                borderRect.anchorMin = Vector2.zero;
+                borderRect.anchorMax = Vector2.one;
+                borderRect.offsetMin = new Vector2(-2, -2);
+                borderRect.offsetMax = new Vector2(2, 2);
+                var borderImg = borderGo.AddComponent<Image>();
+                Color borderColor = ParseColor(colors[i]);
+                borderImg.color = new Color(borderColor.r, borderColor.g, borderColor.b, 0.6f);
+                borderImg.raycastTarget = false;
+
+                // 按钮
+                var btn = entryGo.AddComponent<Button>();
+                btn.targetGraphic = entryBg;
+                int sanctuaryIdx = idx;
+                btn.onClick.AddListener(() => EnterSanctuary(sanctuaryIdx));
+                _sanctuaryButtons.Add(btn);
+
+                // 圣所名称
+                var nameText = SMUiSkin.MakeText(entryGo.transform,
+                    $"<color={colors[i]}>{name}</color>", 15, TextAnchor.UpperCenter);
+                nameText.fontStyle = FontStyle.Bold;
+                var nameRect = nameText.GetComponent<RectTransform>();
+                nameRect.anchorMin = new Vector2(0, 1);
+                nameRect.anchorMax = new Vector2(1, 1);
+                nameRect.pivot = new Vector2(0.5f, 1);
+                nameRect.sizeDelta = new Vector2(0, 25);
+                nameRect.anchoredPosition = new Vector2(0, -10);
+
+                // 知识方向
+                var classText = SMUiSkin.MakeText(entryGo.transform, cls, 11, TextAnchor.UpperCenter);
+                classText.color = new Color(0.8f, 0.8f, 0.8f);
+                var classRect = classText.GetComponent<RectTransform>();
+                classRect.anchorMin = new Vector2(0, 1);
+                classRect.anchorMax = new Vector2(1, 1);
+                classRect.pivot = new Vector2(0.5f, 1);
+                classRect.sizeDelta = new Vector2(0, 20);
+                classRect.anchoredPosition = new Vector2(0, -38);
+
+                // 类型
+                var typeText = SMUiSkin.MakeText(entryGo.transform, typeName, 10, TextAnchor.UpperCenter);
+                typeText.color = new Color(0.6f, 0.6f, 0.6f);
+                var typeRect = typeText.GetComponent<RectTransform>();
+                typeRect.anchorMin = new Vector2(0, 1);
+                typeRect.anchorMax = new Vector2(1, 1);
+                typeRect.pivot = new Vector2(0.5f, 1);
+                typeRect.sizeDelta = new Vector2(0, 18);
+                typeRect.anchoredPosition = new Vector2(0, -58);
+
+                // 进入按钮文字
+                var enterText = SMUiSkin.MakeText(entryGo.transform,
+                    LocalizedTextManager.getText("sm_ui_san_enter"), 12, TextAnchor.LowerCenter);
+                enterText.color = new Color(0.4f, 0.7f, 1.0f);
+                enterText.fontStyle = FontStyle.Bold;
+                var enterRect = enterText.GetComponent<RectTransform>();
+                enterRect.anchorMin = new Vector2(0, 0);
+                enterRect.anchorMax = new Vector2(1, 0);
+                enterRect.pivot = new Vector2(0.5f, 0);
+                enterRect.sizeDelta = new Vector2(0, 25);
+                enterRect.anchoredPosition = new Vector2(0, 8);
             }
         }
 
-        private void BuildConnectionLines(Transform parent)
+        private void BuildInteriorLayer()
         {
-            // 用细线连接相邻节点（青色虚线效果用半透明Image模拟）
-            var lines = new (int, int)[]
-            {
-                (0, 1), (1, 2), (0, 3), (1, 4), (2, 5), (3, 4), (4, 5), (0, 4), (2, 4)
-            };
+            _interiorLayer = new GameObject("InteriorLayer");
+            _interiorLayer.transform.SetParent(transform, false);
+            var rect = _interiorLayer.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(0, 60);
+            rect.offsetMax = new Vector2(0, -60);
 
-            foreach (var (a, b) in lines)
-            {
-                Vector2 pa = NodePositions[a];
-                Vector2 pb = NodePositions[b];
-                Vector2 mid = (pa + pb) * 0.5f;
-                float length = Vector2.Distance(pa, pb);
-                float angle = Mathf.Atan2(pb.y - pa.y, pb.x - pa.x) * Mathf.Rad2Deg;
+            // 白茫茫背景（原著：无边无际的白茫茫世界）
+            var interiorBg = _interiorLayer.AddComponent<Image>();
+            interiorBg.color = new Color(0.9f, 0.92f, 0.95f, 0.97f);
+            interiorBg.raycastTarget = true;
 
-                var lineGo = new GameObject($"Line_{a}_{b}");
-                lineGo.transform.SetParent(parent, false);
-                var lineRect = lineGo.AddComponent<RectTransform>();
-                lineRect.anchorMin = new Vector2(0.5f, 0.5f);
-                lineRect.anchorMax = new Vector2(0.5f, 0.5f);
-                lineRect.pivot = new Vector2(0.5f, 0.5f);
-                lineRect.sizeDelta = new Vector2(length, 2);
-                lineRect.anchoredPosition = mid;
-                lineRect.localRotation = Quaternion.Euler(0, 0, angle);
-                var lineImg = lineGo.AddComponent<Image>();
-                lineImg.color = new Color(0.2f, 0.5f, 0.9f, 0.4f);
-                lineImg.raycastTarget = false;
-            }
-        }
-
-        private void BuildDetailPanel()
-        {
-            var panelGo = new GameObject("DetailPanel");
-            panelGo.transform.SetParent(transform, false);
-            var panelRect = panelGo.AddComponent<RectTransform>();
-            panelRect.anchorMin = new Vector2(0.65f, 0);
-            panelRect.anchorMax = Vector2.one;
-            panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.offsetMin = new Vector2(4, 60);
-            panelRect.offsetMax = new Vector2(-4, -50);
-            var panelImg = panelGo.AddComponent<Image>();
-            panelImg.color = new Color(0.05f, 0.07f, 0.12f, 0.85f);
-
-            // 详情标题
-            _detailTitle = SMUiSkin.MakeText(panelGo.transform,
-                LocalizedTextManager.getText("sm_ui_select_sanctuary"), 15, TextAnchor.UpperCenter);
-            _detailTitle.color = new Color(0.4f, 0.7f, 1.0f);
-            _detailTitle.fontStyle = FontStyle.Bold;
-            var titleRect = _detailTitle.GetComponent<RectTransform>();
+            // 标题
+            _interiorTitle = SMUiSkin.MakeText(_interiorLayer.transform, "", 16, TextAnchor.UpperCenter);
+            _interiorTitle.color = new Color(0.2f, 0.3f, 0.5f);
+            _interiorTitle.fontStyle = FontStyle.Bold;
+            var titleRect = _interiorTitle.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0, 1);
             titleRect.anchorMax = new Vector2(1, 1);
             titleRect.pivot = new Vector2(0.5f, 1);
-            titleRect.sizeDelta = new Vector2(0, 28);
-            titleRect.anchoredPosition = new Vector2(0, -8);
+            titleRect.sizeDelta = new Vector2(0, 30);
+            titleRect.anchoredPosition = new Vector2(0, -15);
 
-            // 详情滚动区
-            var scrollGo = new GameObject("DetailScroll");
-            scrollGo.transform.SetParent(panelGo.transform, false);
-            var scrollRect = scrollGo.AddComponent<RectTransform>();
-            scrollRect.anchorMin = Vector2.zero;
-            scrollRect.anchorMax = Vector2.one;
-            scrollRect.offsetMin = new Vector2(8, 8);
-            scrollRect.offsetMax = new Vector2(-8, -40);
-            var scrollImg = scrollGo.AddComponent<Image>();
-            scrollImg.color = new Color(0, 0, 0, 0.01f);
-            scrollImg.raycastTarget = false;
-            var mask = scrollGo.AddComponent<Mask>();
-            mask.showMaskGraphic = true;
-            var scroll = scrollGo.AddComponent<ScrollRect>();
+            // 光球容器
+            var orbContainerGo = new GameObject("OrbContainer");
+            orbContainerGo.transform.SetParent(_interiorLayer.transform, false);
+            _orbContainer = orbContainerGo.AddComponent<RectTransform>();
+            _orbContainer.anchorMin = Vector2.zero;
+            _orbContainer.anchorMax = Vector2.one;
+            _orbContainer.offsetMin = new Vector2(20, 60);
+            _orbContainer.offsetMax = new Vector2(-20, -20);
 
-            var vpGo = new GameObject("Viewport");
-            vpGo.transform.SetParent(scrollGo.transform, false);
-            var vpRect = vpGo.AddComponent<RectTransform>();
-            vpRect.anchorMin = Vector2.zero;
-            vpRect.anchorMax = Vector2.one;
-            vpRect.offsetMin = Vector2.zero;
-            vpRect.offsetMax = Vector2.zero;
+            // 返回选择层按钮（光门通道）
+            var gateGo = new GameObject("GateBtn");
+            gateGo.transform.SetParent(_interiorLayer.transform, false);
+            var gateRect = gateGo.AddComponent<RectTransform>();
+            gateRect.anchorMin = new Vector2(1, 0);
+            gateRect.anchorMax = new Vector2(1, 0);
+            gateRect.pivot = new Vector2(1, 0);
+            gateRect.sizeDelta = new Vector2(160, 40);
+            gateRect.anchoredPosition = new Vector2(-20, 15);
+            var gateImg = gateGo.AddComponent<Image>();
+            gateImg.color = new Color(0.3f, 0.4f, 0.6f, 0.9f);
+            var gateBtn = gateGo.AddComponent<Button>();
+            var gateText = SMUiSkin.MakeText(gateGo.transform,
+                LocalizedTextManager.getText("sm_ui_san_gate_return"), 13, TextAnchor.MiddleCenter);
+            gateText.color = Color.white;
+            gateText.fontStyle = FontStyle.Bold;
+            var gateTextRect = gateText.GetComponent<RectTransform>();
+            gateTextRect.anchorMin = Vector2.zero;
+            gateTextRect.anchorMax = Vector2.one;
+            gateTextRect.offsetMin = Vector2.zero;
+            gateTextRect.offsetMax = Vector2.zero;
+            gateBtn.onClick.AddListener(ShowSelectLayer);
 
-            var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(vpGo.transform, false);
-            _detailContent = contentGo.AddComponent<RectTransform>();
-            _detailContent.anchorMin = new Vector2(0, 1);
-            _detailContent.anchorMax = new Vector2(1, 1);
-            _detailContent.pivot = new Vector2(0, 1);
-            _detailContent.sizeDelta = new Vector2(0, 0);
-            var contentHit = contentGo.AddComponent<Image>();
-            contentHit.color = new Color(0, 0, 0, 0);
-            contentHit.raycastTarget = true;
-            var vlg = contentGo.AddComponent<VerticalLayoutGroup>();
-            vlg.spacing = 4;
-            vlg.padding = new RectOffset(8, 8, 8, 8);
-            vlg.childControlWidth = true;
-            vlg.childControlHeight = true;
-            vlg.childForceExpandWidth = true;
-            var fitter = contentGo.AddComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            _interiorLayer.SetActive(false);
+        }
 
-            scroll.viewport = vpRect;
-            scroll.content = _detailContent;
-            scroll.horizontal = false;
-            scroll.vertical = true;
+        private void EnterSanctuary(int index)
+        {
+            _currentSanctuary = index;
+            string name = LocalizedTextManager.getText(SuperMechSanctuary.SanctuaryNames[index]);
+            _interiorTitle.text = name;
 
-            // 信息态内容（默认隐藏）
-            var infoGo = new GameObject("InfoStateContent");
-            infoGo.transform.SetParent(panelGo.transform, false);
-            var infoRect = infoGo.AddComponent<RectTransform>();
-            infoRect.anchorMin = Vector2.zero;
-            infoRect.anchorMax = Vector2.one;
-            infoRect.offsetMin = new Vector2(8, 8);
-            infoRect.offsetMax = new Vector2(-8, -40);
-            var infoImg = infoGo.AddComponent<Image>();
-            infoImg.color = new Color(0, 0, 0, 0.01f);
-            infoImg.raycastTarget = false;
-            var infoMask = infoGo.AddComponent<Mask>();
-            infoMask.showMaskGraphic = true;
-            var infoScroll = infoGo.AddComponent<ScrollRect>();
+            // 生成光球（模拟各迭代文明的信息态集合体）
+            GenerateLightOrbs(index);
 
-            var ivpGo = new GameObject("Viewport");
-            ivpGo.transform.SetParent(infoGo.transform, false);
-            var ivpRect = ivpGo.AddComponent<RectTransform>();
-            ivpRect.anchorMin = Vector2.zero;
-            ivpRect.anchorMax = Vector2.one;
-            ivpRect.offsetMin = Vector2.zero;
-            ivpRect.offsetMax = Vector2.zero;
+            _selectLayer.SetActive(false);
+            _interiorLayer.SetActive(true);
+        }
 
-            var icGo = new GameObject("Content");
-            icGo.transform.SetParent(ivpGo.transform, false);
-            _infoStateContent = icGo.AddComponent<RectTransform>();
-            _infoStateContent.anchorMin = new Vector2(0, 1);
-            _infoStateContent.anchorMax = new Vector2(1, 1);
-            _infoStateContent.pivot = new Vector2(0, 1);
-            _infoStateContent.sizeDelta = new Vector2(0, 0);
-            var icHit = icGo.AddComponent<Image>();
-            icHit.color = new Color(0, 0, 0, 0);
-            icHit.raycastTarget = true;
-            var icVlg = icGo.AddComponent<VerticalLayoutGroup>();
-            icVlg.spacing = 4;
-            icVlg.padding = new RectOffset(8, 8, 8, 8);
-            icVlg.childControlWidth = true;
-            icVlg.childControlHeight = true;
-            icVlg.childForceExpandWidth = true;
-            var icFitter = icGo.AddComponent<ContentSizeFitter>();
-            icFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+        private void GenerateLightOrbs(int sanctuaryIndex)
+        {
+            // 清除旧光球
+            foreach (var orb in _lightOrbs) if (orb != null) Destroy(orb);
+            _lightOrbs.Clear();
 
-            infoScroll.viewport = ivpRect;
-            infoScroll.content = _infoStateContent;
-            infoScroll.horizontal = false;
-            infoScroll.vertical = true;
+            // 生成12-20个随机大小的白色光球
+            int orbCount = Random.Range(12, 20);
+            for (int i = 0; i < orbCount; i++)
+            {
+                var orbGo = new GameObject($"LightOrb_{i}");
+                orbGo.transform.SetParent(_orbContainer, false);
+                var orbRect = orbGo.AddComponent<RectTransform>();
+                orbRect.anchorMin = new Vector2(0.5f, 0.5f);
+                orbRect.anchorMax = new Vector2(0.5f, 0.5f);
+                orbRect.pivot = new Vector2(0.5f, 0.5f);
+                float size = Random.Range(30, 70);
+                orbRect.sizeDelta = new Vector2(size, size);
+                // 随机位置
+                float x = Random.Range(-0.4f, 0.4f) * _orbContainer.rect.width;
+                float y = Random.Range(-0.35f, 0.35f) * _orbContainer.rect.height;
+                orbRect.anchoredPosition = new Vector2(x, y);
 
-            infoGo.SetActive(false);
+                // 光球（白色半透明渐变效果用多层Image模拟）
+                var orbImg = orbGo.AddComponent<Image>();
+                orbImg.color = new Color(1f, 1f, 1f, Random.Range(0.3f, 0.7f));
+                orbImg.raycastTarget = true;
+
+                // 光晕
+                var glowGo = new GameObject("Glow");
+                glowGo.transform.SetParent(orbGo.transform, false);
+                var glowRect = glowGo.AddComponent<RectTransform>();
+                glowRect.anchorMin = Vector2.zero;
+                glowRect.anchorMax = Vector2.one;
+                glowRect.offsetMin = new Vector2(-size * 0.3f, -size * 0.3f);
+                glowRect.offsetMax = new Vector2(size * 0.3f, size * 0.3f);
+                var glowImg = glowGo.AddComponent<Image>();
+                glowImg.color = new Color(1f, 1f, 1f, 0.15f);
+                glowImg.raycastTarget = false;
+
+                // 点击光球读取信息
+                var orbBtn = orbGo.AddComponent<Button>();
+                orbBtn.targetGraphic = orbImg;
+                int orbIdx = i;
+                int sanIdx = sanctuaryIndex;
+                orbBtn.onClick.AddListener(() => OnOrbClick(orbIdx, sanIdx));
+
+                _lightOrbs.Add(orbGo);
+            }
+        }
+
+        private void OnOrbClick(int orbIndex, int sanctuaryIndex)
+        {
+            // 触碰光球→获得该圣所领域的随机知识
+            Actor selected = SelectedUnit.unit;
+            if (selected != null && selected.isAlive())
+            {
+                // 给选中单位添加随机知识
+                string[] branches = SuperMechSanctuary.GetSanctuaryKnowledgeBranches(sanctuaryIndex);
+                if (branches.Length > 0)
+                {
+                    string branch = branches[Random.Range(0, branches.Length)];
+                    // 记录日志
+                    Debug.Log($"[超神机械师] {selected.name} 触碰圣所光球，获得{branch}相关知识");
+                }
+            }
+
+            // 光球被触碰后变淡（模拟信息被读取）
+            if (orbIndex < _lightOrbs.Count && _lightOrbs[orbIndex] != null)
+            {
+                var img = _lightOrbs[orbIndex].GetComponent<Image>();
+                if (img != null) img.color = new Color(1f, 1f, 1f, 0.1f);
+            }
+        }
+
+        private void ShowSelectLayer()
+        {
+            _currentSanctuary = -1;
+            _selectLayer.SetActive(true);
+            _interiorLayer.SetActive(false);
+            RefreshStatus();
         }
 
         private void BuildStatusBar()
@@ -439,167 +452,18 @@ namespace SuperMech.Code
             statusRect.anchorMax = Vector2.one;
             statusRect.offsetMin = new Vector2(16, 4);
             statusRect.offsetMax = new Vector2(-16, -4);
-        }
-
-        private void OnNodeClick(int index)
-        {
-            _selectedIndex = index;
-            _showInfoState = false;
-            RefreshAll();
-        }
-
-        private void ToggleInfoState()
-        {
-            _showInfoState = !_showInfoState;
-            RefreshAll();
-        }
-
-        private void RefreshAll()
-        {
-            // 更新节点选中状态
-            for (int i = 0; i < _nodes.Count; i++)
-            {
-                _nodes[i].SetSelected(i == _selectedIndex && !_showInfoState);
-            }
-
-            // 切换详情/信息态面板
-            if (_detailContent != null)
-                _detailContent.parent.parent.gameObject.SetActive(!_showInfoState);
-            if (_infoStateContent != null)
-                _infoStateContent.parent.parent.gameObject.SetActive(_showInfoState);
-
-            if (_showInfoState)
-            {
-                _detailTitle.text = LocalizedTextManager.getText("sm_ui_san_info_library");
-                RefreshInfoState();
-            }
-            else
-            {
-                RefreshDetail();
-            }
 
             RefreshStatus();
-        }
-
-        private void RefreshDetail()
-        {
-            foreach (var go in _detailItems) if (go != null) Destroy(go);
-            _detailItems.Clear();
-
-            if (_selectedIndex < 0 || _selectedIndex >= SuperMechSanctuary.TotalSanctuaries)
-            {
-                _detailTitle.text = LocalizedTextManager.getText("sm_ui_select_sanctuary");
-                return;
-            }
-
-            int i = _selectedIndex;
-            string name = LocalizedTextManager.getText(SuperMechSanctuary.SanctuaryNames[i]);
-            string cls = LocalizedTextManager.getText(SuperMechSanctuary.SanctuaryClasses[i]);
-            string typeName = SuperMechSanctuary.GetSanctuaryTypeName(i);
-            int frags = SuperMechSanctuary.Data.sanctuary_fragments[i];
-            bool unlocked = frags >= SuperMechSanctuary.FragmentsToUnlock;
-
-            _detailTitle.text = name;
-
-            AddDetailLine($"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_class")}:</color> {cls}", 12);
-            AddDetailLine($"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_type")}:</color> {typeName}", 12);
-            AddDetailLine($"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_frag_progress")}:</color> {frags}/{SuperMechSanctuary.FragmentsToUnlock} " +
-                $"<color={(unlocked ? "#4f4" : "#f84")}>[{(unlocked ? LocalizedTextManager.getText("sm_ui_san_unlocked_tag") : LocalizedTextManager.getText("sm_ui_san_locked_tag"))}]</color>", 12);
-
-            // 时间比例
-            Actor selected = SelectedUnit.unit;
-            if (selected != null && selected.isAlive())
-            {
-                string ratioText = SuperMechSanctuary.GetSanctuaryTimeRatioText(selected, i);
-                AddDetailLine($"<color=#ffd700>{LocalizedTextManager.getText("sm_san_time_ratio_label")}:</color> {ratioText}", 12);
-            }
-            AddDetailLine("", 6);
-
-            // 专属知识分支
-            AddDetailLine($"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_knowledge")}</color>", 13);
-            string[] branches = SuperMechSanctuary.GetSanctuaryKnowledgeBranches(i);
-            foreach (string branch in branches)
-            {
-                AddDetailLine($"  • {branch}", 11);
-            }
-            AddDetailLine("", 6);
-
-            // 钥匙说明
-            AddDetailLine($"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_sanctuary_key_title")}</color>", 12);
-            AddDetailLine($"<size=10><color=#aaa>{LocalizedTextManager.getText("sm_ui_sanctuary_key_desc")}</color></size>", 10);
-            AddDetailLine("", 8);
-
-            // 访问圣所按钮
-            AddButton(LocalizedTextManager.getText(unlocked ? "sm_ui_visit_sanctuary" : "sm_ui_sanctuary_locked"),
-                unlocked ? new Color(0.2f, 0.5f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.6f),
-                unlocked, () =>
-                {
-                    Actor visitor = SelectedUnit.unit;
-                    if (visitor == null || !visitor.isAlive())
-                    {
-                        Debug.LogWarning("[超神机械师] 访问圣所失败：请先选中一个存活单位");
-                        return;
-                    }
-                    if (SuperMechSanctuary.VisitSanctuary(visitor, _selectedIndex))
-                    {
-                        RefreshAll();
-                    }
-                });
-
-            AddDetailLine("", 6);
-
-            // 复活按钮
-            AddButton(LocalizedTextManager.getText("sm_ui_open_resurrection"),
-                new Color(0.2f, 0.4f, 0.6f, 0.9f), true,
-                () => SMWindowManager.OpenResurrection());
-        }
-
-        private void RefreshInfoState()
-        {
-            foreach (var go in _infoItems) if (go != null) Destroy(go);
-            _infoItems.Clear();
-
-            // 获取死亡单位记录（通过反射访问私有字段）
-            var deadField = typeof(SuperMechSanctuary).GetField("_deadUnits",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-            if (deadField == null)
-            {
-                AddInfoLine(LocalizedTextManager.getText("sm_ui_san_info_empty"), 12);
-                return;
-            }
-
-            var deadList = deadField.GetValue(null) as System.Collections.IList;
-            if (deadList == null || deadList.Count == 0)
-            {
-                AddInfoLine(LocalizedTextManager.getText("sm_ui_san_info_empty"), 12);
-                return;
-            }
-
-            AddInfoLine($"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_info_records")}: {deadList.Count}</color>", 13);
-            AddInfoLine("", 4);
-
-            foreach (var record in deadList)
-            {
-                var recType = record.GetType();
-                string recName = (string)recType.GetField("name")?.GetValue(record) ?? "?";
-                int recStage = (int)recType.GetField("stage")?.GetValue(record);
-                int recRank = (int)recType.GetField("rankIndex")?.GetValue(record);
-                float recQi = (float)recType.GetField("qi")?.GetValue(record);
-                int recRevive = (int)recType.GetField("reviveCount")?.GetValue(record);
-                string rankName = SuperMechRanks.GetRankName(recRank);
-
-                AddInfoLine($"<color=#ffd700>{recName}</color>  {rankName}  Lv{recStage}", 12);
-                AddInfoLine($"<size=10><color=#aaa>{LocalizedTextManager.getText("sm_ui_san_info_qi")}: {recQi:F0}  {LocalizedTextManager.getText("sm_ui_san_info_revive")}: {recRevive}</color></size>", 10);
-                AddInfoLine("", 4);
-            }
         }
 
         private void RefreshStatus()
         {
             var data = SuperMechSanctuary.Data;
             int unlocked = 0;
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < SuperMechSanctuary.TotalSanctuaries; i++)
+            {
                 if (data.sanctuary_fragments[i] >= SuperMechSanctuary.FragmentsToUnlock) unlocked++;
+            }
 
             _statusText.text =
                 $"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_unlocked")}:</color> {unlocked}/6  " +
@@ -610,55 +474,17 @@ namespace SuperMech.Code
                 $"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_san_revive_count")}:</color> {data.total_resurrections}";
         }
 
-        private void AddDetailLine(string text, int size)
+        private static Color ParseColor(string hex)
         {
-            var t = SMUiSkin.MakeText(_detailContent, text, size, TextAnchor.UpperLeft);
-            t.supportRichText = true;
-            t.horizontalOverflow = HorizontalWrapMode.Wrap;
-            var tr = t.GetComponent<RectTransform>();
-            tr.anchorMin = new Vector2(0, 1);
-            tr.anchorMax = new Vector2(1, 1);
-            tr.pivot = new Vector2(0, 1);
-            tr.sizeDelta = new Vector2(0, size + 6);
-            _detailItems.Add(t.gameObject);
-        }
-
-        private void AddInfoLine(string text, int size)
-        {
-            var t = SMUiSkin.MakeText(_infoStateContent, text, size, TextAnchor.UpperLeft);
-            t.supportRichText = true;
-            t.horizontalOverflow = HorizontalWrapMode.Wrap;
-            var tr = t.GetComponent<RectTransform>();
-            tr.anchorMin = new Vector2(0, 1);
-            tr.anchorMax = new Vector2(1, 1);
-            tr.pivot = new Vector2(0, 1);
-            tr.sizeDelta = new Vector2(0, size + 6);
-            _infoItems.Add(t.gameObject);
-        }
-
-        private void AddButton(string text, Color color, bool interactable, System.Action onClick)
-        {
-            var btnGo = new GameObject("Btn");
-            btnGo.transform.SetParent(_detailContent, false);
-            var btnRect = btnGo.AddComponent<RectTransform>();
-            btnRect.anchorMin = new Vector2(0, 1);
-            btnRect.anchorMax = new Vector2(1, 1);
-            btnRect.pivot = new Vector2(0, 1);
-            btnRect.sizeDelta = new Vector2(0, 30);
-            var btnImg = btnGo.AddComponent<Image>();
-            btnImg.color = color;
-            var btn = btnGo.AddComponent<Button>();
-            btn.interactable = interactable;
-            var btnText = SMUiSkin.MakeText(btnGo.transform, text, 12, TextAnchor.MiddleCenter);
-            btnText.color = Color.white;
-            btnText.fontStyle = FontStyle.Bold;
-            var btnTextRect = btnText.GetComponent<RectTransform>();
-            btnTextRect.anchorMin = Vector2.zero;
-            btnTextRect.anchorMax = Vector2.one;
-            btnTextRect.offsetMin = Vector2.zero;
-            btnTextRect.offsetMax = Vector2.zero;
-            btn.onClick.AddListener(() => onClick?.Invoke());
-            _detailItems.Add(btnGo);
+            Color c = new Color(1, 1, 1);
+            if (hex.StartsWith("#") && hex.Length >= 7)
+            {
+                float r = System.Convert.ToInt32(hex.Substring(1, 2), 16) / 255f;
+                float g = System.Convert.ToInt32(hex.Substring(3, 2), 16) / 255f;
+                float b = System.Convert.ToInt32(hex.Substring(5, 2), 16) / 255f;
+                c = new Color(r, g, b);
+            }
+            return c;
         }
     }
 }
