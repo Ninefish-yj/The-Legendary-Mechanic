@@ -19,9 +19,6 @@ namespace SuperMech.Code
             "core",   // 核心信息默认展开
         };
 
-        /// <summary>showStatsRows方法缓存（反射调用）</summary>
-        private static MethodInfo _showStatsRowsMethod;
-
         /// <summary>检查某个区块是否展开</summary>
         public static bool IsExpanded(long actorId, string sectionId)
         {
@@ -45,25 +42,31 @@ namespace SuperMech.Code
             sections[sectionId] = !current;
         }
 
-        /// <summary>通过反射调用StatsWindow.showStatsRows()重建面板</summary>
+        /// <summary>通过反射调用showStatsRows()重建面板
+        /// 注意：必须用window.GetType()获取实际类型的方法（UnitWindow），
+        /// 不能用typeof(StatsWindow)，因为Harmony Patch的是UnitWindow的override，
+        /// 反射调用基类virtual方法可能不触发子类的Postfix。
+        /// </summary>
         public static void RebuildPanel(StatsWindow window)
         {
             if (window == null) return;
             try
             {
-                if (_showStatsRowsMethod == null)
+                // 用实际类型获取方法，确保触发UnitWindow的Harmony Postfix
+                var method = window.GetType().GetMethod("showStatsRows",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (method != null)
                 {
-                    _showStatsRowsMethod = typeof(StatsWindow).GetMethod("showStatsRows",
-                        BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                    method.Invoke(window, null);
                 }
-                if (_showStatsRowsMethod != null)
+                else
                 {
-                    _showStatsRowsMethod.Invoke(window, null);
+                    Debug.LogWarning("[超神机械师] 未找到showStatsRows方法，类型: " + window.GetType().Name);
                 }
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning($"[超神机械师] 重建面板失败: {e.Message}");
+                Debug.LogWarning($"[超神机械师] 重建面板失败: {e.Message}\n{e.StackTrace}");
             }
         }
 
