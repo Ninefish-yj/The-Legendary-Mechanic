@@ -207,7 +207,6 @@ namespace SuperMech.Code
         public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; }
         public static void SetAutoVisitSanctuary(bool val) { AutoVisitSanctuary = val; }
         public static void SetAutoEnterSanctuary(bool val) { AutoEnterSanctuary = val; }
-        public static void SetSanctuaryCount(int val) { }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
         public static void SetMaxSummonedUnits(float val) { MaxSummonedUnits = Mathf.Clamp((int)val, 0, 500); }

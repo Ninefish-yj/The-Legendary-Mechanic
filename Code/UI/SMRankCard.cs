@@ -78,7 +78,7 @@ namespace SuperMech.Code
                     avatarImg.color = Color.white;
                 }
             }
-            catch { }
+            catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 排行榜头像加载异常: {e.Message}"); }
 
             // === 名称+阶位+体系（中间区域）===
             var infoGo = new GameObject("Info");

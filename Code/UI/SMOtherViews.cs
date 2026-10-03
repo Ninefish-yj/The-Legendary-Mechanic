@@ -72,7 +72,7 @@ namespace SuperMech.Code
         void Update()
         {
             try { OnScrollUpdate(); }
-            catch { }
+            catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 排行榜滚动更新异常: {e.Message}"); }
         }
 
         private void BuildLayout()
@@ -330,7 +330,7 @@ namespace SuperMech.Code
             if (_sortedList.Count > 1)
             {
                 try { _sortedList.Sort((a, b) => GetScore(b, _currentSortType).CompareTo(GetScore(a, _currentSortType))); }
-                catch { }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 排行榜排序异常: {e.Message}"); }
             }
 
             _sessionPopulated = true;
