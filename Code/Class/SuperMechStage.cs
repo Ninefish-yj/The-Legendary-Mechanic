@@ -161,6 +161,18 @@ namespace SuperMech.Code
             return a.data.level >= trigger;
         }
 
+        /// <summary>获取单位职业体系对应的知识前缀</summary>
+        private static string GetClassKnowledgePrefix(Actor a)
+        {
+            if (a == null) return "mech";
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return "mech";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "mind";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "power";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "martial";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "magic";
+            return "mech";
+        }
+
         /// <summary>获取阶段进度描述（用于UI显示）</summary>
         public static string GetStageProgressText(Actor a)
         {
@@ -298,6 +310,17 @@ namespace SuperMech.Code
             {
                 int trigger = GetNextAdvancementTrigger(a);
                 Debug.Log($"[超神机械师] 进阶失败: {a.name} 总等级{a.data.level}未达到转职要求{trigger}");
+                return false;
+            }
+
+            // 原著：转职需要学习高端知识（"机械系主职业卡在转职要求，要我学习两门高端知识"）
+            // 阶段越高需要越多该体系知识
+            string knowledgePrefix = GetClassKnowledgePrefix(a);
+            int requiredKnowledge = Mathf.Min(cur + 1, 10);
+            int knowledgeCount = SuperMechKnowledge.GetUnlockedCount(a, knowledgePrefix);
+            if (knowledgeCount < requiredKnowledge)
+            {
+                Debug.Log($"[超神机械师] 进阶失败: {a.name} {knowledgePrefix}知识{knowledgeCount}/{requiredKnowledge}不足");
                 return false;
             }
 
