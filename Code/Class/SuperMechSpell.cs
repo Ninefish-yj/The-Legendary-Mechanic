@@ -96,6 +96,12 @@ namespace SuperMech.Code
                 xpCostPerPhase = new[] { 300, 600, 1200, 2400 }, baseSuccessRate = 0.35f,
                 prerequisites = new[] { "sm_spell_fireball", "sm_spell_ice_shield" }, intRequirement = 30, mysteryRequirement = 20
             });
+            RegisterSpell(new SpellDef {
+                id = "sm_spell_meteor_swarm", nameKey = "sm_spell_meteor_swarm_name", descKey = "sm_spell_meteor_swarm_desc",
+                branch = SpellBranch.Element, tier = 5, totalPhases = 5,
+                xpCostPerPhase = new[] { 500, 1000, 2000, 4000, 8000 }, baseSuccessRate = 0.2f,
+                prerequisites = new[] { "sm_spell_lightning_storm" }, intRequirement = 50, mysteryRequirement = 40
+            });
 
             // === 秘术分支 ===
             RegisterSpell(new SpellDef {
@@ -109,6 +115,12 @@ namespace SuperMech.Code
                 branch = SpellBranch.Arcane, tier = 3, totalPhases = 3,
                 xpCostPerPhase = new[] { 150, 300, 600 }, baseSuccessRate = 0.5f,
                 prerequisites = new[] { "sm_spell_arcane_missile" }, intRequirement = 20, mysteryRequirement = 15
+            });
+            RegisterSpell(new SpellDef {
+                id = "sm_spell_arcane_blast", nameKey = "sm_spell_arcane_blast_name", descKey = "sm_spell_arcane_blast_desc",
+                branch = SpellBranch.Arcane, tier = 5, totalPhases = 5,
+                xpCostPerPhase = new[] { 400, 800, 1600, 3200, 6400 }, baseSuccessRate = 0.25f,
+                prerequisites = new[] { "sm_spell_dispel" }, intRequirement = 45, mysteryRequirement = 35
             });
 
             // === 庇护分支 ===
@@ -124,6 +136,12 @@ namespace SuperMech.Code
                 xpCostPerPhase = new[] { 100, 200, 400 }, baseSuccessRate = 0.6f,
                 prerequisites = new[] { "sm_spell_minor_ward" }, intRequirement = 10, mysteryRequirement = 10
             });
+            RegisterSpell(new SpellDef {
+                id = "sm_spell_antimagic_field", nameKey = "sm_spell_antimagic_field_name", descKey = "sm_spell_antimagic_field_desc",
+                branch = SpellBranch.Abjuration, tier = 4, totalPhases = 4,
+                xpCostPerPhase = new[] { 350, 700, 1400, 2800 }, baseSuccessRate = 0.3f,
+                prerequisites = new[] { "sm_spell_mage_armor" }, intRequirement = 35, mysteryRequirement = 25
+            });
 
             // === 时空分支 ===
             RegisterSpell(new SpellDef {
@@ -137,6 +155,12 @@ namespace SuperMech.Code
                 branch = SpellBranch.Chronomancy, tier = 4, totalPhases = 4,
                 xpCostPerPhase = new[] { 400, 800, 1600, 3200 }, baseSuccessRate = 0.3f,
                 prerequisites = new[] { "sm_spell_blink" }, intRequirement = 40, mysteryRequirement = 30
+            });
+            RegisterSpell(new SpellDef {
+                id = "sm_spell_time_stop", nameKey = "sm_spell_time_stop_name", descKey = "sm_spell_time_stop_desc",
+                branch = SpellBranch.Chronomancy, tier = 5, totalPhases = 5,
+                xpCostPerPhase = new[] { 600, 1200, 2400, 4800, 9600 }, baseSuccessRate = 0.15f,
+                prerequisites = new[] { "sm_spell_time_slow" }, intRequirement = 60, mysteryRequirement = 50
             });
 
             // === 塑能分支 ===
@@ -152,6 +176,12 @@ namespace SuperMech.Code
                 xpCostPerPhase = new[] { 200, 400, 800 }, baseSuccessRate = 0.45f,
                 prerequisites = new[] { "sm_spell_energy_bolt" }, intRequirement = 20, mysteryRequirement = 15
             });
+            RegisterSpell(new SpellDef {
+                id = "sm_spell_evocation_storm", nameKey = "sm_spell_evocation_storm_name", descKey = "sm_spell_evocation_storm_desc",
+                branch = SpellBranch.Evocation, tier = 5, totalPhases = 5,
+                xpCostPerPhase = new[] { 450, 900, 1800, 3600, 7200 }, baseSuccessRate = 0.22f,
+                prerequisites = new[] { "sm_spell_energy_beam" }, intRequirement = 48, mysteryRequirement = 38
+            });
 
             // === 召唤分支 ===
             RegisterSpell(new SpellDef {
@@ -166,6 +196,12 @@ namespace SuperMech.Code
                 xpCostPerPhase = new[] { 200, 400, 800 }, baseSuccessRate = 0.45f,
                 prerequisites = new[] { "sm_spell_summon_familiar" }, intRequirement = 15, mysteryRequirement = 25
             });
+            RegisterSpell(new SpellDef {
+                id = "sm_spell_summon_elemental_lord", nameKey = "sm_spell_summon_elemental_lord_name", descKey = "sm_spell_summon_elemental_lord_desc",
+                branch = SpellBranch.Summon, tier = 5, totalPhases = 5,
+                xpCostPerPhase = new[] { 500, 1000, 2000, 4000, 8000 }, baseSuccessRate = 0.2f,
+                prerequisites = new[] { "sm_spell_summon_elemental" }, intRequirement = 40, mysteryRequirement = 50
+            });
 
             // === 诅咒祈福分支 ===
             RegisterSpell(new SpellDef {
@@ -179,6 +215,12 @@ namespace SuperMech.Code
                 branch = SpellBranch.Curse, tier = 2, totalPhases = 3,
                 xpCostPerPhase = new[] { 100, 200, 400 }, baseSuccessRate = 0.6f,
                 prerequisites = new[] { "sm_spell_minor_curse" }, intRequirement = 10, mysteryRequirement = 15
+            });
+            RegisterSpell(new SpellDef {
+                id = "sm_spell_death_curse", nameKey = "sm_spell_death_curse_name", descKey = "sm_spell_death_curse_desc",
+                branch = SpellBranch.Curse, tier = 4, totalPhases = 4,
+                xpCostPerPhase = new[] { 350, 700, 1400, 2800 }, baseSuccessRate = 0.28f,
+                prerequisites = new[] { "sm_spell_blessing" }, intRequirement = 30, mysteryRequirement = 40
             });
         }
 
