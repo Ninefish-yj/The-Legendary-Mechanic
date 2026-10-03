@@ -113,6 +113,126 @@ namespace SuperMech.Code
 
             // 5. 自动联盟（强者保护弱者）
             AutoAlliance(allUnits);
+
+            // 6. v0.60.0 势力分裂（成员实力超过领袖时叛变）
+            CheckFactionSplit(allUnits);
+
+            // 7. v0.60.0 势力覆灭（领袖死亡无继任者时解散）
+            CheckFactionCollapse(allUnits);
+        }
+
+        /// <summary>v0.60.0 势力分裂：成员实力超过领袖*1.2且成员>3时，有概率叛变分裂</summary>
+        private static void CheckFactionSplit(List<Actor> units)
+        {
+            var toSplit = new List<FactionData>();
+            foreach (var f in _factions.Values)
+            {
+                if (f.memberIds.Count < 4) continue; // 至少4人才可能分裂
+                Actor leader = FindActor(f.leaderId, units);
+                if (leader == null || !leader.isAlive()) continue;
+                float leaderPower = SuperMechAdvancement.CalcOnar(leader);
+
+                foreach (var mid in f.memberIds)
+                {
+                    if (mid == f.leaderId) continue;
+                    Actor member = FindActor(mid, units);
+                    if (member == null || !member.isAlive()) continue;
+                    float memberPower = SuperMechAdvancement.CalcOnar(member);
+                    // 成员实力超过领袖1.2倍，且有2%概率叛变
+                    if (memberPower > leaderPower * 1.2f && Random.value < 0.02f)
+                    {
+                        // 分裂：成员带走部分成员创建新势力
+                        SplitFaction(f, member, units);
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>分裂势力：成员带走1/3成员创建新势力</summary>
+        private static void SplitFaction(FactionData original, Actor rebel, List<Actor> units)
+        {
+            try
+            {
+                // 创建新势力
+                CreateFaction(rebel);
+                var newFaction = GetFaction(rebel);
+                if (newFaction == null) return;
+
+                // 带走1/3成员（随机）
+                int takeCount = Mathf.Max(1, original.memberIds.Count / 3);
+                var candidates = new List<long>(original.memberIds);
+                candidates.Remove(original.leaderId);
+                candidates.Remove(rebel.id);
+                for (int i = 0; i < takeCount && candidates.Count > 0; i++)
+                {
+                    int idx = Random.Range(0, candidates.Count);
+                    long mid = candidates[idx];
+                    candidates.RemoveAt(idx);
+                    Actor m = FindActor(mid, units);
+                    if (m != null) JoinFaction(m, newFaction.id);
+                }
+
+                // 原势力和新势力敌对
+                SetRelation(original.id, newFaction.id, FactionRelation.Hostile);
+                Debug.Log($"[超神机械师] 势力分裂：{original.name} → {newFaction.name}（{rebel.getName()}叛变）");
+            }
+            catch { }
+        }
+
+        /// <summary>v0.60.0 势力覆灭：领袖死亡且无A阶以上继任者时解散</summary>
+        private static void CheckFactionCollapse(List<Actor> units)
+        {
+            var toRemove = new List<string>();
+            foreach (var f in _factions.Values)
+            {
+                Actor leader = FindActor(f.leaderId, units);
+                if (leader != null && leader.isAlive()) continue;
+
+                // 领袖死亡，找最强成员继任
+                Actor successor = null;
+                float maxPower = 0f;
+                foreach (var mid in f.memberIds)
+                {
+                    Actor m = FindActor(mid, units);
+                    if (m == null || !m.isAlive()) continue;
+                    float power = SuperMechAdvancement.CalcOnar(m);
+                    if (power > maxPower)
+                    {
+                        maxPower = power;
+                        successor = m;
+                    }
+                }
+
+                if (successor != null && SuperMechAdvancement.GetExactRankIndex(successor) >= 8)
+                {
+                    // 有A阶以上继任者，传承
+                    f.leaderId = successor.id;
+                    Debug.Log($"[超神机械师] 势力传承：{f.name} 新领袖 {successor.getName()}");
+                }
+                else
+                {
+                    // 无合格继任者，势力解散
+                    toRemove.Add(f.id);
+                    Debug.Log($"[超神机械师] 势力覆灭：{f.name}（领袖死亡无继任者）");
+                }
+            }
+
+            foreach (var fid in toRemove)
+            {
+                DissolveFaction(fid);
+            }
+        }
+
+        /// <summary>解散势力：所有成员变成无势力</summary>
+        private static void DissolveFaction(string factionId)
+        {
+            if (!_factions.TryGetValue(factionId, out var f)) return;
+            foreach (var mid in f.memberIds)
+            {
+                _actorFaction.Remove(mid);
+            }
+            _factions.Remove(factionId);
         }
 
         /// <summary>更新所有势力的等级和总战力</summary>
@@ -414,6 +534,52 @@ namespace SuperMech.Code
             float techReward = victimRank >= 13 ? 20f : victimRank >= 12 ? 10f : victimRank >= 10 ? 5f : 2f;
             SuperMechCivilization.AddTechPoints(civK, techReward);
             Debug.Log($"[超神机械师] 代理战争：{killer.name}({fk.name})击杀{victim.name}({fv.name})，{civK.name}获得{techReward}科技值");
+
+            // v0.60.0 势力吞并：击杀敌对势力领袖，且战力碾压时吞并
+            if (fv.leaderId == victim.id && fk.totalPower > fv.totalPower * 1.5f && Random.value < 0.3f)
+            {
+                TryAbsorbFaction(fk, fv);
+            }
+        }
+
+        /// <summary>v0.60.0 吞并势力：小势力成员加入大势力</summary>
+        private static void TryAbsorbFaction(FactionData absorber, FactionData target)
+        {
+            try
+            {
+                var units = World.world.units?.units_only_alive;
+                if (units == null) return;
+
+                int absorbed = 0;
+                foreach (var mid in target.memberIds)
+                {
+                    if (mid == target.leaderId) continue; // 领袖已死
+                    Actor m = FindActor(mid, units);
+                    if (m == null || !m.isAlive()) continue;
+                    // 50%概率成员投降加入，否则变成无势力
+                    if (Random.value < 0.5f)
+                    {
+                        JoinFaction(m, absorber.id);
+                        absorbed++;
+                    }
+                    else
+                    {
+                        _actorFaction.Remove(mid);
+                    }
+                }
+
+                // 吞并后吸收目标势力的关系
+                foreach (var rel in target.relations)
+                {
+                    if (rel.Key == absorber.id) continue;
+                    if (!absorber.relations.ContainsKey(rel.Key))
+                        absorber.relations[rel.Key] = rel.Value;
+                }
+
+                _factions.Remove(target.id);
+                Debug.Log($"[超神机械师] 势力吞并：{absorber.name} 吞并 {target.name}（吸收{absorbed}人）");
+            }
+            catch { }
         }
 
         /// <summary>获取势力等级</summary>
