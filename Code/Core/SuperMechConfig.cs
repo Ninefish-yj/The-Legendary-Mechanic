@@ -41,6 +41,8 @@ namespace SuperMech.Code
         public static int KeyDropMinRank = 10;
         /// <summary>多少块钥匙材料合成1把圣所钥匙（默认3）</summary>
         public static int KeyMaterialsPerKey = 3;
+        /// <summary>异能系/念力系单位死亡额外掉落钥匙材料数（原始异能体碎片，默认2）</summary>
+        public static int PsionicKeyMaterialBonus = 2;
         /// <summary>每次进入圣所消耗钥匙数</summary>
         public static int SanctuaryKeyCostEnter = 3;
 
@@ -168,6 +170,7 @@ namespace SuperMech.Code
                 new ItemInfo("sanctuary_key_drop_enabled", "sm_config_740", "sm_config_741"),
                 new ItemInfo("key_drop_min_rank", "sm_config_742", "sm_config_743"),
                 new ItemInfo("key_materials_per_key", "sm_config_744", "sm_config_745"),
+                new ItemInfo("psionic_key_material_bonus", "sm_config_746", "sm_config_747"),
                 new ItemInfo("sanctuary_key_cost_enter", "sm_config_750", "sm_config_751"),
                 new ItemInfo("mech_summon_enabled", "sm_config_605", "sm_config_606"),
                 new ItemInfo("max_summoned_units", "sm_config_607", "sm_config_608"),
@@ -262,6 +265,7 @@ namespace SuperMech.Code
         public static void SetSanctuaryKeyDropEnabled(bool val) { SanctuaryKeyDropEnabled = val; }
         public static void SetKeyDropMinRank(int val) { KeyDropMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetKeyMaterialsPerKey(int val) { KeyMaterialsPerKey = Mathf.Clamp(val, 1, 10); }
+        public static void SetPsionicKeyMaterialBonus(int val) { PsionicKeyMaterialBonus = Mathf.Clamp(val, 0, 10); }
         public static void SetSanctuaryKeyCostEnter(int val) { SanctuaryKeyCostEnter = Mathf.Clamp(val, 1, 10); }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }

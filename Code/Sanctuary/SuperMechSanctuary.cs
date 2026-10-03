@@ -569,13 +569,32 @@ namespace SuperMech.Code
                 int amount = 1;
                 if (rank >= 13) amount = 3;
                 else if (rank >= 12) amount = 2;
-                else if (rank >= 11) amount = 1;
                 else amount = 1;
 
                 string rankName = rank < SuperMechRanks.All.Count
                     ? LocalizedTextManager.getText(SuperMechRanks.All[rank].name)
                     : "?";
-                SuperMechSanctuary.GrantKeyMaterials(amount, "击杀" + rankName);
+
+                // v0.46.1：异能系/念力系单位额外掉落原始异能体碎片（原著：原始异能体是开启第三圣所的钥匙）
+                bool isPsionic = __instance.hasTrait(SuperMechTraits.ClassPsi)
+                              || __instance.hasTrait(SuperMechTraits.ClassMind);
+                if (isPsionic)
+                {
+                    int bonus = SuperMechConfig.PsionicKeyMaterialBonus;
+                    if (bonus > 0)
+                    {
+                        amount += bonus;
+                        SuperMechSanctuary.GrantKeyMaterials(amount, "击杀" + rankName + "+原始异能体碎片");
+                    }
+                    else
+                    {
+                        SuperMechSanctuary.GrantKeyMaterials(amount, "击杀" + rankName);
+                    }
+                }
+                else
+                {
+                    SuperMechSanctuary.GrantKeyMaterials(amount, "击杀" + rankName);
+                }
             }
             catch (System.Exception e)
             {

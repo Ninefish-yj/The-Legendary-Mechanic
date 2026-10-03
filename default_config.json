@@ -147,6 +147,14 @@
       "MinIntVal": 1,
       "MaxIntVal": 10,
       "Callback": "SuperMech.Code.SuperMechConfig:SetKeyMaterialsPerKey"
+    },
+    {
+      "Id": "psionic_key_material_bonus",
+      "Type": "INT_SLIDER",
+      "IntVal": 2,
+      "MinIntVal": 0,
+      "MaxIntVal": 10,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetPsionicKeyMaterialBonus"
     }
   ],
   "Mech": [
