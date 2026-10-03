@@ -42,18 +42,18 @@ namespace SuperMech.Code
             sections[sectionId] = !current;
         }
 
-        /// <summary>通过反射调用showStatsRows()重建面板
-        /// 注意：必须用window.GetType()获取实际类型的方法（UnitWindow），
-        /// 不能用typeof(StatsWindow)，因为Harmony Patch的是UnitWindow的override，
-        /// 反射调用基类virtual方法可能不触发子类的Postfix。
+        /// <summary>重建面板
+        /// 正确方式：调用StatsWindow.updateStatsRows()（internal方法），
+        /// 它会禁用再启用StatsRowsContainer，触发OnDisable->OnEnable->showStatsRows()->协程激活行。
+        /// 不能直接调用showStatsRows()，因为它只创建行但不激活行（SetActive(false)），
+        /// 新行不会显示在面板上。
         /// </summary>
         public static void RebuildPanel(StatsWindow window)
         {
             if (window == null) return;
             try
             {
-                // 用实际类型获取方法，确保触发UnitWindow的Harmony Postfix
-                var method = window.GetType().GetMethod("showStatsRows",
+                var method = window.GetType().GetMethod("updateStatsRows",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 if (method != null)
                 {
@@ -61,7 +61,7 @@ namespace SuperMech.Code
                 }
                 else
                 {
-                    Debug.LogWarning("[超神机械师] 未找到showStatsRows方法，类型: " + window.GetType().Name);
+                    Debug.LogWarning("[超神机械师] 未找到updateStatsRows方法，类型: " + window.GetType().Name);
                 }
             }
             catch (System.Exception e)
