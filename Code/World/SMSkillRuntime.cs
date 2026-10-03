@@ -60,7 +60,7 @@ namespace SuperMech.Code
                     SummonUnits(caster, def);
                     break;
                 case SuperMechSkills.SkillEffectType.Teleport:
-                    Teleport(caster, def);
+                    Teleport(caster, target, def);
                     break;
             }
         }
@@ -109,28 +109,67 @@ namespace SuperMech.Code
             catch { }
         }
 
+        /// <summary>召唤效果（v0.45.0 实装）：在施法者身边生成机械系召唤单位，阶位约低一阶，短寿命消散</summary>
         private static void SummonUnits(Actor caster, SuperMechSkills.SkillDef def)
         {
-            // 简化版：召唤机械单位（后续扩展）
             try
             {
-                int count = Mathf.FloorToInt(def.effectValue);
+                if (World.world == null || World.world.units == null || caster == null) return;
+                int count = Mathf.Clamp(Mathf.FloorToInt(def.effectValue), 1, 5);
+                int rankIdx = SuperMechAdvancement.GetExactRankIndex(caster);
                 for (int i = 0; i < count; i++)
                 {
-                    // WorldBox召唤单位API（简化处理）
+                    WorldTile tile = caster.current_tile;
+                    if (tile == null) continue;
+                    // 在施法者周围随机一格生成
+                    if (tile.neighbours != null && tile.neighbours.Length > 0)
+                        tile = tile.neighbours[Random.Range(0, tile.neighbours.Length)];
+
+                    Actor summoned = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
+                    if (summoned == null) continue;
+
+                    // 召唤物：机械系特质 + 战斗倾向
+                    summoned.addTrait(SuperMechTraits.ClassMech);
+                    summoned.addTrait("aggressive");
+                    // 阶位约低一阶（使徒级机械，非独立超能者）
+                    int minionRank = Mathf.Max(0, rankIdx - 1);
+                    if (minionRank < SuperMechRanks.All.Count)
+                        SuperMechAdvancement.SetExactRank(summoned, minionRank);
+                    // 气力按召唤者缩放
+                    float qiBase = 300f + rankIdx * 150f;
+                    SuperMechQi.SetQiMax(summoned, qiBase);
+                    SuperMechQi.SetQi(summoned, qiBase);
+                    // 存在时间有限：设定短寿命，随时间自然消散
+                    if (summoned.stats != null && def.effectDuration > 0f)
+                        summoned.stats["lifespan"] = Mathf.Max(1f, def.effectDuration / 30f);
                 }
             }
-            catch { }
+            catch (System.Exception e)
+            {
+                if (SuperMechConfig.LogVerbose) Debug.LogWarning($"[超神机械师] 召唤技能异常: {e.Message}");
+            }
         }
 
-        private static void Teleport(Actor caster, SuperMechSkills.SkillDef def)
+        /// <summary>瞬移效果（v0.45.0 实装）：有目标时瞬移到目标身边，无目标时小范围闪避，获得短暂无敌</summary>
+        private static void Teleport(Actor caster, Actor target, SuperMechSkills.SkillDef def)
         {
-            // 简化版：短暂无敌
             try
             {
+                if (caster == null) return;
+                if (target != null && target.isAlive() && target.current_tile != null)
+                {
+                    caster.moveTo(target.current_tile);
+                }
+                else if (caster.current_tile != null && caster.current_tile.neighbours != null && caster.current_tile.neighbours.Length > 0)
+                {
+                    caster.moveTo(caster.current_tile.neighbours[Random.Range(0, caster.current_tile.neighbours.Length)]);
+                }
                 caster.addStatusEffect("invincible", def.effectDuration);
             }
-            catch { }
+            catch (System.Exception e)
+            {
+                if (SuperMechConfig.LogVerbose) Debug.LogWarning($"[超神机械师] 瞬移技能异常: {e.Message}");
+            }
         }
 
         public static bool IsOnCooldown(long unitId, string skillId)

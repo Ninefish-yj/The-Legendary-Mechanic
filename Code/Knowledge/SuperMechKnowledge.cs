@@ -348,6 +348,7 @@ namespace SuperMech.Code
 
         public static KnowledgeDef GetDef(string id)
         {
+            if (string.IsNullOrEmpty(id)) return null;
             _allKnowledge.TryGetValue(id, out var def);
             return def;
         }
@@ -387,6 +388,37 @@ namespace SuperMech.Code
                 case "sm_class_mind": return "mind";
                 default: return "mech";
             }
+        }
+
+        /// <summary>按单位特质返回知识前缀（机械/武道/异能/魔法/念力），不依赖本地化名称（v0.45.0）</summary>
+        public static string GetClassPrefixByTraits(Actor a)
+        {
+            if (a == null) return "mech";
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return "martial";
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return "psi";
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return "mage";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "mind";
+            return "mech";
+        }
+
+        /// <summary>返回某体系下一个未解锁的知识（按层→分支→序号顺序），该体系学完返回null（v0.45.0）</summary>
+        public static string GetNextKnowledgeId(Actor a, string prefix)
+        {
+            if (a == null || string.IsNullOrEmpty(prefix)) return null;
+            KnowledgeDef best = null;
+            foreach (var def in _allKnowledge.Values)
+            {
+                if (def.prefix != prefix) continue;
+                if (IsUnlocked(a, def.id)) continue;
+                if (best == null
+                    || def.tier < best.tier
+                    || (def.tier == best.tier && def.branch < best.branch)
+                    || (def.tier == best.tier && def.branch == best.branch && def.index < best.index))
+                {
+                    best = def;
+                }
+            }
+            return best?.id;
         }
     }
 }

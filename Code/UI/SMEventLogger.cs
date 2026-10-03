@@ -40,8 +40,9 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f));
             RegisterLogAsset("sm_log_skill", "sm_log_skill_text", new Color(0.4f, 0.8f, 0.6f));
             RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f));
+            RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f));
 
-            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册8类日志资产+1历史分类");
+            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册10类日志资产+1历史分类");
         }
 
         /// <summary>注册历史分类Asset</summary>
@@ -333,6 +334,29 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 推送技能日志失败: {e.Message}");
+            }
+        }
+
+        /// <summary>推送超能者竞争事件日志（自动竞争，v0.45.0）</summary>
+        public static void LogCompetition(Actor winner, Actor loser, string result)
+        {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            TryInit();
+            if (!_initialized || winner == null) return;
+            var asset = GetAsset("sm_log_competition");
+            if (asset == null) return;
+
+            try
+            {
+                new WorldLogMessage(asset, SafeName(winner), SafeName(loser), SafeStr(result))
+                {
+                    unit = winner,
+                    location = winner.current_position
+                }.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送竞争日志失败: {e.Message}");
             }
         }
 

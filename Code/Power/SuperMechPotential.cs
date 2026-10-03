@@ -177,7 +177,7 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 if (!SuperMechAdvancement.IsSuperMechUnit(a)) continue;
-                if (!SuperMechAwakened.IsAwakened(a)) continue;
+                // v0.45.0：不再限制降临者——NPC超能者也积累潜能（半速率），支撑自动修炼闭环
 
                 float qi = SuperMechQi.GetQi(a);
                 int curLv = SuperMechQi.GetLevel(qi);
@@ -187,14 +187,22 @@ namespace SuperMech.Code
                 if (curLv > lastLv)
                 {
                     int gained = curLv - lastLv;
-                    if (a.hasTrait("sm_rank_10_s") || a.hasTrait("sm_rank_11_s_plus") || a.hasTrait("sm_rank_12_ss") || a.hasTrait("sm_rank_13_x"))
+                    if (SuperMechAwakened.IsAwakened(a))
                     {
-                        int curAw = GetAwakening(a);
-                        _awakeningMap[a.id] = curAw + gained;
+                        if (a.hasTrait("sm_rank_10_s") || a.hasTrait("sm_rank_11_s_plus") || a.hasTrait("sm_rank_12_ss") || a.hasTrait("sm_rank_13_x"))
+                        {
+                            int curAw = GetAwakening(a);
+                            _awakeningMap[a.id] = curAw + gained;
+                        }
+                        else
+                        {
+                            AddPotential(a, gained);
+                        }
                     }
                     else
                     {
-                        AddPotential(a, gained);
+                        // v0.45.0 NPC超能者自动修炼：以半速率积累潜能（降临者走职业经验体系，速率更高）
+                        AddPotential(a, Mathf.Max(1, gained / 2));
                     }
                     _lastQiLevel[a.id] = curLv;
                 }

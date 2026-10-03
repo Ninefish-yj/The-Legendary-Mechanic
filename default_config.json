@@ -305,5 +305,46 @@
       "Type": "SWITCH",
       "BoolVal": true
     }
+  ],
+  "AI": [
+    {
+      "Id": "auto_competition",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoCompetition"
+    },
+    {
+      "Id": "competition_min_rank",
+      "Type": "SLIDER",
+      "FloatVal": 4.0,
+      "MinVal": 0.0,
+      "MaxVal": 13.0,
+      "Step": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCompetitionMinRank"
+    },
+    {
+      "Id": "competition_interval",
+      "Type": "SLIDER",
+      "FloatVal": 5.0,
+      "MinVal": 1.0,
+      "MaxVal": 50.0,
+      "Step": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCompetitionInterval"
+    },
+    {
+      "Id": "npc_auto_knowledge",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetNpcAutoKnowledge"
+    },
+    {
+      "Id": "npc_knowledge_interval",
+      "Type": "SLIDER",
+      "FloatVal": 5.0,
+      "MinVal": 1.0,
+      "MaxVal": 50.0,
+      "Step": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetNpcKnowledgeInterval"
+    }
   ]
 }

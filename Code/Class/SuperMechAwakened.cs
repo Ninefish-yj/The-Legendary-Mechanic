@@ -313,12 +313,14 @@ namespace SuperMech.Code
 
         private static void AutoUnlockKnowledge(Actor a)
         {
-            string cls = SuperMechBranch.GetClass(a);
-            string prefix = SuperMechKnowledge.GetPrefixForClass(cls);
-            int unlocked = SuperMechPotential.GetUnlockedCount(a);
-            string nodeId = $"{prefix}_{unlocked + 1}";
-            int cost = 2;
-            SuperMechPotential.UnlockNode(a, nodeId, cost);
+            // v0.45.0 修复：旧实现用本地化名称+错误id拼接，导致自动学知识从未生效。
+            // 改为按特质取体系前缀，再用知识树顺序取下一个未解锁知识。
+            string prefix = SuperMechKnowledge.GetClassPrefixByTraits(a);
+            string nextId = SuperMechKnowledge.GetNextKnowledgeId(a, prefix);
+            if (nextId == null) return;
+            var def = SuperMechKnowledge.GetDef(nextId);
+            int cost = def != null ? def.cost : 2;
+            SuperMechPotential.UnlockNode(a, nextId, cost);
         }
 
         private static void AutoSelectBranch(Actor a)

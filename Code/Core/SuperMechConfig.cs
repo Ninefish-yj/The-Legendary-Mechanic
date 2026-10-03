@@ -38,6 +38,18 @@ namespace SuperMech.Code
         public static bool MechSummonEnabled = true;
         public static int MaxSummonedUnits = 50;
 
+        // === 超能者AI配置（v0.45.0）===
+        /// <summary>自动竞争总开关：相近阶位超能者定期切磋</summary>
+        public static bool AutoCompetition = true;
+        /// <summary>竞争最低阶位（0=F~13=X），默认4=C阶</summary>
+        public static int CompetitionMinRank = 4;
+        /// <summary>竞争间隔（岁），同一超能者两次竞争的年龄间隔</summary>
+        public static int CompetitionInterval = 5;
+        /// <summary>NPC自动修炼开关：非降临者超能者自动解锁本系知识</summary>
+        public static bool NpcAutoKnowledge = true;
+        /// <summary>NPC自动解锁知识的年龄间隔（岁）</summary>
+        public static int NpcKnowledgeInterval = 5;
+
         public static float TickInterval = 1.25f;
         public static int MaxTrackedActors = 500;
         public static bool LogVerbose = false;
@@ -120,6 +132,7 @@ namespace SuperMech.Code
                 new CatInfo("Performance", "sm_config_558"),
                 new CatInfo("Combat", "sm_config_621"),
                 new CatInfo("EventLog", "sm_config_710"),
+                new CatInfo("AI", "sm_config_729"),
             };
             foreach (var c in categories)
                 LocalizedTextManager.add(c.key, LocalizedTextManager.getText(c.name), pReplace: true);
@@ -170,6 +183,11 @@ namespace SuperMech.Code
                 new ItemInfo("event_log_iteration_enabled", "sm_config_723", "sm_config_724"),
                 new ItemInfo("event_log_resurrection_enabled", "sm_config_725", "sm_config_726"),
                 new ItemInfo("event_log_concept_reshape_enabled", "sm_config_727", "sm_config_728"),
+                new ItemInfo("auto_competition", "sm_config_730", "sm_config_731"),
+                new ItemInfo("competition_min_rank", "sm_config_732", "sm_config_733"),
+                new ItemInfo("competition_interval", "sm_config_734", "sm_config_735"),
+                new ItemInfo("npc_auto_knowledge", "sm_config_736", "sm_config_737"),
+                new ItemInfo("npc_knowledge_interval", "sm_config_738", "sm_config_739"),
             };
             foreach (var it in items)
             {
@@ -210,6 +228,12 @@ namespace SuperMech.Code
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
         public static void SetMaxSummonedUnits(float val) { MaxSummonedUnits = Mathf.Clamp((int)val, 0, 500); }
+
+        public static void SetAutoCompetition(bool val) { AutoCompetition = val; }
+        public static void SetCompetitionMinRank(float val) { CompetitionMinRank = Mathf.Clamp((int)val, 0, 13); }
+        public static void SetCompetitionInterval(float val) { CompetitionInterval = Mathf.Clamp((int)val, 1, 50); }
+        public static void SetNpcAutoKnowledge(bool val) { NpcAutoKnowledge = val; }
+        public static void SetNpcKnowledgeInterval(float val) { NpcKnowledgeInterval = Mathf.Clamp((int)val, 1, 50); }
 
         public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); }
         public static void SetMaxTrackedActors(float val) { MaxTrackedActors = Mathf.Clamp((int)val, 50, 5000); }

@@ -70,6 +70,8 @@ namespace SuperMech.Code
                 SafeRun("技能自动学习", () => SuperMechSkills.TickAutoLearnAll());
                 SafeRun("技能运行时", () => SMSkillRuntime.Tick());
                 SafeRun("降临者濒死保护", () => SuperMechConceptImmortal.TickGracePeriod());
+                SafeRun("超能者竞争", () => SuperMechAI.TickCompetition());
+                SafeRun("NPC自动修炼", () => SuperMechAI.TickNpcKnowledge());
             }
             else if (group == 2)
             {
@@ -140,6 +142,7 @@ namespace SuperMech.Code
             removed += SuperMechPotentialRating.CleanupDead(alive);
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechAdvancementTask.CleanupDead(alive);
+            removed += SuperMechAI.CleanupDead(alive);
         }
 
         public static void ClearAll()
@@ -179,6 +182,7 @@ namespace SuperMech.Code
             try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
             try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }
+            try { SuperMechAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAI"); }
         }
     }
 }

@@ -4384,5 +4384,19 @@
   "Fusion": "融合",
   "sm_sanctuary_type_psi": "念力师圣所",
   "sm_sanctuary_type_martial": "武道家圣所",
-  "sm_sanctuary_type_mage": "魔法师圣所"
+  "sm_sanctuary_type_mage": "魔法师圣所",
+  "sm_config_729": "超能者AI",
+  "sm_config_730": "自动竞争",
+  "sm_config_731": "相近阶位的超能者会定期切磋竞争，胜者获得气力/潜能磨砺，败者负伤；S+级（超A级）以上竞争有小概率陨落",
+  "sm_config_732": "竞争最低阶位",
+  "sm_config_733": "达到该阶位（0=F~13=X）的超能者才会参与自动竞争，默认4=C阶",
+  "sm_config_734": "竞争间隔（岁）",
+  "sm_config_735": "同一超能者两次参与竞争的年龄间隔，默认5岁",
+  "sm_config_736": "NPC自动学知识",
+  "sm_config_737": "非降临者超能者自动积累潜能并解锁本系知识，补全修炼成长闭环",
+  "sm_config_738": "NPC学知识间隔（岁）",
+  "sm_config_739": "NPC超能者自动解锁知识的年龄间隔，默认5岁",
+  "sm_log_competition_text": "【超能者竞争】{0} 与 {1} 切磋，{0}胜出{2}",
+  "sm_ai_compete_win": "，实力精进",
+  "sm_ai_compete_fatal": "，对手陨落"
 }
