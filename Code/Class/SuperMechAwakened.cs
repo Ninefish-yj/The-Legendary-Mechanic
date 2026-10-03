@@ -289,7 +289,7 @@ namespace SuperMech.Code
             SuperMechSanctuary.VisitSanctuary(a, sanctuaryIndex);
 
             // S级及以上且有足够钥匙时自动进入圣所修炼
-            if (SuperMechConfig.AutoEnterSanctuary && rankIdx >= 10 && SuperMechSanctuary.Data.key_fragments >= 3)
+            if (SuperMechConfig.AutoEnterSanctuary && rankIdx >= 10 && SuperMechSanctuary.Data.key_fragments >= SuperMechSanctuary.GetEnterCost())
             {
                 SuperMechSanctuary.EnterSanctuary(a, sanctuaryIndex);
             }

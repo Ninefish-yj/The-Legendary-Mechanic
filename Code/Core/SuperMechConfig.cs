@@ -34,6 +34,15 @@ namespace SuperMech.Code
         public static bool AutoVisitSanctuary = true;
         /// <summary>单位自动进入圣所（v0.31.0）：S级及以上有足够钥匙时自动进入圣所修炼</summary>
         public static bool AutoEnterSanctuary = true;
+        // === 圣所钥匙机制（v0.46.0，原著向）===
+        /// <summary>高阶单位死亡掉落圣所钥匙材料开关</summary>
+        public static bool SanctuaryKeyDropEnabled = true;
+        /// <summary>掉落钥匙材料的最低阶位（0=F~13=X），默认10=S阶</summary>
+        public static int KeyDropMinRank = 10;
+        /// <summary>多少块钥匙材料合成1把圣所钥匙（默认3）</summary>
+        public static int KeyMaterialsPerKey = 3;
+        /// <summary>每次进入圣所消耗钥匙数</summary>
+        public static int SanctuaryKeyCostEnter = 3;
 
         public static bool MechSummonEnabled = true;
         public static int MaxSummonedUnits = 50;
@@ -156,6 +165,10 @@ namespace SuperMech.Code
                 new ItemInfo("sanctuary_autosave", "sm_config_603", "sm_config_604"),
                 new ItemInfo("auto_visit_sanctuary", "sm_config_653", "sm_config_654"),
                 new ItemInfo("auto_enter_sanctuary", "sm_config_655", "sm_config_656"),
+                new ItemInfo("sanctuary_key_drop_enabled", "sm_config_740", "sm_config_741"),
+                new ItemInfo("key_drop_min_rank", "sm_config_742", "sm_config_743"),
+                new ItemInfo("key_materials_per_key", "sm_config_744", "sm_config_745"),
+                new ItemInfo("sanctuary_key_cost_enter", "sm_config_750", "sm_config_751"),
                 new ItemInfo("mech_summon_enabled", "sm_config_605", "sm_config_606"),
                 new ItemInfo("max_summoned_units", "sm_config_607", "sm_config_608"),
                 new ItemInfo("refinement_bonus", "sm_config_609", "sm_config_610"),
@@ -246,6 +259,10 @@ namespace SuperMech.Code
         public static void SetSanctuaryAutoSave(bool val) { SanctuaryAutoSave = val; }
         public static void SetAutoVisitSanctuary(bool val) { AutoVisitSanctuary = val; }
         public static void SetAutoEnterSanctuary(bool val) { AutoEnterSanctuary = val; }
+        public static void SetSanctuaryKeyDropEnabled(bool val) { SanctuaryKeyDropEnabled = val; }
+        public static void SetKeyDropMinRank(int val) { KeyDropMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetKeyMaterialsPerKey(int val) { KeyMaterialsPerKey = Mathf.Clamp(val, 1, 10); }
+        public static void SetSanctuaryKeyCostEnter(int val) { SanctuaryKeyCostEnter = Mathf.Clamp(val, 1, 10); }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
         public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); }

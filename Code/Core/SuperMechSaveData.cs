@@ -134,6 +134,7 @@ namespace SuperMech.Code
         {
             public int unlockedSanctuaries;
             public int keyFragments;
+            public int keyMaterials; // v0.46.0
             public int[] sanctuaryFragments;
             public int totalPermission;
             public int totalVisits;
@@ -249,6 +250,7 @@ namespace SuperMech.Code
                 {
                     unlockedSanctuaries = SuperMechSanctuary.Data.unlocked_sanctuaries,
                     keyFragments = SuperMechSanctuary.Data.key_fragments,
+                    keyMaterials = SuperMechSanctuary.Data.key_materials,
                     sanctuaryFragments = SuperMechSanctuary.Data.sanctuary_fragments,
                     totalPermission = SuperMechSanctuary.Data.total_permission,
                     totalVisits = SuperMechSanctuary.Data.total_visits,
@@ -296,6 +298,7 @@ namespace SuperMech.Code
 
                 SuperMechSanctuary.Data.unlocked_sanctuaries = data.sanctuary.unlockedSanctuaries;
                 SuperMechSanctuary.Data.key_fragments = data.sanctuary.keyFragments;
+                SuperMechSanctuary.Data.key_materials = data.sanctuary.keyMaterials;
                 SuperMechSanctuary.Data.sanctuary_fragments = data.sanctuary.sanctuaryFragments;
                 SuperMechSanctuary.Data.total_permission = data.sanctuary.totalPermission;
                 SuperMechSanctuary.Data.total_visits = data.sanctuary.totalVisits;

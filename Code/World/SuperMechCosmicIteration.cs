@@ -57,7 +57,8 @@ namespace SuperMech.Code
         public class HeritageData
         {
             public int iteration;              // 来自第几轮
-            public int retainedFragments;      // 保留的钥匙碎片
+            public int retainedFragments;      // 保留的圣所钥匙
+            public int retainedMaterials;      // 保留的钥匙材料（v0.46.0）
             public int retainedAuthority;      // 保留的权限
             public List<string> retainedKnowledge; // 保留的知识ID
             public string summary;             // 上一轮文明总结
@@ -333,6 +334,7 @@ namespace SuperMech.Code
             {
                 iteration = CurrentIteration,
                 retainedFragments = Mathf.FloorToInt(SuperMechSanctuary.Data.key_fragments * retentionRate),
+                retainedMaterials = Mathf.FloorToInt(SuperMechSanctuary.Data.key_materials * retentionRate),
                 retainedAuthority = Mathf.FloorToInt(SuperMechSanctuary.Data.total_permission * retentionRate),
                 retainedKnowledge = new List<string>(),
                 summary = SuperMechCivilizationData.GetHistory().Count > 0
@@ -376,10 +378,11 @@ namespace SuperMech.Code
         {
             if (_pendingHeritage == null) return;
 
-            // 保留钥匙碎片
+            // 保留钥匙和材料
             SuperMechSanctuary.Data.key_fragments += _pendingHeritage.retainedFragments;
+            SuperMechSanctuary.Data.key_materials += _pendingHeritage.retainedMaterials;
 
-            Debug.Log($"[超神机械师] 遗产继承: 来自第{_pendingHeritage.iteration}轮，碎片+{_pendingHeritage.retainedFragments}，知识+{_pendingHeritage.retainedKnowledge.Count}条");
+            Debug.Log($"[超神机械师] 遗产继承: 来自第{_pendingHeritage.iteration}轮，钥匙+{_pendingHeritage.retainedFragments}，材料+{_pendingHeritage.retainedMaterials}，知识+{_pendingHeritage.retainedKnowledge.Count}条");
             _pendingHeritage = null;
         }
 

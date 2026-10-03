@@ -41,6 +41,7 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_skill", "sm_log_skill_text", new Color(0.4f, 0.8f, 0.6f));
             RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f));
             RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f));
+            RegisterLogAsset("sm_log_key", "sm_log_key_text", new Color(0.4f, 0.7f, 1f));
 
             Debug.Log("[超神机械师] 事件日志系统初始化完成，注册10类日志资产+1历史分类");
         }
@@ -357,6 +358,31 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 推送竞争日志失败: {e.Message}");
+            }
+        }
+
+        /// <summary>v0.46.0：获得圣所钥匙事件日志（材料合成时actor可为null）</summary>
+        public static void LogKeyAcquired(Actor a, int amount, string source)
+        {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            TryInit();
+            if (!_initialized || amount <= 0) return;
+            var asset = GetAsset("sm_log_key");
+            if (asset == null) return;
+
+            try
+            {
+                var msg = new WorldLogMessage(asset, SafeName(a), amount.ToString(), SafeStr(source));
+                if (a != null)
+                {
+                    msg.unit = a;
+                    msg.location = a.current_position;
+                }
+                msg.add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送钥匙日志失败: {e.Message}");
             }
         }
 

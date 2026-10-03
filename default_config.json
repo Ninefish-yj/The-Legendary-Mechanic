@@ -117,6 +117,36 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryAutoSave"
+    },
+    {
+      "Id": "sanctuary_key_drop_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryKeyDropEnabled"
+    },
+    {
+      "Id": "sanctuary_key_cost_enter",
+      "Type": "INT_SLIDER",
+      "IntVal": 3,
+      "MinIntVal": 1,
+      "MaxIntVal": 10,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryKeyCostEnter"
+    },
+    {
+      "Id": "key_drop_min_rank",
+      "Type": "INT_SLIDER",
+      "IntVal": 10,
+      "MinIntVal": 0,
+      "MaxIntVal": 13,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetKeyDropMinRank"
+    },
+    {
+      "Id": "key_materials_per_key",
+      "Type": "INT_SLIDER",
+      "IntVal": 3,
+      "MinIntVal": 1,
+      "MaxIntVal": 10,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetKeyMaterialsPerKey"
     }
   ],
   "Mech": [

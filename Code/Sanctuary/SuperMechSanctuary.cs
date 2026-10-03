@@ -4,6 +4,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using HarmonyLib;
 
 namespace SuperMech.Code
 {
@@ -79,7 +80,8 @@ namespace SuperMech.Code
         public class SanctuaryData
         {
             public int unlocked_sanctuaries = 0;
-            public int key_fragments = 0;
+            public int key_fragments = 0;       // v0.46.0：完整圣所钥匙（进入消耗）
+            public int key_materials = 0;       // v0.46.0：钥匙材料（击杀高阶单位掉落，合成钥匙）
             public int[] sanctuary_fragments = new int[6];
             public int total_permission = 0;
             public int total_visits = 0;
@@ -195,9 +197,10 @@ namespace SuperMech.Code
         public static bool EnterSanctuary(Actor a, int sanctuaryIndex = -1)
         {
             if (!SuperMechConfig.SanctuaryEnabled) return false;
-            if (Data.key_fragments < 3)
+            int cost = GetEnterCost();
+            if (Data.key_fragments < cost)
             {
-                Debug.Log("[超神机械师] 圣所钥匙碎片不足（需3）");
+                Debug.Log($"[超神机械师] 圣所钥匙碎片不足（需{cost}，当前{Data.key_fragments}）");
                 return false;
             }
             if (sanctuaryIndex >= 0 && sanctuaryIndex < 6)
@@ -207,7 +210,7 @@ namespace SuperMech.Code
                     return false;
                 }
             }
-            Data.key_fragments -= 3;
+            Data.key_fragments -= cost;
             Data.total_visits++;
 
             if (Data.total_visits >= 3 && !Data.message_board_unlocked)
@@ -341,6 +344,68 @@ namespace SuperMech.Code
         {
             Data.key_fragments++;
             Save();
+        }
+
+        // === v0.46.0 圣所钥匙机制（原著向）===
+        // 钥匙（key_fragments）：进入圣所消耗，由钥匙材料合成
+        // 钥匙材料（key_materials）：击杀S阶及以上超能者掉落
+        // 权限/碎片（_unitAuthority / sanctuary_fragments）：进入圣所后积累，影响奖励，神性蜕变直接获得
+
+        /// <summary>授予钥匙材料，达到合成阈值时自动合成钥匙（v0.46.0，原著：钥匙由稀有材料合成）</summary>
+        public static void GrantKeyMaterials(int amount, string source)
+        {
+            if (!SuperMechConfig.SanctuaryKeyDropEnabled) return;
+            if (amount <= 0) return;
+            Data.key_materials += amount;
+            int crafted = CraftKeys();
+            Save();
+            if (crafted > 0)
+            {
+                SMEventLogger.LogKeyAcquired(null, crafted, source + "合成");
+                Debug.Log($"[超神机械师] 获得{amount}钥匙材料（来源：{source}），自动合成{crafted}把圣所钥匙，材料剩余{Data.key_materials}");
+            }
+            else
+            {
+                Debug.Log($"[超神机械师] 获得{amount}钥匙材料（来源：{source}），当前{Data.key_materials}/{SuperMechConfig.KeyMaterialsPerKey}");
+            }
+        }
+
+        /// <summary>自动合成钥匙：材料达到阈值时转换为钥匙，返回合成数量</summary>
+        public static int CraftKeys()
+        {
+            int perKey = Mathf.Max(1, SuperMechConfig.KeyMaterialsPerKey);
+            int crafted = Data.key_materials / perKey;
+            if (crafted > 0)
+            {
+                Data.key_materials -= crafted * perKey;
+                Data.key_fragments += crafted;
+            }
+            return crafted;
+        }
+
+        /// <summary>神性蜕变获得圣所碎片（权限），随机分配到已解锁圣所（v0.46.0，原著第1039章：神性蜕变给圣所技能碎片）</summary>
+        public static void GrantAuthorityFromDivinity(Actor a)
+        {
+            if (a == null) return;
+            // 找已解锁的圣所，随机选一个+1权限
+            var unlocked = new List<int>();
+            for (int i = 0; i < 6; i++)
+                if ((Data.unlocked_sanctuaries & (1 << i)) != 0)
+                    unlocked.Add(i);
+            int target = unlocked.Count > 0
+                ? unlocked[UnityEngine.Random.Range(0, unlocked.Count)]
+                : UnityEngine.Random.Range(0, 6);
+            AddAuthority(a, target, 1);
+            Data.sanctuary_fragments[target]++;
+            Data.total_permission++;
+            Save();
+            Debug.Log($"[超神机械师] {a.name} 神性蜕变获得圣所碎片，{SanctuaryNames[target]}权限+1");
+        }
+
+        /// <summary>获取每次进入圣所消耗的钥匙数（v0.46.0：可配置）</summary>
+        public static int GetEnterCost()
+        {
+            return Mathf.Max(1, SuperMechConfig.SanctuaryKeyCostEnter);
         }
 
         /// <summary>获取圣所类型</summary>
@@ -481,6 +546,41 @@ namespace SuperMech.Code
             removed += SuperMechCleanup.CleanDict(_reviveCount, alive);
             removed += SuperMechCleanup.CleanDict(_aliveSnapshot, alive);
             return removed;
+        }
+    }
+
+    /// <summary>v0.46.0：高阶超能者死亡掉落圣所钥匙材料（原著：钥匙由稀有材料合成）</summary>
+    [HarmonyPatch]
+    public static class SanctuaryKeyDropPatch
+    {
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(Actor), "die")]
+        public static void DiePostfix(Actor __instance)
+        {
+            if (__instance == null || __instance.isAlive()) return;
+            if (!SuperMechConfig.SanctuaryKeyDropEnabled) return;
+
+            try
+            {
+                int rank = SuperMechAdvancement.GetExactRankIndex(__instance);
+                if (rank < SuperMechConfig.KeyDropMinRank) return;
+
+                // 按阶位掉落材料：S=1, S+=1, SS=2, X=3
+                int amount = 1;
+                if (rank >= 13) amount = 3;
+                else if (rank >= 12) amount = 2;
+                else if (rank >= 11) amount = 1;
+                else amount = 1;
+
+                string rankName = rank < SuperMechRanks.All.Count
+                    ? LocalizedTextManager.getText(SuperMechRanks.All[rank].name)
+                    : "?";
+                SuperMechSanctuary.GrantKeyMaterials(amount, "击杀" + rankName);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 钥匙材料掉落异常: {e.Message}");
+            }
         }
     }
 }

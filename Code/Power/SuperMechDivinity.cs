@@ -176,6 +176,8 @@ namespace SuperMech.Code
             _awakened[a.id] = true;
             a.addTrait("sm_divinity_ascended");
             AddPoints(a, 2);
+            // v0.46.0：神性蜕变获得圣所碎片（权限），原著第1039章
+            SuperMechSanctuary.GrantAuthorityFromDivinity(a);
             Debug.Log($"[超神机械师] {a.name} 触发神性蜕变！获得2点初始点数");
         }
 
