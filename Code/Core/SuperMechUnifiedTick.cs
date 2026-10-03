@@ -172,7 +172,7 @@ namespace SuperMech.Code
             try { SuperMechCrafting.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCrafting"); }
             try { SuperMechPotentialRating.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPotentialRating"); }
             try { SMWindowFrame.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理WindowFrame失败"); }
-            try { SuperMechAwakenWindow.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理AwakenWindow失败"); }
+            try { SuperMechCleanup.ClearUiStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理AwakenWindow失败"); }
             try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
             try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }

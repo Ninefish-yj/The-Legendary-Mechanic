@@ -20,5 +20,11 @@ namespace SuperMech.Code
         {
             return CleanDict(dict, alive);
         }
+
+        /// <summary>清理UI静态状态（世界切换时调用）</summary>
+        public static void ClearUiStaticState()
+        {
+            // 觉醒窗口已停用，保留此方法用于未来扩展
+        }
     }
 }

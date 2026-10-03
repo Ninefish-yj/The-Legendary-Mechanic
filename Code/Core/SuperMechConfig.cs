@@ -167,6 +167,20 @@ namespace SuperMech.Code
                 new ItemInfo("log_verbose", "sm_config_619", "sm_config_620"),
                 new ItemInfo("combat_suppression_enabled", "sm_config_622", "sm_config_623"),
                 new ItemInfo("spirit_pierce_ratio", "sm_config_624", "sm_config_625"),
+                new ItemInfo("suppress_threshold_minor", "sm_config_700", "sm_config_701"),
+                new ItemInfo("suppress_threshold_moderate", "sm_config_702", "sm_config_703"),
+                new ItemInfo("suppress_threshold_strong", "sm_config_704", "sm_config_705"),
+                new ItemInfo("suppress_threshold_overwhelm", "sm_config_706", "sm_config_707"),
+                new ItemInfo("suppress_threshold_annihilate", "sm_config_708", "sm_config_709"),
+                new ItemInfo("suppress_dmg_minor", "sm_config_710", "sm_config_711"),
+                new ItemInfo("suppress_dmg_moderate", "sm_config_712", "sm_config_713"),
+                new ItemInfo("suppress_dmg_strong", "sm_config_714", "sm_config_715"),
+                new ItemInfo("suppress_dmg_overwhelm", "sm_config_716", "sm_config_717"),
+                new ItemInfo("suppress_dmg_annihilate", "sm_config_718", "sm_config_719"),
+                new ItemInfo("suppress_hit_moderate", "sm_config_720", "sm_config_721"),
+                new ItemInfo("suppress_hit_strong", "sm_config_722", "sm_config_723"),
+                new ItemInfo("suppress_hit_overwhelm", "sm_config_724", "sm_config_725"),
+                new ItemInfo("suppress_hit_annihilate", "sm_config_726", "sm_config_727"),
                 new ItemInfo("fusion_single_mul_cap", "sm_config_626", "sm_config_627"),
                 new ItemInfo("fusion_total_mul_cap", "sm_config_628", "sm_config_629"),
                 new ItemInfo("qi_attribute_counter", "sm_config_657", "sm_config_658"),
@@ -242,6 +256,31 @@ namespace SuperMech.Code
 
         public static void SetCombatSuppressionEnabled(bool val) { CombatSuppressionEnabled = val; }
         public static void SetSpiritPierceRatio(float val) { SpiritPierceRatio = Mathf.Clamp01(val); }
+        public static void SetSuppressThresholdMinor(float val) { SuppressThresholdMinor = Mathf.Max(1.0f, val); }
+        public static void SetSuppressThresholdModerate(float val) { SuppressThresholdModerate = Mathf.Max(1.0f, val); }
+        public static void SetSuppressThresholdStrong(float val) { SuppressThresholdStrong = Mathf.Max(1.0f, val); }
+        public static void SetSuppressThresholdOverwhelm(float val) { SuppressThresholdOverwhelm = Mathf.Max(1.0f, val); }
+        public static void SetSuppressThresholdAnnihilate(float val) { SuppressThresholdAnnihilate = Mathf.Max(1.0f, val); }
+        public static void SetSuppressDmgMinor(float val) { SuppressDmgMinor = Mathf.Max(0f, val); }
+        public static void SetSuppressDmgModerate(float val) { SuppressDmgModerate = Mathf.Max(0f, val); }
+        public static void SetSuppressDmgStrong(float val) { SuppressDmgStrong = Mathf.Max(0f, val); }
+        public static void SetSuppressDmgOverwhelm(float val) { SuppressDmgOverwhelm = Mathf.Max(0f, val); }
+        public static void SetSuppressDmgAnnihilate(float val) { SuppressDmgAnnihilate = Mathf.Max(0f, val); }
+        public static void SetSuppressHitModerate(float val) { SuppressHitModerate = Mathf.Clamp01(val); }
+        public static void SetSuppressHitStrong(float val) { SuppressHitStrong = Mathf.Clamp01(val); }
+        public static void SetSuppressHitOverwhelm(float val) { SuppressHitOverwhelm = Mathf.Clamp01(val); }
+        public static void SetSuppressHitAnnihilate(float val) { SuppressHitAnnihilate = Mathf.Clamp01(val); }
+        public static void SetSuppressCritModerate(float val) { SuppressCritModerate = Mathf.Clamp01(val); }
+        public static void SetSuppressCritStrong(float val) { SuppressCritStrong = Mathf.Clamp01(val); }
+        public static void SetSuppressCritOverwhelm(float val) { SuppressCritOverwhelm = Mathf.Clamp01(val); }
+        public static void SetSuppressDefModerate(float val) { SuppressDefModerate = Mathf.Clamp01(val); }
+        public static void SetSuppressDefStrong(float val) { SuppressDefStrong = Mathf.Clamp01(val); }
+        public static void SetSuppressDefOverwhelm(float val) { SuppressDefOverwhelm = Mathf.Clamp01(val); }
+        public static void SetSuppressDefAnnihilate(float val) { SuppressDefAnnihilate = Mathf.Clamp01(val); }
+        public static void SetSuppressDodgeModerate(float val) { SuppressDodgeModerate = Mathf.Clamp01(val); }
+        public static void SetSuppressDodgeStrong(float val) { SuppressDodgeStrong = Mathf.Clamp01(val); }
+        public static void SetSuppressDodgeOverwhelm(float val) { SuppressDodgeOverwhelm = Mathf.Clamp01(val); }
+        public static void SetSuppressDodgeAnnihilate(float val) { SuppressDodgeAnnihilate = Mathf.Clamp01(val); }
         public static void SetFusionSingleMulCap(float val) { FusionSingleMulCap = Mathf.Max(1.0f, val); }
         public static void SetFusionTotalMulCap(float val) { FusionTotalMulCap = Mathf.Max(1.0f, val); }
 
