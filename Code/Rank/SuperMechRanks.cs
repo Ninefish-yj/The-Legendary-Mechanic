@@ -24,6 +24,8 @@ namespace SuperMech.Code
             // B=6000+, A=10000~33000, A+=20000~33000, S=43000爆星(ch864),
             // S+=星系级, SS=82600星团级(ch1040), X=148800宇宙级(ch1402)
             // v0.36.0调整：阈值回归原著精确数值，A级区间陡升（10000~33000跨度2万+）
+            // v0.39.8调整：A级到超A级是质的飞跃（原著第1044章：几十个天灾级联手只能抵挡2个超A一时半会）
+            // A+准超A可碾压A级；S超A级可吊捶A+、碾压A级
             new RankDef { id="sm_rank_00_f",       name="sm_rank_name_00",            onarFloor=0,         damageMul=1.0f,  healthMul=1.0f,  aoe=0,    targets=0,   range=0 },
             new RankDef { id="sm_rank_01_e",       name="sm_rank_name_01",            onarFloor=100,       damageMul=1.3f,  healthMul=1.15f, aoe=0,    targets=0,   range=0 },
             new RankDef { id="sm_rank_02_d",       name="sm_rank_name_02",            onarFloor=800,       damageMul=1.6f,  healthMul=1.3f,  aoe=0,    targets=0,   range=0 },
@@ -31,13 +33,13 @@ namespace SuperMech.Code
             new RankDef { id="sm_rank_04_c",       name="sm_rank_name_04",            onarFloor=2000,      damageMul=2.5f,  healthMul=1.8f,  aoe=0,    targets=0,   range=0 },
             new RankDef { id="sm_rank_05_c_plus",  name="sm_rank_name_05",           onarFloor=4000,      damageMul=3.2f,  healthMul=2.2f,  aoe=2,    targets=1,   range=2 },
             new RankDef { id="sm_rank_06_b",       name="sm_rank_name_06",            onarFloor=6000,      damageMul=4.0f,  healthMul=2.7f,  aoe=5,    targets=2,   range=5 },
-            new RankDef { id="sm_rank_07_b_plus",  name="sm_rank_name_07",           onarFloor=10000,     damageMul=5.0f,  healthMul=3.3f,  aoe=10,   targets=3,   range=8 },
+            new RankDef { id="sm_rank_07_b_plus",  name="sm_rank_name_07",           onarFloor=10000,     damageMul=5.5f,  healthMul=3.5f,  aoe=10,   targets=3,   range=8 },
             new RankDef { id="sm_rank_08_a",       name="sm_rank_name_08",    onarFloor=20000,     damageMul=8.0f,  healthMul=5.0f,  aoe=20,   targets=5,   range=15 },
-            new RankDef { id="sm_rank_09_a_plus",  name="sm_rank_name_09",           onarFloor=33000,     damageMul=10.0f, healthMul=6.5f,  aoe=30,   targets=10,  range=20 },
-            new RankDef { id="sm_rank_10_s",       name="sm_rank_name_10",    onarFloor=43000,     damageMul=12.0f, healthMul=8.0f,  aoe=50,   targets=20,  range=30 },
-            new RankDef { id="sm_rank_11_s_plus",  name="sm_rank_name_11",           onarFloor=65000,     damageMul=14.0f, healthMul=10.0f, aoe=75,   targets=30,  range=40 },
-            new RankDef { id="sm_rank_12_ss",      name="sm_rank_name_12", onarFloor=82600,     damageMul=18.0f, healthMul=14.0f, aoe=100,  targets=50,  range=50 },
-            new RankDef { id="sm_rank_13_x",       name="sm_rank_name_13",     onarFloor=148800,    damageMul=25.0f, healthMul=20.0f, aoe=200,  targets=150, range=100 },
+            new RankDef { id="sm_rank_09_a_plus",  name="sm_rank_name_09",           onarFloor=33000,     damageMul=13.0f, healthMul=8.0f,  aoe=30,   targets=10,  range=20 },
+            new RankDef { id="sm_rank_10_s",       name="sm_rank_name_10",    onarFloor=43000,     damageMul=25.0f, healthMul=18.0f, aoe=50,   targets=20,  range=30 },
+            new RankDef { id="sm_rank_11_s_plus",  name="sm_rank_name_11",           onarFloor=65000,     damageMul=35.0f, healthMul=25.0f, aoe=75,   targets=30,  range=40 },
+            new RankDef { id="sm_rank_12_ss",      name="sm_rank_name_12", onarFloor=82600,     damageMul=50.0f, healthMul=35.0f, aoe=100,  targets=50,  range=50 },
+            new RankDef { id="sm_rank_13_x",       name="sm_rank_name_13",     onarFloor=148800,    damageMul=100.0f,healthMul=70.0f, aoe=200,  targets=150, range=100 },
         };
 
         static SuperMechRanks()
