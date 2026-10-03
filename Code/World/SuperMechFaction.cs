@@ -28,12 +28,15 @@ namespace SuperMech.Code
         private const int MaxFactions = 20;
         private static int _nameCounter = 0;
 
+        // 原著风格势力命名（科幻：黑星军团/虚灵教派/机械军团/萌芽组织/圣约组织）
         private static readonly string[] FactionNamePrefixes = {
-            "龙", "虎", "鹰", "狼", "熊", "凤", "麟", "龟", "蛇", "豹",
-            "星", "月", "日", "云", "风", "雷", "冰", "火", "山", "海"
+            "黑星", "赤焰", "虚灵", "银辉", "苍穹", "星渊", "破晓", "雷霆",
+            "寒霜", "铁血", "暗夜", "星辉", "曜日", "苍蓝", "紫金", "血金",
+            "炎黄", "暗网", "圣约", "萌芽", "机械", "破碎", "永恒", "自由",
+            "荣耀", "深渊", "极光", "混沌", "虚空", "曜石"
         };
         private static readonly string[] FactionNameSuffixes = {
-            "阁", "堂", "门", "宗", "盟", "会", "社", "团", "府", "殿"
+            "军团", "教派", "协会", "组织", "联盟", "帝国", "商会", "共和国"
         };
 
         /// <summary>每tick处理势力创建和加入</summary>
