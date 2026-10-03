@@ -38,24 +38,23 @@ namespace SuperMech.Code
             }
 
             long actorId = a.data.id;
-            System.Action rebuild = () => window.showInfo();
 
             // === 核心档案组（默认展开）===
-            SMCollapsibleSection.BuildHeader(window, actorId, "core", "sm_ui_section_core", rebuild);
+            SMCollapsibleSection.BuildHeader(window, actorId, "core", "sm_ui_section_core");
             if (SMCollapsibleSection.IsExpanded(actorId, "core"))
             {
                 ShowCoreInfo(window, a);
             }
 
             // === 战斗数值组（默认折叠）===
-            SMCollapsibleSection.BuildHeader(window, actorId, "combat", "sm_ui_section_combat", rebuild);
+            SMCollapsibleSection.BuildHeader(window, actorId, "combat", "sm_ui_section_combat");
             if (SMCollapsibleSection.IsExpanded(actorId, "combat"))
             {
                 ShowCombatInfo(window, a);
             }
 
             // === 特殊信息与入口组（默认折叠）===
-            SMCollapsibleSection.BuildHeader(window, actorId, "special", "sm_ui_section_special", rebuild);
+            SMCollapsibleSection.BuildHeader(window, actorId, "special", "sm_ui_section_special");
             if (SMCollapsibleSection.IsExpanded(actorId, "special"))
             {
                 ShowSpecialInfo(window, a);
