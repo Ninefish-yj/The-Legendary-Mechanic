@@ -12,6 +12,9 @@ namespace SuperMech.Code
     {
         public enum FactionRelation { Neutral = 0, Allied = 1, Hostile = 2 }
 
+        /// <summary>v0.61.0 势力政体：原著中势力形式多样（黑星军团=领袖制，超A级协会=议会制，虚灵教派=宗教制）</summary>
+        public enum FactionGovernment { Autocracy = 0, Council = 1, Theocracy = 2 } // 领袖制/议会制/宗教制
+
         public class FactionData
         {
             public string id;
@@ -22,6 +25,8 @@ namespace SuperMech.Code
             public int level = 1;                     // 势力等级（按成员数+总能级计算）
             public float totalPower = 0f;             // 势力总战力（缓存，每tick更新）
             public Dictionary<string, FactionRelation> relations = new Dictionary<string, FactionRelation>();
+            public FactionGovernment government = FactionGovernment.Autocracy; // v0.61.0 政体
+            public List<long> elders = new List<long>(); // v0.61.0 议会制元老/宗教制长老
         }
 
         private static readonly Dictionary<string, FactionData> _factions = new Dictionary<string, FactionData>();
@@ -138,8 +143,10 @@ namespace SuperMech.Code
                     Actor member = FindActor(mid, units);
                     if (member == null || !member.isAlive()) continue;
                     float memberPower = SuperMechAdvancement.CalcOnar(member);
-                    // 成员实力超过领袖1.2倍，且有2%概率叛变
-                    if (memberPower > leaderPower * 1.2f && Random.value < 0.02f)
+                    // 成员实力超过领袖1.2倍，且有概率叛变
+                    // v0.61.0 议会制/宗教制更稳定（分裂概率减半）
+                    float splitChance = f.government == FactionGovernment.Autocracy ? 0.02f : 0.01f;
+                    if (memberPower > leaderPower * 1.2f && Random.value < splitChance)
                     {
                         // 分裂：成员带走部分成员创建新势力
                         SplitFaction(f, member, units);
@@ -204,18 +211,22 @@ namespace SuperMech.Code
                     }
                 }
 
-                if (successor != null && SuperMechAdvancement.GetExactRankIndex(successor) >= 8)
+                if (successor != null)
                 {
-                    // 有A阶以上继任者，传承
-                    f.leaderId = successor.id;
-                    Debug.Log($"[超神机械师] 势力传承：{f.name} 新领袖 {successor.getName()}");
+                    // v0.61.0 议会制/宗教制：元老/长老直接继承（更稳定）
+                    // 领袖制：需要A阶以上继任者
+                    bool canInherit = f.government != FactionGovernment.Autocracy ||
+                                      SuperMechAdvancement.GetExactRankIndex(successor) >= 8;
+                    if (canInherit)
+                    {
+                        f.leaderId = successor.id;
+                        Debug.Log($"[超神机械师] 势力传承：{f.name} 新领袖 {successor.getName()}（{GetGovernmentName(f.government)}）");
+                        continue;
+                    }
                 }
-                else
-                {
-                    // 无合格继任者，势力解散
-                    toRemove.Add(f.id);
-                    Debug.Log($"[超神机械师] 势力覆灭：{f.name}（领袖死亡无继任者）");
-                }
+                // 无合格继任者，势力解散
+                toRemove.Add(f.id);
+                Debug.Log($"[超神机械师] 势力覆灭：{f.name}（领袖死亡无继任者）");
             }
 
             foreach (var fid in toRemove)
@@ -252,6 +263,24 @@ namespace SuperMech.Code
                 f.totalPower = power;
                 // 势力等级：成员数+总战力综合计算
                 f.level = SuperMechFormulas.CalcFactionLevel(aliveCount, power);
+
+                // v0.61.0 议会制/宗教制：更新元老/长老列表（最强的2-3个非领袖成员）
+                if (f.government != FactionGovernment.Autocracy && aliveCount >= 3)
+                {
+                    f.elders.Clear();
+                    var sorted = new List<(long id, float p)>();
+                    foreach (var mid in f.memberIds)
+                    {
+                        if (mid == f.leaderId) continue;
+                        Actor m = FindActor(mid, units);
+                        if (m == null || !m.isAlive()) continue;
+                        sorted.Add((mid, SuperMechAdvancement.CalcOnar(m)));
+                    }
+                    sorted.Sort((a, b) => b.p.CompareTo(a.p));
+                    int elderCount = f.government == FactionGovernment.Council ? 3 : 2;
+                    for (int i = 0; i < Mathf.Min(elderCount, sorted.Count); i++)
+                        f.elders.Add(sorted[i].id);
+                }
             }
         }
 
@@ -355,12 +384,20 @@ namespace SuperMech.Code
             string suffix = FactionSuffixes[Random.Range(0, FactionSuffixes.Length)];
             string name = prefix + suffix;
 
+            // v0.61.0 根据后缀选择政体（原著：教派=宗教制，协会/议会=议会制，军团/帝国=领袖制）
+            FactionGovernment gov = FactionGovernment.Autocracy;
+            if (suffix.Contains("教派") || suffix.Contains("教廷") || suffix.Contains("神国") || suffix.Contains("道统") || suffix.Contains("圣殿"))
+                gov = FactionGovernment.Theocracy;
+            else if (suffix.Contains("协会") || suffix.Contains("议会") || suffix.Contains("评议会") || suffix.Contains("元老院") || suffix.Contains("共同体") || suffix.Contains("联合体"))
+                gov = FactionGovernment.Council;
+
             var f = new FactionData
             {
                 id = id,
                 name = name,
                 leaderId = leader.id,
-                creationTick = 0
+                creationTick = 0,
+                government = gov
             };
             f.memberIds.Add(leader.id);
             _factions[id] = f;
@@ -542,6 +579,17 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>v0.61.0 获取政体名称</summary>
+        public static string GetGovernmentName(FactionGovernment gov)
+        {
+            switch (gov)
+            {
+                case FactionGovernment.Council: return "议会制";
+                case FactionGovernment.Theocracy: return "宗教制";
+                default: return "领袖制";
+            }
+        }
+
         /// <summary>v0.60.0 吞并势力：小势力成员加入大势力</summary>
         private static void TryAbsorbFaction(FactionData absorber, FactionData target)
         {
@@ -550,14 +598,17 @@ namespace SuperMech.Code
                 var units = World.world.units?.units_only_alive;
                 if (units == null) return;
 
+                // v0.61.0 宗教制成员忠诚度高，投降概率+20%
+                float surrenderChance = target.government == FactionGovernment.Theocracy ? 0.7f : 0.5f;
+
                 int absorbed = 0;
                 foreach (var mid in target.memberIds)
                 {
                     if (mid == target.leaderId) continue; // 领袖已死
                     Actor m = FindActor(mid, units);
                     if (m == null || !m.isAlive()) continue;
-                    // 50%概率成员投降加入，否则变成无势力
-                    if (Random.value < 0.5f)
+                    // 成员投降加入，否则变成无势力
+                    if (Random.value < surrenderChance)
                     {
                         JoinFaction(m, absorber.id);
                         absorbed++;
