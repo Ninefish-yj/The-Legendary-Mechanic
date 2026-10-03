@@ -245,9 +245,8 @@ namespace SuperMech.Code
 
             Debug.Log($"[超神机械师] 宇宙大重启! 进入第{CurrentIteration}轮迭代，遗产碎片{_pendingHeritage.retainedFragments}");
 
-            // v0.29.0 UI重构：推送宇宙迭代事件到原生事件日志
+            // 推送事件日志
             float retentionRate = CalculateRetentionRate();
-            // 获取刚结束的文明记录摘要，推送到历史系统
             string civSummary = "";
             var history = SuperMechCivilizationData.GetHistory();
             if (history.Count > 0)
@@ -260,6 +259,53 @@ namespace SuperMech.Code
                     last.iteration, last.totalAwakened, rankName);
             }
             SMEventLogger.LogIteration(CurrentIteration, retentionRate, civSummary);
+
+            // 清除世界单位（保留降临者）
+            ResetWorldForNewIteration();
+
+            // 应用遗产到新世界
+            ApplyHeritage();
+
+            // 开始新一轮文明记录
+            SuperMechCivilizationData.StartIteration(CurrentIteration);
+        }
+
+        /// <summary>大重启时重置世界：清除非降临者单位，降临者重置阶位/知识/气力</summary>
+        private static void ResetWorldForNewIteration()
+        {
+            if (World.world == null || World.world.units == null) return;
+
+            int killed = 0, reset = 0;
+            var toKill = new System.Collections.Generic.List<Actor>();
+
+            foreach (var a in World.world.units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                if (a.hasTrait(SuperMechTraits.Descendant))
+                {
+                    // 降临者保留，但重置成长
+                    SuperMechAdvancement.SetExactRank(a, 0);
+                    SuperMechQi.SetQi(a, 100f);
+                    SuperMechQi.SetQiMax(a, 100f);
+                    SuperMechKnowledge.ClearActor(a);
+                    reset++;
+                }
+                else
+                {
+                    toKill.Add(a);
+                }
+            }
+
+            foreach (var a in toKill)
+            {
+                try { a.die(pDestroy: true, AttackType.None, pCountDeath: false); } catch { }
+                killed++;
+            }
+
+            // 清理传承数据（旧单位ID失效）
+            SuperMechHeritage.Clear();
+
+            Debug.Log($"[超神机械师] 大重启世界重置: 清除{killed}个单位，重置{reset}个降临者");
         }
 
         /// <summary>计算实际遗产保留率（随机波动+圣所权限加成）

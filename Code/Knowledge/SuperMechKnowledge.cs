@@ -370,6 +370,13 @@ namespace SuperMech.Code
 
         public static void Clear() { _unlocked.Clear(); }
 
+        /// <summary>清除单个单位的所有知识（大重启时用）</summary>
+        public static void ClearActor(Actor a)
+        {
+            if (a == null) return;
+            _unlocked.Remove(a.id);
+        }
+
         public static string GetPrefixForClass(string cls)
         {
             switch (cls)
