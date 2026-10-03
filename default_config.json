@@ -25,7 +25,7 @@
     },
     {
       "Id": "awakening_min_age",
-      "Type": "INT_SLIDER",
+      "Type": "SLIDER",
       "IntVal": 16,
       "MinIntVal": 0,
       "MaxIntVal": 100,
@@ -65,7 +65,7 @@
     },
     {
       "Id": "auto_promotion_max_rank",
-      "Type": "INT_SLIDER",
+      "Type": "SLIDER",
       "IntVal": 12,
       "MinIntVal": 0,
       "MaxIntVal": 12,
@@ -137,7 +137,7 @@
     },
     {
       "Id": "max_summoned_units",
-      "Type": "INT_SLIDER",
+      "Type": "SLIDER",
       "IntVal": 50,
       "MinIntVal": 0,
       "MaxIntVal": 500,
@@ -185,7 +185,7 @@
     },
     {
       "Id": "max_tracked_actors",
-      "Type": "INT_SLIDER",
+      "Type": "SLIDER",
       "IntVal": 500,
       "MinIntVal": 50,
       "MaxIntVal": 5000,

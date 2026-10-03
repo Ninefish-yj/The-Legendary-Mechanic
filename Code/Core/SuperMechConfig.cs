@@ -183,7 +183,7 @@ namespace SuperMech.Code
 
         public static void SetAutoAwakening(bool val) { AutoAwakening = val; }
         public static void SetAwakeningChance(float val) { AwakeningChance = Mathf.Clamp01(val); }
-        public static void SetAwakeningMinAge(int val) { AwakeningMinAge = Mathf.Max(0, val); }
+        public static void SetAwakeningMinAge(float val) { AwakeningMinAge = Mathf.Max(0, (int)val); }
 
         public static void SetQiGrowthRate(float val) { QiGrowthRate = Mathf.Max(0.1f, val); }
         public static void SetQiUnlimited(bool val) { QiUnlimited = val; }
@@ -192,7 +192,7 @@ namespace SuperMech.Code
         public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); }
         public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); }
         public static void SetAutoPromotion(bool val) { AutoPromotion = val; }
-        public static void SetAutoPromotionMaxRank(int val) { AutoPromotionMaxRank = Mathf.Clamp(val, 0, 12); }
+        public static void SetAutoPromotionMaxRank(float val) { AutoPromotionMaxRank = Mathf.Clamp((int)val, 0, 12); }
         public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; }
 
         public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; }
@@ -210,10 +210,10 @@ namespace SuperMech.Code
         public static void SetSanctuaryCount(int val) { }
 
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
-        public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); }
+        public static void SetMaxSummonedUnits(float val) { MaxSummonedUnits = Mathf.Clamp((int)val, 0, 500); }
 
         public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); }
-        public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); }
+        public static void SetMaxTrackedActors(float val) { MaxTrackedActors = Mathf.Clamp((int)val, 50, 5000); }
         public static void SetLogVerbose(bool val) { LogVerbose = val; }
 
         public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; }
