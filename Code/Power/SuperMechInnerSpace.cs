@@ -5,7 +5,7 @@ namespace SuperMech.Code
 {
     /// <summary>v0.47.0 超神领域机制（原著第1430章：超神级放出内空间形成领域）
     /// 原著：超神级（X阶）体内形成内空间，战斗时放出内空间投影形成领域，内空间领域内主人拥有绝对优势
-    /// 高阶领域压制低阶领域，同阶内空间互相抵消
+    /// 高阶内空间压制低阶内空间，同阶内空间互相抵消
     /// </summary>
     public static class SuperMechInnerSpace
     {
@@ -14,7 +14,7 @@ namespace SuperMech.Code
         public class DomainState
         {
             public int rank;           // 放出内空间时的阶位
-            public float expireTime;   // 领域结束时间
+            public float expireTime;   // 内空间结束时间
             public int activateCount;  // 本场战斗展开次数
         }
 
@@ -79,13 +79,13 @@ namespace SuperMech.Code
                 return 1f;
             }
 
-            // 只有攻击者有领域
+            // 只有攻击者有内空间
             if (atkDomain)
             {
                 return 1f + GetDomainDamageBonus(_activeDomains[attacker.id].rank);
             }
 
-            // 只有防御者有领域：攻击者伤害降低
+            // 只有防御者有内空间：攻击者伤害降低
             if (defDomain)
             {
                 return 1f - GetDomainDamagePenalty(_activeDomains[target.id].rank);

@@ -88,7 +88,7 @@ namespace SuperMech.Code
                     if (attacker != null && attacker.isAlive()) SuperMechInnerSpace.TryActivate(attacker);
                     SuperMechInnerSpace.TryActivate(target);
 
-                    // 领域伤害修正：攻击者领域加伤，防御者领域减伤
+                    // 内空间伤害修正：攻击者内空间加伤，防御者内空间减伤
                     if (attacker != null && attacker.isAlive())
                     {
                         float atkMul = SuperMechInnerSpace.GetAttackMultiplier(attacker, target);
