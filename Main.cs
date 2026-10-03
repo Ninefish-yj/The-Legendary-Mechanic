@@ -128,6 +128,29 @@ namespace SuperMech
                 Debug.Log($"[超神机械师] 势力创建事件: {evt.leader.name} 创建了{evt.factionName}");
             });
 
+            // 圣所进入 → 调试日志（事件日志已在Sanctuary内部直接调用）
+            SuperMechEventBus.Subscribe<SanctuaryEnteredEvent>("SanctuaryEntered", evt =>
+            {
+                if (evt.actor == null) return;
+                var ctx = SuperMechActorContextRegistry.Get(evt.actor);
+                if (ctx != null) ctx.sanctuaryVisits++;
+            });
+
+            // 知识解锁 → 调试日志
+            SuperMechEventBus.Subscribe<KnowledgeUnlockedEvent>("KnowledgeUnlocked", evt =>
+            {
+                if (evt.actor == null) return;
+                Debug.Log($"[超神机械师] 知识解锁事件: {evt.actor.name} 学会了{evt.knowledgeName}");
+            });
+
+            // 觉醒 → 同步ActorContext标记
+            SuperMechEventBus.Subscribe<ActorAwakenedEvent>("ActorAwakened", evt =>
+            {
+                if (evt.actor == null) return;
+                var ctx = SuperMechActorContextRegistry.Get(evt.actor);
+                if (ctx != null) ctx.hasTalent = true;
+            });
+
             Debug.Log("[超神机械师] 事件总线订阅注册完成");
         }
     }

@@ -131,6 +131,11 @@ namespace SuperMech.Code
                 string className = SuperMechProfession.GetClass(a);
                 string talentRank = talents.Count > 0 ? SuperMechTalent.RatingNames[talents[0].rating] : "?";
                 SMEventLogger.LogAwakening(a, className, talentRank);
+                // 发布觉醒事件
+                SuperMechEventBus.Publish("ActorAwakened", new ActorAwakenedEvent
+                {
+                    actor = a, className = className, talentRank = talentRank
+                });
             }
         }
 

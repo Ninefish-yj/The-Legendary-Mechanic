@@ -256,6 +256,15 @@ namespace SuperMech.Code
             {
                 SuperMechSpecialization.UpdateSpec(a);
             }
+            // 发布知识解锁事件
+            if (added)
+            {
+                string kname = _allKnowledge.TryGetValue(knowledgeId, out var def) ? def.name : knowledgeId;
+                SuperMechEventBus.Publish("KnowledgeUnlocked", new KnowledgeUnlockedEvent
+                {
+                    actor = a, knowledgeId = knowledgeId, knowledgeName = kname
+                });
+            }
             return added;
         }
 

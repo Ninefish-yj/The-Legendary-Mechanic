@@ -484,6 +484,11 @@ namespace SuperMech.Code
             // v0.29.0 UI重构：推送圣所访问事件到原生事件日志
             string sanctuaryName = GetSanctuaryTypeName(sanctuaryIndex);
             SMEventLogger.LogSanctuaryVisit(a, sanctuaryIndex, sanctuaryName);
+            // 发布圣所进入事件
+            SuperMechEventBus.Publish("SanctuaryEntered", new SanctuaryEnteredEvent
+            {
+                actor = a, sanctuaryIndex = sanctuaryIndex, sanctuaryName = sanctuaryName
+            });
 
             Save();
             return true;

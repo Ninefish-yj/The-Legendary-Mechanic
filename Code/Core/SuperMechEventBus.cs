@@ -95,11 +95,26 @@ namespace SuperMech.Code
     {
         public Actor actor;
         public int sanctuaryIndex;
+        public string sanctuaryName;
     }
 
     public struct FactionCreatedEvent
     {
         public Actor leader;
         public string factionName;
+    }
+
+    public struct KnowledgeUnlockedEvent
+    {
+        public Actor actor;
+        public string knowledgeId;
+        public string knowledgeName;
+    }
+
+    public struct ActorAwakenedEvent
+    {
+        public Actor actor;
+        public string className;
+        public string talentRank;
     }
 }
