@@ -105,6 +105,17 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.49.9** | 命名统一：全部SM前缀类名改为SuperMech前缀（15个UI文件+SkillRuntime+6个内部类），全模组91文件命名规范一致；大整理全阶段完成 |
+| **v0.49.8** | 事件总线扩展：新增圣所进入/知识解锁/觉醒三类事件及数据结构；圣所/知识/觉醒系统发布事件；Main.cs订阅同步ActorContext；累计6类事件接入 |
+| **v0.49.7** | 收尾：qiCurrent/qiMax迁移到ActorContext（读档后Context完整恢复）；CalcOnar重构为数据聚合+Formulas纯计算分离，OnarBonus公式抽到Core；ActorContext持久化闭环完成 |
+| **v0.49.6** | P4纯逻辑分离：新增SuperMechFormulas纯公式层(Core)，抽取气力属性公式/ONAR基础/内空间脉冲/光环压制/势力加成/神性参数等纯数值计算；Qi/InnerSpace/Aura/Faction改用Formulas |
+| **v0.49.5** | P3拆循环依赖：Power层对Class层的读操作(GetExactRankIndex/IsSuperMechUnit/IsAwakened/GetStage)全部改为通过Core层ActorContextRegistry辅助方法读取；新增IsSuperMech/IsAwakened/GetRank/GetStage辅助方法；Power→Class仅剩写操作和复杂计算 |
+| **v0.49.4** | P2数据迁移：圣所复活次数(reviveCount)、传承点(heritage，修正为float)、超神标记(transcended)迁移到ActorContext；累计12项核心per-actor数据迁移 |
+| **v0.49.3** | P2数据迁移：潜能点(potential)、神性系统(divinityPoints/profLayers/speciesLayers/triggered)迁移到ActorContext；Add/Spend/Set统一双写 |
+| **v0.49.2** | P2数据迁移：职业阶段(stage)、觉醒等级/经验(awakenedLevel/awakenedXp)迁移到ActorContext；SetStage/SetLevel/SetXp双写，Get方法优先读Context |
+| **v0.49.1** | P2数据迁移：势力成员关系(factionId/isFactionLeader)、精确阶位(exactRank)、气力等级(qiLevel)迁移到ActorContext（双写过渡，旧字典保留存档兼容） |
+| **v0.49.0** | 架构升级：引入事件总线(SuperMechEventBus)+ActorContext统一数据容器，为解耦系统间依赖打基础；阶位变化/单位死亡/势力创建改为事件发布；事件日志通过订阅事件记录 |
+| **v0.48.5** | 代码结构整理：10个文件移到正确目录(Traits/CivilizationData→Core，Race/Legend/Skills→Class，InformationState/Intuition/Heritage/SkillRuntime→Power)；重写交接文档为分层架构图 |
 | **v0.47.3** | 术语修正：清理残留的"领域"叫法——配置注释/配置项名称/事件日志文本统一改为"内空间"，配置默认值注释修正为X阶(13) |
 | **v0.47.2** | 原著术语修正："超A领域"→"超神内空间"，对应原著第1430章"超神级体内形成内空间，战斗时放出内空间投影形成领域"；全面重命名SuperMechDomain→SuperMechInnerSpace，配置分类Domain→InnerSpace，配置项domain_*→inner_space_*，可见文本同步更新 |
 | **v0.47.1** | 原著设定修正：超神领域最低阶位从S阶(10)改为X阶(13)，对应原著第1430章"超神级体内形成内空间"设定；S阶超A级的"气场"由现有Aura系统覆盖；更新配置默认值和描述文本 |
@@ -373,7 +384,7 @@ A: 临界超A（SS级+神性觉醒+进阶任务完成）突破超神级失败时
 
 ## 配置项
 
-模组有44个配置项，在NML配置界面中可调整：
+模组有55个配置项（15个分类），在NML配置界面中可调整：
 
 | 分类 | 项数 | 说明 |
 |---|---|---|
@@ -381,16 +392,17 @@ A: 临界超A（SS级+神性觉醒+进阶任务完成）突破超神级失败时
 | Awakening | 3 | 自动觉醒/概率/最小年龄 |
 | Qi | 3 | 成长率/无上限/属性克制环 |
 | Promotion | 5 | 自动晋升/上限/速度/欧纳倍率/面板显示 |
-| AutoFavorite | 2 | 收藏开关/最低阶位（滑块替代9个开关） |
-| Sanctuary | 2 | 圣所开关/自动存档 |
+| AutoFavorite | 2 | 收藏开关/最低阶位 |
+| Sanctuary | 7 | 圣所开关/自动存档/钥匙掉落/材料合成/进入消耗等 |
 | Mech | 2 | 召唤开关/最大数量 |
 | Refinement | 1 | 精炼加成 |
 | Relic | 2 | 遗物掉落开关/掉落率 |
 | Combat | 4 | 压制开关/压制强度/精神穿甲开关/穿甲比例 |
 | Fusion | 2 | 单配方上限/总倍率上限 |
 | Performance | 3 | Tick间隔/最大追踪/详细日志 |
-| EventLog | 9 | 事件日志总开关/觉醒最低天赋/晋升最低阶位/融合/法术/圣所/迭代/复活/概念重塑日志 |
-| AI | 5 | 自动竞争开关/最低阶位/间隔 + NPC自动学知识开关/间隔 |
+| EventLog | 9 | 事件日志总开关/各类型最低阈值 |
+| AI | 5 | 自动竞争/NPC自动修炼相关 |
+| InnerSpace | 6 | 内空间开关/最低阶位/持续时间/伤害加成等 |
 
 **战斗压制**：只暴露4项总控（开关+强度倍率+精神穿甲开关+比例），内部5档阈值/伤害/命中/暴击/抗性/闪避参数锁死原著默认值，不暴露。
 
@@ -402,7 +414,7 @@ A: 临界超A（SS级+神性觉醒+进阶任务完成）突破超神级失败时
 - **目标游戏版本**：WorldBox 0.51.x (build 719)
 - **GUID**：`SUPERMECH`
 - **入口**：`SuperMech.Main`
-- **代码规模**：87个C#文件，约21,300行，按功能分9个子目录
+- **代码规模**：91个C#文件，约23,000行，按功能分9个子目录
 - **本地化**：`Locales/cz.json`（中文用cz，约4400条），除日志外全部文本本地化
 - **存档**：统一JSON存档v4，按世界seed保存，覆盖33个系统
 
@@ -414,7 +426,7 @@ A: 临界超A（SS级+神性觉醒+进阶任务完成）突破超神级失败时
 ├── mod.json                   # 模组配置
 ├── default_config.json        # 默认配置（44项）
 ├── Code/
-│   ├── Core/                  # 核心（存档v4/配置/反射/统一Tick/跨模组/清理）
+│   ├── Core/                  # 核心（存档/配置/统一Tick/事件总线/ActorContext/纯公式/跨模组/清理）
 │   ├── Class/                 # 职业系统（五系/分支/进阶任务/天赋/觉醒/概念永生/超神遗力）
 │   ├── Power/                 # 力量系统（气力/潜能/神性/维度/核心修炼）
 │   ├── Rank/                  # 阶位系统（能级/阶位专长/职业阶段）
