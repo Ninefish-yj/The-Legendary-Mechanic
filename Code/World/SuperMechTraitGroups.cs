@@ -25,6 +25,9 @@ namespace SuperMech.Code
             new GroupInfo("sm_race_talents", "sm_traitgroups_1031", "#9932CC"),
             new GroupInfo("sm_skills",       "sm_traitgroups_1032", "#FF4500"),
             new GroupInfo("sm_sanctuary",    "sm_traitgroups_1033", "#FFD700"),
+            new GroupInfo("sm_mage_type",    "sm_traitgroups_1034", "#9370DB"),
+            new GroupInfo("sm_mage_spec",    "sm_traitgroups_1035", "#4169E1"),
+            new GroupInfo("sm_specialization","sm_traitgroups_1036","#228B22"),
         };
 
         public static void Register()

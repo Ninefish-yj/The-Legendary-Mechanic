@@ -4340,5 +4340,11 @@
   "sm_ui_san_select_hint": "选择一个圣所进入（玩家可直接查看所有圣所）",
   "sm_ui_san_enter": "▶ 进入圣所",
   "sm_ui_san_gate_return": "◈ 光门通道 · 返回",
-  "sm_ui_san_orb_hint": "点击左侧光球查看该迭代文明的信息态记录\n\n每个光球代表一个曾经存在过的文明\n触碰光球可读取其记忆碎片"
+  "sm_ui_san_orb_hint": "点击左侧光球查看该迭代文明的信息态记录\n\n每个光球代表一个曾经存在过的文明\n触碰光球可读取其记忆碎片",
+  "sm_traitgroups_1034": "法师类型",
+  "sm_traitgroups_1035": "法师专精",
+  "sm_traitgroups_1036": "职业专精",
+  "trait_group_sm_mage_type": "法师类型",
+  "trait_group_sm_mage_spec": "法师专精",
+  "trait_group_sm_specialization": "职业专精"
 }
