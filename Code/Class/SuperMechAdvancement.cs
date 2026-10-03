@@ -181,12 +181,17 @@ namespace SuperMech.Code
                 if (oldExact == targetIdx) continue;
 
                 // 原著：探索纪战争后期"第一个超A级的出现仿佛打破了某种极限"
-                // 仅针对S阶（超A级）：首破前无人知道突破方法，天灾级卡在瓶颈；首破后先行者指引道路，达到阈值即可突破
+                // 仅针对S阶（超A级）：知识积累是基础，首破前还需要顿悟出方法；首破后先行者指引道路，有积累即可突破
                 string targetRankName = LocalizedTextManager.getText(SuperMechRanks.All[targetIdx].name);
                 bool rankBroken = SuperMechSaveData.FirstBreakthroughRanks.Contains(targetRankName);
-                if (!rankBroken && targetIdx > oldExact && targetIdx == 10) // 仅S阶（超A级）有首破机制
+                if (targetIdx == 10 && targetIdx > oldExact) // 仅S阶（超A级）
                 {
-                    if (!CanBreakthrough(a, targetIdx))
+                    // 知识积累：首破前后都需要（超A级需要足够的知识底蕴）
+                    int knowledgeCount = SuperMechKnowledge.GetUnlockedCount(a, "sm_knowledge_");
+                    if (knowledgeCount < 10) continue;
+
+                    // 首破前：无人知道突破方法，只有0.05%概率的天才能自行顿悟
+                    if (!rankBroken && UnityEngine.Random.value >= 0.0005f)
                         continue;
                 }
 
@@ -357,22 +362,6 @@ namespace SuperMech.Code
 
             // v0.39.8 寿命限制：突破阶位延长寿命，S阶以上永生
             ApplyLifespanBonus(a, newRankIdx);
-        }
-
-        /// <summary>超A级首破前突破检查：原著中第一个超A级出现前，天灾级即使达到瓶颈也不知道突破方法
-        /// 只有极低概率的天才能自行摸索出道路（顿悟）</summary>
-        private static bool CanBreakthrough(Actor a, int targetIdx)
-        {
-            if (a == null || targetIdx != 10) return true; // 仅S阶有首破限制
-
-            // 首破前：无人知道超A级的突破方法，只有0.05%概率的天才能自行顿悟
-            if (UnityEngine.Random.value < 0.0005f)
-            {
-                Debug.Log($"[超神机械师]【首位顿悟】{a.name} 自行摸索出了超A级的突破道路！");
-                return true;
-            }
-
-            return false;
         }
 
         private static readonly Dictionary<long, int> _appliedLifespanRank = new Dictionary<long, int>();
