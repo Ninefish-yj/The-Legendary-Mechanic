@@ -98,13 +98,6 @@ namespace SuperMech.Code
                     }
                 }
 
-                // v0.51.0 文明等级显示
-                var civLevel = SuperMechCivilization.GetCivLevel(a);
-                if (civLevel != SuperMechCivilization.CivLevel.Normal)
-                {
-                    ShowRow(window, "文明", SuperMechCivilization.GetLevelName(civLevel), null, new Color(0.7f, 0.85f, 1f));
-                }
-
                 if (a.hasTrait(SuperMechBranch.BranchMech))
                 {
                     string specName = SuperMechSpecialization.GetSpecName(a);

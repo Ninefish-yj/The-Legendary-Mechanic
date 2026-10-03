@@ -130,6 +130,12 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (civBonus - 1f));
                     }
+                    // v0.51.1 文明科技伤害加成
+                    float techBonus = SuperMechCivilization.GetTechDamageBonus(SuperMechCivilization.GetTechLevel(attacker));
+                    if (techBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (techBonus - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
