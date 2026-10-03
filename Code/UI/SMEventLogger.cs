@@ -60,11 +60,16 @@ namespace SuperMech.Code
                 return;
             }
 
+            // 必须设置path_icon为空字符串而非null，否则setMessage中null != ""会进入sprite加载分支
             var asset = new WorldLogAsset
             {
                 id = assetId,
                 locale_id = localeId,
-                color = color
+                color = color,
+                group = "super_mech",
+                path_icon = "",
+                random_ids = 0,
+                text_replacer = null
             };
             AssetManager.world_log_library.add(asset);
             _logAssets[assetId] = asset;
