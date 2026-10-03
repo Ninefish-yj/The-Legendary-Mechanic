@@ -28,15 +28,23 @@ namespace SuperMech.Code
         private const int MaxFactions = 20;
         private static int _nameCounter = 0;
 
-        // 原著风格势力命名（科幻：黑星军团/虚灵教派/机械军团/萌芽组织/圣约组织）
-        private static readonly string[] FactionNamePrefixes = {
-            "黑星", "赤焰", "虚灵", "银辉", "苍穹", "星渊", "破晓", "雷霆",
-            "寒霜", "铁血", "暗夜", "星辉", "曜日", "苍蓝", "紫金", "血金",
-            "炎黄", "暗网", "圣约", "萌芽", "机械", "破碎", "永恒", "自由",
-            "荣耀", "深渊", "极光", "混沌", "虚空", "曜石"
+        // 原著风格势力命名：降临者(地球穿越者)用地球文化风，原住民用异星科幻风
+        // 原著：炎黄联盟是降临者专属命名，虚灵教派/机械军团/赤色帝国是原住民命名
+        private static readonly string[] DescendantPrefixes = {
+            "炎黄", "华夏", "神州", "中华", "黑星", "龙", "星辰", "昆仑",
+            "蓬莱", "方丈", "九州", "五岳", "长江", "黄河", "青龙", "朱雀"
         };
-        private static readonly string[] FactionNameSuffixes = {
-            "军团", "教派", "协会", "组织", "联盟", "帝国", "商会", "共和国"
+        private static readonly string[] NativePrefixes = {
+            "虚灵", "机械", "赤色", "圣约", "萌芽", "血金", "暗网", "银辉",
+            "苍穹", "星渊", "破晓", "雷霆", "寒霜", "铁血", "暗夜", "星辉",
+            "曜日", "苍蓝", "紫金", "破碎", "永恒", "自由", "荣耀", "深渊",
+            "极光", "混沌", "虚空", "曜石", "赤焰", "幽影"
+        };
+        private static readonly string[] DescendantSuffixes = {
+            "联盟", "军团", "组织", "协会", "共和国", "联邦", "公社"
+        };
+        private static readonly string[] NativeSuffixes = {
+            "军团", "教派", "协会", "组织", "帝国", "商会", "王朝", "神国"
         };
 
         /// <summary>每tick处理势力创建和加入</summary>
@@ -100,8 +108,13 @@ namespace SuperMech.Code
         {
             _nameCounter++;
             string id = "faction_" + _nameCounter;
-            string prefix = FactionNamePrefixes[Random.Range(0, FactionNamePrefixes.Length)];
-            string suffix = FactionNameSuffixes[Random.Range(0, FactionNameSuffixes.Length)];
+
+            // 降临者(地球穿越者)用地球文化风命名，原住民用异星科幻风命名
+            bool isDescendant = leader.hasTrait(SuperMechTraits.Descendant);
+            var prefixes = isDescendant ? DescendantPrefixes : NativePrefixes;
+            var suffixes = isDescendant ? DescendantSuffixes : NativeSuffixes;
+            string prefix = prefixes[Random.Range(0, prefixes.Length)];
+            string suffix = suffixes[Random.Range(0, suffixes.Length)];
             string name = prefix + suffix;
 
             var f = new FactionData
