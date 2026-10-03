@@ -394,13 +394,13 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<long, int> _appliedLifespanRank = new Dictionary<long, int>();
 
-        /// <summary>寿命限制：原著中超能者寿命远超常人，超A级接近永生，S阶以上不死不灭</summary>
+        /// <summary>寿命限制：原著中超A级寿命绵长（数百上千年）但会生老病死，只有超神级不死不灭</summary>
         private static void ApplyLifespanBonus(Actor a, int rankIdx)
         {
             if (a == null || rankIdx < 0) return;
 
-            // S阶以上直接给永生特质
-            if (rankIdx >= 10)
+            // X阶（超神级）才是真正的不死不灭
+            if (rankIdx >= 14)
             {
                 if (!a.hasTrait("immortal")) a.addTrait("immortal");
                 _appliedLifespanRank[a.id] = rankIdx;
@@ -419,7 +419,7 @@ namespace SuperMech.Code
             float bonus = GetLifespanBonus(rankIdx);
             if (bonus > 0f && a.stats != null)
             {
-                if (a.stats["lifespan"] <= 0f) a.stats["lifespan"] = 80f; // 普通人默认寿命
+                if (a.stats["lifespan"] <= 0f) a.stats["lifespan"] = 80f;
                 a.stats["lifespan"] += bonus;
             }
             _appliedLifespanRank[a.id] = rankIdx;
@@ -429,12 +429,18 @@ namespace SuperMech.Code
         {
             return rankIdx switch
             {
-                >= 9 => 5000f,   // A+阶：+5000岁
-                >= 8 => 2000f,   // A阶：+2000岁（天灾级，寿命以千年计）
-                >= 6 => 800f,    // B阶：+800岁
-                >= 4 => 300f,    // C阶：+300岁
-                >= 2 => 150f,    // D阶：+150岁
-                >= 1 => 80f,     // E阶：+80岁（觉醒后寿命翻倍）
+                >= 13 => 50000f,  // Ss巅峰超A：+5万岁（接近永生但仍有极限）
+                >= 12 => 30000f,  // S+：+3万岁
+                >= 11 => 20000f,  // S阶超A级：+2万岁（原著：最少数百上千年，长生者更久）
+                >= 10 => 10000f,  // A+：+1万岁
+                >= 9 => 5000f,    // A阶天灾级：+5000岁
+                >= 8 => 2000f,    // B+：+2000岁
+                >= 7 => 1000f,    // B阶：+1000岁
+                >= 6 => 500f,     // C+：+500岁
+                >= 5 => 300f,     // C阶：+300岁
+                >= 4 => 200f,     // D+：+200岁
+                >= 3 => 150f,     // D阶：+150岁
+                >= 1 => 80f,      // E阶觉醒：+80岁
                 _ => 0f
             };
         }
