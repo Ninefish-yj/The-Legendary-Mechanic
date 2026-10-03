@@ -111,6 +111,8 @@ namespace SuperMech.Code
         public static int GetReviveCount(Actor a)
         {
             if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.reviveCount > 0) return ctx.reviveCount;
             int v; _reviveCount.TryGetValue(a.id, out v); return v;
         }
 
@@ -118,6 +120,8 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             _reviveCount[a.id] = count;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.reviveCount = count;
         }
 
         public static int GetAuthority(Actor a, int sanctuaryIndex)

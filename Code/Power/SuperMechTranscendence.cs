@@ -373,6 +373,8 @@ namespace SuperMech.Code
         public static bool IsTranscended(Actor a)
         {
             if (a == null) return false;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null) return ctx.transcended;
             bool v; _transcended.TryGetValue(a.id, out v); return v;
         }
 
@@ -380,6 +382,8 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             _transcended[a.id] = true;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.transcended = true;
         }
 
         public static void SetAdvancementProgress(Actor a, float progress)
@@ -480,7 +484,7 @@ namespace SuperMech.Code
             {
                 if (allMet)
                 {
-                    _transcended[a.id] = true;
+                    SetTranscended(a);
                     SuperMechAdvancement.SetExactRank(a, 13);
                     float curQi = SuperMechQi.GetQi(a);
                     int curLv = SuperMechQi.GetLevel(curQi);

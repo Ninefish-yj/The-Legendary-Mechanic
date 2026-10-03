@@ -16,6 +16,8 @@ namespace SuperMech.Code
         public static float GetHeritage(Actor a)
         {
             if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
+            if (ctx != null && ctx.heritage > 0f) return ctx.heritage;
             float v; _heritage.TryGetValue(a.id, out v); return v;
         }
 
@@ -23,13 +25,16 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             float cur = GetHeritage(a);
-            _heritage[a.id] = cur + amount;
+            SetHeritage(a, cur + amount);
         }
 
         public static void SetHeritage(Actor a, float value)
         {
             if (a == null) return;
-            _heritage[a.id] = Mathf.Max(0, value);
+            float clamped = Mathf.Max(0, value);
+            _heritage[a.id] = clamped;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.heritage = clamped;
         }
 
         public static void TickHeritage()
@@ -76,7 +81,7 @@ namespace SuperMech.Code
                         stats["intelligence"] = (stats["intelligence"]) + 0.5f;
                         stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) + 0.01f;
                     }
-                    _heritage[a.id] = h;
+                    SetHeritage(a, h);
                     _autoUnlocked[a.id] = unlocked;
                     cost = GetCost(unlocked);
                 }

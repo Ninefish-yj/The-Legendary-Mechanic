@@ -33,7 +33,7 @@ namespace SuperMech.Code
         public bool divinityTriggered = false;
         public int infoStateLevel = 0;   // 信息态等级
         public bool transcended = false; // 是否超神
-        public int heritage = 0;         // 传承点
+        public float heritage = 0f;      // 传承点（浮点增长率）
 
         // === 圣所 ===
         public int sanctuaryVisits = 0;
