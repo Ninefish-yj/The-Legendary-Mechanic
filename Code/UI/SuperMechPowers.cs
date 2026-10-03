@@ -12,9 +12,6 @@ namespace SuperMech.Code
         public const string DisasterAlien = "sm_disaster_alien";
         public const string OpenSanctuary = "sm_open_sanctuary";
         public const string OpenRank = "sm_open_rank";
-        public const string OpenKnowledge = "sm_open_knowledge";
-        public const string OpenBag = "sm_open_bag";
-        public const string OpenCraft = "sm_open_craft";
 
         public const string TabName = "SuperMech";
         private static bool _buttonsCreated;
@@ -107,57 +104,6 @@ namespace SuperMech.Code
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 阶位按钮失败: {e.Message}"); }
-            }
-
-            // 5. 知识窗口（含知识树+知识融合标签页）
-            if (PowerButton.get(OpenKnowledge) == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconBook")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton(OpenKnowledge, () => SMWindowManager.OpenKnowledge(), icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_ui_knowledge", "sm_ui_knowledge_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 知识按钮失败: {e.Message}"); }
-            }
-
-            // 6. 背包窗口
-            if (PowerButton.get(OpenBag) == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconBackpack")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton(OpenBag, () => SMWindowManager.OpenBag(), icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_ui_bag", "sm_ui_bag_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 背包按钮失败: {e.Message}"); }
-            }
-
-            // 7. 制造窗口
-            if (PowerButton.get(OpenCraft) == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconHammer")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton(OpenCraft, () => SMWindowManager.OpenCraft(), icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_ui_craft", "sm_ui_craft_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 制造按钮失败: {e.Message}"); }
             }
 
             if (created > 0)
