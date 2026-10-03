@@ -7,8 +7,6 @@ namespace SuperMech.Code
 
     public static class SuperMechCustomStats
     {
-        public const string StatQi = "sm_qi";
-        public const string StatQiMax = "sm_qi_max";
         public const string StatStrength = "sm_strength";
         public const string StatAgility = "sm_agility";
         public const string StatEndurance = "sm_endurance";
@@ -16,10 +14,7 @@ namespace SuperMech.Code
         public const string StatMechAffinity = "sm_mech_affinity";
         public const string StatMageAffinity = "sm_mage_affinity";
         public const string StatMystery = "sm_mystery";
-        public const string StatCharm = "sm_charm";
         public const string StatLuck = "sm_luck";
-        public const string StatProfessionLevel = "sm_profession_level";
-        public const string StatPotentialPoints = "sm_potential_points";
 
         private static bool _registered = false;
 
@@ -31,8 +26,6 @@ namespace SuperMech.Code
 
             var stats = new StatInfo[]
             {
-                new StatInfo(StatQi, "sm_customstats_695", "sm_customstats_696", true, 0f, 3000000f, false),
-                new StatInfo(StatQiMax, "sm_customstats_697", "sm_customstats_698", true, 0f, 3000000f, false),
                 new StatInfo(StatStrength, "sm_customstats_740", "sm_customstats_741", true, 0f, 50000f, false),
                 new StatInfo(StatAgility, "sm_customstats_742", "sm_customstats_743", true, 0f, 50000f, false),
                 new StatInfo(StatEndurance, "sm_customstats_744", "sm_customstats_745", true, 0f, 50000f, false),
@@ -40,10 +33,7 @@ namespace SuperMech.Code
                 new StatInfo(StatMechAffinity, "sm_customstats_707", "sm_customstats_708", true, 0f, 50000f, true),
                 new StatInfo(StatMageAffinity, "sm_customstats_709", "sm_customstats_710", true, 0f, 50000f, true),
                 new StatInfo(StatMystery, "sm_customstats_711", "sm_customstats_712", true, 0f, 50000f, false),
-                new StatInfo(StatCharm, "sm_customstats_713", "sm_customstats_714", true, 0f, 50000f, false),
                 new StatInfo(StatLuck, "sm_customstats_715", "sm_customstats_716", true, 0f, 50000f, false),
-                new StatInfo(StatProfessionLevel, "sm_customstats_717", "sm_customstats_718", false, 0f, 600f, false),
-                new StatInfo(StatPotentialPoints, "sm_customstats_719", "sm_customstats_720", false, 0f, 10000f, false),
             };
 
             int registered = 0;
@@ -99,8 +89,6 @@ namespace SuperMech.Code
 
             float qi = SuperMechQi.GetQi(a);
             float qiMax = SuperMechQi.GetQiMax(a);
-            stats[StatQi] = qi;
-            stats[StatQiMax] = qiMax;
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
@@ -109,26 +97,18 @@ namespace SuperMech.Code
             }
 
             // 原著气力层次属性加成（Lv29：力+12480, 敏+13640, 耐+17200, 智+22845, 神秘+13590）
-            // 使用气力层次（非气力等级），幂函数累积加成，气力低于阈值丧失该层次加成
             stats[StatStrength] = SuperMechQiLayer.GetStrengthBonus(a);
             stats[StatAgility] = SuperMechQiLayer.GetAgilityBonus(a);
             stats[StatEndurance] = SuperMechQiLayer.GetEnduranceBonus(a);
             stats[StatMystery] = SuperMechQiLayer.GetMysteryBonus(a);
-            // 智力按原著Lv29=22845拟合
             int effLayer = SuperMechQiLayer.GetEffectiveLayer(a);
             stats[StatIntelligence] = 5.044f * Mathf.Pow(Mathf.Max(1, effLayer), 2.5f);
-            stats[StatCharm] = effLayer * effLayer * 5.7f;
             stats[StatLuck] = effLayer * effLayer * 2.1f;
 
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
-                // 机械亲和度按原著Lv29=14670%
                 stats[StatMechAffinity] = SuperMechQiLayer.GetMechAffinityBonus(a);
             }
-
-            stats[StatProfessionLevel] = SuperMechStage.GetStage(a);
-
-            stats[StatPotentialPoints] = SuperMechPotential.GetPotential(a);
         }
 
         public static float GetStat(Actor a, string statId)

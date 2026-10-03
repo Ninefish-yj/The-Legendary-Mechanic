@@ -169,7 +169,8 @@ namespace SuperMech.Code
             float mechAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMechAffinity);
             float mageAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMageAffinity);
             float mystery = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMystery);
-            float charm = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatCharm);
+            int effLayer = SuperMechQiLayer.GetEffectiveLayer(actor);
+            float charm = effLayer * effLayer * 5.7f;
             float luck = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatLuck);
 
             CallSetIconValue(window, "sm_divine", divine);
