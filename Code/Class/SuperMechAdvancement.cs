@@ -122,6 +122,9 @@ namespace SuperMech.Code
                 SuperMechPotentialRating.RollRating(a);
                 GrantStarterEquipment(a);
 
+                // v0.39.8 寿命限制：觉醒后寿命延长为普通人3倍，突破阶位继续延长
+                ApplyLifespanBonus(a, 1);
+
                 string talentText = "";
                 foreach (var t in talents)
                     talentText += $"{SuperMechTalent.GetTalentName(t.type)}({SuperMechTalent.RatingNames[t.rating]}) ";
@@ -177,15 +180,14 @@ namespace SuperMech.Code
 
                 if (oldExact == targetIdx) continue;
 
-                // v0.39.7 先行者指引：原著第564章"第一个超A级打破了某种极限，给后来者指引了道路"
-                // 首破前：达到阈值也只有5%概率突破（没人知道方法，卡在瓶颈）
-                // 首破后：达到阈值100%自动突破（先行者经验传播，接二连三突破）
+                // v0.39.8 先行者指引：原著第564章"第一个超A级打破了某种极限，给后来者指引了道路"
+                // 首破前：能级够了但不知道方法，需要满足知识/任务条件才能突破（或极低概率顿悟）
+                // 首破后：先行者经验传播，达到阈值100%自动突破
                 string targetRankName = LocalizedTextManager.getText(SuperMechRanks.All[targetIdx].name);
                 bool rankBroken = SuperMechSaveData.FirstBreakthroughRanks.Contains(targetRankName);
-                if (!rankBroken && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx))
+                if (!rankBroken && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx >= 2)
                 {
-                    // 低阶位（D以下）不卡瓶颈，高阶位才需要先行者指引
-                    if (targetIdx >= 2 && UnityEngine.Random.value > 0.05f)
+                    if (!CanBreakthrough(a, targetIdx))
                         continue;
                 }
 
@@ -353,6 +355,88 @@ namespace SuperMech.Code
                 if (hpInc > 1f) s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * hpInc;
             }
             _appliedRankIdx[a.id] = newRankIdx;
+
+            // v0.39.8 寿命限制：突破阶位延长寿命，S阶以上永生
+            ApplyLifespanBonus(a, newRankIdx);
+        }
+
+        /// <summary>首破前突破条件检查：原著中先行者出现前，即使能级够了也需要找到突破方法</summary>
+        private static bool CanBreakthrough(Actor a, int targetIdx)
+        {
+            if (a == null || targetIdx < 2) return true;
+
+            // 条件1：完成进阶任务（最可靠的突破方法）
+            if (SuperMechAdvancementTask.CheckReq(a, targetIdx))
+                return true;
+
+            // 条件2：学习足够多的知识（从知识中领悟突破方法）
+            int knowledgeCount = SuperMechKnowledge.GetUnlockedCount(a, "sm_knowledge_");
+            int requiredKnowledge = targetIdx switch
+            {
+                >= 10 => 20,  // S阶以上：20个知识
+                >= 8 => 15,   // A阶：15个知识
+                >= 6 => 10,   // B阶：10个知识
+                >= 4 => 5,    // C阶：5个知识
+                _ => 2        // D阶：2个知识
+            };
+            if (knowledgeCount >= requiredKnowledge)
+                return true;
+
+            // 条件3：1%概率顿悟（天才自行领悟突破方法）
+            if (UnityEngine.Random.value < 0.01f)
+            {
+                Debug.Log($"[超神机械师]【顿悟突破】{a.name} 自行领悟了突破方法！");
+                return true;
+            }
+
+            return false;
+        }
+
+        private static readonly Dictionary<long, int> _appliedLifespanRank = new Dictionary<long, int>();
+
+        /// <summary>寿命限制：原著中超能者寿命远超常人，超A级接近永生，S阶以上不死不灭</summary>
+        private static void ApplyLifespanBonus(Actor a, int rankIdx)
+        {
+            if (a == null || rankIdx < 0) return;
+
+            // S阶以上直接给永生特质
+            if (rankIdx >= 10)
+            {
+                if (!a.hasTrait("immortal")) a.addTrait("immortal");
+                _appliedLifespanRank[a.id] = rankIdx;
+                return;
+            }
+
+            // 移除之前的寿命加成（重新计算）
+            if (_appliedLifespanRank.TryGetValue(a.id, out int oldRank) && oldRank != rankIdx)
+            {
+                float oldBonus = GetLifespanBonus(oldRank);
+                if (oldBonus > 0f && a.stats != null)
+                    a.stats["lifespan"] = Mathf.Max(10f, a.stats["lifespan"] - oldBonus);
+            }
+
+            // 应用新的寿命加成
+            float bonus = GetLifespanBonus(rankIdx);
+            if (bonus > 0f && a.stats != null)
+            {
+                if (a.stats["lifespan"] <= 0f) a.stats["lifespan"] = 80f; // 普通人默认寿命
+                a.stats["lifespan"] += bonus;
+            }
+            _appliedLifespanRank[a.id] = rankIdx;
+        }
+
+        private static float GetLifespanBonus(int rankIdx)
+        {
+            return rankIdx switch
+            {
+                >= 9 => 5000f,   // A+阶：+5000岁
+                >= 8 => 2000f,   // A阶：+2000岁（天灾级，寿命以千年计）
+                >= 6 => 800f,    // B阶：+800岁
+                >= 4 => 300f,    // C阶：+300岁
+                >= 2 => 150f,    // D阶：+150岁
+                >= 1 => 80f,     // E阶：+80岁（觉醒后寿命翻倍）
+                _ => 0f
+            };
         }
 
         public static bool IsSuperMechUnit(Actor a)
