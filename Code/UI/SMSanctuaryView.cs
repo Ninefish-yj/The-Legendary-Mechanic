@@ -304,7 +304,7 @@ namespace SuperMech.Code
             contentGo.transform.SetParent(vpGo.transform, false);
             _detailContent = contentGo.AddComponent<RectTransform>();
             _detailContent.anchorMin = new Vector2(0, 1);
-            _detailContent.anchorMax = new Vector2(0, 1);
+            _detailContent.anchorMax = new Vector2(1, 1);
             _detailContent.pivot = new Vector2(0, 1);
             _detailContent.sizeDelta = new Vector2(0, 0);
             var contentHit = contentGo.AddComponent<Image>();
@@ -351,7 +351,7 @@ namespace SuperMech.Code
             icGo.transform.SetParent(ivpGo.transform, false);
             _infoStateContent = icGo.AddComponent<RectTransform>();
             _infoStateContent.anchorMin = new Vector2(0, 1);
-            _infoStateContent.anchorMax = new Vector2(0, 1);
+            _infoStateContent.anchorMax = new Vector2(1, 1);
             _infoStateContent.pivot = new Vector2(0, 1);
             _infoStateContent.sizeDelta = new Vector2(0, 0);
             var icHit = icGo.AddComponent<Image>();
