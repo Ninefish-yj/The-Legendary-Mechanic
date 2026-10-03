@@ -453,7 +453,8 @@ namespace SuperMech.Code
     public class GuimiAdapter : SuperMechModAdapters.IModAdapter
     {
         public string ModName => "诡秘之主";
-        public bool IsAvailable => SuperMechModAdapters.IsTypeLoaded("Guimi.GuimiMain")
+        public bool IsAvailable => SuperMechModAdapters.IsTypeLoaded("XuLie.XuLieClass")
+            || SuperMechModAdapters.IsTypeLoaded("Guimi.GuimiMain")
             || SuperMechModAdapters.IsTypeLoaded("LordOfMysteries.Main");
 
         private static readonly string[] SequenceTraits = {
@@ -481,7 +482,8 @@ namespace SuperMech.Code
         public bool Detect(Actor a)
         {
             if (a == null) return false;
-            return GetRealmLevel(a) > 0 || (a.stats != null && a.stats["XuLie"] > 0f);
+            if (GetRealmLevel(a) > 0) return true;
+            return a.stats != null && a.stats["XuLie"] > 0f;
         }
 
         public int GetRealmLevel(Actor a)
@@ -489,7 +491,8 @@ namespace SuperMech.Code
             if (a == null) return 0;
             for (int i = 0; i < SequenceTraits.Length; i++)
             {
-                if (a.hasTrait(SequenceTraits[i])) return SequenceTraits.Length - i;
+                if (a.hasTrait(SequenceTraits[i]) || a.hasTrait(SequenceTraits[i] + "+"))
+                    return SequenceTraits.Length - i;
             }
             return 0;
         }
