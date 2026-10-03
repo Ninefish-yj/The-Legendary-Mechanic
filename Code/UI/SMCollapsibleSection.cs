@@ -1,11 +1,10 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace SuperMech.Code
 {
-    /// <summary>单位面板折叠区块组件（v0.40.0修复：用IPointerClickHandler替代Button.onClick）
+    /// <summary>单位面板折叠区块组件
     /// 提供折叠状态管理和标题行构建，点击标题行切换展开/折叠
     /// </summary>
     public static class SMCollapsibleSection
@@ -69,7 +68,10 @@ namespace SuperMech.Code
         }
 
         /// <summary>构建折叠标题行
-        /// 用自定义IPointerClickHandler组件处理点击，不依赖Button.onClick（对象池复用会导致监听器累积）
+        /// 只用原生on_click_value（WorldBox原生支持，最可靠）。
+        /// 注意：绝不能同时设置btn.onClick，否则KeyValueField.Awake中的原生监听会调用on_click_value，
+        /// 加上btn.onClick的监听，一次点击触发两次Toggle=没切换。
+        /// on_click_value在OnDisable时被清空，但BuildHeader在每次showStatsRows后都会重新设置，所以有效。
         /// </summary>
         public static void BuildHeader(StatsWindow window, long actorId, string sectionId, string titleKey)
         {
@@ -80,13 +82,13 @@ namespace SuperMech.Code
             var row = window.showStatRow(title, "", null, MetaType.None, -1L,
                 pColorText: false, pIconPath: null, pTooltipId: null, pTooltipData: null, pLocalize: false);
 
-            if (row != null && row.value != null)
+            if (row != null)
             {
-                // 用自定义组件处理点击，挂在row.value上（那里有Graphic能接收点击）
-                var header = row.value.GetComponent<SMCollapsibleHeader>();
-                if (header == null)
-                    header = row.value.gameObject.AddComponent<SMCollapsibleHeader>();
-                header.Init(actorId, sectionId, window);
+                row.on_click_value = () =>
+                {
+                    Toggle(actorId, sectionId);
+                    RebuildPanel(window);
+                };
             }
         }
 
@@ -100,47 +102,6 @@ namespace SuperMech.Code
         public static void ClearAll()
         {
             _expandState.Clear();
-        }
-    }
-
-    /// <summary>折叠标题行点击组件（挂在row.value上，实现IPointerClickHandler）
-    /// 不依赖Button.onClick，避免对象池复用导致监听器累积和双重触发
-    /// </summary>
-    public class SMCollapsibleHeader : MonoBehaviour, IPointerClickHandler
-    {
-        private long _actorId;
-        private string _sectionId;
-        private StatsWindow _window;
-
-        public void Init(long actorId, string sectionId, StatsWindow window)
-        {
-            _actorId = actorId;
-            _sectionId = sectionId;
-            _window = window;
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            SMCollapsibleSection.Toggle(_actorId, _sectionId);
-            SMCollapsibleSection.RebuildPanel(_window);
-        }
-    }
-
-    /// <summary>通用行点击组件（用于入口按钮等，挂在row.value上）
-    /// 不依赖Button.onClick，避免对象池复用导致监听器累积
-    /// </summary>
-    public class SMRowClickHandler : MonoBehaviour, IPointerClickHandler
-    {
-        private System.Action _onClick;
-
-        public void Init(System.Action onClick)
-        {
-            _onClick = onClick;
-        }
-
-        public void OnPointerClick(PointerEventData eventData)
-        {
-            _onClick?.Invoke();
         }
     }
 }
