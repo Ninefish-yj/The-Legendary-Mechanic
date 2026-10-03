@@ -47,6 +47,7 @@ namespace SuperMech.Code
             public int subLevel;
             public List<string> skills;
             public List<string> traits;
+            public int deathAge; // 死亡时年龄（复活后保持年龄连续性，圣所重塑肉身为巅峰状态）
         }
 
         private static readonly Dictionary<long, InformationStateRecord> _aliveSnapshot = new Dictionary<long, InformationStateRecord>();
@@ -151,6 +152,7 @@ namespace SuperMech.Code
                 advancementTaskDone = SuperMechTranscendence.IsAdvancementTaskDone(a),
                 advancementProgress = SuperMechTranscendence.GetAdvancementProgress(a),
                 subLevel = 0,
+                deathAge = a.data.age,
             };
 
             // 职业和分支

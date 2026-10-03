@@ -243,12 +243,12 @@ namespace SuperMech.Code
             SuperMechSanctuary.SetReviveCount(newActor, state.reviveCount + 1);
 
             // 17. 寿命重置（原著第1214章：借圣所重塑肉身与灵魂；第1274章：圣所复苏使预期寿命暴增）
-            // 重塑肉身=恢复到巅峰状态，年龄重置为该阶位巅峰年龄（不是18岁）；信息完整度影响肉身完美度
-            int peakAge = GetPeakAgeForRank(restoredRank);
-            newActor.data.age = peakAge;
-            float baseLifespan = 80f;
+            // 重塑肉身=身体恢复巅峰状态（属性/战力不受年龄影响），但年龄保持死亡时年龄（角色连续性）
+            // 寿命 = 死亡时年龄 + 阶位寿命加成 × 信息完整度（续命，不是返老还童）
+            int deathAge = state.deathAge > 0 ? state.deathAge : GetPeakAgeForRank(restoredRank);
+            newActor.data.age = deathAge;
             float rankBonus = SuperMechAdvancement.GetLifespanBonus(restoredRank);
-            float newLifespan = baseLifespan + rankBonus * integrity;
+            float newLifespan = deathAge + rankBonus * integrity;
             newActor.stats["lifespan"] = newLifespan;
             // X阶超神级信息态抹杀免疫，直接永生
             if (restoredRank >= 14)
