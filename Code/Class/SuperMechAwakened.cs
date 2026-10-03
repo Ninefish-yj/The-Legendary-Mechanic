@@ -84,6 +84,9 @@ namespace SuperMech.Code
         public static int GetLevel(Actor a)
         {
             if (a == null || !IsAwakened(a)) return 0;
+            // 优先从ActorContext读取
+            var ctx = SuperMechActorContextRegistry.TryGet(a.data.id);
+            if (ctx != null && ctx.awakenedLevel > 0) return ctx.awakenedLevel;
             if (_level.TryGetValue(a.data.id, out int lv)) return lv;
             return 1;
         }
@@ -105,6 +108,9 @@ namespace SuperMech.Code
         public static float GetXp(Actor a)
         {
             if (a == null || !IsAwakened(a)) return 0;
+            // 优先从ActorContext读取
+            var ctx = SuperMechActorContextRegistry.TryGet(a.data.id);
+            if (ctx != null && ctx.awakenedXp > 0f) return ctx.awakenedXp;
             if (_xp.TryGetValue(a.data.id, out float xp)) return xp;
             return 0;
         }
@@ -112,13 +118,21 @@ namespace SuperMech.Code
         public static void SetLevel(Actor a, int level)
         {
             if (a == null || !IsAwakened(a)) return;
-            _level[a.data.id] = Mathf.Max(1, level);
+            int clamped = Mathf.Max(1, level);
+            _level[a.data.id] = clamped;
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.awakenedLevel = clamped;
         }
 
         public static void SetXp(Actor a, float xp)
         {
             if (a == null || !IsAwakened(a)) return;
-            _xp[a.data.id] = Mathf.Max(0, xp);
+            float clamped = Mathf.Max(0, xp);
+            _xp[a.data.id] = clamped;
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.awakenedXp = clamped;
         }
 
         public static bool SpendXp(Actor a, float amount)

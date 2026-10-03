@@ -209,6 +209,9 @@ namespace SuperMech.Code
         public static int GetStage(Actor a)
         {
             if (a == null) return 0;
+            // 优先从ActorContext读取
+            var ctx = SuperMechActorContextRegistry.TryGet(a.data.id);
+            if (ctx != null && ctx.stage > 0) return ctx.stage;
             if (_stage.TryGetValue(a.data.id, out int s)) return s;
             return 0;
         }
@@ -272,7 +275,11 @@ namespace SuperMech.Code
         public static void SetStage(Actor a, int stage)
         {
             if (a == null) return;
-            _stage[a.data.id] = Mathf.Clamp(stage, 0, 14);
+            int clamped = Mathf.Clamp(stage, 0, 14);
+            _stage[a.data.id] = clamped;
+            // 同步到ActorContext
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.stage = clamped;
         }
 
         public static bool Advance(Actor a)
