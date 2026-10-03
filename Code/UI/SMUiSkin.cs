@@ -4,8 +4,8 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 程序化UI皮肤——星海终端风格（参考凡人修仙传UiKit设计模式）
-    /// 配色：深灰蓝半透明底 + 冰蓝强调 + 银白文字 + 立体描边
+    /// 程序化UI皮肤——WorldBox原生融合风格（深棕暖色调）
+    /// 配色：深灰棕半透明底 + 金色强调 + 米白文字 + 石质描边
     /// 9-slice pixelsPerUnit=100（关键：NML环境下必须用100，否则边框塌缩）
     /// </summary>
     public static class SMUiSkin
@@ -22,25 +22,25 @@ namespace SuperMech.Code
         private static Sprite _cardSprite;
         private static Sprite _sectionSprite;
 
-        // ═════════════════════════ 星海终端统一色板 ═════════════════════════
-        public static readonly Color BgColor = new Color(0.06f, 0.08f, 0.12f, 0.94f);
-        public static readonly Color BgLight = new Color(0.10f, 0.13f, 0.18f, 0.95f);
-        public static readonly Color BorderColor = new Color(0.40f, 0.60f, 0.85f, 0.9f);
-        public static readonly Color BorderDim = new Color(0.25f, 0.40f, 0.60f, 0.7f);
-        public static readonly Color TextColor = new Color(0.90f, 0.95f, 1.0f, 1f);
-        public static readonly Color TextDim = new Color(0.55f, 0.65f, 0.78f, 1f);
-        public static readonly Color AccentColor = new Color(0.35f, 0.65f, 1.0f, 1f);
-        public static readonly Color AccentDim = new Color(0.20f, 0.40f, 0.65f, 0.8f);
-        public static readonly Color ButtonNormal = new Color(0.10f, 0.14f, 0.20f, 0.92f);
-        public static readonly Color ButtonHover = new Color(0.18f, 0.26f, 0.38f, 0.96f);
-        public static readonly Color ButtonActive = new Color(0.06f, 0.09f, 0.14f, 0.98f);
-        public static readonly Color EdgeLight = new Color(0.55f, 0.75f, 1.0f, 0.4f);
-        public static readonly Color EdgeDark = new Color(0.02f, 0.04f, 0.08f, 0.6f);
-        public static readonly Color RowEven = new Color(0.08f, 0.11f, 0.16f, 0.5f);
-        public static readonly Color RowOdd = new Color(0.06f, 0.08f, 0.12f, 0.3f);
-        public static readonly Color CardBg = new Color(0.09f, 0.12f, 0.17f, 0.9f);
-        public static readonly Color SectionBg = new Color(0.15f, 0.22f, 0.32f, 0.95f);
-        public static readonly Color CloseRed = new Color(0.70f, 0.20f, 0.18f, 0.95f);
+        // ═════════════════════════ 原生融合色板（深棕暖色调）═════════════════════════
+        public static readonly Color BgColor = new Color(0.16f, 0.13f, 0.10f, 0.94f);
+        public static readonly Color BgLight = new Color(0.22f, 0.18f, 0.14f, 0.95f);
+        public static readonly Color BorderColor = new Color(0.55f, 0.42f, 0.25f, 0.9f);
+        public static readonly Color BorderDim = new Color(0.38f, 0.30f, 0.20f, 0.7f);
+        public static readonly Color TextColor = new Color(0.92f, 0.86f, 0.74f, 1f);
+        public static readonly Color TextDim = new Color(0.65f, 0.58f, 0.48f, 1f);
+        public static readonly Color AccentColor = new Color(0.83f, 0.66f, 0.30f, 1f);
+        public static readonly Color AccentDim = new Color(0.55f, 0.42f, 0.20f, 0.8f);
+        public static readonly Color ButtonNormal = new Color(0.24f, 0.19f, 0.14f, 0.92f);
+        public static readonly Color ButtonHover = new Color(0.35f, 0.28f, 0.20f, 0.96f);
+        public static readonly Color ButtonActive = new Color(0.18f, 0.14f, 0.10f, 0.98f);
+        public static readonly Color EdgeLight = new Color(0.65f, 0.52f, 0.32f, 0.4f);
+        public static readonly Color EdgeDark = new Color(0.08f, 0.06f, 0.04f, 0.6f);
+        public static readonly Color RowEven = new Color(0.20f, 0.16f, 0.12f, 0.5f);
+        public static readonly Color RowOdd = new Color(0.16f, 0.13f, 0.10f, 0.3f);
+        public static readonly Color CardBg = new Color(0.22f, 0.18f, 0.14f, 0.9f);
+        public static readonly Color SectionBg = new Color(0.30f, 0.24f, 0.17f, 0.95f);
+        public static readonly Color CloseRed = new Color(0.65f, 0.25f, 0.20f, 0.95f);
 
         // ═════════════════════════ Sprite属性 ═════════════════════════
         public static Sprite Panel => EnsureInit() ? _panelSprite : null;

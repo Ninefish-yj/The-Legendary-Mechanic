@@ -57,7 +57,7 @@ namespace SuperMech.Code
             rankText.fontSize = 12;
             rankText.alignment = TextAnchor.MiddleCenter;
             rankText.text = $"#{rank}";
-            rankText.color = rank <= 3 ? rankColor : new Color(0.7f, 0.75f, 0.8f);
+            rankText.color = rank <= 3 ? rankColor : new Color(0.70f, 0.62f, 0.50f);
 
             // === 头像 ===
             var avatarGo = new GameObject("Avatar");
@@ -95,8 +95,8 @@ namespace SuperMech.Code
             infoText.alignment = TextAnchor.MiddleLeft;
             infoText.horizontalOverflow = HorizontalWrapMode.Overflow;
             infoText.verticalOverflow = VerticalWrapMode.Truncate;
-            // 名称白色 + 阶位带色 + 体系灰色
-            infoText.text = $"<color=#e6f0ff>{displayName}</color>  <color=#{ColorUtility.ToHtmlStringRGB(rankColor)}>{rankName}</color>  <color=#8899aa>{className}</color>";
+            // 名称米白 + 阶位带色 + 体系暗金
+            infoText.text = $"<color=#ebe0cc>{displayName}</color>  <color=#{ColorUtility.ToHtmlStringRGB(rankColor)}>{rankName}</color>  <color=#9a8a6e>{className}</color>";
 
             // === 能级（右侧）===
             var onarGo = new GameObject("Onar");
@@ -112,7 +112,7 @@ namespace SuperMech.Code
             onarText.fontSize = 11;
             onarText.alignment = TextAnchor.MiddleRight;
             onarText.text = onar >= 10000 ? $"{onar / 10000f:F1}w" : $"{onar:F0}";
-            onarText.color = new Color(0.6f, 0.8f, 1.0f);
+            onarText.color = new Color(0.83f, 0.72f, 0.50f);
 
             // === 点击按钮 ===
             _button = gameObject.AddComponent<Button>();
