@@ -25,15 +25,15 @@ namespace SuperMech.Code
         private int _selectedIndex = -1;
         private bool _showInfoState = false;
 
-        // 星图节点位置（6个圣所按环形排列）
+        // 星图节点位置（6个圣所按紧凑排列）
         private static readonly Vector2[] NodePositions =
         {
-            new Vector2(-200, 120),   // 第一圣所：左上
-            new Vector2(0, 160),      // 第二圣所：上中
-            new Vector2(200, 120),    // 第三圣所：右上
-            new Vector2(-200, -80),   // 第四圣所：左下
-            new Vector2(0, -120),     // 第五圣所：下中
-            new Vector2(200, -80),    // 第六圣所：右下
+            new Vector2(-160, 100),   // 第一圣所：左上
+            new Vector2(0, 130),      // 第二圣所：上中
+            new Vector2(160, 100),    // 第三圣所：右上
+            new Vector2(-160, -60),   // 第四圣所：左下
+            new Vector2(0, -90),      // 第五圣所：下中
+            new Vector2(160, -60),    // 第六圣所：右下
         };
 
         public static void Toggle()
@@ -106,8 +106,52 @@ namespace SuperMech.Code
 
         private void BuildStars(Transform parent)
         {
-            // 随机生成50个星点
-            for (int i = 0; i < 50; i++)
+            // 网格背景（参考道途树样式）
+            var gridGo = new GameObject("GridBg");
+            gridGo.transform.SetParent(parent, false);
+            var gridRect = gridGo.AddComponent<RectTransform>();
+            gridRect.anchorMin = Vector2.zero;
+            gridRect.anchorMax = Vector2.one;
+            gridRect.offsetMin = Vector2.zero;
+            gridRect.offsetMax = Vector2.zero;
+            var gridImg = gridGo.AddComponent<Image>();
+            gridImg.color = new Color(0.03f, 0.05f, 0.1f, 0.5f);
+            gridImg.raycastTarget = false;
+
+            // 横向网格线
+            for (int y = -4; y <= 4; y++)
+            {
+                var lineGo = new GameObject($"HLine_{y}");
+                lineGo.transform.SetParent(gridGo.transform, false);
+                var lineRect = lineGo.AddComponent<RectTransform>();
+                lineRect.anchorMin = new Vector2(0, 0.5f);
+                lineRect.anchorMax = new Vector2(1, 0.5f);
+                lineRect.pivot = new Vector2(0.5f, 0.5f);
+                lineRect.sizeDelta = new Vector2(0, 1);
+                lineRect.anchoredPosition = new Vector2(0, y * 50);
+                var lineImg = lineGo.AddComponent<Image>();
+                lineImg.color = new Color(0.1f, 0.2f, 0.4f, 0.15f);
+                lineImg.raycastTarget = false;
+            }
+
+            // 纵向网格线
+            for (int x = -6; x <= 6; x++)
+            {
+                var lineGo = new GameObject($"VLine_{x}");
+                lineGo.transform.SetParent(gridGo.transform, false);
+                var lineRect = lineGo.AddComponent<RectTransform>();
+                lineRect.anchorMin = new Vector2(0.5f, 0);
+                lineRect.anchorMax = new Vector2(0.5f, 1);
+                lineRect.pivot = new Vector2(0.5f, 0.5f);
+                lineRect.sizeDelta = new Vector2(1, 0);
+                lineRect.anchoredPosition = new Vector2(x * 50, 0);
+                var lineImg = lineGo.AddComponent<Image>();
+                lineImg.color = new Color(0.1f, 0.2f, 0.4f, 0.15f);
+                lineImg.raycastTarget = false;
+            }
+
+            // 随机星点
+            for (int i = 0; i < 30; i++)
             {
                 var starGo = new GameObject($"Star_{i}");
                 starGo.transform.SetParent(parent, false);
@@ -118,10 +162,10 @@ namespace SuperMech.Code
                 float x = Random.Range(-0.45f, 0.45f);
                 float y = Random.Range(-0.4f, 0.4f);
                 starRect.anchoredPosition = new Vector2(x * Screen.width, y * Screen.height);
-                float size = Random.Range(1, 3);
+                float size = Random.Range(1, 2);
                 starRect.sizeDelta = new Vector2(size, size);
                 var starImg = starGo.AddComponent<Image>();
-                starImg.color = new Color(1, 1, 1, Random.Range(0.2f, 0.7f));
+                starImg.color = new Color(1, 1, 1, Random.Range(0.1f, 0.4f));
                 starImg.raycastTarget = false;
             }
         }
@@ -243,11 +287,11 @@ namespace SuperMech.Code
                 lineRect.anchorMin = new Vector2(0.5f, 0.5f);
                 lineRect.anchorMax = new Vector2(0.5f, 0.5f);
                 lineRect.pivot = new Vector2(0.5f, 0.5f);
-                lineRect.sizeDelta = new Vector2(length, 1);
+                lineRect.sizeDelta = new Vector2(length, 2);
                 lineRect.anchoredPosition = mid;
                 lineRect.localRotation = Quaternion.Euler(0, 0, angle);
                 var lineImg = lineGo.AddComponent<Image>();
-                lineImg.color = new Color(0.2f, 0.6f, 0.8f, 0.15f);
+                lineImg.color = new Color(0.2f, 0.5f, 0.9f, 0.4f);
                 lineImg.raycastTarget = false;
             }
         }
