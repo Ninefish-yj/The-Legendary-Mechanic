@@ -20,6 +20,7 @@ namespace SuperMech.Code
         // 两层视图
         private GameObject _selectLayer;    // 圣所选择层
         private GameObject _interiorLayer;  // 圣所内部层
+        private GameObject _resurrectionLayer; // 复活面板层（内嵌信息态库）
         private int _currentSanctuary = -1; // 当前进入的圣所
 
         // 内部层光球
@@ -85,6 +86,9 @@ namespace SuperMech.Code
 
             // 圣所内部层（默认隐藏）
             BuildInteriorLayer();
+
+            // 复活面板层（默认隐藏，信息态库内嵌）
+            BuildResurrectionLayer();
 
             // 底部状态栏
             BuildStatusBar();
@@ -159,7 +163,7 @@ namespace SuperMech.Code
             infoTextRect.anchorMax = Vector2.one;
             infoTextRect.offsetMin = Vector2.zero;
             infoTextRect.offsetMax = Vector2.zero;
-            infoBtn.onClick.AddListener(() => SMWindowManager.OpenResurrection());
+            infoBtn.onClick.AddListener(ShowResurrectionLayer);
         }
 
         private void BuildSelectLayer()
@@ -489,6 +493,84 @@ namespace SuperMech.Code
             _currentSanctuary = -1;
             _selectLayer.SetActive(true);
             _interiorLayer.SetActive(false);
+            if (_resurrectionLayer != null) _resurrectionLayer.SetActive(false);
+            RefreshStatus();
+        }
+
+        private void BuildResurrectionLayer()
+        {
+            _resurrectionLayer = new GameObject("ResurrectionLayer");
+            _resurrectionLayer.transform.SetParent(transform, false);
+            var rect = _resurrectionLayer.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(0, 50);
+            rect.offsetMax = new Vector2(0, -50);
+
+            // 半透明背景
+            var bgGo = new GameObject("Bg");
+            bgGo.transform.SetParent(_resurrectionLayer.transform, false);
+            var bgRect = bgGo.AddComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero;
+            bgRect.offsetMax = Vector2.zero;
+            var bgImg = bgGo.AddComponent<Image>();
+            bgImg.color = new Color(0.03f, 0.03f, 0.08f, 0.95f);
+            bgImg.raycastTarget = true;
+
+            // 标题
+            var titleText = SMUiSkin.MakeText(_resurrectionLayer.transform,
+                LocalizedTextManager.getText("sm_ui_san_info_library"), 16, TextAnchor.UpperCenter);
+            titleText.color = new Color(0.6f, 0.8f, 1.0f);
+            titleText.fontStyle = FontStyle.Bold;
+            var titleRect = titleText.GetComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0, 1);
+            titleRect.anchorMax = new Vector2(1, 1);
+            titleRect.pivot = new Vector2(0.5f, 1);
+            titleRect.sizeDelta = new Vector2(0, 30);
+            titleRect.anchoredPosition = new Vector2(0, -10);
+
+            // 返回按钮
+            var backGo = new GameObject("BackBtn");
+            backGo.transform.SetParent(_resurrectionLayer.transform, false);
+            var backRect = backGo.AddComponent<RectTransform>();
+            backRect.anchorMin = new Vector2(0, 1);
+            backRect.anchorMax = new Vector2(0, 1);
+            backRect.pivot = new Vector2(0, 1);
+            backRect.sizeDelta = new Vector2(100, 30);
+            backRect.anchoredPosition = new Vector2(12, -8);
+            var backImg = backGo.AddComponent<Image>();
+            backImg.color = new Color(0.2f, 0.15f, 0.3f, 0.9f);
+            var backBtn = backGo.AddComponent<Button>();
+            var backText = SMUiSkin.MakeText(backGo.transform,
+                LocalizedTextManager.getText("sm_ui_san_back"), 12, TextAnchor.MiddleCenter);
+            backText.color = Color.white;
+            var backTextRect = backText.GetComponent<RectTransform>();
+            backTextRect.anchorMin = Vector2.zero;
+            backTextRect.anchorMax = Vector2.one;
+            backTextRect.offsetMin = Vector2.zero;
+            backTextRect.offsetMax = Vector2.zero;
+            backBtn.onClick.AddListener(ShowSelectLayer);
+
+            // 内嵌复活列表
+            var listGo = new GameObject("ResurrectionList");
+            listGo.transform.SetParent(_resurrectionLayer.transform, false);
+            var listRect = listGo.AddComponent<RectTransform>();
+            listRect.anchorMin = Vector2.zero;
+            listRect.anchorMax = Vector2.one;
+            listRect.offsetMin = new Vector2(20, 20);
+            listRect.offsetMax = new Vector2(-20, -50);
+            listGo.AddComponent<SMResurrectionView>();
+
+            _resurrectionLayer.SetActive(false);
+        }
+
+        private void ShowResurrectionLayer()
+        {
+            _selectLayer.SetActive(false);
+            _interiorLayer.SetActive(false);
+            _resurrectionLayer.SetActive(true);
             RefreshStatus();
         }
 
