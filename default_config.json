@@ -26,10 +26,10 @@
     {
       "Id": "awakening_min_age",
       "Type": "SLIDER",
-      "IntVal": 16,
-      "MinIntVal": 0,
-      "MaxIntVal": 100,
-      "StepIntVal": 1,
+      "FloatVal": 16.0,
+      "MinVal": 0.0,
+      "MaxVal": 100.0,
+      "Step": 1.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningMinAge"
     }
   ],
@@ -66,10 +66,10 @@
     {
       "Id": "auto_promotion_max_rank",
       "Type": "SLIDER",
-      "IntVal": 12,
-      "MinIntVal": 0,
-      "MaxIntVal": 12,
-      "StepIntVal": 1,
+      "FloatVal": 12.0,
+      "MinVal": 0.0,
+      "MaxVal": 12.0,
+      "Step": 1.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotionMaxRank"
     },
     {
@@ -138,10 +138,10 @@
     {
       "Id": "max_summoned_units",
       "Type": "SLIDER",
-      "IntVal": 50,
-      "MinIntVal": 0,
-      "MaxIntVal": 500,
-      "StepIntVal": 10,
+      "FloatVal": 50.0,
+      "MinVal": 0.0,
+      "MaxVal": 500.0,
+      "Step": 10.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetMaxSummonedUnits"
     }
   ],
@@ -186,10 +186,10 @@
     {
       "Id": "max_tracked_actors",
       "Type": "SLIDER",
-      "IntVal": 500,
-      "MinIntVal": 50,
-      "MaxIntVal": 5000,
-      "StepIntVal": 50,
+      "FloatVal": 500.0,
+      "MinVal": 50.0,
+      "MaxVal": 5000.0,
+      "Step": 50.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetMaxTrackedActors"
     },
     {
@@ -261,15 +261,19 @@
       "Id": "event_log_awaken_min_talent",
       "Type": "SLIDER",
       "FloatVal": 3.0,
-      "MinValue": 0,
-      "MaxValue": 6
+      "MinVal": 0.0,
+      "MaxVal": 6.0,
+      "Step": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogAwakenMinTalent"
     },
     {
       "Id": "event_log_promotion_min_rank",
       "Type": "SLIDER",
       "FloatVal": 7.0,
-      "MinValue": 0,
-      "MaxValue": 14
+      "MinVal": 0.0,
+      "MaxVal": 14.0,
+      "Step": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogPromotionMinRank"
     },
     {
       "Id": "event_log_fusion_enabled",
