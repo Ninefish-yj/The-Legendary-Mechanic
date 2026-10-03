@@ -12,6 +12,9 @@ namespace SuperMech.Code
         private const string FileExt = ".json";
         private const int CurrentSaveVersion = 3;
 
+        /// <summary>已首次突破的阶位（全图只记一次，参考西幻mod首位突破记录）</summary>
+        public static readonly HashSet<string> FirstBreakthroughRanks = new HashSet<string>();
+
         /// <summary>
         /// 存档迁移：将旧版本存档数据迁移到当前版本。
         /// 缺失字段自动使用类定义中的默认值。
@@ -49,6 +52,8 @@ namespace SuperMech.Code
             public List<string> unlockedRecipes = new List<string>(); // 已解锁融合配方
             // === v0.37.0 超神遗力还原 ===
             public string worldLegacyPool = "";   // 世界游离遗力池（JSON序列化）
+            // === v0.39.7 首位突破记录 ===
+            public List<string> firstBreakthroughRanks = new List<string>(); // 已首次突破的阶位（全图只记一次）
         }
 
         [Serializable]
@@ -257,6 +262,8 @@ namespace SuperMech.Code
                 data.civilizationData = SuperMechCivilizationData.Serialize();
                 // 保存世界遗力池（v0.37.0）
                 data.worldLegacyPool = SerializeWorldLegacyPool();
+                // 保存首位突破记录（v0.39.7）
+                data.firstBreakthroughRanks = new List<string>(FirstBreakthroughRanks);
 
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
@@ -303,6 +310,11 @@ namespace SuperMech.Code
                 SuperMechCosmicIteration.Initialize(data.cosmicIteration, data.civilizationData);
                 // 加载世界遗力池（v0.37.0）
                 SuperMechTranscendence.SetWorldLegacyPool(DeserializeWorldLegacyPool(data.worldLegacyPool));
+                // 加载首位突破记录（v0.39.7）
+                FirstBreakthroughRanks.Clear();
+                if (data.firstBreakthroughRanks != null)
+                    foreach (var rank in data.firstBreakthroughRanks)
+                        FirstBreakthroughRanks.Add(rank);
 
                 Debug.Log($"[超神机械师] 存档加载：{data.actors.Count}个单位数据待恢复");
             }

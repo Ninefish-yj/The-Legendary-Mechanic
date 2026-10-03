@@ -203,8 +203,15 @@ namespace SuperMech.Code
                     else
                         Debug.Log($"[超神机械师]【阶位提升】{a.name} 晋升{rankName}，气力Lv{qiLv}，实力层次稳步提升");
 
-                    // v0.28.0 UI重构：推送阶位提升事件到原生事件日志
-                    SMEventLogger.LogPromotion(a, oldRankName, rankName, onar, targetIdx);
+                    // v0.39.7 首位突破记录：全图第一次突破到该阶位才记录日志+给奖励
+                    bool isFirstBreakthrough = !SuperMechSaveData.FirstBreakthroughRanks.Contains(rankName);
+                    if (isFirstBreakthrough)
+                    {
+                        SuperMechSaveData.FirstBreakthroughRanks.Add(rankName);
+                        SMEventLogger.LogPromotion(a, oldRankName, rankName, onar, targetIdx);
+                        ApplyFirstBreakthroughBonus(a, targetIdx);
+                        Debug.Log($"[超神机械师]【首位突破】{a.name} 是全图第一个突破到{rankName}的单位！");
+                    }
                 }
 
                 ApplyRankStats(a, targetIdx);
@@ -218,6 +225,27 @@ namespace SuperMech.Code
                         SuperMechDivinity.AwardAdvancementPoints(a);
                 }
             }
+        }
+
+        /// <summary>首位突破奖励（参考西幻mod：全图第一个突破到该阶位的单位获得额外加成）</summary>
+        private static void ApplyFirstBreakthroughBonus(Actor a, int rankIdx)
+        {
+            if (a == null) return;
+            // 按阶位高低给予不同的潜能点奖励
+            int bonusPoints = rankIdx switch
+            {
+                >= 14 => 50,   // X阶 超神级
+                >= 11 => 30,   // S阶以上
+                >= 9 => 20,    // A阶以上
+                >= 7 => 10,    // B阶以上
+                >= 5 => 5,     // C阶以上
+                _ => 2         // D阶以下
+            };
+            SuperMechPotential.AddPotential(a, bonusPoints);
+            // 额外气力加成
+            float qiBonus = rankIdx * 100f;
+            SuperMechQi.AddQi(a, qiBonus);
+            Debug.Log($"[超神机械师] 首位突破奖励：{a.name} 获得{bonusPoints}潜能点+{qiBonus}气力");
         }
 
         private static void CheckDivinityTrigger(Actor a)
