@@ -182,6 +182,11 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (intelBonus - 1f));
                     }
+                    // v0.69.0 宇宙异兽凶性（评级标准之外的宇宙威胁，伤害×3）
+                    if (attacker.hasTrait(SuperMechCosmicBeast.BeastTrait))
+                    {
+                        target.data.health -= (int)(pDamage * (SuperMechCosmicBeast.BeastDamageMult - 1f));
+                    }
                     // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
                     float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
                     if (proxyBonus != 1f)

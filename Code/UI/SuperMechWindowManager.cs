@@ -29,6 +29,7 @@ namespace SuperMech.Code
         public static void OpenGenetics() { ToggleWindow("genetics", "sm_ui_genetics_title", 640, 520, DrawGeneticsContent); }
         public static void OpenStarGate() { ToggleWindow("stargate", "sm_ui_stargate_title", 640, 520, DrawStarGateContent); }
         public static void OpenIntel() { ToggleWindow("intel", "sm_ui_intel_title", 640, 520, DrawIntelContent); }
+        public static void OpenCosmicBeast() { ToggleWindow("beast", "sm_ui_beast_title", 640, 520, DrawCosmicBeastContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
@@ -162,6 +163,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechIntelView>();
+        }
+
+        private static void DrawCosmicBeastContent(RectTransform content)
+        {
+            var go = new GameObject("CosmicBeastView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechCosmicBeastView>();
         }
 
         public static void CloseAll()

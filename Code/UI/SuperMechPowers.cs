@@ -192,6 +192,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 情报按钮失败: {e.Message}"); }
             }
 
+            // 5f. v0.69.0 宇宙异兽观测站（窗口按钮）
+            if (PowerButton.get("sm_beast_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconBeast")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_beast_center", () => SuperMechWindowManager.OpenCosmicBeast(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_beast_title", "sm_ui_beast_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异兽按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {

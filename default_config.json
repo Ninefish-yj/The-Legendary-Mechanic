@@ -29,6 +29,20 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetIntelEnabled"
+    },
+    {
+      "Id": "cosmic_beast_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCosmicBeastEnabled"
+    },
+    {
+      "Id": "cosmic_beast_interval",
+      "Type": "SLIDER",
+      "FloatVal": 500.0,
+      "MinFloatVal": 150.0,
+      "MaxFloatVal": 800.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCosmicBeastInterval"
     }
   ],
   "Awakening": [

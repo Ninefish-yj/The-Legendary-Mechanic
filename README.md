@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.68.0-alpha**（Alpha内测阶段）
+**v0.69.0-alpha**（Alpha内测阶段）
 
 > 版本号说明：从0.0.0开始按实际功能里程碑计算，大功能递增 minor，修正递增 patch。v0.49.x 为大整理阶段，v0.50+ 为持续功能开发。
 
@@ -105,6 +105,7 @@
 
 | 版本 | 主要更新 |
 |---|---|
+| **v0.69.0** | 宇宙异兽体系（原著：评级标准之外的宇宙威胁/虚空生物/宇宙生命）：①波次入侵——异兽周期性从地图边缘（虚空）生成并入侵，向文明聚居区移动（原著：宇宙深空威胁）；②强度成长——基础500+生命、伤害×3（挂战斗补丁特质sm_cosmic_beast），击杀越多入侵越频繁（间隔500→150）强度越高；③击杀收益——异兽死亡位置附近最强单位获得潜能奖励（10+强度×5，原著：异兽浑身是宝）；④异兽不入势力/王国（评级标准之外，不影响文明等级）；⑤UI——神权栏「宇宙异兽观测站」窗口（存活异兽/累计击杀/倒计时/异兽追踪列表）；⑥存档/配置：SaveData.cosmicBeasts+`cosmic_beast_enabled`+`cosmic_beast_interval`；新增CosmicBeast.cs/CosmicBeastView.cs，修改CombatPatches.cs/Powers.cs/WindowManager.cs/UnifiedTick.cs/SaveData.cs/Config.cs/default_config.json/cz.json |
 | **v0.68.0** | 势力情报系统（原著：十三局/风眼上下线/暗网情报中转）：①情报产出——每Tick按文明科技等级与成员规模自动积累情报点（上限1000）；②侦察建档——消耗情报点建立/深化目标势力威胁档案（威胁评级X~C按最高阶位+成员数评估，原著：重大威胁目标档案）；③渗透——对目标势力渗透获得情报优势，其敌对势力对其伤害+5%/层（挂接战斗补丁，原著：知己知彼）；④破坏行动——消耗情报点切断目标势力全部贸易通道（原著：战争是全面博弈，切断对手经济线），可恢复；⑤UI——神权栏「情报中心」窗口（势力情报概览+侦察/渗透/破坏/恢复按钮）；⑥存档/配置：SaveData.intel+`intel_enabled`；新增Intel.cs/IntelView.cs，修改CombatPatches.cs/Powers.cs/WindowManager.cs/UnifiedTick.cs/SaveData.cs/Config.cs/default_config.json/cz.json |
 | **v0.67.0** | 星际航道·星门机制（原著第797/842/1014章：跨星域星门唯一稳定快速方法/技术门槛/秘密星门匿踪）：①星门建造——超星团级及以上文明可建造星门（原著：星团级无此技术），宇宙级（三大文明）星门零偏差；②航道加速——建有星门的势力，贸易商队走星际航道航速×2.5（匿踪×2.0，原著：大幅缩短行程）；③跳跃偏差——非宇宙级星门每次跳跃5%概率定位偏差、行程回退30%（原著：距离越长越难精确定位）；④秘密星门——星门可匿踪切换（原著第842章：隐形装置掩盖能量反应）；⑤UI——神权栏「星门控制台」窗口（势力列表/文明等级/建造/匿踪切换/航道说明）；⑥存档/配置：SaveData.starGates+`star_gate_enabled`；新增StarGate.cs/StarGateView.cs，修改Trade.cs（商队走星门）/Civilization.cs（新增GetCivLevelFromKingdom）/Powers.cs/WindowManager.cs/UnifiedTick.cs/SaveData.cs/Config.cs/default_config.json/cz.json |
 | **v0.66.0** | 基因科研项目（原著：基因链是力量基础/进化方块16层优化/基因升华概念）：①基因优化——单位消耗自身潜能点（成本10+层数×5）提升基因链层数，每层+1.5%伤害、-0.5%受击、+2潜能（原著：基因药剂提升潜力）；②基因升华——基因链≥8层可尝试向更高基因阶段进化（契合度45%~90%，原著：低契合=基因崩溃），成功+15%伤害/+5%减伤/次，失败基因链掉2层（崩溃记录）；③文明基因科研——科技等级自动驱动科研进度，完成后全体成员免费+1基因链（原著：文明级生物科技惠及文明）；④攻防加成挂接CombatPatches；⑤神权栏「基因科研中心」按钮+窗口（文明进度+基因数据库Top20，行内优化/升华按钮，消耗该单位潜能）；⑥存档/配置：SaveData.genetics+`genetics_enabled`；新增Genetics.cs/GeneticsView.cs，修改CombatPatches.cs/Powers.cs/WindowManager.cs/UnifiedTick.cs/SaveData.cs/Config.cs/default_config.json/cz.json |

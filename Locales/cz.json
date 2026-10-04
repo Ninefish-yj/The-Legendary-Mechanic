@@ -4514,5 +4514,18 @@
   "sm_ui_intel_disrupt": "破坏",
   "sm_ui_intel_restore": "恢复",
   "sm_config_780": "势力情报",
-  "sm_config_781": "允许情报产出与侦察/渗透/破坏行动（原著：十三局/风眼/暗网情报博弈）"
+  "sm_config_781": "允许情报产出与侦察/渗透/破坏行动（原著：十三局/风眼/暗网情报博弈）",
+  "sm_ui_beast_title": "宇宙异兽观测站",
+  "sm_ui_beast_subtitle": "评级标准之外的宇宙威胁：虚空生物/宇宙生命从世界边缘入侵（原著设定）",
+  "sm_ui_beast_active": "当前存活异兽",
+  "sm_ui_beast_killed": "累计击杀",
+  "sm_ui_beast_next": "下一波入侵倒计时",
+  "sm_ui_beast_hint": "异兽每Tick从地图边缘（虚空）入侵，向文明聚居区移动；击杀可获得潜能奖励，击杀越多入侵越频繁、强度越高。",
+  "sm_ui_beast_log": "异兽追踪",
+  "sm_ui_beast_none": "当前没有活跃的宇宙异兽",
+  "sm_ui_beast_health": "生命",
+  "sm_config_782": "宇宙异兽",
+  "sm_config_783": "允许宇宙异兽从世界边缘入侵（原著：评级标准之外的宇宙威胁）",
+  "sm_config_784": "异兽入侵间隔",
+  "sm_config_785": "宇宙异兽入侵间隔（tick，150~800，默认500）"
 }
