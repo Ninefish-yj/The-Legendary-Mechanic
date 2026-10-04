@@ -130,25 +130,32 @@ if [ -n "$DANGEROUS_CALLS" ]; then
 fi
 
 # 检查6: 可能的null引用链 - a.b.c形式没有null检查（排除枚举/静态类/命名空间/数据访问/我们自己的类/枚举赋值/transform）
-NULL_CHAIN=$(grep -rnP '\w+\.\w+\.\w+\s*[;=]' "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "//\|try\|catch\|null\|?\.\|System\.\|UnityEngine\.\|NeoModLoader\.\|SuperMech\.\|Code\.\|get_\|set_\|typeof\|nameof\|Mathf\.\|Debug\.\|LogService\.\|Resources\.\|AssetManager\.\|World\.\|Time\.\|GUI\.\|GUILayout\.\|PlayerConfig\.\|Config\.\|TalentType\.\|ProfessionType\.\|ClassMech\|ClassMartial\|ClassPsi\|ClassMage\|ClassMind\|All\.\|Count\b\|\.Data\.\|\.data\.\|\.sanctuary\.\|frame\.\|RootRt\|ContentParent\|\.Type\.\|\.FitMode\.\|\.ScaleMode\.\|\.transform\.\|subspecies.name" | head -10)
+NULL_CHAIN=$(grep -rnP '\w+\.\w+\.\w+\s*[;=]' "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "//\|try\|catch\|null\|?\.\|System\.\|UnityEngine\.\|NeoModLoader\.\|SuperMech\.\|Code\.\|get_\|set_\|typeof\|nameof\|Mathf\.\|Debug\.\|LogService\.\|Resources\.\|AssetManager\.\|World\.\|Time\.\|GUI\.\|GUILayout\.\|PlayerConfig\.\|Config\.\|TalentType\.\|ProfessionType\.\|ClassMech\|ClassMartial\|ClassPsi\|ClassMage\|ClassMind\|All\.\|Count\b\|\.Data\.\|\.data\.\|\.sanctuary\.\|frame\.\|RootRt\|ContentParent\|\.Type\.\|\.FitMode\.\|\.ScaleMode\.\|\.transform\.\|subspecies.name\|current_tile\.\|movementType\|MovementType\|ScrollRect\.MovementType\|anchoredPosition\|sizeDelta\|\.rect\.\|Transition\b\|CivLevel\b\|\.progress\b\|kv\.Value\." | head -10)
 if [ -n "$NULL_CHAIN" ]; then
     echo "  ⚠️  发现可能的null引用链（a.b.c，建议加null检查）:"
     echo "$NULL_CHAIN"
     API_WARNINGS=$((API_WARNINGS+1))
 fi
 
-# 检查7: 创建外部对象后未验证关键字段
-# 只检查PowerButtonCreator（可能返回null），不检查Object.Instantiate（参数非null则返回非null）
-UNVERIFIED_CREATE=$(grep -rn "PowerButtonCreator\." "$MOD_DIR/Code" --include="*.cs" 2>/dev/null | grep -v "//" | while read line; do
-    file=$(echo "$line" | cut -d: -f1)
-    linenum=$(echo "$line" | cut -d: -f2)
-    nextline=$((linenum+1))
-    nextcontent=$(sed -n "${nextline}p" "$file" 2>/dev/null)
-    if echo "$nextcontent" | grep -q "if.*!= null\|if.*== null\|VerifyButtonFields\|try"; then
-        continue
-    fi
-    echo "$line"
-done | head -10)
+# 检查7: 创建外部对象后未验证关键字段（5行窗口，兼容多行lambda）
+UNVERIFIED_CREATE=$(python3 << 'PYEOF2'
+import re, os
+mod_dir = os.environ.get('MOD_DIR', '.')
+hits = []
+for root, dirs, files in os.walk(f'{mod_dir}/Code'):
+    for f in files:
+        if not f.endswith('.cs'): continue
+        p = os.path.join(root, f)
+        lines = open(p, encoding='utf-8').read().split('\n')
+        for i, ln in enumerate(lines):
+            if 'PowerButtonCreator.' in ln and '//' not in ln.split('PowerButtonCreator.')[0]:
+                window = '\n'.join(lines[i:i+6])
+                if re.search(r'if.*(!=|==) null|VerifyButtonFields|try\s*[{(]', window):
+                    continue
+                hits.append(f"{p}:{i+1}:{ln.strip()[:60]}")
+print('\n'.join(hits[:10]))
+PYEOF2
+)
 if [ -n "$UNVERIFIED_CREATE" ]; then
     echo "  ⚠️  发现创建外部对象后未验证（建议创建后检查关键字段）:"
     echo "$UNVERIFIED_CREATE"
@@ -275,7 +282,7 @@ MISSING_HARMONY=$(python3 << 'PYEOF'
 import re, os, glob
 
 mod_dir = os.environ.get('MOD_DIR', '.')
-ref_dir = '/home/user/Doubao/chats/38443538092133890/gz_ref'
+ref_dir = os.path.join(os.path.dirname(mod_dir), 'wb_src', 'gz_ref')
 
 # 扫描所有HarmonyPatch
 patches = []

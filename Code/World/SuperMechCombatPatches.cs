@@ -7,6 +7,7 @@ namespace SuperMech.Code
     [HarmonyPatch]
     public static class SuperMechCombatPatches
     {
+        private static bool _warnedSkill; // 一次性异常警告
         private static bool _prefixErrorLogged;
         private static bool _postfixErrorLogged;
         private static readonly HashSet<AttackType> PhysicalAttacks = new HashSet<AttackType>
@@ -87,7 +88,7 @@ namespace SuperMech.Code
                 // v0.44.0 技能释放：攻击者攻击时有概率触发主动技能
                 if (attacker != null && attacker.isAlive() && Random.value < 0.3f)
                 {
-                    try { SuperMechSkillRuntime.TryCastSkill(attacker, target); } catch { }
+                    try { SuperMechSkillRuntime.TryCastSkill(attacker, target); } catch (System.Exception e) { if (!_warnedSkill) { _warnedSkill = true; Debug.LogWarning($"[超神机械师] 技能释放异常(仅首次): {e.Message}"); } }
                 }
 
                 // v0.47.0 超神内空间：X阶单位战斗时放出内空间

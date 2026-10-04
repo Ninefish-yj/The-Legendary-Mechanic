@@ -10,6 +10,7 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechCosmicIteration
     {
+        private static bool _warnedClear; // 一次性异常警告
         /// <summary>迭代阶段（原著宇宙演化阶段）</summary>
         public enum IterationPhase
         {
@@ -299,7 +300,7 @@ namespace SuperMech.Code
 
             foreach (var a in toKill)
             {
-                try { a.die(pDestroy: true, AttackType.None, pCountDeath: false); } catch { }
+                try { a.die(pDestroy: true, AttackType.None, pCountDeath: false); } catch (System.Exception e) { if (!_warnedClear) { _warnedClear = true; Debug.LogWarning($"[超神机械师] 大重启清场异常(仅首次): {e.Message}"); } }
                 killed++;
             }
 

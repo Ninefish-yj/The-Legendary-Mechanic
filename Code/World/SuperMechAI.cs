@@ -12,6 +12,7 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechAI
     {
+        private static bool _warnedReflect, _warnedMove; // 一次性异常警告
         // === 自动竞争 ===
         /// <summary>记录每个单位上次参与竞争的年龄（避免频繁竞争）</summary>
         private static readonly Dictionary<long, int> _lastCompetitionAge = new Dictionary<long, int>();
@@ -266,7 +267,7 @@ namespace SuperMech.Code
         private static void SetAttackTarget(Actor a, BaseSimObject target, System.Reflection.FieldInfo field)
         {
             if (field == null || a == null || target == null) return;
-            try { field.SetValue(a, target); } catch { }
+            try { field.SetValue(a, target); } catch (System.Exception e) { if (!_warnedReflect) { _warnedReflect = true; Debug.LogWarning($"[超神机械师] AI反射设置攻击目标异常(仅首次): {e.Message}"); } }
         }
 
         private static object GetAttackTarget(Actor a, System.Reflection.FieldInfo field)
@@ -285,7 +286,7 @@ namespace SuperMech.Code
                     var tile = target.current_tile.neighbours[Random.Range(0, target.current_tile.neighbours.Length)];
                     a.moveTo(tile);
                 }
-            } catch { }
+            } catch (System.Exception e) { if (!_warnedMove) { _warnedMove = true; Debug.LogWarning($"[超神机械师] AI移动到附近异常(仅首次): {e.Message}"); } }
         }
 
         /// <summary>查找正在攻击目标的单位</summary>

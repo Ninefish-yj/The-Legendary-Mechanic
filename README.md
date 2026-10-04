@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.75.8-alpha**（Alpha内测阶段）
+**v0.75.9-alpha**（Alpha内测阶段）
 
 > 版本号说明：从0.0.0开始按实际功能里程碑计算，大功能递增 minor，修正递增 patch。v0.49.x 为大整理阶段，v0.50+ 为持续功能开发。
 
@@ -100,6 +100,7 @@
 ---
 
 ## 更新记录
+| v0.75.9 | 修复precompile_check.sh：① Harmony参考路径从失效绝对路径改为MOD_DIR相对推导（原路径为另一会话目录，导致5个补丁目标全部误报“类不存在”；改为本仓库 wb_src/gz_ref 后按真实反编译源码核验 Actor.die/UnitWindow.showMainInfo/showStatsRows/KingdomWindow.showStatsRows 全部真实存在）② API检查误报规则修正（null链排除 current_tile/movementType/anchoredPosition/kv.Value 等已判空与枚举赋值；检查7重写为5行窗口兼容多行lambda）③ 全仓19处空catch加固：catch加异常参数+仅首次Debug.LogWarning（InnerSpace 3/SkillRuntime 3/AI 2/Faction 2/CombatPatches 1/CosmicIteration 1/Legion 2/UI View 5），防静默吞错又防刷屏 | 2026-10-04 |
 | v0.75.8 | EsGod内部标识符彻底清理（按第一版口径，不再迁就旧存档）：枚举SoulEscaped→Sealed、字段soulEscapes→sealCount、常量SoulEscapeCooldown→SealCooldown；神权栏17按钮全量核验（回调/系统均为真实实现，无空壳无残留） | 2026-10-04 |
 | v0.75.7 | 清理废弃设计残留：删除"锻炉权限树"命名与"原著第287章"错误引用（系统更名机械权限体系），黑星军团"军衔"措辞全部改为"贡献星级"，UI标题/代码注释/日志同步；EsGod内部标识符保留（旧存档兼容） | 2026-10-04 |
 | v0.75.6 | 修复实机报错：补齐22个本地化键（职业特质/知识树/职业分支/系别名），修正5个键名拼写（sm_class_me→mech、sm_qi_me→mech、sm_aspect_me→mech、sm_san_civ_aievement→achievement、sm_ui_bran→branch）；本地化缺失12→0 | 2026-10-04 |

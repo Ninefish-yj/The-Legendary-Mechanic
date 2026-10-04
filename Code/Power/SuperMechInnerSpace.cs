@@ -10,6 +10,7 @@ namespace SuperMech.Code
     public static class SuperMechInnerSpace
     {
         private static readonly Dictionary<long, DomainState> _activeDomains = new Dictionary<long, DomainState>();
+        private static bool _warnedPulse, _warnedHit, _warnedEffects; // 一次性异常警告（防刷屏）
 
         public class DomainState
         {
@@ -198,7 +199,7 @@ namespace SuperMech.Code
                 int cx = caster.current_tile.x;
                 int cy = caster.current_tile.y;
                 float maxHp = 0f;
-                try { maxHp = caster.getMaxHealth(); } catch { }
+                try { maxHp = caster.getMaxHealth(); } catch (System.Exception e) { if (!_warnedPulse) { _warnedPulse = true; Debug.LogWarning($"[超神机械师] 内空间脉冲取生命异常(仅首次): {e.Message}"); } }
                 if (maxHp <= 0f) continue;
 
                 float dmg = maxHp * SuperMechFormulas.InnerSpacePulseFraction;
@@ -213,7 +214,7 @@ namespace SuperMech.Code
                     if (enemy.kingdom != null && caster.kingdom != null && enemy.kingdom.id == caster.kingdom.id) continue;
                     int dist = Mathf.Abs(enemy.current_tile.x - cx) + Mathf.Abs(enemy.current_tile.y - cy);
                     if (dist > SuperMechFormulas.InnerSpacePulseRange) continue;
-                    try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch { }
+                    try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch (System.Exception e) { if (!_warnedHit) { _warnedHit = true; Debug.LogWarning($"[超神机械师] 内空间脉冲伤害异常(仅首次): {e.Message}"); } }
                     // 标记敌人处于领域内，施加负面效果（原著：领域带来负面影响）
                     _domainSuppressed[enemy.id] = Time.time + 2f;
                 }
@@ -242,7 +243,7 @@ namespace SuperMech.Code
                 {
                     actor.stats["speed"] *= SuperMechFormulas.InnerSpaceEnemySpeedMul;
                     actor.stats["attack_speed"] *= SuperMechFormulas.InnerSpaceEnemyAttackSpeedMul;
-                } catch { }
+                } catch (System.Exception e) { if (!_warnedEffects) { _warnedEffects = true; Debug.LogWarning($"[超神机械师] 内空间负面效果异常(仅首次): {e.Message}"); } }
             }
         }
 

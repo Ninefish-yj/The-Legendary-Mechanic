@@ -12,6 +12,7 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechLegion
     {
+        private static bool _warnedMove, _warnedReflect; // 一次性异常警告
         public const string CommanderTrait = "sm_legion_commander"; // 军团长
         public const string MemberTrait = "sm_legion_member";      // 军团成员
         public const string KnightTrait = "sm_blackstar_knight";   // 黑星十八骑（原著#534：排行榜前18名5星成员）
@@ -294,7 +295,7 @@ namespace SuperMech.Code
                     a.moveTo(tile);
                 }
             }
-            catch { }
+            catch (System.Exception e) { if (!_warnedMove) { _warnedMove = true; Debug.LogWarning($"[超神机械师] 军团AI移动异常(仅首次): {e.Message}"); } }
         }
 
         private static void SetAttackTarget(Actor a, Actor target)
@@ -306,7 +307,7 @@ namespace SuperMech.Code
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 if (field != null) field.SetValue(a, target);
             }
-            catch { }
+            catch (System.Exception e) { if (!_warnedReflect) { _warnedReflect = true; Debug.LogWarning($"[超神机械师] 军团AI反射异常(仅首次): {e.Message}"); } }
         }
 
         private static Actor FindActorById(long id)

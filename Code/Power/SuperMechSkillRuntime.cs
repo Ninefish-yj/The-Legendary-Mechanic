@@ -10,6 +10,7 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, Dictionary<string, float>> _activeBuffs = new Dictionary<long, Dictionary<string, float>>();
         private static readonly Dictionary<long, Dictionary<string, float>> _dotEffects = new Dictionary<long, Dictionary<string, float>>(); // v0.58.0 持续伤害
         private static readonly Dictionary<long, float> _shields = new Dictionary<long, float>(); // v0.58.0 护盾值
+        private static bool _warnedAoe, _warnedDot; // 一次性异常警告（防刷屏）
 
         /// <summary>战斗中尝试释放技能，返回是否释放了技能</summary>
         public static bool TryCastSkill(Actor attacker, Actor target)
@@ -98,7 +99,7 @@ namespace SuperMech.Code
                     }
                 }
             }
-            catch { }
+            catch (System.Exception e) { if (!_warnedAoe) { _warnedAoe = true; Debug.LogWarning($"[超神机械师] 技能范围结算异常(仅首次): {e.Message}"); } }
         }
 
         private static void ApplyBuff(Actor target, SuperMechSkills.SkillDef def)
@@ -164,7 +165,7 @@ namespace SuperMech.Code
                 // 存储伤害值（用skillId映射）
                 if (!_dotDamageValues.ContainsKey(def.id)) _dotDamageValues[def.id] = dotDamage;
             }
-            catch { }
+            catch (System.Exception e) { if (!_warnedDot) { _warnedDot = true; Debug.LogWarning($"[超神机械师] 持续伤害异常(仅首次): {e.Message}"); } }
         }
 
         private static readonly Dictionary<string, float> _dotDamageValues = new Dictionary<string, float>();
@@ -177,7 +178,7 @@ namespace SuperMech.Code
                 float heal = target.getMaxHealth() * def.effectValue;
                 target.data.health = Mathf.Min(target.getMaxHealth(), target.data.health + (int)heal);
             }
-            catch { }
+            catch (System.Exception e) { if (!_warnedAoe) { _warnedAoe = true; Debug.LogWarning($"[超神机械师] 治疗结算异常(仅首次): {e.Message}"); } }
         }
 
         /// <summary>召唤效果（v0.45.0 实装）：在施法者身边生成机械系召唤单位，阶位约低一阶，短寿命消散</summary>

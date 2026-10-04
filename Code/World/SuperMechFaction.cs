@@ -10,6 +10,7 @@ namespace SuperMech.Code
     /// </summary>
     public static class SuperMechFaction
     {
+        private static bool _warnedSplit, _warnedMerge; // 一次性异常警告
         public enum FactionRelation { Neutral = 0, Allied = 1, Hostile = 2 }
 
         /// <summary>v0.61.0 势力政体：原著中势力形式多样（黑星军团=领袖制，超A级协会=议会制，虚灵教派=宗教制）</summary>
@@ -184,7 +185,7 @@ namespace SuperMech.Code
                 SetRelation(original.id, newFaction.id, FactionRelation.Hostile);
                 Debug.Log($"[超神机械师] 势力分裂：{original.name} → {newFaction.name}（{rebel.getName()}叛变）");
             }
-            catch { }
+            catch (System.Exception e) { if (!_warnedSplit) { _warnedSplit = true; Debug.LogWarning($"[超神机械师] 势力分裂异常(仅首次): {e.Message}"); } }
         }
 
         /// <summary>v0.60.0 势力覆灭：领袖死亡且无A阶以上继任者时解散</summary>
@@ -630,7 +631,7 @@ namespace SuperMech.Code
                 _factions.Remove(target.id);
                 Debug.Log($"[超神机械师] 势力吞并：{absorber.name} 吞并 {target.name}（吸收{absorbed}人）");
             }
-            catch { }
+            catch (System.Exception e) { if (!_warnedMerge) { _warnedMerge = true; Debug.LogWarning($"[超神机械师] 势力吞并异常(仅首次): {e.Message}"); } }
         }
 
         /// <summary>获取势力等级</summary>
