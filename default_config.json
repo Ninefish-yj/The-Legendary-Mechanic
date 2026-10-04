@@ -23,6 +23,12 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetStarGateEnabled"
+    },
+    {
+      "Id": "intel_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetIntelEnabled"
     }
   ],
   "Awakening": [

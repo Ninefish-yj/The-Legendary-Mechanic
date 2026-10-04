@@ -4499,5 +4499,20 @@
   "sm_ui_stargate_show": "显现",
   "sm_ui_stargate_info": "原著设定：跨星域星门大幅缩短行程，是唯一稳定快速跨星域的方法。星门是技术门槛——星团级文明无法打造，超星团级文明拥有技术，三大文明（宇宙级）更禁止其他文明打造跨星域星门。星门跨越距离越长越难精确定位，容易出现偏差；秘密星门站可用隐形装置匿踪。本模组：超星团级及以上文明可建造星门，商队走星际航道航速×2.5（匿踪×2.0），宇宙级文明星门零偏差，其余星门有5%跳跃偏差。",
   "sm_config_778": "星际航道·星门",
-  "sm_config_779": "允许超星团级及以上文明建造星门，贸易商队走星际航道缩短行程（原著第797/842章）"
+  "sm_config_779": "允许超星团级及以上文明建造星门，贸易商队走星际航道缩短行程（原著第797/842章）",
+  "sm_ui_intel_title": "情报中心",
+  "sm_ui_intel_subtitle": "情报是势力的耳目：侦察建档、渗透渗透网、破坏行动（原著：十三局/风眼/暗网）",
+  "sm_ui_intel_factions": "势力情报",
+  "sm_ui_intel_count": "已建档势力",
+  "sm_ui_intel_empty": "当前世界还没有可侦察的势力",
+  "sm_ui_intel_no_recon": "未侦察（点击侦察建档）",
+  "sm_ui_intel_points": "情报点",
+  "sm_ui_intel_infiltrate_short": "渗透",
+  "sm_ui_intel_disrupted": "贸易线被切断！",
+  "sm_ui_intel_recon": "侦察",
+  "sm_ui_intel_infiltrate": "渗透",
+  "sm_ui_intel_disrupt": "破坏",
+  "sm_ui_intel_restore": "恢复",
+  "sm_config_780": "势力情报",
+  "sm_config_781": "允许情报产出与侦察/渗透/破坏行动（原著：十三局/风眼/暗网情报博弈）"
 }

@@ -99,6 +99,7 @@ namespace SuperMech.Code
                 SafeRun("贸易系统", () => SuperMechTrade.TickTradeRoutes(1.25f));
                 SafeRun("基因科研", () => SuperMechGenetics.TickGenetics(1.25f));
                 SafeRun("星门航道", () => SuperMechStarGate.TickStarGates());
+                SafeRun("情报系统", () => SuperMechIntel.TickIntel(1.25f));
             }
 
             float now = Time.time;
@@ -201,6 +202,7 @@ namespace SuperMech.Code
             try { SuperMechTrade.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTrade"); }
             try { SuperMechGenetics.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechGenetics"); }
             try { SuperMechStarGate.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarGate"); }
+            try { SuperMechIntel.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechIntel"); }
         }
     }
 }

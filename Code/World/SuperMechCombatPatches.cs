@@ -176,6 +176,12 @@ namespace SuperMech.Code
                     {
                         target.data.health += (int)(pDamage * (1f - geneDefense));
                     }
+                    // v0.68.0 情报优势伤害加成（原著：知己知彼，被渗透势力受敌对攻击更疼）
+                    float intelBonus = SuperMechIntel.GetIntelDamageBonus(attacker, target);
+                    if (intelBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (intelBonus - 1f));
+                    }
                     // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
                     float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
                     if (proxyBonus != 1f)

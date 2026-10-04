@@ -175,6 +175,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星门按钮失败: {e.Message}"); }
             }
 
+            // 5e. v0.68.0 情报中心（窗口按钮）
+            if (PowerButton.get("sm_intel_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconIntel")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_intel_center", () => SuperMechWindowManager.OpenIntel(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_intel_title", "sm_ui_intel_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 情报按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {
