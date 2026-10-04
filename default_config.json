@@ -63,6 +63,12 @@
       "MinFloatVal": 20.0,
       "MaxFloatVal": 600.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerSpawnIntervalTicks"
+    },
+    {
+      "Id": "legion_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetLegionEnabled"
     }
   ],
   "Awakening": [

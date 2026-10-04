@@ -64,6 +64,8 @@ namespace SuperMech.Code
         public static bool PlayerEnabled = true;
         /// <summary>降临者生成间隔（tick，默认60）</summary>
         public static int PlayerSpawnIntervalTicks = 60;
+        /// <summary>黑星军团·军团命令总开关（v0.72.0，原著：黑星军团信用积分/军团通缉/一人即军团）</summary>
+        public static bool LegionEnabled = true;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -272,6 +274,7 @@ namespace SuperMech.Code
         public static void SetCombatEnhanceEnabled(bool val) { CombatEnhanceEnabled = val; }
         public static void SetPlayerEnabled(bool val) { PlayerEnabled = val; }
         public static void SetPlayerSpawnIntervalTicks(int val) { PlayerSpawnIntervalTicks = Mathf.Clamp(val, 20, 600); }
+        public static void SetLegionEnabled(bool val) { LegionEnabled = val; }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }

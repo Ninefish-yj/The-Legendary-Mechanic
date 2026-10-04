@@ -220,6 +220,12 @@ namespace SuperMech.Code
                     }
                     // v0.70.x 控制判定（精神眩晕/生理眩晕/力量碾压，原著第7/143章）
                     SuperMechCombatEnhance.TryApplyControl(attacker, target);
+                    // v0.72.0 黑星军团加成：军团长军团流加成×成员军衔加成（原著：一人即军团/机械帝皇军团流）
+                    float legionBonus = SuperMechLegion.GetCommanderBonus(attacker) * SuperMechLegion.GetMemberBonus(attacker);
+                    if (legionBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (legionBonus - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
@@ -462,6 +468,9 @@ namespace SuperMech.Code
                 {
                     SuperMechPlayer.OnPlayerKill(killer, target);
                 }
+
+                // v0.72.0 黑星军团：军团成员击杀计入信用积分/军衔成长/军团长收益
+                SuperMechLegion.OnLegionKill(killer, target);
 
                 if (SuperMechAwakened.IsAwakened(killer))
                 {
