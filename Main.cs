@@ -22,6 +22,7 @@ namespace SuperMech
             ModPath = GetDeclaration().FolderPath;
             Debug.Log("[超神机械师] 模组加载: " + ModPath);
             SuperMechConfig.Init();
+            SuperMechConfig.ApplyFromNML(GetConfig()); // v0.75.22: 启动全量同步配置值到静态字段（修复改配置不生效）
             SuperMechEventLogger.Init();
             SuperMechTraitGroups.Register();
             SuperMechCustomStats.Register();

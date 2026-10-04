@@ -158,6 +158,57 @@ namespace SuperMech.Code
         public static float FusionSingleMulCap = 2.0f;
         public static float FusionTotalMulCap = 3.0f;
 
+        /// <summary>
+        /// v0.75.22: 启动时把 NML 已加载的配置值全量同步到静态字段（根治"改了配置不生效"）。
+        /// NML 机制：LoadConfig 只把 json 值存入 ModConfigItem，只有面板修改才触发回调；
+        /// 手改 json / 启动加载的非默认值不会自动流入代码——此处对每项调 SetValue(当前值, skipCallback:false)
+        /// 主动触发回调（SetXXX 更新静态字段）。
+        /// </summary>
+        public static void ApplyFromNML(NeoModLoader.api.ModConfig cfg)
+        {
+            if (cfg == null) return;
+            try
+            {
+                string path = System.IO.Path.Combine(Main.ModPath, "default_config.json");
+                if (!System.IO.File.Exists(path)) return;
+                string jsonText = System.IO.File.ReadAllText(path);
+                var raw = Newtonsoft.Json.JsonConvert.DeserializeObject<
+                    System.Collections.Generic.Dictionary<string, System.Collections.Generic.List<System.Collections.Generic.Dictionary<string, object>>>>(jsonText);
+                if (raw == null) return;
+
+                int synced = 0;
+                foreach (var groupKv in raw)
+                {
+                    foreach (var item in groupKv.Value)
+                    {
+                        if (item == null || !item.ContainsKey("Id")) continue;
+                        string id = item["Id"] as string;
+                        if (string.IsNullOrEmpty(id)) continue;
+                        try
+                        {
+                            var mi = cfg[groupKv.Key][id];
+                            if (mi == null) continue;
+                            object val = null;
+                            switch (mi.Type)
+                            {
+                                case NeoModLoader.api.ConfigItemType.SWITCH: val = mi.BoolVal; break;
+                                case NeoModLoader.api.ConfigItemType.SLIDER: val = mi.FloatVal; break;
+                                case NeoModLoader.api.ConfigItemType.INT_SLIDER: val = mi.IntVal; break;
+                                case NeoModLoader.api.ConfigItemType.SELECT: val = mi.IntVal; break;
+                            }
+                            if (val != null) { mi.SetValue(val, false); synced++; }
+                        }
+                        catch (System.Exception) { /* 组/项不存在则跳过 */ }
+                    }
+                }
+                Debug.Log($"[超神机械师] 配置同步完成：{synced} 项配置值已应用");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 配置同步失败: " + e.Message);
+            }
+        }
+
         public static void Init()
         {
             try

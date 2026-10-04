@@ -58,7 +58,7 @@
     },
     {
       "Id": "player_spawn_interval",
-      "Type": "SLIDER",
+      "Type": "INT_SLIDER",
       "FloatVal": 60.0,
       "MinFloatVal": 20.0,
       "MaxFloatVal": 600.0,
