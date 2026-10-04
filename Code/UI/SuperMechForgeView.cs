@@ -6,7 +6,7 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// v0.75.0 锻炉权限树窗口：机械系权限榜 + 职业称号 + 资源阈值说明
-    /// 原著对应：第287章锻炉权限树（能力匹配权限等级与资源阈值）、机械系职业链（学徒→…→神座）
+    /// 机制：锻炉权限树（权限等级1~13匹配资源阈值）、机械系职业链13阶（入门者→…→神座）
     /// </summary>
     public class SuperMechForgeView : MonoBehaviour
     {

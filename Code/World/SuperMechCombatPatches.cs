@@ -508,7 +508,7 @@ namespace SuperMech.Code
                 // v0.73.0 世界树入侵：击杀世界树单位计入击退进度（树王死亡即击退）
                 SuperMechWorldTree.OnTreeKilled(killer, target);
 
-                // v0.74.0 异神：异神击杀单位→异能·复刻成长；异神被击杀→灵魂逃脱/终局判定
+                // v0.74.0 异神：击杀单位→复刻成长；被击杀→封印时空琥珀/终局判定
                 if (killer.hasTrait(SuperMechEsGod.EsGodTrait))
                 {
                     SuperMechEsGod.OnEsGodKill(killer, target);

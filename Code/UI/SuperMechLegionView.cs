@@ -6,7 +6,7 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// v0.72.0 黑星军团窗口：编制统计 + 信用军衔榜 + 军团命令（集结/远征）
-    /// 原著对应：黑星军团信用积分与贡献度（#333）、军团通缉远征（#729）、战争雇佣（#580）
+    /// 机制：贡献星级制（总贡献晋升/消费不降级）、黑星十八骑、集结/远征命令、远征贡献双倍
     /// </summary>
     public class SuperMechLegionView : MonoBehaviour
     {

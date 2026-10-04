@@ -4,31 +4,17 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.74.0 异神·最终决战（原著细还原；v0.75.4 按原著文件逐字核查修正）
-    /// 原著依据（均为原著正文原文，已对照用户提供的原著文件核验）：
-    ///  1. 异神身份：超A级"异能之神"（第703章：'【异神】——意思是"异能之神"，一个凶名赫赫超A级强者'；
-    ///     '黑雾身躯，红色光点'；绰号"堕落者方舟之主/疯狂信徒的引路人/灭世之潮/生灵屠杀者"；
-    ///     异神本体=高德，第1392章韩萧称其为"异神"、被埃文斯夺走异能）；
-    ///  2. 异神战力（第805章压倒性）：'投入无数年搜集异能，不知道身怀多少种能力的怪物'；
-    ///     '以自身超A级属性作为驱动的力量源泉'；'一人就能压制三人（韩萧/艾默丝/贝奥尼），游刃有余'；
-    ///     '无法同一时间动用太多种异能，会给基因链带来极大的负荷'；
-    ///  3. 异神核心异能【异能·复刻】（第1040章：'这是异神的核心能力'——吸收他人异能、
-    ///     以基因链储存，异神被韩萧关进时空琥珀；第1392章还施彼身：埃文斯以【异能·复刻】
-    ///     夺走异神本体高德的异能，即"能力由埃文斯继承"）；
-    ///  4. 最终终结（第1415章战力碾压：韩萧为超神机械师，驾驭【机械神灵·至高天尊】机体，
-    ///     '仅仅是一次平A，威能便和毁天灭地的大招无异'；韩萧以时空琥珀封印世界树秘树王）。
-    /// 注："三招秒杀[1394]"为不实引用（原著'三招'全文0次，第1394章为赤色帝国政治戏），已于v0.75.4删除；
-    ///     "灵魂逃脱"原著无此词（第703/1040/1392章均描述为封印/夺能），模组"首杀→卷土重来"机制
-    ///     对应原著"异神被关进时空琥珀后卷土重来"（第1040章回顾+第1417/1429章卷土重来）。
-    /// 真实系统适配：异神为巅峰超A级单体威胁（全模组最强单体反派、最终决战对象），周期降临；
-    /// 击杀单位触发异能·复刻成长（击杀越多越强，对应原著：吸收异能变强）；首次击杀对应"被封印
-    /// 于时空琥珀"（冷却后卷土重来），再次击杀才最终决战结算（能力由继承者获得）。定位为 B 线最高
-    /// 强度单体事件，非全书终局（全书大结局为6.0版本【全境入侵】，韩萧回到地球）。
+    /// v0.74.0+ 异神·最终决战（B线最高强度单体事件；v0.75.4/0.75.5 按原著文件核查+剧情清理）
+    /// 机制：异神为巅峰超A级单体威胁，周期降临（伤害×2.5）；击杀单位触发【异能·复刻】成长
+    /// （每击杀+5%伤害，上限+50%）；首次被击杀=封印于时空琥珀（冷却后卷土重来）；
+    /// 再次击杀=最终决战结算：击杀者继承异神之力（伤害+30%）、全体觉醒单位潜能+10、最强文明科技+100。
+    /// 原著章节：703（身份）/805（战力/基因链负荷）/1040（核心能力/封印）/1392（夺能）/1415（超神级战力）。
+    /// 注：原著无"三招秒杀/灵魂逃脱"表述（"三招"全文0次），相关措辞已修正。
     /// </summary>
     public static class SuperMechEsGod
     {
         public const string EsGodTrait = "sm_esgod";        // 异神标记
-        public const string InheritorTrait = "sm_esgod_power"; // 异神之力（继承者获得，原著：能力由埃文斯继承）
+        public const string InheritorTrait = "sm_esgod_power"; // 异神之力（终局后由击杀者继承）
 
         public enum EventState { Idle, Active, SoulEscaped, Defeated }
 
@@ -52,7 +38,7 @@ namespace SuperMech.Code
         private const int SoulEscapeCooldown = 900;        // 封印时空琥珀后卷土重来冷却
         private const int PotentialFinalReward = 10;       // 最终决战奖励：全体觉醒潜能+10
         private const int TechFinalReward = 100;           // 最终决战奖励：最强文明科技+100
-        private const float InheritorDamageBonus = 0.30f;  // 继承者伤害+30%（原著：能力由埃文斯继承）
+        private const float InheritorDamageBonus = 0.30f;  // 继承者伤害+30%（终局后由击杀者继承）
 
         // ============ 状态查询 ============
 
@@ -66,7 +52,7 @@ namespace SuperMech.Code
             return EsGodDamageMult * (1f + Mathf.Min(ReplicateMax, _data.replicateCount * ReplicateGainPerKill));
         }
 
-        /// <summary>继承者异神之力加成（原著：击杀异神后能力由埃文斯继承）</summary>
+        /// <summary>继承者异神之力加成（终局后由击杀者继承）</summary>
         public static float GetInheritorBonus(Actor a)
         {
             if (a == null || !a.hasTrait(InheritorTrait)) return 1f;
@@ -136,14 +122,14 @@ namespace SuperMech.Code
                 return;
             }
 
-            // 已卷土重来过一次：本次为再次决战的终局（原著第1392章还施彼身：埃文斯以异能·复刻夺走异神本体能力）
+            // 已卷土重来过一次：本次为再次决战的终局（原著#1392：能力被夺走）
             if (_data.soulEscapes > 0)
             {
                 ConfirmFinalDefeat(killer, target);
                 return;
             }
 
-            // 首次击杀：异神被封印于时空琥珀（原著：异神被韩萧关进时空琥珀[1040回顾]），冷却后卷土重来
+            // 首次击杀：异神被封印于时空琥珀（原著#1040），冷却后卷土重来
             _data.soulEscapes++;
             _data.state = EventState.SoulEscaped;
             _data.nextSpawnInTicks = SoulEscapeCooldown;

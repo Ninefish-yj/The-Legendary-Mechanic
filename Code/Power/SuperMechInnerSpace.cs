@@ -47,7 +47,7 @@ namespace SuperMech.Code
                 activateCount = (existing?.activateCount ?? 0) + 1
             };
 
-            // 内空间名称不按职业区分（原著：韩萧的虚空领域是个人特殊属性，非职业共性）
+            // 内空间名称不按职业区分
             Debug.Log($"[超神机械师] {a.name} 放出内空间，展开领域！阶位{rank}，持续{SuperMechConfig.InnerSpaceDuration}秒");
         }
 

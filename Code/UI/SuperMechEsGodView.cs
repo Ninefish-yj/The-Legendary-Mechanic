@@ -4,8 +4,7 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.74.0 异神监测窗口：异神状态 + 异能·复刻层数 + 灵魂逃脱记录 + 终局进度
-    /// 原著对应：异神核心异能【异能·复刻】、灵魂逃脱卷土重来、最终决战（起点角色简介/抖音）
+    /// v0.74.0 异神监测窗口：异神状态 + 异能·复刻层数 + 封印/卷土重来记录 + 终局进度
     /// </summary>
     public class SuperMechEsGodView : MonoBehaviour
     {

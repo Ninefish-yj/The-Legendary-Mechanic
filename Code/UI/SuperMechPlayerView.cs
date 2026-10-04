@@ -5,7 +5,7 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// v0.71.0 玩家降临窗口：降临者统计 + 玩家面板样例 + 当前任务（奖池/门槛/贡献榜前五）
-    /// 原著对应：玩家面板（生命/体力/六维/潜能）、奖池任务（接取消耗+贡献度前五分配，原著第130章）
+    /// 机制：降临者面板（生命/体力/六维/潜能/经验）、奖池任务（接取消耗经验+贡献度前五分配）
     /// </summary>
     public class SuperMechPlayerView : MonoBehaviour
     {

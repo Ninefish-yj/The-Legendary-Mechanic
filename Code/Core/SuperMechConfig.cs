@@ -60,7 +60,7 @@ namespace SuperMech.Code
         public static float CosmicBeastInterval = 500f; // 异兽入侵间隔（tick）
         /// <summary>战斗核心总开关（v0.70.x，原著：伤害分区/抗性/控制/Buff）</summary>
         public static bool CombatEnhanceEnabled = true;
-        /// <summary>玩家降临·第四天灾总开关（v0.71.0，原著：韩萧招募地球玩家/玩家不死不灭）</summary>
+        /// <summary>玩家降临·第四天灾总开关（v0.71.0）</summary>
         public static bool PlayerEnabled = true;
         /// <summary>降临者生成间隔（tick，默认60）</summary>
         public static int PlayerSpawnIntervalTicks = 60;
@@ -70,7 +70,7 @@ namespace SuperMech.Code
         public static bool WorldTreeEnabled = true;
         /// <summary>世界树入侵间隔（tick，默认400）</summary>
         public static float WorldTreeInterval = 400f;
-        /// <summary>异神终局总开关（v0.74.0，原著：异神灵魂逃脱卷土重来/最终决战）</summary>
+        /// <summary>异神终局总开关（v0.74.0：封印时空琥珀→卷土重来→最终决战）</summary>
         public static bool EsGodEnabled = true;
         /// <summary>锻炉权限树总开关（v0.75.0，原著第287章：能力匹配权限等级与资源阈值）</summary>
         public static bool ForgeEnabled = true;

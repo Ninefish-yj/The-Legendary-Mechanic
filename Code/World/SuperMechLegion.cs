@@ -4,18 +4,11 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.72.0 黑星军团·军团命令（原著细还原；v0.75.2 修正为原著贡献星级制）
-    /// 原著依据：
-    ///  1. 黑星佣兵团→黑星军团，信用积分+阵营贡献度体系（原著#333：信用积分120奖励4w5经验+300贡献度，贡献度前三额外奖励）；
-    ///  2. 阵营成长-韩萧获利-奖励玩家良性循环（原著#832：任务完成→贡献→奖励→军衔提升→新称号；#729：出征凯旋→玩家赚奖励→回来消费）；
-    ///  3. 战争雇佣子任务（原著#580：战争雇佣任务给经验与酬金）；
-    ///  4. 一人即军团：机械军团百万级+械力加成（原著#702）；机械帝皇统领无数机械战兵、军团流巨大加成（原著#753）；
-    ///  5. 贡献星级制（原著#534）：黑星军团共六级——1星~5星+最高级"黑星十八骑"（排行榜前18名5星成员专属）；
-    ///     晋升三要素=信用积分（完成雇佣任务累积）+阵营关系（贡献≥1000达[友好]）+总贡献量
-    ///     （历史累计、消费不减、不降级；1星→2星需总贡献20000点）；贡献可在阵营商店消费（50恩纳=100贡献）。
-    /// 真实系统适配：军团长由降临者击杀榜第一担任；成员击杀累积总贡献（只增不减，消费不减不降级对应原著#534）；
-    /// 星级=1星~5星，击杀榜前18名的5星成员获"黑星十八骑"称号（加成更高，原著：对应收益自然高很多）；
-    /// 命令=集结/远征；远征期间贡献双倍（战争雇佣）。
+    /// v0.72.0 黑星军团·军团命令（v0.75.2 修正为原著贡献星级制，v0.75.5 清理剧情）
+    /// 机制：军团长由降临者击杀榜第一担任；成员击杀累积总贡献（只增不减、消费不减不降级）；
+    /// 星级1~5按总贡献晋升（1星→2星需总贡献20000），击杀榜前18名5星获"黑星十八骑"称号（加成更高）；
+    /// 命令=集结/远征；远征期间贡献双倍（战争雇佣）；军团长每10击杀+1潜能。
+    /// 原著：信用+阵营关系+总贡献三要素晋升（#534）/战争雇佣（#580）。
     /// </summary>
     public static class SuperMechLegion
     {
@@ -49,7 +42,7 @@ namespace SuperMech.Code
         };
 
         private const int CreditPerKill = 10;          // 每击杀+10总贡献（原著：阵营贡献度/总贡献历史）
-        private const int CommanderCut = 1;            // 军团长每10击杀+1潜能（原著：韩萧获利）
+        private const int CommanderCut = 1;            // 军团长每10击杀+1潜能
         private const float ExpeditionCreditMult = 2f; // 战争雇佣：远征期间贡献双倍（原著#580）
         private const int CommandDurationTicks = 600;  // 命令持续
         private const float MemberCountBonus = 0.02f;  // 每名成员军团长+2%伤害（原著：军团流巨大加成）
@@ -227,7 +220,7 @@ namespace SuperMech.Code
 
         // ============ 战斗挂接 ============
 
-        /// <summary>军团成员击杀：总贡献+星级成长；军团长获益（原著：阵营成长-韩萧获利-奖励玩家）</summary>
+        /// <summary>军团成员击杀：总贡献+星级成长；军团长获益</summary>
         public static void OnLegionKill(Actor killer, Actor target)
         {
             if (killer == null) return;
@@ -241,7 +234,7 @@ namespace SuperMech.Code
             _data.credit[killer.id.ToString()] = GetCredit(killer) + gain;
             _data.totalKills++;
 
-            // 军团长收益：每10击杀+1潜能（原著：韩萧获利）
+            // 军团长收益：每10击杀+1潜能
             if (_data.totalKills % 10 == 0)
             {
                 var commander = GetCommander();

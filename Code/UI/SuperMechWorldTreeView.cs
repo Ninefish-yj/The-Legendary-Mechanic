@@ -5,7 +5,7 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// v0.73.0 世界树入侵窗口：事件状态 + 树王信息 + 击杀统计 + 星际联合军加成说明
-    /// 原著对应：5.0版本世界树入侵、五大树王/十叶执行官/圣树使者、星际联合军（起点#1403）
+    /// 机制：世界树舰队周期降临（树王/叶执行官/圣树使者/树兵），入侵期星际联合军加成，击杀树王结算
     /// </summary>
     public class SuperMechWorldTreeView : MonoBehaviour
     {
