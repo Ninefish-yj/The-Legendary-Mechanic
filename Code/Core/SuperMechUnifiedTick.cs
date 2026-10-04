@@ -52,6 +52,7 @@ namespace SuperMech.Code
                 SafeRun("属性自动分配", () => SuperMechQiAttribute.TickAutoAssign());
                 SafeRun("精炼", () => SuperMechRefinement.TickRefinement());
                 SafeRun("修炼", () => SuperMechRefinement.TickCultivation());
+                SafeRun("气力锻炼", () => SuperMechQiRefine.TickCultivation());
                 SafeRun("自定义属性同步", () => SuperMechCustomStats.TickSync());
                 SafeRun("跨模组能量同步", () => SuperMechCrossMod.TickEnergySync());
             }

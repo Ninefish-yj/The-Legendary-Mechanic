@@ -4682,5 +4682,9 @@
   "inner_space_enemy_penalty": "内空间敌方削弱",
   "inner_space_enemy_penalty Description": "内空间内敌方伤害削弱",
   "inner_space_damage_reduction": "内空间伤害减免",
-  "inner_space_damage_reduction Description": "内空间内自身伤害减免"
+  "inner_space_damage_reduction Description": "内空间内自身伤害减免",
+  "sm_qi_refine_080": "气力锻炼法",
+  "sm_qi_refine_081": "修行气力锻炼法，以长久锻炼缓慢提升气力上限（非战斗时生效，效率随层数与智力提升）。",
+  "trait_sm_qi_refine": "气力锻炼法",
+  "trait_sm_qi_refine_info": "持有气力锻炼法的单位，和平期持续修行，缓慢提升气力上限。觉醒即习得，升级有概率参悟新法，迈入超A级自动多习得一本。"
 }

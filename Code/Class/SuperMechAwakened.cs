@@ -162,6 +162,9 @@ namespace SuperMech.Code
                 int idx = Mathf.Clamp(stage - 1, 0, SuperMechStage.LevelQiBonus.Length - 1);
                 SuperMechQi.AddQiMax(a, SuperMechStage.LevelQiBonus[idx]);
                 SuperMechQi.SetQi(a, SuperMechQi.GetQiMax(a));
+                // v0.75.18: 每升5级有15%概率参悟新的气力锻炼法（原著"修行新的气力锻炼法"）
+                if (lv % 5 == 0 && UnityEngine.Random.value < 0.15f)
+                    SuperMechQiRefine.AddRefineLevel(a, 1);
                 SuperMechPotential.AddPotential(a, LevelPotentialPoints[idx]);
             }
 

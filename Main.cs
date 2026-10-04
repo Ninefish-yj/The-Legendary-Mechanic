@@ -40,6 +40,7 @@ namespace SuperMech
             SuperMechMageType.Register();
             SuperMechSpell.RegisterAll();
             SuperMechRefinement.Register();
+            SuperMechQiRefine.Register();
             SuperMechRelic.Register();
             SuperMechCosmicRelic.Register();
             SuperMechMageTower.Register();

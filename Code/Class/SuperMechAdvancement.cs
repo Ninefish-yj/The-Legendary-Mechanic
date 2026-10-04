@@ -115,6 +115,7 @@ namespace SuperMech.Code
 
                 SuperMechQi.SetQi(a, 100f);
                 SuperMechQi.SetQiMax(a, 100f);
+                SuperMechQiRefine.AddRefineLevel(a, 1); // v0.75.18: 觉醒即习得基础气力锻炼法（原著"长久锻炼慢慢提升气力上限"）
                 SuperMechPotential.SetPotential(a, Random.Range(3, 6));
                 SuperMechPotentialRating.RollRating(a);
                 GrantStarterEquipment(a);
@@ -214,6 +215,9 @@ namespace SuperMech.Code
                     }
                 }
 
+
+                if (targetIdx >= 10 && targetIdx > oldExact && !SuperMechRanks.IsPlusRank(targetIdx))
+                    SuperMechQiRefine.AddRefineLevel(a, 1); // v0.75.18: 迈入超A级自动多习得一本锻炼法（原著超A级标配多本）
 
                 if (!SuperMechAwakened.IsAwakened(a) && !SuperMechRanks.IsPlusRank(targetIdx) && targetIdx > oldExact)
                 {
