@@ -294,6 +294,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异神按钮失败: {e.Message}"); }
             }
 
+            // 5k. v0.75.0 锻炉权限树（窗口按钮）
+            if (PowerButton.get("sm_forge_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconAnvil")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_forge_center", () => SuperMechWindowManager.OpenForge(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_forge_title", "sm_ui_forge_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 锻炉权限树按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {

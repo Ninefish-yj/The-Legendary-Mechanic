@@ -72,6 +72,8 @@ namespace SuperMech.Code
         public static float WorldTreeInterval = 400f;
         /// <summary>异神终局总开关（v0.74.0，原著：异神灵魂逃脱卷土重来/最终决战）</summary>
         public static bool EsGodEnabled = true;
+        /// <summary>锻炉权限树总开关（v0.75.0，原著第287章：能力匹配权限等级与资源阈值）</summary>
+        public static bool ForgeEnabled = true;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -284,6 +286,7 @@ namespace SuperMech.Code
         public static void SetWorldTreeEnabled(bool val) { WorldTreeEnabled = val; }
         public static void SetWorldTreeInterval(float val) { WorldTreeInterval = Mathf.Clamp(val, 200f, 2000f); }
         public static void SetEsGodEnabled(bool val) { EsGodEnabled = val; }
+        public static void SetForgeEnabled(bool val) { ForgeEnabled = val; }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }

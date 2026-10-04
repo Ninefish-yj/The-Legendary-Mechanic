@@ -89,6 +89,12 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetEsGodEnabled"
+    },
+    {
+      "Id": "forge_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetForgeEnabled"
     }
   ],
   "Awakening": [

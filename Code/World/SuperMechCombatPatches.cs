@@ -253,6 +253,12 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (inheritorBonus - 1f));
                     }
+                    // v0.75.0 锻炉权限树：机械系权限伤害加成（原著第287章：能力匹配权限等级）
+                    float forgeBonus = SuperMechForge.GetMechDamageBonus(attacker);
+                    if (forgeBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (forgeBonus - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
@@ -508,6 +514,9 @@ namespace SuperMech.Code
                     SuperMechEsGod.OnEsGodKill(killer, target);
                 }
                 SuperMechEsGod.OnEsGodKilled(killer, target);
+
+                // v0.75.0 锻炉权限树：机械系击杀累积锻炉资源并自动提升权限（原著：资源阈值驱动成长）
+                SuperMechForge.OnMechKill(killer, target);
 
                 if (SuperMechAwakened.IsAwakened(killer))
                 {
