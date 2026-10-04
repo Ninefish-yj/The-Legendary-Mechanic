@@ -328,7 +328,7 @@ namespace SuperMech.Code
                         intel = 1f + iv * 0.02f;
                     }
                     float recovery = (2f + max * 0.005f) * intel * tickInterval * SuperMechConfig.QiGrowthRate;
-                    if (a.hasTrait("sm_refinement")) recovery *= SuperMechConfig.RefinementBonus;
+                    if (a.hasTrait("sm_qi_refine")) recovery *= SuperMechConfig.RefinementBonus; // v0.75.20: 提炼法并入气力修炼法
                     if (a.hasTrait(SuperMechTraits.ClassPsi))
                         recovery *= SuperMechPotentialRating.GetQiGrowthMult(a);
 
@@ -348,7 +348,7 @@ namespace SuperMech.Code
                     int curLv = GetLevel(max);
                     float growthDecay = GetGrowthDecay(curLv);
                     float maxGrowth = 0.05f * tickInterval * SuperMechConfig.QiGrowthRate * growthDecay;
-                    if (a.hasTrait("sm_refinement")) maxGrowth *= SuperMechConfig.RefinementBonus;
+                    if (a.hasTrait("sm_qi_refine")) maxGrowth *= SuperMechConfig.RefinementBonus;
                     if (a.hasTrait("sm_em_refinement") && a.hasTrait(SuperMechTraits.ClassMech))
                         maxGrowth *= 1.5f;
                     if (a.hasTrait("sm_divinity_ascended")) maxGrowth *= 1.5f;

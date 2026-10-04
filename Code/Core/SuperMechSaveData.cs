@@ -234,9 +234,9 @@ namespace SuperMech.Code
                             fiveSystemGenius = SuperMechTalent.IsFiveSystemGenius(a),
                             equippedAffixes = SerializeAffixes(a),
                             durability = SuperMechEquipBreak.GetDurability(a).ToString(),
-                            refineCount = SuperMechRefinement.GetRefineCount(a),
-                            emRefineCount = SuperMechRefinement.GetEmRefineCount(a),
-                            refineQiBonus = SuperMechRefinement.GetRefineQiBonus(a),
+                            refineCount = SuperMechQiRefine.GetRefineCount(a),
+                            emRefineCount = SuperMechQiRefine.GetEmRefineCount(a),
+                            refineQiBonus = SuperMechQiRefine.GetRefineQiBonus(a),
                             emRefineQiBonus = GetEmRefineQiBonus(a),
                             activeSynergies = GetActiveSynergyIds(a),
                             geneStage = SuperMechCorePower.GetGeneStage(a),
@@ -644,7 +644,7 @@ namespace SuperMech.Code
         }
 
         private static float GetEmRefineQiBonus(Actor a)
-        {            var dict = SuperMechRefinement._emRefineQiBonus;
+        {            var dict = SuperMechQiRefine._emRefineQiBonus;
             return dict != null && dict.TryGetValue(a.id, out float v) ? v : 0f;
         }
 
@@ -733,22 +733,22 @@ namespace SuperMech.Code
 
                 if (ad.refineCount > 0)
                 {
-                    var dict = SuperMechRefinement._refineCount;
+                    var dict = SuperMechQiRefine._refineCount;
                     if (dict != null) dict[a.id] = ad.refineCount;
                 }
                 if (ad.emRefineCount > 0)
                 {
-                    var dict = SuperMechRefinement._emRefineCount;
+                    var dict = SuperMechQiRefine._emRefineCount;
                     if (dict != null) dict[a.id] = ad.emRefineCount;
                 }
                 if (ad.refineQiBonus > 0)
                 {
-                    var dict = SuperMechRefinement._refineQiBonus;
+                    var dict = SuperMechQiRefine._refineQiBonus;
                     if (dict != null) dict[a.id] = ad.refineQiBonus;
                 }
                 if (ad.emRefineQiBonus > 0)
                 {
-                    var dict = SuperMechRefinement._emRefineQiBonus;
+                    var dict = SuperMechQiRefine._emRefineQiBonus;
                     if (dict != null) dict[a.id] = ad.emRefineQiBonus;
                 }
 

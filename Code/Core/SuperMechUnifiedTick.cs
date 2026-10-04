@@ -50,8 +50,8 @@ namespace SuperMech.Code
                 SafeRun("气力等级", () => SuperMechQi.TickQiLevels());
                 SafeRun("核心神力", () => SuperMechCorePower.TickCorePowers());
                 SafeRun("属性自动分配", () => SuperMechQiAttribute.TickAutoAssign());
-                SafeRun("精炼", () => SuperMechRefinement.TickRefinement());
-                SafeRun("修炼", () => SuperMechRefinement.TickCultivation());
+                SafeRun("气力提炼", () => SuperMechQiRefine.TickRefine());
+                SafeRun("冥想修炼", () => SuperMechMeditation.TickCultivation());
                 SafeRun("气力锻炼", () => SuperMechQiRefine.TickCultivation());
                 SafeRun("自定义属性同步", () => SuperMechCustomStats.TickSync());
                 SafeRun("跨模组能量同步", () => SuperMechCrossMod.TickEnergySync());
@@ -145,7 +145,7 @@ namespace SuperMech.Code
             removed += SuperMechAura.CleanupDead(alive);
             removed += SuperMechInnerSpace.CleanupDead(alive);
             removed += SuperMechCrafting.CleanupDead(alive);
-            removed += SuperMechRefinement.CleanupDead(alive);
+            removed += SuperMechQiRefine.CleanupDead(alive);
             removed += SuperMechSubClass.CleanupDead(alive);
             removed += SuperMechLegend.CleanupDead(alive);
             removed += SuperMechIntuition.CleanupDead(alive);
