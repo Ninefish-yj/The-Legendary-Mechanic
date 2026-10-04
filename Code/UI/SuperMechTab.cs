@@ -8,7 +8,7 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// v0.75.14: 参考诸天神座模组——使用 NML 原生 TabManager 页签聚合全部窗口入口。
-    /// v0.75.25: 改名「超能者面板」（原著核心身份名）。神权栏不再堆按钮：主界面右下角新增该 Tab，Tab 内为滚动分组面板。
+    /// v0.75.26: 改名「星海总览」（Tab=模组全系统入口聚合，个人成长+世界+终局全景；"超能者面板"名实不符——含个人信息面板含义）。神权栏不再堆按钮：主界面右下角新增该 Tab，Tab 内为滚动分组面板。
     /// </summary>
     public static class SuperMechTab
     {
