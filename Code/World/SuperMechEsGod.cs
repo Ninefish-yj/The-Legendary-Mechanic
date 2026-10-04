@@ -16,14 +16,14 @@ namespace SuperMech.Code
         public const string EsGodTrait = "sm_esgod";        // 异神标记
         public const string InheritorTrait = "sm_esgod_power"; // 异神之力（终局后由击杀者继承）
 
-        public enum EventState { Idle, Active, SoulEscaped, Defeated }
+        public enum EventState { Idle, Active, Sealed, Defeated }
 
         public class EsGodSaveData
         {
             public EventState state = EventState.Idle;
             public int nextSpawnInTicks = 600;   // 距下次降临
             public int replicateCount;           // 异能·复刻层数（击杀数）
-            public int soulEscapes;              // 封印/卷土重来次数（首次封印于时空琥珀）
+            public int sealCount;              // 封印/卷土重来次数（首次封印于时空琥珀）
             public bool finalDefeated;           // 是否已被终局消灭
             public long esGodId = -1;            // 异神单位id
         }
@@ -35,7 +35,7 @@ namespace SuperMech.Code
         private const float EsGodDamageMult = 2.5f;        // 异神伤害倍率（原著：巅峰超A级碾压普通单位）
         private const float ReplicateGainPerKill = 0.05f;  // 异能·复刻：每击杀+5%伤害（原著：夺取异能变强）
         private const float ReplicateMax = 0.50f;          // 复刻成长上限+50%
-        private const int SoulEscapeCooldown = 900;        // 封印时空琥珀后卷土重来冷却
+        private const int SealCooldown = 900;        // 封印时空琥珀后卷土重来冷却
         private const int PotentialFinalReward = 10;       // 最终决战奖励：全体觉醒潜能+10
         private const int TechFinalReward = 100;           // 最终决战奖励：最强文明科技+100
         private const float InheritorDamageBonus = 0.30f;  // 继承者伤害+30%（终局后由击杀者继承）
@@ -75,7 +75,7 @@ namespace SuperMech.Code
             {
                 // 异神死亡处理由战斗补丁触发（OnEsGodKilled）
             }
-            else if (_data.state == EventState.SoulEscaped)
+            else if (_data.state == EventState.Sealed)
             {
                 // 卷土重来（原著：异神被关进时空琥珀后卷土重来[1040回顾/1417/1429]）
                 _data.nextSpawnInTicks--;
@@ -123,17 +123,17 @@ namespace SuperMech.Code
             }
 
             // 已卷土重来过一次：本次为再次决战的终局（原著#1392：能力被夺走）
-            if (_data.soulEscapes > 0)
+            if (_data.sealCount > 0)
             {
                 ConfirmFinalDefeat(killer, target);
                 return;
             }
 
             // 首次击杀：异神被封印于时空琥珀（原著#1040），冷却后卷土重来
-            _data.soulEscapes++;
-            _data.state = EventState.SoulEscaped;
-            _data.nextSpawnInTicks = SoulEscapeCooldown;
-            Debug.Log($"[超神机械师] 【异神】异神被击退，封印于时空琥珀！将在 {SoulEscapeCooldown} tick 后卷土重来");
+            _data.sealCount++;
+            _data.state = EventState.Sealed;
+            _data.nextSpawnInTicks = SealCooldown;
+            Debug.Log($"[超神机械师] 【异神】异神被击退，封印于时空琥珀！将在 {SealCooldown} tick 后卷土重来");
         }
 
         /// <summary>异神最终决战确认：异神卷土重来后再次被击杀时，由战斗补丁调用，判定终局（原著第1392章还施彼身）</summary>
@@ -216,7 +216,7 @@ namespace SuperMech.Code
             _data.state = data.state;
             _data.nextSpawnInTicks = data.nextSpawnInTicks;
             _data.replicateCount = data.replicateCount;
-            _data.soulEscapes = data.soulEscapes;
+            _data.sealCount = data.sealCount;
             _data.finalDefeated = data.finalDefeated;
             _data.esGodId = data.esGodId;
         }
@@ -226,7 +226,7 @@ namespace SuperMech.Code
             _data.state = EventState.Idle;
             _data.nextSpawnInTicks = 600;
             _data.replicateCount = 0;
-            _data.soulEscapes = 0;
+            _data.sealCount = 0;
             _data.finalDefeated = false;
             _data.esGodId = -1;
         }

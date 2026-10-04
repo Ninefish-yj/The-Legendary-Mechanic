@@ -52,7 +52,7 @@ namespace SuperMech.Code
 
             string state = d.state == SuperMechEsGod.EventState.Idle ? LocalizedTextManager.getText("sm_ui_esgod_state_idle")
                 : d.state == SuperMechEsGod.EventState.Active ? LocalizedTextManager.getText("sm_ui_esgod_state_active")
-                : d.state == SuperMechEsGod.EventState.SoulEscaped ? LocalizedTextManager.getText("sm_ui_esgod_state_escaped")
+                : d.state == SuperMechEsGod.EventState.Sealed ? LocalizedTextManager.getText("sm_ui_esgod_state_escaped")
                 : LocalizedTextManager.getText("sm_ui_esgod_state_defeated");
 
             _countText.text = LocalizedTextManager.getText("sm_ui_esgod_title") + " | "
@@ -63,7 +63,7 @@ namespace SuperMech.Code
               .Append(d.replicateCount).Append(" 层（伤害+" )
               .Append((d.replicateCount * 0.05f * 100f).ToString("0")).Append("%，上限50%）").Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_esgod_escape")).Append(": ")
-              .Append(d.soulEscapes).Append(" 次 | ")
+              .Append(d.sealCount).Append(" 次 | ")
               .Append(LocalizedTextManager.getText("sm_ui_esgod_final")).Append(": ")
               .Append(d.finalDefeated ? LocalizedTextManager.getText("sm_ui_esgod_final_yes") : LocalizedTextManager.getText("sm_ui_esgod_final_no")).Append("\n");
             if (d.state == SuperMechEsGod.EventState.Idle)
