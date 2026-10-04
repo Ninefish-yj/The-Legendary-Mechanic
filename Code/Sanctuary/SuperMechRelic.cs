@@ -80,6 +80,9 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("item_" + def.id, LocalizedTextManager.getText(def.name), pReplace: true);
                 LocalizedTextManager.add("item_" + def.id + "_desc",
                     LocalizedTextManager.getText("sm_relic_103"), pReplace: true);
+                // v0.75.11: 游戏 EquipItem.getDescriptionID() 查 {id}_description，注册同键避免装备详情missing text
+                LocalizedTextManager.add(def.id + "_description",
+                    LocalizedTextManager.getText("sm_relic_103"), pReplace: true);
                 registered++;
             }
 

@@ -13,6 +13,16 @@ namespace SuperMech.Code
             {
                 _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 if (_font == null) _font = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                if (_font == null)
+                {
+                    // v0.75.11: 部分Unity版本无内建字体，动态创建系统字体兜底，避免AddText抛NRE导致窗口白板
+                    try
+                    {
+                        _font = Font.CreateDynamicFontFromOSFont(
+                            new[] { "Arial", "Microsoft YaHei", "Noto Sans CJK SC", "PingFang SC", "SimHei" }, 14);
+                    }
+                    catch (System.Exception) { }
+                }
             }
             return _font;
         }
@@ -61,7 +71,7 @@ namespace SuperMech.Code
             var txt = go.GetComponent<Text>();
             if (txt == null) txt = go.AddComponent<Text>();
             txt.text = text;
-            txt.font = GetFont();
+            var f = GetFont(); if (f != null) txt.font = f; // 字体为null时用引擎默认，避免NRE白板
             txt.fontSize = fontSize;
             txt.alignment = anchor;
             txt.color = color ?? new Color(0.1f, 0.15f, 0.25f, 1f);

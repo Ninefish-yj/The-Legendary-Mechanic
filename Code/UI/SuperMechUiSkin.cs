@@ -54,7 +54,15 @@ namespace SuperMech.Code
         public static Sprite Card => EnsureInit() ? _cardSprite : null;
         public static Sprite Section => EnsureInit() ? _sectionSprite : null;
 
-        public static Font DefaultFont => Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        public static Font DefaultFont
+        {
+            get
+            {
+                var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
+                return f;
+            }
+        }
 
         private static bool EnsureInit()
         {
@@ -139,7 +147,7 @@ namespace SuperMech.Code
             var go = new GameObject("Text");
             go.transform.SetParent(parent, false);
             var text = go.AddComponent<Text>();
-            text.font = DefaultFont;
+            var df = DefaultFont; if (df != null) text.font = df; // v0.75.11: 字体兜底，避免NRE白板
             text.fontSize = fontSize;
             text.color = TextColor;
             text.alignment = anchor;

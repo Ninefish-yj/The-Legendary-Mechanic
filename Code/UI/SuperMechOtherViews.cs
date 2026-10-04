@@ -646,6 +646,7 @@ namespace SuperMech.Code
 
         private void RefreshList()
         {
+            if (_listContent == null || _countText == null || _emptyText == null) return; // v0.75.11: 布局未构建时防御
             // 清空旧条目
             for (int i = _listContent.childCount - 1; i >= 0; i--)
             {
