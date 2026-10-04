@@ -32,6 +32,7 @@ namespace SuperMech.Code
 
         public static Canvas GetCanvas()
         {
+            // v0.75.12: Unity销毁对象时==null重载返回true，若缓存canvas已随场景失效则重建
             if (_canvas != null) return _canvas;
             var go = new GameObject("SM_Canvas");
             _canvas = go.AddComponent<Canvas>();

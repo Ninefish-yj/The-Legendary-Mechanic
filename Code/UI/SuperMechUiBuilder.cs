@@ -66,21 +66,53 @@ namespace SuperMech.Code
             return img;
         }
 
-        public static Text AddText(GameObject go, string text, int fontSize = 14, TextAnchor anchor = TextAnchor.MiddleLeft, Color? color = null)
+                public static Text AddText(GameObject go, string text, int fontSize = 14, TextAnchor anchor = TextAnchor.MiddleLeft, Color? color = null)
         {
-            var txt = go.GetComponent<Text>();
-            if (txt == null) txt = go.AddComponent<Text>();
-            txt.text = text;
-            var f = GetFont(); if (f != null) txt.font = f; // 字体为null时用引擎默认，避免NRE白板
-            txt.fontSize = fontSize;
-            txt.alignment = anchor;
-            txt.color = color ?? new Color(0.1f, 0.15f, 0.25f, 1f);
-            txt.horizontalOverflow = HorizontalWrapMode.Wrap;
-            txt.verticalOverflow = VerticalWrapMode.Overflow;
-            return txt;
+            // v0.75.12: 实机ObjectReferenceException定位——在已有go上AddComponent<Text>不稳定，
+            // 改为与UiSkin.MakeText相同的"新建子对象挂Text"路径（实机已验证100%可行），并全链路判空防御
+            if (go == null)
+            {
+                Debug.LogWarning("[超神机械师] AddText: go为null，跳过文本创建");
+                return null;
+            }
+            Text txt = null;
+            try
+            {
+                txt = go.GetComponent<Text>();
+                if (txt == null)
+                {
+                    var textGo = new GameObject("Text");
+                    textGo.transform.SetParent(go.transform, false);
+                    var rect = textGo.AddComponent<RectTransform>();
+                    rect.anchorMin = Vector2.zero;
+                    rect.anchorMax = Vector2.one;
+                    rect.offsetMin = Vector2.zero;
+                    rect.offsetMax = Vector2.zero;
+                    txt = textGo.AddComponent<Text>();
+                }
+                if (txt == null)
+                {
+                    Debug.LogWarning("[超神机械师] AddText: 创建Text组件失败 " + go.name);
+                    return null;
+                }
+                txt.text = text ?? "";
+                var f = GetFont(); if (f != null) txt.font = f; // 字体为null时用引擎默认，避免NRE白板
+                txt.fontSize = fontSize;
+                txt.alignment = anchor;
+                txt.color = color ?? new Color(0.1f, 0.15f, 0.25f, 1f);
+                txt.horizontalOverflow = HorizontalWrapMode.Wrap;
+                txt.verticalOverflow = VerticalWrapMode.Overflow;
+                return txt;
+            }
+            catch (System.Exception e)
+            {
+                // 防御兜底：任何异常都不让窗口白板
+                Debug.LogWarning("[超神机械师] AddText防御触发: " + (go != null ? go.name : "null") + " -> " + e.Message);
+                return null;
+            }
         }
 
-        public static Button AddButton(GameObject go, Action onClick, Color? normalColor = null, Color? hoverColor = null)
+public static Button AddButton(GameObject go, Action onClick, Color? normalColor = null, Color? hoverColor = null)
         {
             var btn = go.GetComponent<Button>();
             if (btn == null) btn = go.AddComponent<Button>();
