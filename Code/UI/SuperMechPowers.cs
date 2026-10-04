@@ -158,6 +158,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 基因按钮失败: {e.Message}"); }
             }
 
+            // 5d. v0.67.0 星际航道·星门控制台（窗口按钮）
+            if (PowerButton.get("sm_stargate_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconStarGate")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_stargate_center", () => SuperMechWindowManager.OpenStarGate(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_stargate_title", "sm_ui_stargate_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星门按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {

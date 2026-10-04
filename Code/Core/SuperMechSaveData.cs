@@ -47,6 +47,7 @@ namespace SuperMech.Code
             public SuperMechFaction.FactionSaveData faction = new SuperMechFaction.FactionSaveData();
             public SuperMechTrade.TradeSaveData trade = new SuperMechTrade.TradeSaveData();
             public SuperMechGenetics.GeneticsSaveData genetics = new SuperMechGenetics.GeneticsSaveData();
+            public SuperMechStarGate.StarGateSaveData starGates = new SuperMechStarGate.StarGateSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -275,6 +276,8 @@ namespace SuperMech.Code
                 data.trade = SuperMechTrade.Save();
                 // 保存基因科研数据（v0.66.0）
                 data.genetics = SuperMechGenetics.Save();
+                // 保存星际航道·星门数据（v0.67.0）
+                data.starGates = SuperMechStarGate.Save();
 
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
@@ -321,6 +324,8 @@ namespace SuperMech.Code
                 if (data.trade != null) SuperMechTrade.Load(data.trade);
                 // 加载基因科研数据（v0.66.0）
                 if (data.genetics != null) SuperMechGenetics.Load(data.genetics);
+                // 加载星际航道·星门数据（v0.67.0）
+                if (data.starGates != null) SuperMechStarGate.Load(data.starGates);
 
                 _pendingLoad = data;
                 _loadPending = true;

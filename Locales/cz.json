@@ -4484,5 +4484,20 @@
   "sm_ui_genetics_optimize": "优化",
   "sm_ui_genetics_sublimate": "升华",
   "sm_config_776": "基因科研",
-  "sm_config_777": "允许基因优化/升华与文明基因科研（消耗潜能点，基因链提供攻防加成）"
+  "sm_config_777": "允许基因优化/升华与文明基因科研（消耗潜能点，基因链提供攻防加成）",
+  "sm_ui_stargate_title": "星际航道·星门控制台",
+  "sm_ui_stargate_subtitle": "跨星域星门是唯一稳定快速跨星域的方法（原著第797章）",
+  "sm_ui_stargate_list": "星门网络",
+  "sm_ui_stargate_built": "已建星门",
+  "sm_ui_stargate_no_faction": "当前世界没有可建造星门的势力",
+  "sm_ui_stargate_ready": "可建造",
+  "sm_ui_stargate_need_tech": "无技术（需超星团级文明）",
+  "sm_ui_stargate_active": "星门活跃",
+  "sm_ui_stargate_hidden": "秘密星门·匿踪",
+  "sm_ui_stargate_build": "建造",
+  "sm_ui_stargate_hide": "匿踪",
+  "sm_ui_stargate_show": "显现",
+  "sm_ui_stargate_info": "原著设定：跨星域星门大幅缩短行程，是唯一稳定快速跨星域的方法。星门是技术门槛——星团级文明无法打造，超星团级文明拥有技术，三大文明（宇宙级）更禁止其他文明打造跨星域星门。星门跨越距离越长越难精确定位，容易出现偏差；秘密星门站可用隐形装置匿踪。本模组：超星团级及以上文明可建造星门，商队走星际航道航速×2.5（匿踪×2.0），宇宙级文明星门零偏差，其余星门有5%跳跃偏差。",
+  "sm_config_778": "星际航道·星门",
+  "sm_config_779": "允许超星团级及以上文明建造星门，贸易商队走星际航道缩短行程（原著第797/842章）"
 }

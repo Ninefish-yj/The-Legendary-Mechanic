@@ -98,6 +98,7 @@ namespace SuperMech.Code
                 SafeRun("文明系统", () => SuperMechCivilization.TickCivilizations());
                 SafeRun("贸易系统", () => SuperMechTrade.TickTradeRoutes(1.25f));
                 SafeRun("基因科研", () => SuperMechGenetics.TickGenetics(1.25f));
+                SafeRun("星门航道", () => SuperMechStarGate.TickStarGates());
             }
 
             float now = Time.time;
@@ -199,6 +200,7 @@ namespace SuperMech.Code
             try { SuperMechFaction.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechFaction"); }
             try { SuperMechTrade.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTrade"); }
             try { SuperMechGenetics.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechGenetics"); }
+            try { SuperMechStarGate.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarGate"); }
         }
     }
 }

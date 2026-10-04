@@ -51,6 +51,8 @@ namespace SuperMech.Code
         public static bool TradeEnabled = true;
         /// <summary>基因科研系统总开关（v0.66.0，原著：基因链是力量基础，基因优化/升华）</summary>
         public static bool GeneticsEnabled = true;
+        /// <summary>星际航道·星门总开关（v0.67.0，原著：跨星域星门是唯一稳定快速跨星域方法）</summary>
+        public static bool StarGateEnabled = true;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -186,6 +188,7 @@ namespace SuperMech.Code
                 new ItemInfo("sanctuary_energy_regen", "sm_config_772", "sm_config_773"),
                 new ItemInfo("trade_enabled", "sm_config_774", "sm_config_775"),
                 new ItemInfo("genetics_enabled", "sm_config_776", "sm_config_777"),
+                new ItemInfo("star_gate_enabled", "sm_config_778", "sm_config_779"),
                 new ItemInfo("inner_space_enabled", "sm_config_752", "sm_config_753"),
                 new ItemInfo("inner_space_min_rank", "sm_config_754", "sm_config_755"),
                 new ItemInfo("inner_space_duration", "sm_config_756", "sm_config_757"),
@@ -247,6 +250,7 @@ namespace SuperMech.Code
         public static void SetSanctuaryEnergyRegen(float val) { SanctuaryEnergyRegen = Mathf.Clamp(val, 0f, 10f); }
         public static void SetTradeEnabled(bool val) { TradeEnabled = val; }
         public static void SetGeneticsEnabled(bool val) { GeneticsEnabled = val; }
+        public static void SetStarGateEnabled(bool val) { StarGateEnabled = val; }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }

@@ -123,6 +123,15 @@ namespace SuperMech.Code
             return CivLevel.Normal;
         }
 
+        /// <summary>获取王国文明等级（v0.67.0 星门技术门槛判定用）</summary>
+        public static CivLevel GetCivLevelFromKingdom(Kingdom k)
+        {
+            if (k == null) return CivLevel.Normal;
+            long kid = k.getID();
+            if (_kingdomLevel.TryGetValue(kid, out var level)) return level;
+            return CivLevel.Normal;
+        }
+
         /// <summary>获取单位所属文明科技等级</summary>
         public static int GetTechLevel(Actor a)
         {

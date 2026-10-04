@@ -223,7 +223,15 @@ namespace SuperMech.Code
                 if (dist > 3f)
                 {
                     caravan.moveTo(target.current_tile);
-                    route.progress = Mathf.Min(1f, route.progress + CaravanSpeedPerTick * delta);
+                    // v0.67.0 星际航道：出发势力建有星门则商队走星门跳跃，大幅缩短行程（原著：跨星域星门唯一稳定快速方法）
+                    float starMul = SuperMechStarGate.GetTravelSpeedMultiplier(route.factionA);
+                    float gain = CaravanSpeedPerTick * delta * starMul;
+                    route.progress = Mathf.Min(1f, route.progress + gain);
+                    // 跳跃偏差（原著：星门跨越距离越长越难精确定位，容易出现偏差）
+                    if (starMul > 1f && SuperMechStarGate.TryJumpBias(route.factionA))
+                    {
+                        route.progress = Mathf.Max(0f, route.progress - SuperMechStarGate.GetJumpBiasLoss());
+                    }
                 }
                 else
                 {

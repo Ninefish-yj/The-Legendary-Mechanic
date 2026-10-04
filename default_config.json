@@ -17,6 +17,12 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetGeneticsEnabled"
+    },
+    {
+      "Id": "star_gate_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetStarGateEnabled"
     }
   ],
   "Awakening": [
