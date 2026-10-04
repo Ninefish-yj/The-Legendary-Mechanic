@@ -242,6 +242,17 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (treeMult - 1f));
                     }
+                    // v0.74.0 异神：异能·复刻成长伤害倍率 + 继承者异神之力加成
+                    float esGodMult = SuperMechEsGod.GetEsGodDamageMult(attacker);
+                    if (esGodMult != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (esGodMult - 1f));
+                    }
+                    float inheritorBonus = SuperMechEsGod.GetInheritorBonus(attacker);
+                    if (inheritorBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (inheritorBonus - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
@@ -490,6 +501,13 @@ namespace SuperMech.Code
 
                 // v0.73.0 世界树入侵：击杀世界树单位计入击退进度（树王死亡即击退）
                 SuperMechWorldTree.OnTreeKilled(killer, target);
+
+                // v0.74.0 异神：异神击杀单位→异能·复刻成长；异神被击杀→灵魂逃脱/终局判定
+                if (killer.hasTrait(SuperMechEsGod.EsGodTrait))
+                {
+                    SuperMechEsGod.OnEsGodKill(killer, target);
+                }
+                SuperMechEsGod.OnEsGodKilled(killer, target);
 
                 if (SuperMechAwakened.IsAwakened(killer))
                 {

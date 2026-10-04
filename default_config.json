@@ -83,6 +83,12 @@
       "MinFloatVal": 200.0,
       "MaxFloatVal": 2000.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeInterval"
+    },
+    {
+      "Id": "es_god_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetEsGodEnabled"
     }
   ],
   "Awakening": [

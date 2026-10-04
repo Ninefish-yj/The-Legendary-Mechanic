@@ -277,6 +277,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 世界树按钮失败: {e.Message}"); }
             }
 
+            // 5j. v0.74.0 异神监测（窗口按钮）
+            if (PowerButton.get("sm_esgod_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconSkull")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_esgod_center", () => SuperMechWindowManager.OpenEsGod(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_esgod_title", "sm_ui_esgod_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异神按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {
