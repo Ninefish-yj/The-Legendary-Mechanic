@@ -17,7 +17,7 @@ namespace SuperMech.Code
     {
         public const string PlayerTrait = "sm_player";      // 降临者标记（第四天灾玩家）
 
-        // ==== 玩家面板（原著：生命/体力/六维属性/自由点/潜能/专长） ====
+        // ==== 玩家面板（原著：生命/体力/六维属性/自由点/潜能/经验/专长） ====
         public class PlayerPanelData
         {
             public int vitality;          // 生命值
@@ -31,6 +31,7 @@ namespace SuperMech.Code
             public int luck;              // 幸运
             public int freePoints;        // 自由属性点
             public int potential;         // 潜能点
+            public int experience;        // 经验值（原著：接取任务消耗经验）
             public int kills;             // 累计击杀
             public int contribution;      // 累计任务贡献
         }
@@ -50,6 +51,7 @@ namespace SuperMech.Code
             public int expiresTick;       // 到期tick
             public string publisherName;  // 发布者（最强文明）
             public Dictionary<long, int> contribution = new Dictionary<long, int>();
+            public HashSet<long> accepted = new HashSet<long>(); // 已接取降临者（原著第130章：接取消耗经验）
             public bool settled;
             public string grade;
         }
@@ -101,7 +103,7 @@ namespace SuperMech.Code
                     vitality = 100, stamina = 100,
                     strength = 10, agility = 10, endurance = 10, intelligence = 10,
                     mystery = 5, charm = 5, luck = 5,
-                    freePoints = 5, potential = 1
+                    freePoints = 5, potential = 1, experience = 1000
                 };
                 _data.panels[key] = p;
             }
@@ -164,12 +166,13 @@ namespace SuperMech.Code
                 foreach (var id in done) _respawnTicks.Remove(id);
             }
 
-            // 4. 任务到期结算
+            // 4. 任务到期结算 + 降临者接取任务（原著第130章：接取消耗经验，奖池按贡献度前五分配）
             for (int i = _data.tasks.Count - 1; i >= 0; i--)
             {
                 var t = _data.tasks[i];
                 if (t.settled) { _data.tasks.RemoveAt(i); continue; }
                 if (_tick >= t.expiresTick) SettleTask(t);
+                else AcceptTaskByPlayers(t); // 未到期的任务：在册降临者自动接取（接取消耗经验）
             }
 
             // 5. 自动发布新任务（无进行中任务时，由最强文明发布）
@@ -236,12 +239,31 @@ namespace SuperMech.Code
 
         // ============ 任务系统 ============
 
+        /// <summary>在册降临者自动接取进行中任务（原著第130章：接取消耗经验；经验不足则扣至0）</summary>
+        private static void AcceptTaskByPlayers(TaskData t)
+        {
+            if (t == null || t.settled) return;
+            foreach (var kv in _data.panels)
+            {
+                if (!long.TryParse(kv.Key, out long id)) continue;
+                if (t.accepted.Contains(id)) continue;
+                var a = FindActorById(id);
+                if (a == null || !a.isAlive()) continue;
+
+                var panel = kv.Value;
+                int cost = Mathf.Max(1, (int)t.entryCost);
+                int actual = Mathf.Min(cost, panel.experience);
+                panel.experience -= actual;
+                t.accepted.Add(id);
+            }
+        }
+
         /// <summary>降临者击杀：计入讨伐任务贡献与面板（战斗补丁调用）</summary>
         public static void OnPlayerKill(Actor killer, Actor target)
         {
             if (killer == null || !killer.hasTrait(PlayerTrait)) return;
             var panel = GetOrCreatePanel(killer);
-            if (panel != null) panel.kills++;
+            if (panel != null) { panel.kills++; panel.experience += 10; } // 击杀经验（攒经验→接取任务消耗，闭环）
 
             foreach (var t in _data.tasks)
             {

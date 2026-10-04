@@ -4,25 +4,31 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.72.0 黑星军团·军团命令（原著细还原）
+    /// v0.72.0 黑星军团·军团命令（原著细还原；v0.75.2 修正为原著贡献星级制）
     /// 原著依据：
     ///  1. 黑星佣兵团→黑星军团，信用积分+阵营贡献度体系（原著#333：信用积分120奖励4w5经验+300贡献度，贡献度前三额外奖励）；
     ///  2. 阵营成长-韩萧获利-奖励玩家良性循环（原著#832：任务完成→贡献→奖励→军衔提升→新称号；#729：出征凯旋→玩家赚奖励→回来消费）；
     ///  3. 战争雇佣子任务（原著#580：战争雇佣任务给经验与酬金）；
-    ///  4. 一人即军团：机械军团百万级+械力加成（原著#702）；机械帝皇统领无数机械战兵、军团流巨大加成（原著#753）。
-    /// 真实系统适配：军团长由降临者击杀榜第一担任；成员击杀累积信用积分与军衔；命令=集结/远征；远征期间信用双倍（战争雇佣）。
+    ///  4. 一人即军团：机械军团百万级+械力加成（原著#702）；机械帝皇统领无数机械战兵、军团流巨大加成（原著#753）；
+    ///  5. 贡献星级制（原著#534）：黑星军团共六级——1星~5星+最高级"黑星十八骑"（排行榜前18名5星成员专属）；
+    ///     晋升三要素=信用积分（完成雇佣任务累积）+阵营关系（贡献≥1000达[友好]）+总贡献量
+    ///     （历史累计、消费不减、不降级；1星→2星需总贡献20000点）；贡献可在阵营商店消费（50恩纳=100贡献）。
+    /// 真实系统适配：军团长由降临者击杀榜第一担任；成员击杀累积总贡献（只增不减，消费不减不降级对应原著#534）；
+    /// 星级=1星~5星，击杀榜前18名的5星成员获"黑星十八骑"称号（加成更高，原著：对应收益自然高很多）；
+    /// 命令=集结/远征；远征期间贡献双倍（战争雇佣）。
     /// </summary>
     public static class SuperMechLegion
     {
         public const string CommanderTrait = "sm_legion_commander"; // 军团长
         public const string MemberTrait = "sm_legion_member";      // 军团成员
+        public const string KnightTrait = "sm_blackstar_knight";   // 黑星十八骑（原著#534：排行榜前18名5星成员）
 
         public enum CommandType { None, Rally, Expedition }
 
         public class LegionSaveData
         {
             public long commanderId = -1;
-            public Dictionary<string, int> credit = new Dictionary<string, int>(); // actorId -> 信用积分
+            public Dictionary<string, int> credit = new Dictionary<string, int>(); // actorId -> 总贡献量（原著#534：历史累计、消费不减、不降级）
             public CommandType command = CommandType.None;
             public int commandTicksLeft;
             public int totalKills;
@@ -31,20 +37,20 @@ namespace SuperMech.Code
         private static readonly LegionSaveData _data = new LegionSaveData();
         public static LegionSaveData Data => _data;
 
-        // 军衔阈值（原著：军衔随贡献度提升）
+        // 贡献星级阈值（原著#534：六级制=1星~5星+黑星十八骑；模组贡献尺度等比缩放，晋升只增不减）
         private static readonly (int threshold, string name, float dmgBonus)[] Ranks =
         {
-            (0,    "新兵",   0.00f),
-            (100,  "老兵",   0.05f),
-            (300,  "精锐",   0.10f),
-            (800,  "核心",   0.15f),
-            (2000, "指挥官", 0.20f),
-            (5000, "军团长", 0.30f),
+            (0,    "1星",      0.00f),
+            (100,  "2星",      0.05f),
+            (300,  "3星",      0.10f),
+            (800,  "4星",      0.15f),
+            (2000, "5星",      0.20f),
+            (5000, "黑星十八骑", 0.30f),
         };
 
-        private const int CreditPerKill = 10;          // 每击杀+10信用（原著：阵营贡献度）
+        private const int CreditPerKill = 10;          // 每击杀+10总贡献（原著：阵营贡献度/总贡献历史）
         private const int CommanderCut = 1;            // 军团长每10击杀+1潜能（原著：韩萧获利）
-        private const float ExpeditionCreditMult = 2f; // 战争雇佣：远征期间信用双倍（原著#580）
+        private const float ExpeditionCreditMult = 2f; // 战争雇佣：远征期间贡献双倍（原著#580）
         private const int CommandDurationTicks = 600;  // 命令持续
         private const float MemberCountBonus = 0.02f;  // 每名成员军团长+2%伤害（原著：军团流巨大加成）
 
@@ -98,13 +104,37 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>军衔查询（原著：军衔随贡献度提升）</summary>
+        /// <summary>星级查询（原著#534：1星~5星+黑星十八骑六级制，贡献只增不减）</summary>
         public static (string name, float dmgBonus) GetRank(int credit)
         {
             var current = Ranks[0];
             foreach (var r in Ranks)
                 if (credit >= r.threshold) current = r;
             return (current.name, current.dmgBonus);
+        }
+
+        /// <summary>黑星十八骑判定（原著#534：排行榜前18名的5星成员，收益自然高很多）</summary>
+        public static bool IsEighteenKnight(Actor a)
+        {
+            if (a == null || !a.hasTrait(MemberTrait) && !a.hasTrait(CommanderTrait) && !a.hasTrait(SuperMechPlayer.PlayerTrait)) return false;
+            if (GetCredit(a) < 2000) return false; // 需达5星
+            int rank = GetKillRank(a.id);
+            return rank > 0 && rank <= 18;
+        }
+
+        /// <summary>降临者击杀榜名次（1=榜首）</summary>
+        private static int GetKillRank(long actorId)
+        {
+            var list = new List<KeyValuePair<long, int>>();
+            foreach (var kv in SuperMechPlayer.Data.panels)
+            {
+                if (!long.TryParse(kv.Key, out long id)) continue;
+                list.Add(new KeyValuePair<long, int>(id, kv.Value.kills));
+            }
+            list.Sort((x, y) => y.Value.CompareTo(x.Value));
+            for (int i = 0; i < list.Count; i++)
+                if (list[i].Key == actorId) return i + 1;
+            return -1;
         }
 
         public static int GetCredit(Actor a)
@@ -197,7 +227,7 @@ namespace SuperMech.Code
 
         // ============ 战斗挂接 ============
 
-        /// <summary>军团成员击杀：信用积分+军衔成长；军团长获益（原著：阵营成长-韩萧获利-奖励玩家）</summary>
+        /// <summary>军团成员击杀：总贡献+星级成长；军团长获益（原著：阵营成长-韩萧获利-奖励玩家）</summary>
         public static void OnLegionKill(Actor killer, Actor target)
         {
             if (killer == null) return;
@@ -205,7 +235,7 @@ namespace SuperMech.Code
             bool isMember = killer.hasTrait(MemberTrait) || killer.hasTrait(CommanderTrait);
             if (!isPlayer && !isMember) return;
 
-            // 信用积分（战争雇佣期间双倍，原著#580）
+            // 总贡献量（只增不减，原著#534：即使消费/花掉也不降级）
             int gain = CreditPerKill;
             if (_data.command == CommandType.Expedition) gain = (int)(gain * ExpeditionCreditMult);
             _data.credit[killer.id.ToString()] = GetCredit(killer) + gain;
@@ -219,7 +249,7 @@ namespace SuperMech.Code
                     SuperMechPotential.AddPotential(commander, CommanderCut);
             }
 
-            // 成员自动挂军衔标记（避免重复遍历）
+            // 成员自动挂军团标记（避免重复遍历）
             if (!killer.hasTrait(MemberTrait) && !killer.hasTrait(CommanderTrait))
                 killer.addTrait(MemberTrait);
         }
@@ -231,11 +261,12 @@ namespace SuperMech.Code
             return 1f + MemberCount * MemberCountBonus;
         }
 
-        /// <summary>成员军衔伤害加成</summary>
+        /// <summary>成员星级伤害加成（原著#534：黑星十八骑收益高很多）</summary>
         public static float GetMemberBonus(Actor a)
         {
             if (a == null) return 1f;
             if (!a.hasTrait(MemberTrait) && !a.hasTrait(CommanderTrait) && !a.hasTrait(SuperMechPlayer.PlayerTrait)) return 1f;
+            if (IsEighteenKnight(a)) return 1f + Ranks[5].dmgBonus;
             var (_, dmg) = GetRank(GetCredit(a));
             return 1f + dmg;
         }

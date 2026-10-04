@@ -102,7 +102,8 @@ namespace SuperMech.Code
                 {
                     var p = kv.Value;
                     sb.Append("· ").Append(kv.Key.name != null ? kv.Key.name : "玩家")
-                      .Append("  [击").Append(p.kills).Append(" 贡").Append(p.contribution).Append("]\n");
+                      .Append("  [击").Append(p.kills).Append(" 贡").Append(p.contribution)
+                      .Append(" 经").Append(p.experience).Append("]\n");
                 }
             }
             _panelText.text = sb.ToString();
