@@ -104,7 +104,7 @@ namespace SuperMech.Code
             }
 
             // 3. 圣所（窗口按钮，用SimpleButton直接绑定Action）
-            // v0.75.14: 窗口入口已迁入「超神」Tab（SuperMechTab），神权栏不再放窗口按钮
+            // v0.75.27: 圣所恢复为神权栏单独按钮；窗口入口聚合在「星海总览」大面板（下方按钮4）
 
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)

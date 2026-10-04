@@ -42,6 +42,19 @@ namespace SuperMech.Code
         public static readonly Color SectionBg = new Color(0.30f, 0.24f, 0.17f, 0.95f);
         public static readonly Color CloseRed = new Color(0.65f, 0.25f, 0.20f, 0.95f);
 
+        // ═════════════════════ 星海总览大面板：冷色科幻色板（参考诸天神座 palette）═════════════════════
+        public static readonly Color SciBg = new Color(0.067f, 0.094f, 0.153f, 0.96f);      // #111827 面板底
+        public static readonly Color SciCard = new Color(0.094f, 0.133f, 0.208f, 0.92f);    // #182235 卡片
+        public static readonly Color SciCardHover = new Color(0.13f, 0.20f, 0.30f, 0.96f);  // 悬浮（青调提亮）
+        public static readonly Color SciCardActive = new Color(0.06f, 0.10f, 0.16f, 0.98f); // 按下
+        public static readonly Color SciBorder = new Color(0.196f, 0.263f, 0.353f, 0.9f);   // #32435A 边框
+        public static readonly Color SciGold = new Color(0.91f, 0.765f, 0.416f, 1f);        // #E8C36A 金色标题
+        public static readonly Color SciCyan = new Color(0.286f, 0.843f, 0.89f, 1f);        // #49D7E3 青色高亮
+        public static readonly Color SciPurple = new Color(0.608f, 0.482f, 1f, 1f);         // #9B7BFF 紫色
+        public static readonly Color SciDanger = new Color(0.89f, 0.365f, 0.416f, 1f);      // #E35D6A 战斗红
+        public static readonly Color SciText = new Color(0.91f, 0.93f, 0.96f, 1f);          // #E8EDF5 正文
+        public static readonly Color SciMuted = new Color(0.576f, 0.643f, 0.737f, 1f);      // #93A4BC 次要
+
         // ═════════════════════════ Sprite属性 ═════════════════════════
         public static Sprite Panel => EnsureInit() ? _panelSprite : null;
         public static Sprite ButtonNormalSprite => EnsureInit() ? _buttonNormal : null;
@@ -179,6 +192,44 @@ namespace SuperMech.Code
             btn.spriteState = spriteState;
             var btnText = MakeText(go.transform, text, fontSize, TextAnchor.MiddleCenter);
             btnText.color = TextColor;
+            if (onClick != null) btn.onClick.AddListener(() => onClick());
+            return btn;
+        }
+
+        /// <summary>星海总览大面板卡片按钮：纯色卡片 + 左侧组色条 + 悬浮提亮（冷色科幻风）</summary>
+        public static Button MakeSciCardButton(Transform parent, string text, Color accent, System.Action onClick)
+        {
+            var go = new GameObject("SciCard");
+            go.transform.SetParent(parent, false);
+            var img = go.AddComponent<Image>();
+            img.color = SciCard;
+            var btn = go.AddComponent<Button>();
+            btn.transition = Selectable.Transition.ColorTint;
+            var colors = btn.colors;
+            colors.normalColor = SciCard;
+            colors.highlightedColor = SciCardHover;
+            colors.pressedColor = SciCardActive;
+            colors.selectedColor = SciCard;
+            colors.fadeDuration = 0.08f;
+            btn.colors = colors;
+
+            // 左侧组色条
+            var barGo = new GameObject("AccentBar");
+            barGo.transform.SetParent(go.transform, false);
+            var bar = barGo.AddComponent<Image>();
+            bar.color = accent;
+            var br = barGo.GetComponent<RectTransform>();
+            br.anchorMin = new Vector2(0, 0); br.anchorMax = new Vector2(0, 1);
+            br.pivot = new Vector2(0, 0.5f);
+            br.offsetMin = new Vector2(0, 6);
+            br.offsetMax = new Vector2(4, -6);
+
+            var label = MakeText(go.transform, text, 13, TextAnchor.MiddleCenter);
+            label.color = SciText;
+            var tr = label.GetComponent<RectTransform>();
+            tr.offsetMin = new Vector2(10, 0);
+            tr.offsetMax = new Vector2(-4, 0);
+
             if (onClick != null) btn.onClick.AddListener(() => onClick());
             return btn;
         }
