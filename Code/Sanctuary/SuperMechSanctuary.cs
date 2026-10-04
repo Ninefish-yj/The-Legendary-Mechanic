@@ -87,7 +87,7 @@ namespace SuperMech.Code
             public int[] sanctuary_fragments = new int[6];
             public int total_permission = 0;
             public int total_visits = 0;
-            public bool message_board_unlocked = false;
+            public bool message_board_unlocked = true; // v0.75.21: 默认解锁（原著无门槛），内容分级看圣所权限
             public int total_divinity_ascensions = 0;
             public int total_resurrections = 0;
             public float sanctuary_energy = 5000f;  // 圣所能量（复活媒介消耗）
@@ -248,12 +248,8 @@ namespace SuperMech.Code
             }
             Data.key_fragments -= cost;
             Data.total_visits++;
-
-            if (Data.total_visits >= 3 && !Data.message_board_unlocked)
-            {
-                Data.message_board_unlocked = true;
-                Debug.Log("[超神机械师] 文明留言板已解锁！");
-            }
+            // v0.75.21: 留言板默认全解锁（原著chapter1267：韩萧首次进圣所即见光幕留言板，无访问次数门槛）
+            // 内容分级按圣所权限（权限高→空缺少→留言全，原著"权限高了才能减少空缺"）在 ShowMessageBoard 内实现
 
             int authority = GetAuthority(a, sanctuaryIndex >= 0 ? sanctuaryIndex : 0);
             int knowledgeGain = Mathf.Clamp(authority + 1, 1, 20);
