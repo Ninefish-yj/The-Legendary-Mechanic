@@ -106,7 +106,10 @@ namespace SuperMech.Code
             if (Random.value < compatibility)
             {
                 g.sublimations++;
-                Debug.Log($"[超神机械师] {a.name} 基因升华成功！进入第 {g.sublimations} 次基因进化");
+                // v0.70.x 升华力量爆发：自动获得攻击强化Buff（原著：进化带来战力暴涨）
+                SuperMechCombatEnhance.ApplyBuff(a, SuperMechCombatEnhance.BuffAtk,
+                    SuperMechCombatEnhance.BuffDurationTicks, SuperMechCombatEnhance.BuffAtkValue);
+                Debug.Log($"[超神机械师] {a.name} 基因升华成功！进入第 {g.sublimations} 次基因进化（获得攻击强化）");
                 SuperMechEventBus.Publish("GeneSublimated", new GeneEvent { actorId = a.id, sublimations = g.sublimations });
                 return true;
             }

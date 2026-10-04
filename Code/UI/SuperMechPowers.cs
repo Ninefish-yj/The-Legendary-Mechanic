@@ -192,6 +192,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 情报按钮失败: {e.Message}"); }
             }
 
+            // 5g. v0.70.x 战斗核心（窗口按钮）
+            if (PowerButton.get("sm_combat_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconCombat")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_combat_center", () => SuperMechWindowManager.OpenCombatEnhance(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_combat_title", "sm_ui_combat_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 战斗按钮失败: {e.Message}"); }
+            }
+
             // 5f. v0.69.0 宇宙异兽观测站（窗口按钮）
             if (PowerButton.get("sm_beast_center") == null)
             {

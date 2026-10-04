@@ -187,6 +187,25 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (SuperMechCosmicBeast.BeastDamageMult - 1f));
                     }
+                    // v0.70.x 伤害分区与抗性：物理/能量抗性百分比减伤，攻击者穿透无视部分抗性（原著：上限90%）
+                    float resistance = SuperMechCombatEnhance.GetEffectiveResistance(target, attacker);
+                    if (resistance > 0f)
+                    {
+                        target.data.health += (int)(pDamage * resistance);
+                    }
+                    // v0.70.x Buff：攻击强化/防御强化（原著：战斗增益）
+                    float atkBuff = SuperMechCombatEnhance.GetBuffDamageBonus(attacker);
+                    if (atkBuff != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (atkBuff - 1f));
+                    }
+                    float defBuff = SuperMechCombatEnhance.GetBuffDefenseBonus(target);
+                    if (defBuff != 1f)
+                    {
+                        target.data.health += (int)(pDamage * (1f - defBuff));
+                    }
+                    // v0.70.x 控制判定（精神眩晕/生理眩晕/力量碾压，原著第7/143章）
+                    SuperMechCombatEnhance.TryApplyControl(attacker, target);
                     // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
                     float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
                     if (proxyBonus != 1f)

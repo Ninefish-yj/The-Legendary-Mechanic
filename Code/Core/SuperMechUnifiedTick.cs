@@ -101,6 +101,7 @@ namespace SuperMech.Code
                 SafeRun("星门航道", () => SuperMechStarGate.TickStarGates());
                 SafeRun("情报系统", () => SuperMechIntel.TickIntel(1.25f));
                 SafeRun("宇宙异兽", () => SuperMechCosmicBeast.TickCosmicBeasts(1.25f));
+                SafeRun("战斗Buff", () => SuperMechCombatEnhance.TickBuffs());
             }
 
             float now = Time.time;
@@ -158,6 +159,7 @@ namespace SuperMech.Code
             removed += SuperMechFaction.CleanupDead(alive);
             removed += SuperMechTrade.CleanupDead(alive);
             removed += SuperMechGenetics.CleanupDead(alive);
+            removed += SuperMechCombatEnhance.CleanupDead(alive);
             removed += SuperMechActorContextRegistry.CleanupDead(alive);
         }
 
@@ -205,6 +207,7 @@ namespace SuperMech.Code
             try { SuperMechStarGate.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarGate"); }
             try { SuperMechIntel.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechIntel"); }
             try { SuperMechCosmicBeast.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCosmicBeast"); }
+            try { SuperMechCombatEnhance.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCombatEnhance"); }
         }
     }
 }

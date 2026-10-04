@@ -50,6 +50,7 @@ namespace SuperMech.Code
             public SuperMechStarGate.StarGateSaveData starGates = new SuperMechStarGate.StarGateSaveData();
             public SuperMechIntel.IntelSaveData intel = new SuperMechIntel.IntelSaveData();
             public SuperMechCosmicBeast.CosmicBeastSaveData cosmicBeasts = new SuperMechCosmicBeast.CosmicBeastSaveData();
+            public SuperMechCombatEnhance.CombatEnhanceSaveData combatEnhance = new SuperMechCombatEnhance.CombatEnhanceSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -284,6 +285,8 @@ namespace SuperMech.Code
                 data.intel = SuperMechIntel.Save();
                 // 保存宇宙异兽数据（v0.69.0）
                 data.cosmicBeasts = SuperMechCosmicBeast.Save();
+                // 保存战斗核心数据（v0.70.x）
+                data.combatEnhance = SuperMechCombatEnhance.Save();
 
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
@@ -336,6 +339,8 @@ namespace SuperMech.Code
                 if (data.intel != null) SuperMechIntel.Load(data.intel);
                 // 加载宇宙异兽数据（v0.69.0）
                 if (data.cosmicBeasts != null) SuperMechCosmicBeast.Load(data.cosmicBeasts);
+                // 加载战斗核心数据（v0.70.x）
+                if (data.combatEnhance != null) SuperMechCombatEnhance.Load(data.combatEnhance);
 
                 _pendingLoad = data;
                 _loadPending = true;

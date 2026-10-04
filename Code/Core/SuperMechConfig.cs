@@ -58,6 +58,8 @@ namespace SuperMech.Code
         /// <summary>宇宙异兽体系总开关（v0.69.0，原著：评级标准之外的宇宙威胁）</summary>
         public static bool CosmicBeastEnabled = true;
         public static float CosmicBeastInterval = 500f; // 异兽入侵间隔（tick）
+        /// <summary>战斗核心总开关（v0.70.x，原著：伤害分区/抗性/控制/Buff）</summary>
+        public static bool CombatEnhanceEnabled = true;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -197,6 +199,7 @@ namespace SuperMech.Code
                 new ItemInfo("intel_enabled", "sm_config_780", "sm_config_781"),
                 new ItemInfo("cosmic_beast_enabled", "sm_config_782", "sm_config_783"),
                 new ItemInfo("cosmic_beast_interval", "sm_config_784", "sm_config_785"),
+                new ItemInfo("combat_enhance_enabled", "sm_config_786", "sm_config_787"),
                 new ItemInfo("inner_space_enabled", "sm_config_752", "sm_config_753"),
                 new ItemInfo("inner_space_min_rank", "sm_config_754", "sm_config_755"),
                 new ItemInfo("inner_space_duration", "sm_config_756", "sm_config_757"),
@@ -262,6 +265,7 @@ namespace SuperMech.Code
         public static void SetIntelEnabled(bool val) { IntelEnabled = val; }
         public static void SetCosmicBeastEnabled(bool val) { CosmicBeastEnabled = val; }
         public static void SetCosmicBeastInterval(float val) { CosmicBeastInterval = Mathf.Clamp(val, 150f, 800f); }
+        public static void SetCombatEnhanceEnabled(bool val) { CombatEnhanceEnabled = val; }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }

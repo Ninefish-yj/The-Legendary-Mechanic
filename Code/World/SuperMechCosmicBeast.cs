@@ -142,7 +142,10 @@ namespace SuperMech.Code
             if (best != null)
             {
                 SuperMechPotential.AddPotential(best, 10 + b.strength * 5);
-                Debug.Log($"[超神机械师] {best.name} 获得异兽素材潜能奖励 +{10 + b.strength * 5}");
+                // v0.70.x 异兽素材强化：击杀者获得攻击强化Buff（原著：异兽浑身是宝）
+                SuperMechCombatEnhance.ApplyBuff(best, SuperMechCombatEnhance.BuffAtk,
+                    SuperMechCombatEnhance.BuffDurationTicks, SuperMechCombatEnhance.BuffAtkValue);
+                Debug.Log($"[超神机械师] {best.name} 获得异兽素材潜能奖励 +{10 + b.strength * 5} 与攻击强化");
             }
         }
 

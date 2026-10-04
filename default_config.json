@@ -43,6 +43,12 @@
       "MinFloatVal": 150.0,
       "MaxFloatVal": 800.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetCosmicBeastInterval"
+    },
+    {
+      "Id": "combat_enhance_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCombatEnhanceEnabled"
     }
   ],
   "Awakening": [
