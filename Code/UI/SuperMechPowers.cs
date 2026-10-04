@@ -126,6 +126,46 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 宇宙迭代按钮失败: {e.Message}"); }
             }
 
+            // 4. 星海总览（窗口按钮，点击打开17个系统窗口入口总览）
+            if (PowerButton.get("sm_overview_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_overview_open", () =>
+                    {
+                        SuperMechWindowManager.OpenOverview();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_overview_open", "sm_overview_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星海总览按钮失败: {e.Message}"); }
+            }
+
+            // 5. 圣所（窗口按钮，点击打开圣所：钥匙/留言板/文明遗产）
+            if (PowerButton.get("sm_sanctuary_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_sanctuary_open", () =>
+                    {
+                        SuperMechWindowManager.OpenSanctuary();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_sanctuary_open", "sm_sanctuary_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 圣所按钮失败: {e.Message}"); }
+            }
+
             if (created > 0)
             {
                 _modTab.UpdateLayout();

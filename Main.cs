@@ -63,7 +63,6 @@ namespace SuperMech
             Debug.Log("[超神机械师] Harmony Patch 完成（单位面板注入+战斗挂钩）");
 
             SuperMechSaveData.Load();
-            SuperMechTab.Init();
             SuperMechWindowManager.Init();
 
             Debug.Log("[超神机械师] Phase 1 系统注册完成");

@@ -4663,5 +4663,9 @@
   "trait_sm_disaster_infected": "异化怪物",
   "trait_sm_disaster_infected_info": "被异化原体（生化武器）感染的狂暴生物，伤害与血量畸变强化，敌视一切。",
   "sm_tab_panel_title": "星海总览",
-  "sm_tab_panel_desc": "超能者个人成长与星海世界系统总览：知识、技能、阶位、战斗、异兽、贸易、基因、星际、情报、势力、圣所、世界树、异神"
+  "sm_tab_panel_desc": "超能者个人成长与星海世界系统总览：知识、技能、阶位、战斗、异兽、贸易、基因、星际、情报、势力、圣所、世界树、异神",
+  "sm_overview_open": "星海总览",
+  "sm_overview_open_desc": "模组全部系统窗口入口：成长、战斗、世界、终局四组共17个系统",
+  "sm_sanctuary_open": "圣所",
+  "sm_sanctuary_open_desc": "打开圣所：钥匙、留言板与宇宙文明遗产"
 }

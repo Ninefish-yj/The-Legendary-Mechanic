@@ -37,6 +37,7 @@ namespace SuperMech.Code
         public static void OpenEsGod() { ToggleWindow("esgod", "sm_ui_esgod_title", 640, 520, DrawEsGodContent); }
         public static void OpenForge() { ToggleWindow("forge", "sm_ui_forge_title", 640, 520, DrawForgeContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
+        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 520, 560, SuperMechTab.DrawOverviewContent); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
         {
