@@ -33,6 +33,7 @@ namespace SuperMech.Code
         public static void OpenCombatEnhance() { ToggleWindow("combat", "sm_ui_combat_title", 640, 520, DrawCombatEnhanceContent); }
         public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 520, DrawPlayerContent); }
         public static void OpenLegion() { ToggleWindow("legion", "sm_ui_legion_title", 640, 520, DrawLegionContent); }
+        public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 520, DrawWorldTreeContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
@@ -214,6 +215,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechLegionView>();
+        }
+
+        private static void DrawWorldTreeContent(RectTransform content)
+        {
+            var go = new GameObject("WorldTreeView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechWorldTreeView>();
         }
 
         public static void CloseAll()

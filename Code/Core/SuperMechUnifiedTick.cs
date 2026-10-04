@@ -104,6 +104,7 @@ namespace SuperMech.Code
                 SafeRun("战斗Buff", () => SuperMechCombatEnhance.TickBuffs());
                 SafeRun("玩家降临", () => SuperMechPlayer.TickPlayer(1.25f));
                 SafeRun("黑星军团", () => SuperMechLegion.TickLegion(1.25f));
+                SafeRun("世界树入侵", () => SuperMechWorldTree.TickWorldTree(1.25f));
             }
 
             float now = Time.time;
@@ -214,6 +215,7 @@ namespace SuperMech.Code
             try { SuperMechCombatEnhance.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCombatEnhance"); }
             try { SuperMechPlayer.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPlayer"); }
             try { SuperMechLegion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechLegion"); }
+            try { SuperMechWorldTree.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechWorldTree"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
         }
     }

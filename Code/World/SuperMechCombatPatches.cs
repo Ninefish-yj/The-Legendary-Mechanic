@@ -226,6 +226,22 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (legionBonus - 1f));
                     }
+                    // v0.73.0 世界树入侵：星际联合军加成（入侵期间非树单位伤害+5%）/ 世界树单位凶性（伤害×1.15~1.6）
+                    float unionBonus = SuperMechWorldTree.GetUnionDamageBonus(attacker);
+                    if (unionBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (unionBonus - 1f));
+                    }
+                    float unionDef = SuperMechWorldTree.GetUnionDefenseBonus(target);
+                    if (unionDef != 1f)
+                    {
+                        target.data.health += (int)(pDamage * (1f - unionDef));
+                    }
+                    float treeMult = SuperMechWorldTree.GetTreeDamageMult(attacker);
+                    if (treeMult != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (treeMult - 1f));
+                    }
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
@@ -471,6 +487,9 @@ namespace SuperMech.Code
 
                 // v0.72.0 黑星军团：军团成员击杀计入信用积分/军衔成长/军团长收益
                 SuperMechLegion.OnLegionKill(killer, target);
+
+                // v0.73.0 世界树入侵：击杀世界树单位计入击退进度（树王死亡即击退）
+                SuperMechWorldTree.OnTreeKilled(killer, target);
 
                 if (SuperMechAwakened.IsAwakened(killer))
                 {

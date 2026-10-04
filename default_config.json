@@ -69,6 +69,20 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetLegionEnabled"
+    },
+    {
+      "Id": "world_tree_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeEnabled"
+    },
+    {
+      "Id": "world_tree_interval",
+      "Type": "SLIDER",
+      "FloatVal": 400.0,
+      "MinFloatVal": 200.0,
+      "MaxFloatVal": 2000.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeInterval"
     }
   ],
   "Awakening": [

@@ -66,6 +66,10 @@ namespace SuperMech.Code
         public static int PlayerSpawnIntervalTicks = 60;
         /// <summary>黑星军团·军团命令总开关（v0.72.0，原著：黑星军团信用积分/军团通缉/一人即军团）</summary>
         public static bool LegionEnabled = true;
+        /// <summary>世界树文明入侵总开关（v0.73.0，原著：5.0版本世界树入侵/星际联合军）</summary>
+        public static bool WorldTreeEnabled = true;
+        /// <summary>世界树入侵间隔（tick，默认400）</summary>
+        public static float WorldTreeInterval = 400f;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -275,6 +279,8 @@ namespace SuperMech.Code
         public static void SetPlayerEnabled(bool val) { PlayerEnabled = val; }
         public static void SetPlayerSpawnIntervalTicks(int val) { PlayerSpawnIntervalTicks = Mathf.Clamp(val, 20, 600); }
         public static void SetLegionEnabled(bool val) { LegionEnabled = val; }
+        public static void SetWorldTreeEnabled(bool val) { WorldTreeEnabled = val; }
+        public static void SetWorldTreeInterval(float val) { WorldTreeInterval = Mathf.Clamp(val, 200f, 2000f); }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }

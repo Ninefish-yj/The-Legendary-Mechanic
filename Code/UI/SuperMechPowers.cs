@@ -260,6 +260,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 黑星军团按钮失败: {e.Message}"); }
             }
 
+            // 5i. v0.73.0 世界树入侵监测（窗口按钮）
+            if (PowerButton.get("sm_world_tree_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconTree")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_world_tree_center", () => SuperMechWindowManager.OpenWorldTree(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_tree_title", "sm_ui_tree_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 世界树按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {

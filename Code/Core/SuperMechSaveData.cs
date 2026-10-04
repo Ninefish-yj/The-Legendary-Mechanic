@@ -53,6 +53,7 @@ namespace SuperMech.Code
             public SuperMechCombatEnhance.CombatEnhanceSaveData combatEnhance = new SuperMechCombatEnhance.CombatEnhanceSaveData();
             public SuperMechPlayer.PlayerSaveData player = new SuperMechPlayer.PlayerSaveData();
             public SuperMechLegion.LegionSaveData legion = new SuperMechLegion.LegionSaveData();
+            public SuperMechWorldTree.WorldTreeSaveData worldTree = new SuperMechWorldTree.WorldTreeSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -347,6 +348,8 @@ namespace SuperMech.Code
                 if (data.player != null) SuperMechPlayer.Load(data.player);
                 // 加载黑星军团数据（v0.72.0）
                 if (data.legion != null) SuperMechLegion.Load(data.legion);
+                // 加载世界树入侵数据（v0.73.0）
+                if (data.worldTree != null) SuperMechWorldTree.Load(data.worldTree);
 
                 _pendingLoad = data;
                 _loadPending = true;
