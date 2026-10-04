@@ -70,6 +70,29 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>按订阅ID取消订阅（Subscribe 返回的 ID）</summary>
+        public static void Unsubscribe(string eventName, int subscriptionId)
+        {
+            if (!_handlers.TryGetValue(eventName, out var list)) return;
+            for (int i = list.Count - 1; i >= 0; i--)
+            {
+                if (list[i].GetHashCode() == subscriptionId)
+                {
+                    list.RemoveAt(i);
+                    break;
+                }
+            }
+            if (list.Count == 0) _handlers.Remove(eventName);
+        }
+
+        /// <summary>按委托直接取消订阅</summary>
+        public static void Unsubscribe(string eventName, Delegate handler)
+        {
+            if (!_handlers.TryGetValue(eventName, out var list)) return;
+            list.Remove(handler);
+            if (list.Count == 0) _handlers.Remove(eventName);
+        }
+
         /// <summary>清空所有订阅（世界重置时调用）</summary>
         public static void Clear()
         {

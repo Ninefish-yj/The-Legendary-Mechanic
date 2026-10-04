@@ -164,6 +164,20 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * 0.5f);
                     }
+                    // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
+                    float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
+                    if (proxyBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (proxyBonus - 1f));
+                    }
+                    // v0.56.0 法术实际战斗效果
+                    ApplySpellCombatEffects(attacker, target, pDamage);
+                }
+
+                // 独立战斗增强区（不依赖势力系统开关）：基因/情报/异兽/伤害分区/Buff/控制
+                // 各系统方法内部已检查自身 enabled 配置，关闭对应系统即失效
+                if (attacker != null && attacker.isAlive())
+                {
                     // v0.66.0 基因科研伤害加成（原著：基因链是力量基础，基因优化提升战力）
                     float geneBonus = SuperMechGenetics.GetGeneDamageBonus(attacker);
                     if (geneBonus != 1f)
@@ -187,7 +201,7 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (SuperMechCosmicBeast.BeastDamageMult - 1f));
                     }
-                    // v0.70.x 伤害分区与抗性：物理/能量抗性百分比减伤，攻击者穿透无视部分抗性（原著：上限90%）
+                    // v0.70.x 伤害分区与抗性：物理/能量/精神抗性百分比减伤，攻击者穿透无视部分抗性（原著：上限90%）
                     float resistance = SuperMechCombatEnhance.GetEffectiveResistance(target, attacker);
                     if (resistance > 0f)
                     {
@@ -206,14 +220,6 @@ namespace SuperMech.Code
                     }
                     // v0.70.x 控制判定（精神眩晕/生理眩晕/力量碾压，原著第7/143章）
                     SuperMechCombatEnhance.TryApplyControl(attacker, target);
-                    // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
-                    float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
-                    if (proxyBonus != 1f)
-                    {
-                        target.data.health -= (int)(pDamage * (proxyBonus - 1f));
-                    }
-                    // v0.56.0 法术实际战斗效果
-                    ApplySpellCombatEffects(attacker, target, pDamage);
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))

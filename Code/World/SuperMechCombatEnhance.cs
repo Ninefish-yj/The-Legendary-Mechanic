@@ -78,10 +78,20 @@ namespace SuperMech.Code
             return Mathf.Min(0.9f, pen);
         }
 
-        /// <summary>实际减免：抗性-穿透（原著：穿透无视抗性）</summary>
+        /// <summary>攻击者是否为精神系（念力/异能 mind、psi 职业或终极知识），决定走精神抗性分区</summary>
+        public static bool IsPsychicAttacker(Actor attacker)
+        {
+            if (attacker == null) return false;
+            if (attacker.hasTrait(SuperMechTraits.ClassPsi) || attacker.hasTrait(SuperMechTraits.ClassMind)) return true;
+            return SuperMechKnowledge.HasUltimateKnowledge(attacker, "mind") || SuperMechKnowledge.HasUltimateKnowledge(attacker, "psi");
+        }
+
+        /// <summary>实际减免：抗性-穿透（原著：穿透无视抗性）；精神系攻击走精神抗性分区（原著：耐力不减精神伤害）</summary>
         public static float GetEffectiveResistance(Actor target, Actor attacker)
         {
-            float resist = GetBaseResistance(target, false);
+            if (!SuperMechConfig.CombatEnhanceEnabled) return 0f;
+            bool psychic = IsPsychicAttacker(attacker);
+            float resist = GetBaseResistance(target, psychic);
             float pen = GetPenetration(attacker, target);
             return Mathf.Clamp(resist - pen, 0f, ResistanceMax);
         }
@@ -105,7 +115,7 @@ namespace SuperMech.Code
 
         public static float GetBuffDamageBonus(Actor a)
         {
-            if (a == null) return 1f;
+            if (!SuperMechConfig.CombatEnhanceEnabled || a == null) return 1f;
             if (!_buffs.TryGetValue(a.id, out var list)) return 1f;
             float bonus = 0f;
             foreach (var b in list) if (b.id == BuffAtk) bonus += b.value;
@@ -114,7 +124,7 @@ namespace SuperMech.Code
 
         public static float GetBuffDefenseBonus(Actor a)
         {
-            if (a == null) return 1f;
+            if (!SuperMechConfig.CombatEnhanceEnabled || a == null) return 1f;
             if (!_buffs.TryGetValue(a.id, out var list)) return 1f;
             float bonus = 0f;
             foreach (var b in list) if (b.id == BuffDef) bonus += b.value;

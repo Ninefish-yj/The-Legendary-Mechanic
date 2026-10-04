@@ -208,6 +208,7 @@ namespace SuperMech.Code
             try { SuperMechIntel.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechIntel"); }
             try { SuperMechCosmicBeast.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCosmicBeast"); }
             try { SuperMechCombatEnhance.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCombatEnhance"); }
+            try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
         }
     }
 }
