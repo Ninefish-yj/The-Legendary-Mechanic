@@ -7,54 +7,12 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetModEnabled"
     },
     {
-      "Id": "trade_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetTradeEnabled"
-    },
-    {
-      "Id": "genetics_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetGeneticsEnabled"
-    },
-    {
-      "Id": "star_gate_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetStarGateEnabled"
-    },
-    {
-      "Id": "intel_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetIntelEnabled"
-    },
-    {
-      "Id": "cosmic_beast_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetCosmicBeastEnabled"
-    },
-    {
       "Id": "cosmic_beast_interval",
       "Type": "SLIDER",
       "FloatVal": 500.0,
       "MinFloatVal": 150.0,
       "MaxFloatVal": 800.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetCosmicBeastInterval"
-    },
-    {
-      "Id": "combat_enhance_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetCombatEnhanceEnabled"
-    },
-    {
-      "Id": "player_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerEnabled"
     },
     {
       "Id": "player_spawn_interval",
@@ -65,36 +23,12 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerSpawnIntervalTicks"
     },
     {
-      "Id": "legion_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetLegionEnabled"
-    },
-    {
-      "Id": "world_tree_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeEnabled"
-    },
-    {
       "Id": "world_tree_interval",
       "Type": "SLIDER",
       "FloatVal": 400.0,
       "MinFloatVal": 200.0,
       "MaxFloatVal": 2000.0,
       "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeInterval"
-    },
-    {
-      "Id": "es_god_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetEsGodEnabled"
-    },
-    {
-      "Id": "forge_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetForgeEnabled"
     }
   ],
   "Awakening": [
@@ -180,19 +114,34 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetShowRankInPanel"
     }
   ],
-  "AutoFavorite": [
+  "Combat": [
     {
-      "Id": "auto_favorite_enabled",
+      "Id": "combat_suppression_enabled",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCombatSuppressionEnabled"
     },
     {
-      "Id": "auto_favorite_min_rank",
-      "Type": "SELECT",
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteMinRank",
-      "IntVal": 9,
-      "MaxIntVal": 14
+      "Id": "combat_suppression_intensity",
+      "Type": "SLIDER",
+      "FloatVal": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressIntensity",
+      "MinFloatVal": 0.1,
+      "MaxFloatVal": 3.0
+    },
+    {
+      "Id": "spirit_pierce_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceEnabled"
+    },
+    {
+      "Id": "spirit_pierce_ratio",
+      "Type": "SLIDER",
+      "FloatVal": 0.3,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceRatio",
+      "MinFloatVal": 0.0,
+      "MaxFloatVal": 1.0
     }
   ],
   "Sanctuary": [
@@ -255,102 +204,6 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnergyRegen"
     }
   ],
-  "Mech": [
-    {
-      "Id": "mech_summon_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMechSummonEnabled"
-    },
-    {
-      "Id": "max_summoned_units",
-      "Type": "INT_SLIDER",
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxSummonedUnits",
-      "IntVal": 50,
-      "MinIntVal": 0,
-      "MaxIntVal": 500
-    }
-  ],
-  "Refinement": [
-    {
-      "Id": "refinement_bonus",
-      "Type": "SLIDER",
-      "FloatVal": 2.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetRefinementBonus",
-      "MinFloatVal": 0.0,
-      "MaxFloatVal": 10.0
-    }
-  ],
-  "Relic": [
-    {
-      "Id": "relic_drop_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropEnabled"
-    },
-    {
-      "Id": "relic_drop_rate",
-      "Type": "SLIDER",
-      "FloatVal": 0.01,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropRate",
-      "MinFloatVal": 0.0,
-      "MaxFloatVal": 0.5
-    }
-  ],
-  "Performance": [
-    {
-      "Id": "tick_interval",
-      "Type": "SLIDER",
-      "FloatVal": 1.25,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetTickInterval",
-      "MinFloatVal": 1.0,
-      "MaxFloatVal": 60.0
-    },
-    {
-      "Id": "max_tracked_actors",
-      "Type": "INT_SLIDER",
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxTrackedActors",
-      "IntVal": 500,
-      "MinIntVal": 50,
-      "MaxIntVal": 5000
-    },
-    {
-      "Id": "log_verbose",
-      "Type": "SWITCH",
-      "BoolVal": false,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetLogVerbose"
-    }
-  ],
-  "Combat": [
-    {
-      "Id": "combat_suppression_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetCombatSuppressionEnabled"
-    },
-    {
-      "Id": "combat_suppression_intensity",
-      "Type": "SLIDER",
-      "FloatVal": 1.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuppressIntensity",
-      "MinFloatVal": 0.1,
-      "MaxFloatVal": 3.0
-    },
-    {
-      "Id": "spirit_pierce_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceEnabled"
-    },
-    {
-      "Id": "spirit_pierce_ratio",
-      "Type": "SLIDER",
-      "FloatVal": 0.3,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceRatio",
-      "MinFloatVal": 0.0,
-      "MaxFloatVal": 1.0
-    }
-  ],
   "Fusion": [
     {
       "Id": "fusion_single_mul_cap",
@@ -367,58 +220,6 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetFusionTotalMulCap",
       "MinFloatVal": 1.0,
       "MaxFloatVal": 20.0
-    }
-  ],
-  "EventLog": [
-    {
-      "Id": "event_log_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true
-    },
-    {
-      "Id": "event_log_awaken_min_talent",
-      "Type": "INT_SLIDER",
-      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogAwakenMinTalent",
-      "IntVal": 3,
-      "MinIntVal": 0,
-      "MaxIntVal": 6
-    },
-    {
-      "Id": "event_log_promotion_min_rank",
-      "Type": "SELECT",
-      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogPromotionMinRank",
-      "IntVal": 7,
-      "MaxIntVal": 14
-    },
-    {
-      "Id": "event_log_fusion_enabled",
-      "Type": "SWITCH",
-      "BoolVal": false
-    },
-    {
-      "Id": "event_log_spell_enabled",
-      "Type": "SWITCH",
-      "BoolVal": false
-    },
-    {
-      "Id": "event_log_sanctuary_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true
-    },
-    {
-      "Id": "event_log_iteration_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true
-    },
-    {
-      "Id": "event_log_resurrection_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true
-    },
-    {
-      "Id": "event_log_concept_reshape_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true
     }
   ],
   "AI": [
@@ -458,7 +259,109 @@
       "MaxIntVal": 50
     }
   ],
-  "InnerSpace": [
+  "Advanced": [
+    {
+      "Id": "trade_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetTradeEnabled"
+    },
+    {
+      "Id": "genetics_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetGeneticsEnabled"
+    },
+    {
+      "Id": "star_gate_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetStarGateEnabled"
+    },
+    {
+      "Id": "intel_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetIntelEnabled"
+    },
+    {
+      "Id": "cosmic_beast_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCosmicBeastEnabled"
+    },
+    {
+      "Id": "combat_enhance_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCombatEnhanceEnabled"
+    },
+    {
+      "Id": "player_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerEnabled"
+    },
+    {
+      "Id": "legion_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetLegionEnabled"
+    },
+    {
+      "Id": "world_tree_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeEnabled"
+    },
+    {
+      "Id": "es_god_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetEsGodEnabled"
+    },
+    {
+      "Id": "forge_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetForgeEnabled"
+    },
+    {
+      "Id": "mech_summon_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetMechSummonEnabled"
+    },
+    {
+      "Id": "max_summoned_units",
+      "Type": "INT_SLIDER",
+      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxSummonedUnits",
+      "IntVal": 50,
+      "MinIntVal": 0,
+      "MaxIntVal": 500
+    },
+    {
+      "Id": "relic_drop_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropEnabled"
+    },
+    {
+      "Id": "relic_drop_rate",
+      "Type": "SLIDER",
+      "FloatVal": 0.01,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetRelicDropRate",
+      "MinFloatVal": 0.0,
+      "MaxFloatVal": 0.5
+    },
+    {
+      "Id": "refinement_bonus",
+      "Type": "SLIDER",
+      "FloatVal": 2.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetRefinementBonus",
+      "MinFloatVal": 0.0,
+      "MaxFloatVal": 10.0
+    },
     {
       "Id": "inner_space_enabled",
       "Type": "SWITCH",
@@ -504,6 +407,40 @@
       "MinFloatVal": 0.0,
       "MaxFloatVal": 0.5,
       "Callback": "SuperMech.Code.SuperMechConfig:SetInnerSpaceDamageReduction"
+    },
+    {
+      "Id": "tick_interval",
+      "Type": "SLIDER",
+      "FloatVal": 1.25,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetTickInterval",
+      "MinFloatVal": 1.0,
+      "MaxFloatVal": 60.0
+    },
+    {
+      "Id": "max_tracked_actors",
+      "Type": "INT_SLIDER",
+      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxTrackedActors",
+      "IntVal": 500,
+      "MinIntVal": 50,
+      "MaxIntVal": 5000
+    },
+    {
+      "Id": "log_verbose",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetLogVerbose"
+    },
+    {
+      "Id": "event_log_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true
+    },
+    {
+      "Id": "event_log_promotion_min_rank",
+      "Type": "SELECT",
+      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogPromotionMinRank",
+      "IntVal": 7,
+      "MaxIntVal": 14
     }
   ]
 }

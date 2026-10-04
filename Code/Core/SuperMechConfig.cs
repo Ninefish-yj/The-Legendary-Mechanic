@@ -240,6 +240,7 @@ namespace SuperMech.Code
                 new CatInfo("Combat", "sm_config_621"),
                 new CatInfo("EventLog", "sm_config_710"),
                 new CatInfo("AI", "sm_config_729"),
+                new CatInfo("Advanced", "sm_config_adv"),
             };
             foreach (var c in categories)
                 LocalizedTextManager.add(c.key, LocalizedTextManager.getText(c.name), pReplace: true);
