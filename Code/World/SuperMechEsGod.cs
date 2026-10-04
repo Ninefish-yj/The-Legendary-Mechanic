@@ -4,17 +4,26 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.74.0 异神·最终决战（原著细还原）
-    /// 原著依据：
-    ///  1. 异神身份：凶名赫赫的巅峰超A级强者"异能之神"，黑雾身躯+红色光点，能力"神速""维度夹缝"等，
-    ///     曾以分身压制韩萧[703]；多次作为反派与韩萧对抗（起点：超A级强者，非超神级）；
-    ///  2. 韩萧晋升超神级（超神机械师，掌控宇宙机械法则）后，最终决战以【神体要塞】+【机械神灵·至高天尊】
-    ///     三招秒杀异神[1394]；异神灵魂逃脱后卷土重来，终被彻底终结（抖音：最终对决韩萧以超神级实力击杀e神）；
-    ///  3. 异神核心异能【异能·复刻】：近身接触吸收目标异能基因，以基因链形式储存、不会随目标死亡消失（起点角色简介）；
-    ///  4. 异神养成计划（原著#1040：异能·复刻出现在埃文斯身上，与异神核心能力相同），能力由埃文斯继承。
+    /// v0.74.0 异神·最终决战（原著细还原；v0.75.4 按原著文件逐字核查修正）
+    /// 原著依据（均为原著正文原文，已对照用户提供的原著文件核验）：
+    ///  1. 异神身份：超A级"异能之神"（第703章：'【异神】——意思是"异能之神"，一个凶名赫赫超A级强者'；
+    ///     '黑雾身躯，红色光点'；绰号"堕落者方舟之主/疯狂信徒的引路人/灭世之潮/生灵屠杀者"；
+    ///     异神本体=高德，第1392章韩萧称其为"异神"、被埃文斯夺走异能）；
+    ///  2. 异神战力（第805章压倒性）：'投入无数年搜集异能，不知道身怀多少种能力的怪物'；
+    ///     '以自身超A级属性作为驱动的力量源泉'；'一人就能压制三人（韩萧/艾默丝/贝奥尼），游刃有余'；
+    ///     '无法同一时间动用太多种异能，会给基因链带来极大的负荷'；
+    ///  3. 异神核心异能【异能·复刻】（第1040章：'这是异神的核心能力'——吸收他人异能、
+    ///     以基因链储存，异神被韩萧关进时空琥珀；第1392章还施彼身：埃文斯以【异能·复刻】
+    ///     夺走异神本体高德的异能，即"能力由埃文斯继承"）；
+    ///  4. 最终终结（第1415章战力碾压：韩萧为超神机械师，驾驭【机械神灵·至高天尊】机体，
+    ///     '仅仅是一次平A，威能便和毁天灭地的大招无异'；韩萧以时空琥珀封印世界树秘树王）。
+    /// 注："三招秒杀[1394]"为不实引用（原著'三招'全文0次，第1394章为赤色帝国政治戏），已于v0.75.4删除；
+    ///     "灵魂逃脱"原著无此词（第703/1040/1392章均描述为封印/夺能），模组"首杀→卷土重来"机制
+    ///     对应原著"异神被关进时空琥珀后卷土重来"（第1040章回顾+第1417/1429章卷土重来）。
     /// 真实系统适配：异神为巅峰超A级单体威胁（全模组最强单体反派、最终决战对象），周期降临；
-    /// 击杀单位触发异能·复刻成长（击杀越多越强）；首次击杀仅触发灵魂逃脱（冷却后卷土重来），
-    /// 再次击杀才最终决战结算（能力由继承者获得）。定位为 B 线最高强度单体事件，非全书终局。
+    /// 击杀单位触发异能·复刻成长（击杀越多越强，对应原著：吸收异能变强）；首次击杀对应"被封印
+    /// 于时空琥珀"（冷却后卷土重来），再次击杀才最终决战结算（能力由继承者获得）。定位为 B 线最高
+    /// 强度单体事件，非全书终局（全书大结局为6.0版本【全境入侵】，韩萧回到地球）。
     /// </summary>
     public static class SuperMechEsGod
     {
@@ -28,7 +37,7 @@ namespace SuperMech.Code
             public EventState state = EventState.Idle;
             public int nextSpawnInTicks = 600;   // 距下次降临
             public int replicateCount;           // 异能·复刻层数（击杀数）
-            public int soulEscapes;              // 灵魂逃脱次数
+            public int soulEscapes;              // 封印/卷土重来次数（首次封印于时空琥珀）
             public bool finalDefeated;           // 是否已被终局消灭
             public long esGodId = -1;            // 异神单位id
         }
@@ -40,7 +49,7 @@ namespace SuperMech.Code
         private const float EsGodDamageMult = 2.5f;        // 异神伤害倍率（原著：巅峰超A级碾压普通单位）
         private const float ReplicateGainPerKill = 0.05f;  // 异能·复刻：每击杀+5%伤害（原著：夺取异能变强）
         private const float ReplicateMax = 0.50f;          // 复刻成长上限+50%
-        private const int SoulEscapeCooldown = 900;        // 灵魂逃脱后卷土重来冷却
+        private const int SoulEscapeCooldown = 900;        // 封印时空琥珀后卷土重来冷却
         private const int PotentialFinalReward = 10;       // 最终决战奖励：全体觉醒潜能+10
         private const int TechFinalReward = 100;           // 最终决战奖励：最强文明科技+100
         private const float InheritorDamageBonus = 0.30f;  // 继承者伤害+30%（原著：能力由埃文斯继承）
@@ -82,7 +91,7 @@ namespace SuperMech.Code
             }
             else if (_data.state == EventState.SoulEscaped)
             {
-                // 灵魂逃脱：冷却后卷土重来（原著：异神灵魂逃脱卷土重来）
+                // 卷土重来（原著：异神被关进时空琥珀后卷土重来[1040回顾/1417/1429]）
                 _data.nextSpawnInTicks--;
                 if (_data.nextSpawnInTicks <= 0) SpawnEsGod();
             }
@@ -114,7 +123,7 @@ namespace SuperMech.Code
             _data.replicateCount++;
         }
 
-        /// <summary>战斗挂接：异神被击杀（原著：灵魂逃脱卷土重来/最终决战）</summary>
+        /// <summary>战斗挂接：异神被击杀（原著：被封印于时空琥珀后卷土重来[1040/1417/1429]/最终决战[1392/1415]）</summary>
         public static void OnEsGodKilled(Actor killer, Actor target)
         {
             if (target == null || !target.hasTrait(EsGodTrait)) return;
@@ -122,26 +131,26 @@ namespace SuperMech.Code
 
             if (_data.finalDefeated)
             {
-                // 已终局消灭过，不再复活
+                // 已最终决战消灭过，不再复活
                 _data.state = EventState.Defeated;
                 return;
             }
 
-            // 已灵魂逃脱过一次：本次为卷土重来后的终局决战（原著：最终决战击杀异神）
+            // 已卷土重来过一次：本次为再次决战的终局（原著第1392章还施彼身：埃文斯以异能·复刻夺走异神本体能力）
             if (_data.soulEscapes > 0)
             {
                 ConfirmFinalDefeat(killer, target);
                 return;
             }
 
-            // 首次击杀：灵魂逃脱，卷土重来（原著：灵魂逃脱后卷土重来）
+            // 首次击杀：异神被封印于时空琥珀（原著：异神被韩萧关进时空琥珀[1040回顾]），冷却后卷土重来
             _data.soulEscapes++;
             _data.state = EventState.SoulEscaped;
             _data.nextSpawnInTicks = SoulEscapeCooldown;
-            Debug.Log($"[超神机械师] 【异神】异神被击退，但灵魂逃脱！将在 {SoulEscapeCooldown} tick 后卷土重来");
+            Debug.Log($"[超神机械师] 【异神】异神被击退，封印于时空琥珀！将在 {SoulEscapeCooldown} tick 后卷土重来");
         }
 
-        /// <summary>异神终局确认：当异神在灵魂逃脱后再次被击杀时，由战斗补丁调用，判定终局</summary>
+        /// <summary>异神最终决战确认：异神卷土重来后再次被击杀时，由战斗补丁调用，判定终局（原著第1392章还施彼身）</summary>
         public static void ConfirmFinalDefeat(Actor killer, Actor target)
         {
             if (target == null || !target.hasTrait(EsGodTrait)) return;
