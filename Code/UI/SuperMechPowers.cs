@@ -74,18 +74,7 @@ namespace SuperMech.Code
             }
 
             // 3. 圣所（窗口按钮，用SimpleButton直接绑定Action）
-            // v0.75.13: 神权栏收敛——17个窗口入口收纳进总览窗口，神权栏只留总览+神力按钮
-            if (PowerButton.get("sm_overview_center") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_overview_center", () => SuperMechWindowManager.OpenOverview(), icon);
-                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
-                }
-                catch (System.Exception) { }
-            }
+            // v0.75.14: 窗口入口已迁入「超神」Tab（SuperMechTab），神权栏不再放窗口按钮
 
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)

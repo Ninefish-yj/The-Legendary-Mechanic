@@ -1,4 +1,5 @@
 using System;
+using NeoModLoader;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,7 +12,9 @@ namespace SuperMech.Code
         {
             if (_font == null)
             {
-                _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                // v0.75.14: 参考诸天神座——NML官方字体(current_font)优先，中文支持且永不为null
+                _font = LocalizedTextManager.current_font;
+                if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 if (_font == null) _font = Resources.GetBuiltinResource<Font>("Arial.ttf");
                 if (_font == null)
                 {

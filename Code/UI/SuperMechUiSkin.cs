@@ -58,7 +58,8 @@ namespace SuperMech.Code
         {
             get
             {
-                var f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                var f = LocalizedTextManager.current_font;
+                if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 if (f == null) f = Resources.GetBuiltinResource<Font>("Arial.ttf");
                 return f;
             }
