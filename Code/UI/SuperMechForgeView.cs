@@ -5,8 +5,8 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.75.0 锻炉权限树窗口：机械系权限榜 + 职业称号 + 资源阈值说明
-    /// 机制：锻炉权限树（权限等级1~13匹配资源阈值）、机械系职业链13阶（入门者→…→神座）
+    /// v0.75.0 机械权限体系窗口：机械系权限榜 + 职业称号 + 资源阈值说明
+    /// 机制：机械权限体系（权限等级1~13匹配资源阈值）、机械系职业链13阶（入门者→…→神座）
     /// </summary>
     public class SuperMechForgeView : MonoBehaviour
     {

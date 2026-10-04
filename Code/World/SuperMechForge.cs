@@ -4,12 +4,11 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.75.0 机械系权限体系（内部命名"锻炉权限树"；v0.75.3 修正原著依据，v0.75.5 清理剧情）
-    /// 机制：机械系单位击杀累积锻炉资源，资源达阈值（10+权限级×5）自动提升权限等级（1~13）；
+    /// v0.75.0 机械系权限体系（v0.75.3 修正原著依据，v0.75.5 清理剧情，v0.75.7 清理废弃命名）
+    /// 机制：机械系单位击杀累积机械资源，资源达阈值（10+权限级×5）自动提升权限等级（1~13）；
     /// 权限决定机械伤害加成（每级+1.5%，上限19.5%）与机械称号（13阶职业链）；
     /// 权限与资源阈值挂钩（能力匹配权限等级、升级需资源）。
     /// 原著：五级知识权限（#47）/13阶职业链（#48/#234/#356/#661/#1388；超神=X级尽头）。
-    /// 注："锻炉权限树/第287章建立"为不实来源（原著无此专名），系统名仅为内部命名。
     /// </summary>
     public static class SuperMechForge
     {
@@ -42,7 +41,7 @@ namespace SuperMech.Code
 
         // 数值（原著：资源阈值驱动，杜绝战力膨胀）
         private const int MaxPermission = 13;           // 权限上限（原著13阶职业）
-        private const int ResourcePerKill = 1;          // 机械系每击杀+1锻炉资源
+        private const int ResourcePerKill = 1;          // 机械系每击杀+1机械资源
         private const int ThresholdBase = 10;           // 权限1级阈值
         private const int ThresholdPerLevel = 5;        // 每级递增5资源
         private const float DamagePerPermission = 0.015f; // 每权限级+1.5%机械伤害（上限13级→19.5%）
@@ -93,7 +92,7 @@ namespace SuperMech.Code
 
         // ============ 战斗挂接 ============
 
-        /// <summary>机械系单位击杀：累积锻炉资源并自动提升权限（原著：资源阈值驱动成长）</summary>
+        /// <summary>机械系单位击杀：累积机械资源并自动提升权限（资源阈值驱动成长）</summary>
         public static void OnMechKill(Actor killer, Actor target)
         {
             if (!SuperMechConfig.ForgeEnabled || killer == null) return;
@@ -109,7 +108,7 @@ namespace SuperMech.Code
             {
                 _data.resources[key] -= threshold;
                 _data.permission[key] = perm + 1;
-                Debug.Log($"[超神机械师] 锻炉权限提升：{(killer.name != null ? killer.name : "机械师")} 权限{perm + 1}级（{GetTitle(perm + 1)}）");
+                Debug.Log($"[超神机械师] 机械权限提升：{(killer.name != null ? killer.name : "机械师")} 权限{perm + 1}级（{GetTitle(perm + 1)}）");
             }
         }
 

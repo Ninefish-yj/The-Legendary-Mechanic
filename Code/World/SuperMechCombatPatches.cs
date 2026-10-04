@@ -220,7 +220,7 @@ namespace SuperMech.Code
                     }
                     // v0.70.x 控制判定（精神眩晕/生理眩晕/力量碾压，原著第7/143章）
                     SuperMechCombatEnhance.TryApplyControl(attacker, target);
-                    // v0.72.0 黑星军团加成：军团长军团流加成×成员军衔加成（原著：一人即军团/机械帝皇军团流）
+                    // v0.72.0 黑星军团加成：军团长军团流加成×成员星级加成（原著：一人即军团/机械帝皇军团流）
                     float legionBonus = SuperMechLegion.GetCommanderBonus(attacker) * SuperMechLegion.GetMemberBonus(attacker);
                     if (legionBonus != 1f)
                     {
@@ -253,7 +253,7 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (inheritorBonus - 1f));
                     }
-                    // v0.75.0 锻炉权限树：机械系权限伤害加成（原著第287章：能力匹配权限等级）
+                    // v0.75.0 机械权限体系：机械系权限伤害加成
                     float forgeBonus = SuperMechForge.GetMechDamageBonus(attacker);
                     if (forgeBonus != 1f)
                     {
@@ -502,7 +502,7 @@ namespace SuperMech.Code
                     SuperMechPlayer.OnPlayerKill(killer, target);
                 }
 
-                // v0.72.0 黑星军团：军团成员击杀计入信用积分/军衔成长/军团长收益
+                // v0.72.0 黑星军团：军团成员击杀计入贡献/星级成长/军团长收益
                 SuperMechLegion.OnLegionKill(killer, target);
 
                 // v0.73.0 世界树入侵：击杀世界树单位计入击退进度（树王死亡即击退）
@@ -515,7 +515,7 @@ namespace SuperMech.Code
                 }
                 SuperMechEsGod.OnEsGodKilled(killer, target);
 
-                // v0.75.0 锻炉权限树：机械系击杀累积锻炉资源并自动提升权限（原著：资源阈值驱动成长）
+                // v0.75.0 机械权限体系：机械系击杀累积机械资源并自动提升权限（资源阈值驱动成长）
                 SuperMechForge.OnMechKill(killer, target);
 
                 if (SuperMechAwakened.IsAwakened(killer))

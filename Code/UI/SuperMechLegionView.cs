@@ -5,7 +5,7 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.72.0 黑星军团窗口：编制统计 + 信用军衔榜 + 军团命令（集结/远征）
+    /// v0.72.0 黑星军团窗口：编制统计 + 贡献星级榜 + 军团命令（集结/远征）
     /// 机制：贡献星级制（总贡献晋升/消费不降级）、黑星十八骑、集结/远征命令、远征贡献双倍
     /// </summary>
     public class SuperMechLegionView : MonoBehaviour
@@ -34,7 +34,7 @@ namespace SuperMech.Code
             countRect.offsetMin = new Vector2(8, 0);
             countRect.offsetMax = new Vector2(-8, 0);
 
-            // 中：信用军衔榜
+            // 中：贡献星级榜
             var creditPanel = SuperMechUiBuilder.CreatePanel(transform, "CreditPanel", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var cpRect = creditPanel.GetComponent<RectTransform>();
             cpRect.anchorMin = new Vector2(0, 1);
@@ -107,7 +107,7 @@ namespace SuperMech.Code
                 + LocalizedTextManager.getText("sm_ui_legion_member_count") + " " + SuperMechLegion.MemberCount
                 + " | " + LocalizedTextManager.getText("sm_ui_legion_commander") + " " + cmdName;
 
-            // 信用军衔榜 Top6
+            // 贡献星级榜 Top6
             var sb = new System.Text.StringBuilder();
             sb.Append(LocalizedTextManager.getText("sm_ui_legion_credit_title")).Append("\n");
             var top = GetTopCredit(6);

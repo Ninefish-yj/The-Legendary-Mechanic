@@ -72,7 +72,7 @@ namespace SuperMech.Code
         public static float WorldTreeInterval = 400f;
         /// <summary>异神终局总开关（v0.74.0：封印时空琥珀→卷土重来→最终决战）</summary>
         public static bool EsGodEnabled = true;
-        /// <summary>锻炉权限树总开关（v0.75.0，原著第287章：能力匹配权限等级与资源阈值）</summary>
+        /// <summary>机械权限体系总开关（v0.75.0）</summary>
         public static bool ForgeEnabled = true;
 
         // === 超神内空间（v0.47.0，原著第1430章）===

@@ -294,7 +294,7 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异神按钮失败: {e.Message}"); }
             }
 
-            // 5k. v0.75.0 锻炉权限树（窗口按钮）
+            // 5k. v0.75.0 机械权限体系（窗口按钮）
             if (PowerButton.get("sm_forge_center") == null)
             {
                 try
@@ -308,7 +308,7 @@ namespace SuperMech.Code
                         _modTab.AddPowerButton("tools", pb); created++;
                     }
                 }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 锻炉权限树按钮失败: {e.Message}"); }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 机械权限体系按钮失败: {e.Message}"); }
             }
 
             // 6. 宇宙迭代（大重启）
