@@ -47,6 +47,7 @@ namespace SuperMech.Code
                 return;
             }
             var newWin = SuperMechUguiWindow.Create(id, titleKey, w, h);
+            if (newWin == null) return;
             _windows[id] = newWin;
             drawContent?.Invoke(newWin.Content);
         }

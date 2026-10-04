@@ -17,8 +17,12 @@ namespace SuperMech.Code
 
         void Awake()
         {
-            BuildLayout();
-            RefreshGrid();
+            try
+            {
+                BuildLayout();
+                RefreshGrid();
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] BagView初始化失败: " + e); }
         }
 
         private void BuildLayout()

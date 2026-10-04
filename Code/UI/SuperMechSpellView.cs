@@ -217,8 +217,12 @@ namespace SuperMech.Code
 
         void OnEnable()
         {
-            RefreshList();
-            RefreshDetail();
+            try
+            {
+                RefreshList();
+                RefreshDetail();
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] SpellView刷新失败: " + e); }
         }
     }
 }

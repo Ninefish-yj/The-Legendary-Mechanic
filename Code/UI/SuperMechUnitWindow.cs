@@ -22,7 +22,7 @@ namespace SuperMech.Code
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning($"[超神机械师] 单位面板信息注入异常: {e.Message}");
+                Debug.LogError("[超神机械师] 单位面板信息注入异常: " + e);
             }
         }
 

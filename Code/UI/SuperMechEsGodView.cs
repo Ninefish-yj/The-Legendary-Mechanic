@@ -14,7 +14,7 @@ namespace SuperMech.Code
 
         void Awake() { try { BuildLayout(); } catch (System.Exception e) { Debug.LogError("[超神机械师] EsGodView初始化失败: " + e); } }
         void OnEnable() { try { RefreshAll(); } catch (System.Exception e) { Debug.LogError("[超神机械师] EsGodView刷新失败: " + e); } }
-        void Update() { try { RefreshAll(); } catch (System.Exception e) { if (!_warnedRefresh) { _warnedRefresh = true; Debug.LogWarning($"[超神机械师] 异神监测窗口刷新异常(仅首次): " + e.Message); } } }
+        void Update() { try { RefreshAll(); } catch (System.Exception e) { if (!_warnedRefresh) { _warnedRefresh = true; Debug.LogError($"[超神机械师] 异神监测窗口刷新异常(仅首次): " + e.Message); } } }
 
         private void BuildLayout()
         {

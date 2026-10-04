@@ -53,7 +53,16 @@ namespace SuperMech.Code
             rect.offsetMax = Vector2.zero;
 
             _instance = go.AddComponent<SuperMechSanctuaryView>();
-            _instance.Build();
+            try
+            {
+                _instance.Build();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 圣所窗口构建失败: " + e);
+                _instance.Close();
+                _instance = null;
+            }
         }
 
         public void Close()

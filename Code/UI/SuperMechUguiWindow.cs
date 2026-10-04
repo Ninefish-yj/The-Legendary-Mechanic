@@ -62,7 +62,16 @@ namespace SuperMech.Code
             var window = go.AddComponent<SuperMechUguiWindow>();
             window.WindowId = id;
             window.Rect = rect;
-            window.BuildUI(titleKey);
+            try
+            {
+                window.BuildUI(titleKey);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 窗口构建失败(" + id + "): " + e);
+                UnityEngine.Object.Destroy(go);
+                return null;
+            }
             window.IsOpen = true;
             return window;
         }
