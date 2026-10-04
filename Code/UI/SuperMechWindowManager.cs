@@ -37,7 +37,29 @@ namespace SuperMech.Code
         public static void OpenEsGod() { ToggleWindow("esgod", "sm_ui_esgod_title", 640, 520, DrawEsGodContent); }
         public static void OpenForge() { ToggleWindow("forge", "sm_ui_forge_title", 640, 520, DrawForgeContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
-        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 660, 640, SuperMechTab.DrawOverviewContent); }
+        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent); }
+
+        /// <summary>星海总览工作台页签映射：key=本地化键，draw=内嵌内容绘制；draw==null 表示点击开独立窗口（圣所）</summary>
+        internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
+        {
+            ("sm_ui_knowledge", DrawKnowledgeContent),
+            ("sm_ui_bag", DrawBagContent),
+            ("sm_ui_spell_entry", DrawSpellContent),
+            ("sm_ui_craft", DrawCraftContent),
+            ("sm_ui_rank_window_title", DrawRankContent),
+            ("sm_ui_combat_title", DrawCombatEnhanceContent),
+            ("sm_ui_beast_title", DrawCosmicBeastContent),
+            ("sm_ui_trade_title", DrawTradeContent),
+            ("sm_ui_genetics_title", DrawGeneticsContent),
+            ("sm_ui_stargate_title", DrawStarGateContent),
+            ("sm_ui_intel_title", DrawIntelContent),
+            ("sm_ui_faction_window_title", DrawFactionContent),
+            ("sm_ui_sanctuary", null),
+            ("sm_ui_player_title", DrawPlayerContent),
+            ("sm_ui_legion_title", DrawLegionContent),
+            ("sm_ui_tree_title", DrawWorldTreeContent),
+            ("sm_ui_esgod_title", DrawEsGodContent),
+        };
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
         {
@@ -53,7 +75,7 @@ namespace SuperMech.Code
             drawContent?.Invoke(newWin.Content);
         }
 
-        private static void DrawKnowledgeContent(RectTransform content)
+        internal static void DrawKnowledgeContent(RectTransform content)
         {
             var go = new GameObject("KnowledgeView");
             go.transform.SetParent(content, false);
@@ -65,7 +87,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechKnowledgeView>();
         }
 
-        private static void DrawBagContent(RectTransform content)
+        internal static void DrawBagContent(RectTransform content)
         {
             var go = new GameObject("BagView");
             go.transform.SetParent(content, false);
@@ -77,7 +99,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechBagView>();
         }
 
-        private static void DrawSpellContent(RectTransform content)
+        internal static void DrawSpellContent(RectTransform content)
         {
             var go = new GameObject("SpellView");
             go.transform.SetParent(content, false);
@@ -89,7 +111,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechSpellView>();
         }
 
-        private static void DrawCraftContent(RectTransform content)
+        internal static void DrawCraftContent(RectTransform content)
         {
             var go = new GameObject("CraftView");
             go.transform.SetParent(content, false);
@@ -101,7 +123,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechCraftView>();
         }
 
-        private static void DrawRankContent(RectTransform content)
+        internal static void DrawRankContent(RectTransform content)
         {
             var go = new GameObject("RankView");
             go.transform.SetParent(content, false);
@@ -113,7 +135,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechRankView>();
         }
 
-        private static void DrawFactionContent(RectTransform content)
+        internal static void DrawFactionContent(RectTransform content)
         {
             var go = new GameObject("FactionView");
             go.transform.SetParent(content, false);
@@ -125,7 +147,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechFactionView>();
         }
 
-        private static void DrawTradeContent(RectTransform content)
+        internal static void DrawTradeContent(RectTransform content)
         {
             var go = new GameObject("TradeView");
             go.transform.SetParent(content, false);
@@ -137,7 +159,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechTradeView>();
         }
 
-        private static void DrawGeneticsContent(RectTransform content)
+        internal static void DrawGeneticsContent(RectTransform content)
         {
             var go = new GameObject("GeneticsView");
             go.transform.SetParent(content, false);
@@ -149,7 +171,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechGeneticsView>();
         }
 
-        private static void DrawStarGateContent(RectTransform content)
+        internal static void DrawStarGateContent(RectTransform content)
         {
             var go = new GameObject("StarGateView");
             go.transform.SetParent(content, false);
@@ -161,7 +183,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechStarGateView>();
         }
 
-        private static void DrawIntelContent(RectTransform content)
+        internal static void DrawIntelContent(RectTransform content)
         {
             var go = new GameObject("IntelView");
             go.transform.SetParent(content, false);
@@ -173,7 +195,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechIntelView>();
         }
 
-        private static void DrawCosmicBeastContent(RectTransform content)
+        internal static void DrawCosmicBeastContent(RectTransform content)
         {
             var go = new GameObject("CosmicBeastView");
             go.transform.SetParent(content, false);
@@ -185,7 +207,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechCosmicBeastView>();
         }
 
-        private static void DrawCombatEnhanceContent(RectTransform content)
+        internal static void DrawCombatEnhanceContent(RectTransform content)
         {
             var go = new GameObject("CombatEnhanceView");
             go.transform.SetParent(content, false);
@@ -197,7 +219,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechCombatEnhanceView>();
         }
 
-        private static void DrawPlayerContent(RectTransform content)
+        internal static void DrawPlayerContent(RectTransform content)
         {
             var go = new GameObject("PlayerView");
             go.transform.SetParent(content, false);
@@ -209,7 +231,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechPlayerView>();
         }
 
-        private static void DrawLegionContent(RectTransform content)
+        internal static void DrawLegionContent(RectTransform content)
         {
             var go = new GameObject("LegionView");
             go.transform.SetParent(content, false);
@@ -221,7 +243,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechLegionView>();
         }
 
-        private static void DrawWorldTreeContent(RectTransform content)
+        internal static void DrawWorldTreeContent(RectTransform content)
         {
             var go = new GameObject("WorldTreeView");
             go.transform.SetParent(content, false);
@@ -233,7 +255,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechWorldTreeView>();
         }
 
-        private static void DrawEsGodContent(RectTransform content)
+        internal static void DrawEsGodContent(RectTransform content)
         {
             var go = new GameObject("EsGodView");
             go.transform.SetParent(content, false);
@@ -245,7 +267,7 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechEsGodView>();
         }
 
-        private static void DrawForgeContent(RectTransform content)
+        internal static void DrawForgeContent(RectTransform content)
         {
             var go = new GameObject("ForgeView");
             go.transform.SetParent(content, false);

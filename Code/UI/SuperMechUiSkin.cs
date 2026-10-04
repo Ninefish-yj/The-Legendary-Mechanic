@@ -196,44 +196,6 @@ namespace SuperMech.Code
             return btn;
         }
 
-        /// <summary>星海总览大面板卡片按钮：纯色卡片 + 左侧组色条 + 悬浮提亮（冷色科幻风）</summary>
-        public static Button MakeSciCardButton(Transform parent, string text, Color accent, System.Action onClick)
-        {
-            var go = new GameObject("SciCard");
-            go.transform.SetParent(parent, false);
-            var img = go.AddComponent<Image>();
-            img.color = SciCard;
-            var btn = go.AddComponent<Button>();
-            btn.transition = Selectable.Transition.ColorTint;
-            var colors = btn.colors;
-            colors.normalColor = SciCard;
-            colors.highlightedColor = SciCardHover;
-            colors.pressedColor = SciCardActive;
-            colors.selectedColor = SciCard;
-            colors.fadeDuration = 0.08f;
-            btn.colors = colors;
-
-            // 左侧组色条
-            var barGo = new GameObject("AccentBar");
-            barGo.transform.SetParent(go.transform, false);
-            var bar = barGo.AddComponent<Image>();
-            bar.color = accent;
-            var br = barGo.GetComponent<RectTransform>();
-            br.anchorMin = new Vector2(0, 0); br.anchorMax = new Vector2(0, 1);
-            br.pivot = new Vector2(0, 0.5f);
-            br.offsetMin = new Vector2(0, 6);
-            br.offsetMax = new Vector2(4, -6);
-
-            var label = MakeText(go.transform, text, 13, TextAnchor.MiddleCenter);
-            label.color = SciText;
-            var tr = label.GetComponent<RectTransform>();
-            tr.offsetMin = new Vector2(10, 0);
-            tr.offsetMax = new Vector2(-4, 0);
-
-            if (onClick != null) btn.onClick.AddListener(() => onClick());
-            return btn;
-        }
-
         /// <summary>添加立体描边（顶高光+底阴影）</summary>
         public static void Add3DEdges(RectTransform target)
         {
