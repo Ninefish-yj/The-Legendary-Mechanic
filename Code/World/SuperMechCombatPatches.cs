@@ -441,6 +441,9 @@ namespace SuperMech.Code
 
             try
             {
+                // v0.71.0 第四天灾：降临者死亡后进入复活队列（玩家不死不灭）
+                SuperMechPlayer.OnPlayerDeath(target);
+
                 Actor killer = pAttacker as Actor;
                 if (killer == null || !killer.isAlive() || killer.data == null) return;
 
@@ -453,6 +456,12 @@ namespace SuperMech.Code
                 }
 
                 SuperMechLegend.OnKill(killer, target);
+
+                // v0.71.0 玩家降临：降临者击杀计入讨伐任务贡献（原著：玩家为黑星打工）
+                if (killer.hasTrait(SuperMechPlayer.PlayerTrait))
+                {
+                    SuperMechPlayer.OnPlayerKill(killer, target);
+                }
 
                 if (SuperMechAwakened.IsAwakened(killer))
                 {

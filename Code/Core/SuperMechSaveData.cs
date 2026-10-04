@@ -51,6 +51,7 @@ namespace SuperMech.Code
             public SuperMechIntel.IntelSaveData intel = new SuperMechIntel.IntelSaveData();
             public SuperMechCosmicBeast.CosmicBeastSaveData cosmicBeasts = new SuperMechCosmicBeast.CosmicBeastSaveData();
             public SuperMechCombatEnhance.CombatEnhanceSaveData combatEnhance = new SuperMechCombatEnhance.CombatEnhanceSaveData();
+            public SuperMechPlayer.PlayerSaveData player = new SuperMechPlayer.PlayerSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -341,6 +342,8 @@ namespace SuperMech.Code
                 if (data.cosmicBeasts != null) SuperMechCosmicBeast.Load(data.cosmicBeasts);
                 // 加载战斗核心数据（v0.70.x）
                 if (data.combatEnhance != null) SuperMechCombatEnhance.Load(data.combatEnhance);
+                // 加载玩家降临数据（v0.71.0）
+                if (data.player != null) SuperMechPlayer.Load(data.player);
 
                 _pendingLoad = data;
                 _loadPending = true;

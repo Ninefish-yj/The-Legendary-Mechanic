@@ -31,6 +31,7 @@ namespace SuperMech.Code
         public static void OpenIntel() { ToggleWindow("intel", "sm_ui_intel_title", 640, 520, DrawIntelContent); }
         public static void OpenCosmicBeast() { ToggleWindow("beast", "sm_ui_beast_title", 640, 520, DrawCosmicBeastContent); }
         public static void OpenCombatEnhance() { ToggleWindow("combat", "sm_ui_combat_title", 640, 520, DrawCombatEnhanceContent); }
+        public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 520, DrawPlayerContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
@@ -188,6 +189,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechCombatEnhanceView>();
+        }
+
+        private static void DrawPlayerContent(RectTransform content)
+        {
+            var go = new GameObject("PlayerView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechPlayerView>();
         }
 
         public static void CloseAll()

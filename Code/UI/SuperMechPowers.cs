@@ -226,6 +226,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异兽按钮失败: {e.Message}"); }
             }
 
+            // 5g. v0.71.0 玩家降临·第四天灾（窗口按钮）
+            if (PowerButton.get("sm_player_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlayer")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_player_center", () => SuperMechWindowManager.OpenPlayer(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_player_title", "sm_ui_player_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 玩家降临按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {

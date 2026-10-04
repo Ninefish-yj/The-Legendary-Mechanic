@@ -60,6 +60,10 @@ namespace SuperMech.Code
         public static float CosmicBeastInterval = 500f; // 异兽入侵间隔（tick）
         /// <summary>战斗核心总开关（v0.70.x，原著：伤害分区/抗性/控制/Buff）</summary>
         public static bool CombatEnhanceEnabled = true;
+        /// <summary>玩家降临·第四天灾总开关（v0.71.0，原著：韩萧招募地球玩家/玩家不死不灭）</summary>
+        public static bool PlayerEnabled = true;
+        /// <summary>降临者生成间隔（tick，默认60）</summary>
+        public static int PlayerSpawnIntervalTicks = 60;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -266,6 +270,8 @@ namespace SuperMech.Code
         public static void SetCosmicBeastEnabled(bool val) { CosmicBeastEnabled = val; }
         public static void SetCosmicBeastInterval(float val) { CosmicBeastInterval = Mathf.Clamp(val, 150f, 800f); }
         public static void SetCombatEnhanceEnabled(bool val) { CombatEnhanceEnabled = val; }
+        public static void SetPlayerEnabled(bool val) { PlayerEnabled = val; }
+        public static void SetPlayerSpawnIntervalTicks(int val) { PlayerSpawnIntervalTicks = Mathf.Clamp(val, 20, 600); }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }

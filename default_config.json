@@ -49,6 +49,20 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetCombatEnhanceEnabled"
+    },
+    {
+      "Id": "player_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerEnabled"
+    },
+    {
+      "Id": "player_spawn_interval",
+      "Type": "SLIDER",
+      "FloatVal": 60.0,
+      "MinFloatVal": 20.0,
+      "MaxFloatVal": 600.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerSpawnIntervalTicks"
     }
   ],
   "Awakening": [
