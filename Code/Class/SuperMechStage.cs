@@ -72,9 +72,9 @@ namespace SuperMech.Code
             "sm_stage_122", "sm_stage_123", "sm_stage_124", "sm_stage_125", "sm_stage_126", "sm_stage_127", "sm_stage_128"
         };
 
-        public static readonly float[] StageQiBonus = { 10, 30, 50, 70, 100, 120, 150, 180, 210, 240, 300, 360, 450, 700 };
+        public static readonly float[] StageQiBonus = { 100, 300, 500, 700, 1000, 1200, 1500, 1800, 2100, 2400, 3000, 3600, 4500, 7000 }; // v0.75.17: ×10
 
-        public static readonly float[] LevelQiBonus = { 10, 20, 50, 80, 120, 120, 150, 180, 200, 220, 300, 360, 450, 700 };
+        public static readonly float[] LevelQiBonus = { 100, 200, 500, 800, 1200, 1200, 1500, 1800, 2000, 2200, 3000, 3600, 4500, 7000 }; // v0.75.17: ×10
 
         /// <summary>机械系各阶段等级上限（原著精确数据，未知项用合理估算标注）
         /// 索引0=阶段1机械入门者，索引13=阶段14超神机械师

@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.75.16-alpha**（Alpha内测阶段）
+**v0.75.17-alpha**（Alpha内测阶段）
 
 > 版本号说明：从0.0.0开始按实际功能里程碑计算，大功能递增 minor，修正递增 patch。v0.49.x 为大整理阶段，v0.50+ 为持续功能开发。
 
@@ -100,6 +100,7 @@
 ---
 
 ## 更新记录
+| v0.75.17 | 阶位晋升数值平衡（实机全E级）：① 战斗气力成长 0.15→1.5/秒（10倍）② 升级/阶段气力奖励 ×10（StageQiBonus/LevelQiBonus）③ 精炼气力 ×10（RefineBaseQi 10→100，纯度收益 3/2/1→30/20/10）——E(100)→D(300) 从17分钟战斗缩短至约2.5分钟，成长链路可见 | 2026-10-04 |
 | v0.75.16 | 配置面板全面汉化：default_config.json 70 项配置补齐 82 个本地化键（名称+Description悬停说明）——此前仅 21 项汉化、49 项显示英文 Id；NML 配置面板按 getText(Id)/getText(Id+" Description") 取文本，现已全中文 | 2026-10-04 |
 | v0.75.15 | 命名统一：神权栏「召唤降临者」按钮常量 SummonAwakened→SummonDescendant（消除觉醒者/降临者歧义，id 保留旧值） | 2026-10-04 |
 | v0.75.14 | 参考「诸天神座」模组重构UI层：① 字体根治——GetFont/DefaultFont 首位换用 NML 官方 LocalizedTextManager.current_font（中文支持、永不null，即该模组无白板问题的关键）② 入口聚合——新建 NML 原生 Tab「超神」（TabManager.CreateTab，主界面右下角），Tab 内 ScrollRect 滚动面板分四组收纳 17 个窗口入口，取代 v0.75.13 总览窗口；神权栏只留召唤/天灾/大重启 | 2026-10-04 |

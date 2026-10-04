@@ -21,7 +21,7 @@ namespace SuperMech.Code
         public const int MaxRefineCount = 80;
         public const int RefineXpCost = 800;
         public const int RefineStaminaCost = 500;
-        public const float RefineBaseQi = 10f;
+        public const float RefineBaseQi = 100f; // v0.75.17: ×10
         public const int MaxEmRefineCount = 100;
 
         public static void Register()
@@ -108,9 +108,9 @@ namespace SuperMech.Code
 
         private static int CalcQiGain(float perfection)
         {
-            if (perfection >= 80f) return 3;
-            if (perfection >= 40f) return 2;
-            return 1;
+            if (perfection >= 80f) return 30; // v0.75.17: ×10
+            if (perfection >= 40f) return 20;
+            return 10;
         }
 
         public static bool TryRefine(Actor a)
