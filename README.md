@@ -52,7 +52,7 @@
 
 ## 当前版本
 
-**v0.75.12-alpha**（Alpha内测阶段）
+**v0.75.13-alpha**（Alpha内测阶段）
 
 > 版本号说明：从0.0.0开始按实际功能里程碑计算，大功能递增 minor，修正递增 patch。v0.49.x 为大整理阶段，v0.50+ 为持续功能开发。
 
@@ -100,6 +100,7 @@
 ---
 
 ## 更新记录
+| v0.75.13 | 神权栏UI收敛（全量审计后修正）：18个窗口入口收纳为1个"超神总览"按钮+总览分组窗口（成长/战斗/世界/终局四组）；保留召唤/天灾/大重启神力按钮；审计确认无空壳系统、Synergy与Fusion机制不同不合并、适配器反射自适应非空转 | 2026-10-04 |
 | v0.75.12 | 修复实机白板（22:42日志）：日志证明用户跑v0.75.11仍有12窗口崩在AddText的txt.text——对比发现崩的全是AddText窗口、没崩的全是MakeText窗口，实机"在已有go上AddComponent\<Text\>"路径不可靠；AddText重写为与MakeText相同的"新建子对象挂Text"路径（实机已验证稳定）+全链路判空+防御日志；GetCanvas缓存加固 | 2026-10-04 |
 | v0.75.11 | 修复UI白板根因（实机日志22:22定位）：① 字体加载NRE——UiBuilder.GetFont与UiSkin.DefaultFont仅试LegacyRuntime.ttf/Arial.ttf两个内建字体名，游戏Unity版本取不到返回null，AddText执行txt.font=null抛NullReferenceException，导致10+窗口（EsGod/Legion/Forge/WorldTree/Player/CombatEnhance/StarGate/Trade/Genetics/Faction）BuildLayout全崩白板；新增系统动态字体兜底（Arial/微软雅黑/Noto/苹方/黑体）+赋值判空 ② 装备描述键缺失——游戏EquipItem.getDescriptionID()查询{id}_description，装备注册仅add了item_{id}_desc，键名不匹配导致全部装备详情missing text；Relic注册补注册{id}_description ③ 补9个本地化键：sm_sanctuary_type_mech（旧拼写me遗留）、sm_fusion_branch_weapon/energy/control+_desc（融合分支名/描述）、sm_recipe_c_t3_0_desc（配方描述） ④ FactionView.RefreshList布局未构建时判空防御 | 2026-10-04 |
 | v0.75.10 | UI白板加固（软工检查）：BagView Awake/SpellView OnEnable/Sanctuary窗口构建/UguiWindow.Create 全部补异常保护（构建失败销毁窗口+LogError，不再留半成品白板）；ToggleWindow 加 Create null 保护；单位面板注入与5个监测窗口刷新异常日志 Warning→Error（进实机error日志可诊断） | 2026-10-04 |

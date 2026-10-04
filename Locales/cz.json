@@ -4593,5 +4593,12 @@
   "sm_fusion_branch_weapon_desc": "武装系知识融合：强化武器类产物的伤害与攻速属性",
   "sm_fusion_branch_energy_desc": "能量系知识融合：强化能量类产物的能级与续航属性",
   "sm_fusion_branch_control_desc": "操控系知识融合：强化操控类产物的精密度与协同属性",
-  "sm_recipe_c_t3_0_desc": "高阶操控系融合配方：以量子技术重构知识回路，产物为量子通讯核心"
+  "sm_recipe_c_t3_0_desc": "高阶操控系融合配方：以量子技术重构知识回路，产物为量子通讯核心",
+  "sm_overview_center_title": "超神总览",
+  "sm_overview_center_desc": "打开超神系统总览面板",
+  "sm_ui_ov_title": "超神·总览",
+  "sm_ui_ov_growth": "◈ 成长体系",
+  "sm_ui_ov_war": "◈ 战斗强化",
+  "sm_ui_ov_world": "◈ 世界动态",
+  "sm_ui_ov_finale": "◈ 终局时代"
 }

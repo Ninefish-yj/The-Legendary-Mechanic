@@ -38,6 +38,75 @@ namespace SuperMech.Code
         public static void OpenForge() { ToggleWindow("forge", "sm_ui_forge_title", 640, 520, DrawForgeContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
+        public static void OpenOverview()
+        {
+            ToggleWindow("overview", "sm_ui_ov_title", 660, 580, DrawOverviewContent);
+        }
+
+        // v0.75.13: 神权栏收敛——18个窗口入口收纳为总览窗口分组列表
+        private static float _ovY = -8f;
+        private static int _ovCol = 0;
+
+        private static void DrawOverviewContent(RectTransform content)
+        {
+            _ovY = -8f; _ovCol = 0;
+            float colW = (content.rect.width - 40f) / 2f;
+            if (colW < 200f) colW = 200f;
+
+            void GroupTitle(string key)
+            {
+                var t = SuperMechUiSkin.MakeText(content, LocalizedTextManager.getText(key), 13, TextAnchor.MiddleLeft);
+                var tr = t.GetComponent<RectTransform>();
+                tr.anchorMin = new Vector2(0, 1); tr.anchorMax = new Vector2(1, 1);
+                tr.pivot = new Vector2(0.5f, 1);
+                tr.anchoredPosition = new Vector2(12, _ovY);
+                tr.sizeDelta = new Vector2(0, 22);
+                _ovY -= 28f;
+            }
+
+            void Entry(string nameKey, System.Action open)
+            {
+                int col = _ovCol;
+                var b = SuperMechUiSkin.MakeButton(content, LocalizedTextManager.getText(nameKey), 12, open);
+                var br = b.GetComponent<RectTransform>();
+                br.anchorMin = new Vector2(0, 1); br.anchorMax = new Vector2(0, 1);
+                br.pivot = new Vector2(0, 1);
+                br.anchoredPosition = new Vector2(12 + col * (colW + 10), _ovY);
+                br.sizeDelta = new Vector2(colW, 30);
+                _ovCol ^= 1;
+                if (_ovCol == 0) _ovY -= 38f;
+            }
+
+            GroupTitle("sm_ui_ov_growth");
+            Entry("sm_ui_knowledge", () => OpenKnowledge());
+            Entry("sm_ui_bag", () => OpenBag());
+            Entry("sm_ui_spell_entry", () => OpenSpell());
+            Entry("sm_ui_craft", () => OpenCraft());
+            Entry("sm_ui_rank_window_title", () => OpenRank());
+            if (_ovCol == 1) { _ovCol = 0; _ovY -= 38f; }
+
+            GroupTitle("sm_ui_ov_war");
+            Entry("sm_ui_combat_title", () => OpenCombatEnhance());
+            Entry("sm_ui_beast_title", () => OpenCosmicBeast());
+            if (_ovCol == 1) { _ovCol = 0; _ovY -= 38f; }
+
+            GroupTitle("sm_ui_ov_world");
+            Entry("sm_ui_trade_title", () => OpenTrade());
+            Entry("sm_ui_genetics_title", () => OpenGenetics());
+            Entry("sm_ui_stargate_title", () => OpenStarGate());
+            Entry("sm_ui_intel_title", () => OpenIntel());
+            Entry("sm_ui_faction_window_title", () => OpenFaction());
+            if (_ovCol == 1) { _ovCol = 0; _ovY -= 38f; }
+
+            GroupTitle("sm_ui_ov_finale");
+            Entry("sm_ui_sanctuary", () => OpenSanctuary());
+            Entry("sm_ui_player_title", () => OpenPlayer());
+            Entry("sm_ui_legion_title", () => OpenLegion());
+            Entry("sm_ui_tree_title", () => OpenWorldTree());
+            Entry("sm_ui_esgod_title", () => OpenEsGod());
+            Entry("sm_ui_forge_title", () => OpenForge());
+        }
+
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
         {
             if (_windows.TryGetValue(id, out var win) && win != null && win.IsOpen)
