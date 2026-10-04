@@ -23,6 +23,36 @@ namespace SuperMech.Code
             // 只有需要点击地图的神力才注册GodPower
             AddAwakenedPower(SummonDescendant, "sm_powers_922", "actor_traits/iconChosenOne");
             AddDisaster(DisasterAlien, "sm_powers_924");
+            RegisterDisasterTrait();
+        }
+
+        /// <summary>异化怪物trait（原著第513章：异化原体影响微生物，生物异化暴走）</summary>
+        private static bool _disasterTraitRegistered;
+        private static void RegisterDisasterTrait()
+        {
+            if (_disasterTraitRegistered) return;
+            _disasterTraitRegistered = true;
+            try
+            {
+                LocalizedTextManager.add("trait_sm_disaster_infected", LocalizedTextManager.getText("sm_disaster_infected_080"), pReplace: true);
+                LocalizedTextManager.add("trait_sm_disaster_infected_info", LocalizedTextManager.getText("sm_disaster_infected_081"), pReplace: true);
+                var t = new ActorTrait
+                {
+                    id = "sm_disaster_infected",
+                    path_icon = "actor_traits/iconPoison",
+                    group_id = "sm_disaster",
+                    needs_to_be_explored = false,
+                    base_stats = new BaseStats()
+                };
+                // 微生物异化强化：狂暴化 + 血肉畸变
+                t.base_stats["multiplier_damage"] = 1.8f;
+                t.base_stats["multiplier_health"] = 1.4f;
+                AssetManager.traits.add(t);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 异化怪物trait注册失败: " + e.Message);
+            }
         }
 
         public static void TryCreateButtons()
@@ -184,12 +214,38 @@ namespace SuperMech.Code
             p.click_action += (tile, powerId) =>
             {
                 if (tile == null) return false;
-                Actor a = World.world.units.createNewUnit("beast", tile, pMiracleSpawn: false, pAdultAge: true);
-                if (a != null)
+                // v0.75.24: 异化原体投放（原著第513章：生化武器，影响微生物）——感染周围生物，引发异化怪物潮
+                int infected = 0;
+                var units = World.world.units.units_only_alive;
+                if (units != null)
                 {
-                    a.addTrait("sm_rank_06_b");
-                    a.addTrait("aggressive");
+                    foreach (Actor u in units)
+                    {
+                        if (u == null || !u.isAlive()) continue;
+                        // v0.75.24: 全球异化蔓延（原著第509章"全面爆发的异化之灾"=全球性浩劫，不按投放点限域）
+                        if (u.hasTrait("sm_disaster_infected")) continue;
+                        if (u.hasTrait("sm_rank_00_f") || u.hasTrait("sm_rank_01_e") || u.hasTrait("sm_rank_02_d")) continue; // 超能者免疫（原著：异人是抵抗中坚）
+                        if (Random.value < 0.25f)
+                        {
+                            u.addTrait("sm_disaster_infected");
+                            u.addTrait("aggressive");
+                            infected++;
+                        }
+                    }
                 }
+                // 异化怪物潮：生成3~5只D级异化野兽
+                int swarm = 3 + Random.Range(0, 3);
+                for (int i = 0; i < swarm; i++)
+                {
+                    Actor a = World.world.units.createNewUnit("beast", tile, pMiracleSpawn: false, pAdultAge: true);
+                    if (a != null)
+                    {
+                        a.addTrait("sm_disaster_infected");
+                        a.addTrait("aggressive");
+                        a.addTrait("sm_rank_02_d");
+                    }
+                }
+                Debug.Log($"[超神机械师]【异化之灾】异化原体投放：感染{infected}个生物，生成{swarm}只异化怪物");
                 return true;
             };
             AssetManager.powers.add(p);
