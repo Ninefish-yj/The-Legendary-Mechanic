@@ -26,6 +26,7 @@ namespace SuperMech.Code
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 620, 460, DrawRankContent); }
         public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 620, 500, DrawFactionContent); }
         public static void OpenTrade() { ToggleWindow("trade", "sm_ui_trade_title", 640, 520, DrawTradeContent); }
+        public static void OpenGenetics() { ToggleWindow("genetics", "sm_ui_genetics_title", 640, 520, DrawGeneticsContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
@@ -123,6 +124,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechTradeView>();
+        }
+
+        private static void DrawGeneticsContent(RectTransform content)
+        {
+            var go = new GameObject("GeneticsView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechGeneticsView>();
         }
 
         public static void CloseAll()

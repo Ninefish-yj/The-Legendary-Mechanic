@@ -164,6 +164,18 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * 0.5f);
                     }
+                    // v0.66.0 基因科研伤害加成（原著：基因链是力量基础，基因优化提升战力）
+                    float geneBonus = SuperMechGenetics.GetGeneDamageBonus(attacker);
+                    if (geneBonus != 1f)
+                    {
+                        target.data.health -= (int)(pDamage * (geneBonus - 1f));
+                    }
+                    // v0.66.0 基因科研减伤（基因链提供躯体强度）
+                    float geneDefense = SuperMechGenetics.GetGeneDefenseBonus(target);
+                    if (geneDefense != 1f)
+                    {
+                        target.data.health += (int)(pDamage * (1f - geneDefense));
+                    }
                     // v0.54.0 代理战争：不同文明势力间伤害加成，文明交战时额外加成
                     float proxyBonus = SuperMechFaction.GetProxyWarBonus(attacker, target);
                     if (proxyBonus != 1f)

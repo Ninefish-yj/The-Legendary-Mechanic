@@ -141,6 +141,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 贸易按钮失败: {e.Message}"); }
             }
 
+            // 5c. v0.66.0 基因科研中心（窗口按钮）
+            if (PowerButton.get("sm_genetics_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconBio")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_genetics_center", () => SuperMechWindowManager.OpenGenetics(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_genetics_title", "sm_ui_genetics_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 基因按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {

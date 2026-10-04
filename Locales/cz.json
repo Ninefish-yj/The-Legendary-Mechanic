@@ -4469,5 +4469,20 @@
   "sm_ui_trade_status_blocked": "封锁",
   "sm_ui_trade_forbidden": "（原著约束：圣所信息档案、原始异能体等核心特殊事物绝不纳入贸易）",
   "sm_config_774": "跨文明贸易",
-  "sm_config_775": "允许星海文明之间建立商队贸易通道，获得科技与潜能收益"
+  "sm_config_775": "允许星海文明之间建立商队贸易通道，获得科技与潜能收益",
+  "sm_ui_genetics_title": "基因科研中心",
+  "sm_ui_genetics_subtitle": "基因链是力量的基础：基因优化强化属性，基因升华向更高进化（原著设定）",
+  "sm_ui_genetics_civ_research": "文明基因科研（自动）",
+  "sm_ui_genetics_database": "基因数据库",
+  "sm_ui_genetics_research": "科研进度",
+  "sm_ui_genetics_no_faction": "当前世界没有开展科研的势力",
+  "sm_ui_genetics_empty": "尚未有单位接受基因优化",
+  "sm_ui_genetics_cost": "优化成本:10+层数×5 | 升华:100+50×次数",
+  "sm_ui_genetics_chain": "基因链",
+  "sm_ui_genetics_sublimate_short": "升华",
+  "sm_ui_genetics_potential": "潜能",
+  "sm_ui_genetics_optimize": "优化",
+  "sm_ui_genetics_sublimate": "升华",
+  "sm_config_776": "基因科研",
+  "sm_config_777": "允许基因优化/升华与文明基因科研（消耗潜能点，基因链提供攻防加成）"
 }

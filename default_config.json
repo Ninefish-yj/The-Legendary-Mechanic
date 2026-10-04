@@ -11,6 +11,12 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetTradeEnabled"
+    },
+    {
+      "Id": "genetics_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetGeneticsEnabled"
     }
   ],
   "Awakening": [
