@@ -4,13 +4,17 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.74.0 异神终局（原著细还原）
+    /// v0.74.0 异神·最终决战（原著细还原）
     /// 原著依据：
-    ///  1. 异神核心异能【异能·复刻】：近身接触吸收目标异能基因，以基因链形式储存、不会随目标死亡消失，拥有数十种异能（起点角色简介）；
-    ///  2. 异神灵魂逃脱后卷土重来；最终决战韩萧以超神级实力击杀异神，能力由埃文斯继承（抖音：异神灵魂逃脱卷土重来/最终决战击杀e神）；
-    ///  3. 异神养成计划（原著#1040：异能·复刻出现在埃文斯身上，与异神核心能力相同）。
-    /// 真实系统适配：异神为超神级单体威胁，周期降临；击杀单位触发异能·复刻成长（击杀越多越强）；
-    /// 首次击杀仅触发灵魂逃脱（冷却后卷土重来），再次击杀才终局消灭并结算奖励（能力由继承者获得）。
+    ///  1. 异神身份：凶名赫赫的巅峰超A级强者"异能之神"，黑雾身躯+红色光点，能力"神速""维度夹缝"等，
+    ///     曾以分身压制韩萧[703]；多次作为反派与韩萧对抗（起点：超A级强者，非超神级）；
+    ///  2. 韩萧晋升超神级（超神机械师，掌控宇宙机械法则）后，最终决战以【神体要塞】+【机械神灵·至高天尊】
+    ///     三招秒杀异神[1394]；异神灵魂逃脱后卷土重来，终被彻底终结（抖音：最终对决韩萧以超神级实力击杀e神）；
+    ///  3. 异神核心异能【异能·复刻】：近身接触吸收目标异能基因，以基因链形式储存、不会随目标死亡消失（起点角色简介）；
+    ///  4. 异神养成计划（原著#1040：异能·复刻出现在埃文斯身上，与异神核心能力相同），能力由埃文斯继承。
+    /// 真实系统适配：异神为巅峰超A级单体威胁（全模组最强单体反派、最终决战对象），周期降临；
+    /// 击杀单位触发异能·复刻成长（击杀越多越强）；首次击杀仅触发灵魂逃脱（冷却后卷土重来），
+    /// 再次击杀才最终决战结算（能力由继承者获得）。定位为 B 线最高强度单体事件，非全书终局。
     /// </summary>
     public static class SuperMechEsGod
     {
@@ -32,13 +36,13 @@ namespace SuperMech.Code
         private static readonly EsGodSaveData _data = new EsGodSaveData();
         public static EsGodSaveData Data => _data;
 
-        // 数值（原著：超神级战力）
-        private const float EsGodDamageMult = 2.5f;        // 异神伤害倍率（原著：超神级碾压）
+        // 数值（原著：巅峰超A级·异能之神——全模组最强单体反派，接近但未达超神级）
+        private const float EsGodDamageMult = 2.5f;        // 异神伤害倍率（原著：巅峰超A级碾压普通单位）
         private const float ReplicateGainPerKill = 0.05f;  // 异能·复刻：每击杀+5%伤害（原著：夺取异能变强）
         private const float ReplicateMax = 0.50f;          // 复刻成长上限+50%
         private const int SoulEscapeCooldown = 900;        // 灵魂逃脱后卷土重来冷却
-        private const int PotentialFinalReward = 10;       // 终局奖励：全体觉醒潜能+10
-        private const int TechFinalReward = 100;           // 终局奖励：最强文明科技+100
+        private const int PotentialFinalReward = 10;       // 最终决战奖励：全体觉醒潜能+10
+        private const int TechFinalReward = 100;           // 最终决战奖励：最强文明科技+100
         private const float InheritorDamageBonus = 0.30f;  // 继承者伤害+30%（原著：能力由埃文斯继承）
 
         // ============ 状态查询 ============
@@ -95,7 +99,7 @@ namespace SuperMech.Code
                 if (!god.hasTrait(EsGodTrait)) god.addTrait(EsGodTrait);
                 _data.esGodId = god.id;
                 _data.state = EventState.Active;
-                Debug.Log($"[超神机械师] 【异神降临】超神级威胁降临（异能·复刻层数 {_data.replicateCount}）！");
+                Debug.Log($"[超神机械师] 【异神降临】巅峰超A级·异能之神降临（异能·复刻层数 {_data.replicateCount}）！");
             }
             catch (System.Exception e)
             {
