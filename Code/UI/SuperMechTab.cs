@@ -8,7 +8,7 @@ namespace SuperMech.Code
 {
     /// <summary>
     /// v0.75.14: 参考诸天神座模组——使用 NML 原生 TabManager 页签聚合全部窗口入口。
-    /// 神权栏不再堆按钮：主界面右下角新增「超神」Tab，Tab 内为滚动分组面板。
+    /// v0.75.25: 改名「超能者面板」（原著核心身份名）。神权栏不再堆按钮：主界面右下角新增该 Tab，Tab 内为滚动分组面板。
     /// </summary>
     public static class SuperMechTab
     {
@@ -24,7 +24,7 @@ namespace SuperMech.Code
                 Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
                               ?? Resources.Load<Sprite>("ui/icons/iconGift")
                               ?? Resources.Load<Sprite>("ui/icons/iconQuestion");
-                _tab = TabManager.CreateTab("supermech", "sm_tab_title", "sm_tab_desc", icon);
+                _tab = TabManager.CreateTab("supermech", "sm_tab_panel_title", "sm_tab_panel_desc", icon);
                 if (_tab == null)
                 {
                     Debug.LogWarning("[超神机械师] 超神Tab创建失败（TabManager返回null）");
@@ -50,7 +50,7 @@ namespace SuperMech.Code
             pr.offsetMax = new Vector2(-4, -4);
 
             // 标题
-            var title = SuperMechUiSkin.MakeText(panel.transform, LocalizedTextManager.getText("sm_tab_title"), 14, TextAnchor.MiddleLeft);
+            var title = SuperMechUiSkin.MakeText(panel.transform, LocalizedTextManager.getText("sm_tab_panel_title"), 14, TextAnchor.MiddleLeft);
             var tr = title.GetComponent<RectTransform>();
             tr.anchorMin = new Vector2(0, 1); tr.anchorMax = new Vector2(1, 1);
             tr.pivot = new Vector2(0.5f, 1);

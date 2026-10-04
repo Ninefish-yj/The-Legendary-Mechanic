@@ -4661,5 +4661,7 @@
   "sm_disaster_infected_080": "异化怪物",
   "sm_disaster_infected_081": "被异化原体感染的狂暴生物：血肉畸变、敌视一切文明。超能者免疫（原著：异人是抵抗异化之灾的中坚力量）",
   "trait_sm_disaster_infected": "异化怪物",
-  "trait_sm_disaster_infected_info": "被异化原体（生化武器）感染的狂暴生物，伤害与血量畸变强化，敌视一切。"
+  "trait_sm_disaster_infected_info": "被异化原体（生化武器）感染的狂暴生物，伤害与血量畸变强化，敌视一切。",
+  "sm_tab_panel_title": "超能者面板",
+  "sm_tab_panel_desc": "超能者成长之路：知识、技能、阶位、战斗与星海征途的总览"
 }
