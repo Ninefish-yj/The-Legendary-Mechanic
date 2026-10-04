@@ -5,6 +5,12 @@
       "Type": "SWITCH",
       "BoolVal": true,
       "Callback": "SuperMech.Code.SuperMechConfig:SetModEnabled"
+    },
+    {
+      "Id": "trade_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetTradeEnabled"
     }
   ],
   "Awakening": [

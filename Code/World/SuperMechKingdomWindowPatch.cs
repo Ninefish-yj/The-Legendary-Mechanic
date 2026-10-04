@@ -54,6 +54,14 @@ namespace SuperMech.Code
                         "文明守护者", guardian.name, MetaType.None, -1L, "iconKings"
                     });
                 }
+                // v0.65.0 跨文明贸易通道状态
+                int tradeCount = SuperMechTrade.GetRouteCountForKingdom(kingdom);
+                if (tradeCount > 0)
+                {
+                    _showStatRow.Invoke(__instance, new object[] {
+                        "贸易通道", $"{tradeCount}条", MetaType.None, -1L, "iconAge"
+                    });
+                }
             }
         }
 

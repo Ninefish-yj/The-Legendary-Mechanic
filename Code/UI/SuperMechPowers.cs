@@ -124,6 +124,23 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 势力按钮失败: {e.Message}"); }
             }
 
+            // 5b. v0.65.0 跨文明贸易中心（窗口按钮）
+            if (PowerButton.get("sm_trade_center") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconTrade")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_trade_center", () => SuperMechWindowManager.OpenTrade(), icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_trade_title", "sm_ui_trade_subtitle");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 贸易按钮失败: {e.Message}"); }
+            }
+
             // 6. 宇宙迭代（大重启）
             if (PowerButton.get("sm_great_restart") == null)
             {

@@ -45,6 +45,7 @@ namespace SuperMech.Code
             public Dictionary<string, ActorSaveData> actors = new Dictionary<string, ActorSaveData>();
             public SanctuarySaveData sanctuary = new SanctuarySaveData();
             public SuperMechFaction.FactionSaveData faction = new SuperMechFaction.FactionSaveData();
+            public SuperMechTrade.TradeSaveData trade = new SuperMechTrade.TradeSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -269,6 +270,8 @@ namespace SuperMech.Code
                 data.firstBreakthroughRanks = new List<string>(FirstBreakthroughRanks);
                 // 保存势力数据（v0.48.0）
                 data.faction = SuperMechFaction.Save();
+                // 保存跨文明贸易数据（v0.65.0）
+                data.trade = SuperMechTrade.Save();
 
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
@@ -311,6 +314,8 @@ namespace SuperMech.Code
 
                 // 加载势力数据（v0.48.0）
                 SuperMechFaction.Load(data.faction);
+                // 加载跨文明贸易数据（v0.65.0）
+                if (data.trade != null) SuperMechTrade.Load(data.trade);
 
                 _pendingLoad = data;
                 _loadPending = true;

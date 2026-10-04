@@ -96,6 +96,7 @@ namespace SuperMech.Code
                 SafeRun("内空间负面效果", () => SuperMechInnerSpace.TickDomainEffects());
                 SafeRun("势力系统", () => SuperMechFaction.TickFactions());
                 SafeRun("文明系统", () => SuperMechCivilization.TickCivilizations());
+                SafeRun("贸易系统", () => SuperMechTrade.TickTradeRoutes(1.25f));
             }
 
             float now = Time.time;
@@ -151,6 +152,7 @@ namespace SuperMech.Code
             removed += SuperMechAdvancementTask.CleanupDead(alive);
             removed += SuperMechAI.CleanupDead(alive);
             removed += SuperMechFaction.CleanupDead(alive);
+            removed += SuperMechTrade.CleanupDead(alive);
             removed += SuperMechActorContextRegistry.CleanupDead(alive);
         }
 
@@ -192,6 +194,8 @@ namespace SuperMech.Code
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
             try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }
             try { SuperMechAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAI"); }
+            try { SuperMechFaction.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechFaction"); }
+            try { SuperMechTrade.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTrade"); }
         }
     }
 }

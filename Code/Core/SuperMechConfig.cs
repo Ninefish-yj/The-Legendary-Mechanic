@@ -47,6 +47,8 @@ namespace SuperMech.Code
         public static int SanctuaryKeyCostEnter = 3;
         /// <summary>圣所能量恢复速率（每秒点数，0=关闭恢复；原著：圣所不灭自行运转，能量不枯竭）</summary>
         public static float SanctuaryEnergyRegen = 1f;
+        /// <summary>跨文明贸易系统总开关（v0.65.0，原著：星海文明开展跨星域贸易）</summary>
+        public static bool TradeEnabled = true;
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -180,6 +182,7 @@ namespace SuperMech.Code
                 new ItemInfo("auto_enter_sanctuary", "sm_config_655", "sm_config_656"),
                 new ItemInfo("sanctuary_key_drop_enabled", "sm_config_740", "sm_config_741"),
                 new ItemInfo("sanctuary_energy_regen", "sm_config_772", "sm_config_773"),
+                new ItemInfo("trade_enabled", "sm_config_774", "sm_config_775"),
                 new ItemInfo("inner_space_enabled", "sm_config_752", "sm_config_753"),
                 new ItemInfo("inner_space_min_rank", "sm_config_754", "sm_config_755"),
                 new ItemInfo("inner_space_duration", "sm_config_756", "sm_config_757"),
@@ -239,6 +242,7 @@ namespace SuperMech.Code
         public static void SetPsionicKeyMaterialBonus(int val) { PsionicKeyMaterialBonus = Mathf.Clamp(val, 0, 10); }
         public static void SetSanctuaryKeyCostEnter(int val) { SanctuaryKeyCostEnter = Mathf.Clamp(val, 1, 10); }
         public static void SetSanctuaryEnergyRegen(float val) { SanctuaryEnergyRegen = Mathf.Clamp(val, 0f, 10f); }
+        public static void SetTradeEnabled(bool val) { TradeEnabled = val; }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }
