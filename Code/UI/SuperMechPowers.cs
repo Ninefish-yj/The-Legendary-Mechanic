@@ -8,7 +8,7 @@ namespace SuperMech.Code
 {
     public static class SuperMechPowers
     {
-        public const string SummonAwakened = "sm_summon_awakened";
+        public const string SummonDescendant = "sm_summon_awakened"; // 降临者（玩家化身）；id保留旧值不影响运行时
         public const string DisasterAlien = "sm_disaster_alien";
         public const string OpenSanctuary = "sm_open_sanctuary";
         public const string OpenRank = "sm_open_rank";
@@ -21,7 +21,7 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 只有需要点击地图的神力才注册GodPower
-            AddAwakenedPower(SummonAwakened, "sm_powers_922", "actor_traits/iconChosenOne");
+            AddAwakenedPower(SummonDescendant, "sm_powers_922", "actor_traits/iconChosenOne");
             AddDisaster(DisasterAlien, "sm_powers_924");
         }
 
@@ -47,14 +47,14 @@ namespace SuperMech.Code
 
             int created = 0;
 
-            // 1. 召唤降临者（需要点击地图，用GodPower按钮）
-            if (PowerButton.get(SummonAwakened) == null && AssetManager.powers.get(SummonAwakened) != null)
+            // 1. 召唤降临者（玩家化身，需要点击地图，用GodPower按钮）
+            if (PowerButton.get(SummonDescendant) == null && AssetManager.powers.get(SummonDescendant) != null)
             {
                 try
                 {
-                    Sprite icon = AssetManager.powers.get(SummonAwakened).getIconSprite()
+                    Sprite icon = AssetManager.powers.get(SummonDescendant).getIconSprite()
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateGodPowerButton(SummonAwakened, icon);
+                    var pb = PowerButtonCreator.CreateGodPowerButton(SummonDescendant, icon);
                     if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
