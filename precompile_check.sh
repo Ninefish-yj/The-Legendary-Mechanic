@@ -7,7 +7,11 @@
 MOD_DIR="$(cd "$(dirname "$0")" && pwd)"
 COMPILE_DIR="/tmp/sm_compile_check_v3"
 DOTNET="$HOME/dotnet8/dotnet"
-DLL_DIR="/home/user/Doubao/chats/38443538092133890/NML_source/bin/Release/net48"
+# v0.64.1：DLL 引用目录迁移——优先取仓库同级 nml_src 构建产物，其次回退到历史路径
+DLL_DIR="${NML_DLL_DIR:-$MOD_DIR/../nml_src/bin/Release/net48}"
+if [ ! -d "$DLL_DIR" ]; then
+  DLL_DIR="/home/user/Doubao/chats/38443538092133890/NML_source/bin/Release/net48"
+fi
 
 echo "=== 超神机械师模组预编译检查 v3 (完整DLL引用) ==="
 echo ""

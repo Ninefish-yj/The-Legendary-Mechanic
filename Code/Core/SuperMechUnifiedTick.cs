@@ -83,6 +83,7 @@ namespace SuperMech.Code
                 SafeRun("自动神化尝试", () => SuperMechTranscendence.TickAutoAttempt());
                 SafeRun("信息状态", () => SuperMechInfoState.TickInfoState());
                 SafeRun("信息态记录", () => SuperMechInformationState.Tick(1.25f));
+                SafeRun("圣所能量恢复", () => SuperMechSanctuary.RegenerateEnergy(1.25f));
             }
             else
             {

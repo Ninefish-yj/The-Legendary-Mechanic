@@ -24,6 +24,8 @@ namespace SuperMech.Code
         public const float DivinityOnarThreshold = 78000f;
         public const int DivinityQiLevel = 21;
         public const int FragmentsToUnlock = 3;
+        /// <summary>圣所能量上限（原著：圣所是不灭的信息态存在，自行汲取能量维持运转，不会枯竭）</summary>
+        public const float MaxSanctuaryEnergy = 10000f;
 
         /// <summary>圣所类型（原著：五个超能职业分别对应一个圣所，第六圣所为信息态）</summary>
         public enum SanctuaryType
@@ -165,6 +167,34 @@ namespace SuperMech.Code
         public const int ResurrectionCost = 5;
         public const int DivineRankIndex = 13;
 
+        /// <summary>圣所是否已解锁（原著第1267章：圣所碎片就是权限；集齐3碎片解锁对应圣所）</summary>
+        public static bool IsSanctuaryUnlocked(int sanctuaryIndex)
+        {
+            if (sanctuaryIndex < 0 || sanctuaryIndex >= TotalSanctuaries) return false;
+            return Data.sanctuary_fragments[sanctuaryIndex] >= FragmentsToUnlock;
+        }
+
+        /// <summary>从碎片同步解锁位掩码（v0.64.1 修复：此前位掩码从未被置位，导致圣所访问/进入逻辑永远失败）</summary>
+        public static void RefreshUnlockedFromFragments()
+        {
+            for (int i = 0; i < TotalSanctuaries; i++)
+            {
+                if (Data.sanctuary_fragments[i] >= FragmentsToUnlock)
+                    Data.unlocked_sanctuaries |= (1 << i);
+            }
+        }
+
+        /// <summary>圣所能量缓慢恢复（原著：圣所不灭、自行运转；能量枯竭会永久禁用复苏，故随时间恢复）
+        /// 恢复速率由配置 sanctuary_energy_regen 控制（每秒点数），上限 MaxSanctuaryEnergy</summary>
+        public static void RegenerateEnergy(float delta)
+        {
+            if (!SuperMechConfig.SanctuaryEnabled) return;
+            if (Data.sanctuary_energy >= MaxSanctuaryEnergy) return;
+            float rate = Mathf.Max(0f, SuperMechConfig.SanctuaryEnergyRegen);
+            if (rate <= 0f) return;
+            Data.sanctuary_energy = Mathf.Min(MaxSanctuaryEnergy, Data.sanctuary_energy + rate * delta);
+        }
+
         public static void Load()
         {
             try
@@ -176,6 +206,8 @@ namespace SuperMech.Code
                     if (Data.sanctuary_fragments == null || Data.sanctuary_fragments.Length < 6)
                         Data.sanctuary_fragments = new int[6];
                 }
+                // v0.64.1 修复：旧存档碎片已达标但位掩码缺失，加载时统一从碎片重算解锁状态
+                RefreshUnlockedFromFragments();
             }
             catch (System.Exception e)
             {
@@ -209,7 +241,7 @@ namespace SuperMech.Code
             }
             if (sanctuaryIndex >= 0 && sanctuaryIndex < 6)
             {
-                if ((Data.unlocked_sanctuaries & (1 << sanctuaryIndex)) == 0)
+                if (!IsSanctuaryUnlocked(sanctuaryIndex))
                 {
                     return false;
                 }
@@ -242,15 +274,13 @@ namespace SuperMech.Code
 
             ApplySanctuaryClassBonus(a, s, sanctuaryIndex);
 
-            if ((Data.unlocked_sanctuaries & (1 << 5)) != 0)
+            if (IsSanctuaryUnlocked(5))
             {
                 SuperMechInfoState.Upgrade(a);
             }
 
             Save();
 
-            string className = SuperMechProfession.GetClass(a) ?? "sm_sanctuary_971";
-            string sanctuaryName = sanctuaryIndex >= 0 ? $"sm_sanctuary_972" : "sm_sanctuary_973";
             return true;
         }
 
@@ -263,7 +293,7 @@ namespace SuperMech.Code
             {
                 for (int i = 0; i < 6; i++)
                 {
-                    if ((Data.unlocked_sanctuaries & (1 << i)) != 0)
+                    if (IsSanctuaryUnlocked(i))
                     {
                         sanctuaryIndex = i;
                         break;
@@ -340,7 +370,7 @@ namespace SuperMech.Code
         {
             int count = 0;
             for (int i = 0; i < 6; i++)
-                if ((Data.unlocked_sanctuaries & (1 << i)) != 0) count++;
+                if (IsSanctuaryUnlocked(i)) count++;
             return count;
         }
 
@@ -394,7 +424,7 @@ namespace SuperMech.Code
             // 找已解锁的圣所，随机选一个+1权限
             var unlocked = new List<int>();
             for (int i = 0; i < 6; i++)
-                if ((Data.unlocked_sanctuaries & (1 << i)) != 0)
+                if (IsSanctuaryUnlocked(i))
                     unlocked.Add(i);
             int target = unlocked.Count > 0
                 ? unlocked[UnityEngine.Random.Range(0, unlocked.Count)]
@@ -402,6 +432,8 @@ namespace SuperMech.Code
             AddAuthority(a, target, 1);
             Data.sanctuary_fragments[target]++;
             Data.total_permission++;
+            // v0.64.1 修复：碎片达到阈值后立即解锁对应圣所，并同步位掩码
+            RefreshUnlockedFromFragments();
             Save();
             Debug.Log($"[超神机械师] {a.name} 神性蜕变获得圣所碎片，{SanctuaryNames[target]}权限+1");
         }
@@ -439,7 +471,7 @@ namespace SuperMech.Code
         public static bool VisitSanctuary(Actor a, int sanctuaryIndex)
         {
             if (a == null || sanctuaryIndex < 0 || sanctuaryIndex >= TotalSanctuaries) return false;
-            if ((Data.unlocked_sanctuaries & (1 << sanctuaryIndex)) == 0) return false;
+            if (!IsSanctuaryUnlocked(sanctuaryIndex)) return false;
 
             // 增加访问次数和权限
             Data.total_visits++;

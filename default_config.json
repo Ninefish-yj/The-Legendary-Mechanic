@@ -155,6 +155,14 @@
       "MinIntVal": 0,
       "MaxIntVal": 10,
       "Callback": "SuperMech.Code.SuperMechConfig:SetPsionicKeyMaterialBonus"
+    },
+    {
+      "Id": "sanctuary_energy_regen",
+      "Type": "SLIDER",
+      "FloatVal": 1.0,
+      "MinFloatVal": 0.0,
+      "MaxFloatVal": 10.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnergyRegen"
     }
   ],
   "Mech": [

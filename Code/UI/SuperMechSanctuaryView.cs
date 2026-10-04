@@ -389,7 +389,8 @@ namespace SuperMech.Code
             var msgBtnImg = msgBtnGo.AddComponent<Image>();
             msgBtnImg.color = new Color(0.4f, 0.3f, 0.6f, 0.9f);
             var msgBtn = msgBtnGo.AddComponent<Button>();
-            var msgBtnText = SuperMechUiSkin.MakeText(msgBtnGo.transform, "留言板", 13, TextAnchor.MiddleCenter);
+            var msgBtnText = SuperMechUiSkin.MakeText(msgBtnGo.transform,
+                LocalizedTextManager.getText("sm_ui_san_msg_board"), 13, TextAnchor.MiddleCenter);
             msgBtnText.color = Color.white;
             msgBtnText.fontStyle = FontStyle.Bold;
             var msgBtnTextRect = msgBtnText.GetComponent<RectTransform>();
@@ -520,10 +521,11 @@ namespace SuperMech.Code
 
             // 显示详情面板
             if (_orbDetailPanel != null) _orbDetailPanel.SetActive(true);
+            string tType = LocalizedTextManager.getText("sm_ui_san_type");
             _orbDetailText.text =
                 $"【文明记录】\n\n" +
                 $"<color=#3366cc>名称：</color>{info.civilizationName}\n" +
-                $"<color=#3366cc>内空间：</color>{info.domain}\n" +
+                $"<color=#3366cc>{tType}：</color>{info.domain}\n" +
                 $"<color=#3366cc>迭代：</color>第{info.iteration}轮\n" +
                 $"<color=#3366cc>成就：</color>{info.achievement}\n" +
                 $"<color=#cc3333>毁灭：</color>{info.destructionCause}\n\n" +
@@ -654,7 +656,7 @@ namespace SuperMech.Code
             int unlocked = 0;
             for (int i = 0; i < SuperMechSanctuary.TotalSanctuaries; i++)
             {
-                if (data.sanctuary_fragments[i] >= SuperMechSanctuary.FragmentsToUnlock) unlocked++;
+                if (SuperMechSanctuary.IsSanctuaryUnlocked(i)) unlocked++;
             }
 
             _statusText.text =
@@ -700,7 +702,8 @@ namespace SuperMech.Code
             bg.raycastTarget = true;
 
             // 标题
-            var titleText = SuperMechUiSkin.MakeText(panel.transform, "【圣所留言板】", 18, TextAnchor.UpperCenter);
+            var titleText = SuperMechUiSkin.MakeText(panel.transform,
+                LocalizedTextManager.getText("sm_ui_san_msg_board_title"), 18, TextAnchor.UpperCenter);
             titleText.color = new Color(0.2f, 0.25f, 0.5f);
             titleText.fontStyle = FontStyle.Bold;
             var titleRect = titleText.GetComponent<RectTransform>();
@@ -712,8 +715,10 @@ namespace SuperMech.Code
 
             // 权限提示
             int perm = SuperMechSanctuary.Data.total_permission;
+            string tPerm = LocalizedTextManager.getText("sm_ui_san_permission");
+            string tVisible = LocalizedTextManager.getText("sm_ui_san_visible");
             var permText = SuperMechUiSkin.MakeText(panel.transform,
-                $"圣所权限：{perm}  |  可见留言：{GetVisibleMessageCount(perm)}/{_sanctuaryMessages.Length}",
+                $"{tPerm}:{perm}  |  {tVisible}:{GetVisibleMessageCount(perm)}/{_sanctuaryMessages.Length}",
                 11, TextAnchor.UpperCenter);
             permText.color = new Color(0.4f, 0.4f, 0.6f);
             var permRect = permText.GetComponent<RectTransform>();
@@ -773,7 +778,8 @@ namespace SuperMech.Code
             var closeBtn = closeBtnGo.AddComponent<Button>();
             closeBtn.targetGraphic = closeBg;
             closeBtn.onClick.AddListener(() => Destroy(panel));
-            var closeText = SuperMechUiSkin.MakeText(closeBtnGo.transform, "关闭", 13, TextAnchor.MiddleCenter);
+            var closeText = SuperMechUiSkin.MakeText(closeBtnGo.transform,
+                LocalizedTextManager.getText("sm_ui_san_close"), 13, TextAnchor.MiddleCenter);
             closeText.color = Color.white;
         }
 
@@ -807,9 +813,8 @@ namespace SuperMech.Code
         /// <summary>根据权限对留言内容进行遮挡（███）</summary>
         private static string ApplyMask(string message, int permission, int index)
         {
-            // 权限越低，遮挡越多
-            int maskCount = 3 - permission;
-            if (maskCount <= 0 || index <= 0) return message; // 第一条基本介绍不遮挡
+            // 权限越低，遮挡越多；第一条基本介绍不遮挡
+            if (permission >= 3 || index <= 0) return message;
             // 简单遮挡：将部分███保留，权限低时更多内容被替换为███
             if (permission == 1 && index >= 2)
             {

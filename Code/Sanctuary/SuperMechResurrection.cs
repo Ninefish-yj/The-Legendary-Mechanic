@@ -250,9 +250,8 @@ namespace SuperMech.Code
             float rankBonus = SuperMechAdvancement.GetLifespanBonus(restoredRank);
             float newLifespan = deathAge + rankBonus * integrity;
             newActor.stats["lifespan"] = newLifespan;
-            // X阶超神级信息态抹杀免疫，直接永生
-            if (restoredRank >= 14)
-                newActor.addTrait(AssetManager.traits.get("immortal"));
+            // 注：X阶（超神级）不通过圣所复苏——原著超神级靠概念不朽维持存在，CanResurrect 已排除 rankIndex>=13，
+            // 因此 restoredRank 最大为12，无需在此追加不朽特质。
 
             // 从信息态列表中移除（已复活）
             SuperMechInformationState.RemoveDeadState(state.actorId);
