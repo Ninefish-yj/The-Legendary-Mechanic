@@ -72,7 +72,9 @@ namespace SuperMech.Code
                   ? LocalizedTextManager.getText("sm_ui_supera_dominance")
                   : attitude == SuperMechSupermA.Attitude.Purge
                       ? LocalizedTextManager.getText("sm_ui_supera_purge")
-                      : LocalizedTextManager.getText("sm_ui_supera_tolerate")).Append("\n");
+                      : attitude == SuperMechSupermA.Attitude.Vigilant
+                          ? LocalizedTextManager.getText("sm_ui_supera_vigilant")
+                          : LocalizedTextManager.getText("sm_ui_supera_tolerate")).Append("\n");
             // 超A级协会
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_council")).Append(": ")
               .Append(council

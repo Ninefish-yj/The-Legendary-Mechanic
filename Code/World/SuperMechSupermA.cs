@@ -27,12 +27,14 @@ namespace SuperMech.Code
         public const string CouncilTrait = "sm_supera_council"; // 超A级协会成员标记
         public const string PurgeTrait = "sm_supera_purge";     // 清算标记（文明联合压制）
 
-        public enum Attitude { Tolerate, Purge, Dominance } // 默许 / 清算风暴 / 超A时代（个体伟力压倒集体伟力）
+        public enum Attitude { Tolerate, Vigilant, Purge, Dominance } // 默许 / 警惕（超能者群体收编压力） / 清算风暴 / 超A时代
 
         // 数值（原著尺度等比缩放）
         private const int SuperAThreshold = 3;      // 非嫡系超A≥3 触发清算（自由个体伟力泛滥的担忧，原著巅峰之殇导火索）
         private const int CouncilThreshold = 5;     // 超A≥5 协会成立（原著：协会为超A级规模庞大后由麦尼逊等推动创建，ch1016"超A总数只会一直增加"）
         private const int DominanceThreshold = 8;   // 超A≥8=个体伟力压倒集体伟力（原著ch1018"个体伟力将失去掌控"）
+        private const int AwakenedVigilantThreshold = 20; // 非嫡系超能者≥20→霸主文明警惕（超能者群体泛滥，原著ch1018超A/超能者总数只会一直增加）
+        private const float VigilantSuppressMult = 0.95f;  // 警惕期非嫡系超能者伤害×0.95（收编压力：逼自由超能者投靠文明）
         private const int PurgeDuration = 120;      // 清算风暴时长（周期事件，非无尽战争；风暴后回默许=霸主文明收编/拉拢）
         private const float CouncilDamageBonus = 0.10f; // 协会联合加成：超A个体伤害+10%
         private const float DominanceDamageBonus = 0.15f; // 超A时代协会主导：伤害+15%
@@ -78,6 +80,28 @@ namespace SuperMech.Code
                 if (k != null && k.id == a.kingdom.id) return true;
             }
             return false;
+        }
+
+        /// <summary>非霸主文明嫡系的觉醒者（超能者）数量：超能者群体=个体伟力底座，泛滥=威胁文明秩序
+        /// （原著：文明自己的超能者是资产，不受控的自由超能者是隐患）</summary>
+        public static int CountForeignAwakened()
+        {
+            if (World.world == null || World.world.units == null) return 0;
+            int count = 0;
+            foreach (Actor a in World.world.units.units_only_alive)
+            {
+                if (a == null || !SuperMechAwakened.IsAwakened(a)) continue;
+                if (!IsDynasty(a)) count++;
+            }
+            return count;
+        }
+
+        /// <summary>收编压力：警惕期非霸主文明嫡系超能者伤害×0.95（原著：文明靠收编拉拢超能者，
+        /// 不收编的自由超能者受压；暴力清算只针对超A级顶端泛滥）</summary>
+        public static float GetVigilantSuppressMult(Actor a)
+        {
+            if (_attitude != Attitude.Vigilant || a == null || !SuperMechAwakened.IsAwakened(a) || IsDynasty(a)) return 1f;
+            return VigilantSuppressMult;
         }
 
         /// <summary>非霸主文明嫡系的自由超A级个体数（清算对象池）</summary>
@@ -147,7 +171,21 @@ namespace SuperMech.Code
                 return;
             }
 
-            // ②清算风暴进行中：倒计时，结束后回默许（霸主文明收编/拉拢，非无尽战争）
+            // ②超能者群体威胁：非嫡系超能者泛滥→霸主文明警惕（收编压力）；超A清算风暴优先
+            if (_attitude == Attitude.Purge || _attitude == Attitude.Dominance)
+            {
+                // 清算/超A时代优先，不覆盖
+            }
+            else if (CountForeignAwakened() >= AwakenedVigilantThreshold)
+            {
+                _attitude = Attitude.Vigilant;
+            }
+            else
+            {
+                _attitude = Attitude.Tolerate;
+            }
+
+            // ③清算风暴进行中：倒计时，结束后回默许（霸主文明收编/拉拢，非无尽战争）
             if (_attitude == Attitude.Purge)
             {
                 _purgeTicksLeft--;
@@ -159,7 +197,7 @@ namespace SuperMech.Code
                 return;
             }
 
-            // ③清算触发：非嫡系自由超A泛滥 + 协会未成立 + 霸主文明有能力清算（时序：文明未成形无力清算，
+            // ④清算触发：非嫡系自由超A泛滥 + 协会未成立 + 霸主文明有能力清算（时序：文明未成形无力清算，
             //    先发展出超A力量时只有默许拉拢——原著巅峰之殇是三大文明成形后的历史事件）
             if (foreign >= SuperAThreshold && !_councilFormed && CanPurge())
             {
@@ -169,8 +207,11 @@ namespace SuperMech.Code
                 return;
             }
 
-            // ④默许/拉拢（协会成立后文明转默许；嫡系超A不受清算）
-            if (_attitude == Attitude.Purge) _attitude = Attitude.Tolerate;
+            // ⑤回退：清算风暴结束或未触发时，按超能者威胁重估（警惕/默许）
+            if (_attitude == Attitude.Purge)
+            {
+                _attitude = CountForeignAwakened() >= AwakenedVigilantThreshold ? Attitude.Vigilant : Attitude.Tolerate;
+            }
         }
 
         /// <summary>清算能力：霸主文明（科技最强3王国）中最强者至少达到超星团级（原著：三大文明=宇宙级
@@ -212,5 +253,7 @@ namespace SuperMech.Code
             _councilFormed = false;
             _purgeTicksLeft = 0;
         }
+
+        public static bool IsVigilant => _attitude == Attitude.Vigilant;
     }
 }

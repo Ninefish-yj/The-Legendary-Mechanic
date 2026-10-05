@@ -262,6 +262,12 @@ namespace SuperMech.Code
                 {
                     target.data.health -= (int)(pDamage * (purgeMult - 1f));
                 }
+                // v0.76.5 超能者群体收编压力：警惕期非嫡系超能者伤害×0.95（原著：文明收编拉拢超能者）
+                float vigilantMult = SuperMechSupermA.GetVigilantSuppressMult(target);
+                if (vigilantMult != 1f)
+                {
+                    target.data.health -= (int)(pDamage * (1f - vigilantMult));
+                }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
                 {
