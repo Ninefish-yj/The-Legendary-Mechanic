@@ -98,10 +98,12 @@ namespace SuperMech.Code
         /// ch1214圣所记录圣体级/超A级信息=另一种形式的不灭）</summary>
         public class IterationArchive
         {
-            public int iteration;               // 第几轮宇宙迭代
+            public int iteration;               // 第几轮宇宙迭代（0=前代/原著上代文明）
             public int superACount;             // 该迭代超A级（圣体级）数量
             public int[] classCounts = new int[5]; // 体系分布：机械/念力/武道/异能/魔法
             public int maxRankIdx;              // 最高阶位
+            public string label;                // 档案名（本地化键；null=玩家世界第N轮记录）
+            public string note;                 // 档案说明（本地化键；null=无）
         }
 
         public class DeadUnitRecord
@@ -269,20 +271,37 @@ namespace SuperMech.Code
                 // 迭代档案兜底（旧存档缺字段→null）
                 if (Data.iteration_archives == null)
                     Data.iteration_archives = new System.Collections.Generic.List<IterationArchive>();
-                // v0.76.15 预置原著前代文明档案：圣所=上代文明（变数文明/诸星联）遗产变异成的底层规律
-                // （ch1211"上迭代遗产、让下一迭代更丰富"；ch1207 诸星联=33星域近万圣体级超A）。
-                // iteration=0 表示前代（原著上代文明），作为传承的初始来源——圣所本体即由此而来。
+                // v0.76.15/16 预置原著前代文明档案：圣所=上代文明遗产变异成的底层规律，记录一个迭代发生的
+                // 所有信息（ch1211），大重启时随机抽取融入新生宇宙。前代记录=圣所传承的初始来源。
+                // iteration=0 表示前代（原著上代文明）。
                 if (Data.iteration_archives.Count == 0)
                 {
+                    // ① 圣所文明（变革迭代）：信息态突破、查到大重启起源、用信息态延续文明失败、留下圣所（ch1211）
                     Data.iteration_archives.Add(new IterationArchive
                     {
-                        iteration = 0,
-                        superACount = 400, // 圣所记录的核心圣体级信息量（代表记录，非全量）
-                        classCounts = new int[] { 80, 80, 80, 80, 80 }, // 五大超能体系分布（圣所逐代补全，ch1217）
-                        maxRankIdx = 12   // 至高级=巅峰超A级（ch1207，SS）
+                        iteration = 0, label = "sm_san_arch_sanciv", note = "sm_san_arch_sanciv_n",
+                        superACount = 300, classCounts = new int[] { 70, 60, 60, 60, 50 }, maxRankIdx = 12
+                    });
+                    // ② 世界重启计划：圣所文明末期最大成果/失败，为后世创造次级维度世界（ch1211/1217）
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0, label = "sm_san_arch_restart", note = "sm_san_arch_restart_n",
+                        superACount = 50, classCounts = new int[] { 15, 10, 10, 10, 5 }, maxRankIdx = 12
+                    });
+                    // ③ 次级维度世界：一段失败的重启、早该消失的幻影（杰斯所在，ch1216/1217）
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0, label = "sm_san_arch_dime", note = "sm_san_arch_dime_n",
+                        superACount = 50, classCounts = new int[] { 12, 12, 12, 8, 6 }, maxRankIdx = 12
+                    });
+                    // ④ 诸星联：33星域近万圣体级（超A级）体制化文明（ch1207/1214）
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0, label = "sm_san_arch_alliance", note = "sm_san_arch_alliance_n",
+                        superACount = 400, classCounts = new int[] { 80, 80, 80, 80, 80 }, maxRankIdx = 12
                     });
                     Save();
-                    Debug.Log("[超神机械师] 圣所预置前代文明档案：原著·诸星联（上代文明遗产，传承+2%）");
+                    Debug.Log("[超神机械师] 圣所预置前代文明档案×4（圣所文明/世界重启计划/次级维度/诸星联，传承+4%）");
                 }
             }
             catch (System.Exception e)

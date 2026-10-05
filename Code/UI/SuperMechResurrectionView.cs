@@ -72,11 +72,13 @@ namespace SuperMech.Code
             var last = SuperMechSanctuary.GetIterationArchives().Count > 0
                 ? SuperMechSanctuary.GetIterationArchives()[SuperMechSanctuary.GetIterationArchives().Count - 1] : null;
             string tInherit = LocalizedTextManager.getText("sm_ui_res_inherit");
+            string lastLabel = last != null
+                ? (string.IsNullOrEmpty(last.label) ? last.iteration.ToString()
+                    : (LocalizedTextManager.getText(last.label) + (string.IsNullOrEmpty(last.note) ? "" : "·" + LocalizedTextManager.getText(last.note))))
+                : "—";
             string inheritInfo = totalArchives > 0 && last != null
                 ? string.Format(LocalizedTextManager.getText("sm_ui_res_inherit_info"),
-                    totalArchives,
-                    last.iteration == 0 ? LocalizedTextManager.getText("sm_ui_res_inherit_prev") : last.iteration.ToString(),
-                    last.superACount, (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f))
+                    totalArchives, lastLabel, last.superACount, (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f))
                 : string.Format(LocalizedTextManager.getText("sm_ui_res_inherit_none"), (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f));
             _infoText.text = $"<color=#6ab7ff>{tEnergy}:</color> {SuperMechSanctuary.Data.sanctuary_energy:F0}  " +
                 $"<color=#6ab7ff>{tCond}:</color> S+ 20%\n" +
