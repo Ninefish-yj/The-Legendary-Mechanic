@@ -60,6 +60,7 @@ namespace SuperMech.Code
             ("sm_ui_legion_title", DrawLegionContent),
             ("sm_ui_tree_title", DrawWorldTreeContent),
             ("sm_ui_esgod_title", DrawEsGodContent),
+            ("sm_ui_rank_window_title", DrawRankContent),
         };
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)
