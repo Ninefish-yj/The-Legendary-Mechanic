@@ -6,7 +6,7 @@ namespace SuperMech.Code
     /// <summary>阶位专长系统：晋升阶位(OnRankUp)时获得的加成专长；区别于 Specialty=通用专长</summary>
     public static class SuperMechRankSpecialty
     {
-        // v0.76.69 收敛：17 个超A 终局 Power → 6 个（用户"修正"——自研 Power 收敛；概念不朽保留独立复活机制）
+        // v0.76.69 收敛+70 改名：超A级进阶系统（原著依据=超A级=超能者巅峰/圣体级/圣所复苏资格/机械神明）——原17个自研Power收敛为6个
         public const string DivinePower      = "sm_rs5_power";       // 超凡神力（超凡之力+至高超能+神圣威严）
         public const string EternalBody      = "sm_rs5_body";        // 永恒之躯（永恒之体+细胞反应堆+宇宙之躯+生命转变）
         public const string QiFoundation     = "sm_rs_qifoundation"; // 气力根基（保留原 id）
