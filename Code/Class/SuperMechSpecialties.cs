@@ -61,6 +61,9 @@ namespace SuperMech.Code
             // 虚拟技术革新·麦尼逊（ch1294：虚拟技术改良、虚拟技术类能力加成1.75x、不灭械国技术基础；麦尼逊活跃ch1404+）
             new SpecialtyDef { id = "sm_legend_virtual_reform", nameKey = "sm_legend_virtual_reform", descKey = "sm_legend_virtual_reform_info", system = "mech",
                                dmgMul = 0.25f, alive = true },
+            // 诡诈师·索罗金（ch936：心灵异能强度+75%、智力神秘+20%、心灵技能效果等级+4可突破上限；索罗金活跃ch1403+）
+            new SpecialtyDef { id = "sm_legend_sorokin_trickster", nameKey = "sm_legend_sorokin_trickster", descKey = "sm_legend_sorokin_trickster_info", system = "psi",
+                               dmgMul = 0.35f, alive = true },
             // 注：模板专长（强韧生命等）是另一系统（NPC/BOSS类别专长），不属于专属专长——不在此池
         };
 
