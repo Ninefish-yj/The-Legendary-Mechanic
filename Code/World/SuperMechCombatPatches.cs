@@ -243,8 +243,8 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (treeMult - 1f));
                     }
-                    // v0.76.0 个体伟力：异神（顶层超A）×2.5 + 超A级协会联合加成（个体伟力联合）
-                    float esGodMult = SuperMechEsGod.GetEsGodDamageMult(attacker);
+                    // v0.76.41 个体伟力：顶层超A（X阶）×2.5 + 超A级协会联合加成（个体伟力联合）
+                    float esGodMult = SuperMechEsGod.GetTopSuperAMult(attacker);
                     if (esGodMult != 1f)
                     {
                         target.data.health -= (int)(pDamage * (esGodMult - 1f));
@@ -516,8 +516,8 @@ namespace SuperMech.Code
                 // v0.73.0 世界树入侵：击杀世界树单位计入击退进度（树王死亡即击退）
                 SuperMechWorldTree.OnTreeKilled(killer, target);
 
-                // v0.76.0 异神：被击杀→遗落异神遗产（原著ch1008，不再封印复活）
-                SuperMechEsGod.OnEsGodKilled(killer, target);
+                // v0.76.41 顶层超A：被击杀→遗落异神遗产（原著ch1008，仅一次）
+                SuperMechEsGod.OnTopSuperAKilled(killer, target);
 
                 if (SuperMechAwakened.IsAwakened(killer))
                 {

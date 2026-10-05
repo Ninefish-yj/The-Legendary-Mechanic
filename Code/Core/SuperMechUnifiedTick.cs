@@ -106,7 +106,6 @@ namespace SuperMech.Code
                 SafeRun("玩家降临", () => SuperMechPlayer.TickPlayer(1.25f));
                 SafeRun("黑星军团", () => SuperMechLegion.TickLegion(1.25f));
                 SafeRun("世界树入侵", () => SuperMechWorldTree.TickWorldTree(1.25f));
-                SafeRun("异神", () => SuperMechEsGod.TickEsGod(1.25f));
                 SafeRun("个体伟力", () => SuperMechSupermA.Tick(1.25f));
             }
 

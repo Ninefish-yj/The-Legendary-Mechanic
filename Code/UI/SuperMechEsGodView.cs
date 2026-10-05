@@ -61,12 +61,6 @@ namespace SuperMech.Code
             bool order = SuperMechSupermA.OrderEstablished;
             bool bureau = SuperMechSupermA.Bureaucratized;
             bool alliance = SuperMechSupermA.AllianceFormed;
-            var d = SuperMechEsGod.Data;
-
-            string state = d.state == SuperMechEsGod.EventState.Idle ? LocalizedTextManager.getText("sm_ui_esgod_state_idle")
-                : d.state == SuperMechEsGod.EventState.Active ? LocalizedTextManager.getText("sm_ui_esgod_state_active")
-                : LocalizedTextManager.getText("sm_ui_esgod_state_defeated");
-
             float threatPower = SuperMechSupermA.GetThreatPower();   // 超星团级文明超A（清算对象）
             float classPower = SuperMechSupermA.GetClassPower();     // 超A阶级总力量
             float freePower = SuperMechSupermA.GetFreeSuperAPower(); // 民间自由超A（圣域收编对象）
@@ -115,8 +109,16 @@ namespace SuperMech.Code
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_layers")).Append(": ")
               .Append("威胁 ").Append(threatPower.ToString("0")).Append(" / 阶级 ")
               .Append(classPower.ToString("0")).Append(" / 民间 ").Append(freePower.ToString("0")).Append("\n");
-            // 异神状态（顶层超A之一）
-            sb.Append(LocalizedTextManager.getText("sm_ui_esgod_state")).Append(": ").Append(state).Append("\n");
+            // 顶层超A格局（原著异神=顶层超A之一，不生成特殊单位；状态=世界顶层超A有无+遗产）
+            int topCount = SuperMechEsGod.CountTopSuperA();
+            sb.Append(LocalizedTextManager.getText("sm_ui_esgod_state")).Append(": ")
+              .Append(topCount > 0
+                  ? string.Format(LocalizedTextManager.getText("sm_ui_esgod_state_active"), topCount)
+                  : LocalizedTextManager.getText("sm_ui_esgod_state_idle")).Append("\n")
+              .Append(LocalizedTextManager.getText("sm_ui_esgod_heritage")).Append(": ")
+              .Append(SuperMechEsGod.Data.heritageClaimed
+                  ? LocalizedTextManager.getText("sm_ui_esgod_heritage_yes")
+                  : LocalizedTextManager.getText("sm_ui_esgod_heritage_no")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_esgod_desc")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_desc")).Append("\n");
             // v0.76.22 世界之外·高维存在层（原著文明已脱离迭代循环，与玩家平级的超脱存在）

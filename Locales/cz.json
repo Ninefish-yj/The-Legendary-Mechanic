@@ -4518,11 +4518,11 @@
   "sm_config_791": "世界树文明入侵",
   "sm_config_792": "世界树入侵间隔（tick）",
   "sm_ui_esgod_title": "超A格局",
-  "sm_ui_esgod_state": "状态：",
+  "sm_ui_esgod_state": "顶层超A（X阶）",
   "sm_ui_esgod_state_idle": "未现世",
-  "sm_ui_esgod_state_active": "现世",
+  "sm_ui_esgod_state_active": "现世{0}位",
   "sm_ui_esgod_state_defeated": "已陨落",
-  "sm_ui_esgod_desc": "异神：顶层超A级之一（异能之神），作为个体伟力代表，其存在是霸主文明的默许；被击杀后遗落异神遗产（技术资料→最强文明科技+30、全体觉醒潜能+3）",
+  "sm_ui_esgod_desc": "顶层超A：X阶·超神级觉醒者（原著\"超A之上即为超神级\"），个体伟力巅峰，其存在是霸主文明的默许；原著异神即顶层超A之一（已随暗面系升维，不降临本世界）；顶层超A被击杀后遗落异神遗产（技术资料→最强文明科技+30、全体觉醒潜能+3）",
   "sm_config_793": "异神现世",
   "sm_config_794": "机械权限体系",
   "sm_trait_class_mech": "机械天赋",
@@ -4585,7 +4585,7 @@
   "world_tree_interval": "世界树入侵间隔(秒)",
   "world_tree_interval Description": "世界树入侵的触发间隔（秒）",
   "es_god_enabled": "异神现世",
-  "es_god_enabled Description": "启用异神（顶层超A级个体：首个X阶超A现世时降临，被击杀后遗落异神遗产）",
+  "es_god_enabled Description": "启用顶层超A异神遗产（顶层超A被击杀后最强文明继承技术资料）",
   "awakening_chance": "觉醒概率",
   "awakening_chance Description": "单位觉醒为超能者的基础概率",
   "qi_attribute_counter": "气力属性计数",
@@ -4709,5 +4709,8 @@
   "sm_san_arch_beyond_n": "宇宙本无重启，只有走向终结的终极命运。救世主文明为延续宇宙寿命改造宇宙规则，创造了坍缩重生的轮回（大重启），自身却毁于其中。三大文明剥离全宇宙信息态为暗面，经历小重启轮回后与真实宇宙重合——暗面融入真实宇宙，但暗面系（遗留的改造物、随暗面而来的住民与登陆者）仍存于真实宇宙。为摆脱重启循环，三大文明重新改造遗留之物——宇宙重启、万物打包重生的那一刻，改造发生异变：暗面系一并升维为超脱存在，与创世神同层次，俯瞰迭代。它留下心得：重启的瞬间，改造之物可能异变为超脱之机——异变不可复制、不可预测，此乃接力最珍贵的一棒",
   "sm_ui_supera_beyond_msg": "高维留言",
   "sm_ui_supera_beyond_msg_yes": "已收到（三大文明的成功心得已写入圣所档案）",
-  "sm_ui_supera_beyond_msg_no": "未收到（世界达成秩序/圣域/体制化/同盟任一里程碑时，超脱者将留下心得）"
+  "sm_ui_supera_beyond_msg_no": "未收到（世界达成秩序/圣域/体制化/同盟任一里程碑时，超脱者将留下心得）",
+  "sm_ui_esgod_heritage": "异神遗产",
+  "sm_ui_esgod_heritage_yes": "已掉落（最强文明继承技术资料，觉醒者潜能+3）",
+  "sm_ui_esgod_heritage_no": "未掉落"
 }
