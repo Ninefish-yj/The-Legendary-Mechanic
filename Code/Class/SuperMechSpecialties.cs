@@ -249,8 +249,9 @@ namespace SuperMech.Code
                         // 原著：专属专长由单位领悟/自创，或由高维原著人物赋予（人物存活才赋予）
                         string s = null;
                         int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
-                        if (rankIdx >= 13)
+                        if (rankIdx >= 13 && !a.hasTrait(SuperMechTraits.Descendant))
                         {
+                            // 原著：模板专长=NPC/BOSS专属（玩家弄不到，ch107）；个人专属=超A级强者独有（前世玩家不存在这种能力，ch1093）
                             if (list.Count == 0) s = TryLegendaryGrant(a, list);      // 首槽：原著人物（存活）赋予个人专属
                             else s = TryTemplateFormation(a, list);                       // 后续槽：概率形成模板专长
                         }
@@ -283,6 +284,7 @@ namespace SuperMech.Code
         /// <summary>原著赋予：X阶超A匹配职业系时，由存活的原著人物赋予个人专属专长</summary>
         private static string TryLegendaryGrant(Actor a, List<string> existing)
         {
+            if (a.hasTrait(SuperMechTraits.Descendant)) return null;   // 原著：玩家不存在专属专长（ch1093）
             string sys = GetSystem(a);
             var pool = LegendaryAll.FindAll(d => d.alive && d.system == sys);
             if (pool.Count == 0) return null;
@@ -294,6 +296,7 @@ namespace SuperMech.Code
         /// <summary>模板专长形成：X阶超A（NPC/BOSS 定位）按形成几率获得模板专长（原著：专属专长形成几率）</summary>
         private static string TryTemplateFormation(Actor a, List<string> existing)
         {
+            if (a.hasTrait(SuperMechTraits.Descendant)) return null;   // 原著：玩家弄不到模板专长（ch107）
             var pool = LegendaryAll.FindAll(d => !d.alive);
             if (pool.Count == 0) return null;
             var cand = pool.FindAll(d => !existing.Contains(d.id));
