@@ -130,13 +130,6 @@ namespace SuperMech.Code
             sb.Append("\n<color=#ffd966>════ ").Append(LocalizedTextManager.getText("sm_ui_supera_beyond")).Append(" ════</color>\n");
             // 引言（题词：历史观）
             sb.Append("<i><color=#b8b8b8>").Append(LocalizedTextManager.getText("sm_ui_supera_motto")).Append("</color></i>\n\n");
-            // 论坛区：圣所留言板（前代档案帖子列表）
-            sb.Append("<color=#ffd966>┄┄ ").Append(LocalizedTextManager.getText("sm_ui_supera_board")).Append("</color>\n");
-            foreach (var ar in SuperMechSanctuary.GetIterationArchives())
-            {
-                if (ar == null) continue;
-                sb.Append("<color=#c9a86a>▍</color>").Append(LocalizedTextManager.getText(ar.label)).Append("\n");
-            }
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_beyond_arch")).Append(": ")
               .Append(string.Format(LocalizedTextManager.getText("sm_ui_supera_beyond_arch_info"),
                   archCount, archSuperA, (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f))).Append("\n")
