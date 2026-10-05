@@ -4636,13 +4636,5 @@
   "sm_tpl_low_immune": "低强度攻击免疫",
   "sm_tpl_low_immune_info": "模板专长（原著：哈达威硬化防御）：生命+35%",
   "sm_tpl_tough_body": "刚韧之躯",
-  "sm_tpl_tough_body_info": "模板专长（原著：韩萧体魄刚韧）：生命+25%，生命低于40%时攻击再+15%",
-  "sm_rankspecialty_270": "超A巅峰之力",
-  "sm_rankspecialty_271": "超A级进阶（原著：超A级=超能者巅峰，个体伟力顶点）：攻击+40%，生命+15%，智力+20",
-  "sm_rankspecialty_272": "圣体之躯",
-  "sm_rankspecialty_273": "超A级进阶（原著：圣体级=超A生命层次，圣所复苏资格）：生命+60%，体力+50",
-  "sm_rankspecialty_274": "超A巅峰血脉",
-  "sm_rankspecialty_275": "超A级进阶（巅峰超A血脉蜕变）：攻击+30%，生命+15%，护甲+10，智力+10",
-  "sm_rankspecialty_276": "机械神明",
-  "sm_rankspecialty_277": "超A级进阶·最终形态（原著：巅峰超A级位列机械神明之一）：攻击+60%，生命+35%，护甲+15，智力+30"
+  "sm_tpl_tough_body_info": "模板专长（原著：韩萧体魄刚韧）：生命+25%，生命低于40%时攻击再+15%"
 }
