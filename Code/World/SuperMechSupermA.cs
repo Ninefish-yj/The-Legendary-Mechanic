@@ -44,6 +44,11 @@ namespace SuperMech.Code
         private const float SanctumDamageBonus = 0.15f; // 超能圣域加成：超A个体伤害+15%（圣域体制，对等共存）
         private const float PurgeDamageTakenMult = 1.30f; // 清算期超星团级/民间超A受击伤害×1.3（文明联合压制）
         private const int RecalcInterval = 8;       // 每8 tick 重算态度/协会/圣域
+        // v0.76.11 社会形态分叉（原著：主宇宙=半自由三大文明 vs 诸星联=超A全面体制化，ch1207/1210）
+        private const float BureaucratBonus = 0.05f;    // 体制化文明：超A纳入编制+5%（诸星联式：超A=安全部干部，受控不作乱）
+        private const float AllianceBonus = 0.05f;      // 超星团同盟联合加成+5%（ch1459"战后就会与超A级协会、超星团同盟形成新的制衡格局"）
+        private const float AlliancePowerRatio = 0.25f; // 超星团级文明超A力量≥霸主文明25%且被清算过→抱团成立同盟
+        private const float AlliancePurgeScale = 1.25f; // 同盟成立后清算触发阈值×1.25（抱团制衡，清算难度上升）
 
         private static int _tick = 0;
         private static Attitude _attitude = Attitude.Tolerate;
@@ -51,6 +56,10 @@ namespace SuperMech.Code
         private static bool _sanctumFormed = false;
         private static int _purgeTicksLeft = 0;     // 清算风暴剩余时长
         private static int _aftermathTicksLeft = 0; // 绝户计残留剩余时长
+        private static bool _orderEstablished = false; // 秩序确立（探索历→星海历：霸主文明≥超星团级且力量压过超A阶级）
+        private static bool _bureaucratized = false;   // 霸主文明体制化（宇宙级=诸星联式：超A全部纳入编制）
+        private static bool _allianceFormed = false;   // 超星团同盟（超星团级文明被清算后抱团制衡）
+        private static int _purgeCount = 0;            // 清算风暴发生次数
 
         // ============ 状态查询 ============
 
@@ -59,6 +68,9 @@ namespace SuperMech.Code
         public static bool SanctumFormed => _sanctumFormed;
         public static bool IsSanctum => _attitude == Attitude.Sanctum;
         public static bool IsVigilant => _attitude == Attitude.Vigilant;
+        public static bool OrderEstablished => _orderEstablished;
+        public static bool Bureaucratized => _bureaucratized;
+        public static bool AllianceFormed => _allianceFormed;
 
         /// <summary>超A级判定：觉醒超能者中能级S级及以上（原著ch1040：韩萧能级82600=阶位SS=超A级，
         /// S级=超A级入门档；X阶=超神级=超A之上，原著ch1402韩萧命名"超A级之上就叫做超神级"；
@@ -217,12 +229,17 @@ namespace SuperMech.Code
             return result;
         }
 
-        /// <summary>协会/圣域联合加成：超A阶级联合伤害+10%（协会，ch1016"拧成一股…高级文明更加忌惮"）；
-        /// 超能圣域+15%（圣域体制，ch1459与三大文明同层次对等共存）</summary>
+        /// <summary>超A个体战力加成（叠加）：协会+10%（ch1016阶级联合）；超能圣域+15%（ch1459对等共存）；
+        /// 体制化文明编制超A+5%（诸星联式：超A=安全部干部，受控不作乱，ch1207/1210）；
+        /// 超星团同盟超A+5%（ch1459三方制衡）</summary>
         public static float GetCouncilDamageBonus(Actor a)
         {
-            if (!_councilFormed || !IsSuperA(a)) return 1f;
-            return 1f + (_sanctumFormed ? SanctumDamageBonus : CouncilDamageBonus);
+            if (a == null || !IsSuperA(a)) return 1f;
+            float bonus = 0f;
+            if (_councilFormed) bonus += _sanctumFormed ? SanctumDamageBonus : CouncilDamageBonus;
+            if (_bureaucratized && IsDynasty(a)) bonus += BureaucratBonus; // 体制化霸主收编的超A=编制干部
+            if (_allianceFormed && a.kingdom != null && IsMidCivilization(a.kingdom)) bonus += AllianceBonus;
+            return 1f + bonus;
         }
 
         /// <summary>清算压制：清算期超星团级/民间超A个体受击伤害×1.3（霸主文明联合压制他文明超A，
@@ -256,7 +273,50 @@ namespace SuperMech.Code
             float awakenedPower = GetAwakenedPower();// 非霸主高阶超能者群体力量
             float civPower = GetCivPower();          // 霸主文明集体伟力
 
-            // ①超能圣域（终局）：协会已立 + 超A阶级力量达霸主文明80% → 政治地位被承认（ch1459
+            // ①秩序确立（探索历→星海历）：霸主文明≥超星团级 且 文明力量压过超A阶级——
+            //   权威结构确立（谁的力量大谁定规则，ch1002/1018）。确立前=探索历（无秩序：
+            //   超A自由沉浮、文明无力约束，清算/收编/协会全不生效）
+            _orderEstablished = civPower >= classPower && CanPurge();
+            if (!_orderEstablished)
+            {
+                if (_attitude == Attitude.Purge)
+                {
+                    _attitude = Attitude.Tolerate;
+                    ApplyPurgeTrait(false);
+                }
+                else
+                {
+                    _attitude = Attitude.Tolerate;
+                }
+                return;
+            }
+
+            // ②霸主文明体制化（诸星联式分叉）：霸主文明达宇宙级→超A全面纳入编制（ch1207/1210：
+            //   诸星联近万圣体级全是安全部干部、乖宝宝）——编制消化威胁：清算永不触发、
+            //   态度恒为默许（文明吞并超A阶级=与圣域并列的另一条稳定化路径）
+            _bureaucratized = IsBureaucratCiv();
+            if (_bureaucratized)
+            {
+                if (_attitude == Attitude.Purge)
+                {
+                    _attitude = Attitude.Tolerate;
+                    ApplyPurgeTrait(false);
+                }
+                else if (_attitude != Attitude.Sanctum)
+                {
+                    _attitude = Attitude.Tolerate;
+                }
+                return;
+            }
+
+            // ③超星团同盟：超星团级文明被清算过（巅峰之殇历史）且力量达霸主25%→抱团制衡
+            //   （ch1459"战后就会与超A级协会、超星团同盟形成新的制衡格局"）
+            if (_purgeCount > 0 && !_allianceFormed && threatPower >= civPower * AlliancePowerRatio)
+            {
+                _allianceFormed = true;
+            }
+
+            // ④超能圣域（终局）：协会已立 + 超A阶级力量达霸主文明80% → 政治地位被承认（ch1459
             //   "超能圣域和三大文明的势力达到了同一层次"）——对等共存，清算永久解除，终局不回退
             if (_councilFormed && classPower >= civPower * SanctumPowerRatio)
             {
@@ -301,10 +361,12 @@ namespace SuperMech.Code
             // ④清算触发：超星团级文明超A力量达霸主文明40%（他文明个人伟力资产膨胀=失控风险，
             //   ch1018"个体伟力将失去掌控"）+ 霸主文明有能力清算（时序：文明未成形无力清算）+
             //   圣域未成立（协会不免疫清算——ch1459"当年三大文明对超A级协会的打压"，直到圣域）
-            if (threatPower >= civPower * PurgePowerRatio && CanPurge())
+            float purgeRatio = PurgePowerRatio * (_allianceFormed ? AlliancePurgeScale : 1f); // 同盟抱团→清算难度上升
+            if (threatPower >= civPower * purgeRatio)
             {
                 _attitude = Attitude.Purge;   // 清算风暴（原著巅峰之殇：清超星团级盟友的超A，绝户计）
                 _purgeTicksLeft = PurgeDuration;
+                _purgeCount++;
                 ApplyPurgeTrait(true);
                 return;
             }
@@ -356,6 +418,19 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>霸主文明体制化判定：霸主文明（科技最强3王国）中最强达宇宙级（Universal，
+        /// 诸星联=宇宙级文明+近万超A编制化，ch1207）</summary>
+        public static bool IsBureaucratCiv()
+        {
+            var top = GetTopCivilizations(3);
+            foreach (var k in top)
+            {
+                if (k == null) continue;
+                if ((int)SuperMechCivilization.GetCivLevelFromKingdom(k) >= 4) return true; // Universal+
+            }
+            return false;
+        }
+
         public static void Clear()
         {
             _tick = 0;
@@ -364,6 +439,10 @@ namespace SuperMech.Code
             _sanctumFormed = false;
             _purgeTicksLeft = 0;
             _aftermathTicksLeft = 0;
+            _orderEstablished = false;
+            _bureaucratized = false;
+            _allianceFormed = false;
+            _purgeCount = 0;
         }
     }
 }

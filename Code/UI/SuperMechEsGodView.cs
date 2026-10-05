@@ -58,6 +58,9 @@ namespace SuperMech.Code
             var attitude = SuperMechSupermA.CurrentAttitude;
             bool council = SuperMechSupermA.CouncilFormed;
             bool sanctum = SuperMechSupermA.SanctumFormed;
+            bool order = SuperMechSupermA.OrderEstablished;
+            bool bureau = SuperMechSupermA.Bureaucratized;
+            bool alliance = SuperMechSupermA.AllianceFormed;
             var d = SuperMechEsGod.Data;
 
             string state = d.state == SuperMechEsGod.EventState.Idle ? LocalizedTextManager.getText("sm_ui_esgod_state_idle")
@@ -95,6 +98,19 @@ namespace SuperMech.Code
               .Append(sanctum
                   ? LocalizedTextManager.getText("sm_ui_supera_sanctum_yes")
                   : LocalizedTextManager.getText("sm_ui_supera_sanctum_no")).Append("\n");
+            // 秩序确立（探索历→星海历）与社会形态分叉（诸星联式体制化）
+            sb.Append(LocalizedTextManager.getText("sm_ui_supera_order")).Append(": ")
+              .Append(order
+                  ? LocalizedTextManager.getText("sm_ui_supera_order_yes")
+                  : LocalizedTextManager.getText("sm_ui_supera_order_no")).Append("\n");
+            sb.Append(LocalizedTextManager.getText("sm_ui_supera_form")).Append(": ")
+              .Append(bureau
+                  ? LocalizedTextManager.getText("sm_ui_supera_form_bureau")
+                  : LocalizedTextManager.getText("sm_ui_supera_form_semi")).Append("\n");
+            sb.Append(LocalizedTextManager.getText("sm_ui_supera_alliance")).Append(": ")
+              .Append(alliance
+                  ? LocalizedTextManager.getText("sm_ui_supera_alliance_yes")
+                  : LocalizedTextManager.getText("sm_ui_supera_alliance_no")).Append("\n");
             // 力量分层（威胁=力量比值：清算对象=超星团级文明超A；民间自由超A=圣域收编对象）
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_layers")).Append(": ")
               .Append("威胁 ").Append(threatPower.ToString("0")).Append(" / 阶级 ")
