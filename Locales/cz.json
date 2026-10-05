@@ -4670,5 +4670,8 @@
   "sm_ui_supera_form_semi": "半自由（三大文明式：超A=战略威慑工具，五态博弈）",
   "sm_ui_supera_alliance": "超星团同盟",
   "sm_ui_supera_alliance_yes": "已抱团（超星团级文明被清算后联合制衡：超A+5%，霸主清算阈值×1.25）",
-  "sm_ui_supera_alliance_no": "未成立"
+  "sm_ui_supera_alliance_no": "未成立",
+  "sm_ui_res_inherit": "跨迭代传承",
+  "sm_ui_res_inherit_info": "圣所档案{0}轮 | 上轮超A×{1} | 复苏完整度+{2}%（原著ch1211：圣所把上迭代信息融入新生宇宙）",
+  "sm_ui_res_inherit_none": "暂无迭代档案，复苏完整度+{0}%"
 }

@@ -262,6 +262,9 @@ namespace SuperMech.Code
             }
             SuperMechEventLogger.LogIteration(CurrentIteration, retentionRate, civSummary);
 
+            // 记录当前迭代超A信息到圣所档案（原著ch1211/1214：圣所记录超A级信息，跨迭代传承）
+            try { SuperMechSanctuary.RecordIterationArchive(); } catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 圣所迭代档案记录失败: {e.Message}"); }
+
             // 清除世界单位（保留降临者）
             ResetWorldForNewIteration();
 

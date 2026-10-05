@@ -39,7 +39,9 @@ namespace SuperMech.Code
             float baseIntegrity = Mathf.Clamp01(0.5f + state.rankIndex * 0.04f);
             // 复苏次数衰减
             float decay = Mathf.Pow(1f - InformationDecayPerRevive, state.reviveCount);
-            return Mathf.Clamp01(baseIntegrity * decay);
+            // v0.76.12 跨迭代传承：圣所历代累积的超A记录让新迭代复苏更完整（原著ch1211下一迭代更丰富）
+            float inheritance = SuperMechSanctuary.GetInheritanceBonus();
+            return Mathf.Clamp01(baseIntegrity * decay * inheritance);
         }
 
         /// <summary>检查是否可以复活该信息态（原著限制）</summary>

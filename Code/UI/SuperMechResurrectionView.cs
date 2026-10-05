@@ -68,9 +68,18 @@ namespace SuperMech.Code
             string tCond = LocalizedTextManager.getText("sm_ui_res_cond");
             string tDeadRecord = LocalizedTextManager.getText("sm_ui_res_dead_record");
             string tResurrectable = LocalizedTextManager.getText("sm_ui_res_resurrectable");
+            int totalArchives = SuperMechSanctuary.GetIterationArchives().Count;
+            var last = SuperMechSanctuary.GetIterationArchives().Count > 0
+                ? SuperMechSanctuary.GetIterationArchives()[SuperMechSanctuary.GetIterationArchives().Count - 1] : null;
+            string tInherit = LocalizedTextManager.getText("sm_ui_res_inherit");
+            string inheritInfo = totalArchives > 0 && last != null
+                ? string.Format(LocalizedTextManager.getText("sm_ui_res_inherit_info"),
+                    totalArchives, last.iteration, last.superACount, (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f))
+                : string.Format(LocalizedTextManager.getText("sm_ui_res_inherit_none"), (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f));
             _infoText.text = $"<color=#6ab7ff>{tEnergy}:</color> {SuperMechSanctuary.Data.sanctuary_energy:F0}  " +
                 $"<color=#6ab7ff>{tCond}:</color> S+ 20%\n" +
-                $"<color=#8fa8c8>{tDeadRecord}: {deadStates.Count} | {tResurrectable}: {SuperMechResurrection.GetResurrectableStates().Count}</color>";
+                $"<color=#8fa8c8>{tDeadRecord}: {deadStates.Count} | {tResurrectable}: {SuperMechResurrection.GetResurrectableStates().Count}</color>\n" +
+                $"<color=#7fc97f>{tInherit}: {inheritInfo}</color>";
 
             if (deadStates.Count == 0)
             {

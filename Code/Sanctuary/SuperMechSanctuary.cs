@@ -91,6 +91,17 @@ namespace SuperMech.Code
             public int total_divinity_ascensions = 0;
             public int total_resurrections = 0;
             public float sanctuary_energy = 5000f;  // 圣所能量（复活媒介消耗）
+            public List<IterationArchive> iteration_archives = new List<IterationArchive>(); // v0.76.12 跨迭代传承档案
+        }
+
+        /// <summary>跨迭代档案（v0.76.12 圣所跨迭代传承：原著ch1211圣所=上一迭代遗产融入新生宇宙，
+        /// ch1214圣所记录圣体级/超A级信息=另一种形式的不灭）</summary>
+        public class IterationArchive
+        {
+            public int iteration;               // 第几轮宇宙迭代
+            public int superACount;             // 该迭代超A级（圣体级）数量
+            public int[] classCounts = new int[5]; // 体系分布：机械/念力/武道/异能/魔法
+            public int maxRankIdx;              // 最高阶位
         }
 
         public class DeadUnitRecord
@@ -109,6 +120,53 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _reviveCount = new Dictionary<long, int>();
         private static readonly HashSet<long> _transcendenceFailed = new HashSet<long>();
         private static readonly Dictionary<long, int[]> _unitAuthority = new Dictionary<long, int[]>();
+
+        /// <summary>记录当前迭代的超A级（圣体级）信息到圣所档案（大重启前调用；
+        /// 原著ch1214：圣所关注记录超A级个体=有价值的信息；ch1211：圣所把上一迭代信息融入新生宇宙）</summary>
+        public static void RecordIterationArchive()
+        {
+            int superA = 0;
+            int[] cls = new int[5];
+            int maxRank = 0;
+            if (World.world != null && World.world.units != null)
+            {
+                foreach (var a in World.world.units.units_only_alive)
+                {
+                    if (a == null || !SuperMechSupermA.IsSuperA(a)) continue;
+                    superA++;
+                    int ri = SuperMechAdvancement.GetExactRankIndex(a);
+                    if (ri > maxRank) maxRank = ri;
+                    int ci = 0;
+                    if (a.hasTrait(SuperMechTraits.ClassMech)) ci = 0;
+                    else if (a.hasTrait(SuperMechTraits.ClassPsi)) ci = 1;
+                    else if (a.hasTrait(SuperMechTraits.ClassMartial)) ci = 2;
+                    else if (a.hasTrait(SuperMechTraits.ClassMind)) ci = 3;
+                    else if (a.hasTrait(SuperMechTraits.ClassMage)) ci = 4;
+                    cls[ci]++;
+                }
+            }
+            Data.iteration_archives.Add(new IterationArchive
+            {
+                iteration = SuperMechCosmicIteration.CurrentIteration,
+                superACount = superA,
+                classCounts = cls,
+                maxRankIdx = maxRank
+            });
+            Save();
+            Debug.Log($"[超神机械师] 圣所迭代档案: 第{SuperMechCosmicIteration.CurrentIteration}轮 超A×{superA} 最高阶rank{maxRank}");
+        }
+
+        /// <summary>历代传承系数：圣所逐代累积的超A记录→新迭代复苏更完整（原著ch1211
+        /// "一次次对宇宙进行微小的改变，不断让下一迭代的宇宙变得更加丰富"；每200超A记录+1%，上限+10%）</summary>
+        public static float GetInheritanceBonus()
+        {
+            int total = 0;
+            foreach (var ar in Data.iteration_archives) total += ar.superACount;
+            return 1f + Mathf.Min(0.10f, total * 0.0005f);
+        }
+
+        /// <summary>历代迭代档案（UI显示用）</summary>
+        public static List<IterationArchive> GetIterationArchives() => Data.iteration_archives;
 
         public static int GetReviveCount(Actor a)
         {
