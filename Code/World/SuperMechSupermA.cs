@@ -140,7 +140,10 @@ namespace SuperMech.Code
             return power;
         }
 
-        /// <summary>非霸主文明嫡系觉醒者（超能者）力量总和（超能者群体=个体伟力底座）</summary>
+        /// <summary>非霸主文明嫡系高阶觉醒者（超能者，能级A级及以上）力量总和。
+        /// 觉醒者=检测出超能基因并觉醒成超能者（原著ch1004"检测出了超能基因，觉醒成超能者"）；
+        /// 低阶超能者（F~B+）对文明无威胁（原著ch1004：凡人埃文斯弄死E级阶位恶徒——低阶超能者再多
+        /// 也只是治安问题），威胁只看高阶（A级及以上=个体伟力储备，ch1459"自然觉醒的民间超能者"指高阶）</summary>
         public static float GetAwakenedPower()
         {
             if (World.world == null || World.world.units == null) return 0f;
@@ -148,6 +151,7 @@ namespace SuperMech.Code
             foreach (Actor a in World.world.units.units_only_alive)
             {
                 if (a == null || !SuperMechAwakened.IsAwakened(a) || IsDynasty(a)) continue;
+                if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue; // A级以下=低阶，不算威胁
                 power += GetPowerIndex(a);
             }
             return power;
