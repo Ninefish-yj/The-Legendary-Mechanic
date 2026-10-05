@@ -52,12 +52,13 @@ namespace SuperMech.Code
         public static Attitude CurrentAttitude => _attitude;
         public static bool CouncilFormed => _councilFormed;
 
-        /// <summary>超A级判定：觉醒超能者中的能级X阶（原著：超A级=超能者体系的顶级强者，
-        /// 韩萧等都是超能者；普通人即使战力堆高也不属超A级语境——普通单位不算威胁池、不被清算波及，
-        /// 避免"有能级就被清算"的大屠杀）</summary>
+        /// <summary>超A级判定：觉醒超能者中能级S级及以上（原著ch1040：韩萧能级82600=阶位SS=超A级，
+        /// S级=超A级入门档；X阶=超神级=超A之上，原著ch1402韩萧命名"超A级之上就叫做超神级"；
+        /// 超A级与超神级同属个体伟力威胁池；普通人即使战力堆高也不属超A级语境——不进威胁池、
+        /// 不被清算波及，避免"有能级就被清算"的大屠杀）</summary>
         public static bool IsSuperA(Actor a)
         {
-            return a != null && SuperMechAwakened.IsAwakened(a) && SuperMechAdvancement.GetExactRankIndex(a) >= 13;
+            return a != null && SuperMechAwakened.IsAwakened(a) && SuperMechAdvancement.GetExactRankIndex(a) >= 10;
         }
 
         /// <summary>当前存活超A级个体数（含异神）</summary>
@@ -119,7 +120,7 @@ namespace SuperMech.Code
             return count;
         }
 
-        /// <summary>力量指数：能级onar/1000（X阶超A≈149，普通超能者≈0.x~10）</summary>
+        /// <summary>力量指数：能级onar/1000（SS巅峰超A≈83，X超神级≈149，普通超能者≈0.x~10）</summary>
         public static float GetPowerIndex(Actor a)
         {
             if (a == null) return 0f;
