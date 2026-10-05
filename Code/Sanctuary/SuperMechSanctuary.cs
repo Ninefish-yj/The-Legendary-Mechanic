@@ -291,8 +291,8 @@ namespace SuperMech.Code
                         iteration = 0, type = 0, label = "sm_san_arch_sanciv", note = "sm_san_arch_sanciv_n",
                         superACount = 300, classCounts = new int[] { 70, 60, 60, 60, 50 }, maxRankIdx = 12
                     });
-                    // ③ 诸星联（次级维度世界）：次级维度=诸星联所在的世界（ch1207）；世界重启计划=诸星联
-                    // 逃脱宇宙终结的方案，失败后截出闭合循环时空=幻影世界（ch1211/1216/1217）
+                    // ③ 诸星联（次级维度世界开辟者）："我们的迭代早于你们"（ch1211）——诸星联=前代迭代文明，
+                    // 发起世界重启计划失败→宇宙末期截取为闭合循环时空（幻影·杰斯）→为后世开辟次级维度世界
                     Data.iteration_archives.Add(new IterationArchive
                     {
                         iteration = 0, type = 0, label = "sm_san_arch_alliance", note = "sm_san_arch_alliance_n",
