@@ -286,7 +286,7 @@ namespace SuperMech.Code
             if (clearBtnImg != null) clearBtnImg.color = new Color(0.5f, 0.2f, 0.2f, 0.8f);
 
             // 统计文字（右）
-            _countText = SuperMechUiSkin.MakeText(ctrlRow.transform, "共 0 人", 10, TextAnchor.MiddleRight);
+            _countText = SuperMechUiSkin.MakeText(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_legion_count_zero"), 10, TextAnchor.MiddleRight);
             var countRect = _countText.GetComponent<RectTransform>();
             countRect.anchorMin = new Vector2(1, 0.5f);
             countRect.anchorMax = new Vector2(1, 0.5f);
@@ -707,7 +707,7 @@ namespace SuperMech.Code
             topRect.anchorMax = new Vector2(1, 1);
             topRect.pivot = new Vector2(0.5f, 1);
             topRect.sizeDelta = new Vector2(0, 28);
-            _countText = SuperMechUiBuilder.AddText(topBar, "势力总数: 0", 13, TextAnchor.MiddleLeft);
+            _countText = SuperMechUiBuilder.AddText(topBar, LocalizedTextManager.getText("sm_ui_faction_count_zero"), 13, TextAnchor.MiddleLeft);
             var countRect = _countText.GetComponent<RectTransform>();
             countRect.anchorMin = Vector2.zero;
             countRect.anchorMax = Vector2.one;

@@ -35,9 +35,6 @@ namespace SuperMech.Code
                 // 执行效果
                 ExecuteEffect(attacker, target, def);
 
-                // 事件日志
-                SuperMechEventLogger.LogSkillCast(attacker, def);
-
                 return true;
             }
             return false;

@@ -532,13 +532,7 @@ namespace SuperMech.Code
             if (_orbDetailPanel != null) _orbDetailPanel.SetActive(true);
             string tType = LocalizedTextManager.getText("sm_ui_san_type");
             _orbDetailText.text =
-                $"【文明记录】\n\n" +
-                $"<color=#3366cc>名称：</color>{info.civilizationName}\n" +
-                $"<color=#3366cc>{tType}：</color>{info.domain}\n" +
-                $"<color=#3366cc>迭代：</color>第{info.iteration}轮\n" +
-                $"<color=#3366cc>成就：</color>{info.achievement}\n" +
-                $"<color=#cc3333>毁灭：</color>{info.destructionCause}\n\n" +
-                $"<color=#888><size=10>信息态记录 · 触碰光球可读取</size></color>";
+                string.Format(LocalizedTextManager.getText("sm_ui_san_record_title"), info.civilizationName, info.domain, info.iteration, info.achievement, info.destructionCause);
 
             // 光球被查看后变淡（模拟信息已读取）
             if (orbIndex < _lightOrbs.Count && _lightOrbs[orbIndex] != null)
