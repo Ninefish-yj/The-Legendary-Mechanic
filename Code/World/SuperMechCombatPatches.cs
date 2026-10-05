@@ -530,6 +530,18 @@ namespace SuperMech.Code
 
                 SuperMechEquipDrop.TryDrop(killer, target);
 
+                // v0.76.48 圣所钥匙材料掉落接线（原著：击杀S阶及以上超能者掉钥匙材料，异能/念力系高阶死亡额外掉落）
+                if (SuperMechConfig.SanctuaryKeyDropEnabled)
+                {
+                    int kRank = SuperMechAdvancement.GetExactRankIndex(target);
+                    if (kRank >= SuperMechConfig.KeyDropMinRank)
+                    {
+                        int mats = 1;
+                        if (target.hasTrait(SuperMechTraits.ClassPsi)) mats += SuperMechConfig.PsionicKeyMaterialBonus;
+                        SuperMechSanctuary.GrantKeyMaterials(mats, "击杀高阶超能者");
+                    }
+                }
+
                 int killerRank = SuperMechAdvancement.GetExactRankIndex(killer);
                 int targetRank2 = SuperMechAdvancement.GetExactRankIndex(target);
                 if (killerRank - targetRank2 >= 2 && SuperMechRelic.GetCurrentEquipIndex(target) >= 0)
@@ -577,6 +589,8 @@ namespace SuperMech.Code
                         float bonus = spell != null ? 0.1f + spell.tier * 0.05f : 0.15f;
                         // v0.62.0 魔法系终极知识：法术伤害+20%
                         if (SuperMechKnowledge.HasUltimateKnowledge(attacker, "mage")) bonus *= 1.2f;
+                        // v0.76.48 法师类型强度加成（魔网/秘法专精匹配分支伤害×1.5）
+                        bonus *= SuperMechMageType.GetSpellPowerBonus(attacker, sid);
                         target.data.health -= (int)(pDamage * bonus);
                         break;
                     }

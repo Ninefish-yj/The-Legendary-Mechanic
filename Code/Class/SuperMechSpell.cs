@@ -328,6 +328,9 @@ namespace SuperMech.Code
             var spell = GetSpell(spellId);
             if (spell == null) return false;
 
+            // v0.76.48 法师类型接线：回路法师只能学专精分支高阶（其他分支仅基础）
+            if (!SuperMechMageType.CanLearnSpell(a, spell.branch.ToString(), spell.tier)) return false;
+
             var progress = GetProgress(a, spellId);
             if (progress.learned) return false;
             if (progress.currentPhase >= spell.totalPhases) return false;

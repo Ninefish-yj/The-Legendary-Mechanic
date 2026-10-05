@@ -28,7 +28,9 @@ namespace SuperMech.Code
         public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
         public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
         public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
-        public static void OpenCraft() { ToggleWindow("craft", "sm_ui_craft", 560, 420, DrawCraftContent); }
+        public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
+        public static void OpenCosmicRelic(Actor a) { SuperMechCosmicRelicView.OverrideActor = a; ToggleWindow("relic", "sm_ui_cr_title", 460, 420, DrawCosmicRelicContent); }
+        public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 480, 400, DrawDimensionContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 620, 460, DrawRankContent); }
         public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 620, 500, DrawFactionContent); }
         public static void OpenTrade() { ToggleWindow("trade", "sm_ui_trade_title", 640, 520, DrawTradeContent); }
@@ -124,6 +126,30 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechCraftView>();
+        }
+
+        internal static void DrawDimensionContent(RectTransform content)
+        {
+            var go = new GameObject("DimensionView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechDimensionView>();
+        }
+
+        internal static void DrawCosmicRelicContent(RectTransform content)
+        {
+            var go = new GameObject("CosmicRelicView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechCosmicRelicView>();
         }
 
         internal static void DrawRankContent(RectTransform content)

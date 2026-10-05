@@ -228,6 +228,17 @@ namespace SuperMech.Code
 
         }
 
+        /// <summary>材料是否充足（UI 按钮可用态检查；无城市=免材料直接可造）</summary>
+        public static bool HasMaterials(Actor maker, Dictionary<string, int> cost)
+        {
+            if (cost == null || cost.Count == 0) return true;
+            City city = maker == null ? null : maker.city;
+            if (city == null) return true;
+            foreach (var kv in cost)
+                if (city.getResourcesAmount(kv.Key) < kv.Value) return false;
+            return true;
+        }
+
         public static int GetMinionCount(Actor maker)
         {
             List<long> list;

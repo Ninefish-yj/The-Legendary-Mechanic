@@ -95,6 +95,27 @@ namespace SuperMech.Code
             // 应用上一轮遗产
             ApplyHeritage();
 
+            // v0.76.48 预置前代暗面宇宙历史（三大文明前代路线=背景设定，玩家世界不驱动暗面链）：
+            // 信息态剥离→暗面迭代×3→世界树（第二次暗面迭代30%诞生）→与真实宇宙重合
+            if (_darkUniverseHistory.Count == 0)
+            {
+                _darkUniverseHistory.Add(new DarkUniverseCivilization
+                { iteration = 1, civilizationName = "三大文明·信息态剥离", totalAwakened = 0, maxRankReached = 0,
+                  summary = "三大文明为规避大重启，剥离全宇宙信息态，开辟暗面宇宙", worldTreeCreated = false });
+                _darkUniverseHistory.Add(new DarkUniverseCivilization
+                { iteration = 2, civilizationName = "三大文明·暗面第二迭代", totalAwakened = 0, maxRankReached = 0,
+                  summary = "暗面宇宙第二次迭代，30%概率诞生世界树（信息态技术结晶）", worldTreeCreated = true });
+                _darkUniverseHistory.Add(new DarkUniverseCivilization
+                { iteration = 3, civilizationName = "三大文明·暗面第三迭代", totalAwakened = 0, maxRankReached = 0,
+                  summary = "暗面宇宙最终迭代，暗面系准备回归真实宇宙", worldTreeCreated = true });
+                _darkUniverseHistory.Add(new DarkUniverseCivilization
+                { iteration = 4, civilizationName = "三大文明·重合异变", totalAwakened = 0, maxRankReached = 0,
+                  summary = "暗面与真实宇宙重合瞬间异变，暗面系升维为超脱存在（手段可学、异变不可求）", worldTreeCreated = true });
+                WorldTreeCreated = true;
+                WorldTreeLevel = 3;
+                DarkUniverseIteration = 3;
+            }
+
             Debug.Log($"[超神机械师] 宇宙迭代系统初始化: 第{CurrentIteration}轮，历史记录{SuperMechCivilizationData.GetHistory().Count}轮");
         }
 

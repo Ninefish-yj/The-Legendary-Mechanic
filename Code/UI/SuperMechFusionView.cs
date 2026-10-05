@@ -20,6 +20,7 @@ namespace SuperMech.Code
 
         public static Actor OverrideActor;
         private static Actor SelectedActor => OverrideActor != null ? OverrideActor : SelectedUnit.unit;
+        private RectTransform _craftPanel; // v0.76.48 装备制造区块
 
         void Awake()
         {
@@ -27,6 +28,7 @@ namespace SuperMech.Code
             {
                 BuildLayout();
                 RefreshList();
+                RefreshCraftPanel();
             }
             catch (System.Exception e) { Debug.LogError("[超神机械师] SMFusionView初始化失败: " + e); }
         }
@@ -74,7 +76,7 @@ namespace SuperMech.Code
             var detailScrollRect = detailScrollGo.AddComponent<ScrollRect>();
             var dsr = detailScrollGo.GetComponent<RectTransform>();
             dsr.anchorMin = Vector2.zero; dsr.anchorMax = Vector2.one;
-            dsr.offsetMin = new Vector2(8, 8); dsr.offsetMax = new Vector2(-8, 50);
+            dsr.offsetMin = new Vector2(8, 8); dsr.offsetMax = new Vector2(-8, 130);
             var detailMaskImg = detailScrollGo.AddComponent<Image>();
             detailMaskImg.color = new Color(0f, 0f, 0f, 0.01f);
             detailMaskImg.raycastTarget = false;
@@ -130,6 +132,19 @@ namespace SuperMech.Code
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
             _detailText.text = LocalizedTextManager.getText("sm_ui_select_recipe");
+
+            // v0.76.48 装备制造区块（知识融合·装备制造）：已解锁配方+制造按钮
+            var craftGo = new GameObject("CraftEquipPanel");
+            craftGo.transform.SetParent(detailGo.transform, false);
+            var craftRect = craftGo.AddComponent<RectTransform>();
+            craftRect.anchorMin = new Vector2(0, 0);
+            craftRect.anchorMax = new Vector2(1, 0);
+            craftRect.pivot = new Vector2(0.5f, 0);
+            craftRect.offsetMin = new Vector2(8, 4);
+            craftRect.offsetMax = new Vector2(-8, 122);
+            var craftImg = craftGo.AddComponent<Image>();
+            craftImg.color = SuperMechUiSkin.CardBg;
+            _craftPanel = craftRect;
 
             // 底部融合按钮
             var btnGo = new GameObject("FuseBtn");
@@ -236,6 +251,52 @@ namespace SuperMech.Code
                         rBtn.onClick.AddListener(() => SelectRecipe(rid));
                     }
                 }
+            }
+        }
+
+        private void RefreshCraftPanel()
+        {
+            if (_craftPanel == null) return;
+            foreach (Transform child in _craftPanel) Destroy(child.gameObject);
+
+            var actor = SelectedActor;
+            if (actor == null)
+            {
+                SuperMechUiSkin.MakeText(_craftPanel, LocalizedTextManager.getText("sm_ui_need_target"), 12, TextAnchor.UpperLeft);
+                return;
+            }
+
+            SuperMechUiSkin.MakeText(_craftPanel, LocalizedTextManager.getText("sm_ui_craft_equip_title"), 13, TextAnchor.UpperLeft);
+
+            var learned = SuperMechKnowledgeFusion.GetLearnedRecipes(actor);
+            if (learned == null || learned.Count == 0)
+            {
+                SuperMechUiSkin.MakeText(_craftPanel, LocalizedTextManager.getText("sm_ui_craft_equip_empty"), 12, TextAnchor.UpperLeft);
+                return;
+            }
+
+            foreach (var r in learned)
+            {
+                var rowGo = new GameObject("CE_"+r.id);
+                rowGo.transform.SetParent(_craftPanel, false);
+                var row = rowGo.AddComponent<RectTransform>();
+                row.anchorMin = new Vector2(0, 1);
+                row.anchorMax = new Vector2(1, 1);
+                row.pivot = new Vector2(0.5f, 1);
+                row.sizeDelta = new Vector2(0, 28);
+
+                bool onCd = SuperMechKnowledgeFusion.IsCraftOnCooldown(actor);
+                string label = LocalizedTextManager.getText(r.equipName) + (onCd ? "（" + LocalizedTextManager.getText("sm_ui_craft_cd") + "）" : "");
+                SuperMechUiSkin.MakeText(row, label, 12, TextAnchor.MiddleLeft);
+
+                var btn = SuperMechUiSkin.MakeButton(row, LocalizedTextManager.getText("sm_ui_craft_equip_btn"), 12,
+                    () => { SuperMechKnowledgeFusion.CraftEquip(actor, r.id); RefreshCraftPanel(); });
+                var br = btn.GetComponent<RectTransform>();
+                br.anchorMin = new Vector2(1, 0.5f);
+                br.anchorMax = new Vector2(1, 0.5f);
+                br.sizeDelta = new Vector2(90, 24);
+                br.anchoredPosition = new Vector2(-45, 0);
+                if (onCd) btn.interactable = false;
             }
         }
 

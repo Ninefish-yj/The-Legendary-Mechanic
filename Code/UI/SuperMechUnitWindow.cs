@@ -181,8 +181,16 @@ namespace SuperMech.Code
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
-                    new Color(0.6f, 0.8f, 0.4f), () => SuperMechWindowManager.OpenCraft());
+                    new Color(0.6f, 0.8f, 0.4f), () => SuperMechWindowManager.OpenCraft(a));
             }
+
+            // v0.76.48 宇宙宝物：选中单位装备/切换宇宙宝物（创世神赐予 trait）
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_cr_entry"), "iconChosenOne",
+                new Color(0.95f, 0.75f, 0.3f), () => SuperMechWindowManager.OpenCosmicRelic(a));
+
+            // v0.76.48 次级维度：高阶超能者进入维度获得增益（原著：次级维度修炼）
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_dim_entry"), "iconDivineLight",
+                new Color(0.75f, 0.55f, 0.95f), () => SuperMechWindowManager.OpenDimension(a));
 
         }
 
