@@ -119,6 +119,20 @@ namespace SuperMech.Code
             sb.Append(LocalizedTextManager.getText("sm_ui_esgod_state")).Append(": ").Append(state).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_esgod_desc")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_desc")).Append("\n");
+            // v0.76.22 世界之外·高维存在层（原著文明已脱离迭代循环，与玩家平级的超脱存在）
+            int archCount = SuperMechSanctuary.GetIterationArchives().Count;
+            int archSuperA = 0;
+            foreach (var ar in SuperMechSanctuary.GetIterationArchives())
+                if (ar != null && ar.type == 0) archSuperA += ar.superACount;
+            sb.Append("\n<color=#ffd966>══ ").Append(LocalizedTextManager.getText("sm_ui_supera_beyond")).Append(" ══</color>\n")
+              .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_desc")).Append("\n")
+              .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_arch")).Append(": ")
+              .Append(string.Format(LocalizedTextManager.getText("sm_ui_supera_beyond_arch_info"),
+                  archCount, archSuperA, (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f))).Append("\n")
+              .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_echo")).Append(": ")
+              .Append(order || sanctum || bureau || alliance
+                  ? LocalizedTextManager.getText("sm_ui_supera_beyond_watching")
+                  : LocalizedTextManager.getText("sm_ui_supera_beyond_quiet"));
             _detailText.text = sb.ToString();
         }
     }
