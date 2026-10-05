@@ -282,26 +282,15 @@ namespace SuperMech.Code
                         iteration = 0, label = "sm_san_arch_sanciv", note = "sm_san_arch_sanciv_n",
                         superACount = 300, classCounts = new int[] { 70, 60, 60, 60, 50 }, maxRankIdx = 12
                     });
-                    // ② 世界重启计划：圣所文明末期最大成果/失败，为后世创造次级维度世界（ch1211/1217）
-                    Data.iteration_archives.Add(new IterationArchive
-                    {
-                        iteration = 0, label = "sm_san_arch_restart", note = "sm_san_arch_restart_n",
-                        superACount = 50, classCounts = new int[] { 15, 10, 10, 10, 5 }, maxRankIdx = 12
-                    });
-                    // ③ 次级维度世界：一段失败的重启、早该消失的幻影（杰斯所在，ch1216/1217）
-                    Data.iteration_archives.Add(new IterationArchive
-                    {
-                        iteration = 0, label = "sm_san_arch_dime", note = "sm_san_arch_dime_n",
-                        superACount = 50, classCounts = new int[] { 12, 12, 12, 8, 6 }, maxRankIdx = 12
-                    });
-                    // ④ 诸星联：33星域近万圣体级（超A级）体制化文明（ch1207/1214）
+                    // ② 诸星联（次级维度世界）：次级维度=诸星联所在的世界（ch1207）；世界重启计划=诸星联
+                    // 逃脱宇宙终结的方案，失败后截出闭合循环时空=幻影世界（ch1211/1216/1217）
                     Data.iteration_archives.Add(new IterationArchive
                     {
                         iteration = 0, label = "sm_san_arch_alliance", note = "sm_san_arch_alliance_n",
-                        superACount = 400, classCounts = new int[] { 80, 80, 80, 80, 80 }, maxRankIdx = 12
+                        superACount = 500, classCounts = new int[] { 100, 100, 100, 100, 100 }, maxRankIdx = 12
                     });
                     Save();
-                    Debug.Log("[超神机械师] 圣所预置前代文明档案×4（圣所文明/世界重启计划/次级维度/诸星联，传承+4%）");
+                    Debug.Log("[超神机械师] 圣所预置前代文明档案×2（圣所文明/诸星联·次级维度世界，传承+4%）");
                 }
             }
             catch (System.Exception e)
