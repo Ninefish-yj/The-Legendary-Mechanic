@@ -75,6 +75,14 @@
       "Type": "SWITCH",
       "BoolVal": false,
       "Callback": "SuperMech.Code.SuperMechConfig:SetQiAttributeCounterEnabled"
+    },
+    {
+      "Id": "qi_display_decimals",
+      "Type": "INT_SLIDER",
+      "IntVal": 0,
+      "MinIntVal": 0,
+      "MaxIntVal": 3,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetQiDisplayDecimals"
     }
   ],
   "Promotion": [
@@ -315,16 +323,10 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeEnabled"
     },
     {
-      "Id": "es_god_enabled",
+      "Id": "super_a_enabled",
       "Type": "SWITCH",
       "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetEsGodEnabled"
-    },
-    {
-      "Id": "forge_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetForgeEnabled"
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSuperAEnabled"
     },
     {
       "Id": "mech_summon_enabled",

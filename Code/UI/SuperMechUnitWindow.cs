@@ -33,7 +33,8 @@ namespace SuperMech.Code
             bool hasTalent = SuperMechTalent.HasTalent(a);
             if (!hasTalent)
             {
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"), null, InfoColor);
+                if (SuperMechConfig.ShowRankInPanel)
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), LocalizedTextManager.getText("sm_ui_mortal"), null, InfoColor);
                 return;
             }
 
@@ -64,7 +65,8 @@ namespace SuperMech.Code
 
         private static void ShowCoreInfo(UnitWindow window, Actor a)
         {
-            ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a), null, InfoColor);
+            if (SuperMechConfig.ShowRankInPanel)
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_rank"), GetRank(a), null, InfoColor);
 
             string talentText = GetTalentText(a);
             if (!string.IsNullOrEmpty(talentText))
@@ -136,7 +138,8 @@ namespace SuperMech.Code
             int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
             string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
             string qiName = GetQiDisplayName(a);
-            string qiBar = qiMax > 0 ? $"{qi:F0}/{qiMax:F0}" : qi.ToString("F0");
+            string qiFmt = "F" + SuperMechConfig.QiDisplayDecimals;
+            string qiBar = qiMax > 0 ? qi.ToString(qiFmt) + "/" + qiMax.ToString(qiFmt) : qi.ToString(qiFmt);
             ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
 
             int qiLayer = SuperMechQiLayer.GetLayer(a);

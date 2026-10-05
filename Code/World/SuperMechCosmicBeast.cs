@@ -32,7 +32,7 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<long, BeastData> _beasts = new Dictionary<long, BeastData>();
         private static int _killedCount = 0;
-        private static int _nextSpawnInTicks = 500;
+        private static int _nextSpawnInTicks = (int)SuperMechConfig.CosmicBeastInterval;
 
         public const string BeastTrait = "sm_cosmic_beast";
         public const float BeastDamageMult = 3f; // 异兽凶性：伤害×3（挂接战斗补丁）
@@ -191,8 +191,8 @@ namespace SuperMech.Code
 
         private static int GetNextInterval()
         {
-            // 击杀越多，异兽入侵越频繁（原著：威胁愈演愈烈）
-            return Mathf.Max(150, 500 - _killedCount * 20);
+            // 击杀越多，异兽入侵越频繁（原著：威胁愈演愈烈）；基准间隔由配置 CosmicBeastInterval 控制
+            return Mathf.Max(150, (int)SuperMechConfig.CosmicBeastInterval - _killedCount * 20);
         }
 
         public static CosmicBeastSaveData Save()
