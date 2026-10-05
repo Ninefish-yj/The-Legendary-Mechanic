@@ -56,6 +56,12 @@ namespace SuperMech.Code
             new SpecialtyDef { id = "sm_tpl_nuclear",       nameKey = "sm_tpl_nuclear",       descKey = "sm_tpl_nuclear_info",       system = "mech",    dmgMul = 0.15f, hpMul = 0.20f },
             new SpecialtyDef { id = "sm_tpl_combat_skill",  nameKey = "sm_tpl_combat_skill",  descKey = "sm_tpl_combat_skill_info",  system = "martial", dmgMul = 0.20f, lowHpMul = 0.20f },
             new SpecialtyDef { id = "sm_tpl_fixed_reduce",  nameKey = "sm_tpl_fixed_reduce",  descKey = "sm_tpl_fixed_reduce_info",  system = "any",     hpMul = 0.30f },
+            // 高级生命强韧（原著：每损失40%血量全属性临时+10%——低血爆发）
+            new SpecialtyDef { id = "sm_tpl_high_life",     nameKey = "sm_tpl_high_life",     descKey = "sm_tpl_high_life_info",     system = "any",     hpMul = 0.30f, lowHpMul = 0.20f },
+            // 低强度攻击免疫（原著：哈达威硬化防御模板专长——免疫低强度攻击）
+            new SpecialtyDef { id = "sm_tpl_low_immune",    nameKey = "sm_tpl_low_immune",    descKey = "sm_tpl_low_immune_info",    system = "any",     hpMul = 0.35f },
+            // 刚韧之躯（原著：韩萧模板专长——体魄刚韧）
+            new SpecialtyDef { id = "sm_tpl_tough_body",    nameKey = "sm_tpl_tough_body",    descKey = "sm_tpl_tough_body_info",    system = "any",     hpMul = 0.25f, lowHpMul = 0.15f },
         };
 
         // === 原著专属专长（原著明确出现过的能力，由对应原著人物（高维存在）赋予，人物已死则不赋予） ===

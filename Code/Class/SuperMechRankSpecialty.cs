@@ -17,7 +17,6 @@ namespace SuperMech.Code
         public const string MechGodVirtual   = "sm_rs_mechgod_virtual";
         public const string MechGodArmed     = "sm_rs_mechgod_armed";
         public const string MechGodEnergy    = "sm_rs_mechgod_energy";
-        public const string VirtualCreation  = "sm_rs_virtualcreation";
         public const string LifeVirtual      = "sm_rs_lifevirtual";
         public const string LifeMech         = "sm_rs_lifemech";
         public const string BeyondArtifact   = "sm_rs_beyondartifact";
@@ -49,8 +48,6 @@ namespace SuperMech.Code
                 dmg: 1.00f, hp: 0.40f, armor: 15f);
             AddRankSpec(MechGodEnergy, "sm_rankspecialty_246", "sm_rankspecialty_247",
                 dmg: 0.70f, hp: 0.60f, armor: 20f);
-            AddRankSpec(VirtualCreation, "sm_rankspecialty_248", "sm_rankspecialty_249",
-                intel: 40, exp: 2.0f);
             AddRankSpec(LifeVirtual, "sm_rankspecialty_250", "sm_rankspecialty_251",
                 hp: 0.20f, intel: 10);
             AddRankSpec(LifeMech, "sm_rankspecialty_252", "sm_rankspecialty_253",
@@ -106,7 +103,7 @@ namespace SuperMech.Code
             {
                 string[] divineSpecs = {
                     DivineMajesty, CosmicBody, QiFoundation, ConceptImmortal,
-                    VirtualCreation, LifeVirtual, LifeMech,
+                    LifeVirtual, LifeMech,
                     BeyondArtifact, SpeciesDivine, DivineGene, BornElite
                 };
                 foreach (string spec in divineSpecs)

@@ -2536,8 +2536,6 @@
   "sm_rankspecialty_245": "武装分支最终形态：火力全开，万炮齐发，伤害+100%攻速+30%射程+5。",
   "sm_rankspecialty_246": "机械神灵·起源神君",
   "sm_rankspecialty_247": "能量分支最终形态：纳米殖装与能量融合，近战无敌，伤害+70%生命+60%护甲+20。",
-  "sm_rankspecialty_248": "虚拟创世（伪）",
-  "sm_rankspecialty_249": "在虚拟空间中创世，智力+40，经验获取+100%。",
   "sm_rankspecialty_250": "生命转变·虚拟",
   "sm_rankspecialty_251": "生命形态虚拟化，可在信息态与物质态间转换。",
   "sm_rankspecialty_252": "生命转变·万机",
@@ -4794,5 +4792,11 @@
   "sm_tpl_fixed_reduce_info": "模板专长（原著：固定伤害减免）：生命+30%",
   "sm_spec_wuji": "武道无极",
   "sm_spec_wuji_info": "成长型专长（原著：卡罗特核心专长，每阶位蜕变强化全部武道技能）：攻击+15%，生命低于40%时再+15%",
-  "sm_ui_templates": "模板专长"
+  "sm_ui_templates": "模板专长",
+  "sm_tpl_high_life": "高级生命强韧",
+  "sm_tpl_high_life_info": "模板专长（原著：每损失40%血量全属性临时+10%）：生命+30%，生命低于40%时攻击再+20%",
+  "sm_tpl_low_immune": "低强度攻击免疫",
+  "sm_tpl_low_immune_info": "模板专长（原著：哈达威硬化防御）：生命+35%",
+  "sm_tpl_tough_body": "刚韧之躯",
+  "sm_tpl_tough_body_info": "模板专长（原著：韩萧体魄刚韧）：生命+25%，生命低于40%时攻击再+15%"
 }
