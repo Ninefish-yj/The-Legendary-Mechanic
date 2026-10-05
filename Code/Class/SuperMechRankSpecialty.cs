@@ -6,8 +6,8 @@ namespace SuperMech.Code
     /// <summary>阶位专长系统：晋升阶位(OnRankUp)时获得的加成专长；区别于 Specialty=通用专长</summary>
     public static class SuperMechRankSpecialty
     {
-        // v0.76.71 按原著修剪：原著没有"超A级进阶/超凡神力/机械神座"等 Power 概念——自研 Power 全部删除
-        // 仅保留原著依据明确的机制：圣所复苏（原著："达到超A级层次的超能者可以通过圣所复活""超A级层次理解为复活许可证"）
+        // v0.76.72 更正：X阶位专长【资讯唯一·概念永生】（原著1402-1403）——达到X阶后信息态巨变，
+        // 死亡后无需圣所复苏、自发信息态扰动重生；与"圣所复苏"（圣所备份复活）是两个不同机制，不可混用
         public const string ConceptImmortal  = "sm_rs_conceptimmortal";
 
         public static void Register()
@@ -43,7 +43,7 @@ namespace SuperMech.Code
         public static void OnRankUp(Actor a, int newRankIndex)
         {
             if (a == null) return;
-            // 圣所复苏：超A级（X阶）=圣所复活资格（原著："超A级层次理解为复活许可证"）
+            // 资讯唯一·概念永生：X阶位专长（原著：达到X阶获得，死亡自发信息态重生，不需要圣所复苏）
             if (newRankIndex >= 13 && !a.hasTrait(ConceptImmortal))
                 a.addTrait(ConceptImmortal);
         }
