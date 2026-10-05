@@ -190,7 +190,7 @@ namespace SuperMech.Code
         {
             if (!CanAdvanceStage(a)) return false;
             int stage = SuperMechStage.GetStage(a);
-            if (!SuperMechAdvancementTask.CheckReq(a, stage))
+            if (!SuperMechStageTask.CheckReq(a, stage))
             {
                 return false;
             }

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
+    /// <summary>子职业系统：职业分支下的细分路线（区别于 Profession=五系身份、Branch=分支）</summary>
     public static class SuperMechSubClass
     {
         public const string SubAgent       = "sm_sub_agent";

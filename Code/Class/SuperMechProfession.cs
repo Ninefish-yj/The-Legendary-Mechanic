@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
+    /// <summary>五系职业身份系统（机械/武道/魔法/异能/超能），GetClass 取职业；职业=身份归属，阶段在 SuperMechStage</summary>
     public static class SuperMechProfession
     {
         public enum ProfessionType

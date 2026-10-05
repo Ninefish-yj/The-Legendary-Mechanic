@@ -251,7 +251,7 @@ namespace SuperMech.Code
                             towerLevel = SuperMechMageTower.GetTowerLevel(a),
                             subXpData = SerializeSubXp(a),
                             subLevelData = SerializeSubLevels(a),
-                            craftCount = SuperMechAdvancementTask.GetCraftCount(a)
+                            craftCount = SuperMechStageTask.GetCraftCount(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -836,7 +836,7 @@ namespace SuperMech.Code
 
                 if (ad.craftCount > 0)
                 {
-                    var dict = SuperMechAdvancementTask._craftCount;
+                    var dict = SuperMechStageTask._craftCount;
                     if (dict != null) dict[a.id] = ad.craftCount;
                 }
             }

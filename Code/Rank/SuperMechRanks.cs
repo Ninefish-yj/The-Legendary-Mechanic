@@ -3,6 +3,7 @@ using NeoModLoader.services;
 
 namespace SuperMech.Code
 {
+    /// <summary>能级阶位定义（F~X 14 阶）：trait id=sm_rank_0X_x；只定义阶位，晋升逻辑在 SuperMechAdvancement；排行榜(排名)是 SuperMechLeaderboardCard，勿混</summary>
     public static class SuperMechRanks
     {
         public class RankDef

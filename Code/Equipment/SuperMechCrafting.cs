@@ -149,7 +149,7 @@ namespace SuperMech.Code
             SuperMechQi.AddQi(maker, qiGain);
             if (SuperMechAwakened.IsAwakened(maker))
                 SuperMechAwakened.AddXp(maker, expGain);
-            SuperMechAdvancementTask.OnCraft(maker);
+            SuperMechStageTask.OnCraft(maker);
 
             if (SuperMechAwakened.IsAwakened(maker) && stage >= 4 && perfection >= 1.0f)
                 SuperMechDivinity.AwardCraftingPoints(maker);

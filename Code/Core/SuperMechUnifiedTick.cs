@@ -64,7 +64,7 @@ namespace SuperMech.Code
                 SafeRun("职业子等级", () => SuperMechSubClass.TickSubLevels());
                 SafeRun("觉醒经验", () => SuperMechAwakened.TickXp());
                 SafeRun("自动玩法", () => SuperMechAwakened.TickAutoPlay());
-                SafeRun("进阶任务", () => SuperMechAdvancementTask.TickTasks());
+                SafeRun("进阶任务", () => SuperMechStageTask.TickTasks());
                 SafeRun("传承", () => SuperMechHeritage.TickHeritage());
                 SafeRun("知识协同", () => SuperMechKnowledgeSynergy.TickSynergy());
                 SafeRun("机械融合", () => SuperMechMechFusion.TickFusion());
@@ -159,7 +159,7 @@ namespace SuperMech.Code
             removed += SuperMechSkillRuntime.CleanupDead(alive);
             removed += SuperMechPotentialRating.CleanupDead(alive);
             removed += SuperMechQiAttribute.CleanupDead(alive);
-            removed += SuperMechAdvancementTask.CleanupDead(alive);
+            removed += SuperMechStageTask.CleanupDead(alive);
             removed += SuperMechAI.CleanupDead(alive);
             removed += SuperMechFaction.CleanupDead(alive);
             removed += SuperMechTrade.CleanupDead(alive);
@@ -185,7 +185,7 @@ namespace SuperMech.Code
             try { SuperMechTranscendence.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTranscendence"); }
             try { SuperMechInfoState.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechInfoState"); }
             try { SuperMechAwakened.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAwakened"); }
-            try { SuperMechAdvancementTask.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAdvancementTask"); }
+            try { SuperMechStageTask.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStageTask"); }
             try { SuperMechHeritage.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechHeritage"); }
             try { SuperMechIntuition.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechIntuition"); }
             try { SuperMechQiAttribute.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechQiAttribute"); }

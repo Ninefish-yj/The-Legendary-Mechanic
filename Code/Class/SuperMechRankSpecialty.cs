@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
+    /// <summary>阶位专长系统：晋升阶位(OnRankUp)时获得的加成专长；区别于 Specialty=通用专长</summary>
     public static class SuperMechRankSpecialty
     {
         public const string TranscendentPower = "sm_rs_transcendent";

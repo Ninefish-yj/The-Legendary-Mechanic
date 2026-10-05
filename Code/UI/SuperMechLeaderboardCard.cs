@@ -7,7 +7,7 @@ namespace SuperMech.Code
     /// 布局：[排名徽章] [头像] [名称·阶位·体系] [能级]
     /// 点击选中单位，前三名高亮
     /// </summary>
-    public class SuperMechRankCard : MonoBehaviour
+    public class SuperMechLeaderboardCard : MonoBehaviour
     {
         private Actor _actor;
         private Button _button;

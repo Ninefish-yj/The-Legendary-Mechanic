@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    public static class SuperMechAdvancementTask
+    public static class SuperMechStageTask
     {
         private enum ReqType { Knowledge, Attribute, TotalLevel, Craft, Divinity }
 

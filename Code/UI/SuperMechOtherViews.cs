@@ -507,7 +507,7 @@ namespace SuperMech.Code
             cardRect.sizeDelta = new Vector2(0, 34);
             cardRect.anchoredPosition = new Vector2(0, -index * 38f - 2);
 
-            var card = cardGo.AddComponent<SuperMechRankCard>();
+            var card = cardGo.AddComponent<SuperMechLeaderboardCard>();
             float onar = SuperMechEnergyLevel.Calculate(actor);
             string className = GetRankClassName(actor);
             card.Build(actor, index + 1, onar, className);

@@ -5,6 +5,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
+    /// <summary>通用专长系统（被动）：觉醒/分支授予随机专长；区别于 RankSpecialty=晋升阶位专长、Specialization=机械专精</summary>
     public static class SuperMechSpecialty
     {
         public const string PsiFire      = "sm_spec_psi_fire";
