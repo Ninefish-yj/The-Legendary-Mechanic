@@ -6,6 +6,12 @@ namespace SuperMech.Code
     internal static class SuperMechWindowManager
     {
         private static readonly Dictionary<string, SuperMechUguiWindow> _windows = new Dictionary<string, SuperMechUguiWindow>();
+
+        /// <summary>v0.75.35: 换存档时清空窗口引用缓存（防悬垂引用）</summary>
+        public static void Clear()
+        {
+            _windows.Clear();
+        }
         private static bool _initialized;
 
         public static void Init()

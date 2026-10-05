@@ -13,6 +13,12 @@ namespace SuperMech.Code
         private static bool _initFailed;
         private static readonly Dictionary<string, WorldLogAsset> _logAssets = new Dictionary<string, WorldLogAsset>();
 
+        /// <summary>v0.75.35: 换存档时清空日志资源缓存</summary>
+        public static void Clear()
+        {
+            _logAssets.Clear();
+        }
+
         /// <summary>初始化：注册自定义WorldLogAsset到原生日志库</summary>
         public static void Init()
         {

@@ -177,6 +177,16 @@ namespace SuperMech.Code
         }
 
         /// <summary>清理已死亡单位的缓存（合并自原SuperMechRefinement）</summary>
+        /// <summary>v0.75.35: 换存档/宇宙迭代时清空精炼数据（防跨存档残留污染新世界）</summary>
+        public static void Clear()
+        {
+            _refineLevel.Clear();
+            _refineCount.Clear();
+            _emRefineCount.Clear();
+            _refineQiBonus.Clear();
+            _emRefineQiBonus.Clear();
+        }
+
         public static int CleanupDead(HashSet<long> alive)
         {
             if (alive == null) return 0;

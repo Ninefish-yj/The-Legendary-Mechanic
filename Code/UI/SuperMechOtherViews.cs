@@ -49,6 +49,16 @@ namespace SuperMech.Code
         private static int _currentSystemFilter = -1; // -1=全部
         private static int _currentRankFilter = -1;  // -1=全部
         private static int _currentSortType = 0;     // 0=能级,1=气力,2=阶位,3=知识数,4=职业等级
+
+        /// <summary>v0.75.35: 换存档时清空排行榜缓存/卡片引用/筛选状态（防悬垂引用与状态残留）</summary>
+        public static void Clear()
+        {
+            _scoreCache.Clear();
+            _cardByIndex.Clear();
+            _currentSystemFilter = -1;
+            _currentRankFilter = -1;
+            _currentSortType = 0;
+        }
         private static int _lastViewStart = 9999;
         private static int _lastViewEnd = -1;
         private static bool _sessionPopulated;

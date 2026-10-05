@@ -203,6 +203,10 @@ namespace SuperMech.Code
             try { SuperMechCrafting.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCrafting"); }
             try { SuperMechPotentialRating.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPotentialRating"); }
             try { SuperMechWindowFrameInner.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理WindowFrame失败"); }
+            try { SuperMechQiRefine.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理精炼数据失败"); }
+            try { SuperMechWindowManager.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理窗口缓存失败"); }
+            try { SuperMechEventLogger.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理日志资源失败"); }
+            try { SuperMechRankView.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理排行榜缓存失败"); }
             try { SuperMechCleanup.ClearUiStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理AwakenWindow失败"); }
             try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
