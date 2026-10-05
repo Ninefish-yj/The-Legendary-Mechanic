@@ -107,7 +107,7 @@ namespace SuperMech.Code
 
                 if (a.hasTrait(SuperMechBranch.BranchMech))
                 {
-                    string specName = SuperMechSpecialization.GetSpecName(a);
+                    string specName = SuperMechBranchMastery.GetSpecName(a);
                     if (specName != LocalizedTextManager.getText("sm_spec_none"))
                         ShowRow(window, LocalizedTextManager.getText("sm_ui_specialization"), specName, null, new Color(0.6f, 0.9f, 1f));
                 }
@@ -168,10 +168,10 @@ namespace SuperMech.Code
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
 
             // v0.76.57 专属专长：超A级个体独有的专属能力（原著：专属被动/专属能力），显示于单位面板
-            string specText = SuperMechSpecialties.GetDisplay(a);
+            string specText = SuperMechExclusiveTrait.GetDisplay(a);
             if (!string.IsNullOrEmpty(specText))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_specialties"), specText, null, new Color(1f, 0.8f, 0.4f));
-                string tplText = SuperMechSpecialties.GetTemplateDisplay(a);
+                string tplText = SuperMechExclusiveTrait.GetTemplateDisplay(a);
                 if (tplText != null)
                     ShowRow(window, LocalizedTextManager.getText("sm_ui_templates"), tplText, null, new Color(0.9f, 0.6f, 0.9f));
         }

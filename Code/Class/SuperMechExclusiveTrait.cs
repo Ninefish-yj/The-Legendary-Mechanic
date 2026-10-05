@@ -13,7 +13,7 @@ namespace SuperMech.Code
     /// 专长注册为真实特质（特质系统，组 sm_specialties），单位面板「专属专长」栏显示个体名；
     /// 战斗效果挂接攻击伤害乘区。运行时数据存 ActorContext.custom，持久化走 ActorSaveData.specialties。
     /// </summary>
-    public static class SuperMechSpecialties
+    public static class SuperMechExclusiveTrait
     {
         public class SpecialtyDef
         {

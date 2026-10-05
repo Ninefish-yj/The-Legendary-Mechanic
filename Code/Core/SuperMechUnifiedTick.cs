@@ -74,7 +74,7 @@ namespace SuperMech.Code
                 SafeRun("超能者竞争", () => SuperMechAI.TickCompetition());
                 SafeRun("NPC自动修炼", () => SuperMechAI.TickNpcKnowledge());
                 SafeRun("机械军团AI", () => SuperMechAI.TickMechLegion());
-                SafeRun("专属专长", () => SuperMechSpecialties.TickGrant());
+                SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
             }
             else if (group == 2)
             {

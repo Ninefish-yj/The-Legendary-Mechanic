@@ -266,7 +266,7 @@ namespace SuperMech.Code
             // 学习机械系知识后自动更新专精（只有机械师分支有专精）
             if (added && knowledgeId.StartsWith("sm_know_mech_") && a.hasTrait(SuperMechBranch.BranchMech))
             {
-                SuperMechSpecialization.UpdateSpec(a);
+                SuperMechBranchMastery.UpdateSpec(a);
             }
             // 发布知识解锁事件
             if (added)

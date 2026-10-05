@@ -352,7 +352,7 @@ namespace SuperMech.Code
             if (branches == null || branches.Count == 0) return;
             var b = branches[Random.Range(0, branches.Count)];
             a.addTrait(b.traitId);
-            SuperMechSpecialty.GrantBranchSpecialty(a, b.traitId);
+            SuperMechElement.GrantBranchSpecialty(a, b.traitId);
         }
 
         public static void TickXp()

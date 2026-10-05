@@ -9,7 +9,7 @@ namespace SuperMech.Code
     /// 专精由知识树学习倾向决定，影响高阶形态与战斗风格
     /// 职业=身份/阶位，专精=知识树+路线，两者叠加构成build
     /// </summary>
-    public static class SuperMechSpecialization
+    public static class SuperMechBranchMastery
     {
         public const string SpecLarge = "sm_spec_large";     // 大型机械 - 武装分支 - 宇宙帝皇
         public const string SpecMicro = "sm_spec_micro";     // 微型机械 - 能量分支 - 起源神君

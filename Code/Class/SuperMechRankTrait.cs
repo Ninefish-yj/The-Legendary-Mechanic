@@ -4,7 +4,7 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>阶位专长系统：晋升阶位(OnRankUp)时获得的加成专长；区别于 Specialty=通用专长</summary>
-    public static class SuperMechRankSpecialty
+    public static class SuperMechRankTrait
     {
         // v0.76.72 更正：X阶位专长【资讯唯一·概念永生】（原著1402-1403）——达到X阶后信息态巨变，
         // 死亡后无需圣所复苏、自发信息态扰动重生；与"圣所复苏"（圣所备份复活）是两个不同机制，不可混用

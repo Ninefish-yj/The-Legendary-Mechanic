@@ -144,7 +144,7 @@ namespace SuperMech.Code
             // 必须是X阶（超神级）
             if (SuperMechAdvancement.GetExactRankIndex(a) < 13) return false;
             // 必须有资讯唯一·概念永生特质
-            if (!a.hasTrait(SuperMechRankSpecialty.ConceptImmortal)) return false;
+            if (!a.hasTrait(SuperMechRankTrait.ConceptImmortal)) return false;
             // 被信息态抹杀则无法重塑（真正死亡）
             if (IsInformationErased(a)) return false;
             // 处于信息态稳定期内再次死亡则真正死亡（信息态未稳定）

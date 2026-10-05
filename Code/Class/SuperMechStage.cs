@@ -241,10 +241,10 @@ namespace SuperMech.Code
                 int idx = Mathf.Clamp(s - 1, 0, arr.Length - 1);
 
                 // 机械师高阶阶段（神座/超神）按专精显示不同形态名
-                if (a.hasTrait(SuperMechBranch.BranchMech) && SuperMechSpecialization.GetSpec(a) != null)
+                if (a.hasTrait(SuperMechBranch.BranchMech) && SuperMechBranchMastery.GetSpec(a) != null)
                 {
-                    if (s == 13) result = SuperMechSpecialization.GetThroneFormName(a);
-                    else if (s >= 14) result = SuperMechSpecialization.GetHighFormName(a);
+                    if (s == 13) result = SuperMechBranchMastery.GetThroneFormName(a);
+                    else if (s >= 14) result = SuperMechBranchMastery.GetHighFormName(a);
                     else result = arr[idx];
                 }
                 else

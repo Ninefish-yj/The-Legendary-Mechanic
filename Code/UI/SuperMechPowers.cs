@@ -227,7 +227,7 @@ namespace SuperMech.Code
                     if (!a.hasTrait("sm_rank_00_f"))
                         a.addTrait("sm_rank_00_f");
                     SuperMechAdvancement.SetExactRank(a, 0);
-                    SuperMechSpecialty.AssignRandomSpecialty(a);
+                    SuperMechElement.AssignRandomSpecialty(a);
                     SuperMechQi.SetQi(a, 100f);
                     SuperMechQi.SetQiMax(a, 100f);
                     Debug.Log($"[超神机械师] 召唤降临者：{a.name}（{pType}）");

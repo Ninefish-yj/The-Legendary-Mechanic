@@ -78,7 +78,7 @@ namespace SuperMech.Code
                 if (!a.hasTrait("sm_rank_01_e"))
                     a.addTrait("sm_rank_01_e");
                 SetExactRank(a, 1);
-                SuperMechSpecialty.AssignRandomSpecialty(a);
+                SuperMechElement.AssignRandomSpecialty(a);
 
                 var talents = SuperMechTalent.GetTalents(a);
                 if (talents != null && talents.Count > 0)
@@ -206,7 +206,7 @@ namespace SuperMech.Code
                                 a.removeTrait(r.id);
                         }
                         a.addTrait(targetId);
-                        SuperMechRankSpecialty.OnRankUp(a, targetIdx);
+                        SuperMechRankTrait.OnRankUp(a, targetIdx);
                         // 原著：武道系通过修行不同流派可改变气力属性（火的爆裂/风的速度/铁的坚韧）
                         SuperMechQiAttribute.TryMartialStyleChange(a);
                     }
@@ -482,7 +482,7 @@ namespace SuperMech.Code
                 }
             }
             ApplyRankStats(a, index);
-            SuperMechRankSpecialty.OnRankUp(a, index);
+            SuperMechRankTrait.OnRankUp(a, index);
             SuperMechRace.AutoEvolve(a, index);
 
             if (!SuperMechAwakened.IsAwakened(a))

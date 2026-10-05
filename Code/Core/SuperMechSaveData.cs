@@ -239,7 +239,7 @@ namespace SuperMech.Code
                             refineQiBonus = SuperMechQiRefine.GetRefineQiBonus(a),
                             emRefineQiBonus = GetEmRefineQiBonus(a),
                             activeSynergies = GetActiveSynergyIds(a),
-                            specialties = SuperMechSpecialties.GetSpecialties(a),
+                            specialties = SuperMechExclusiveTrait.GetSpecialties(a),
                             geneStage = SuperMechCorePower.GetGeneStage(a),
                             manaStage = SuperMechCorePower.GetManaStage(a),
                             mindStage = SuperMechCorePower.GetMindStage(a),
@@ -755,7 +755,7 @@ namespace SuperMech.Code
                 {
                     // 组合自创专长（sm_spec_gen_*）：重启后按同种子重建注册（同单位同槽位→同效果）
                     foreach (string sid in ad.specialties)
-                        if (sid.StartsWith("sm_spec_gen_")) SuperMechSpecialties.RebuildGenerated(sid);
+                        if (sid.StartsWith("sm_spec_gen_")) SuperMechExclusiveTrait.RebuildGenerated(sid);
                     var ctx = SuperMechActorContextRegistry.Get(a);
                     if (ctx != null) ctx.SetCustom("specialties", new List<string>(ad.specialties));
                 }

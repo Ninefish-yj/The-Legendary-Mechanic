@@ -36,8 +36,8 @@ namespace SuperMech
             SuperMechCorePower.Register();
             SuperMechSubClass.Register();
             SuperMechBranch.Register();
-            SuperMechSpecialization.Register();
-            SuperMechSpecialties.Register();
+            SuperMechBranchMastery.Register();
+            SuperMechExclusiveTrait.Register();
             SuperMechMageType.Register();
             SuperMechSpell.RegisterAll();
             SuperMechMeditation.Register();
@@ -47,8 +47,8 @@ namespace SuperMech
             SuperMechMageTower.Register();
             SuperMechAwakened.Register();
             SuperMechStageTask.Register();
-            SuperMechSpecialty.Register();
-            SuperMechRankSpecialty.Register();
+            SuperMechElement.Register();
+            SuperMechRankTrait.Register();
             SuperMechRace.Register();
             SuperMechSanctuary.Register();
             SuperMechCrafting.Register();
