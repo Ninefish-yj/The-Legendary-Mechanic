@@ -46,6 +46,7 @@ namespace SuperMech.Code
             // 属单位面板职责（单位面板特殊组已有入口按钮）；星海总览只保留系统级功能。
             ("sm_ui_combat_title", DrawCombatEnhanceContent),
             ("sm_ui_beast_title", DrawCosmicBeastContent),
+            ("sm_ui_forge_title", DrawForgeContent),
             ("sm_ui_trade_title", DrawTradeContent),
             ("sm_ui_genetics_title", DrawGeneticsContent),
             ("sm_ui_stargate_title", DrawStarGateContent),
