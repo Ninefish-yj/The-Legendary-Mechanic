@@ -53,8 +53,6 @@ namespace SuperMech.Code
             if (bag != null) equipCount = bag.Count;
 
             int perkCount = 0;
-            var perks = SuperMechPerks.GetPerks(a);
-            if (perks != null) perkCount = perks.Count;
 
             // === 纯公式计算 ===
             float baseOnar = SuperMechFormulas.OnarBase(qi);
@@ -81,7 +79,6 @@ namespace SuperMech.Code
                     a.addTrait("sm_rank_01_e");
                 SetExactRank(a, 1);
                 SuperMechSpecialty.AssignRandomSpecialty(a);
-                SuperMechPerks.GrantRandomPerks(a);
 
                 var talents = SuperMechTalent.GetTalents(a);
                 if (talents != null && talents.Count > 0)

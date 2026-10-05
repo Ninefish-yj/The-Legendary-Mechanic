@@ -12,7 +12,6 @@ namespace SuperMech.Code
             new GroupInfo("sm_ranks",        "sm_traitgroups_1016", "#FFD700"),
             new GroupInfo("sm_classes",      "sm_traitgroups_1017", "#00BFFF"),
             new GroupInfo("sm_branches",     "sm_traitgroups_1018", "#9370DB"),
-            new GroupInfo("sm_perks",        "sm_traitgroups_1019", "#FFD700"),
                         new GroupInfo("sm_relic",        "sm_traitgroups_1024", "#FFD700"),
             new GroupInfo("sm_cosmic_relic", "sm_traitgroups_1025", "#FFA500"),
             new GroupInfo("sm_mage_tower",   "sm_traitgroups_1026", "#4169E1"),

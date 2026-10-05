@@ -15,7 +15,6 @@ namespace SuperMech.Code
                 case "sm_ranks":          return "ui/Icons/actor_traits/iconBlessing";
                 case "sm_classes":        return "ui/Icons/actor_traits/iconGenius";
                 case "sm_branches":       return "ui/Icons/actor_traits/iconArcaneReflexes";
-                case "sm_perks":          return "ui/Icons/actor_traits/iconBattleReflexes";
                                 case "sm_relic":          return "ui/Icons/actor_traits/iconBlessing";
                 case "sm_cosmic_relic":   return "ui/Icons/actor_traits/iconChosenOne";
                 case "sm_mage_tower":     return "ui/Icons/actor_traits/iconArcaneReflexes";

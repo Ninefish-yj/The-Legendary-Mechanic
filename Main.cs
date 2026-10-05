@@ -34,7 +34,6 @@ namespace SuperMech
             SuperMechKnowledgeRecipe.RegisterBaseRecipes();
             SuperMechQi.Register();
             SuperMechCorePower.Register();
-            SuperMechPerks.Register();
             SuperMechSubClass.Register();
             SuperMechBranch.Register();
             SuperMechSpecialization.Register();
