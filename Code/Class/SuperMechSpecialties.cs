@@ -39,6 +39,82 @@ namespace SuperMech.Code
             new SpecialtyDef { id = "sm_spec_siphon",     nameKey = "sm_spec_siphon",     descKey = "sm_spec_siphon_info",     system = "any",     dmgMul = 0f,    siphon = true },
         };
 
+        // === 组合自创（原著：专属专长无限自创、名字单位自己取——可生成模组未预设的独特专长） ===
+        // 生成规则：按 (actorId, slot) 做确定性种子 → 同一单位重启后生成相同专长（存档可重建）
+        private static readonly string[] GenPrefixes = { "死亡", "虚空", "湮灭", "无尽", "命运", "星海", "永夜", "苍穹", "深渊", "神域", "混沌", "天启", "寂灭", "轮回" };
+        private static readonly string[] GenCores = { "收割", "印记", "领域", "共鸣", "侵蚀", "汲取", "爆发", "超频", "穿透", "压制", "觉醒", "重铸", "凝视", "吞噬" };
+        private static readonly string[] GenSuffixes = { "", "之域", "之力", "之瞳", "之门", "之环" };
+
+        public class GenSpec
+        {
+            public float dmg;
+            public bool mark; public int markMax; public float burst;
+            public bool lowHp; public float lowHpBonus;
+            public bool siphon;
+        }
+
+        private static readonly Dictionary<string, GenSpec> _genParams = new Dictionary<string, GenSpec>();
+
+        /// <summary>为超A级单位按槽位组合自创一个独特专属专长（模组未预设）</summary>
+        public static string GenerateSpecialty(long actorId, int slot)
+        {
+            var rng = new System.Random(unchecked((int)(actorId * 7 + slot * 13 + 0x5EED)));
+            string name = GenPrefixes[rng.Next(GenPrefixes.Length)]
+                        + GenCores[rng.Next(GenCores.Length)]
+                        + GenSuffixes[rng.Next(GenSuffixes.Length)];
+            if (name.Length < 3) name = GenPrefixes[rng.Next(GenPrefixes.Length)] + name;
+
+            float dmg = 0.08f + (float)rng.NextDouble() * 0.17f;   // +8%~25%
+            bool mark = rng.Next(100) < 45;
+            bool lowHp = !mark && rng.Next(100) < 40;
+            bool siphon = !mark && !lowHp && rng.Next(100) < 40;
+            int markMax = 5 + rng.Next(6);                          // 5~10 层
+            float burst = 0.3f + (float)rng.NextDouble() * 0.7f;    // 引爆 +30%~100%
+            float lowHpBonus = 0.2f + (float)rng.NextDouble() * 0.2f;
+
+            string id = "sm_spec_gen_" + actorId + "_" + slot;
+            RegisterGenerated(id, name, dmg, mark, markMax, burst, lowHp, lowHpBonus, siphon);
+            return id;
+        }
+
+        /// <summary>动态注册组合专长为真实特质（重名/重复注册幂等）</summary>
+        private static void RegisterGenerated(string id, string name, float dmg, bool mark,
+            int markMax, float burst, bool lowHp, float lowHpBonus, bool siphon)
+        {
+            if (AssetManager.traits.has(id)) { _genParams[id] = new GenSpec { dmg = dmg, mark = mark, markMax = markMax, burst = burst, lowHp = lowHp, lowHpBonus = lowHpBonus, siphon = siphon }; return; }
+            LocalizedTextManager.add(id, name, pReplace: true);
+            LocalizedTextManager.add(id + "_info", name + "（领悟自创的专属专长，效果与名字为该单位独有）", pReplace: true);
+            var t = new ActorTrait
+            {
+                id = id, path_icon = "ui/Icons/actor_traits/iconChosenOne",
+                group_id = "sm_specialties", needs_to_be_explored = false,
+                rarity = (mark || dmg >= 0.18f) ? Rarity.R3_Legendary : Rarity.R2_Epic,
+                base_stats = new BaseStats()
+            };
+            AssetManager.traits.add(t);
+            _genParams[id] = new GenSpec { dmg = dmg, mark = mark, markMax = markMax, burst = burst, lowHp = lowHp, lowHpBonus = lowHpBonus, siphon = siphon };
+        }
+
+        /// <summary>存档恢复时重建组合专长（同单位同槽位 → 同种子 → 同效果）</summary>
+        public static void RebuildGenerated(string id)
+        {
+            string[] parts = id.Split('_');
+            if (parts.Length < 4 || !id.StartsWith("sm_spec_gen_")) return;
+            if (long.TryParse(parts[3], out long actorId) && int.TryParse(parts[4], out int slot))
+            {
+                var rng = new System.Random(unchecked((int)(actorId * 7 + slot * 13 + 0x5EED)));
+                string name = GenPrefixes[rng.Next(GenPrefixes.Length)] + GenCores[rng.Next(GenCores.Length)] + GenSuffixes[rng.Next(GenSuffixes.Length)];
+                float dmg = 0.08f + (float)rng.NextDouble() * 0.17f;
+                bool mark = rng.Next(100) < 45;
+                bool lowHp = !mark && rng.Next(100) < 40;
+                bool siphon = !mark && !lowHp && rng.Next(100) < 40;
+                int markMax = 5 + rng.Next(6);
+                float burst = 0.3f + (float)rng.NextDouble() * 0.7f;
+                float lowHpBonus = 0.2f + (float)rng.NextDouble() * 0.2f;
+                RegisterGenerated(id, name, dmg, mark, markMax, burst, lowHp, lowHpBonus, siphon);
+            }
+        }
+
         // === 注册（特质系统：专属专长=真实特质，有名字/图标/稀有度/描述） ===
         public static void Register()
         {
@@ -120,8 +196,18 @@ namespace SuperMech.Code
                     int guard = 0;
                     while (list.Count < slots && guard++ < 8)
                     {
-                        string s = RollSpecialty(a, list);
-                        if (s == null) break;
+                        // 原著：专属专长由单位自己领悟自创——一半概率组合出模组未预设的独特专长
+                        string s;
+                        if (UnityEngine.Random.value < 0.5f)
+                        {
+                            s = GenerateSpecialty(a.data.id, list.Count);
+                            if (list.Contains(s)) { s = RollSpecialty(a, list); if (s == null) break; }
+                        }
+                        else
+                        {
+                            s = RollSpecialty(a, list);
+                            if (s == null) break;
+                        }
                         list.Add(s);
                         if (!a.hasTrait(s)) a.addTrait(s);   // 专属专长=真实特质，挂到单位特质系统
                     }
@@ -172,21 +258,44 @@ namespace SuperMech.Code
             foreach (string id in list)
             {
                 var d = All.Find(x => x.id == id);
-                if (d == null) continue;
-                bonus += d.dmgMul;
-                if (d.lowHpMul > 0f && lowHp) bonus += d.lowHpMul;
-                if (d.deathMark)
+                if (d != null)
                 {
-                    int stacks = GetStacks(a);
-                    if (stacks + DeathMarkGain >= DeathMarkMax)
+                    bonus += d.dmgMul;
+                    if (d.lowHpMul > 0f && lowHp) bonus += d.lowHpMul;
+                    if (d.deathMark)
                     {
-                        ClearStacks(a);
-                        bonus += DeathMarkBurst;   // 引爆【死神收割】
+                        int stacks = GetStacks(a);
+                        if (stacks + DeathMarkGain >= DeathMarkMax)
+                        {
+                            ClearStacks(a);
+                            bonus += DeathMarkBurst;   // 引爆【死神收割】
+                        }
+                        else
+                        {
+                            var ctx = SuperMechActorContextRegistry.Get(a);
+                            if (ctx != null) ctx.SetCustom("death_mark_stacks", stacks + DeathMarkGain);
+                        }
                     }
-                    else
+                    continue;
+                }
+                // 组合自创专长（模组未预设，效果参数存 _genParams）
+                if (_genParams.TryGetValue(id, out var g))
+                {
+                    bonus += g.dmg;
+                    if (g.lowHp && lowHp) bonus += g.lowHpBonus;
+                    if (g.mark)
                     {
-                        var ctx = SuperMechActorContextRegistry.Get(a);
-                        if (ctx != null) ctx.SetCustom("death_mark_stacks", stacks + DeathMarkGain);
+                        int stacks = GetStacks(a);
+                        if (stacks + DeathMarkGain >= g.markMax)
+                        {
+                            ClearStacks(a);
+                            bonus += g.burst;
+                        }
+                        else
+                        {
+                            var ctx = SuperMechActorContextRegistry.Get(a);
+                            if (ctx != null) ctx.SetCustom("death_mark_stacks", stacks + DeathMarkGain);
+                        }
                     }
                 }
             }
@@ -196,7 +305,16 @@ namespace SuperMech.Code
         // === 击杀回气力（能量虹吸，击杀补丁调用） ===
         public static void OnKill(Actor killer)
         {
-            if (killer == null || !Has(killer, "sm_spec_siphon")) return;
+            if (killer == null) return;
+            bool siphon = Has(killer, "sm_spec_siphon");
+            if (!siphon)
+            {
+                var list = GetSpecialties(killer);
+                if (list != null)
+                    foreach (string id in list)
+                        if (_genParams.TryGetValue(id, out var g) && g.siphon) { siphon = true; break; }
+            }
+            if (!siphon) return;
             float max = SuperMechQi.GetQiMax(killer);
             if (max > 0f) SuperMechQi.AddQi(killer, max * 0.25f);   // 原著ch1009：恢复15%~25%气力
         }

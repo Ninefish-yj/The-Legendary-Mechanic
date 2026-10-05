@@ -753,6 +753,9 @@ namespace SuperMech.Code
 
                 if (ad.specialties != null && ad.specialties.Count > 0)
                 {
+                    // 组合自创专长（sm_spec_gen_*）：重启后按同种子重建注册（同单位同槽位→同效果）
+                    foreach (string sid in ad.specialties)
+                        if (sid.StartsWith("sm_spec_gen_")) SuperMechSpecialties.RebuildGenerated(sid);
                     var ctx = SuperMechActorContextRegistry.Get(a);
                     if (ctx != null) ctx.SetCustom("specialties", new List<string>(ad.specialties));
                 }
