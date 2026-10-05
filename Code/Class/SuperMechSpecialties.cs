@@ -32,11 +32,13 @@ namespace SuperMech.Code
             new SpecialtyDef { id = "sm_spec_elemental",  system = "mage",    dmgMul = 0.15f },
             new SpecialtyDef { id = "sm_spec_mind",       system = "mind",    dmgMul = 0.10f },
             new SpecialtyDef { id = "sm_spec_immortal",   system = "any",     dmgMul = 0.10f },
-            new SpecialtyDef { id = "sm_spec_siphon",     system = "any",     dmgMul = 0.06f, siphon = true },
+            new SpecialtyDef { id = "sm_spec_siphon",     system = "any",     dmgMul = 0f,    siphon = true },
         };
 
-        public const int DeathMarkMax = 5;
-        public const float DeathMarkBurst = 0.6f;
+        // 原著机制（ch1030）：印记赋予目标 5 层【死亡侵蚀】，引爆 15 层【死神收割】
+        public const int DeathMarkGain = 5;        // 每次攻击赋予的层数（原著：5 层死亡侵蚀）
+        public const int DeathMarkMax = 15;        // 层数上限（原著：15 层引爆）
+        public const float DeathMarkBurst = 1.0f;  // 引爆伤害（死神收割）
 
         // === 运行时存取（ActorContext.custom） ===
         public static List<string> GetSpecialties(Actor a)
@@ -150,15 +152,15 @@ namespace SuperMech.Code
                 if (d.deathMark)
                 {
                     int stacks = GetStacks(a);
-                    if (stacks + 1 >= DeathMarkMax)
+                    if (stacks + DeathMarkGain >= DeathMarkMax)
                     {
                         ClearStacks(a);
-                        bonus += DeathMarkBurst;
+                        bonus += DeathMarkBurst;   // 引爆【死神收割】
                     }
                     else
                     {
                         var ctx = SuperMechActorContextRegistry.Get(a);
-                        if (ctx != null) ctx.SetCustom("death_mark_stacks", stacks + 1);
+                        if (ctx != null) ctx.SetCustom("death_mark_stacks", stacks + DeathMarkGain);
                     }
                 }
             }
@@ -170,7 +172,7 @@ namespace SuperMech.Code
         {
             if (killer == null || !Has(killer, "sm_spec_siphon")) return;
             float max = SuperMechQi.GetQiMax(killer);
-            if (max > 0f) SuperMechQi.AddQi(killer, max * 0.3f);
+            if (max > 0f) SuperMechQi.AddQi(killer, max * 0.25f);   // 原著ch1009：恢复15%~25%气力
         }
 
         // === UI 显示名 ===

@@ -4759,7 +4759,7 @@
   "trait_group_sm_perks": "天赋",
   "sm_ui_specialties": "专属专长",
   "sm_spec_death_mark": "死亡印记",
-  "sm_spec_death_mark_info": "攻击叠加死亡印记，5 层引爆额外伤害（原著：死亡能量专属被动）",
+  "sm_spec_death_mark_info": "攻击赋予目标死亡侵蚀层数，15 层引爆死神收割（原著：印记层数引爆机制）",
   "sm_spec_gravity": "重力压制",
   "sm_spec_gravity_info": "攻击伤害+8%（原著：重力系专属能力）",
   "sm_spec_qi_blood": "气血爆发",
@@ -4772,6 +4772,6 @@
   "sm_spec_mind_info": "攻击伤害+10%（原著：心灵系专属能力）",
   "sm_spec_immortal": "不死之躯",
   "sm_spec_immortal_info": "攻击伤害+10%（原著：超A级强者的不死特性）",
-  "sm_spec_siphon": "能量虹吸",
-  "sm_spec_siphon_info": "攻击伤害+6%，击杀回复30%气力上限（原著：能量汲取）"
+  "sm_spec_siphon": "汲取",
+  "sm_spec_siphon_info": "击杀时汲取宇宙暗能量，恢复25%气力上限（原著：汲取暗能量恢复气力）"
 }
