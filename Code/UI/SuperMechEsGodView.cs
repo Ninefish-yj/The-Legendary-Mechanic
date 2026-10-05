@@ -138,8 +138,24 @@ namespace SuperMech.Code
               .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_msg")).Append(": ")
               .Append(SuperMechSanctuary.Data.beyond_message_given
                   ? LocalizedTextManager.getText("sm_ui_supera_beyond_msg_yes")
-                  : LocalizedTextManager.getText("sm_ui_supera_beyond_msg_no"));
+                  : LocalizedTextManager.getText("sm_ui_supera_beyond_msg_no")).Append("\n")
+              .Append("\n<color=#ffd966>").Append(LocalizedTextManager.getText("sm_ui_supera_dialog")).Append("</color>\n")
+              .Append(GetBeyondDialog(order, bureau, alliance, sanctum, council,
+                  attitude == SuperMechSupermA.Attitude.Purge, SuperMechEsGod.CountTopSuperA()));
             _detailText.text = sb.ToString();
+        }
+
+        /// <summary>超脱者对话：世界之外的存在（韩萧/旧日登陆者）观察本世界并回应（按状态动态，非固定剧情）</summary>
+        private static string GetBeyondDialog(bool order, bool bureau, bool alliance, bool sanctum, bool council, bool purge, int topCount)
+        {
+            if (sanctum) return LocalizedTextManager.getText("sm_ui_supera_dialog_sanctum");
+            if (bureau) return LocalizedTextManager.getText("sm_ui_supera_dialog_bureau");
+            if (alliance) return LocalizedTextManager.getText("sm_ui_supera_dialog_alliance");
+            if (purge) return LocalizedTextManager.getText("sm_ui_supera_dialog_purge");
+            if (council) return LocalizedTextManager.getText("sm_ui_supera_dialog_council");
+            if (order) return LocalizedTextManager.getText("sm_ui_supera_dialog_order");
+            if (topCount > 0) return LocalizedTextManager.getText("sm_ui_supera_dialog_top");
+            return LocalizedTextManager.getText("sm_ui_supera_dialog_early");
         }
     }
 }

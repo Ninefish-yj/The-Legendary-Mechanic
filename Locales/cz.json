@@ -4712,5 +4712,14 @@
   "sm_ui_supera_beyond_msg_no": "未收到（世界达成秩序/圣域/体制化/同盟任一里程碑时，超脱者将留下心得）",
   "sm_ui_esgod_heritage": "异神遗产",
   "sm_ui_esgod_heritage_yes": "已掉落（最强文明继承技术资料，觉醒者潜能+3）",
-  "sm_ui_esgod_heritage_no": "未掉落"
+  "sm_ui_esgod_heritage_no": "未掉落",
+  "sm_ui_supera_dialog": "与超脱者对话",
+  "sm_ui_supera_dialog_early": "韩萧：\"又一片新天地。当年我们也是从混沌起步——看你们走出什么样的路。\"",
+  "sm_ui_supera_dialog_top": "韩萧：\"X阶现世……又一个接近超神级的个体，值得一看。\"",
+  "sm_ui_supera_dialog_order": "地球玩家：\"秩序立起来了。想起我们登陆的那些年——规则终究是强者的棋盘。\"",
+  "sm_ui_supera_dialog_council": "地球玩家：\"超A们抱团了？我们当年也这么干过。\"",
+  "sm_ui_supera_dialog_purge": "韩萧：\"个体伟力与集体伟力的碰撞又上演了——这条路我们走了很久，答案得你们自己找。\"",
+  "sm_ui_supera_dialog_alliance": "地球玩家：\"被清算过的文明抱团了，有意思。\"",
+  "sm_ui_supera_dialog_bureau": "韩萧：\"文明把超A收进编制……诸星联的老路，你们也走到了。\"",
+  "sm_ui_supera_dialog_sanctum": "韩萧：\"个体伟力与集体伟力找到了平衡——这一步，我们当年没能亲眼看到。\""
 }
