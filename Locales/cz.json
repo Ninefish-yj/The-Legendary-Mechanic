@@ -4756,5 +4756,22 @@
   "trait_group_sm_rank_specialty": "阶位专长",
   "trait_group_sm_specialty": "专长",
   "trait_group_sm_cosmic_relic": "宇宙宝物",
-  "trait_group_sm_perks": "天赋"
+  "trait_group_sm_perks": "天赋",
+  "sm_ui_specialties": "专属专长",
+  "sm_spec_death_mark": "死亡印记",
+  "sm_spec_death_mark_info": "攻击叠加死亡印记，5 层引爆额外伤害（原著：死亡能量专属被动）",
+  "sm_spec_gravity": "重力压制",
+  "sm_spec_gravity_info": "攻击伤害+8%（原著：重力系专属能力）",
+  "sm_spec_qi_blood": "气血爆发",
+  "sm_spec_qi_blood_info": "攻击伤害+10%，生命低于40%时再+25%（原著：武道气血）",
+  "sm_spec_overclock": "超频过载",
+  "sm_spec_overclock_info": "攻击伤害+15%（原著：机械超频改造）",
+  "sm_spec_elemental": "元素共鸣",
+  "sm_spec_elemental_info": "攻击伤害+15%（原著：元素系专属能力）",
+  "sm_spec_mind": "意识渗透",
+  "sm_spec_mind_info": "攻击伤害+10%（原著：心灵系专属能力）",
+  "sm_spec_immortal": "不死之躯",
+  "sm_spec_immortal_info": "攻击伤害+10%（原著：超A级强者的不死特性）",
+  "sm_spec_siphon": "能量虹吸",
+  "sm_spec_siphon_info": "攻击伤害+6%，击杀回复30%气力上限（原著：能量汲取）"
 }

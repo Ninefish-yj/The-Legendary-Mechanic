@@ -221,6 +221,12 @@ namespace SuperMech.Code
                     }
                     // v0.70.x 控制判定（精神眩晕/生理眩晕/力量碾压，原著第7/143章）
                     SuperMechCombatEnhance.TryApplyControl(attacker, target);
+                    // v0.76.57 专属专长：超A级个体专属能力伤害加成（原著：专属被动/专属能力）
+                    float specBonus = SuperMechSpecialties.GetAttackBonus(attacker);
+                    if (specBonus != 0f)
+                    {
+                        target.data.health -= (int)(pDamage * specBonus);
+                    }
                     // v0.72.0 黑星军团加成：军团长军团流加成×成员星级加成（原著：一人即军团/机械帝皇军团流）
                     float legionBonus = SuperMechLegion.GetCommanderBonus(attacker) * SuperMechLegion.GetMemberBonus(attacker);
                     if (legionBonus != 1f)
@@ -518,6 +524,9 @@ namespace SuperMech.Code
 
                 // v0.76.41 顶层超A：被击杀→遗落异神遗产（原著ch1008，仅一次）
                 SuperMechEsGod.OnTopSuperAKilled(killer, target);
+
+                // v0.76.57 专属专长·能量虹吸：击杀回复30%气力上限
+                SuperMechSpecialties.OnKill(killer);
 
                 if (SuperMechAwakened.IsAwakened(killer))
                 {

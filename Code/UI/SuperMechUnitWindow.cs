@@ -166,6 +166,11 @@ namespace SuperMech.Code
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, null, new Color(0.7f, 0.9f, 1f));
             if (isAwakened)
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
+
+            // v0.76.57 专属专长：超A级个体独有的专属能力（原著：专属被动/专属能力），显示于单位面板
+            string specText = SuperMechSpecialties.GetDisplay(a);
+            if (!string.IsNullOrEmpty(specText))
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_specialties"), specText, null, new Color(1f, 0.8f, 0.4f));
         }
 
         private static void ShowEntryButtons(UnitWindow window, Actor a)

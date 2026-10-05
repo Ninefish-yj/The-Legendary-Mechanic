@@ -119,6 +119,7 @@ namespace SuperMech.Code
             public float refineQiBonus;
             public float emRefineQiBonus;
             public List<string> activeSynergies;
+            public List<string> specialties;   // 专属专长（超A级个体独有，v0.76.57）
             public int geneStage;
             public int manaStage;
             public int mindStage;
@@ -238,6 +239,7 @@ namespace SuperMech.Code
                             refineQiBonus = SuperMechQiRefine.GetRefineQiBonus(a),
                             emRefineQiBonus = GetEmRefineQiBonus(a),
                             activeSynergies = GetActiveSynergyIds(a),
+                            specialties = SuperMechSpecialties.GetSpecialties(a),
                             geneStage = SuperMechCorePower.GetGeneStage(a),
                             manaStage = SuperMechCorePower.GetManaStage(a),
                             mindStage = SuperMechCorePower.GetMindStage(a),
@@ -747,6 +749,12 @@ namespace SuperMech.Code
                 {
                     var dict = SuperMechQiRefine._emRefineQiBonus;
                     if (dict != null) dict[a.id] = ad.emRefineQiBonus;
+                }
+
+                if (ad.specialties != null && ad.specialties.Count > 0)
+                {
+                    var ctx = SuperMechActorContextRegistry.Get(a);
+                    if (ctx != null) ctx.SetCustom("specialties", new List<string>(ad.specialties));
                 }
 
                 if (ad.activeSynergies != null && ad.activeSynergies.Count > 0)
