@@ -35,7 +35,6 @@ namespace SuperMech.Code
         public static void OpenLegion() { ToggleWindow("legion", "sm_ui_legion_title", 640, 520, DrawLegionContent); }
         public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 520, DrawWorldTreeContent); }
         public static void OpenEsGod() { ToggleWindow("esgod", "sm_ui_esgod_title", 640, 520, DrawEsGodContent); }
-        public static void OpenForge() { ToggleWindow("forge", "sm_ui_forge_title", 640, 520, DrawForgeContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
         public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent); }
 
@@ -46,7 +45,6 @@ namespace SuperMech.Code
             // 属单位面板职责（单位面板特殊组已有入口按钮）；星海总览只保留系统级功能。
             ("sm_ui_combat_title", DrawCombatEnhanceContent),
             ("sm_ui_beast_title", DrawCosmicBeastContent),
-            ("sm_ui_forge_title", DrawForgeContent),
             ("sm_ui_trade_title", DrawTradeContent),
             ("sm_ui_genetics_title", DrawGeneticsContent),
             ("sm_ui_stargate_title", DrawStarGateContent),
@@ -263,18 +261,6 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechEsGodView>();
-        }
-
-        internal static void DrawForgeContent(RectTransform content)
-        {
-            var go = new GameObject("ForgeView");
-            go.transform.SetParent(content, false);
-            var rect = go.AddComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
-            go.AddComponent<SuperMechForgeView>();
         }
 
         public static void CloseAll()

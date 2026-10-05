@@ -55,7 +55,6 @@ namespace SuperMech.Code
             public SuperMechLegion.LegionSaveData legion = new SuperMechLegion.LegionSaveData();
             public SuperMechWorldTree.WorldTreeSaveData worldTree = new SuperMechWorldTree.WorldTreeSaveData();
             public SuperMechEsGod.EsGodSaveData esGod = new SuperMechEsGod.EsGodSaveData();
-            public SuperMechForge.ForgeSaveData forge = new SuperMechForge.ForgeSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -354,8 +353,6 @@ namespace SuperMech.Code
                 if (data.worldTree != null) SuperMechWorldTree.Load(data.worldTree);
                 // 加载异神终局数据（v0.74.0）
                 if (data.esGod != null) SuperMechEsGod.Load(data.esGod);
-                // 加载机械权限体系数据（v0.75.0）
-                if (data.forge != null) SuperMechForge.Load(data.forge);
 
                 _pendingLoad = data;
                 _loadPending = true;

@@ -167,7 +167,6 @@ namespace SuperMech.Code
             removed += SuperMechCombatEnhance.CleanupDead(alive);
             removed += SuperMechPlayer.CleanupDead(alive);
             removed += SuperMechLegion.CleanupDead(alive);
-            removed += SuperMechForge.CleanupDead(alive);
             removed += SuperMechActorContextRegistry.CleanupDead(alive);
         }
 
@@ -220,7 +219,6 @@ namespace SuperMech.Code
             try { SuperMechLegion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechLegion"); }
             try { SuperMechWorldTree.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechWorldTree"); }
             try { SuperMechEsGod.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEsGod"); }
-            try { SuperMechForge.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechForge"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
         }
     }
