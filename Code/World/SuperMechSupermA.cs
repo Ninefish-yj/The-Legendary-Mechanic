@@ -15,25 +15,34 @@ namespace SuperMech.Code
     /// 在超A数量达标时成立，抵消清算、提供联合加成；异神为顶层超A个体之一。
     /// 清算分对象（原著巅峰之殇ch1002）：清的是超星团级盟友/非嫡系的自由超A个体，
     /// 三大文明嫡系超A（战略威慑工具）不清算——清算目的反而是把超A收编为嫡系；
-    /// 清算非必然（原著ch1018：清算有政治考量，巴德尔"不当任期内做"），仅非嫡系超A泛滥触发。
+    /// 清算非必然且有条件（原著ch1018：政治考量，巴德尔"不当任期内做"；文明间在维护统治权威上联合，
+    /// 平时互相竞争用超A当战略威慑工具）：
+    ///  ①清算能力=霸主文明至少超星团级（文明未成形无力清算——时序：先有超A则只有默许拉拢）；
+    ///  ②清算=周期事件（120tick清算风暴后回默许收编，非无尽战争）；
+    ///  ③协会成立（超A≥5）抵消清算；
+    ///  ④超A≥8=个体伟力压倒集体伟力（原著ch1018"个体伟力将失去掌控"），超A时代：清算永久停、协会主导。
     /// </summary>
     public static class SuperMechSupermA
     {
         public const string CouncilTrait = "sm_supera_council"; // 超A级协会成员标记
         public const string PurgeTrait = "sm_supera_purge";     // 清算标记（文明联合压制）
 
-        public enum Attitude { Tolerate, Purge } // 默许 / 清算
+        public enum Attitude { Tolerate, Purge, Dominance } // 默许 / 清算风暴 / 超A时代（个体伟力压倒集体伟力）
 
         // 数值（原著尺度等比缩放）
         private const int SuperAThreshold = 3;      // 非嫡系超A≥3 触发清算（自由个体伟力泛滥的担忧，原著巅峰之殇导火索）
         private const int CouncilThreshold = 5;     // 超A≥5 协会成立（原著：协会为超A级规模庞大后由麦尼逊等推动创建，ch1016"超A总数只会一直增加"）
+        private const int DominanceThreshold = 8;   // 超A≥8=个体伟力压倒集体伟力（原著ch1018"个体伟力将失去掌控"）
+        private const int PurgeDuration = 120;      // 清算风暴时长（周期事件，非无尽战争；风暴后回默许=霸主文明收编/拉拢）
         private const float CouncilDamageBonus = 0.10f; // 协会联合加成：超A个体伤害+10%
+        private const float DominanceDamageBonus = 0.15f; // 超A时代协会主导：伤害+15%
         private const float PurgeDamageTakenMult = 1.30f; // 清算期超A个体受击伤害×1.3（文明联合压制）
         private const int RecalcInterval = 8;       // 每8 tick 重算态度/协会
 
         private static int _tick = 0;
         private static Attitude _attitude = Attitude.Tolerate;
         private static bool _councilFormed = false;
+        private static int _purgeTicksLeft = 0;     // 清算风暴剩余时长
 
         // ============ 状态查询 ============
 
@@ -98,11 +107,11 @@ namespace SuperMech.Code
             return result;
         }
 
-        /// <summary>协会联合加成：超A个体伤害+10%（原著：超A级联合提升地位）</summary>
+        /// <summary>协会联合加成：超A个体伤害+10%；超A时代（个体伟力压倒集体伟力）协会主导+15%（原著ch1018）</summary>
         public static float GetCouncilDamageBonus(Actor a)
         {
             if (!_councilFormed || !IsSuperA(a)) return 1f;
-            return 1f + CouncilDamageBonus;
+            return 1f + (_attitude == Attitude.Dominance ? DominanceDamageBonus : CouncilDamageBonus);
         }
 
         /// <summary>清算压制：清算期非嫡系超A个体受击伤害×1.3（霸主文明联合压制自由个体伟力，
@@ -112,6 +121,8 @@ namespace SuperMech.Code
             if (_attitude != Attitude.Purge || !IsSuperA(a) || IsDynasty(a)) return 1f;
             return PurgeDamageTakenMult;
         }
+
+        public static bool IsDominance => _attitude == Attitude.Dominance;
 
         // ============ 主循环 ============
 
@@ -126,16 +137,53 @@ namespace SuperMech.Code
             int count = CountSuperA();
             int foreign = CountForeignSuperA();          // 清算对象池：非霸主文明嫡系的自由超A
             _councilFormed = count >= CouncilThreshold;  // 原著后期：超A级协会由超A级个体大规模联合创建
-            if (foreign >= SuperAThreshold && !_councilFormed)
+
+            // ①超A时代：个体伟力压倒集体伟力（原著ch1018"个体伟力将失去掌控"）→ 清算永久停、协会主导
+            if (count >= DominanceThreshold)
             {
-                _attitude = Attitude.Purge;             // 非嫡系自由超A泛滥→霸主文明清算（原著巅峰之殇：清盟友超A收编为嫡系）
-                ApplyPurgeTrait(true);
-            }
-            else
-            {
-                _attitude = Attitude.Tolerate;          // 默许/拉拢（协会成立后文明转默许；嫡系超A不受清算）
+                _attitude = Attitude.Dominance;
+                _purgeTicksLeft = 0;
                 ApplyPurgeTrait(false);
+                return;
             }
+
+            // ②清算风暴进行中：倒计时，结束后回默许（霸主文明收编/拉拢，非无尽战争）
+            if (_attitude == Attitude.Purge)
+            {
+                _purgeTicksLeft--;
+                if (_purgeTicksLeft <= 0)
+                {
+                    _attitude = Attitude.Tolerate;
+                    ApplyPurgeTrait(false);
+                }
+                return;
+            }
+
+            // ③清算触发：非嫡系自由超A泛滥 + 协会未成立 + 霸主文明有能力清算（时序：文明未成形无力清算，
+            //    先发展出超A力量时只有默许拉拢——原著巅峰之殇是三大文明成形后的历史事件）
+            if (foreign >= SuperAThreshold && !_councilFormed && CanPurge())
+            {
+                _attitude = Attitude.Purge;             // 非嫡系自由超A泛滥→霸主文明清算风暴（原著巅峰之殇：清盟友收编嫡系）
+                _purgeTicksLeft = PurgeDuration;
+                ApplyPurgeTrait(true);
+                return;
+            }
+
+            // ④默许/拉拢（协会成立后文明转默许；嫡系超A不受清算）
+            if (_attitude == Attitude.Purge) _attitude = Attitude.Tolerate;
+        }
+
+        /// <summary>清算能力：霸主文明（科技最强3王国）中最强者至少达到超星团级（原著：三大文明=宇宙级
+        /// 集体伟力，清算需文明成形；先发展出超A力量而文明未成形时，文明无力清算只能默许）</summary>
+        public static bool CanPurge()
+        {
+            var top = GetTopCivilizations(3);
+            foreach (var k in top)
+            {
+                if (k == null) continue;
+                if ((int)SuperMechCivilization.GetCivLevelFromKingdom(k) >= 3) return true; // SuperCluster+
+            }
+            return false;
         }
 
         /// <summary>清算标记应用：只作用于非霸主文明嫡系的自由超A个体（原著巅峰之殇ch1002：
@@ -162,6 +210,7 @@ namespace SuperMech.Code
             _tick = 0;
             _attitude = Attitude.Tolerate;
             _councilFormed = false;
+            _purgeTicksLeft = 0;
         }
     }
 }

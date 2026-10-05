@@ -68,9 +68,11 @@ namespace SuperMech.Code
             var sb = new System.Text.StringBuilder();
             // 三大文明态度（个体伟力 vs 集体伟力）
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_attitude")).Append(": ")
-              .Append(attitude == SuperMechSupermA.Attitude.Purge
-                  ? LocalizedTextManager.getText("sm_ui_supera_purge")
-                  : LocalizedTextManager.getText("sm_ui_supera_tolerate")).Append("\n");
+              .Append(attitude == SuperMechSupermA.Attitude.Dominance
+                  ? LocalizedTextManager.getText("sm_ui_supera_dominance")
+                  : attitude == SuperMechSupermA.Attitude.Purge
+                      ? LocalizedTextManager.getText("sm_ui_supera_purge")
+                      : LocalizedTextManager.getText("sm_ui_supera_tolerate")).Append("\n");
             // 超A级协会
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_council")).Append(": ")
               .Append(council
