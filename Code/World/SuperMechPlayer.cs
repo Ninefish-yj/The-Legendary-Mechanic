@@ -189,6 +189,11 @@ namespace SuperMech.Code
                     Actor p = World.world.units.spawnNewUnit("human", tile, false, true, 6f, null, false, true);
                     if (p == null) continue;
                     if (!p.hasTrait(PlayerTrait)) p.addTrait(PlayerTrait);
+                    // v0.76.54 与手动召唤对齐：金色名字（玩家标记）+不育（不属于这个世界）+初始F阶
+                    if (!p.data.favorite) p.switchFavorite();
+                    if (!p.hasTrait("infertile")) p.addTrait("infertile");
+                    if (!p.hasTrait("sm_rank_00_f")) p.addTrait("sm_rank_00_f");
+                    SuperMechAdvancement.SetExactRank(p, 0);
                     GetOrCreatePanel(p);
                     _data.spawnCounter++;
                 }

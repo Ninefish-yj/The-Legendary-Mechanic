@@ -35,7 +35,7 @@ namespace SuperMech.Code
         public const string ClassMech    = "sm_class_mech";
         public const string ClassMage    = "sm_class_mage";
         public const string ClassMind    = "sm_class_mind";
-        public const string Descendant   = "sm_descendant"; // 降临者（玩家）特质
+        public const string Descendant   = "sm_player"; // 降临者（玩家）特质——v0.76.54 与自动降临统一为单一 trait（sm_descendant 已合并删除）
 
 
         public const string SkillQiMod          = "sm_skill_qimod";
@@ -98,7 +98,7 @@ namespace SuperMech.Code
             descendant.base_stats["experience"] = 2.0f; // 经验值获取翻倍
             descendant.base_stats["intelligence"] = 2;
             LocalizedTextManager.add("trait_" + Descendant, "降临者", pReplace: true);
-            LocalizedTextManager.add("trait_" + Descendant + "_info", "玩家化身（金色名字，不育），经验值获取翻倍，死亡后可重生（60秒内最多3次，超过则冻结+无敌等待刷新，复活后短暂眩晕）", pReplace: true);
+            LocalizedTextManager.add("trait_" + Descendant + "_info", "降临者（旧日登陆者化身，金色名字，不育），经验值获取翻倍，死亡后可重生（60秒内最多3次，超过则冻结+无敌等待刷新，复活后短暂眩晕）", pReplace: true);
             AssetManager.traits.add(descendant);
         }
 
