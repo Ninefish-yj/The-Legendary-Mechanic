@@ -171,6 +171,9 @@ namespace SuperMech.Code
             string specText = SuperMechSpecialties.GetDisplay(a);
             if (!string.IsNullOrEmpty(specText))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_specialties"), specText, null, new Color(1f, 0.8f, 0.4f));
+                string tplText = SuperMechSpecialties.GetTemplateDisplay(a);
+                if (tplText != null)
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_templates"), tplText, null, new Color(0.9f, 0.6f, 0.9f));
         }
 
         private static void ShowEntryButtons(UnitWindow window, Actor a)

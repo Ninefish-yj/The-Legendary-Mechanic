@@ -41,6 +41,21 @@ namespace SuperMech.Code
             new SpecialtyDef { id = "sm_spec_mind",       nameKey = "sm_spec_mind",       descKey = "sm_spec_mind_info",       system = "mind",    dmgMul = 0.10f },
             new SpecialtyDef { id = "sm_spec_immortal",   nameKey = "sm_spec_immortal",   descKey = "sm_spec_immortal_info",   system = "any",     dmgMul = 0.10f },
             new SpecialtyDef { id = "sm_spec_siphon",     nameKey = "sm_spec_siphon",     descKey = "sm_spec_siphon_info",     system = "any",     dmgMul = 0f,    siphon = true },
+            // 原著专长（通用领悟）：武道无极（成长型：每新阶位蜕变一次，需对武道有新感悟——强化全部武道技能，原著无专属后缀）
+            new SpecialtyDef { id = "sm_spec_wuji",        nameKey = "sm_spec_wuji",        descKey = "sm_spec_wuji_info",        system = "martial", dmgMul = 0.15f, lowHpMul = 0.15f },
+        };
+
+        // === 模板专长（原著：NPC/BOSS专属、职业专属模板——独立系统，不属于专属专长） ===
+        // 完美械感（第602章：机械系顶尖模板，机械总亲和x1.4直接作用于总值）
+        // 强韧生命（ch104：低级/中级，耐力转化生命）；核子力·结构加固（真实伤害免疫）
+        // 传奇级战斗技巧（ch1066）；传奇固定伤害减免（ch1009）
+        public static readonly List<SpecialtyDef> TemplateAll = new List<SpecialtyDef>
+        {
+            new SpecialtyDef { id = "sm_tpl_perfect_mech",  nameKey = "sm_tpl_perfect_mech",  descKey = "sm_tpl_perfect_mech_info",  system = "mech",    dmgMul = 0.30f },
+            new SpecialtyDef { id = "sm_tpl_tough_life",    nameKey = "sm_tpl_tough_life",    descKey = "sm_tpl_tough_life_info",    system = "any",     hpMul = 0.25f },
+            new SpecialtyDef { id = "sm_tpl_nuclear",       nameKey = "sm_tpl_nuclear",       descKey = "sm_tpl_nuclear_info",       system = "mech",    dmgMul = 0.15f, hpMul = 0.20f },
+            new SpecialtyDef { id = "sm_tpl_combat_skill",  nameKey = "sm_tpl_combat_skill",  descKey = "sm_tpl_combat_skill_info",  system = "martial", dmgMul = 0.20f, lowHpMul = 0.20f },
+            new SpecialtyDef { id = "sm_tpl_fixed_reduce",  nameKey = "sm_tpl_fixed_reduce",  descKey = "sm_tpl_fixed_reduce_info",  system = "any",     hpMul = 0.30f },
         };
 
         // === 原著专属专长（原著明确出现过的能力，由对应原著人物（高维存在）赋予，人物已死则不赋予） ===
@@ -85,6 +100,17 @@ namespace SuperMech.Code
         private static bool _markBurstJustHappened = false;   // 死亡侵蚀满层引爆标记（用于即死判定）
 
         /// <summary>死亡侵蚀满层引爆后的即死判定（原著：引爆后立刻进行一次即死判定；模组：5% 概率处决）</summary>
+        /// <summary>单位面板模板专长显示</summary>
+        public static string GetTemplateDisplay(Actor a)
+        {
+            var list = EnsureList(a);
+            var tpl = list.FindAll(id => TemplateAll.Exists(t => t.id == id));
+            if (tpl.Count == 0) return null;
+            var names = new List<string>();
+            foreach (var id in tpl) names.Add(LocalizedTextManager.getText(id));
+            return string.Join("、", names.ToArray());
+        }
+
         public static void TryInstantKill(Actor attacker, Actor target)
         {
             if (!_markBurstJustHappened) return;
@@ -173,6 +199,22 @@ namespace SuperMech.Code
                 AssetManager.traits.add(t);
             }
             // 原著专属专长：由高维原著人物赋予，均为传奇稀有度
+            foreach (var d in TemplateAll)
+            {
+                LocalizedTextManager.add(d.id, LocalizedTextManager.getText(d.nameKey), pReplace: true);
+                LocalizedTextManager.add(d.id + "_info", LocalizedTextManager.getText(d.descKey), pReplace: true);
+                var t = new ActorTrait
+                {
+                    id = d.id,
+                    path_icon = "ui/Icons/actor_traits/iconChosenOne",
+                    group_id = "sm_templates",
+                    needs_to_be_explored = false,
+                    rarity = Rarity.R3_Legendary,
+                    base_stats = new BaseStats()
+                };
+                if (d.hpMul > 0f) t.base_stats["multiplier_health"] = 1f + d.hpMul;
+                AssetManager.traits.add(t);
+            }
             foreach (var d in LegendaryAll)
             {
                 LocalizedTextManager.add(d.id, LocalizedTextManager.getText(d.nameKey), pReplace: true);
@@ -256,8 +298,9 @@ namespace SuperMech.Code
                         int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
                         if (rankIdx >= 13 && !a.hasTrait(SuperMechTraits.Descendant))
                         {
-                            // 原著：个人专属=超A级强者独有（前世玩家不存在这种能力，ch1093）——由存活原著人物赋予
+                            // 原著：个人专属=超A级强者独有（前世玩家不存在这种能力）——由存活原著人物赋予；模板专长=NPC/BOSS类别专属——概率形成
                             if (list.Count == 0) s = TryLegendaryGrant(a, list);      // 首槽：原著人物（存活）赋予个人专属
+                            else s = TryTemplateFormation(a, list);                   // 后续槽：概率形成模板专长
                         }
                         if (s == null)
                         {
@@ -285,6 +328,18 @@ namespace SuperMech.Code
         }
 
         /// <summary>原著赋予：X阶超A匹配职业系的原著人物（存活）赋予其专属专长</summary>
+        /// <summary>模板专长形成：X阶超A（NPC/BOSS定位）按形成几率获得模板专长（原著：NPC/BOSS专属+职业专属模板）</summary>
+        private static string TryTemplateFormation(Actor a, List<string> existing)
+        {
+            if (a.hasTrait(SuperMechTraits.Descendant)) return null;   // 原著：玩家弄不到模板专长
+            var pool = TemplateAll.FindAll(d => d.system == "any" || d.system == GetSystem(a));
+            if (pool.Count == 0) return null;
+            var cand = pool.FindAll(d => !existing.Contains(d.id));
+            if (cand.Count == 0) return null;
+            if (UnityEngine.Random.value > 0.2f) return null;   // 形成几率 20%
+            return cand[UnityEngine.Random.Range(0, cand.Count)].id;
+        }
+
         /// <summary>原著赋予：X阶超A匹配职业系时，由存活的原著人物赋予个人专属专长</summary>
         private static string TryLegendaryGrant(Actor a, List<string> existing)
         {
@@ -358,6 +413,13 @@ namespace SuperMech.Code
                     continue;
                 }
                 // 原著专属专长（高维原著人物赋予）
+                var td = TemplateAll.Find(x => x.id == id);
+                if (td != null)
+                {
+                    bonus += td.dmgMul;
+                    if (td.lowHpMul > 0f && lowHp) bonus += td.lowHpMul;
+                    continue;
+                }
                 var ld = LegendaryAll.Find(x => x.id == id);
                 if (ld != null)
                 {

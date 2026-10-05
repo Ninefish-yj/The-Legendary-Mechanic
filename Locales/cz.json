@@ -4781,5 +4781,18 @@
   "sm_legend_virtual_reform": "虚拟技术革新·麦尼逊",
   "sm_legend_virtual_reform_info": "个人专属专长：虚拟技术改良——攻击+25%",
   "sm_legend_sorokin_trickster": "诡诈师·索罗金",
-  "sm_legend_sorokin_trickster_info": "个人专属专长：心灵异能强度大幅提升——攻击+35%"
+  "sm_legend_sorokin_trickster_info": "个人专属专长：心灵异能强度大幅提升——攻击+35%",
+  "sm_tpl_perfect_mech": "完美械感",
+  "sm_tpl_perfect_mech_info": "模板专长（原著：机械系顶尖模板，机械总亲和x1.4）：攻击+30%",
+  "sm_tpl_tough_life": "强韧生命",
+  "sm_tpl_tough_life_info": "模板专长（原著：耐力转化生命）：生命上限+25%",
+  "sm_tpl_nuclear": "核子力·结构加固",
+  "sm_tpl_nuclear_info": "模板专长（原著：真实伤害免疫）：攻击+15%，生命+20%",
+  "sm_tpl_combat_skill": "传奇级战斗技巧",
+  "sm_tpl_combat_skill_info": "模板专长（原著：战斗技巧）：攻击+20%，生命低于40%时再+20%",
+  "sm_tpl_fixed_reduce": "传奇固定伤害减免",
+  "sm_tpl_fixed_reduce_info": "模板专长（原著：固定伤害减免）：生命+30%",
+  "sm_spec_wuji": "武道无极",
+  "sm_spec_wuji_info": "成长型专长（原著：卡罗特核心专长，每阶位蜕变强化全部武道技能）：攻击+15%，生命低于40%时再+15%",
+  "sm_ui_templates": "模板专长"
 }
