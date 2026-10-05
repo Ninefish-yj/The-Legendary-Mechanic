@@ -4,58 +4,65 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.76.0 个体伟力·集体伟力体系（原著后期主线，用户指定方向）
-    /// 原著依据：
-    ///  1. 超A级=个体伟力：掌握个人伟力的超A级已是宇宙大人物，但在高级文明眼中更多是战略威慑（ch1016）；
-    ///  2. 三大文明默许/清算：三大文明担忧"个体伟力泛滥"，历史上以"巅峰之殇"清算超A级盟友
-    ///     （ch1002），后期讨论"新的清算"（ch1018）；
-    ///  3. 超A级协会（原著后期创建）：超A级个体联合起来提升宇宙地位、对抗文明压制（ch1016 麦尼逊推动）；
-    ///  4. 异神=顶层超A之一（ch712"异能之神"），能存在是三大文明的默许——受集体伟力框架约束。
-    /// 机制：超A级个体（能级X阶）计数驱动文明态度（默许/清算）；超A级协会（个体伟力联合）
-    /// 在超A数量达标时成立，抵消清算、提供联合加成；异神为顶层超A个体之一。
-    /// 清算分对象（原著巅峰之殇ch1002）：清的是超星团级盟友/非嫡系的自由超A个体，
-    /// 三大文明嫡系超A（战略威慑工具）不清算——清算目的反而是把超A收编为嫡系；
-    /// 清算非必然且有条件（原著ch1018：政治考量，巴德尔"不当任期内做"；文明间在维护统治权威上联合，
-    /// 平时互相竞争用超A当战略威慑工具）：
-    ///  ①清算能力=霸主文明至少超星团级（文明未成形无力清算——时序：先有超A则只有默许拉拢）；
-    ///  ②清算=周期事件（120tick清算风暴后回默许收编，非无尽战争）；
-    ///  ③协会成立（超A≥5）抵消清算；
-    ///  ④超A≥8=个体伟力压倒集体伟力（原著ch1018"个体伟力将失去掌控"），超A时代：清算永久停、协会主导。
+    /// v0.76.10 个体伟力·集体伟力体系（原著后期主线重写——按原著现实考量，非自造）
+    /// 原著机制链（全部有原文）：
+    ///  1. 起点：超A级在高级文明眼中="战略威慑和自相残杀的工具"（ch1016）；
+    ///  2. 巅峰之殇（ch1002）：三大文明超A互相伤害损伤惨重→担心失去个人伟力战略优势→
+    ///     编莫须有罪名，把超星团级文明的超A盟友屠干净——清算对象=他文明（超星团级文明）的超A资产，
+    ///     不是自由散人；且是"绝户计"：超A担心人身安全不敢投靠超星团级→三大文明把超A都抓到自己手里；
+    ///  3. 清算逻辑（ch1018）：超A总数只会一直增加→"个体伟力将失去掌控"→"清算超A级是必须的，
+    ///     不过我不打算在我的任期内做"——文明未雨绸缪+政治烫手山芋，非"超A压倒文明"；
+    ///  4. 阶级觉醒（ch1016）：麦尼逊为超A级所代表的"阶级"谋福利，联合="拧成一股…高级文明更加忌惮"；
+    ///     但协会会被打压（ch1459"当年三大文明对超A级协会的打压"）；
+    ///  5. 终局=超能圣域（ch1459）：韩萧建圣域→"与三大文明的势力达到同一层次"→"把全宇宙的
+    ///     个体伟力一网打尽"（收编自然觉醒的民间超能者）→其他文明只剩嫡系培养的超能者→
+    ///     变相帮文明巩固统治基础——超A阶级自治实体与三大文明对等共存（终局，非压倒）。
+    /// 状态机：默许→警惕（高阶超能者群体收编压力）→清算风暴（清超星团级文明超A+绝户计）→
+    /// 协会（超A阶级联合，会被打压）→超能圣域（政治地位承认，对等共存终局）。
+    /// 删除：v0.76.0~v0.76.9 的"超A时代=个体压倒文明"状态（原著无此状态，系自造）。
     /// </summary>
     public static class SuperMechSupermA
     {
         public const string CouncilTrait = "sm_supera_council"; // 超A级协会成员标记
         public const string PurgeTrait = "sm_supera_purge";     // 清算标记（文明联合压制）
 
-        public enum Attitude { Tolerate, Vigilant, Purge, Dominance } // 默许 / 警惕（超能者群体收编压力） / 清算风暴 / 超A时代
+        public enum Attitude { Tolerate, Vigilant, Purge, Council, Sanctum }
+        // 默许 / 警惕（高阶超能者群体收编压力） / 清算风暴（巅峰之殇：清超星团级文明超A） /
+        // 协会（超A阶级联合） / 超能圣域（与三大文明同层次，对等共存终局）
 
-        // 数值（力量对比制：威胁=力量比值，非单位数量——用户点破：3个巅峰超A与10个菜鸟超A威胁不同）
-        // 力量指数：onar/1000（X阶超A≈149，普通超能者≈0.x~10）；文明力量：科技点+Lv×100
-        private const float VigilantPowerRatio = 0.20f;  // 非嫡系超能者力量≥文明力量20%→警惕（收编压力，原著ch1018超能者总数只会一直增加）
-        private const float PurgePowerRatio = 0.40f;     // 非嫡系超A力量≥文明力量40%→清算风暴（原著巅峰之殇：清盟友收编嫡系）
-        private const float CouncilPowerRatio = 0.60f;   // 超A力量≥文明力量60%→协会成立（对等威慑，原著后期麦尼逊推动）
-        private const float DominancePowerRatio = 1.00f; // 超A力量≥文明力量100%→超A时代（个体伟力压倒集体伟力，原著ch1018"个体伟力将失去掌控"）
-        private const float VigilantSuppressMult = 0.95f;  // 警惕期非嫡系超能者伤害×0.95（收编压力：逼自由超能者投靠文明）
-        private const int PurgeDuration = 120;      // 清算风暴时长（周期事件，非无尽战争；风暴后回默许=霸主文明收编/拉拢）
-        private const float CouncilDamageBonus = 0.10f; // 协会联合加成：超A个体伤害+10%
-        private const float DominanceDamageBonus = 0.15f; // 超A时代协会主导：伤害+15%
-        private const float PurgeDamageTakenMult = 1.30f; // 清算期超A个体受击伤害×1.3（文明联合压制）
-        private const int RecalcInterval = 8;       // 每8 tick 重算态度/协会
+        // 力量对比制（威胁=力量比值，非单位数量）：力量指数=onar/1000（SS巅峰超A≈83，X超神级≈149）；
+        // 文明力量=科技点+Lv×100；超A级=S/S+/SS（ch1040韩萧82600=SS），X=超神级（ch1402超A之上）
+        private const float VigilantPowerRatio = 0.20f;  // 非霸主高阶觉醒者力量≥霸主文明20%→警惕（收编压力，ch1018超能者总数只会一直增加）
+        private const float PurgePowerRatio = 0.40f;     // 超星团级文明超A力量≥霸主文明40%→清算风暴（ch1002巅峰之殇：清他文明超A）
+        private const float CouncilPowerRatio = 0.60f;   // 超A阶级总力量≥霸主文明60%→协会成立（ch1016麦尼逊阶级联合，文明忌惮）
+        private const float SanctumPowerRatio = 0.80f;   // 协会已立且阶级力量≥霸主文明80%→超能圣域（ch1459与三大文明同层次，对等共存）
+        private const float VigilantSuppressMult = 0.95f;  // 警惕期非霸主高阶超能者伤害×0.95（收编压力）
+        private const int PurgeDuration = 120;      // 清算风暴时长（周期事件，非无尽战争）
+        private const int AftermathDuration = 120;  // 绝户计残留时长（清算后超A不敢投靠超星团级→流失向霸主文明，ch1002）
+        private const float AftermathPowerMult = 0.80f; // 绝户计：超星团级文明超A力量×0.8（流失/不敢投靠）
+        private const float CouncilDamageBonus = 0.10f; // 协会联合加成：超A个体伤害+10%（阶级联合威慑）
+        private const float SanctumDamageBonus = 0.15f; // 超能圣域加成：超A个体伤害+15%（圣域体制，对等共存）
+        private const float PurgeDamageTakenMult = 1.30f; // 清算期超星团级/民间超A受击伤害×1.3（文明联合压制）
+        private const int RecalcInterval = 8;       // 每8 tick 重算态度/协会/圣域
 
         private static int _tick = 0;
         private static Attitude _attitude = Attitude.Tolerate;
         private static bool _councilFormed = false;
+        private static bool _sanctumFormed = false;
         private static int _purgeTicksLeft = 0;     // 清算风暴剩余时长
+        private static int _aftermathTicksLeft = 0; // 绝户计残留剩余时长
 
         // ============ 状态查询 ============
 
         public static Attitude CurrentAttitude => _attitude;
         public static bool CouncilFormed => _councilFormed;
+        public static bool SanctumFormed => _sanctumFormed;
+        public static bool IsSanctum => _attitude == Attitude.Sanctum;
+        public static bool IsVigilant => _attitude == Attitude.Vigilant;
 
         /// <summary>超A级判定：觉醒超能者中能级S级及以上（原著ch1040：韩萧能级82600=阶位SS=超A级，
         /// S级=超A级入门档；X阶=超神级=超A之上，原著ch1402韩萧命名"超A级之上就叫做超神级"；
-        /// 超A级与超神级同属个体伟力威胁池；普通人即使战力堆高也不属超A级语境——不进威胁池、
-        /// 不被清算波及，避免"有能级就被清算"的大屠杀）</summary>
+        /// 普通人即使战力堆高也不属超A级语境——不进威胁池、不被清算波及）</summary>
         public static bool IsSuperA(Actor a)
         {
             return a != null && SuperMechAwakened.IsAwakened(a) && SuperMechAdvancement.GetExactRankIndex(a) >= 10;
@@ -73,9 +80,8 @@ namespace SuperMech.Code
             return count;
         }
 
-        /// <summary>嫡系判定：超A个体属于霸主文明（科技最强3王国）之一=战略威慑工具（原著：三大文明
-        /// 把超A级收编到自己手里），清算豁免；非嫡系=有自由思想、不受控制风险的独立个体（ch1019），
-        /// 才是清算对象（原著巅峰之殇：清超星团级盟友的超A，不碰自己人）</summary>
+        /// <summary>嫡系判定：超A个体属于霸主文明（科技最强3王国）之一=战略威慑工具（原著：
+        /// 三大文明把超A级收编到自己手里，ch1002"以此把更多超A级都抓到了自己手里"），清算豁免</summary>
         public static bool IsDynasty(Actor a)
         {
             if (a == null || a.kingdom == null) return false;
@@ -86,26 +92,26 @@ namespace SuperMech.Code
             return false;
         }
 
-        /// <summary>非霸主文明嫡系的觉醒者（超能者）数量：超能者群体=个体伟力底座，泛滥=威胁文明秩序
-        /// （原著：文明自己的超能者是资产，不受控的自由超能者是隐患）</summary>
-        public static int CountForeignAwakened()
+        /// <summary>超星团级文明判定（原著清算对象=超星团级文明的超A盟友资产，ch1002：
+        /// 把包括摩多文明在内的所有超星团级文明的超A级盟友屠了个干净）：文明等级≥超星团级(SuperCluster)
+        /// 且非霸主文明3王国</summary>
+        public static bool IsMidCivilization(Kingdom k)
         {
-            if (World.world == null || World.world.units == null) return 0;
-            int count = 0;
-            foreach (Actor a in World.world.units.units_only_alive)
+            if (k == null) return false;
+            foreach (var top in GetTopCivilizations(3))
             {
-                if (a == null || !SuperMechAwakened.IsAwakened(a)) continue;
-                if (!IsDynasty(a)) count++;
+                if (top != null && top.id == k.id) return false; // 霸主文明不是清算对象
             }
-            return count;
+            return (int)SuperMechCivilization.GetCivLevelFromKingdom(k) >= 3; // SuperCluster+
         }
 
-        /// <summary>收编压力：警惕期非霸主文明嫡系超能者伤害×0.95（原著：文明靠收编拉拢超能者，
-        /// 不收编的自由超能者受压；暴力清算只针对超A级顶端泛滥）</summary>
-        public static float GetVigilantSuppressMult(Actor a)
+        /// <summary>民间自由超A判定：自然觉醒、未依附超星团级/霸主文明的散人超A（原著ch1459
+        /// "自然觉醒的民间超能者"——超能圣域收编对象；低层文明/无文明的超A）</summary>
+        public static bool IsFreeSuperA(Actor a)
         {
-            if (_attitude != Attitude.Vigilant || a == null || !SuperMechAwakened.IsAwakened(a) || IsDynasty(a)) return 1f;
-            return VigilantSuppressMult;
+            if (a == null || !IsSuperA(a) || IsDynasty(a)) return false;
+            if (a.kingdom != null && (int)SuperMechCivilization.GetCivLevelFromKingdom(a.kingdom) >= 3) return false;
+            return true;
         }
 
         /// <summary>非霸主文明嫡系的自由超A级个体数（显示辅助，判定用力量）</summary>
@@ -127,23 +133,50 @@ namespace SuperMech.Code
             return SuperMechAdvancement.CalcOnar(a) / 1000f;
         }
 
-        /// <summary>非霸主文明嫡系超A力量总和（清算对象力量；威胁=力量比值非单位数量）</summary>
-        public static float GetSuperAPower()
+        /// <summary>超星团级文明超A力量总和（清算对象池——原著巅峰之殇清的就是他文明/盟友的超A资产；
+        /// 绝户计残留期×0.8：超A担心人身安全不敢投靠超星团级→流失向霸主文明，ch1002）</summary>
+        public static float GetThreatPower()
         {
             if (World.world == null || World.world.units == null) return 0f;
             float power = 0f;
             foreach (Actor a in World.world.units.units_only_alive)
             {
                 if (a == null || !IsSuperA(a) || IsDynasty(a)) continue;
+                if (a.kingdom == null || (int)SuperMechCivilization.GetCivLevelFromKingdom(a.kingdom) < 3) continue;
                 power += GetPowerIndex(a);
+            }
+            return _aftermathTicksLeft > 0 ? power * AftermathPowerMult : power;
+        }
+
+        /// <summary>超A阶级总力量（全体超A，含霸主文明嫡系——原著ch1016麦尼逊"为超A级所代表的阶级
+        /// 谋求福利"，阶级=所有超A级个体，不分阵营）</summary>
+        public static float GetClassPower()
+        {
+            if (World.world == null || World.world.units == null) return 0f;
+            float power = 0f;
+            foreach (Actor a in World.world.units.units_only_alive)
+            {
+                if (a == null || !IsSuperA(a)) continue;
+                power += GetPowerIndex(a);
+            }
+            return power;
+        }
+
+        /// <summary>民间自由超A力量（圣域收编对象：低层文明/无文明的自然觉醒散人）</summary>
+        public static float GetFreeSuperAPower()
+        {
+            if (World.world == null || World.world.units == null) return 0f;
+            float power = 0f;
+            foreach (Actor a in World.world.units.units_only_alive)
+            {
+                if (IsFreeSuperA(a)) power += GetPowerIndex(a);
             }
             return power;
         }
 
         /// <summary>非霸主文明嫡系高阶觉醒者（超能者，能级A级及以上）力量总和。
         /// 觉醒者=检测出超能基因并觉醒成超能者（原著ch1004"检测出了超能基因，觉醒成超能者"）；
-        /// 低阶超能者（F~B+）对文明无威胁（原著ch1004：凡人埃文斯弄死E级阶位恶徒——低阶超能者再多
-        /// 也只是治安问题），威胁只看高阶（A级及以上=个体伟力储备，ch1459"自然觉醒的民间超能者"指高阶）</summary>
+        /// 低阶超能者（F~B+）对文明无威胁（原著ch1004：凡人埃文斯弄死E级阶位恶徒），威胁只看高阶</summary>
         public static float GetAwakenedPower()
         {
             if (World.world == null || World.world.units == null) return 0f;
@@ -184,22 +217,29 @@ namespace SuperMech.Code
             return result;
         }
 
-        /// <summary>协会联合加成：超A个体伤害+10%；超A时代（个体伟力压倒集体伟力）协会主导+15%（原著ch1018）</summary>
+        /// <summary>协会/圣域联合加成：超A阶级联合伤害+10%（协会，ch1016"拧成一股…高级文明更加忌惮"）；
+        /// 超能圣域+15%（圣域体制，ch1459与三大文明同层次对等共存）</summary>
         public static float GetCouncilDamageBonus(Actor a)
         {
             if (!_councilFormed || !IsSuperA(a)) return 1f;
-            return 1f + (_attitude == Attitude.Dominance ? DominanceDamageBonus : CouncilDamageBonus);
+            return 1f + (_sanctumFormed ? SanctumDamageBonus : CouncilDamageBonus);
         }
 
-        /// <summary>清算压制：清算期非嫡系超A个体受击伤害×1.3（霸主文明联合压制自由个体伟力，
-        /// 原著巅峰之殇式清算）；嫡系超A（战略威慑工具）豁免</summary>
+        /// <summary>清算压制：清算期超星团级/民间超A个体受击伤害×1.3（霸主文明联合压制他文明超A，
+        /// 原著巅峰之殇式清算）；霸主文明嫡系超A（战略威慑工具）豁免</summary>
         public static float GetPurgeDamageTakenMult(Actor a)
         {
             if (_attitude != Attitude.Purge || !IsSuperA(a) || IsDynasty(a)) return 1f;
             return PurgeDamageTakenMult;
         }
 
-        public static bool IsDominance => _attitude == Attitude.Dominance;
+        /// <summary>收编压力：警惕期非霸主文明嫡系高阶超能者伤害×0.95（原著：文明靠收编拉拢超能者，
+        /// 不收编的自由超能者受压；暴力清算只针对超星团级文明的超A资产）</summary>
+        public static float GetVigilantSuppressMult(Actor a)
+        {
+            if (_attitude != Attitude.Vigilant || a == null || !SuperMechAwakened.IsAwakened(a) || IsDynasty(a)) return 1f;
+            return VigilantSuppressMult;
+        }
 
         // ============ 主循环 ============
 
@@ -211,54 +251,81 @@ namespace SuperMech.Code
             _tick++;
             if (_tick % RecalcInterval != 0) return;
 
-            float superAPower = GetSuperAPower();      // 非嫡系超A力量（清算对象）
-            float awakenedPower = GetAwakenedPower();   // 非嫡系超能者群体力量
-            float civPower = GetCivPower();             // 霸主文明集体伟力
-            _councilFormed = superAPower >= civPower * CouncilPowerRatio; // 超A力量达文明60%→协会成立（对等威慑）
+            float threatPower = GetThreatPower();    // 超星团级文明超A力量（清算对象=他文明资产）
+            float classPower = GetClassPower();      // 超A阶级总力量（含霸主文明嫡系）
+            float awakenedPower = GetAwakenedPower();// 非霸主高阶超能者群体力量
+            float civPower = GetCivPower();          // 霸主文明集体伟力
 
-            // ①超A时代：超A力量压倒文明力量（原著ch1018"个体伟力将失去掌控"）→ 清算永久停、协会主导
-            if (superAPower >= civPower * DominancePowerRatio)
+            // ①超能圣域（终局）：协会已立 + 超A阶级力量达霸主文明80% → 政治地位被承认（ch1459
+            //   "超能圣域和三大文明的势力达到了同一层次"）——对等共存，清算永久解除，终局不回退
+            if (_councilFormed && classPower >= civPower * SanctumPowerRatio)
             {
-                _attitude = Attitude.Dominance;
-                _purgeTicksLeft = 0;
-                ApplyPurgeTrait(false);
-                return;
-            }
-
-            // ②清算风暴进行中：倒计时，结束后回默许/警惕（霸主文明收编/拉拢，非无尽战争）
-            if (_attitude == Attitude.Purge)
-            {
-                _purgeTicksLeft--;
-                if (_purgeTicksLeft <= 0)
+                if (!_sanctumFormed)
                 {
-                    _attitude = awakenedPower >= civPower * VigilantPowerRatio ? Attitude.Vigilant : Attitude.Tolerate;
+                    _sanctumFormed = true;
+                    _attitude = Attitude.Sanctum;
+                    _purgeTicksLeft = 0;
+                    _aftermathTicksLeft = 0;
                     ApplyPurgeTrait(false);
                 }
                 return;
             }
 
-            // ③超能者群体威胁：非嫡系超能者力量达文明20%→警惕（收编压力）
+            if (_attitude == Attitude.Sanctum) return; // 终局态保持
+
+            // ②清算风暴进行中：倒计时；结束后进入"绝户计"残留（超A担心人身安全不敢投靠超星团级
+            //   →流失向霸主文明，ch1002"三大文明以此把更多超A级都抓到了自己手里"）
+            if (_attitude == Attitude.Purge)
+            {
+                _purgeTicksLeft--;
+                if (_purgeTicksLeft <= 0)
+                {
+                    _attitude = Attitude.Tolerate;
+                    _aftermathTicksLeft = AftermathDuration;
+                    ApplyPurgeTrait(false);
+                }
+                return;
+            }
+
+            // ③绝户计残留期：倒计时后回默许/警惕
+            if (_aftermathTicksLeft > 0)
+            {
+                _aftermathTicksLeft--;
+                if (_aftermathTicksLeft <= 0)
+                {
+                    _attitude = awakenedPower >= civPower * VigilantPowerRatio ? Attitude.Vigilant : Attitude.Tolerate;
+                }
+                return;
+            }
+
+            // ④清算触发：超星团级文明超A力量达霸主文明40%（他文明个人伟力资产膨胀=失控风险，
+            //   ch1018"个体伟力将失去掌控"）+ 霸主文明有能力清算（时序：文明未成形无力清算）+
+            //   圣域未成立（协会不免疫清算——ch1459"当年三大文明对超A级协会的打压"，直到圣域）
+            if (threatPower >= civPower * PurgePowerRatio && CanPurge())
+            {
+                _attitude = Attitude.Purge;   // 清算风暴（原著巅峰之殇：清超星团级盟友的超A，绝户计）
+                _purgeTicksLeft = PurgeDuration;
+                ApplyPurgeTrait(true);
+                return;
+            }
+
+            // ⑤超A级协会（阶级联合）：超A阶级总力量达霸主文明60%（ch1016麦尼逊阶级觉醒，
+            //   联合="拧成一股…高级文明更加忌惮"）——提供联合加成，但不免疫清算（会被打压）
+            _councilFormed = classPower >= civPower * CouncilPowerRatio;
+
+            // ⑥高阶超能者群体威胁：非霸主高阶觉醒者力量达霸主文明20%→警惕（收编压力）
             if (awakenedPower >= civPower * VigilantPowerRatio)
             {
                 _attitude = Attitude.Vigilant;
             }
-            else if (_attitude == Attitude.Vigilant)
+            else
             {
                 _attitude = Attitude.Tolerate;
-            }
-
-            // ④清算触发：非嫡系超A力量达文明40% + 协会未成立 + 霸主文明有能力清算（时序：文明未成形无力清算，
-            //    先发展出超A力量时只有默许拉拢——原著巅峰之殇是三大文明成形后的历史事件）
-            if (superAPower >= civPower * PurgePowerRatio && !_councilFormed && CanPurge())
-            {
-                _attitude = Attitude.Purge;             // 非嫡系超A力量泛滥→霸主文明清算风暴（原著巅峰之殇：清盟友收编嫡系）
-                _purgeTicksLeft = PurgeDuration;
-                ApplyPurgeTrait(true);
             }
         }
 
         /// <summary>清算能力：霸主文明（科技最强3王国）中最强者至少达到超星团级（原著：三大文明=宇宙级
-        /// 集体伟力，清算需文明成形；先发展出超A力量而文明未成形时，文明无力清算只能默许）</summary>
+        /// 集体伟力，清算需文明成形；先发展出超A力量而文明未成形时，文明无力清算只能默许拉拢）</summary>
         public static bool CanPurge()
         {
             var top = GetTopCivilizations(3);
@@ -270,8 +337,8 @@ namespace SuperMech.Code
             return false;
         }
 
-        /// <summary>清算标记应用：只作用于非霸主文明嫡系的自由超A个体（原著巅峰之殇ch1002：
-        /// 清超星团级盟友的超A，三大文明嫡系不清算；清算目的是把超A收编为嫡系战略武器）</summary>
+        /// <summary>清算标记应用：只作用于超星团级/民间超A个体（原著巅峰之殇ch1002：清超星团级盟友的
+        /// 超A，三大文明嫡系不清算；清算目的是把超A收编为嫡系战略武器）</summary>
         private static void ApplyPurgeTrait(bool purge)
         {
             if (World.world == null || World.world.units == null) return;
@@ -294,9 +361,9 @@ namespace SuperMech.Code
             _tick = 0;
             _attitude = Attitude.Tolerate;
             _councilFormed = false;
+            _sanctumFormed = false;
             _purgeTicksLeft = 0;
+            _aftermathTicksLeft = 0;
         }
-
-        public static bool IsVigilant => _attitude == Attitude.Vigilant;
     }
 }
