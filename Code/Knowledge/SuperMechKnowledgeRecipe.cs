@@ -24,7 +24,7 @@ namespace SuperMech.Code
         {
             Equip = 0,      // 装备图纸
             Skill = 1,      // 技能/能力
-            Perk = 2,       // 专长/特质
+            Specialty = 2, // 融合产出专长/特质
             StatBoost = 3   // 属性提升
         }
 
@@ -244,30 +244,30 @@ namespace SuperMech.Code
                 new object[] { "recipe_e_t5_3", "sm_recipe_e_t5_3_name", "sm_recipe_e_t5_3_desc", FusionBranch.Energy, 5, "sm_know_mech_4_1_1", "sm_know_mech_4_1_2", 251000, 0.32f, FusionResultType.StatBoost, "fusion_eternal_energy", 3.1f, 3.5f, 1.55f, 8200 },
 
                 // === 操控分支 Tier1 ===
-                new object[] { "recipe_c_t1_0", "sm_recipe_c_t1_0_name", "sm_recipe_c_t1_0_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_0", "sm_know_mech_0_2_1", 5000, 0.70f, FusionResultType.Perk, "fusion_ai_core", 1.3f, 1.2f, 1.4f, 300 },
-                new object[] { "recipe_c_t1_1", "sm_recipe_c_t1_1_name", "sm_recipe_c_t1_1_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_1", "sm_know_mech_0_2_2", 5000, 0.70f, FusionResultType.Perk, "fusion_remote_control", 1.2f, 1.1f, 1.5f, 250 },
-                new object[] { "recipe_c_t1_2", "sm_recipe_c_t1_2_name", "sm_recipe_c_t1_2_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_0", "sm_know_mech_0_2_2", 5500, 0.70f, FusionResultType.Perk, "fusion_nerve_link", 1.3f, 1.4f, 1.4f, 400 },
-                new object[] { "recipe_c_t1_3", "sm_recipe_c_t1_3_name", "sm_recipe_c_t1_3_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_1", "sm_know_mech_0_2_2", 6000, 0.67f, FusionResultType.Perk, "fusion_basic_sensing", 1.4f, 1.2f, 1.5f, 500 },
+                new object[] { "recipe_c_t1_0", "sm_recipe_c_t1_0_name", "sm_recipe_c_t1_0_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_0", "sm_know_mech_0_2_1", 5000, 0.70f, FusionResultType.Specialty, "fusion_ai_core", 1.3f, 1.2f, 1.4f, 300 },
+                new object[] { "recipe_c_t1_1", "sm_recipe_c_t1_1_name", "sm_recipe_c_t1_1_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_1", "sm_know_mech_0_2_2", 5000, 0.70f, FusionResultType.Specialty, "fusion_remote_control", 1.2f, 1.1f, 1.5f, 250 },
+                new object[] { "recipe_c_t1_2", "sm_recipe_c_t1_2_name", "sm_recipe_c_t1_2_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_0", "sm_know_mech_0_2_2", 5500, 0.70f, FusionResultType.Specialty, "fusion_nerve_link", 1.3f, 1.4f, 1.4f, 400 },
+                new object[] { "recipe_c_t1_3", "sm_recipe_c_t1_3_name", "sm_recipe_c_t1_3_desc", FusionBranch.Control, 1, "sm_know_mech_0_2_1", "sm_know_mech_0_2_2", 6000, 0.67f, FusionResultType.Specialty, "fusion_basic_sensing", 1.4f, 1.2f, 1.5f, 500 },
                 // === 操控分支 Tier2 (4个) ===
-                new object[] { "recipe_c_t2_0", "sm_recipe_c_t2_0_name", "sm_recipe_c_t2_0_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_0", "sm_know_mech_1_2_1", 15000, 0.60f, FusionResultType.Perk, "fusion_tactical_ai", 1.5f, 1.3f, 1.6f, 600 },
-                new object[] { "recipe_c_t2_1", "sm_recipe_c_t2_1_name", "sm_recipe_c_t2_1_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_1", "sm_know_mech_1_2_2", 15000, 0.60f, FusionResultType.Perk, "fusion_swarm_control", 1.4f, 1.4f, 1.7f, 550 },
-                new object[] { "recipe_c_t2_2", "sm_recipe_c_t2_2_name", "sm_recipe_c_t2_2_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_0", "sm_know_mech_1_2_2", 15500, 0.60f, FusionResultType.Perk, "fusion_primary_space", 1.5f, 1.5f, 1.6f, 700 },
-                new object[] { "recipe_c_t2_3", "sm_recipe_c_t2_3_name", "sm_recipe_c_t2_3_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_1", "sm_know_mech_1_2_2", 16000, 0.57f, FusionResultType.Perk, "fusion_adv_electromagnetic", 1.6f, 1.3f, 1.7f, 800 },
+                new object[] { "recipe_c_t2_0", "sm_recipe_c_t2_0_name", "sm_recipe_c_t2_0_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_0", "sm_know_mech_1_2_1", 15000, 0.60f, FusionResultType.Specialty, "fusion_tactical_ai", 1.5f, 1.3f, 1.6f, 600 },
+                new object[] { "recipe_c_t2_1", "sm_recipe_c_t2_1_name", "sm_recipe_c_t2_1_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_1", "sm_know_mech_1_2_2", 15000, 0.60f, FusionResultType.Specialty, "fusion_swarm_control", 1.4f, 1.4f, 1.7f, 550 },
+                new object[] { "recipe_c_t2_2", "sm_recipe_c_t2_2_name", "sm_recipe_c_t2_2_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_0", "sm_know_mech_1_2_2", 15500, 0.60f, FusionResultType.Specialty, "fusion_primary_space", 1.5f, 1.5f, 1.6f, 700 },
+                new object[] { "recipe_c_t2_3", "sm_recipe_c_t2_3_name", "sm_recipe_c_t2_3_desc", FusionBranch.Control, 2, "sm_know_mech_1_2_1", "sm_know_mech_1_2_2", 16000, 0.57f, FusionResultType.Specialty, "fusion_adv_electromagnetic", 1.6f, 1.3f, 1.7f, 800 },
                 // === 操控分支 Tier3 (4个) ===
-                new object[] { "recipe_c_t3_0", "sm_recipe_c_t3_0_name", "sm_recipe_c_t3_0_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_0", "sm_know_mech_2_2_1", 40000, 0.50f, FusionResultType.Perk, "fusion_quantum_comm", 1.7f, 1.5f, 1.8f, 1200 },
-                new object[] { "recipe_c_t3_1", "sm_recipe_c_t3_1_name", "sm_recipe_c_t3_1_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_1", "sm_know_mech_2_2_2", 40000, 0.50f, FusionResultType.Perk, "fusion_mind_control", 1.8f, 1.4f, 1.7f, 1100 },
-                new object[] { "recipe_c_t3_2", "sm_recipe_c_t3_2_name", "sm_recipe_c_t3_2_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_0", "sm_know_mech_2_2_2", 40500, 0.50f, FusionResultType.Perk, "fusion_advanced_virtual_ai", 1.7f, 1.7f, 1.8f, 1300 },
-                new object[] { "recipe_c_t3_3", "sm_recipe_c_t3_3_name", "sm_recipe_c_t3_3_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_1", "sm_know_mech_2_2_2", 41000, 0.47f, FusionResultType.Perk, "fusion_interstellar_nav", 1.8f, 1.5f, 1.9f, 1400 },
+                new object[] { "recipe_c_t3_0", "sm_recipe_c_t3_0_name", "sm_recipe_c_t3_0_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_0", "sm_know_mech_2_2_1", 40000, 0.50f, FusionResultType.Specialty, "fusion_quantum_comm", 1.7f, 1.5f, 1.8f, 1200 },
+                new object[] { "recipe_c_t3_1", "sm_recipe_c_t3_1_name", "sm_recipe_c_t3_1_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_1", "sm_know_mech_2_2_2", 40000, 0.50f, FusionResultType.Specialty, "fusion_mind_control", 1.8f, 1.4f, 1.7f, 1100 },
+                new object[] { "recipe_c_t3_2", "sm_recipe_c_t3_2_name", "sm_recipe_c_t3_2_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_0", "sm_know_mech_2_2_2", 40500, 0.50f, FusionResultType.Specialty, "fusion_advanced_virtual_ai", 1.7f, 1.7f, 1.8f, 1300 },
+                new object[] { "recipe_c_t3_3", "sm_recipe_c_t3_3_name", "sm_recipe_c_t3_3_desc", FusionBranch.Control, 3, "sm_know_mech_2_2_1", "sm_know_mech_2_2_2", 41000, 0.47f, FusionResultType.Specialty, "fusion_interstellar_nav", 1.8f, 1.5f, 1.9f, 1400 },
                 // === 操控分支 Tier4 (4个) ===
-                new object[] { "recipe_c_t4_0", "sm_recipe_c_t4_0_name", "sm_recipe_c_t4_0_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_0", "sm_know_mech_3_2_1", 100000, 0.40f, FusionResultType.Perk, "fusion_dimensional_control", 2.0f, 1.8f, 2.0f, 2500 },
-                new object[] { "recipe_c_t4_1", "sm_recipe_c_t4_1_name", "sm_recipe_c_t4_1_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_1", "sm_know_mech_3_2_2", 100000, 0.40f, FusionResultType.Perk, "fusion_time_control", 2.2f, 1.6f, 2.2f, 2800 },
-                new object[] { "recipe_c_t4_2", "sm_recipe_c_t4_2_name", "sm_recipe_c_t4_2_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_0", "sm_know_mech_3_2_2", 100500, 0.40f, FusionResultType.Perk, "fusion_high_space_app", 2.0f, 2.0f, 2.0f, 2600 },
-                new object[] { "recipe_c_t4_3", "sm_recipe_c_t4_3_name", "sm_recipe_c_t4_3_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_1", "sm_know_mech_3_2_2", 101000, 0.37f, FusionResultType.Perk, "fusion_quantum_matrix", 2.1f, 1.8f, 2.1f, 2700 },
+                new object[] { "recipe_c_t4_0", "sm_recipe_c_t4_0_name", "sm_recipe_c_t4_0_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_0", "sm_know_mech_3_2_1", 100000, 0.40f, FusionResultType.Specialty, "fusion_dimensional_control", 2.0f, 1.8f, 2.0f, 2500 },
+                new object[] { "recipe_c_t4_1", "sm_recipe_c_t4_1_name", "sm_recipe_c_t4_1_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_1", "sm_know_mech_3_2_2", 100000, 0.40f, FusionResultType.Specialty, "fusion_time_control", 2.2f, 1.6f, 2.2f, 2800 },
+                new object[] { "recipe_c_t4_2", "sm_recipe_c_t4_2_name", "sm_recipe_c_t4_2_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_0", "sm_know_mech_3_2_2", 100500, 0.40f, FusionResultType.Specialty, "fusion_high_space_app", 2.0f, 2.0f, 2.0f, 2600 },
+                new object[] { "recipe_c_t4_3", "sm_recipe_c_t4_3_name", "sm_recipe_c_t4_3_desc", FusionBranch.Control, 4, "sm_know_mech_3_2_1", "sm_know_mech_3_2_2", 101000, 0.37f, FusionResultType.Specialty, "fusion_quantum_matrix", 2.1f, 1.8f, 2.1f, 2700 },
                 // === 操控分支 Tier5 (4个) ===
-                new object[] { "recipe_c_t5_0", "sm_recipe_c_t5_0_name", "sm_recipe_c_t5_0_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_0", "sm_know_mech_4_2_1", 250000, 0.30f, FusionResultType.Perk, "fusion_cosmic_ai", 3.0f, 2.5f, 2.5f, 6000 },
-                new object[] { "recipe_c_t5_1", "sm_recipe_c_t5_1_name", "sm_recipe_c_t5_1_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_1", "sm_know_mech_4_2_2", 250000, 0.30f, FusionResultType.Perk, "fusion_reality_warp", 3.5f, 2.0f, 2.8f, 7000 },
-                new object[] { "recipe_c_t5_2", "sm_recipe_c_t5_2_name", "sm_recipe_c_t5_2_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_0", "sm_know_mech_4_2_2", 250500, 0.30f, FusionResultType.Perk, "fusion_virtual_creator", 3.0f, 2.7f, 2.5f, 6100 },
-                new object[] { "recipe_c_t5_3", "sm_recipe_c_t5_3_name", "sm_recipe_c_t5_3_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_1", "sm_know_mech_4_2_2", 251000, 0.27f, FusionResultType.Perk, "fusion_hyperspace_theory", 3.1f, 2.5f, 2.6f, 6200 },
+                new object[] { "recipe_c_t5_0", "sm_recipe_c_t5_0_name", "sm_recipe_c_t5_0_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_0", "sm_know_mech_4_2_1", 250000, 0.30f, FusionResultType.Specialty, "fusion_cosmic_ai", 3.0f, 2.5f, 2.5f, 6000 },
+                new object[] { "recipe_c_t5_1", "sm_recipe_c_t5_1_name", "sm_recipe_c_t5_1_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_1", "sm_know_mech_4_2_2", 250000, 0.30f, FusionResultType.Specialty, "fusion_reality_warp", 3.5f, 2.0f, 2.8f, 7000 },
+                new object[] { "recipe_c_t5_2", "sm_recipe_c_t5_2_name", "sm_recipe_c_t5_2_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_0", "sm_know_mech_4_2_2", 250500, 0.30f, FusionResultType.Specialty, "fusion_virtual_creator", 3.0f, 2.7f, 2.5f, 6100 },
+                new object[] { "recipe_c_t5_3", "sm_recipe_c_t5_3_name", "sm_recipe_c_t5_3_desc", FusionBranch.Control, 5, "sm_know_mech_4_2_1", "sm_know_mech_4_2_2", 251000, 0.27f, FusionResultType.Specialty, "fusion_hyperspace_theory", 3.1f, 2.5f, 2.6f, 6200 },
 
                 // === 跨分支配方（15个：武装+能量/武装+操控/能量+操控，每级各1个）===
                 new object[] { "recipe_we_t1", "sm_recipe_we_t1_name", "sm_recipe_we_t1_desc", FusionBranch.Weapon, 1, "sm_know_mech_0_0_0", "sm_know_mech_0_1_0", 8000, 0.65f, FusionResultType.Equip, "fusion_energy_blade", 1.5f, 1.4f, 1.2f, 400 },

@@ -52,11 +52,10 @@ namespace SuperMech.Code
             var bag = SuperMechEquipBag.GetBag(a);
             if (bag != null) equipCount = bag.Count;
 
-            int perkCount = 0;
 
             // === 纯公式计算 ===
             float baseOnar = SuperMechFormulas.OnarBase(qi);
-            float bonus = SuperMechFormulas.OnarBonus(skillCount, knowledgeCount, equipCount, perkCount,
+            float bonus = SuperMechFormulas.OnarBonus(skillCount, knowledgeCount, equipCount,
                 skillDmgSum, skillHpSum, skillSpdSum);
 
             return baseOnar * (1f + bonus) * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
