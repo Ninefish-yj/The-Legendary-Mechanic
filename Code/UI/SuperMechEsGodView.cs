@@ -121,31 +121,14 @@ namespace SuperMech.Code
                   : LocalizedTextManager.getText("sm_ui_esgod_heritage_no")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_esgod_desc")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_desc")).Append("\n");
-            // v0.76.43 世界之外·高维存在层（论坛+聊天软件风格）：
-            // 论坛区=圣所留言板（前代档案帖子列表）；聊天区=与超脱者对话（消息流）；引言=文明题词
-            int archCount = SuperMechSanctuary.GetIterationArchives().Count;
-            int archSuperA = 0;
-            foreach (var ar in SuperMechSanctuary.GetIterationArchives())
-                if (ar != null && ar.type == 0) archSuperA += ar.superACount;
+            // v0.76.45 世界之外·高维存在层（纯聊天软件风格）：引言题词+超脱者消息流。
+            // 圣所数据（档案计数/传承/留言状态）归圣所显示（圣所窗口/复活界面），不在此区块。
             sb.Append("\n<color=#ffd966>════ ").Append(LocalizedTextManager.getText("sm_ui_supera_beyond")).Append(" ════</color>\n");
-            // 引言（题词：历史观）
+            // 群聊置顶公告（题词：历史观）
             sb.Append("<i><color=#b8b8b8>").Append(LocalizedTextManager.getText("sm_ui_supera_motto")).Append("</color></i>\n\n");
-            sb.Append(LocalizedTextManager.getText("sm_ui_supera_beyond_arch")).Append(": ")
-              .Append(string.Format(LocalizedTextManager.getText("sm_ui_supera_beyond_arch_info"),
-                  archCount, archSuperA, (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f))).Append("\n")
-              .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_echo")).Append(": ")
-              .Append(order || sanctum || bureau || alliance
-                  ? LocalizedTextManager.getText("sm_ui_supera_beyond_watching")
-                  : LocalizedTextManager.getText("sm_ui_supera_beyond_quiet")).Append("\n")
-              .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_msg")).Append(": ")
-              .Append(SuperMechSanctuary.Data.beyond_message_given
-                  ? LocalizedTextManager.getText("sm_ui_supera_beyond_msg_yes")
-                  : LocalizedTextManager.getText("sm_ui_supera_beyond_msg_no")).Append("\n\n");
-            // 聊天区：与超脱者对话（消息流，论坛/聊天软件风格）
-            sb.Append("<color=#ffd966>┄┄ ").Append(LocalizedTextManager.getText("sm_ui_supera_dialog")).Append("</color>\n")
-              .Append("<color=#7fc8ff>▍").Append(LocalizedTextManager.getText("sm_ui_supera_dialog_now")).Append("</color>\n")
-              .Append(GetBeyondDialog(order, bureau, alliance, sanctum, council,
-                  attitude == SuperMechSupermA.Attitude.Purge, SuperMechEsGod.CountTopSuperA()));
+            // 消息流：超脱者对话（含注视/留言的沉浸表达）
+            sb.Append(GetBeyondDialog(order, bureau, alliance, sanctum, council,
+                attitude == SuperMechSupermA.Attitude.Purge, SuperMechEsGod.CountTopSuperA()));
             _detailText.text = sb.ToString();
         }
 
