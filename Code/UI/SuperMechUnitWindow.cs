@@ -178,6 +178,10 @@ namespace SuperMech.Code
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
                     new Color(0.6f, 0.8f, 0.4f), () => SuperMechWindowManager.OpenCraft());
             }
+
+            // v0.75.30: 阶位排行榜从星海总览迁至单位面板入口（查看全图强者格局）
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_rank_window_title"), "iconPlanet",
+                new Color(1f, 0.62f, 0.04f), () => SuperMechWindowManager.OpenRank());
         }
 
         private static void ShowEntryButton(UnitWindow window, string label, string iconPath, Color color, System.Action onClick)

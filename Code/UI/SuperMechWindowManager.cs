@@ -42,11 +42,8 @@ namespace SuperMech.Code
         /// <summary>星海总览工作台页签映射：key=本地化键，draw=内嵌内容绘制；draw==null 表示点击开独立窗口（圣所）</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
-            ("sm_ui_knowledge", DrawKnowledgeContent),
-            ("sm_ui_bag", DrawBagContent),
-            ("sm_ui_spell_entry", DrawSpellContent),
-            ("sm_ui_craft", DrawCraftContent),
-            ("sm_ui_rank_window_title", DrawRankContent),
+            // v0.75.30: 成长5页签(知识/背包/技能/锻造/阶位)移除——它们显示"当前选中单位"的个体信息，
+            // 属单位面板职责（单位面板特殊组已有入口按钮）；星海总览只保留系统级功能。
             ("sm_ui_combat_title", DrawCombatEnhanceContent),
             ("sm_ui_beast_title", DrawCosmicBeastContent),
             ("sm_ui_trade_title", DrawTradeContent),
