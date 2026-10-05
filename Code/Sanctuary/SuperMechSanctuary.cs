@@ -330,9 +330,11 @@ namespace SuperMech.Code
                         iteration = 0, type = 1, label = "sm_san_arch_dark", note = "sm_san_arch_dark_n",
                         superACount = 0, maxRankIdx = 0
                     });
-                    // ⑥ 高维留言·成功转化经验：三大文明已成功脱离迭代循环（模组设定层，非原著剧情线——
-                    // 用户定位：不加剧情，只留"已成功"结果），以成功者身份留下心得：跳出迭代循环的
-                    // 方案与经验，让迭代内的世界参考（ch1211接力精神：即便失败也留下心得让后人研究）
+                    // ⑥ 高维留言·成功转化经验：按原著条件推演的"活过大重启"路径（用户要求"模组衍生的
+                    // 成功按原著条件推演，结果符合期待"）：①剥离保全（信息态剥离，三大文明方案）②信息态化
+                    // （文明化入信息态，不随重启崩坏）③实化重建（信息实化装置+虚拟创世=世界树/韩萧方案）
+                    // ④圣所继承（跨迭代留档，圣所文明遗产）——文明以信息态重生，跳出重启轮回；
+                    // 留言=成功心得供迭代内世界参考（ch1211接力精神）
                     Data.iteration_archives.Add(new IterationArchive
                     {
                         iteration = 0, type = 1, label = "sm_san_arch_beyond", note = "sm_san_arch_beyond_n",
