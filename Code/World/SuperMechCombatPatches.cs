@@ -227,6 +227,7 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * specBonus);
                     }
+                    SuperMechSpecialties.TryInstantKill(attacker, target);   // 死亡侵蚀满层引爆→即死判定
                     // v0.72.0 黑星军团加成：军团长军团流加成×成员星级加成（原著：一人即军团/机械帝皇军团流）
                     float legionBonus = SuperMechLegion.GetCommanderBonus(attacker) * SuperMechLegion.GetMemberBonus(attacker);
                     if (legionBonus != 1f)

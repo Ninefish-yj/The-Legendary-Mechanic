@@ -23,10 +23,12 @@ namespace SuperMech.Code
             public string system;   // psi/martial/mech/mage/mind/any
             public float dmgMul;    // 攻击伤害加成（0.10 = +10%）
             public float lowHpMul;  // 自身生命<40% 时额外加成（0.25 = 再+25%）
-            public bool deathMark;  // 印记层数引爆（死亡侵蚀→死神收割）
+            public float hpMul;     // 生命加成（走 trait base_stats 累加，安全）
+            public bool deathMark;  // 印记层数引爆（死亡侵蚀体系）
             public float markBurst; // 引爆伤害（0 = 用默认 DeathMarkBurst）
+            public bool instantKill;// 满层引爆时进行即死判定（原著：死亡侵蚀满层引爆即死判定）
             public bool siphon;     // 击杀回复 30% 气力上限
-            public bool alive = true; // 归属原著人物是否存活（死了不赋予）
+            public bool alive = true; // 个人专属=归属原著人物存活（存活才赋予）；模板专长=false（形成获得）
         }
 
         public static readonly List<SpecialtyDef> All = new List<SpecialtyDef>
@@ -49,10 +51,15 @@ namespace SuperMech.Code
         // 真名解放=红魔·托莱恩（恶魔族超A·ch1010 诞生于亮银旋臂·ch1056 出场）
         public static readonly List<SpecialtyDef> LegendaryAll = new List<SpecialtyDef>
         {
-            new SpecialtyDef { id = "sm_legend_death_reap",    nameKey = "sm_legend_death_reap",    descKey = "sm_legend_death_reap_info",    system = "psi",     dmgMul = 0.15f, deathMark = true,  markBurst = 1.2f },
-            new SpecialtyDef { id = "sm_legend_virtual_world", nameKey = "sm_legend_virtual_world", descKey = "sm_legend_virtual_world_info", system = "mech",    dmgMul = 0.25f, lowHpMul = 0.30f },
-            new SpecialtyDef { id = "sm_legend_charge",        nameKey = "sm_legend_charge",        descKey = "sm_legend_charge_info",        system = "mech",    dmgMul = 0.15f, lowHpMul = 0.40f },
-            new SpecialtyDef { id = "sm_legend_true_name",     nameKey = "sm_legend_true_name",     descKey = "sm_legend_true_name_info",     system = "psi",     dmgMul = 0.12f, lowHpMul = 0.25f },
+            // === 个人专属专长（原著标明：超A级强者独有，由归属原著人物赋予，人物存活才可赋予） ===
+            // 死亡侵蚀=海拉（ch1012：超A级专属被动——死亡能量击中叠加15层，满层引爆即死判定；海拉活跃ch1401+）
+            new SpecialtyDef { id = "sm_legend_death_erosion", nameKey = "sm_legend_death_erosion", descKey = "sm_legend_death_erosion_info", system = "psi",
+                               dmgMul = 0.10f, deathMark = true, markBurst = 1.2f, instantKill = true, alive = true },
+            // === 模板专长（原著标明：NPC/BOSS专属、效果极其强劲、稀有——单位形成获得，非人物赋予） ===
+            new SpecialtyDef { id = "sm_legend_tough_life",   nameKey = "sm_legend_tough_life",   descKey = "sm_legend_tough_life_info",   system = "any",     hpMul = 0.25f, alive = false },
+            new SpecialtyDef { id = "sm_legend_nuclear",      nameKey = "sm_legend_nuclear",      descKey = "sm_legend_nuclear_info",      system = "mech",    dmgMul = 0.15f, hpMul = 0.20f, alive = false },
+            new SpecialtyDef { id = "sm_legend_combat_skill", nameKey = "sm_legend_combat_skill", descKey = "sm_legend_combat_skill_info", system = "martial", dmgMul = 0.20f, lowHpMul = 0.20f, alive = false },
+            new SpecialtyDef { id = "sm_legend_fixed_reduce", nameKey = "sm_legend_fixed_reduce", descKey = "sm_legend_fixed_reduce_info", system = "any",     hpMul = 0.30f, alive = false },
         };
 
         // === 组合自创（原著：专属专长无限自创、名字单位自己取——可生成模组未预设的独特专长） ===
@@ -70,6 +77,16 @@ namespace SuperMech.Code
         }
 
         private static readonly Dictionary<string, GenSpec> _genParams = new Dictionary<string, GenSpec>();
+        private static bool _markBurstJustHappened = false;   // 死亡侵蚀满层引爆标记（用于即死判定）
+
+        /// <summary>死亡侵蚀满层引爆后的即死判定（原著：引爆后立刻进行一次即死判定；模组：5% 概率处决）</summary>
+        public static void TryInstantKill(Actor attacker, Actor target)
+        {
+            if (!_markBurstJustHappened) return;
+            _markBurstJustHappened = false;
+            if (attacker == null || target == null || !target.isAlive()) return;
+            if (UnityEngine.Random.value < 0.05f) target.data.health = 0;  // 即死判定：5% 概率直接处决
+        }
 
         /// <summary>为超A级单位按槽位组合自创一个独特专属专长（模组未预设）</summary>
         public static string GenerateSpecialty(long actorId, int slot)
@@ -164,6 +181,7 @@ namespace SuperMech.Code
                     rarity = Rarity.R3_Legendary,
                     base_stats = new BaseStats()
                 };
+                if (d.hpMul > 0f) t.base_stats["multiplier_health"] = 1f + d.hpMul;  // 模板专长生命加成（trait 层累加）
                 AssetManager.traits.add(t);
             }
         }
@@ -233,7 +251,8 @@ namespace SuperMech.Code
                         int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
                         if (rankIdx >= 13)
                         {
-                            s = TryLegendaryGrant(a, list);   // X阶：匹配职业系的原著人物（存活）赋予
+                            if (list.Count == 0) s = TryLegendaryGrant(a, list);      // 首槽：原著人物（存活）赋予个人专属
+                            else s = TryTemplateFormation(a, list);                       // 后续槽：概率形成模板专长
                         }
                         if (s == null)
                         {
@@ -261,13 +280,26 @@ namespace SuperMech.Code
         }
 
         /// <summary>原著赋予：X阶超A匹配职业系的原著人物（存活）赋予其专属专长</summary>
+        /// <summary>原著赋予：X阶超A匹配职业系时，由存活的原著人物赋予个人专属专长</summary>
         private static string TryLegendaryGrant(Actor a, List<string> existing)
         {
             string sys = GetSystem(a);
-            var pool = LegendaryAll.FindAll(d => d.system == sys && d.alive);
+            var pool = LegendaryAll.FindAll(d => d.alive && d.system == sys);
             if (pool.Count == 0) return null;
             var cand = pool.FindAll(d => !existing.Contains(d.id));
             if (cand.Count == 0) return null;
+            return cand[UnityEngine.Random.Range(0, cand.Count)].id;
+        }
+
+        /// <summary>模板专长形成：X阶超A（NPC/BOSS 定位）按形成几率获得模板专长（原著：专属专长形成几率）</summary>
+        private static string TryTemplateFormation(Actor a, List<string> existing)
+        {
+            var pool = LegendaryAll.FindAll(d => !d.alive);
+            if (pool.Count == 0) return null;
+            var cand = pool.FindAll(d => !existing.Contains(d.id));
+            if (cand.Count == 0) return null;
+            // 形成几率 20%（原著：专属专长形成几率——模组固定低概率）
+            if (UnityEngine.Random.value > 0.2f) return null;
             return cand[UnityEngine.Random.Range(0, cand.Count)].id;
         }
 
@@ -344,6 +376,7 @@ namespace SuperMech.Code
                         {
                             ClearStacks(a);
                             bonus += burst;
+                            if (ld.instantKill) _markBurstJustHappened = true;  // 死亡侵蚀满层引爆→即死判定
                         }
                         else
                         {
