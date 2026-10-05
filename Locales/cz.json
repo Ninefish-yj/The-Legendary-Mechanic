@@ -4663,8 +4663,8 @@
   "sm_ui_supera_sanctum_no": "未建立（协会+阶级力量≥文明80%时建立，原著ch1459）",
   "sm_ui_supera_layers": "力量分层",
   "sm_ui_supera_order": "秩序",
-  "sm_ui_supera_order_yes": "星海历（秩序确立：霸主文明≥超星团级且力量压过超A，五态博弈生效）",
-  "sm_ui_supera_order_no": "探索历（无秩序：文明无力约束超A，超A自由沉浮）",
+  "sm_ui_supera_order_yes": "（秩序确立：霸主文明≥超星团级且力量压过超A，五态博弈生效）",
+  "sm_ui_supera_order_no": "（无秩序：文明无力约束超A，超A自由沉浮）",
   "sm_ui_supera_form": "社会形态",
   "sm_ui_supera_form_bureau": "体制化（霸主文明达宇宙级=诸星联式：超A全面纳入编制+5%，不作乱，清算永停）",
   "sm_ui_supera_form_semi": "半自由（三大文明式：超A=战略威慑工具，五态博弈）",
@@ -4673,5 +4673,11 @@
   "sm_ui_supera_alliance_no": "未成立",
   "sm_ui_res_inherit": "跨迭代传承",
   "sm_ui_res_inherit_info": "圣所档案{0}轮 | 上轮超A×{1} | 复苏完整度+{2}%（原著ch1211：圣所把上迭代信息融入新生宇宙）",
-  "sm_ui_res_inherit_none": "暂无迭代档案，复苏完整度+{0}%"
+  "sm_ui_res_inherit_none": "暂无迭代档案，复苏完整度+{0}%",
+  "sm_config_era": "历法设置",
+  "sm_config_era_cal": "历法风格",
+  "sm_config_era_cal_desc": "超A格局中秩序/混乱时代的历法命名：原著历法（探索历/星海历）、文明历法（混沌时代/以最强文明命名）、时代历法（混沌历/秩序历）",
+  "sm_config_era_0": "原著历法（探索历/星海历）",
+  "sm_config_era_1": "文明历法（混沌时代/以最强文明命名）",
+  "sm_config_era_2": "时代历法（混沌历/秩序历）"
 }

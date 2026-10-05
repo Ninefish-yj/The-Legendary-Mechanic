@@ -7,6 +7,7 @@ namespace SuperMech.Code
     public static class SuperMechConfig
     {
         public static bool ModEnabled = true;
+        public static int EraCalendar = 0; // 历法风格（0原著历法/1文明历法/2时代历法；玩家可选/修改，v0.76.13）
 
         public static bool AutoAwakening = true;
         public static float AwakeningChance = 0.05f;
@@ -195,6 +196,7 @@ namespace SuperMech.Code
                                 case NeoModLoader.api.ConfigItemType.INT_SLIDER: val = mi.IntVal; break;
                                 case NeoModLoader.api.ConfigItemType.SELECT: val = mi.IntVal; break;
                             }
+                            if (id == "era_calendar") EraCalendar = mi.IntVal; // v0.76.13 历法风格（玩家可选/修改）
                             if (val != null) { mi.SetValue(val, false); synced++; }
                         }
                         catch (System.Exception) { /* 组/项不存在则跳过 */ }
@@ -240,6 +242,7 @@ namespace SuperMech.Code
                 new CatInfo("EventLog", "sm_config_710"),
                 new CatInfo("AI", "sm_config_729"),
                 new CatInfo("Advanced", "sm_config_adv"),
+                new CatInfo("Era", "sm_config_era"),
             };
             foreach (var c in categories)
                 LocalizedTextManager.add(c.key, LocalizedTextManager.getText(c.name), pReplace: true);

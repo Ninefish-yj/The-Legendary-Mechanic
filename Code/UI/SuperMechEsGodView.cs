@@ -101,8 +101,8 @@ namespace SuperMech.Code
             // 秩序确立（探索历→星海历）与社会形态分叉（诸星联式体制化）
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_order")).Append(": ")
               .Append(order
-                  ? LocalizedTextManager.getText("sm_ui_supera_order_yes")
-                  : LocalizedTextManager.getText("sm_ui_supera_order_no")).Append("\n");
+                  ? SuperMechSupermA.GetEraOrderName() + LocalizedTextManager.getText("sm_ui_supera_order_yes")
+                  : SuperMechSupermA.GetEraChaosName() + LocalizedTextManager.getText("sm_ui_supera_order_no")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_form")).Append(": ")
               .Append(bureau
                   ? LocalizedTextManager.getText("sm_ui_supera_form_bureau")

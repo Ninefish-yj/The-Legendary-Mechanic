@@ -418,6 +418,38 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>混乱时代历法名（玩家可在配置选择/修改历法风格，v0.76.13）：
+        /// 0=原著历法"探索历"；1=文明历法"混沌时代"；2=时代历法"混沌历"</summary>
+        public static string GetEraChaosName()
+        {
+            switch (SuperMechConfig.EraCalendar)
+            {
+                case 1: return "混沌时代";
+                case 2: return "混沌历";
+                default: return "探索历";
+            }
+        }
+
+        /// <summary>秩序时代历法名：0=原著历法"星海历"；1=文明历法（以霸主文明最强者命名"XX历"）；
+        /// 2=时代历法"秩序历"</summary>
+        public static string GetEraOrderName()
+        {
+            switch (SuperMechConfig.EraCalendar)
+            {
+                case 1:
+                    var top = GetTopCivilizations(3);
+                    if (top.Count > 0 && top[0] != null)
+                    {
+                        string n = top[0].name;
+                        if (n.EndsWith("历")) return n;
+                        return n + "历";
+                    }
+                    return "星海历";
+                case 2: return "秩序历";
+                default: return "星海历";
+            }
+        }
+
         /// <summary>霸主文明体制化判定：霸主文明（科技最强3王国）中最强达宇宙级（Universal，
         /// 诸星联=宇宙级文明+近万超A编制化，ch1207）</summary>
         public static bool IsBureaucratCiv()
