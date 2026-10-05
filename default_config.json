@@ -442,19 +442,5 @@
       "IntVal": 7,
       "MaxIntVal": 14
     }
-  ],
-  "Era": [
-    {
-      "Id": "era_calendar",
-      "Name": "sm_config_era_cal",
-      "Description": "sm_config_era_cal_desc",
-      "Type": "SELECT",
-      "Options": [
-        "sm_config_era_0",
-        "sm_config_era_1",
-        "sm_config_era_2"
-      ],
-      "Default": 0
-    }
   ]
 }

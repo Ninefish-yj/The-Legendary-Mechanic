@@ -60,6 +60,7 @@ namespace SuperMech.Code
             ("sm_ui_legion_title", DrawLegionContent),
             ("sm_ui_tree_title", DrawWorldTreeContent),
             ("sm_ui_esgod_title", DrawEsGodContent),
+            ("sm_ui_era_title", DrawEraContent),
             ("sm_ui_rank_window_title", DrawRankContent),
         };
 
@@ -267,6 +268,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechEsGodView>();
+        }
+
+        internal static void DrawEraContent(RectTransform content)
+        {
+            var go = new GameObject("EraView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechEraView>();
         }
 
         public static void CloseAll()
