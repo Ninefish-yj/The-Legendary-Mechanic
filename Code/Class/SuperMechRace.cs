@@ -177,8 +177,8 @@ namespace SuperMech.Code
                 LocalizedTextManager.add("trait_group_sm_race_talents", LocalizedTextManager.getText("sm_race_345"), pReplace: true);
             }
 
-            AddMarkerTrait(TraitSuperARace, "sm_race_346", "sm_race_347", 0.40f, 0.40f, 15);
-            AddMarkerTrait(TraitDivineRace, "sm_race_348", "sm_race_349", 1.00f, 1.00f, 30);
+            AddMarkerTrait(TraitSuperARace, "sm_race_346", "sm_race_347", 0.40f, 0.40f, 15, Rarity.R2_Epic);
+            AddMarkerTrait(TraitDivineRace, "sm_race_348", "sm_race_349", 1.00f, 1.00f, 30, Rarity.R3_Legendary);
 
             foreach (var t in TalentPool)
                 AddSubspeciesTrait(t.id, t.name, t.desc, t.intel, t.dmgMul, t.hpMul, t.spdMul, t.armor);
@@ -272,7 +272,7 @@ namespace SuperMech.Code
         }
 
         private static void AddMarkerTrait(string id, string name, string desc,
-            float dmg, float hp, int intel)
+            float dmg, float hp, int intel, Rarity rarity)
         {
             LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
             LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
@@ -280,7 +280,7 @@ namespace SuperMech.Code
             {
                 id = id, path_icon = "ui/Icons/actor_traits/iconGiant",
                 group_id = "sm_race", can_be_removed = false, can_be_given = false,
-                needs_to_be_explored = false, base_stats = new BaseStats()
+                needs_to_be_explored = false, rarity = rarity, base_stats = new BaseStats()
             };
             t.base_stats["intelligence"] = intel;
             t.base_stats["multiplier_damage"] = 1f + dmg;
@@ -324,6 +324,9 @@ namespace SuperMech.Code
                 if (st.base_stats_meta == null) st.base_stats_meta = new BaseStats();
             }
 
+            st.rarity = id == SubspeciesDivineGene ? Rarity.R3_Legendary
+                      : (id == SubspeciesBornElite || intel >= 16 || dmgMul >= 0.30f) ? Rarity.R2_Epic
+                      : Rarity.R1_Rare;
             if (intel > 0) st.base_stats_meta["intelligence"] = intel;
             if (dmgMul > 0) st.base_stats_meta["multiplier_damage"] = 1f + dmgMul;
             if (hpMul > 0) st.base_stats_meta["multiplier_health"] = 1f + hpMul;

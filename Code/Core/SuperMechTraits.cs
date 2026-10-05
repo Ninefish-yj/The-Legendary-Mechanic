@@ -61,6 +61,9 @@ namespace SuperMech.Code
                 if (r.aoe > 0f) t.base_stats["area_of_effect"] = r.aoe;
                 if (r.targets > 0f) t.base_stats["targets"] = r.targets;
                 if (r.range > 0f) t.base_stats["range"] = r.range;
+                t.rarity = rankIdx <= 3 ? Rarity.R0_Normal
+                          : rankIdx <= 8 ? Rarity.R1_Rare
+                          : rankIdx <= 11 ? Rarity.R2_Epic : Rarity.R3_Legendary;
                 if (rankIdx >= 4) t.addCombatAction("combat_dodge");
                 if (rankIdx >= 6) t.addCombatAction("combat_block");
                 if (rankIdx >= 8) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); }
@@ -93,7 +96,7 @@ namespace SuperMech.Code
             {
                 id = Descendant, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_special",
                 needs_to_be_explored = false, rate_inherit = 0, rate_birth = 0,
-                base_stats = new BaseStats()
+                rarity = Rarity.R2_Epic, base_stats = new BaseStats()
             };
             descendant.base_stats["experience"] = 2.0f; // 经验值获取翻倍
             descendant.base_stats["intelligence"] = 2;

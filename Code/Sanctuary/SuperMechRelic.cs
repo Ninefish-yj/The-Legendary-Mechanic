@@ -286,7 +286,9 @@ namespace SuperMech.Code
                 var t = new ActorTrait
                 {
                     id = r.id, path_icon = "ui/Icons/actor_traits/iconChosenOne", group_id = "sm_cosmic_relic",
-                    needs_to_be_explored = false, base_stats = new BaseStats()
+                    needs_to_be_explored = false,
+                    rarity = r.isWonder ? Rarity.R3_Legendary : Rarity.R2_Epic,
+                    base_stats = new BaseStats()
                 };
                 t.base_stats["multiplier_damage"] = r.dmgMul;
                 t.base_stats["multiplier_health"] = r.hpMul;
