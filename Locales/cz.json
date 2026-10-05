@@ -4775,11 +4775,11 @@
   "sm_spec_siphon": "汲取",
   "sm_spec_siphon_info": "击杀时汲取宇宙暗能量，恢复25%气力上限（原著：汲取暗能量恢复气力）",
   "sm_legend_death_reap": "死神收割",
-  "sm_legend_death_reap_info": "死亡系专属传承：攻击赋予死亡侵蚀层数，15层引爆更高额伤害（原著：死神专属印记体系）",
+  "sm_legend_death_reap_info": "死亡系专属传承：攻击赋予死亡侵蚀层数，15层引爆更高额伤害（原著：死亡能量印记体系）",
   "sm_legend_virtual_world": "虚拟创世",
   "sm_legend_virtual_world_info": "机械系专属传承：攻击+25%，生命低于40%时再+30%（原著：虚拟创世级能力）",
   "sm_legend_charge": "冲锋·无尽蓄势",
-  "sm_legend_charge_info": "武道系专属传承：攻击+15%，生命低于40%时再+40%（原著：领悟的冲锋招式）",
+  "sm_legend_charge_info": "机械系专属传承：攻击+15%，生命低于40%时再+40%（原著：冲刺距离赋予额外伤害的冲锋招式）",
   "sm_legend_true_name": "真名解放",
   "sm_legend_true_name_info": "异能系专属传承：攻击+12%，生命低于40%时再+25%（原著：真名解放的强化抗性）"
 }

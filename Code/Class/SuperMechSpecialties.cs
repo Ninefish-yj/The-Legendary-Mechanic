@@ -42,14 +42,16 @@ namespace SuperMech.Code
         };
 
         // === 原著专属专长（原著明确出现过的能力，由对应原著人物（高维存在）赋予，人物已死则不赋予） ===
-        // 归属人物不进入世界、不显示姓名（高维层），仅作赋予源与存活判定：
-        // 虚拟创世=韩萧（机械系·原著活至终局）、死神收割=死神（死亡系·活跃）、
-        // 冲锋·无尽蓄势=武道强者（活跃）、真名解放=红魔（异能变身·活跃）
+        // 归属人物不进入世界、不显示姓名（高维层），仅作赋予源与存活判定（原著核实）：
+        // 虚拟创世=韩萧（机械系·ch1402 虚拟创世（伪）·活至终局）、
+        // 死神收割=海拉（死亡系异能超A·ch1030 海拉引爆15层印记·活跃 ch1401+）、
+        // 冲锋·无尽蓄势=韩萧（ch1009 韩萧领悟·机械系近战冲锋）、
+        // 真名解放=红魔·托莱恩（恶魔族超A·ch1010 诞生于亮银旋臂·ch1056 出场）
         public static readonly List<SpecialtyDef> LegendaryAll = new List<SpecialtyDef>
         {
             new SpecialtyDef { id = "sm_legend_death_reap",    nameKey = "sm_legend_death_reap",    descKey = "sm_legend_death_reap_info",    system = "psi",     dmgMul = 0.15f, deathMark = true,  markBurst = 1.2f },
             new SpecialtyDef { id = "sm_legend_virtual_world", nameKey = "sm_legend_virtual_world", descKey = "sm_legend_virtual_world_info", system = "mech",    dmgMul = 0.25f, lowHpMul = 0.30f },
-            new SpecialtyDef { id = "sm_legend_charge",        nameKey = "sm_legend_charge",        descKey = "sm_legend_charge_info",        system = "martial", dmgMul = 0.15f, lowHpMul = 0.40f },
+            new SpecialtyDef { id = "sm_legend_charge",        nameKey = "sm_legend_charge",        descKey = "sm_legend_charge_info",        system = "mech",    dmgMul = 0.15f, lowHpMul = 0.40f },
             new SpecialtyDef { id = "sm_legend_true_name",     nameKey = "sm_legend_true_name",     descKey = "sm_legend_true_name_info",     system = "psi",     dmgMul = 0.12f, lowHpMul = 0.25f },
         };
 
