@@ -4741,5 +4741,20 @@
   "sm_ui_san_record_title": "【文明记录】\n\n<color=#3366cc>名称：</color>{0}\n<color=#3366cc>类型：</color>{1}\n<color=#3366cc>迭代：</color>第{2}轮\n<color=#3366cc>成就：</color>{3}\n<color=#cc3333>毁灭：</color>{4}\n\n<color=#888><size=10>信息态记录 · 触碰光球可读取</size></color>",
   "sm_ui_legion_count_zero": "共 0 人",
   "sm_ui_faction_count_zero": "势力总数: 0",
-  "sm_ui_faction_label": "势力"
+  "sm_ui_faction_label": "势力",
+  "trait_group_sm_ranks": "阶位",
+  "trait_group_sm_classes": "职业",
+  "trait_group_sm_branches": "知识分支",
+  "trait_group_sm_awakened": "觉醒",
+  "trait_group_sm_disaster": "异化",
+  "trait_group_sm_sanctuary": "圣所",
+  "trait_group_sm_race": "种族",
+  "trait_group_sm_special": "降临者",
+  "trait_group_sm_cultivation": "修炼",
+  "trait_group_sm_mage_tower": "法师塔",
+  "trait_group_sm_subclass": "副职业",
+  "trait_group_sm_rank_specialty": "阶位专长",
+  "trait_group_sm_specialty": "专长",
+  "trait_group_sm_cosmic_relic": "宇宙宝物",
+  "trait_group_sm_perks": "天赋"
 }
