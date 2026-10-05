@@ -266,6 +266,24 @@ namespace SuperMech.Code
                 }
                 // v0.64.1 修复：旧存档碎片已达标但位掩码缺失，加载时统一从碎片重算解锁状态
                 RefreshUnlockedFromFragments();
+                // 迭代档案兜底（旧存档缺字段→null）
+                if (Data.iteration_archives == null)
+                    Data.iteration_archives = new System.Collections.Generic.List<IterationArchive>();
+                // v0.76.15 预置原著前代文明档案：圣所=上代文明（变数文明/诸星联）遗产变异成的底层规律
+                // （ch1211"上迭代遗产、让下一迭代更丰富"；ch1207 诸星联=33星域近万圣体级超A）。
+                // iteration=0 表示前代（原著上代文明），作为传承的初始来源——圣所本体即由此而来。
+                if (Data.iteration_archives.Count == 0)
+                {
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0,
+                        superACount = 400, // 圣所记录的核心圣体级信息量（代表记录，非全量）
+                        classCounts = new int[] { 80, 80, 80, 80, 80 }, // 五大超能体系分布（圣所逐代补全，ch1217）
+                        maxRankIdx = 12   // 至高级=巅峰超A级（ch1207，SS）
+                    });
+                    Save();
+                    Debug.Log("[超神机械师] 圣所预置前代文明档案：原著·诸星联（上代文明遗产，传承+2%）");
+                }
             }
             catch (System.Exception e)
             {
