@@ -56,7 +56,6 @@ namespace SuperMech.Code
             ("sm_ui_stargate_title", DrawStarGateContent),
             ("sm_ui_intel_title", DrawIntelContent),
             ("sm_ui_faction_window_title", DrawFactionContent),
-            ("sm_ui_sanctuary", null),
             ("sm_ui_player_title", DrawPlayerContent),
             ("sm_ui_legion_title", DrawLegionContent),
             ("sm_ui_tree_title", DrawWorldTreeContent),
