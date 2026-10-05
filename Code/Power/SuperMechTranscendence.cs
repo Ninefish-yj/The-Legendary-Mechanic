@@ -88,7 +88,6 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, bool> _transcended = new Dictionary<long, bool>();
         private static readonly Dictionary<long, bool> _advancementTaskDone = new Dictionary<long, bool>();
         private static readonly Dictionary<long, float> _advancementProgress = new Dictionary<long, float>();
-        private static readonly Dictionary<long, int> _divineCatalyst = new Dictionary<long, int>();
 
         // 世界中游离的超神遗力池（冲击超神级失败后生成，等待被感知吸收）
         private static readonly List<LegacyPowerSource> _worldLegacyPool = new List<LegacyPowerSource>();
@@ -420,26 +419,6 @@ namespace SuperMech.Code
             return cond1 && cond2 && cond3;
         }
 
-        public static bool CatalyzeBreakthrough(Actor a)
-        {
-            if (a == null || !a.isAlive()) return false;
-            int rank = SuperMechActorContextRegistry.GetRank(a);
-            if (rank < 12) return false;
-
-            if (!_divineCatalyst.TryGetValue(a.id, out int layers)) layers = 0;
-            if (layers >= 5) return false;
-
-            _divineCatalyst[a.id] = layers + 1;
-            Debug.Log($"[超神机械师] 神之催化：{a.name} 获得第{layers + 1}层催化（成功率+{(layers + 1) * 10}%）");
-            return true;
-        }
-
-        public static int GetCatalystLayers(Actor a)
-        {
-            if (a == null) return 0;
-            _divineCatalyst.TryGetValue(a.id, out int v);
-            return v;
-        }
 
         public static bool AttemptTranscend(Actor a)
         {
@@ -461,9 +440,6 @@ namespace SuperMech.Code
 
             float legendBonus = SuperMechLegend.GetBreakthroughBonus(a);
             if (legendBonus > 0) successRate += legendBonus;
-
-            int catalyst = GetCatalystLayers(a);
-            if (catalyst > 0) successRate += catalyst * 0.10f;
 
             successRate = Mathf.Clamp(successRate, 0.01f, 0.99f);
 
