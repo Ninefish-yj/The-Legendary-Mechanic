@@ -7,15 +7,19 @@ namespace SuperMech.Code
     /// <summary>
     /// 专属专长系统：原著超A级强者各具独特的专属能力
     /// （ch1012 死亡能量专属被动——攻击叠加特殊状态层数；ch1017 专属能力）。
-    /// 每个超A级个体晋升后按职业系抽取专属专长（S=1 / SS=2 / X=3 个，个体独有组合），
-    /// 显示于单位面板「专属专长」栏；战斗效果挂接攻击伤害乘区。
-    /// 运行时数据存 ActorContext.custom，持久化走 ActorSaveData.specialties。
+    /// 每个超A级个体晋升时按职业系【领悟】专属专长（S=1 / SS=2 / X=3 个，个体独有组合，
+    /// 原著：专属专长是超A级自创/领悟的个人流派，名字由单位自己取——
+    /// ch1009 领悟技能、ch1090 领悟新技能新专长、ch1384 自创念力攻击技能完善自身流派），
+    /// 专长注册为真实特质（特质系统，组 sm_specialties），单位面板「专属专长」栏显示个体名；
+    /// 战斗效果挂接攻击伤害乘区。运行时数据存 ActorContext.custom，持久化走 ActorSaveData.specialties。
     /// </summary>
     public static class SuperMechSpecialties
     {
         public class SpecialtyDef
         {
             public string id;
+            public string nameKey;  // 特质名本地化键
+            public string descKey;  // 特质描述本地化键
             public string system;   // psi/martial/mech/mage/mind/any
             public float dmgMul;    // 攻击伤害加成（0.10 = +10%）
             public float lowHpMul;  // 自身生命<40% 时额外加成（0.25 = 再+25%）
@@ -25,15 +29,36 @@ namespace SuperMech.Code
 
         public static readonly List<SpecialtyDef> All = new List<SpecialtyDef>
         {
-            new SpecialtyDef { id = "sm_spec_death_mark", system = "psi",     dmgMul = 0.10f, deathMark = true },
-            new SpecialtyDef { id = "sm_spec_gravity",    system = "psi",     dmgMul = 0.08f },
-            new SpecialtyDef { id = "sm_spec_qi_blood",   system = "martial", dmgMul = 0.10f, lowHpMul = 0.25f },
-            new SpecialtyDef { id = "sm_spec_overclock",  system = "mech",    dmgMul = 0.15f },
-            new SpecialtyDef { id = "sm_spec_elemental",  system = "mage",    dmgMul = 0.15f },
-            new SpecialtyDef { id = "sm_spec_mind",       system = "mind",    dmgMul = 0.10f },
-            new SpecialtyDef { id = "sm_spec_immortal",   system = "any",     dmgMul = 0.10f },
-            new SpecialtyDef { id = "sm_spec_siphon",     system = "any",     dmgMul = 0f,    siphon = true },
+            new SpecialtyDef { id = "sm_spec_death_mark", nameKey = "sm_spec_death_mark", descKey = "sm_spec_death_mark_info", system = "psi",     dmgMul = 0.10f, deathMark = true },
+            new SpecialtyDef { id = "sm_spec_gravity",    nameKey = "sm_spec_gravity",    descKey = "sm_spec_gravity_info",    system = "psi",     dmgMul = 0.08f },
+            new SpecialtyDef { id = "sm_spec_qi_blood",   nameKey = "sm_spec_qi_blood",   descKey = "sm_spec_qi_blood_info",   system = "martial", dmgMul = 0.10f, lowHpMul = 0.25f },
+            new SpecialtyDef { id = "sm_spec_overclock",  nameKey = "sm_spec_overclock",  descKey = "sm_spec_overclock_info",  system = "mech",    dmgMul = 0.15f },
+            new SpecialtyDef { id = "sm_spec_elemental",  nameKey = "sm_spec_elemental",  descKey = "sm_spec_elemental_info",  system = "mage",    dmgMul = 0.15f },
+            new SpecialtyDef { id = "sm_spec_mind",       nameKey = "sm_spec_mind",       descKey = "sm_spec_mind_info",       system = "mind",    dmgMul = 0.10f },
+            new SpecialtyDef { id = "sm_spec_immortal",   nameKey = "sm_spec_immortal",   descKey = "sm_spec_immortal_info",   system = "any",     dmgMul = 0.10f },
+            new SpecialtyDef { id = "sm_spec_siphon",     nameKey = "sm_spec_siphon",     descKey = "sm_spec_siphon_info",     system = "any",     dmgMul = 0f,    siphon = true },
         };
+
+        // === 注册（特质系统：专属专长=真实特质，有名字/图标/稀有度/描述） ===
+        public static void Register()
+        {
+            foreach (var d in All)
+            {
+                LocalizedTextManager.add(d.id, LocalizedTextManager.getText(d.nameKey), pReplace: true);
+                LocalizedTextManager.add(d.id + "_info", LocalizedTextManager.getText(d.descKey), pReplace: true);
+                var t = new ActorTrait
+                {
+                    id = d.id,
+                    path_icon = "ui/Icons/actor_traits/iconGenius",
+                    group_id = "sm_specialties",
+                    needs_to_be_explored = false,
+                    rarity = (d.id == "sm_spec_death_mark" || d.id == "sm_spec_siphon")
+                        ? Rarity.R3_Legendary : Rarity.R2_Epic,
+                    base_stats = new BaseStats()
+                };
+                AssetManager.traits.add(t);
+            }
+        }
 
         // 原著机制（ch1030）：印记赋予目标 5 层【死亡侵蚀】，引爆 15 层【死神收割】
         public const int DeathMarkGain = 5;        // 每次攻击赋予的层数（原著：5 层死亡侵蚀）
@@ -98,6 +123,7 @@ namespace SuperMech.Code
                         string s = RollSpecialty(a, list);
                         if (s == null) break;
                         list.Add(s);
+                        if (!a.hasTrait(s)) a.addTrait(s);   // 专属专长=真实特质，挂到单位特质系统
                     }
                 }
                 catch (Exception e)
@@ -175,16 +201,18 @@ namespace SuperMech.Code
             if (max > 0f) SuperMechQi.AddQi(killer, max * 0.25f);   // 原著ch1009：恢复15%~25%气力
         }
 
-        // === UI 显示名 ===
+        // === UI 显示名（原著：专属专长的名字是单位自己取的——显示 {单位名}·{专长名}） ===
         public static string GetDisplay(Actor a)
         {
             var list = GetSpecialties(a);
             if (list == null || list.Count == 0) return null;
+            string unitName = a.data != null ? a.data.name : null;
             var names = new List<string>();
             foreach (string id in list)
             {
                 string t = LocalizedTextManager.getText(id);
-                names.Add(string.IsNullOrEmpty(t) ? id : t);
+                string baseName = string.IsNullOrEmpty(t) ? id : t;
+                names.Add(string.IsNullOrEmpty(unitName) ? baseName : unitName + "·" + baseName);
             }
             return string.Join("、", names.ToArray());
         }
