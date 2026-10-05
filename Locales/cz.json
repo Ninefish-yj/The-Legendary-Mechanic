@@ -4775,5 +4775,9 @@
   "sm_spec_siphon": "汲取",
   "sm_spec_siphon_info": "击杀时汲取宇宙暗能量，恢复25%气力上限（原著：汲取暗能量恢复气力）",
   "sm_legend_death_erosion": "死亡侵蚀",
-  "sm_legend_death_erosion_info": "个人专属专长（原著：超A级专属被动）：攻击赋予死亡侵蚀层数，15层引爆并立即进行即死判定"
+  "sm_legend_death_erosion_info": "个人专属专长（原著：超A级专属被动）：攻击赋予死亡侵蚀层数，15层引爆并立即进行即死判定",
+  "sm_legend_mech_country": "亿万械国·麦尼逊",
+  "sm_legend_mech_country_info": "个人专属专长：机械亲和与械国之智——攻击+20%，生命+15%",
+  "sm_legend_virtual_reform": "虚拟技术革新·麦尼逊",
+  "sm_legend_virtual_reform_info": "个人专属专长：虚拟技术改良——攻击+25%"
 }

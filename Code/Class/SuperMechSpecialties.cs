@@ -53,9 +53,15 @@ namespace SuperMech.Code
         {
             // === 个人专属专长（原著标明：超A级强者独有、名字自己取的——由归属原著人物赋予，人物存活才可赋予） ===
             // 死亡侵蚀=海拉（ch1012：超A级专属被动——死亡能量击中叠加15层，满层引爆即死判定；海拉活跃ch1401+）
-            // 注：模板专长（强韧生命等）是另一系统（NPC/BOSS类别专长），不属于专属专长——不在此池
             new SpecialtyDef { id = "sm_legend_death_erosion", nameKey = "sm_legend_death_erosion", descKey = "sm_legend_death_erosion_info", system = "psi",
                                dmgMul = 0.10f, deathMark = true, markBurst = 1.2f, instantKill = true, alive = true },
+            // 亿万械国·麦尼逊（ch1294：模板级专属专长——智力+15%、机械总亲和1.2x、机械系技能+2、械融合·赋予/帝皇之赐/王者之师；生成条件苛刻=数百年经历总结；麦尼逊活跃ch1404+）
+            new SpecialtyDef { id = "sm_legend_mech_country", nameKey = "sm_legend_mech_country", descKey = "sm_legend_mech_country_info", system = "mech",
+                               dmgMul = 0.20f, hpMul = 0.15f, alive = true },
+            // 虚拟技术革新·麦尼逊（ch1294：虚拟技术改良、虚拟技术类能力加成1.75x、不灭械国技术基础；麦尼逊活跃ch1404+）
+            new SpecialtyDef { id = "sm_legend_virtual_reform", nameKey = "sm_legend_virtual_reform", descKey = "sm_legend_virtual_reform_info", system = "mech",
+                               dmgMul = 0.25f, alive = true },
+            // 注：模板专长（强韧生命等）是另一系统（NPC/BOSS类别专长），不属于专属专长——不在此池
         };
 
         // === 组合自创（原著：专属专长无限自创、名字单位自己取——可生成模组未预设的独特专长） ===
@@ -177,6 +183,7 @@ namespace SuperMech.Code
                     rarity = Rarity.R3_Legendary,
                     base_stats = new BaseStats()
                 };
+                if (d.hpMul > 0f) t.base_stats["multiplier_health"] = 1f + d.hpMul;  // 个人专属生命加成（trait 层累加）
                 AssetManager.traits.add(t);
             }
         }
