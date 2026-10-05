@@ -304,7 +304,9 @@ namespace SuperMech.Code
                         iteration = 0, type = 1, label = "sm_san_arch_board", note = "sm_san_arch_board_n",
                         superACount = 0, maxRankIdx = 0
                     });
-                    // ⑤ 暗面迭代·循环重启：深层真相情报，完全解锁权限才可见（ch1465）
+                    // ⑤ 暗面宇宙（信息态剥离计划）：二号迭代三大文明继承诸星联思路，剥离全宇宙信息态→
+                    // 三号迭代形成封闭暗面宇宙（虚拟·小重启循环），4次暗面迭代（韩萧=第四），
+                    // 世界树/枢蛇/玩家皆源于此（ch1464）；完全解锁权限才可见（ch1465）
                     Data.iteration_archives.Add(new IterationArchive
                     {
                         iteration = 0, type = 1, label = "sm_san_arch_dark", note = "sm_san_arch_dark_n",
