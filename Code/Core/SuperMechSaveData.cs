@@ -351,7 +351,7 @@ namespace SuperMech.Code
                 if (data.legion != null) SuperMechLegion.Load(data.legion);
                 // 加载世界树入侵数据（v0.73.0）
                 if (data.worldTree != null) SuperMechWorldTree.Load(data.worldTree);
-                // 加载异神终局数据（v0.74.0）
+                // 加载异神数据（v0.76.0重写：顶层超A个体，天灾框架已删）
                 if (data.esGod != null) SuperMechEsGod.Load(data.esGod);
 
                 _pendingLoad = data;
