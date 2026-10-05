@@ -23,8 +23,10 @@ namespace SuperMech.Code
             public string system;   // psi/martial/mech/mage/mind/any
             public float dmgMul;    // 攻击伤害加成（0.10 = +10%）
             public float lowHpMul;  // 自身生命<40% 时额外加成（0.25 = 再+25%）
-            public bool deathMark;  // 死亡印记：攻击叠层，5 层引爆
-            public bool siphon;     // 能量虹吸：击杀回复 30% 气力上限
+            public bool deathMark;  // 印记层数引爆（死亡侵蚀→死神收割）
+            public float markBurst; // 引爆伤害（0 = 用默认 DeathMarkBurst）
+            public bool siphon;     // 击杀回复 30% 气力上限
+            public bool alive = true; // 归属原著人物是否存活（死了不赋予）
         }
 
         public static readonly List<SpecialtyDef> All = new List<SpecialtyDef>
@@ -37,6 +39,18 @@ namespace SuperMech.Code
             new SpecialtyDef { id = "sm_spec_mind",       nameKey = "sm_spec_mind",       descKey = "sm_spec_mind_info",       system = "mind",    dmgMul = 0.10f },
             new SpecialtyDef { id = "sm_spec_immortal",   nameKey = "sm_spec_immortal",   descKey = "sm_spec_immortal_info",   system = "any",     dmgMul = 0.10f },
             new SpecialtyDef { id = "sm_spec_siphon",     nameKey = "sm_spec_siphon",     descKey = "sm_spec_siphon_info",     system = "any",     dmgMul = 0f,    siphon = true },
+        };
+
+        // === 原著专属专长（原著明确出现过的能力，由对应原著人物（高维存在）赋予，人物已死则不赋予） ===
+        // 归属人物不进入世界、不显示姓名（高维层），仅作赋予源与存活判定：
+        // 虚拟创世=韩萧（机械系·原著活至终局）、死神收割=死神（死亡系·活跃）、
+        // 冲锋·无尽蓄势=武道强者（活跃）、真名解放=红魔（异能变身·活跃）
+        public static readonly List<SpecialtyDef> LegendaryAll = new List<SpecialtyDef>
+        {
+            new SpecialtyDef { id = "sm_legend_death_reap",    nameKey = "sm_legend_death_reap",    descKey = "sm_legend_death_reap_info",    system = "psi",     dmgMul = 0.15f, deathMark = true,  markBurst = 1.2f },
+            new SpecialtyDef { id = "sm_legend_virtual_world", nameKey = "sm_legend_virtual_world", descKey = "sm_legend_virtual_world_info", system = "mech",    dmgMul = 0.25f, lowHpMul = 0.30f },
+            new SpecialtyDef { id = "sm_legend_charge",        nameKey = "sm_legend_charge",        descKey = "sm_legend_charge_info",        system = "martial", dmgMul = 0.15f, lowHpMul = 0.40f },
+            new SpecialtyDef { id = "sm_legend_true_name",     nameKey = "sm_legend_true_name",     descKey = "sm_legend_true_name_info",     system = "psi",     dmgMul = 0.12f, lowHpMul = 0.25f },
         };
 
         // === 组合自创（原著：专属专长无限自创、名字单位自己取——可生成模组未预设的独特专长） ===
@@ -134,6 +148,22 @@ namespace SuperMech.Code
                 };
                 AssetManager.traits.add(t);
             }
+            // 原著专属专长：由高维原著人物赋予，均为传奇稀有度
+            foreach (var d in LegendaryAll)
+            {
+                LocalizedTextManager.add(d.id, LocalizedTextManager.getText(d.nameKey), pReplace: true);
+                LocalizedTextManager.add(d.id + "_info", LocalizedTextManager.getText(d.descKey), pReplace: true);
+                var t = new ActorTrait
+                {
+                    id = d.id,
+                    path_icon = "ui/Icons/actor_traits/iconChosenOne",
+                    group_id = "sm_specialties",
+                    needs_to_be_explored = false,
+                    rarity = Rarity.R3_Legendary,
+                    base_stats = new BaseStats()
+                };
+                AssetManager.traits.add(t);
+            }
         }
 
         // 原著机制（ch1030）：印记赋予目标 5 层【死亡侵蚀】，引爆 15 层【死神收割】
@@ -196,17 +226,26 @@ namespace SuperMech.Code
                     int guard = 0;
                     while (list.Count < slots && guard++ < 8)
                     {
-                        // 原著：专属专长由单位自己领悟自创——一半概率组合出模组未预设的独特专长
-                        string s;
-                        if (UnityEngine.Random.value < 0.5f)
+                        // 原著：专属专长由单位领悟/自创，或由高维原著人物赋予（人物存活才赋予）
+                        string s = null;
+                        int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
+                        if (rankIdx >= 13)
                         {
-                            s = GenerateSpecialty(a.data.id, list.Count);
-                            if (list.Contains(s)) { s = RollSpecialty(a, list); if (s == null) break; }
+                            s = TryLegendaryGrant(a, list);   // X阶：匹配职业系的原著人物（存活）赋予
                         }
-                        else
+                        if (s == null)
                         {
-                            s = RollSpecialty(a, list);
-                            if (s == null) break;
+                            // 一半概率组合自创（模组未预设的独特专长），否则从预设池领悟
+                            if (UnityEngine.Random.value < 0.5f)
+                            {
+                                s = GenerateSpecialty(a.data.id, list.Count);
+                                if (list.Contains(s)) { s = RollSpecialty(a, list); if (s == null) break; }
+                            }
+                            else
+                            {
+                                s = RollSpecialty(a, list);
+                                if (s == null) break;
+                            }
                         }
                         list.Add(s);
                         if (!a.hasTrait(s)) a.addTrait(s);   // 专属专长=真实特质，挂到单位特质系统
@@ -217,6 +256,17 @@ namespace SuperMech.Code
                     Debug.LogWarning("[超神机械师] 专属专长授予失败: " + e.Message);
                 }
             }
+        }
+
+        /// <summary>原著赋予：X阶超A匹配职业系的原著人物（存活）赋予其专属专长</summary>
+        private static string TryLegendaryGrant(Actor a, List<string> existing)
+        {
+            string sys = GetSystem(a);
+            var pool = LegendaryAll.FindAll(d => d.system == sys && d.alive);
+            if (pool.Count == 0) return null;
+            var cand = pool.FindAll(d => !existing.Contains(d.id));
+            if (cand.Count == 0) return null;
+            return cand[UnityEngine.Random.Range(0, cand.Count)].id;
         }
 
         private static string RollSpecialty(Actor a, List<string> existing)
@@ -269,6 +319,29 @@ namespace SuperMech.Code
                         {
                             ClearStacks(a);
                             bonus += DeathMarkBurst;   // 引爆【死神收割】
+                        }
+                        else
+                        {
+                            var ctx = SuperMechActorContextRegistry.Get(a);
+                            if (ctx != null) ctx.SetCustom("death_mark_stacks", stacks + DeathMarkGain);
+                        }
+                    }
+                    continue;
+                }
+                // 原著专属专长（高维原著人物赋予）
+                var ld = LegendaryAll.Find(x => x.id == id);
+                if (ld != null)
+                {
+                    bonus += ld.dmgMul;
+                    if (ld.lowHpMul > 0f && lowHp) bonus += ld.lowHpMul;
+                    if (ld.deathMark)
+                    {
+                        int stacks = GetStacks(a);
+                        float burst = ld.markBurst > 0f ? ld.markBurst : DeathMarkBurst;
+                        if (stacks + DeathMarkGain >= DeathMarkMax)
+                        {
+                            ClearStacks(a);
+                            bonus += burst;
                         }
                         else
                         {
