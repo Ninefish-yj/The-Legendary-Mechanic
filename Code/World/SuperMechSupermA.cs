@@ -97,9 +97,34 @@ namespace SuperMech.Code
             int count = CountSuperA();
             _councilFormed = count >= CouncilThreshold;  // 原著后期：超A级协会由超A级个体联合创建
             if (count >= SuperAThreshold && !_councilFormed)
+            {
                 _attitude = Attitude.Purge;             // 个体伟力泛滥→文明清算（ch1018）
+                ApplyPurgeTrait(true);                  // 清算不分敌我：所有超A个体（含自己人）打清算标记
+            }
             else
+            {
                 _attitude = Attitude.Tolerate;          // 默许/拉拢（协会成立后文明转默许）
+                ApplyPurgeTrait(false);
+            }
+        }
+
+        /// <summary>清算标记应用：清算不分阵营（原著巅峰之殇ch1002：三大文明连超星团级盟友的超A级一起清算，
+        /// 怕的是"个体伟力泛滥"本身，ch1019：超A是"有自由思想、不受控制风险的独立个体"）</summary>
+        private static void ApplyPurgeTrait(bool purge)
+        {
+            if (World.world == null || World.world.units == null) return;
+            foreach (Actor a in World.world.units.units_only_alive)
+            {
+                if (a == null || !IsSuperA(a)) continue;
+                if (purge)
+                {
+                    if (!a.hasTrait(PurgeTrait)) a.addTrait(PurgeTrait);
+                }
+                else
+                {
+                    if (a.hasTrait(PurgeTrait)) a.removeTrait(PurgeTrait);
+                }
+            }
         }
 
         public static void Clear()
