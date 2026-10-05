@@ -4775,13 +4775,5 @@
   "sm_spec_siphon": "汲取",
   "sm_spec_siphon_info": "击杀时汲取宇宙暗能量，恢复25%气力上限（原著：汲取暗能量恢复气力）",
   "sm_legend_death_erosion": "死亡侵蚀",
-  "sm_legend_death_erosion_info": "个人专属专长（原著：超A级专属被动）：攻击赋予死亡侵蚀层数，15层引爆并立即进行即死判定",
-  "sm_legend_tough_life": "强韧生命",
-  "sm_legend_tough_life_info": "模板专长（原著：NPC与BOSS专属）：生命上限+25%",
-  "sm_legend_nuclear": "核子力·结构加固",
-  "sm_legend_nuclear_info": "模板专长（原著：真实伤害免疫）：攻击+15%，生命+20%",
-  "sm_legend_combat_skill": "传奇级战斗技巧",
-  "sm_legend_combat_skill_info": "模板专长（原著：战斗技巧）：攻击+20%，生命低于40%时再+20%",
-  "sm_legend_fixed_reduce": "传奇固定伤害减免",
-  "sm_legend_fixed_reduce_info": "模板专长（原著：固定伤害减免）：生命+30%"
+  "sm_legend_death_erosion_info": "个人专属专长（原著：超A级专属被动）：攻击赋予死亡侵蚀层数，15层引爆并立即进行即死判定"
 }

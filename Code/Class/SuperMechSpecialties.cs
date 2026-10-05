@@ -51,15 +51,11 @@ namespace SuperMech.Code
         // 真名解放=红魔·托莱恩（恶魔族超A·ch1010 诞生于亮银旋臂·ch1056 出场）
         public static readonly List<SpecialtyDef> LegendaryAll = new List<SpecialtyDef>
         {
-            // === 个人专属专长（原著标明：超A级强者独有，由归属原著人物赋予，人物存活才可赋予） ===
+            // === 个人专属专长（原著标明：超A级强者独有、名字自己取的——由归属原著人物赋予，人物存活才可赋予） ===
             // 死亡侵蚀=海拉（ch1012：超A级专属被动——死亡能量击中叠加15层，满层引爆即死判定；海拉活跃ch1401+）
+            // 注：模板专长（强韧生命等）是另一系统（NPC/BOSS类别专长），不属于专属专长——不在此池
             new SpecialtyDef { id = "sm_legend_death_erosion", nameKey = "sm_legend_death_erosion", descKey = "sm_legend_death_erosion_info", system = "psi",
                                dmgMul = 0.10f, deathMark = true, markBurst = 1.2f, instantKill = true, alive = true },
-            // === 模板专长（原著标明：NPC/BOSS专属、效果极其强劲、稀有——单位形成获得，非人物赋予） ===
-            new SpecialtyDef { id = "sm_legend_tough_life",   nameKey = "sm_legend_tough_life",   descKey = "sm_legend_tough_life_info",   system = "any",     hpMul = 0.25f, alive = false },
-            new SpecialtyDef { id = "sm_legend_nuclear",      nameKey = "sm_legend_nuclear",      descKey = "sm_legend_nuclear_info",      system = "mech",    dmgMul = 0.15f, hpMul = 0.20f, alive = false },
-            new SpecialtyDef { id = "sm_legend_combat_skill", nameKey = "sm_legend_combat_skill", descKey = "sm_legend_combat_skill_info", system = "martial", dmgMul = 0.20f, lowHpMul = 0.20f, alive = false },
-            new SpecialtyDef { id = "sm_legend_fixed_reduce", nameKey = "sm_legend_fixed_reduce", descKey = "sm_legend_fixed_reduce_info", system = "any",     hpMul = 0.30f, alive = false },
         };
 
         // === 组合自创（原著：专属专长无限自创、名字单位自己取——可生成模组未预设的独特专长） ===
@@ -181,7 +177,6 @@ namespace SuperMech.Code
                     rarity = Rarity.R3_Legendary,
                     base_stats = new BaseStats()
                 };
-                if (d.hpMul > 0f) t.base_stats["multiplier_health"] = 1f + d.hpMul;  // 模板专长生命加成（trait 层累加）
                 AssetManager.traits.add(t);
             }
         }
@@ -251,9 +246,8 @@ namespace SuperMech.Code
                         int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
                         if (rankIdx >= 13 && !a.hasTrait(SuperMechTraits.Descendant))
                         {
-                            // 原著：模板专长=NPC/BOSS专属（玩家弄不到，ch107）；个人专属=超A级强者独有（前世玩家不存在这种能力，ch1093）
+                            // 原著：个人专属=超A级强者独有（前世玩家不存在这种能力，ch1093）——由存活原著人物赋予
                             if (list.Count == 0) s = TryLegendaryGrant(a, list);      // 首槽：原著人物（存活）赋予个人专属
-                            else s = TryTemplateFormation(a, list);                       // 后续槽：概率形成模板专长
                         }
                         if (s == null)
                         {
@@ -293,18 +287,6 @@ namespace SuperMech.Code
             return cand[UnityEngine.Random.Range(0, cand.Count)].id;
         }
 
-        /// <summary>模板专长形成：X阶超A（NPC/BOSS 定位）按形成几率获得模板专长（原著：专属专长形成几率）</summary>
-        private static string TryTemplateFormation(Actor a, List<string> existing)
-        {
-            if (a.hasTrait(SuperMechTraits.Descendant)) return null;   // 原著：玩家弄不到模板专长（ch107）
-            var pool = LegendaryAll.FindAll(d => !d.alive);
-            if (pool.Count == 0) return null;
-            var cand = pool.FindAll(d => !existing.Contains(d.id));
-            if (cand.Count == 0) return null;
-            // 形成几率 20%（原著：专属专长形成几率——模组固定低概率）
-            if (UnityEngine.Random.value > 0.2f) return null;
-            return cand[UnityEngine.Random.Range(0, cand.Count)].id;
-        }
 
         private static string RollSpecialty(Actor a, List<string> existing)
         {
