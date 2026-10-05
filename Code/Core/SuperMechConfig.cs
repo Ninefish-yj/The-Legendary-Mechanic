@@ -72,6 +72,7 @@ namespace SuperMech.Code
         public static float WorldTreeInterval = 400f;
         /// <summary>异神终局总开关（v0.74.0：封印时空琥珀→卷土重来→最终决战）</summary>
         public static bool EsGodEnabled = true;
+        public static bool SuperAEnabled = true;   // 个体伟力·集体伟力体系（超A级/清算/协会）
 
         // === 超神内空间（v0.47.0，原著第1430章）===
         /// <summary>超神内空间总开关（X阶放出内空间，原著第1430章）</summary>
@@ -336,6 +337,7 @@ namespace SuperMech.Code
         public static void SetWorldTreeEnabled(bool val) { WorldTreeEnabled = val; }
         public static void SetWorldTreeInterval(float val) { WorldTreeInterval = Mathf.Clamp(val, 200f, 2000f); }
         public static void SetEsGodEnabled(bool val) { EsGodEnabled = val; }
+        public static void SetSuperAEnabled(bool val) { SuperAEnabled = val; }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
         public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }

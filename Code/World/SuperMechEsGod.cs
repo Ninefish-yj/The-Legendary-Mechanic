@@ -4,59 +4,48 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.74.0+ 异神·最终决战（B线最高强度单体事件；v0.75.4/0.75.5 按原著文件核查+剧情清理）
-    /// 机制：异神为巅峰超A级单体威胁，周期降临（伤害×2.5）；击杀单位触发【异能·复刻】成长
-    /// （每击杀+5%伤害，上限+50%）；首次被击杀=封印于时空琥珀（冷却后卷土重来）；
-    /// 再次击杀=最终决战结算：击杀者继承异神之力（伤害+30%）、全体觉醒单位潜能+10、最强文明科技+100。
-    /// 原著章节：703（身份）/805（战力/基因链负荷）/1040（核心能力/封印）/1392（夺能）/1415（超神级战力）。
-    /// 注：原著无"三招秒杀/灵魂逃脱"表述（"三招"全文0次），相关措辞已修正。
+    /// v0.76.0 异神·顶层超A之一（用户修正定位：异神只是顶层超A级之一，能存在是三大文明的默许，
+    /// 不是威压宇宙的天灾；v0.74 天灾框架[周期降临/复刻成长/封印琥珀/终局决战]整体删除）
+    /// 原著依据：
+    ///  1. 异神="异能之神"，凶名赫赫的超A级顶级强者（ch712 黑雾身躯/红色光点/异神分身）；
+    ///  2. 顶层超A之一——与韩萧、麦尼逊等同量级的个体伟力代表（ch713+）；
+    ///  3. 存在依赖三大文明默许（ch1002/1018：三大文明可默许亦可清算超A级）；
+    ///  4. 异神遗产（ch1008：进化方块/技术资料，谁得到谁继承准宇宙级文明核心技术）。
+    /// 机制：异神作为顶层超A个体，在世界出现首个X阶超A级时降临一次（不周期循环）；
+    /// 属于超A个体（SuperMechSupermA 计数/清算/协会一视同仁）；被击杀后遗落异神遗产
+    /// （最强文明科技+30，原著：异神遗产=技术资料）；不再封印复活。
     /// </summary>
     public static class SuperMechEsGod
     {
-        public const string EsGodTrait = "sm_esgod";        // 异神标记
-        public const string InheritorTrait = "sm_esgod_power"; // 异神之力（终局后由击杀者继承）
+        public const string EsGodTrait = "sm_esgod";        // 异神标记（顶层超A）
 
-        public enum EventState { Idle, Active, Sealed, Defeated }
+        public enum EventState { Idle, Active, Defeated }
 
         public class EsGodSaveData
         {
             public EventState state = EventState.Idle;
-            public int nextSpawnInTicks = 600;   // 距下次降临
-            public int replicateCount;           // 异能·复刻层数（击杀数）
-            public int sealCount;              // 封印/卷土重来次数（首次封印于时空琥珀）
-            public bool finalDefeated;           // 是否已被终局消灭
             public long esGodId = -1;            // 异神单位id
+            public bool heritageClaimed;         // 异神遗产是否已掉落
         }
 
         private static readonly EsGodSaveData _data = new EsGodSaveData();
         public static EsGodSaveData Data => _data;
 
-        // 数值（原著：巅峰超A级·异能之神——全模组最强单体反派，接近但未达超神级）
-        private const float EsGodDamageMult = 2.5f;        // 异神伤害倍率（原著：巅峰超A级碾压普通单位）
-        private const float ReplicateGainPerKill = 0.05f;  // 异能·复刻：每击杀+5%伤害（原著：夺取异能变强）
-        private const float ReplicateMax = 0.50f;          // 复刻成长上限+50%
-        private const int SealCooldown = 900;        // 封印时空琥珀后卷土重来冷却
-        private const int PotentialFinalReward = 10;       // 最终决战奖励：全体觉醒潜能+10
-        private const int TechFinalReward = 100;           // 最终决战奖励：最强文明科技+100
-        private const float InheritorDamageBonus = 0.30f;  // 继承者伤害+30%（终局后由击杀者继承）
+        // 数值（原著：巅峰超A级·异能之神——顶层超A个体，接近但未达超神级）
+        private const float EsGodDamageMult = 2.5f;        // 异神伤害倍率（原著：顶层超A碾压普通单位）
+        private const int TechHeritageReward = 30;          // 异神遗产：最强文明科技+30（原著ch1008技术资料）
+        private const int PotentialHeritageReward = 3;      // 异神遗产：全体觉醒潜能+3
 
         // ============ 状态查询 ============
 
         public static bool IsActive => _data.state == EventState.Active;
         public static bool IsEsGod(Actor a) => a != null && a.hasTrait(EsGodTrait);
 
-        /// <summary>异神伤害倍率：基础×2.5 + 异能·复刻成长（原著：夺取异能、以基因链储存变强）</summary>
+        /// <summary>异神伤害倍率：×2.5（原著：顶层超A·异能之神，个体伟力巅峰）</summary>
         public static float GetEsGodDamageMult(Actor a)
         {
             if (a == null || !a.hasTrait(EsGodTrait)) return 1f;
-            return EsGodDamageMult * (1f + Mathf.Min(ReplicateMax, _data.replicateCount * ReplicateGainPerKill));
-        }
-
-        /// <summary>继承者异神之力加成（终局后由击杀者继承）</summary>
-        public static float GetInheritorBonus(Actor a)
-        {
-            if (a == null || !a.hasTrait(InheritorTrait)) return 1f;
-            return 1f + InheritorDamageBonus;
+            return EsGodDamageMult;
         }
 
         // ============ 主循环 ============
@@ -68,18 +57,9 @@ namespace SuperMech.Code
 
             if (_data.state == EventState.Idle)
             {
-                _data.nextSpawnInTicks--;
-                if (_data.nextSpawnInTicks <= 0) SpawnEsGod();
-            }
-            else if (_data.state == EventState.Active)
-            {
-                // 异神死亡处理由战斗补丁触发（OnEsGodKilled）
-            }
-            else if (_data.state == EventState.Sealed)
-            {
-                // 卷土重来（原著：异神被关进时空琥珀后卷土重来[1040回顾/1417/1429]）
-                _data.nextSpawnInTicks--;
-                if (_data.nextSpawnInTicks <= 0) SpawnEsGod();
+                // 降临条件：世界已出现X阶超A级个体（原著：超A级是宇宙中的大人物，异神为顶层之一）
+                if (SuperMechSupermA.CountSuperA() >= 1)
+                    SpawnEsGod();
             }
         }
 
@@ -94,7 +74,7 @@ namespace SuperMech.Code
                 if (!god.hasTrait(EsGodTrait)) god.addTrait(EsGodTrait);
                 _data.esGodId = god.id;
                 _data.state = EventState.Active;
-                Debug.Log($"[超神机械师] 【异神降临】巅峰超A级·异能之神降临（异能·复刻层数 {_data.replicateCount}）！");
+                Debug.Log($"[超神机械师] 【异神】顶层超A·异能之神现身（三大文明默许下的个体伟力）");
             }
             catch (System.Exception e)
             {
@@ -102,72 +82,30 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>战斗挂接：异神击杀单位→异能·复刻成长（原著：近身接触吸收异能基因）</summary>
-        public static void OnEsGodKill(Actor killer, Actor target)
-        {
-            if (killer == null || !killer.hasTrait(EsGodTrait)) return;
-            _data.replicateCount++;
-        }
-
-        /// <summary>战斗挂接：异神被击杀（原著：被封印于时空琥珀后卷土重来[1040/1417/1429]/最终决战[1392/1415]）</summary>
+        /// <summary>战斗挂接：异神被击杀→遗落异神遗产（原著ch1008：异神遗产=进化方块/技术资料，
+        /// 谁得到谁继承准宇宙级文明核心技术）——不再封印复活</summary>
         public static void OnEsGodKilled(Actor killer, Actor target)
         {
             if (target == null || !target.hasTrait(EsGodTrait)) return;
             if (_data.esGodId != target.id) return;
 
-            if (_data.finalDefeated)
+            if (!_data.heritageClaimed)
             {
-                // 已最终决战消灭过，不再复活
-                _data.state = EventState.Defeated;
-                return;
-            }
+                _data.heritageClaimed = true;
+                Kingdom top = FindStrongestKingdom();
+                if (top != null) SuperMechCivilization.AddTechPoints(top, TechHeritageReward);
 
-            // 已卷土重来过一次：本次为再次决战的终局（原著#1392：能力被夺走）
-            if (_data.sealCount > 0)
-            {
-                ConfirmFinalDefeat(killer, target);
-                return;
-            }
-
-            // 首次击杀：异神被封印于时空琥珀（原著#1040），冷却后卷土重来
-            _data.sealCount++;
-            _data.state = EventState.Sealed;
-            _data.nextSpawnInTicks = SealCooldown;
-            Debug.Log($"[超神机械师] 【异神】异神被击退，封印于时空琥珀！将在 {SealCooldown} tick 后卷土重来");
-        }
-
-        /// <summary>异神最终决战确认：异神卷土重来后再次被击杀时，由战斗补丁调用，判定终局（原著第1392章还施彼身）</summary>
-        public static void ConfirmFinalDefeat(Actor killer, Actor target)
-        {
-            if (target == null || !target.hasTrait(EsGodTrait)) return;
-            if (_data.esGodId != target.id) return;
-
-            // 异神养成计划（原著#1040）：能力由继承者获得——击杀者获得异神之力
-            if (killer != null && killer.isAlive())
-            {
-                if (!killer.hasTrait(InheritorTrait)) killer.addTrait(InheritorTrait);
-            }
-
-            // 终局奖励：全体觉醒单位潜能+10、最强文明科技+100
-            Kingdom top = FindStrongestKingdom();
-            if (top != null) SuperMechCivilization.AddTechPoints(top, TechFinalReward);
-
-            if (World.world.units != null)
-            {
-                var units = World.world.units.units_only_alive;
-                if (units != null)
+                if (World.world.units != null && World.world.units.units_only_alive != null)
                 {
-                    foreach (var a in units)
+                    foreach (var a in World.world.units.units_only_alive)
                     {
                         if (a == null || !a.isAlive()) continue;
-                        if (SuperMechAwakened.IsAwakened(a)) SuperMechPotential.AddPotential(a, PotentialFinalReward);
+                        if (SuperMechAwakened.IsAwakened(a)) SuperMechPotential.AddPotential(a, PotentialHeritageReward);
                     }
                 }
+                Debug.Log($"[超神机械师] 【异神遗产】异神被击杀，遗落异神遗产：最强文明科技+{TechHeritageReward}、全体觉醒潜能+{PotentialHeritageReward}");
             }
-
-            _data.finalDefeated = true;
             _data.state = EventState.Defeated;
-            Debug.Log($"[超神机械师] 【异神终局】异神被彻底消灭！能力由继承者获得（伤害+30%），全文明获得终局奖励");
         }
 
         // ============ 工具 ============
@@ -214,21 +152,15 @@ namespace SuperMech.Code
         {
             if (data == null) return;
             _data.state = data.state;
-            _data.nextSpawnInTicks = data.nextSpawnInTicks;
-            _data.replicateCount = data.replicateCount;
-            _data.sealCount = data.sealCount;
-            _data.finalDefeated = data.finalDefeated;
             _data.esGodId = data.esGodId;
+            _data.heritageClaimed = data.heritageClaimed;
         }
 
         public static void Clear()
         {
             _data.state = EventState.Idle;
-            _data.nextSpawnInTicks = 600;
-            _data.replicateCount = 0;
-            _data.sealCount = 0;
-            _data.finalDefeated = false;
             _data.esGodId = -1;
+            _data.heritageClaimed = false;
         }
     }
 }

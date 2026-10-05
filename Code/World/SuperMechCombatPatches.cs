@@ -243,17 +243,24 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (treeMult - 1f));
                     }
-                    // v0.74.0 异神：异能·复刻成长伤害倍率 + 继承者异神之力加成
+                    // v0.76.0 个体伟力：异神（顶层超A）×2.5 + 超A级协会联合加成（个体伟力联合）
                     float esGodMult = SuperMechEsGod.GetEsGodDamageMult(attacker);
                     if (esGodMult != 1f)
                     {
                         target.data.health -= (int)(pDamage * (esGodMult - 1f));
                     }
-                    float inheritorBonus = SuperMechEsGod.GetInheritorBonus(attacker);
-                    if (inheritorBonus != 1f)
+                    float councilBonus = SuperMechSupermA.GetCouncilDamageBonus(attacker);
+                    if (councilBonus != 1f)
                     {
-                        target.data.health -= (int)(pDamage * (inheritorBonus - 1f));
+                        target.data.health -= (int)(pDamage * (councilBonus - 1f));
                     }
+                }
+
+                // v0.76.0 集体伟力清算：清算期超A级个体受文明联合压制（受击伤害×1.3，原著巅峰之殇式清算）
+                float purgeMult = SuperMechSupermA.GetPurgeDamageTakenMult(target);
+                if (purgeMult != 1f)
+                {
+                    target.data.health -= (int)(pDamage * (purgeMult - 1f));
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
@@ -503,11 +510,7 @@ namespace SuperMech.Code
                 // v0.73.0 世界树入侵：击杀世界树单位计入击退进度（树王死亡即击退）
                 SuperMechWorldTree.OnTreeKilled(killer, target);
 
-                // v0.74.0 异神：击杀单位→复刻成长；被击杀→封印时空琥珀/终局判定
-                if (killer.hasTrait(SuperMechEsGod.EsGodTrait))
-                {
-                    SuperMechEsGod.OnEsGodKill(killer, target);
-                }
+                // v0.76.0 异神：被击杀→遗落异神遗产（原著ch1008，不再封印复活）
                 SuperMechEsGod.OnEsGodKilled(killer, target);
 
                 if (SuperMechAwakened.IsAwakened(killer))
