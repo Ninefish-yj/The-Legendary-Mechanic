@@ -142,6 +142,15 @@ namespace SuperMech.Code
         }
 
         /// <summary>按王国获取科技等级（用于王国面板注入）</summary>
+        /// <summary>读取王国科技点（供超A-文明力量对比评估；科技点随发展持续增长）</summary>
+        public static float GetTechPointsFromKingdom(Kingdom k)
+        {
+            if (k == null) return 0f;
+            long kid = k.getID();
+            if (_kingdomTechPoints.TryGetValue(kid, out var points)) return points;
+            return 0f;
+        }
+
         public static int GetTechLevelFromKingdom(Kingdom k)
         {
             if (k == null) return 0;

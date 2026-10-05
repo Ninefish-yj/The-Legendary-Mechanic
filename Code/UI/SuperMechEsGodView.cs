@@ -62,8 +62,13 @@ namespace SuperMech.Code
                 : d.state == SuperMechEsGod.EventState.Active ? LocalizedTextManager.getText("sm_ui_esgod_state_active")
                 : LocalizedTextManager.getText("sm_ui_esgod_state_defeated");
 
+            float superAPower = SuperMechSupermA.GetSuperAPower();
+            float awakenedPower = SuperMechSupermA.GetAwakenedPower();
+            float civPower = SuperMechSupermA.GetCivPower();
             _countText.text = LocalizedTextManager.getText("sm_ui_esgod_title") + " | "
-                + LocalizedTextManager.getText("sm_ui_supera_count") + " " + superACount;
+                + LocalizedTextManager.getText("sm_ui_supera_count") + " " + superACount + " | "
+                + LocalizedTextManager.getText("sm_ui_supera_power") + " "
+                + superAPower.ToString("0") + "/" + civPower.ToString("0");
 
             var sb = new System.Text.StringBuilder();
             // 三大文明态度（个体伟力 vs 集体伟力）
