@@ -99,11 +99,12 @@ namespace SuperMech.Code
         public class IterationArchive
         {
             public int iteration;               // 第几轮宇宙迭代（0=前代/原著上代文明）
-            public int superACount;             // 该迭代超A级（圣体级）数量
+            public int superACount;             // 该迭代超A级（圣体级）数量（type=1记事档案不计传承）
             public int[] classCounts = new int[5]; // 体系分布：机械/念力/武道/异能/魔法
             public int maxRankIdx;              // 最高阶位
             public string label;                // 档案名（本地化键；null=玩家世界第N轮记录）
             public string note;                 // 档案说明（本地化键；null=无）
+            public int type;                    // 0=文明档案（计入传承）/1=记事档案（纯记录，ch1267留言/情报）
         }
 
         public class DeadUnitRecord
@@ -159,11 +160,13 @@ namespace SuperMech.Code
         }
 
         /// <summary>历代传承系数：圣所逐代累积的超A记录→新迭代复苏更完整（原著ch1211
-        /// "一次次对宇宙进行微小的改变，不断让下一迭代的宇宙变得更加丰富"；每200超A记录+1%，上限+10%）</summary>
+        /// "一次次对宇宙进行微小的改变，不断让下一迭代的宇宙变得更加丰富"；每200超A记录+1%，上限+10%）。
+        /// 只统计文明档案（type=0）；记事档案（留言/情报）不计入传承。</summary>
         public static float GetInheritanceBonus()
         {
             int total = 0;
-            foreach (var ar in Data.iteration_archives) total += ar.superACount;
+            foreach (var ar in Data.iteration_archives)
+                if (ar != null && ar.type == 0) total += ar.superACount;
             return 1f + Mathf.Min(0.10f, total * 0.0005f);
         }
 
@@ -276,21 +279,39 @@ namespace SuperMech.Code
                 // iteration=0 表示前代（原著上代文明）。
                 if (Data.iteration_archives.Count == 0)
                 {
-                    // ① 圣所文明（变革迭代）：信息态突破、查到大重启起源、用信息态延续文明失败、留下圣所（ch1211）
+                    // ① 救世主文明：最初改造宇宙、触动信息态异变、影响宇宙发展路线的文明（ch1211）
                     Data.iteration_archives.Add(new IterationArchive
                     {
-                        iteration = 0, label = "sm_san_arch_sanciv", note = "sm_san_arch_sanciv_n",
+                        iteration = 0, type = 0, label = "sm_san_arch_savior", note = "sm_san_arch_savior_n",
+                        superACount = 200, classCounts = new int[] { 50, 40, 40, 40, 30 }, maxRankIdx = 12
+                    });
+                    // ② 圣所文明（变革迭代）：信息态突破、查到大重启起源、用信息态延续文明失败、留下圣所（ch1211）
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0, type = 0, label = "sm_san_arch_sanciv", note = "sm_san_arch_sanciv_n",
                         superACount = 300, classCounts = new int[] { 70, 60, 60, 60, 50 }, maxRankIdx = 12
                     });
-                    // ② 诸星联（次级维度世界）：次级维度=诸星联所在的世界（ch1207）；世界重启计划=诸星联
+                    // ③ 诸星联（次级维度世界）：次级维度=诸星联所在的世界（ch1207）；世界重启计划=诸星联
                     // 逃脱宇宙终结的方案，失败后截出闭合循环时空=幻影世界（ch1211/1216/1217）
                     Data.iteration_archives.Add(new IterationArchive
                     {
-                        iteration = 0, label = "sm_san_arch_alliance", note = "sm_san_arch_alliance_n",
+                        iteration = 0, type = 0, label = "sm_san_arch_alliance", note = "sm_san_arch_alliance_n",
                         superACount = 500, classCounts = new int[] { 100, 100, 100, 100, 100 }, maxRankIdx = 12
                     });
+                    // ④ 历代终极文明留言板：圣所记录每个迭代终极文明的经验留言，一代代传下去（ch1267）
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0, type = 1, label = "sm_san_arch_board", note = "sm_san_arch_board_n",
+                        superACount = 0, maxRankIdx = 0
+                    });
+                    // ⑤ 暗面迭代·循环重启：深层真相情报，完全解锁权限才可见（ch1465）
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0, type = 1, label = "sm_san_arch_dark", note = "sm_san_arch_dark_n",
+                        superACount = 0, maxRankIdx = 0
+                    });
                     Save();
-                    Debug.Log("[超神机械师] 圣所预置前代文明档案×2（圣所文明/诸星联·次级维度世界，传承+4%）");
+                    Debug.Log("[超神机械师] 圣所预置前代档案×5（救世主/圣所文明/诸星联/终极文明留言板/暗面迭代，传承+5%）");
                 }
             }
             catch (System.Exception e)
