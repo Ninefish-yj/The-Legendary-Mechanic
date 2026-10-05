@@ -78,12 +78,17 @@ namespace SuperMech.Code
                 string clsText = cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）");
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_class"), clsText, null, InfoColor);
 
-                string stage = SuperMechStage.GetStageName(a);
-                if (stage != "—" && stage != "sm_knowledgetab_829")
+                // v0.75.33: 职业阶段仅对觉醒者显示（独立转职链，原著玩家转职）；
+                // 普通单位的职业阶段是阶位镜像（RankToStage），与"能级阶位"重复，不再展示
+                if (SuperMechAwakened.IsAwakened(a))
                 {
-                    string progress = SuperMechStage.GetStageProgressText(a);
-                    string stageText = string.IsNullOrEmpty(progress) ? stage : $"{stage}（{progress}）";
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stageText, null, InfoColor);
+                    string stage = SuperMechStage.GetStageName(a);
+                    if (stage != "—" && stage != "sm_knowledgetab_829")
+                    {
+                        string progress = SuperMechStage.GetStageProgressText(a);
+                        string stageText = string.IsNullOrEmpty(progress) ? stage : $"{stage}（{progress}）";
+                        ShowRow(window, LocalizedTextManager.getText("sm_ui_class_stage"), stageText, null, InfoColor);
+                    }
                 }
 
                 // v0.50.0 势力显示
