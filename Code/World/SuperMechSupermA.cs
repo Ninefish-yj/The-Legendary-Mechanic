@@ -23,7 +23,7 @@ namespace SuperMech.Code
 
         // 数值（原著尺度等比缩放）
         private const int SuperAThreshold = 3;      // 超A≥3 触发清算（个体伟力泛滥的担忧）
-        private const int CouncilThreshold = 2;     // 超A≥2 协会成立（个体伟力联合）
+        private const int CouncilThreshold = 5;     // 超A≥5 协会成立（原著：协会为超A级规模庞大后由麦尼逊等推动创建，ch1016"超A总数只会一直增加"）
         private const float CouncilDamageBonus = 0.10f; // 协会联合加成：超A个体伤害+10%
         private const float PurgeDamageTakenMult = 1.30f; // 清算期超A个体受击伤害×1.3（文明联合压制）
         private const int RecalcInterval = 8;       // 每8 tick 重算态度/协会
@@ -95,7 +95,7 @@ namespace SuperMech.Code
             if (_tick % RecalcInterval != 0) return;
 
             int count = CountSuperA();
-            _councilFormed = count >= CouncilThreshold;  // 原著后期：超A级协会由超A级个体联合创建
+            _councilFormed = count >= CouncilThreshold;  // 原著后期：超A级协会由超A级个体大规模联合创建
             if (count >= SuperAThreshold && !_councilFormed)
             {
                 _attitude = Attitude.Purge;             // 个体伟力泛滥→文明清算（ch1018）
