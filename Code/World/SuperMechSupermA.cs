@@ -52,10 +52,12 @@ namespace SuperMech.Code
         public static Attitude CurrentAttitude => _attitude;
         public static bool CouncilFormed => _councilFormed;
 
-        /// <summary>超A级判定：能级X阶（原著：超A级=超脱A级的顶级强者，模组X阶为能级顶点）</summary>
+        /// <summary>超A级判定：觉醒超能者中的能级X阶（原著：超A级=超能者体系的顶级强者，
+        /// 韩萧等都是超能者；普通人即使战力堆高也不属超A级语境——普通单位不算威胁池、不被清算波及，
+        /// 避免"有能级就被清算"的大屠杀）</summary>
         public static bool IsSuperA(Actor a)
         {
-            return a != null && SuperMechAdvancement.GetExactRankIndex(a) >= 13;
+            return a != null && SuperMechAwakened.IsAwakened(a) && SuperMechAdvancement.GetExactRankIndex(a) >= 13;
         }
 
         /// <summary>当前存活超A级个体数（含异神）</summary>
