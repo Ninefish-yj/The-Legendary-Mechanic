@@ -4649,10 +4649,10 @@
   "sm_sanctuary_open_desc": "打开圣所：钥匙、留言板与宇宙文明遗产",
   "sm_ui_supera_count": "超A级个体",
   "sm_ui_supera_attitude": "霸主文明态度",
-  "sm_ui_supera_tolerate": "默许（个体自由活动）",
-  "sm_ui_supera_purge": "清算（无差别压制超A，受击×1.3）",
+  "sm_ui_supera_tolerate": "默许（自由活动）",
+  "sm_ui_supera_purge": "清算（只清非霸主文明嫡系的自由超A，受击×1.3）",
   "sm_ui_supera_council": "超A级协会",
   "sm_ui_supera_council_yes": "已成立（超A≥5，个体伟力联合，伤害+10%）",
   "sm_ui_supera_council_no": "未成立",
-  "sm_ui_supera_desc": "说明：超A级（能级X阶）=个体伟力。超A≥3且协会未成立→霸主文明发动无差别清算（原著ch1018个体伟力泛滥担忧，巅峰之殇ch1002连盟友超A一起清）；超A≥5→超A级协会成立（原著后期：麦尼逊等推动，个体伟力大规模联合，抵消清算并获联合加成）。"
+  "sm_ui_supera_desc": "说明：超A级（能级X阶）=个体伟力。非霸主文明嫡系的自由超A≥3且协会未成立→霸主文明清算（原著巅峰之殇ch1002：清超星团级盟友的超A、把超A收编为嫡系；嫡系超A=战略威慑工具不清算；清算有政治考量非必然，ch1018）；超A≥5→超A级协会成立（原著后期：麦尼逊等推动，大规模个体伟力联合，抵消清算+伤害+10%）。"
 }
