@@ -121,11 +121,6 @@ namespace SuperMech.Code
                   : LocalizedTextManager.getText("sm_ui_esgod_heritage_no")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_esgod_desc")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_supera_desc")).Append("\n");
-            // v0.76.48 前代暗面宇宙背景（三大文明前代路线，数据预置+展示）
-            sb.Append(LocalizedTextManager.getText("sm_ui_supera_dark")).Append(": ")
-              .Append(string.Format(LocalizedTextManager.getText("sm_ui_supera_dark_info"),
-                  SuperMechCosmicIteration.GetDarkUniverseHistory().Count,
-                  (int)(SuperMechCosmicIteration.GetWorldTreeRetentionBonus() * 100f))).Append("\n");
             // v0.76.45 世界之外·高维存在层（纯聊天软件风格）：引言题词+超脱者消息流。
             // 圣所数据（档案计数/传承/留言状态）归圣所显示（圣所窗口/复活界面），不在此区块。
             sb.Append("\n<color=#ffd966>════ ").Append(LocalizedTextManager.getText("sm_ui_supera_beyond")).Append(" ════</color>\n");

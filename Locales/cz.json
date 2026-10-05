@@ -4676,7 +4676,5 @@
   "sm_ui_dim_none": "未进入",
   "sm_ui_dim_enter": "进入",
   "sm_ui_dim_inside": "维度中",
-  "sm_ui_dim_locked": "条件不足",
-  "sm_ui_supera_dark": "前代·暗面宇宙",
-  "sm_ui_supera_dark_info": "三大文明前代路线：{0} 轮暗面迭代 · 世界树遗产保留+{1}%"
+  "sm_ui_dim_locked": "条件不足"
 }
