@@ -330,10 +330,9 @@ namespace SuperMech.Code
                         iteration = 0, type = 1, label = "sm_san_arch_dark", note = "sm_san_arch_dark_n",
                         superACount = 0, maxRankIdx = 0
                     });
-                    // ⑥ 高维留言·成功转化经验：方案（原著）=信息态剥离计划→信息实化装置（世界树）+
-                    // 韩萧虚拟创世，暗面宇宙与真实宇宙重合（ch1471两方案50%/70%、ch1477执行成功）；
-                    // 成功定义（模组设计延伸）=彻底脱离迭代循环本身——原著开放式未写此层，
-                    // 按模组设定三大文明已达成；留言=接力最珍贵的一棒（ch1211"即便失败也留下心得让后人研究"）
+                    // ⑥ 高维留言·成功转化经验：三大文明已成功脱离迭代循环（模组设定层，非原著剧情线——
+                    // 用户定位：不加剧情，只留"已成功"结果），以成功者身份留下心得：跳出迭代循环的
+                    // 方案与经验，让迭代内的世界参考（ch1211接力精神：即便失败也留下心得让后人研究）
                     Data.iteration_archives.Add(new IterationArchive
                     {
                         iteration = 0, type = 1, label = "sm_san_arch_beyond", note = "sm_san_arch_beyond_n",
