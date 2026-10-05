@@ -277,6 +277,12 @@ namespace SuperMech.Code
             //   权威结构确立（谁的力量大谁定规则，ch1002/1018）。确立前=探索历（无秩序：
             //   超A自由沉浮、文明无力约束，清算/收编/协会全不生效）
             _orderEstablished = civPower >= classPower && CanPurge();
+
+            // v0.76.23 高维留言：世界达成任一重大里程碑→三大文明（超脱者）向圣所写入成功心得
+            // （一次性·跨迭代保留；原著接力：终极文明把经验留给后人，ch1211）
+            if (_orderEstablished || _bureaucratized || _sanctumFormed || _allianceFormed)
+                SuperMechSanctuary.TryGiveBeyondMessage();
+
             if (!_orderEstablished)
             {
                 if (_attitude == Attitude.Purge)

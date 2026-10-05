@@ -132,7 +132,11 @@ namespace SuperMech.Code
               .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_echo")).Append(": ")
               .Append(order || sanctum || bureau || alliance
                   ? LocalizedTextManager.getText("sm_ui_supera_beyond_watching")
-                  : LocalizedTextManager.getText("sm_ui_supera_beyond_quiet"));
+                  : LocalizedTextManager.getText("sm_ui_supera_beyond_quiet")).Append("\n")
+              .Append(LocalizedTextManager.getText("sm_ui_supera_beyond_msg")).Append(": ")
+              .Append(SuperMechSanctuary.Data.beyond_message_given
+                  ? LocalizedTextManager.getText("sm_ui_supera_beyond_msg_yes")
+                  : LocalizedTextManager.getText("sm_ui_supera_beyond_msg_no"));
             _detailText.text = sb.ToString();
         }
     }

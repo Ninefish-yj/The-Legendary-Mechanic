@@ -4704,5 +4704,10 @@
   "sm_ui_supera_beyond_arch_info": "前代记录{0}条·历代超A记录{1}（救世主→圣所文明→诸星联→暗面宇宙）→传承完整度+{2}%",
   "sm_ui_supera_beyond_echo": "超脱者的注视",
   "sm_ui_supera_beyond_watching": "你的世界已达成秩序/圣域等里程碑——世界之外的存在正在注视这一棒",
-  "sm_ui_supera_beyond_quiet": "世界仍在迭代内自行演化，它们安静俯瞰"
+  "sm_ui_supera_beyond_quiet": "世界仍在迭代内自行演化，它们安静俯瞰",
+  "sm_san_arch_beyond": "高维留言·成功转化经验",
+  "sm_san_arch_beyond_n": "三大文明已成功脱离迭代循环（暗面宇宙与真实宇宙重合、虚拟转为真实，ch1477）——以终极文明身份留下成功心得：为迭代内的世界留下\"如何转化度过大重启\"的方案（接力最珍贵的一棒）",
+  "sm_ui_supera_beyond_msg": "高维留言",
+  "sm_ui_supera_beyond_msg_yes": "已收到（三大文明的成功心得已写入圣所档案）",
+  "sm_ui_supera_beyond_msg_no": "未收到（世界达成秩序/圣域/体制化/同盟任一里程碑时，超脱者将留下心得）"
 }

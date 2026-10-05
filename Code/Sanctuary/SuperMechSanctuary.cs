@@ -92,6 +92,7 @@ namespace SuperMech.Code
             public int total_resurrections = 0;
             public float sanctuary_energy = 5000f;  // 圣所能量（复活媒介消耗）
             public List<IterationArchive> iteration_archives = new List<IterationArchive>(); // v0.76.12 跨迭代传承档案
+            public bool beyond_message_given = false; // v0.76.23 高维留言是否已写入（一次性·跨迭代保留）
         }
 
         /// <summary>跨迭代档案（v0.76.12 圣所跨迭代传承：原著ch1211圣所=上一迭代遗产融入新生宇宙，
@@ -157,6 +158,23 @@ namespace SuperMech.Code
             });
             Save();
             Debug.Log($"[超神机械师] 圣所迭代档案: 第{SuperMechCosmicIteration.CurrentIteration}轮 超A×{superA} 最高阶rank{maxRank}");
+        }
+
+        /// <summary>高维留言：世界达成重大里程碑（秩序确立/体制化/圣域/同盟）时，
+        /// 三大文明（已脱离迭代的超脱者）向圣所写入成功心得——原著接力精神（ch1211"即便失败了
+        /// 也会留下心得让后人研究"；成功经验是接力最珍贵的一棒）。一次性，写入后跨迭代永久保留。</summary>
+        public static bool TryGiveBeyondMessage()
+        {
+            if (Data.beyond_message_given) return false;
+            Data.beyond_message_given = true;
+            Data.iteration_archives.Add(new IterationArchive
+            {
+                iteration = 0, type = 1, label = "sm_san_arch_beyond", note = "sm_san_arch_beyond_n",
+                superACount = 0, maxRankIdx = 0
+            });
+            Save();
+            Debug.Log("[超神机械师] 高维留言：三大文明向圣所写入成功心得（世界达成里程碑）");
+            return true;
         }
 
         /// <summary>历代传承系数：圣所逐代累积的超A记录→新迭代复苏更完整（原著ch1211
@@ -312,8 +330,17 @@ namespace SuperMech.Code
                         iteration = 0, type = 1, label = "sm_san_arch_dark", note = "sm_san_arch_dark_n",
                         superACount = 0, maxRankIdx = 0
                     });
+                    // ⑥ 高维留言·成功转化经验：三大文明已成功脱离迭代循环（暗面宇宙与真实宇宙重合、
+                    // 由"虚拟"转为"真实"，ch1477开放式结局），以终极文明身份在圣所留言板留下成功心得——
+                    // 接力最珍贵的一棒：为迭代内的世界留下"如何转化度过大重启"的方案（ch1211"即便失败了
+                    // 也会在圣所里留下自己的心得，让后人继续研究"）
+                    Data.iteration_archives.Add(new IterationArchive
+                    {
+                        iteration = 0, type = 1, label = "sm_san_arch_beyond", note = "sm_san_arch_beyond_n",
+                        superACount = 0, maxRankIdx = 0
+                    });
                     Save();
-                    Debug.Log("[超神机械师] 圣所预置前代档案×5（救世主/圣所文明/诸星联/终极文明留言板/暗面迭代，传承+5%）");
+                    Debug.Log("[超神机械师] 圣所预置前代档案×6（救世主/圣所文明/诸星联/留言板/暗面宇宙/高维留言，传承+5%）");
                 }
             }
             catch (System.Exception e)
