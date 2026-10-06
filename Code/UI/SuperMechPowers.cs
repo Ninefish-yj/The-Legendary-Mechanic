@@ -40,6 +40,7 @@ namespace SuperMech.Code
                 {
                     id = "sm_disaster_infected",
                     path_icon = "actor_traits/iconPoison",
+                    group_id = "sm_awakened",
                     needs_to_be_explored = false,
                     can_be_given = false,
                     can_be_removed = true,
