@@ -1,0 +1,8 @@
+*.zip
+*.log
+.DS_Store
+*.user
+*.suo
+bin/
+obj/
+.vs/
