@@ -45,25 +45,26 @@ namespace SuperMech.Code
             public Message(string s, string c, WorldState st) { speaker = s; content = c; state = st; }
         }
 
-        private static readonly List<Message> _messages = new List<Message>
+        private static List<Message> _messages;
+        private static List<Message> Messages => _messages ??= new List<Message>
         {
             // 早期
-            new Message("韩萧", LocalizedTextManager.getText("sm_wb_msg_hanxiao_early"), WorldState.Early),
-            new Message("地球玩家", LocalizedTextManager.getText("sm_wb_msg_earth_early"), WorldState.Early),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_early"), WorldState.Early),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_roubao"), LocalizedTextManager.getText("sm_wb_msg_earth_early"), WorldState.Early),
             // 出现X阶
-            new Message("韩萧", LocalizedTextManager.getText("sm_wb_msg_hanxiao_xrank"), WorldState.XRankAppeared),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_xrank"), WorldState.XRankAppeared),
             // 秩序确立
-            new Message("地球玩家", LocalizedTextManager.getText("sm_wb_msg_earth_order"), WorldState.OrderEstablished),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_kuangdao"), LocalizedTextManager.getText("sm_wb_msg_earth_order"), WorldState.OrderEstablished),
             // 超A协会成立
-            new Message("地球玩家", LocalizedTextManager.getText("sm_wb_msg_earth_assoc"), WorldState.CouncilFormed),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_jile"), LocalizedTextManager.getText("sm_wb_msg_earth_assoc"), WorldState.CouncilFormed),
             // 清算风暴
-            new Message("韩萧", LocalizedTextManager.getText("sm_wb_msg_hanxiao_purge"), WorldState.PurgeStorm),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_purge"), WorldState.PurgeStorm),
             // 超星团同盟
-            new Message("地球玩家", LocalizedTextManager.getText("sm_wb_msg_earth_alliance"), WorldState.SuperclusterAlliance),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_feiyun"), LocalizedTextManager.getText("sm_wb_msg_earth_alliance"), WorldState.SuperclusterAlliance),
             // 体制化
-            new Message("韩萧", LocalizedTextManager.getText("sm_wb_msg_hanxiao_system"), WorldState.Institutionalized),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_system"), WorldState.Institutionalized),
             // 超能圣域
-            new Message("韩萧", LocalizedTextManager.getText("sm_wb_msg_hanxiao_balance"), WorldState.SanctuaryRealm),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_balance"), WorldState.SanctuaryRealm),
         };
 
         /// <summary>检测当前世界状态</summary>
@@ -186,7 +187,7 @@ namespace SuperMech.Code
             // 状态变化时，把旧状态的消息加入历史
             if (state != _lastState)
             {
-                foreach (var msg in _messages)
+                foreach (var msg in Messages)
                 {
                     if (msg.state == _lastState && !_messageHistory.Contains(msg))
                     {
@@ -198,7 +199,7 @@ namespace SuperMech.Code
 
             // 收集要显示的消息：当前状态的消息 + 最近历史消息（总共不超过MaxVisibleMessages）
             var visible = new List<Message>();
-            foreach (var msg in _messages)
+            foreach (var msg in Messages)
             {
                 if (msg.state == state) visible.Add(msg);
             }
@@ -234,7 +235,7 @@ namespace SuperMech.Code
             foreach (var msg in visible)
             {
                 bool isCurrent = msg.state == state;
-                bool isHanXiao = msg.speaker == "韩萧" || msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_hanxiao");
+                bool isHanXiao = msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_hanxiao");
                 bool sameAsLast = lastSpeaker == msg.speaker;
 
                 float msgHeight = 60f;
@@ -259,7 +260,7 @@ namespace SuperMech.Code
                 ar.sizeDelta = new Vector2(32, 32);
                 var avatarImg = avatarGo.GetComponent<Image>();
                 avatarImg.color = isHanXiao ? new Color(0.2f, 0.5f, 0.9f, isCurrent ? 0.9f : 0.4f) : new Color(0.3f, 0.7f, 0.4f, isCurrent ? 0.9f : 0.4f);
-                var avatarTxt = SuperMechUiSkin.MakeText(avatarGo.transform, isHanXiao ? "黑" : "玩", 14, TextAnchor.MiddleCenter);
+                var avatarTxt = SuperMechUiSkin.MakeText(avatarGo.transform, isHanXiao ? LocalizedTextManager.getText("sm_wb_avatar_hanxiao") : LocalizedTextManager.getText("sm_wb_avatar_player"), 14, TextAnchor.MiddleCenter);
                 avatarTxt.color = new Color(1, 1, 1, isCurrent ? 1f : 0.5f);
                 avatarTxt.fontStyle = FontStyle.Bold;
                 var atRect = avatarTxt.GetComponent<RectTransform>();

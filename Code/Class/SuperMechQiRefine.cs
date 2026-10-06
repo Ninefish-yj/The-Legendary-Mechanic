@@ -39,8 +39,12 @@ namespace SuperMech.Code
             if (a == null) return 0;
             int v;
             if (_refineLevel.TryGetValue(a.data.id, out v)) return v;
-            if (a.hasTrait(RefineMethodTrait)) return 1;
             return 0;
+        }
+
+        public static bool HasRefineMethod(Actor a)
+        {
+            return GetRefineLevel(a) > 0;
         }
 
         public static void AddRefineLevel(Actor a, int add)
@@ -50,8 +54,6 @@ namespace SuperMech.Code
             int next = Mathf.Min(MaxRefineLevel, cur + add);
             if (next == cur) return;
             _refineLevel[a.data.id] = next;
-            if (!a.hasTrait(RefineMethodTrait))
-                a.addTrait(RefineMethodTrait);
             Debug.Log($"[超神机械师] {a.name} 习得气力修炼法 Lv{next}，气力上限将随长久修行缓慢提升");
         }
 
@@ -64,24 +66,9 @@ namespace SuperMech.Code
         {
             if (_traitRegistered) return;
             _traitRegistered = true;
-            try
-            {
-                LocalizedTextManager.add("trait_" + RefineMethodTrait, LocalizedTextManager.getText("sm_qi_refine_080"), pReplace: true);
-                LocalizedTextManager.add("trait_" + RefineMethodTrait + "_info", LocalizedTextManager.getText("sm_qi_refine_081"), pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = RefineMethodTrait,
-                    path_icon = "actor_traits/iconSpellbook",
-                    group_id = "sm_cultivation",
-                    needs_to_be_explored = false,
-                    base_stats = new BaseStats()
-                };
-                AssetManager.traits.add(t);
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning("[超神机械师] 气力修炼法trait注册失败: " + e.Message);
-            }
+            // 不再注册为ActorTrait，修炼法是纯数据存储
+            LocalizedTextManager.add("trait_" + RefineMethodTrait, LocalizedTextManager.getText("sm_qi_refine_080"), pReplace: true);
+            LocalizedTextManager.add("trait_" + RefineMethodTrait + "_info", LocalizedTextManager.getText("sm_qi_refine_081"), pReplace: true);
         }
 
         // ============ 入口1：被动修行（锻炼法） ============
@@ -133,7 +120,7 @@ namespace SuperMech.Code
         /// <summary>主动提炼（全系通用）：消耗经验，按完美度提升气力上限，80次上限</summary>
         public static bool TryRefine(Actor a)
         {
-            if (a == null || !a.hasTrait(RefineMethodTrait)) return false;
+            if (a == null || !HasRefineMethod(a)) return false;
             long id = a.data.id;
             int count = GetRefineCount(a);
             if (count >= MaxRefineCount) return false;
@@ -160,7 +147,7 @@ namespace SuperMech.Code
         /// <summary>机械师专属提炼（电磁因子提炼法，原著sm_refinement_082定位）：智力驱动，100次上限</summary>
         public static bool TryEmRefine(Actor a)
         {
-            if (a == null || !a.hasTrait(RefineMethodTrait)) return false;
+            if (a == null || !HasRefineMethod(a)) return false;
             if (!a.hasTrait(SuperMechTraits.ClassMech)) return false;
             long id = a.data.id;
             int count = GetEmRefineCount(a);
@@ -217,7 +204,7 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (!a.hasTrait(RefineMethodTrait)) continue;
+                if (!HasRefineMethod(a)) continue;
                 if (SuperMechAwakened.IsAwakened(a)) continue;
                 if (Random.value < 0.1f) TryRefine(a);
                 if (a.hasTrait(SuperMechTraits.ClassMech) && Random.value < 0.05f) TryEmRefine(a);

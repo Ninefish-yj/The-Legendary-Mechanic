@@ -39,9 +39,27 @@ namespace SuperMech.Code
         private static int _lastViewEnd = -1;
         private static bool _sessionPopulated;
 
-        private static readonly string[] SystemNames = { "全部", "机械系", "魔法系", "异能系", "武道系", "念力系" };
-        private static readonly string[] RankNames = { "全部", "F", "E", "D", "C", "B", "A", "S", "X" };
-        private static readonly string[] SortNames = { "能级排序", "气力排序", "阶位排序", "知识排序", "职业排序" };
+        private static string[] _systemNames;
+        private static string[] SystemNames => _systemNames ??= new[] {
+            LocalizedTextManager.getText("sm_ui_filter_all"),
+            LocalizedTextManager.getText("sm_ui_filter_mech"),
+            LocalizedTextManager.getText("sm_ui_filter_mage"),
+            LocalizedTextManager.getText("sm_ui_filter_psi"),
+            LocalizedTextManager.getText("sm_ui_filter_martial"),
+            LocalizedTextManager.getText("sm_ui_filter_mind")
+        };
+        private static string[] _rankNames;
+        private static string[] RankNames => _rankNames ??= new[] {
+            LocalizedTextManager.getText("sm_ui_filter_all"), "F", "E", "D", "C", "B", "A", "S", "X"
+        };
+        private static string[] _sortNames;
+        private static string[] SortNames => _sortNames ??= new[] {
+            LocalizedTextManager.getText("sm_ui_sort_energy"),
+            LocalizedTextManager.getText("sm_ui_sort_qi"),
+            LocalizedTextManager.getText("sm_ui_sort_rank"),
+            LocalizedTextManager.getText("sm_ui_sort_knowledge"),
+            LocalizedTextManager.getText("sm_ui_sort_class")
+        };
 
         void Awake()
         {
@@ -494,7 +512,7 @@ namespace SuperMech.Code
             cardRect.anchoredPosition = new Vector2(0, -index * 38f - 2);
 
             var card = cardGo.AddComponent<SuperMechLeaderboardCard>();
-            float onar = SuperMechEnergyLevel.Calculate(actor);
+            float onar = SuperMechAdvancement.CalcOnar(actor);
             string className = GetRankClassName(actor);
             card.Build(actor, index + 1, onar, className);
 

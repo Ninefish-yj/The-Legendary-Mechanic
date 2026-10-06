@@ -40,8 +40,9 @@ namespace SuperMech.Code
                 {
                     id = "sm_disaster_infected",
                     path_icon = "actor_traits/iconPoison",
-                    group_id = "sm_special",
                     needs_to_be_explored = false,
+                    can_be_given = false,
+                    can_be_removed = true,
                     base_stats = new BaseStats()
                 };
                 // 微生物异化强化：狂暴化 + 血肉畸变

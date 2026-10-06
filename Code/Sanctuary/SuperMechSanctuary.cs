@@ -696,7 +696,7 @@ namespace SuperMech.Code
             {
                 id = "sm_divinity_ascended",
                 path_icon = "ui/Icons/actor_traits/iconBlessing",
-                group_id = "sm_special",
+                group_id = "sm_awakened",
                 needs_to_be_explored = false,
                 base_stats = new BaseStats()
             };

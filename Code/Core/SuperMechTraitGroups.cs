@@ -11,12 +11,11 @@ namespace SuperMech.Code
         {
             new GroupInfo("sm_ranks",          "sm_traitgroups_1016", "#FFD700"),
             new GroupInfo("sm_classes",        "sm_traitgroups_1040", "#00BFFF"),
+            new GroupInfo("sm_awakened",       "sm_traitgroups_1045", "#00FF7F"),
+            new GroupInfo("sm_descendant",     "sm_traitgroups_1046", "#FFD700"),
             new GroupInfo("sm_specialties",    "sm_traitgroups_1028", "#FF69B4"),
             new GroupInfo("sm_subclass",       "sm_traitgroups_1030", "#708090"),
             new GroupInfo("sm_race",           "sm_traitgroups_1031", "#9932CC"),
-            new GroupInfo("sm_cultivation",    "sm_traitgroups_1041", "#00CED1"),
-            new GroupInfo("sm_special",        "sm_traitgroups_1042", "#FF1493"),
-            new GroupInfo("sm_items",          "sm_traitgroups_1043", "#FFA500"),
             new GroupInfo("sm_rank_specialty", "sm_traitgroups_1029", "#FF4500"),
             new GroupInfo("sm_templates",      "sm_traitgroups_1044", "#DA70D6"),
         };
@@ -35,7 +34,22 @@ namespace SuperMech.Code
                         color = g.color
                     };
                     AssetManager.trait_groups.add(group);
-                    LocalizedTextManager.add("trait_group_" + g.id, LocalizedTextManager.getText(g.nameKey), pReplace: true);
+                    string groupName = LocalizedTextManager.getText(g.nameKey);
+                    if (string.IsNullOrEmpty(groupName)) groupName = g.id;
+                    LocalizedTextManager.add("trait_group_" + g.id, groupName, pReplace: true);
+
+                    // 种族专长分组同时注册到亚种特质分组（SubspeciesTrait使用subspecies_trait_groups）
+                    if (g.id == "sm_race")
+                    {
+                        var subGroup = new SubspeciesTraitGroupAsset
+                        {
+                            id = g.id,
+                            name = "trait_group_" + g.id,
+                            color = g.color
+                        };
+                        AssetManager.subspecies_trait_groups.add(subGroup);
+                    }
+
                     registered++;
                 }
                 catch (System.Exception e)

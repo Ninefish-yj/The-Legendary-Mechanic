@@ -132,7 +132,8 @@ namespace SuperMech.Code
             }
 
             var label = SuperMechUiBuilder.AddText(row,
-                $"[{f.level}级] {f.name}  |  成员:{f.memberIds.Count}  |  领袖:{leaderName}  |  战力:{f.totalPower:F0}",
+                string.Format(LocalizedTextManager.getText("sm_ui_faction_info"),
+                    f.level, f.name, f.memberIds.Count, leaderName, f.totalPower.ToString("F0")),
                 11, TextAnchor.MiddleLeft);
             var labelRect = label.GetComponent<RectTransform>();
             labelRect.anchorMin = Vector2.zero;
@@ -151,7 +152,7 @@ namespace SuperMech.Code
         private void ShowMembers(SuperMechFaction.FactionData f)
         {
             var sb = new System.Text.StringBuilder();
-            sb.AppendLine($"=== {f.name} 成员列表 ===");
+            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_member_list"), f.name));
             var units = World.world.units?.units_only_alive;
             int idx = 1;
             foreach (var mid in f.memberIds)
@@ -164,13 +165,13 @@ namespace SuperMech.Code
                     string rankName = (rank >= 0 && rank < SuperMechRanks.All.Count)
                         ? LocalizedTextManager.getText(SuperMechRanks.All[rank].name)
                         : "?";
-                    string role = (a.id == f.leaderId) ? "领袖" : "成员";
+                    string role = (a.id == f.leaderId) ? LocalizedTextManager.getText("sm_ui_leader") : LocalizedTextManager.getText("sm_ui_member");
                     sb.AppendLine($"{idx}. {a.name} [{rankName}] {role}");
                     idx++;
                     break;
                 }
             }
-            if (idx == 1) sb.AppendLine("（无存活成员）");
+            if (idx == 1) sb.AppendLine(LocalizedTextManager.getText("sm_ui_no_alive_members"));
             _detailText.text = sb.ToString();
         }
     }

@@ -31,6 +31,9 @@ namespace SuperMech.Code
             EternalBody, ExplosivePower, CellReactor, StatusBoost
         };
 
+        // 已授予阶位专长的单位ID（避免重复授予）
+        private static readonly HashSet<long> _rankSpecGranted = new HashSet<long>();
+
         public static void Register()
         {
             // 超A级阶位专长（7个选项）
@@ -78,7 +81,7 @@ namespace SuperMech.Code
         {
             if (a == null) return;
             // S阶（超A级）选择两项阶位专长
-            if (newRankIndex >= 10 && !a.data.GetBool("sm_rank_spec_granted", false))
+            if (newRankIndex >= 10 && !_rankSpecGranted.Contains(a.data.id))
             {
                 // 威能加成（无上威能）必选
                 if (!a.hasTrait(BoundlessPower)) a.addTrait(BoundlessPower);
@@ -88,7 +91,7 @@ namespace SuperMech.Code
                 int idx = UnityEngine.Random.Range(0, candidates.Count);
                 string second = candidates[idx];
                 if (!a.hasTrait(second)) a.addTrait(second);
-                a.data.SetBool("sm_rank_spec_granted", true);
+                _rankSpecGranted.Add(a.data.id);
                 Debug.Log($"[超神机械师] {a.data.name} 进阶超A，选择阶位专长：无上威能 + {LocalizedTextManager.getText("trait_" + second)}");
             }
             // X阶获得概念永生
@@ -117,6 +120,11 @@ namespace SuperMech.Code
                 else if (spec == SuperMechSpecialty.SpecMartialHeavy)
                     SuperMechSkills.LearnSkill(a, "sm_skill_martial_heavy_god");
             }
+        }
+
+        public static void Clear()
+        {
+            _rankSpecGranted.Clear();
         }
     }
 }

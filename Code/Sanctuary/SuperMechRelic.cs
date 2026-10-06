@@ -277,36 +277,28 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            foreach (var r in Relics)
-            {
-                string typeName = r.isWonder ? LocalizedTextManager.getText("sm_relic_133") : "sm_relic_134";
-                LocalizedTextManager.add("trait_" + r.id, LocalizedTextManager.getText(r.name), pReplace: true);
-                LocalizedTextManager.add("trait_" + r.id + "_info",
-                    LocalizedTextManager.getText("sm_relic_135"), pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = r.id, path_icon = "ui/Icons/actor_traits/iconChosenOne", group_id = "sm_items",
-                    needs_to_be_explored = false,
-                    rarity = r.isWonder ? Rarity.R3_Legendary : Rarity.R2_Epic,
-                    base_stats = new BaseStats()
-                };
-                t.base_stats["multiplier_damage"] = r.dmgMul;
-                t.base_stats["multiplier_health"] = r.hpMul;
-                AssetManager.traits.add(t);
-            }
-
-
+            // 装备/宝物不再注册为ActorTrait，改为Dictionary存储+Postfix应用属性加成
+            // 避免特质面板混乱（P0修复）
             int wonderCount = Relics.FindAll(r => r.isWonder).Count;
+        }
+
+        public static void ApplyEquipBonus(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            if (_equipped.TryGetValue(a.data.id, out string id) && !string.IsNullOrEmpty(id))
+            {
+                var r = Relics.Find(x => x.id == id);
+                if (r != null)
+                {
+                    if (r.dmgMul > 0f) stats["multiplier_damage"] = (stats["multiplier_damage"] > 0f ? stats["multiplier_damage"] : 1f) * (1f + r.dmgMul / 100f);
+                    if (r.hpMul > 0f) stats["multiplier_health"] = (stats["multiplier_health"] > 0f ? stats["multiplier_health"] : 1f) * (1f + r.hpMul / 100f);
+                }
+            }
         }
 
         public static void EquipCosmicRelic(Actor a, string relicId)
         {
             if (a == null) return;
-            if (_equipped.TryGetValue(a.data.id, out string oldId) && !string.IsNullOrEmpty(oldId))
-            {
-                if (a.hasTrait(oldId)) a.removeTrait(oldId);
-            }
-            a.addTrait(relicId);
             _equipped[a.data.id] = relicId;
         }
 

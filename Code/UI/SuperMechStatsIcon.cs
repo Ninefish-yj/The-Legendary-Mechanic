@@ -33,14 +33,9 @@ namespace SuperMech.Code
         private static Transform _contentTransform;
         private static readonly List<StatsIconData> IconDatas = new List<StatsIconData>
         {
-            new StatsIconData("sm_strength", "ui/Icons/actor_traits/iconBlessing", true),
-            new StatsIconData("sm_agility", "ui/Icons/actor_traits/iconBlessing", true),
-            new StatsIconData("sm_endurance", "ui/Icons/actor_traits/iconBlessing", true),
-            new StatsIconData("sm_intelligence", "ui/Icons/actor_traits/iconBlessing", true),
             new StatsIconData("sm_mech_affinity", "ui/Icons/iconMechAffinity", true),
             new StatsIconData("sm_magic_affinity", "ui/Icons/iconMagicAffinity", true),
             new StatsIconData("sm_mystery", "ui/Icons/iconMystery", true),
-            new StatsIconData("sm_luck", "ui/Icons/iconLuck", true),
         };
 
         public static void Initialize(UnitWindow window)
@@ -162,23 +157,13 @@ namespace SuperMech.Code
         {
             if (!_initialized || _contentTransform == null) return;
 
-            float strength = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatStrength);
-            float agility = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatAgility);
-            float endurance = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatEndurance);
-            float intelligence = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatIntelligence);
             float mechAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMechAffinity);
             float mageAff = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMageAffinity);
             float mystery = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatMystery);
-            float luck = SuperMechCustomStats.GetStat(actor, SuperMechCustomStats.StatLuck);
 
-            CallSetIconValue(window, "sm_strength", strength);
-            CallSetIconValue(window, "sm_agility", agility);
-            CallSetIconValue(window, "sm_endurance", endurance);
-            CallSetIconValue(window, "sm_intelligence", intelligence);
             CallSetIconValue(window, "sm_mech_affinity", mechAff);
             CallSetIconValue(window, "sm_magic_affinity", mageAff);
             CallSetIconValue(window, "sm_mystery", mystery);
-            CallSetIconValue(window, "sm_luck", luck);
         }
 
         public static void ClearStaticState()

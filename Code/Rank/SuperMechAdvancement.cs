@@ -52,7 +52,7 @@ namespace SuperMech.Code
             float bonus = SuperMechFormulas.OnarBonus(skillCount, knowledgeCount, equipCount,
                 skillDmgSum, skillHpSum, skillSpdSum);
 
-            return baseOnar * (1f + bonus) * SuperMechConfig.OnaMultiplier * SuperMechConfig.PromotionSpeed;
+            return baseOnar * (1f + bonus) * SuperMechConfig.OnaMultiplier;
         }
 
         public static void TickAutoAwakening()
@@ -68,6 +68,8 @@ namespace SuperMech.Code
                 if (Random.value > SuperMechConfig.AwakeningChance) continue;
 
                 SuperMechTalent.GrantTalents(a);
+                if (!a.hasTrait(SuperMechAwakened.AwakenedTrait))
+                    a.addTrait(SuperMechAwakened.AwakenedTrait);
                 if (!a.hasTrait("sm_rank_01_e"))
                     a.addTrait("sm_rank_01_e");
                 SetExactRank(a, 1);
@@ -185,7 +187,7 @@ namespace SuperMech.Code
                         continue;
                 }
 
-                _exactRank[a.id] = targetIdx;
+                SetExactRank(a, targetIdx);
 
                 if (!SuperMechRanks.IsPlusRank(targetIdx))
                 {

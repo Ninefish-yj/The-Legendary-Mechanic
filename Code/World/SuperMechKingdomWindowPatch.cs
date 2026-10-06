@@ -37,13 +37,13 @@ namespace SuperMech.Code
                 if (civLevel != SuperMechCivilization.CivLevel.Normal)
                 {
                     _showStatRow.Invoke(__instance, new object[] {
-                        "文明等级", SuperMechCivilization.GetLevelName(civLevel), MetaType.None, -1L, "iconKingdom"
+                        LocalizedTextManager.getText("sm_ui_civ_level"), SuperMechCivilization.GetLevelName(civLevel), MetaType.None, -1L, "iconKingdom"
                     });
                 }
                 if (techLevel > 0)
                 {
                     _showStatRow.Invoke(__instance, new object[] {
-                        "科技等级", $"Lv{techLevel}", MetaType.None, -1L, "iconAge"
+                        LocalizedTextManager.getText("sm_ui_tech_level"), $"Lv{techLevel}", MetaType.None, -1L, "iconAge"
                     });
                 }
                 // v0.52.0 文明守护者
@@ -51,7 +51,7 @@ namespace SuperMech.Code
                 if (guardian != null)
                 {
                     _showStatRow.Invoke(__instance, new object[] {
-                        "文明守护者", guardian.name, MetaType.None, -1L, "iconKings"
+                        LocalizedTextManager.getText("sm_ui_civ_guardian"), guardian.name, MetaType.None, -1L, "iconKings"
                     });
                 }
             }

@@ -62,7 +62,7 @@ namespace SuperMech.Code
 
             var sb = new System.Text.StringBuilder();
             sb.Append(LocalizedTextManager.getText("sm_ui_tree_king")).Append(": ")
-              .Append(d.kingName != null && d.kingName.Length > 0 ? d.kingName : "（未入侵）").Append("\n");
+              .Append(d.kingName != null && d.kingName.Length > 0 ? d.kingName : LocalizedTextManager.getText("sm_ui_no_invasion")).Append("\n");
             if (d.state == SuperMechWorldTree.EventState.Invading)
             {
                 sb.Append(LocalizedTextManager.getText("sm_ui_tree_remaining")).Append(" ").Append(d.ticksLeft).Append("\n");

@@ -9,6 +9,7 @@ namespace SuperMech.Code
     /// 原著：机械师有武装/能量/虚拟三分支（知识树分类，按学习倾向性自动判定主要分支）
     /// 模组扩展：枪炮师/械武者也各有三专精，按属性倾向性自动判定
     /// 专精在职业阶段达到第7阶段（战争堡垒/机甲操控师）时自动判定
+    /// 存储方式：Dictionary（非特质），属性加成通过Actor.updateStats Postfix应用
     /// </summary>
     public static class SuperMechSpecialty
     {
@@ -23,9 +24,9 @@ namespace SuperMech.Code
         public const string SpecGunDancer = "sm_spec_gun_dancer";       // 枪斗士（中近距离机动）
 
         // === 械武者三专精（模组扩展，基于原著"武技+机械"推演）===
-        public const string SpecMartialWeapon = "sm_spec_martial_weapon";   // 武器大师（多武器切换）
-        public const string SpecMartialFight = "sm_spec_martial_fight";     // 格斗技师（近身搏击）
-        public const string SpecMartialHeavy = "sm_spec_martial_heavy";     // 重装斗士（重甲防御）
+        public const string SpecMartialWeapon = "sm_spec_mech_martial_weapon";   // 武器大师（多武器切换）
+        public const string SpecMartialFight = "sm_spec_mech_martial_fight";     // 格斗技师（近身搏击）
+        public const string SpecMartialHeavy = "sm_spec_mech_martial_heavy";     // 重装斗士（重甲防御）
 
         public struct SpecialtyDef
         {
@@ -38,6 +39,9 @@ namespace SuperMech.Code
         }
 
         public static readonly List<SpecialtyDef> AllSpecialties = new List<SpecialtyDef>();
+
+        // 单位专精存储（actor id -> spec id）
+        private static readonly Dictionary<long, string> _unitSpecialty = new Dictionary<long, string>();
 
         public static void Register()
         {
@@ -92,20 +96,10 @@ namespace SuperMech.Code
                 applyBonus = s => { s["armor"] = s["armor"] + 15f; s["multiplier_health"] = (s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]) * 1.30f; s["damage"] = s["damage"] + 8f; }
             });
 
-            // 注册特质
+            // 不再注册为ActorTrait，专精是纯数据存储
+            // 本地化文本仍需注册（用于UI显示）
             foreach (var spec in AllSpecialties)
             {
-                var bs = new BaseStats();
-                spec.applyBonus(bs);
-                var t = new ActorTrait
-                {
-                    id = spec.id,
-                    path_icon = "ui/Icons/actor_traits/iconArcaneReflexes",
-                    group_id = "sm_specialties",
-                    needs_to_be_explored = false,
-                    base_stats = bs
-                };
-                AssetManager.traits.add(t);
                 LocalizedTextManager.add("trait_" + spec.id, LocalizedTextManager.getText(spec.name), pReplace: true);
                 LocalizedTextManager.add("trait_" + spec.id + "_info", LocalizedTextManager.getText(spec.desc), pReplace: true);
             }
@@ -115,11 +109,19 @@ namespace SuperMech.Code
         public static string GetSpecialty(Actor a)
         {
             if (a == null) return null;
-            foreach (var spec in AllSpecialties)
-            {
-                if (a.hasTrait(spec.id)) return spec.id;
-            }
-            return null;
+            string spec;
+            _unitSpecialty.TryGetValue(a.id, out spec);
+            return spec;
+        }
+
+        /// <summary>设置单位专精</summary>
+        public static void SetSpecialty(Actor a, string specId)
+        {
+            if (a == null) return;
+            if (string.IsNullOrEmpty(specId))
+                _unitSpecialty.Remove(a.id);
+            else
+                _unitSpecialty[a.id] = specId;
         }
 
         /// <summary>获取某职业方向的专精列表</summary>
@@ -137,6 +139,22 @@ namespace SuperMech.Code
         public static bool HasSpecialty(Actor a)
         {
             return GetSpecialty(a) != null;
+        }
+
+        /// <summary>应用专精属性加成（在Actor.updateStats Postfix中调用）</summary>
+        public static void ApplySpecialtyBonus(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            string specId = GetSpecialty(a);
+            if (string.IsNullOrEmpty(specId)) return;
+            foreach (var spec in AllSpecialties)
+            {
+                if (spec.id == specId && spec.applyBonus != null)
+                {
+                    spec.applyBonus(stats);
+                    return;
+                }
+            }
         }
 
         /// <summary>
@@ -219,7 +237,7 @@ namespace SuperMech.Code
 
             if (chosenId != null)
             {
-                a.addTrait(chosenId);
+                SetSpecialty(a, chosenId);
             }
         }
 
@@ -244,6 +262,18 @@ namespace SuperMech.Code
                 if (spec.id == specId) return LocalizedTextManager.getText(spec.name);
             }
             return "";
+        }
+
+        public static void Clear() { _unitSpecialty.Clear(); }
+
+        public static void Clear(Actor a)
+        {
+            if (a != null) _unitSpecialty.Remove(a.id);
+        }
+
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            return SuperMechCleanup.CleanDict(_unitSpecialty, alive);
         }
     }
 }

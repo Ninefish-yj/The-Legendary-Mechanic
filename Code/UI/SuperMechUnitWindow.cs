@@ -100,7 +100,9 @@ namespace SuperMech.Code
                     if (faction != null)
                     {
                         bool isLeader = faction.leaderId == a.id;
-                        string factionText = isLeader ? $"{faction.name}（领袖·Lv{faction.level}）" : $"{faction.name}（成员·Lv{faction.level}）";
+                        string factionText = isLeader
+                            ? string.Format(LocalizedTextManager.getText("sm_ui_faction_leader"), faction.name, faction.level)
+                            : string.Format(LocalizedTextManager.getText("sm_ui_faction_member"), faction.name, faction.level);
                         ShowRow(window, LocalizedTextManager.getText("sm_ui_faction_label"), factionText, null, new Color(1f, 0.85f, 0.5f));
                     }
                 }

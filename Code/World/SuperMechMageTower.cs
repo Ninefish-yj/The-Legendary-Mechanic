@@ -30,27 +30,8 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            for (int i = 0; i < TowerIds.Length; i++)
-            {
-                var b = TowerBonus[i];
-                LocalizedTextManager.add("trait_" + TowerIds[i], LocalizedTextManager.getText(TowerNames[i]), pReplace: true);
-                LocalizedTextManager.add("trait_" + TowerIds[i] + "_info",
-                    LocalizedTextManager.getText("sm_magetower_362"), pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = TowerIds[i],
-                    path_icon = "ui/Icons/actor_traits/iconArcaneReflexes",
-                    group_id = "sm_classes",
-                    needs_to_be_explored = false,
-                    base_stats = new BaseStats()
-                };
-                t.base_stats["multiplier_damage"] = 1f + b.dmg;
-                t.base_stats["multiplier_health"] = 1f + b.hp;
-                t.base_stats["intelligence"] = b.intel;
-                t.base_stats["mana"] = b.mana;
-                AssetManager.traits.add(t);
-            }
-
+            // v0.82.0: 法师塔改为纯Dictionary存储，属性加成在Actor_UpdateStats_Postfix中应用
+            // 不再注册为特质，避免特质面板混乱
         }
 
         public static void TickMageTowers()
@@ -81,24 +62,12 @@ namespace SuperMech.Code
         {
             if (a == null) return 0;
             if (_towerLevel.TryGetValue(a.data.id, out int lv)) return lv;
-            for (int i = TowerIds.Length - 1; i >= 0; i--)
-            {
-                if (a.hasTrait(TowerIds[i])) { _towerLevel[a.data.id] = i + 1; return i + 1; }
-            }
             return 0;
         }
 
         public static void SetTowerLevel(Actor a, int level)
         {
             if (a == null || level < 0 || level > TowerIds.Length) return;
-            for (int i = 0; i < TowerIds.Length; i++)
-            {
-                if (a.hasTrait(TowerIds[i])) a.removeTrait(TowerIds[i]);
-            }
-            if (level > 0)
-            {
-                a.addTrait(TowerIds[level - 1]);
-            }
             _towerLevel[a.data.id] = level;
         }
 
@@ -106,6 +75,21 @@ namespace SuperMech.Code
         {
             int lv = GetTowerLevel(a);
             return lv > 0 ? TowerNames[lv - 1] : "sm_magetower_363";
+        }
+
+        /// <summary>
+        /// 应用法师塔属性加成（v0.82.0: 从特质改为Postfix手动应用）
+        /// </summary>
+        public static void ApplyTowerBonus(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            int lv = GetTowerLevel(a);
+            if (lv <= 0 || lv > TowerBonus.Length) return;
+            var b = TowerBonus[lv - 1];
+            stats["multiplier_damage"] *= 1f + b.dmg;
+            stats["multiplier_health"] *= 1f + b.hp;
+            stats["intelligence"] += b.intel;
+            stats["mana"] += b.mana;
         }
 
         public static void Clear()

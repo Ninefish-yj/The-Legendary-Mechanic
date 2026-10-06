@@ -11,10 +11,16 @@ namespace SuperMech.Code
         private RectTransform _listContent;
         private Text _headText;
 
-        private static readonly Dictionary<string, string> MaterialNames = new Dictionary<string, string>
+        private static Dictionary<string, string> _materialNames;
+        private static Dictionary<string, string> MaterialNames => _materialNames ??= new Dictionary<string, string>
         {
-            { "common_metals", "金属" }, { "gems", "宝石" }, { "stone", "石头" }, { "wood", "木材" },
-            { "gold", "金" }, { "adamantine", "精金" }, { "dragon_scales", "龙鳞" }
+            { "common_metals", LocalizedTextManager.getText("sm_ui_metal") },
+            { "gems", LocalizedTextManager.getText("sm_ui_gem") },
+            { "stone", LocalizedTextManager.getText("sm_ui_stone") },
+            { "wood", LocalizedTextManager.getText("sm_ui_wood") },
+            { "gold", LocalizedTextManager.getText("sm_ui_gold") },
+            { "adamantine", LocalizedTextManager.getText("sm_ui_orichalcum") },
+            { "dragon_scales", LocalizedTextManager.getText("sm_ui_dragonscale") }
         };
 
         void Awake()

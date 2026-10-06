@@ -102,6 +102,9 @@ namespace SuperMech.Code
             public int dailyResetTick;
             public int spawnCounter;
             public int nextSpawnInTicks = 60;
+            public HashSet<string> usedPlayerIDs = new HashSet<string>();   // 已使用的网名（防重复）
+            public Dictionary<long, string> playerIDs = new Dictionary<long, string>(); // actorId -> 网名
+            public bool hanxiaoSpawned;  // 韩萧化身是否已生成（唯一）
         }
 
         private static readonly PlayerSaveData _data = new PlayerSaveData();
@@ -250,21 +253,26 @@ namespace SuperMech.Code
             if (tile == null) return;
             Actor p = World.world.units.spawnNewUnit("human", tile, false, true, 6f, null, false, true);
             if (p == null) return;
+            // 第一步：设置名字（降临者直接就是玩家身份，不是夺舍）
+            p.data.name = "黑星";
+            _playerIDs[p.id] = "黑星";
+            _usedPlayerIDs.Add("黑星");
+            // 然后添加特质
             if (!p.hasTrait(PlayerTrait)) p.addTrait(PlayerTrait);
             if (!p.hasTrait(HanXiaoTrait)) p.addTrait(HanXiaoTrait);
-            // 金色名字 + 不育 + 初始F阶
+            if (!p.hasTrait("sm_awakened")) p.addTrait("sm_awakened");
             if (!p.data.favorite) p.switchFavorite();
             if (!p.hasTrait("infertile")) p.addTrait("infertile");
             if (!p.hasTrait("sm_rank_00_f")) p.addTrait("sm_rank_00_f");
             SuperMechAdvancement.SetExactRank(p, 0);
-            // 韩萧化身：机械系职业 + 更高初始属性
             SuperMechProfession.SetProfession(p, SuperMechProfession.ProfessionType.Mechanical);
-            // 更高初始潜能（前世记忆）
             SuperMechPotential.AddPotential(p, 10);
-            // 特殊名字（原著：韩萧游戏ID是"黑星"，不是真名）
-            p.data.name = "黑星";
-            // 记录玩家ID（复活时恢复）
-            _playerIDs[p.id] = "黑星";
+            // 初始化气力（韩萧前世记忆，初始气力更高）
+            if (SuperMechQi.GetQiMax(p) <= 0f)
+            {
+                SuperMechQi.SetQiMax(p, 200f);
+                SuperMechQi.SetQi(p, 200f);
+            }
             GetOrCreatePanel(p);
             var panel = GetOrCreatePanel(p);
             if (panel != null)
@@ -282,26 +290,38 @@ namespace SuperMech.Code
         {
             WorldTile tile = FindEdgeTile();
             if (tile == null) return;
+            // 先选好玩家ID（生成单位后立即设置，避免WorldBox默认名字闪烁）
+            string playerID = PickEarthPlayerID();
             Actor p = World.world.units.spawnNewUnit("human", tile, false, true, 6f, null, false, true);
             if (p == null) return;
+            // 第一步：设置名字（降临者直接就是玩家身份，不是夺舍）
+            p.data.name = playerID;
+            _playerIDs[p.id] = playerID;
+            _usedPlayerIDs.Add(playerID);
+            // 然后添加特质
             if (!p.hasTrait(PlayerTrait)) p.addTrait(PlayerTrait);
-            // 金色名字 + 不育 + 初始F阶
+            if (!p.hasTrait("sm_awakened")) p.addTrait("sm_awakened");
             if (!p.data.favorite) p.switchFavorite();
             if (!p.hasTrait("infertile")) p.addTrait("infertile");
             if (!p.hasTrait("sm_rank_00_f")) p.addTrait("sm_rank_00_f");
             SuperMechAdvancement.SetExactRank(p, 0);
-            // 地球玩家化身：随机五系职业 + 游戏网名
             AssignRandomClass(p);
-            AssignEarthPlayerID(p);
+            // 初始化气力（F阶标准100点，避免CalcOnar返回0导致排行榜垫底）
+            if (SuperMechQi.GetQiMax(p) <= 0f)
+            {
+                SuperMechQi.SetQiMax(p, 100f);
+                SuperMechQi.SetQi(p, 100f);
+            }
             GetOrCreatePanel(p);
             _data.spawnCounter++;
+            if (SuperMechConfig.LogVerbose)
+                Debug.Log($"[超神机械师] 地球玩家降临：{playerID}");
         }
 
-        /// <summary>分配地球玩家网名（正经人谁实名上网，原著风格ID）</summary>
-        private static void AssignEarthPlayerID(Actor p)
+        /// <summary>选取地球玩家网名（正经人谁实名上网，原著风格ID）</summary>
+        private static string PickEarthPlayerID()
         {
             string playerID = null;
-            // 优先从固定ID词库中选未使用的
             var available = new List<string>();
             foreach (var id in EarthPlayerFixedIDs)
             {
@@ -313,21 +333,10 @@ namespace SuperMech.Code
             }
             else
             {
-                // 词库用完，随机生成带数字后缀的ID
                 string baseID = EarthPlayerFixedIDs[Random.Range(0, EarthPlayerFixedIDs.Length)];
                 playerID = baseID + Random.Range(1, 9999);
             }
-            _usedPlayerIDs.Add(playerID);
-            // 记录玩家ID（复活时恢复）
-            _playerIDs[p.id] = playerID;
-            // 设置单位名字为网名
-            try
-            {
-                p.data.name = playerID;
-            }
-            catch { /* 名字字段可能是只读，忽略 */ }
-            if (SuperMechConfig.LogVerbose)
-                Debug.Log($"[超神机械师] 地球玩家降临：{playerID}");
+            return playerID;
         }
 
         /// <summary>随机分配五系职业</summary>
@@ -353,18 +362,54 @@ namespace SuperMech.Code
                 Actor p = World.world.units.spawnNewUnit("human", tile, false, true, 6f, null, false, true);
                 if (p == null) return;
                 // 复用原单位内部ID（原著：玩家复活是同一个角色，同一个账号）
-                // WorldBox的data.id是可写long字段，ID自增不会冲突
                 p.data.id = actorId;
-                if (!p.hasTrait(PlayerTrait)) p.addTrait(PlayerTrait);
-                // 恢复玩家ID（网名）
+                // 第一步：恢复名字（降临者直接就是玩家身份，不是夺舍）
                 if (_playerIDs.TryGetValue(actorId, out string playerID))
                 {
-                    try { p.data.name = playerID; } catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 设置玩家ID失败: {e.Message}"); }
+                    p.data.name = playerID;
                 }
+                if (!p.hasTrait(PlayerTrait)) p.addTrait(PlayerTrait);
+                if (!p.hasTrait("sm_awakened")) p.addTrait("sm_awakened");
                 // 金色名字 + 不育
                 if (!p.data.favorite) p.switchFavorite();
                 if (!p.hasTrait("infertile")) p.addTrait("infertile");
-                // 面板数据因为复用ID自动关联（_data.panels的key是actorId字符串）
+                // 恢复阶位特质（复用ID后_exactRank自动关联，但特质需要重新添加）
+                int rankIdx = SuperMechAdvancement.GetExactRankIndex(p);
+                if (rankIdx >= 0 && rankIdx < SuperMechRanks.All.Count)
+                {
+                    string rankId = SuperMechRanks.All[rankIdx].id;
+                    if (!p.hasTrait(rankId)) p.addTrait(rankId);
+                }
+                // 恢复体系特质（复用ID后_profession字典自动关联，但特质需要重新添加）
+                var prof = SuperMechProfession.GetProfession(p);
+                if (prof != SuperMechProfession.ProfessionType.None)
+                {
+                    switch (prof)
+                    {
+                        case SuperMechProfession.ProfessionType.Mechanical:
+                            if (!p.hasTrait(SuperMechTraits.ClassMech)) p.addTrait(SuperMechTraits.ClassMech);
+                            break;
+                        case SuperMechProfession.ProfessionType.Martial:
+                            if (!p.hasTrait(SuperMechTraits.ClassMartial)) p.addTrait(SuperMechTraits.ClassMartial);
+                            break;
+                        case SuperMechProfession.ProfessionType.Psi:
+                            if (!p.hasTrait(SuperMechTraits.ClassPsi)) p.addTrait(SuperMechTraits.ClassPsi);
+                            break;
+                        case SuperMechProfession.ProfessionType.Mage:
+                            if (!p.hasTrait(SuperMechTraits.ClassMage)) p.addTrait(SuperMechTraits.ClassMage);
+                            break;
+                        case SuperMechProfession.ProfessionType.Mind:
+                            if (!p.hasTrait(SuperMechTraits.ClassMind)) p.addTrait(SuperMechTraits.ClassMind);
+                            break;
+                    }
+                }
+                // 初始化气力（如果为0）
+                if (SuperMechQi.GetQiMax(p) <= 0f)
+                {
+                    SuperMechQi.SetQiMax(p, 100f);
+                    SuperMechQi.SetQi(p, 100f);
+                }
+                // 面板数据因为复用ID自动关联
                 GetOrCreatePanel(p);
             }
             catch (System.Exception e)
@@ -582,12 +627,20 @@ namespace SuperMech.Code
 
         // ============ 存档 ============
 
-        public static PlayerSaveData Save() => _data;
+        public static PlayerSaveData Save()
+        {
+            _data.usedPlayerIDs = new HashSet<string>(_usedPlayerIDs);
+            _data.playerIDs = new Dictionary<long, string>(_playerIDs);
+            _data.hanxiaoSpawned = _hanxiaoSpawned;
+            return _data;
+        }
 
         public static void Load(PlayerSaveData data)
         {
             _data.panels.Clear();
             _data.tasks.Clear();
+            _usedPlayerIDs.Clear();
+            _playerIDs.Clear();
             if (data == null) return;
             if (data.panels != null)
                 foreach (var kv in data.panels) _data.panels[kv.Key] = kv.Value;
@@ -598,6 +651,11 @@ namespace SuperMech.Code
             _data.dailyResetTick = data.dailyResetTick;
             _data.spawnCounter = data.spawnCounter;
             _data.nextSpawnInTicks = data.nextSpawnInTicks;
+            if (data.usedPlayerIDs != null)
+                foreach (var id in data.usedPlayerIDs) _usedPlayerIDs.Add(id);
+            if (data.playerIDs != null)
+                foreach (var kv in data.playerIDs) _playerIDs[kv.Key] = kv.Value;
+            _hanxiaoSpawned = data.hanxiaoSpawned;
         }
 
         public static void Clear()
@@ -605,6 +663,9 @@ namespace SuperMech.Code
             _data.panels.Clear();
             _data.tasks.Clear();
             _respawnTicks.Clear();
+            _usedPlayerIDs.Clear();
+            _playerIDs.Clear();
+            _hanxiaoSpawned = false;
         }
 
         public static int CleanupDead(HashSet<long> alive)

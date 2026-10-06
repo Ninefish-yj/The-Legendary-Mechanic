@@ -272,9 +272,9 @@ namespace SuperMech.Code
             if (mysVal < spell.mysteryRequirement) return false;
 
             // 回路法师限制：非专精分支只能学tier<=1
-            if (a.hasTrait(SuperMechMageType.TypeCircuit))
+            if (SuperMechMageType.HasMageType(a, SuperMechMageType.TypeCircuit))
             {
-                string spec = SuperMechMageType.GetSpecName(a);
+                string spec = SuperMechMageType.GetMageSpec(a);
                 string branchName = BranchNameKeys[(int)spell.branch];
                 bool isSpecMatch = IsSpecMatch(spec, spell.branch);
                 if (!isSpecMatch && spell.tier > 1) return false;
@@ -283,13 +283,12 @@ namespace SuperMech.Code
             return true;
         }
 
-        private static bool IsSpecMatch(string specName, SpellBranch branch)
+        private static bool IsSpecMatch(string specId, SpellBranch branch)
         {
-            if (string.IsNullOrEmpty(specName)) return false;
-            // 简化匹配：专精名包含分支关键词
-            if (branch == SpellBranch.Element && specName.Contains("元素")) return true;
-            if (branch == SpellBranch.Arcane && specName.Contains("秘术")) return true;
-            if (branch == SpellBranch.Summon && specName.Contains("召唤")) return true;
+            if (string.IsNullOrEmpty(specId)) return false;
+            if (branch == SpellBranch.Element && specId == SuperMechMageType.SpecElement) return true;
+            if (branch == SpellBranch.Arcane && specId == SuperMechMageType.SpecArcane) return true;
+            if (branch == SpellBranch.Summon && specId == SuperMechMageType.SpecSummon) return true;
             return false;
         }
 
@@ -308,9 +307,9 @@ namespace SuperMech.Code
             rate += mysVal * 0.005f;
 
             // 回路法师专精分支+30%
-            if (a.hasTrait(SuperMechMageType.TypeCircuit))
+            if (SuperMechMageType.HasMageType(a, SuperMechMageType.TypeCircuit))
             {
-                string spec = SuperMechMageType.GetSpecName(a);
+                string spec = SuperMechMageType.GetMageSpec(a);
                 if (IsSpecMatch(spec, spell.branch)) rate += 0.3f;
             }
 

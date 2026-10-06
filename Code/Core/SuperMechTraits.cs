@@ -92,7 +92,7 @@ namespace SuperMech.Code
             // 降临者（玩家）特质：经验值加成+重生（原著：玩家靠经验值升级）
             var descendant = new ActorTrait
             {
-                id = Descendant, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_special",
+                id = Descendant, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_descendant",
                 needs_to_be_explored = false, rate_inherit = 0, rate_birth = 0,
                 rarity = Rarity.R2_Epic, base_stats = new BaseStats()
             };
@@ -105,7 +105,7 @@ namespace SuperMech.Code
             // 韩萧化身特质：唯一，前世记忆+更高属性（v0.76.83）
             var hanxiao = new ActorTrait
             {
-                id = "sm_player_hanxiao", path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_special",
+                id = "sm_player_hanxiao", path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_descendant",
                 needs_to_be_explored = false, rate_inherit = 0, rate_birth = 0,
                 rarity = Rarity.R3_Legendary, base_stats = new BaseStats()
             };

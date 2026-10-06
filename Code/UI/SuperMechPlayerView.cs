@@ -102,9 +102,10 @@ namespace SuperMech.Code
                 foreach (var kv in panels)
                 {
                     var p = kv.Value;
-                    sb.Append("· ").Append(kv.Key.name != null ? kv.Key.name : "玩家")
-                      .Append("  [击").Append(p.kills).Append(" 贡").Append(p.contribution)
-                      .Append(" 经").Append(p.experience).Append("]\n");
+                    sb.Append("· ").Append(kv.Key.name != null ? kv.Key.name : LocalizedTextManager.getText("sm_ui_player"))
+                      .Append("  [").Append(LocalizedTextManager.getText("sm_ui_kills")).Append(p.kills)
+                      .Append(" ").Append(LocalizedTextManager.getText("sm_ui_contrib")).Append(p.contribution)
+                      .Append(" ").Append(LocalizedTextManager.getText("sm_ui_exp")).Append(p.experience).Append("]\n");
                 }
             }
             _panelText.text = sb.ToString();
@@ -140,7 +141,7 @@ namespace SuperMech.Code
                         var a = FindActor(top[i].Key);
                         sb2.Append("  ").Append(i + 1).Append(". ")
                           .Append(a != null && a.name != null ? a.name : ("#" + top[i].Key))
-                          .Append("  贡").Append(top[i].Value).Append("\n");
+                          .Append("  ").Append(LocalizedTextManager.getText("sm_ui_contrib")).Append(top[i].Value).Append("\n");
                     }
                 }
             }

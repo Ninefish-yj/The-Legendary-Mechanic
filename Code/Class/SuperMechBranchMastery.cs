@@ -8,6 +8,7 @@ namespace SuperMech.Code
     /// 机械师专精系统：大型机械/微型机械/虚拟技术
     /// 专精由知识树学习倾向决定，影响高阶形态与战斗风格
     /// 职业=身份/阶位，专精=知识树+路线，两者叠加构成build
+    /// 存储方式：Dictionary（非特质），属性加成通过Actor.updateStats Postfix应用
     /// </summary>
     public static class SuperMechBranchMastery
     {
@@ -78,19 +79,10 @@ namespace SuperMech.Code
                 }
             });
 
+            // 不再注册为ActorTrait，专精是纯数据存储
+            // 本地化文本仍需注册（用于UI显示）
             foreach (var spec in AllSpecs)
             {
-                var bs = new BaseStats();
-                spec.applyBonus(bs);
-                var t = new ActorTrait
-                {
-                    id = spec.id,
-                    path_icon = "ui/Icons/actor_traits/iconArcaneReflexes",
-                    group_id = "sm_specialties",
-                    needs_to_be_explored = false,
-                    base_stats = bs
-                };
-                AssetManager.traits.add(t);
                 LocalizedTextManager.add("trait_" + spec.id, LocalizedTextManager.getText(spec.nameKey), pReplace: true);
                 LocalizedTextManager.add("trait_" + spec.id + "_info", LocalizedTextManager.getText(spec.descKey), pReplace: true);
             }
@@ -137,25 +129,45 @@ namespace SuperMech.Code
 
             if (newSpec != oldSpec)
             {
-                if (oldSpec != null && a.hasTrait(oldSpec))
-                    a.removeTrait(oldSpec);
-                if (newSpec != null && !a.hasTrait(newSpec))
+                SetSpec(a, newSpec);
+                if (newSpec != null)
                 {
-                    a.addTrait(newSpec);
-                    _unitSpec[a.data.id] = newSpec;
                     LogInfo($"[超神机械师] {a.data.name} 解锁专精：{LocalizedTextManager.getText(GetSpecDef(newSpec).nameKey)}");
                 }
             }
         }
 
+        public static void SetSpec(Actor a, string specId)
+        {
+            if (a == null) return;
+            if (string.IsNullOrEmpty(specId))
+                _unitSpec.Remove(a.id);
+            else
+                _unitSpec[a.id] = specId;
+        }
+
         public static string GetSpec(Actor a)
         {
             if (a == null) return null;
-            foreach (var spec in AllSpecs)
-            {
-                if (a.hasTrait(spec.id)) return spec.id;
-            }
-            return null;
+            string spec;
+            _unitSpec.TryGetValue(a.id, out spec);
+            return spec;
+        }
+
+        public static bool HasSpec(Actor a, string specId)
+        {
+            return GetSpec(a) == specId;
+        }
+
+        /// <summary>应用专精属性加成（在Actor.updateStats Postfix中调用）</summary>
+        public static void ApplySpecBonus(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            string spec = GetSpec(a);
+            if (string.IsNullOrEmpty(spec)) return;
+            var def = GetSpecDef(spec);
+            if (def.applyBonus != null)
+                def.applyBonus(stats);
         }
 
         public static SpecDef GetSpecDef(string specId)
@@ -203,7 +215,7 @@ namespace SuperMech.Code
 
         public static void Clear(Actor a)
         {
-            if (a != null) _unitSpec.Remove(a.data.id);
+            if (a != null) _unitSpec.Remove(a.id);
         }
 
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)

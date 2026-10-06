@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>通用专长系统（被动）：觉醒/分支授予随机专长；区别于 RankSpecialty=晋升阶位专长、Specialization=机械专精</summary>
+    /// <summary>通用专长系统（被动）：觉醒/分支授予随机专长；区别于 RankSpecialty=晋升阶位专长、Specialization=机械专精
+    /// 存储方式：Dictionary（非特质），属性加成通过Actor.updateStats Postfix应用</summary>
     public static class SuperMechElement
     {
         // 异能系四大分支（原著：力场/元素操控/体质强化/变身）
@@ -41,6 +42,29 @@ namespace SuperMech.Code
         public const string MechSurge    = "sm_spec_mech_surge";
         public const string MechWill     = "sm_spec_mech_will";
 
+        public struct SpecDef
+        {
+            public string id;
+            public string nameKey;
+            public string descKey;
+            public int intelligence;
+            public float dmgMul;
+            public float hpMul;
+        }
+
+        public static readonly Dictionary<string, SpecDef> AllSpecs = new Dictionary<string, SpecDef>();
+
+        // 单位专精存储（actor id -> spec id集合）
+        private static readonly Dictionary<long, HashSet<string>> _unitSpecs = new Dictionary<long, HashSet<string>>();
+
+        public static readonly string[] AllSpecIds = {
+            PsiForceField, PsiElement, PsiPhysique, PsiTransform,
+            MartialWeapon, MartialFight, MartialGuard, MartialExtreme,
+            MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark,
+            MindControl, MindDetect, MindTelekinesis, MindTelepathy, MindShield, MindCurrent,
+            MechMech, MechDrone, MechTurret, MechOverload, MechSurge, MechWill
+        };
+
         public static void Register()
         {
             // 异能系四大分支（原著：力场/元素操控/体质强化/变身）
@@ -75,22 +99,37 @@ namespace SuperMech.Code
             AddSpec(MechOverload, "sm_specialty_220",  5, 0.30f, 0f,   "sm_specialty_221");
             AddSpec(MechSurge,    "sm_specialty_222", 6, 0.15f, 0.05f, "sm_specialty_223");
             AddSpec(MechWill,     "sm_specialty_224", 8, 0.25f, 0f,   "sm_specialty_225");
-
         }
 
         private static void AddSpec(string id, string name, int intell, float dmgMul, float hpMul, string desc)
         {
             LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
             LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
-            var t = new ActorTrait
+            AllSpecs[id] = new SpecDef { id = id, nameKey = name, descKey = desc, intelligence = intell, dmgMul = dmgMul, hpMul = hpMul };
+        }
+
+        public static void AddSpec(Actor a, string specId)
+        {
+            if (a == null || string.IsNullOrEmpty(specId)) return;
+            if (!_unitSpecs.TryGetValue(a.id, out var set))
             {
-                id = id, path_icon = "ui/Icons/actor_traits/iconDragonslayer", group_id = "sm_specialties",
-                needs_to_be_explored = false, base_stats = new BaseStats()
-            };
-            t.base_stats["intelligence"] = intell;
-            if (dmgMul > 0) t.base_stats["multiplier_damage"] = 1f + dmgMul;
-            if (hpMul > 0) t.base_stats["multiplier_health"] = 1f + hpMul;
-            AssetManager.traits.add(t);
+                set = new HashSet<string>();
+                _unitSpecs[a.id] = set;
+            }
+            set.Add(specId);
+        }
+
+        public static bool HasSpec(Actor a, string specId)
+        {
+            if (a == null || string.IsNullOrEmpty(specId)) return false;
+            return _unitSpecs.TryGetValue(a.id, out var set) && set.Contains(specId);
+        }
+
+        public static void RemoveSpec(Actor a, string specId)
+        {
+            if (a == null) return;
+            if (_unitSpecs.TryGetValue(a.id, out var set))
+                set.Remove(specId);
         }
 
         public static void AssignRandomSpecialty(Actor a)
@@ -98,7 +137,7 @@ namespace SuperMech.Code
             if (a.hasTrait(SuperMechTraits.ClassPsi))
             {
                 string[] specs = { PsiForceField, PsiElement, PsiPhysique, PsiTransform };
-                a.addTrait(specs[Random.Range(0, specs.Length)]);
+                AddSpec(a, specs[Random.Range(0, specs.Length)]);
             }
         }
 
@@ -108,30 +147,18 @@ namespace SuperMech.Code
             string branchId = SuperMechBranch.GetBranch(a);
             string specId = null;
 
-            // 机械系三分支（武装/能量/操控）
-            if (branchId == SuperMechBranch.BranchArmed) specId = MechTurret;
-            else if (branchId == SuperMechBranch.BranchEnergy) specId = MechMech;
-            else if (branchId == SuperMechBranch.BranchControl) specId = MechDrone;
+            // 机械系三职业方向
+            if (branchId == SuperMechBranch.BranchGunner) specId = MechTurret;
+            else if (branchId == SuperMechBranch.BranchMech) specId = MechMech;
+            else if (branchId == SuperMechBranch.BranchMartial) specId = MechDrone;
 
-            // 念力系四大分支
+            // 念力系四大方向
             else if (branchId == SuperMechBranch.BranchPsiMind) specId = MindControl;
             else if (branchId == SuperMechBranch.BranchPsiKinesis) specId = MindTelekinesis;
             else if (branchId == SuperMechBranch.BranchPsiSense) specId = MindDetect;
             else if (branchId == SuperMechBranch.BranchPsiPotential) specId = MindCurrent;
 
-            // 异能系四大分支
-            else if (branchId == SuperMechBranch.BranchPsiField) specId = PsiForceField;
-            else if (branchId == SuperMechBranch.BranchPsiElement) specId = PsiElement;
-            else if (branchId == SuperMechBranch.BranchPsiPhysique) specId = PsiPhysique;
-            else if (branchId == SuperMechBranch.BranchPsiTransform) specId = PsiTransform;
-
-            // 武道系四大方向
-            else if (branchId == SuperMechBranch.BranchMartialWeapon) specId = MartialWeapon;
-            else if (branchId == SuperMechBranch.BranchMartialFight) specId = MartialFight;
-            else if (branchId == SuperMechBranch.BranchMartialGuard) specId = MartialGuard;
-            else if (branchId == SuperMechBranch.BranchMartialExtreme) specId = MartialExtreme;
-
-            // 无分支时随机分配一个对应体系的专长
+            // 无方向时随机分配一个对应体系的专长
             else if (a.hasTrait(SuperMechTraits.ClassMech))
             {
                 string[] specs = { MechTurret, MechMech, MechDrone };
@@ -157,36 +184,48 @@ namespace SuperMech.Code
                 string[] elements = { MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark };
                 specId = elements[Random.Range(0, elements.Length)];
             }
-            else if (a.hasTrait(SuperMechTraits.ClassPsi))
-            {
-                string[] specs = { PsiForceField, PsiElement, PsiPhysique, PsiTransform };
-                specId = specs[Random.Range(0, specs.Length)];
-            }
 
-            if (specId != null && !a.hasTrait(specId))
+            if (specId != null && !HasSpec(a, specId))
             {
-                a.addTrait(specId);
+                AddSpec(a, specId);
             }
         }
+
         public static List<string> GetSpecialties(Actor a)
         {
             var list = new List<string>();
             if (a == null) return list;
-            string[] allSpecs = {
-                PsiFire, PsiIce, PsiElectric, PsiTransform, PsiControl, PsiLuck,
-                PsiDeath, PsiCarbon, PsiHeal, PsiMagnet, PsiSoulFire,
-                MartialWave, MartialFlash, MartialShield, MartialBurst, MartialReserve,
-                MartialSky, MartialSync, MartialAbyss, MartialCompress, MartialForm,
-                MartialExplode, MartialShock, MartialSurge, MartialSword, MartialBlade, MartialFist,
-                MageFire, MageWater, MageWind, MageEarth, MageLight, MageDark,
-                MindControl, MindDetect, MindTelekinesis, MindTelepathy, MindShield, MindCurrent,
-                MechMech, MechDrone, MechTurret, MechOverload, MechSurge, MechWill
-            };
-            foreach (var specId in allSpecs)
-            {
-                if (a.hasTrait(specId)) list.Add(specId);
-            }
+            if (_unitSpecs.TryGetValue(a.id, out var set))
+                list.AddRange(set);
             return list;
+        }
+
+        /// <summary>应用所有专精属性加成（在Actor.updateStats Postfix中调用）</summary>
+        public static void ApplyAllSpecBonus(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            if (!_unitSpecs.TryGetValue(a.id, out var set)) return;
+            foreach (var specId in set)
+            {
+                if (AllSpecs.TryGetValue(specId, out var def))
+                {
+                    stats["intelligence"] = stats["intelligence"] + def.intelligence;
+                    if (def.dmgMul > 0) stats["multiplier_damage"] = (stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"]) * (1f + def.dmgMul);
+                    if (def.hpMul > 0) stats["multiplier_health"] = (stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"]) * (1f + def.hpMul);
+                }
+            }
+        }
+
+        public static void Clear() { _unitSpecs.Clear(); }
+
+        public static void Clear(Actor a)
+        {
+            if (a != null) _unitSpecs.Remove(a.id);
+        }
+
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
+        {
+            return SuperMechCleanup.CleanDict(_unitSpecs, alive);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace SuperMech.Code
 
         public static readonly string[] LevelNames = {
             "Lv1", "Lv2", "Lv3", "Lv4", "Lv5",
-            "sm_qi_937", "Lv7", "Lv8", "Lv9", "Lv10",
+            "Lv6", "Lv7", "Lv8", "Lv9", "Lv10",
             "Lv11", "Lv12", "Lv13", "Lv14", "Lv15",
             "Lv16", "Lv17", "Lv18", "Lv19", "Lv20",
             "Lv21", "Lv22", "Lv23", "Lv24", "Lv25",
@@ -249,6 +249,17 @@ namespace SuperMech.Code
             return spent;
         }
 
+        /// <summary>检查单位是否有任何阶位特质（F~X）</summary>
+        private static bool HasAnyRankTrait(Actor a)
+        {
+            if (a == null) return false;
+            for (int i = 0; i < SuperMechRanks.All.Count; i++)
+            {
+                if (a.hasTrait(SuperMechRanks.All[i].id)) return true;
+            }
+            return false;
+        }
+
         public static bool IsInCombat(Actor a)
         {
             if (a == null) return false;
@@ -278,6 +289,13 @@ namespace SuperMech.Code
             {
                 if (a == null) continue;
                 if (!SuperMechActorContextRegistry.IsSuperMech(a)) continue;
+
+                // 迁移：有阶位特质但气力上限为0的单位，初始化气力（旧存档/特殊途径获得阶位的单位）
+                if (GetQiMax(a) <= 0f && HasAnyRankTrait(a))
+                {
+                    SetQiMax(a, 100f);
+                    SetQi(a, 100f);
+                }
 
                 if (processed >= maxTracked)
                 {
@@ -328,7 +346,7 @@ namespace SuperMech.Code
                         intel = 1f + iv * 0.02f;
                     }
                     float recovery = (2f + max * 0.005f) * intel * tickInterval * SuperMechConfig.QiGrowthRate;
-                    if (a.hasTrait("sm_qi_refine")) recovery *= SuperMechConfig.RefinementBonus; // v0.75.20: 提炼法并入气力修炼法
+                    if (SuperMechQiRefine.HasRefineMethod(a)) recovery *= SuperMechConfig.RefinementBonus; // v0.75.20: 提炼法并入气力修炼法
                     if (a.hasTrait(SuperMechTraits.ClassPsi))
                         recovery *= SuperMechPotentialRating.GetQiGrowthMult(a);
 
@@ -348,8 +366,8 @@ namespace SuperMech.Code
                     int curLv = GetLevel(max);
                     float growthDecay = GetGrowthDecay(curLv);
                     float maxGrowth = 0.05f * tickInterval * SuperMechConfig.QiGrowthRate * growthDecay;
-                    if (a.hasTrait("sm_qi_refine")) maxGrowth *= SuperMechConfig.RefinementBonus;
-                    if (a.hasTrait("sm_em_refinement") && a.hasTrait(SuperMechTraits.ClassMech))
+                    if (SuperMechQiRefine.HasRefineMethod(a)) maxGrowth *= SuperMechConfig.RefinementBonus;
+                    if (SuperMechQiRefine.GetEmRefineCount(a) > 0 && a.hasTrait(SuperMechTraits.ClassMech))
                         maxGrowth *= 1.5f;
                     if (a.hasTrait("sm_divinity_ascended")) maxGrowth *= 1.5f;
                     AddQiMax(a, maxGrowth);

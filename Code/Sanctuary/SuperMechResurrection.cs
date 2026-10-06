@@ -137,11 +137,10 @@ namespace SuperMech.Code
             // 2. 职业特质
             RestoreClass(newActor, state.classTrait);
 
-            // 3. 分支特质
+            // 3. 分支（Dictionary存储，非特质）
             if (!string.IsNullOrEmpty(state.branchTrait))
             {
-                var branchTrait = AssetManager.traits.get(state.branchTrait);
-                if (branchTrait != null) newActor.addTrait(branchTrait);
+                SuperMechBranch.SetBranch(newActor, state.branchTrait);
             }
 
             // 4. 阶位（按完整度）
