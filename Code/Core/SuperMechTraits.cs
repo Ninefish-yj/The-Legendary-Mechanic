@@ -115,6 +115,25 @@ namespace SuperMech.Code
             LocalizedTextManager.add("trait_sm_player_hanxiao", "韩萧化身", pReplace: true);
             LocalizedTextManager.add("trait_sm_player_hanxiao_info", "超脱者韩萧投放的化身，保留前世记忆，机械系天赋极高", pReplace: true);
             AssetManager.traits.add(hanxiao);
+
+            // 内部标记特质（不显示在面板，仅用于代码判断）
+            string[] internalMarkers = { "sm_berserk", "sm_cosmic_relic_owner", "sm_summoned", "sm_talent", "sm_void_boost" };
+            foreach (string mid in internalMarkers)
+            {
+                var mt = new ActorTrait
+                {
+                    id = mid,
+                    path_icon = "actor_traits/iconUnknown",
+                    group_id = "sm_awakened",
+                    needs_to_be_explored = false,
+                    can_be_given = false,
+                    can_be_removed = false,
+                    base_stats = new BaseStats()
+                };
+                LocalizedTextManager.add("trait_" + mid, mid, pReplace: true);
+                LocalizedTextManager.add("trait_" + mid + "_info", "内部标记", pReplace: true);
+                AssetManager.traits.add(mt);
+            }
         }
 
         private static void AddClassTrait(string id, string name, int intell, int str, int stam,

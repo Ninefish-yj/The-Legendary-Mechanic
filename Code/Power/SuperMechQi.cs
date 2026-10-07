@@ -330,8 +330,8 @@ namespace SuperMech.Code
 
                     int curLv2 = GetLevel(qi);
                     float combatGrowth = 1.5f * tickInterval * GetGrowthDecay(curLv2); // v0.75.17: 战斗气力成长10倍(原0.15过低导致全卡E)
-                    if (a.hasTrait("sm_refinement")) combatGrowth *= 1.5f;
-                    if (a.hasTrait("sm_divinity_ascended")) combatGrowth *= 1.5f;
+                    if (SuperMechQiRefine.HasRefineMethod(a)) combatGrowth *= 1.5f;
+                    if (SuperMechDivinity.IsDivineAwakened(a)) combatGrowth *= 1.5f;
                     AddQiMax(a, combatGrowth);
                 }
                 else
@@ -369,7 +369,7 @@ namespace SuperMech.Code
                     if (SuperMechQiRefine.HasRefineMethod(a)) maxGrowth *= SuperMechConfig.RefinementBonus;
                     if (SuperMechQiRefine.GetEmRefineCount(a) > 0 && a.hasTrait(SuperMechTraits.ClassMech))
                         maxGrowth *= 1.5f;
-                    if (a.hasTrait("sm_divinity_ascended")) maxGrowth *= 1.5f;
+                    if (SuperMechDivinity.IsDivineAwakened(a)) maxGrowth *= 1.5f;
                     AddQiMax(a, maxGrowth);
                 }
 

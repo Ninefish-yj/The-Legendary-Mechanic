@@ -56,7 +56,7 @@ namespace SuperMech.Code
 
                 if (SuperMechQi.IsInCombat(a)) growth *= 3f;
 
-                if (a.hasTrait("sm_refinement")) growth *= 1.5f;
+                if (SuperMechQiRefine.HasRefineMethod(a)) growth *= 1.5f;
 
                 AddHeritage(a, growth);
 

@@ -83,7 +83,7 @@ namespace SuperMech.Code
                 float progressRate = 0.5f * tickInterval;
                 progressRate *= (1f + (rankIdx - 10) * 0.3f);
                 if (SuperMechQi.IsInCombat(a)) progressRate *= 2f;
-                if (a.hasTrait("sm_refinement")) progressRate *= 1.3f;
+                if (SuperMechQiRefine.HasRefineMethod(a)) progressRate *= 1.3f;
 
                 d.progress += progressRate;
                 if (d.progress >= d.target)

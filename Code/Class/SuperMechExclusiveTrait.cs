@@ -27,19 +27,18 @@ namespace SuperMech.Code
         }
 
         // === 模板专长（原著：NPC/BOSS/职业类别专长） ===
-        // 强韧生命（ch104）、核子力·结构加固（真实伤害免疫）、传奇级战斗技巧（ch1066）、
-        // 传奇固定伤害减免（ch1009）、完美械感（ch602 机械系顶尖模板）、
-        // 高级生命强韧（低血爆发）、低强度攻击免疫（哈达威硬化防御）、刚韧之躯（韩萧模板）
+        // 完美械感(ch602,115次)、强韧生命(ch104,40次)、核子力·结构加固(真实伤害免疫)、
+        // 传奇级战斗技巧(ch1066)、领袖之证(26次)、永恒能源(13次)、机械生命火种(16次)、生命曙光(原著有)
         public static readonly List<SpecialtyDef> TemplateAll = new List<SpecialtyDef>
         {
-            new SpecialtyDef { id = "sm_tpl_perfect_mech",  nameKey = "sm_tpl_perfect_mech",  descKey = "sm_tpl_perfect_mech_info",  system = "mech",    dmgMul = 0.30f },
+            new SpecialtyDef { id = "sm_tpl_perfect_sense", nameKey = "sm_tpl_perfect_sense", descKey = "sm_tpl_perfect_sense_info", system = "mech",    dmgMul = 0.30f },
             new SpecialtyDef { id = "sm_tpl_tough_life",    nameKey = "sm_tpl_tough_life",    descKey = "sm_tpl_tough_life_info",    system = "any",     hpMul = 0.25f },
-            new SpecialtyDef { id = "sm_tpl_nuclear",       nameKey = "sm_tpl_nuclear",       descKey = "sm_tpl_nuclear_info",       system = "mech",    dmgMul = 0.15f, hpMul = 0.20f },
-            new SpecialtyDef { id = "sm_tpl_combat_skill",  nameKey = "sm_tpl_combat_skill",  descKey = "sm_tpl_combat_skill_info",  system = "martial", dmgMul = 0.20f, lowHpMul = 0.20f },
-            new SpecialtyDef { id = "sm_tpl_fixed_reduce",  nameKey = "sm_tpl_fixed_reduce",  descKey = "sm_tpl_fixed_reduce_info",  system = "any",     hpMul = 0.30f },
-            new SpecialtyDef { id = "sm_tpl_high_life",     nameKey = "sm_tpl_high_life",     descKey = "sm_tpl_high_life_info",     system = "any",     hpMul = 0.30f, lowHpMul = 0.20f },
-            new SpecialtyDef { id = "sm_tpl_low_immune",    nameKey = "sm_tpl_low_immune",    descKey = "sm_tpl_low_immune_info",    system = "any",     hpMul = 0.35f },
-            new SpecialtyDef { id = "sm_tpl_tough_body",    nameKey = "sm_tpl_tough_body",    descKey = "sm_tpl_tough_body_info",    system = "any",     hpMul = 0.25f, lowHpMul = 0.15f },
+            new SpecialtyDef { id = "sm_tpl_nuclear_armor", nameKey = "sm_tpl_nuclear_armor", descKey = "sm_tpl_nuclear_armor_info", system = "mech",    dmgMul = 0.15f, hpMul = 0.20f },
+            new SpecialtyDef { id = "sm_tpl_legend_combat", nameKey = "sm_tpl_legend_combat", descKey = "sm_tpl_legend_combat_info", system = "martial", dmgMul = 0.20f, lowHpMul = 0.20f },
+            new SpecialtyDef { id = "sm_tpl_leader_badge",  nameKey = "sm_tpl_leader_badge",  descKey = "sm_tpl_leader_badge_info",  system = "any",     hpMul = 0.30f },
+            new SpecialtyDef { id = "sm_tpl_eternal_energy",nameKey = "sm_tpl_eternal_energy",descKey = "sm_tpl_eternal_energy_info",system = "any",     hpMul = 0.30f, lowHpMul = 0.20f },
+            new SpecialtyDef { id = "sm_tpl_mech_life_seed",nameKey = "sm_tpl_mech_life_seed",descKey = "sm_tpl_mech_life_seed_info",system = "mech",    hpMul = 0.35f },
+            new SpecialtyDef { id = "sm_tpl_life_dawn",     nameKey = "sm_tpl_life_dawn",     descKey = "sm_tpl_life_dawn_info",     system = "any",     hpMul = 0.25f, lowHpMul = 0.15f },
         };
 
         // === 专属专长（原著：超A级个人独有，玩家不存在这种能力） ===

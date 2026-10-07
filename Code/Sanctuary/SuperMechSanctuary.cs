@@ -692,25 +692,9 @@ namespace SuperMech.Code
         {
             Load();
 
-            var divinityTrait = new ActorTrait
-            {
-                id = "sm_divinity_ascended",
-                path_icon = "ui/Icons/actor_traits/iconBlessing",
-                group_id = "sm_awakened",
-                needs_to_be_explored = false,
-                base_stats = new BaseStats()
-            };
-            divinityTrait.base_stats["multiplier_damage"] = 1.2f;
-            divinityTrait.base_stats["multiplier_health"] = 1.2f;
-            divinityTrait.base_stats["critical_chance"] = 0.05f;
-            AssetManager.traits.add(divinityTrait);
-
             LocalizedTextManager.add("power_sm_enter_sanctuary", LocalizedTextManager.getText("sm_sanctuary_974"), pReplace: true);
             LocalizedTextManager.add("power_sm_enter_sanctuary_desc",
                 LocalizedTextManager.getText("sm_sanctuary_975"), pReplace: true);
-            LocalizedTextManager.add("trait_sm_divinity_ascended", LocalizedTextManager.getText("sm_sanctuary_976"), pReplace: true);
-            LocalizedTextManager.add("trait_sm_divinity_ascended_info", LocalizedTextManager.getText("sm_sanctuary_977"), pReplace: true);
-
         }
 
         public static void Clear()

@@ -156,7 +156,7 @@ namespace SuperMech.Code
                 float progress;
                 if (!_insightProgress.TryGetValue(a.id, out progress)) progress = 0;
                 progress += 0.3f * tickInterval;
-                if (a.hasTrait("sm_refinement")) progress *= 1.5f;
+                if (SuperMechQiRefine.HasRefineMethod(a)) progress *= 1.5f;
                 var destiny = SuperMechIntuition.GetDestiny(a);
                 if (destiny != null && destiny.completed) progress *= 2f;
 
@@ -191,7 +191,6 @@ namespace SuperMech.Code
             _awakened[a.id] = true;
             var ctx = SuperMechActorContextRegistry.Get(a);
             if (ctx != null) ctx.divinityTriggered = true;
-            a.addTrait("sm_divinity_ascended");
             AddPoints(a, 2);
             // v0.46.0：神性蜕变获得圣所碎片（权限），原著第1039章
             SuperMechSanctuary.GrantAuthorityFromDivinity(a);
