@@ -659,37 +659,8 @@ namespace SuperMech.Code
             if (__instance == null || !__instance.isAlive()) return;
             try
             {
-                var stats = __instance.stats;
-                // 应用气力层次属性加成（原著：气力层次提升带来力量/敏捷/耐力/智力/神秘全面提升）
-                if (SuperMechAwakened.IsAwakened(__instance))
-                {
-                    float strBonus = SuperMechQiLayer.GetStrengthBonus(__instance);
-                    float agiBonus = SuperMechQiLayer.GetAgilityBonus(__instance);
-                    float endBonus = SuperMechQiLayer.GetEnduranceBonus(__instance);
-                    float intBonus = SuperMechQiLayer.GetIntelligenceBonus(__instance);
-                    float mysBonus = SuperMechQiLayer.GetMysteryBonus(__instance);
-                    // 映射到原版战斗属性：力量→伤害，敏捷→速度/攻速，耐力→生命/护甲，智力→原版智力，神秘→伤害加成
-                    stats["damage"] += strBonus * 0.1f;
-                    stats["speed"] += agiBonus * 0.05f;
-                    stats["attack_speed"] += agiBonus * 0.02f;
-                    stats["health"] += endBonus * 2f;
-                    stats["armor"] += endBonus * 0.1f;
-                    stats["intelligence"] += intBonus;
-                    stats["damage"] += mysBonus * 0.05f;
-                    stats["critical_chance"] += SuperMechCustomStats.GetStat(__instance, SuperMechCustomStats.StatLuck) * 0.001f;
-                }
-                // 应用职业方向属性加成（分支不再注册为特质，需手动应用）
-                SuperMechBranch.ApplyBranchBonus(__instance, stats);
-                // 应用专精属性加成（专精不再注册为特质，需手动应用）
-                SuperMechBranchMastery.ApplySpecBonus(__instance, stats);
-                // 应用通用专长属性加成（专长不再注册为特质，需手动应用）
-                SuperMechElement.ApplyAllSpecBonus(__instance, stats);
-                // 应用职业专精属性加成（专精不再注册为特质，需手动应用）
-                SuperMechSpecialty.ApplySpecialtyBonus(__instance, stats);
-                // 应用装备/宝物属性加成（不再注册为特质，需手动应用）
-                SuperMechCosmicRelic.ApplyEquipBonus(__instance, stats);
-                // 应用法师塔属性加成（v0.82.0: 从特质改为Postfix手动应用）
-                SuperMechMageTower.ApplyTowerBonus(__instance, stats);
+                // 属性加成计算已提取到CombatBonusCalculator（单一职责）
+                CombatBonusCalculator.ApplyAllBonuses(__instance, __instance.stats);
             }
             catch (System.Exception e)
             {

@@ -721,7 +721,7 @@ namespace SuperMech.Code
             string tPerm = LocalizedTextManager.getText("sm_ui_san_permission");
             string tVisible = LocalizedTextManager.getText("sm_ui_san_visible");
             var permText = SuperMechUiSkin.MakeText(panel.transform,
-                $"{tPerm}:{perm}  |  {tVisible}:{GetVisibleMessageCount(perm)}/{SanctuaryMessages.Length}",
+                $"{tPerm}:{perm}  |  {tVisible}:{SanctuaryMessageBoard.GetVisibleCount(perm)}/{SanctuaryMessageBoard.TotalCount}",
                 11, TextAnchor.UpperCenter);
             permText.color = new Color(0.4f, 0.4f, 0.6f);
             var permRect = permText.GetComponent<RectTransform>();
@@ -748,24 +748,8 @@ namespace SuperMech.Code
             contentText.verticalOverflow = VerticalWrapMode.Truncate;
             contentText.supportRichText = true;
 
-            // 构建留言内容
-            var sb = new System.Text.StringBuilder();
-            int visible = GetVisibleMessageCount(perm);
-            for (int i = 0; i < SanctuaryMessages.Length; i++)
-            {
-                if (i >= visible)
-                {
-                    sb.AppendLine(LocalizedTextManager.getText("sm_san_msg_no_perm"));
-                    sb.AppendLine("");
-                    continue;
-                }
-                string msg = ApplyMask(SanctuaryMessages[i], perm, i);
-                sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_san_msg_num"), i + 1));
-                sb.AppendLine(msg);
-                sb.AppendLine("");
-            }
-            sb.AppendLine(LocalizedTextManager.getText("sm_san_msg_hint"));
-            contentText.text = sb.ToString();
+            // 构建留言内容（业务逻辑已提取到SanctuaryMessageBoard）
+            contentText.text = SanctuaryMessageBoard.BuildDisplayContent(perm);
 
             // 关闭按钮
             var closeBtnGo = new GameObject("CloseBtn");
@@ -784,42 +768,6 @@ namespace SuperMech.Code
             var closeText = SuperMechUiSkin.MakeText(closeBtnGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_close"), 13, TextAnchor.MiddleCenter);
             closeText.color = Color.white;
-        }
-
-        /// <summary>原著留言：各迭代终极文明的留言（chapter1267）</summary>
-        private static string[] _sanctuaryMessages;
-        private static string[] SanctuaryMessages => _sanctuaryMessages ??= new[] {
-            LocalizedTextManager.getText("sm_san_msg_1"),
-            LocalizedTextManager.getText("sm_san_msg_2"),
-            LocalizedTextManager.getText("sm_san_msg_3"),
-            LocalizedTextManager.getText("sm_san_msg_4"),
-            LocalizedTextManager.getText("sm_san_msg_5"),
-            LocalizedTextManager.getText("sm_san_msg_6"),
-            LocalizedTextManager.getText("sm_san_msg_7"),
-        };
-
-        /// <summary>根据权限计算可见留言数量</summary>
-        private static int GetVisibleMessageCount(int permission)
-        {
-            if (permission <= 0) return 1;
-            if (permission == 1) return 3;
-            if (permission == 2) return 5;
-            return 7; // 3+碎片全部可见
-        }
-
-        /// <summary>根据权限对留言内容进行遮挡（███）</summary>
-        private static string ApplyMask(string message, int permission, int index)
-        {
-            // 权限越低，遮挡越多；第一条基本介绍不遮挡
-            if (permission >= 3 || index <= 0) return message;
-            // 简单遮挡：将部分███保留，权限低时更多内容被替换为███
-            if (permission == 1 && index >= 2)
-            {
-                // 低权限：只显示前半部分
-                int half = message.Length / 2;
-                return message.Substring(0, half) + LocalizedTextManager.getText("sm_san_msg_mask");
-            }
-            return message;
         }
 
         /// <summary>光球记录的文明信息</summary>
