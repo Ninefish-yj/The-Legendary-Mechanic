@@ -23,12 +23,12 @@ namespace SuperMech.Code
         {
             // 不再注册为ActorTrait，修炼状态是纯数据
             // 本地化文本仍需注册（用于UI显示）
-            LocalizedTextManager.add("trait_" + PsiResonance, "念力共鸣", pReplace: true);
-            LocalizedTextManager.add("trait_" + PsiResonance + "_info", "念力系冥想修炼，持续提升智力", pReplace: true);
-            LocalizedTextManager.add("trait_" + ManaMeditation, "法力冥想", pReplace: true);
-            LocalizedTextManager.add("trait_" + ManaMeditation + "_info", "魔法系冥想修炼，持续提升智力与法力", pReplace: true);
-            LocalizedTextManager.add("trait_" + MindTrain, "心念训练", pReplace: true);
-            LocalizedTextManager.add("trait_" + MindTrain + "_info", "心念系冥想修炼，持续提升智力", pReplace: true);
+            LocalizedTextManager.add("trait_" + PsiResonance, LocalizedTextManager.getText("sm_med_psi_resonance"), pReplace: true);
+            LocalizedTextManager.add("trait_" + PsiResonance + "_info", LocalizedTextManager.getText("sm_med_psi_resonance_info"), pReplace: true);
+            LocalizedTextManager.add("trait_" + ManaMeditation, LocalizedTextManager.getText("sm_med_mana_meditation"), pReplace: true);
+            LocalizedTextManager.add("trait_" + ManaMeditation + "_info", LocalizedTextManager.getText("sm_med_mana_meditation_info"), pReplace: true);
+            LocalizedTextManager.add("trait_" + MindTrain, LocalizedTextManager.getText("sm_med_mind_train"), pReplace: true);
+            LocalizedTextManager.add("trait_" + MindTrain + "_info", LocalizedTextManager.getText("sm_med_mind_train_info"), pReplace: true);
         }
 
         public static bool HasCultivation(Actor a, string type)

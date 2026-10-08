@@ -33,27 +33,27 @@ namespace SuperMech.Code
         public static void Register()
         {
             // 天赋型法师
-            LocalizedTextManager.add("trait_" + TypeTalent, "天赋型法师", pReplace: true);
-            LocalizedTextManager.add("trait_" + TypeTalent + "_info", "先天觉醒法力，可学习所有法术分支", pReplace: true);
+            LocalizedTextManager.add("trait_" + TypeTalent, LocalizedTextManager.getText("sm_mage_type_talent"), pReplace: true);
+            LocalizedTextManager.add("trait_" + TypeTalent + "_info", LocalizedTextManager.getText("sm_mage_type_talent_info"), pReplace: true);
 
             // 回路法师
-            LocalizedTextManager.add("trait_" + TypeCircuit, "回路法师", pReplace: true);
-            LocalizedTextManager.add("trait_" + TypeCircuit + "_info", "植入魔法回路，专精一系法术，威力加成但无法学习其他系高阶法术", pReplace: true);
+            LocalizedTextManager.add("trait_" + TypeCircuit, LocalizedTextManager.getText("sm_mage_type_circuit"), pReplace: true);
+            LocalizedTextManager.add("trait_" + TypeCircuit + "_info", LocalizedTextManager.getText("sm_mage_type_circuit_info"), pReplace: true);
 
             // 魔网法师
-            LocalizedTextManager.add("trait_" + TypeWeave, "魔网法师", pReplace: true);
-            LocalizedTextManager.add("trait_" + TypeWeave + "_info", "法力借自魔法实体，法术无消耗但每日有使用次数上限", pReplace: true);
+            LocalizedTextManager.add("trait_" + TypeWeave, LocalizedTextManager.getText("sm_mage_type_weave"), pReplace: true);
+            LocalizedTextManager.add("trait_" + TypeWeave + "_info", LocalizedTextManager.getText("sm_mage_type_weave_info"), pReplace: true);
 
             // 专精分支
-            RegisterSpecText(SpecElement, "元素专精", "专精元素法术，威力+50%，成功率+30%");
-            RegisterSpecText(SpecArcane, "秘术专精", "专精秘术法术，威力+50%，成功率+30%");
-            RegisterSpecText(SpecSummon, "召唤专精", "专精召唤法术，威力+50%，成功率+30%");
+            RegisterSpecText(SpecElement, "sm_mage_spec_element", "sm_mage_spec_element_info");
+            RegisterSpecText(SpecArcane, "sm_mage_spec_arcane", "sm_mage_spec_arcane_info");
+            RegisterSpecText(SpecSummon, "sm_mage_spec_summon", "sm_mage_spec_summon_info");
         }
 
-        private static void RegisterSpecText(string id, string name, string desc)
+        private static void RegisterSpecText(string id, string nameKey, string descKey)
         {
-            LocalizedTextManager.add("trait_" + id, name, pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info", desc, pReplace: true);
+            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(nameKey), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(descKey), pReplace: true);
         }
 
         /// <summary>设置法师类型</summary>
