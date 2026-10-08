@@ -25,7 +25,7 @@ namespace SuperMech.Code
 
         // 内部层光球
         private readonly List<GameObject> _lightOrbs = new();
-        private readonly List<OrbInfo> _orbInfos = new();
+        private readonly List<SanctuaryOrbInfo> _orbInfos = new();
         private RectTransform _orbContainer;
         private Text _interiorTitle;
         private GameObject _orbDetailPanel;
@@ -432,54 +432,16 @@ namespace SuperMech.Code
             _lightOrbs.Clear();
             _orbInfos.Clear();
 
-            // 基于真实迭代历史生成光球——迭代几轮就有几个记录
-            var history = SuperMechCivilizationData.GetHistory();
-            int orbCount = Mathf.Max(history.Count, 1);
+            // 业务数据由SanctuaryOrbDataProvider生成（UI与业务分离）
+            var orbInfos = SanctuaryOrbDataProvider.GenerateOrbInfos(sanctuaryIndex);
+            _orbInfos.AddRange(orbInfos);
+            int orbCount = orbInfos.Count;
 
             for (int i = 0; i < orbCount; i++)
             {
-                var snap = (i < history.Count) ? history[i] : SuperMechCivilizationData.GetCurrent();
-                int iter = (snap != null) ? snap.iteration : SuperMechCosmicIteration.CurrentIteration;
-                bool isCurrent = (i >= history.Count);
-
-                // 文明名称：真实记录用著名单位或迭代编号
-                string civName;
-                if (snap != null && snap.notableUnits != null && snap.notableUnits.Count > 0)
-                    civName = snap.notableUnits[0] + LocalizedTextManager.getText("sm_san_civ_era");
-                else if (snap != null)
-                    civName = string.Format(LocalizedTextManager.getText("sm_san_civ_iteration"), iter);
-                else
-                    civName = LocalizedTextManager.getText("sm_san_civ_current");
-
-                // 成就：基于真实数据
-                string achievement;
-                if (snap != null)
-                {
-                    string rankName = (snap.maxRankReached >= 0 && snap.maxRankReached < SuperMechRanks.All.Count)
-                        ? LocalizedTextManager.getText(SuperMechRanks.All[snap.maxRankReached].name)
-                        : LocalizedTextManager.getText("sm_civ_none");
-                    achievement = string.Format(LocalizedTextManager.getText("sm_san_civ_achievement"),
-                        snap.totalAwakened, rankName, snap.totalKnowledgeUnlocked);
-                }
-                else
-                {
-                    achievement = LocalizedTextManager.getText("sm_san_civ_ongoing");
-                }
-
-                string destruction = isCurrent
-                    ? LocalizedTextManager.getText("sm_san_civ_ongoing")
-                    : LocalizedTextManager.getText("sm_san_civ_reset");
-
-                var info = new OrbInfo
-                {
-                    civilizationName = civName,
-                    domain = SuperMechSanctuary.GetSanctuaryTypeName(sanctuaryIndex),
-                    iteration = iter,
-                    achievement = achievement,
-                    destructionCause = destruction,
-                    snapshot = snap
-                };
-                _orbInfos.Add(info);
+                float size = SanctuaryOrbDataProvider.CalculateOrbSize(i, orbCount);
+                Vector2 pos = SanctuaryOrbDataProvider.CalculateOrbPosition(i, orbCount, _orbContainer.rect);
+                float alpha = SanctuaryOrbDataProvider.CalculateOrbAlpha(i, orbCount);
 
                 var orbGo = new GameObject($"LightOrb_{i}");
                 orbGo.transform.SetParent(_orbContainer, false);
@@ -487,19 +449,11 @@ namespace SuperMech.Code
                 orbRect.anchorMin = new Vector2(0.5f, 0.5f);
                 orbRect.anchorMax = new Vector2(0.5f, 0.5f);
                 orbRect.pivot = new Vector2(0.5f, 0.5f);
-                // 越古老的迭代光球越小越暗，越近的越大越亮
-                float ageFactor = 1f - (float)i / Mathf.Max(1, orbCount);
-                float size = 30f + ageFactor * 40f;
                 orbRect.sizeDelta = new Vector2(size, size);
-                // 环形分布避免重叠
-                float angle = (i / (float)orbCount) * Mathf.PI * 2f;
-                float radius = 0.15f + ageFactor * 0.25f;
-                float x = Mathf.Cos(angle) * radius * _orbContainer.rect.width;
-                float y = Mathf.Sin(angle) * radius * _orbContainer.rect.height;
-                orbRect.anchoredPosition = new Vector2(x, y);
+                orbRect.anchoredPosition = pos;
 
                 var orbImg = orbGo.AddComponent<Image>();
-                orbImg.color = new Color(1f, 1f, 1f, 0.3f + ageFactor * 0.4f);
+                orbImg.color = new Color(1f, 1f, 1f, alpha);
                 orbImg.raycastTarget = true;
 
                 var glowGo = new GameObject("Glow");
@@ -510,7 +464,7 @@ namespace SuperMech.Code
                 glowRect.offsetMin = new Vector2(-size * 0.3f, -size * 0.3f);
                 glowRect.offsetMax = new Vector2(size * 0.3f, size * 0.3f);
                 var glowImg = glowGo.AddComponent<Image>();
-                glowImg.color = new Color(1f, 1f, 1f, 0.1f + ageFactor * 0.15f);
+                glowImg.color = new Color(1f, 1f, 1f, alpha * 0.375f);
                 glowImg.raycastTarget = false;
 
                 var orbBtn = orbGo.AddComponent<Button>();
@@ -768,17 +722,6 @@ namespace SuperMech.Code
             var closeText = SuperMechUiSkin.MakeText(closeBtnGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_close"), 13, TextAnchor.MiddleCenter);
             closeText.color = Color.white;
-        }
-
-        /// <summary>光球记录的文明信息</summary>
-        private class OrbInfo
-        {
-            public string civilizationName;
-            public string domain;
-            public int iteration;
-            public string achievement;
-            public string destructionCause;
-            public SuperMechCivilizationData.CivilizationSnapshot snapshot; // 真实迭代快照
         }
     }
 }

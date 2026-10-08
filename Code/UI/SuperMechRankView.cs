@@ -407,43 +407,13 @@ namespace SuperMech.Code
 
         private static float GetScore(Actor a, int sortType)
         {
-            return sortType switch
-            {
-                0 => SuperMechAdvancement.CalcOnar(a), // 能级
-                1 => SuperMechQi.GetQiMax(a), // 气力
-                2 => SuperMechAdvancement.GetExactRankIndex(a), // 阶位
-                3 => SuperMechKnowledge.GetUnlockedCount(a, "mech"), // 知识数
-                4 => SuperMechStage.GetStage(a), // 职业阶段
-                _ => 0
-            };
+            return RankSorter.GetScore(a, sortType);
         }
 
         private void UpdateStats()
         {
             if (_statsText == null) return;
-
-            // 阶位分布（单行摘要，适配顶部工具栏）
-            int[] rankCount = new int[8]; // F,E,D,C,B,A,S,X
-            foreach (var a in _candidatePool)
-            {
-                int rankIdx = SuperMechAdvancement.GetExactRankIndex(a);
-                int tier = rankIdx switch
-                {
-                    0 => 0, 1 or 2 => 1, 3 or 4 => 2, 5 or 6 => 3,
-                    7 => 4, 8 or 9 => 5, 10 or 11 or 12 => 6, 13 => 7,
-                    _ => -1
-                };
-                if (tier >= 0) rankCount[tier]++;
-            }
-
-            string[] rankLabels = { "F", "E", "D", "C", "B", "A", "S", "X" };
-            string stats = "";
-            for (int i = 0; i < 8; i++)
-            {
-                if (rankCount[i] > 0)
-                    stats += $"{rankLabels[i]}:{rankCount[i]} ";
-            }
-            _statsText.text = stats;
+            _statsText.text = RankSorter.CalculateRankStats(_candidatePool);
         }
 
         private void OnScrollUpdate()
