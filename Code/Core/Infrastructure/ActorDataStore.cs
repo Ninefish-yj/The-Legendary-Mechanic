@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SuperMech.Code.Core.Infrastructure
+namespace SuperMech.Code
 {
     /// <summary>
     /// 基于Actor的泛型数据存储基类

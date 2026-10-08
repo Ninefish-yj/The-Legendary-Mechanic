@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SuperMech.Code.Core.Infrastructure
+namespace SuperMech.Code
 {
     /// <summary>
     /// 系统注册表：统一管理所有IRegisterable和ITickable系统

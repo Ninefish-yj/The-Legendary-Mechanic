@@ -1,6 +1,6 @@
 using System.Text;
 
-namespace SuperMech.Code.UI
+namespace SuperMech.Code
 {
     /// <summary>
     /// 圣所留言板业务逻辑

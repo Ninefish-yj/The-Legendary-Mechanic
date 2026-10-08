@@ -1,4 +1,4 @@
-namespace SuperMech.Code.Core.Infrastructure
+namespace SuperMech.Code
 {
     /// <summary>
     /// 可注册系统接口：所有需要在模组加载时初始化的系统实现此接口

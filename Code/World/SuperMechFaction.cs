@@ -38,28 +38,6 @@ namespace SuperMech.Code
         private const float CreateChance = 0.02f; // 每tick创建概率
         private const float JoinChance = 0.05f;   // 每tick加入概率
         private const int MaxFactions = 20;
-        private static int _nameCounter = 0;
-
-        // 原著风格势力命名：前缀区分降临者(地球文化)与原住民(异星科幻)，后缀通用
-        // 原著：炎黄联盟是降临者专属前缀，虚灵/机械/赤色是原住民前缀；后缀军团/组织/联盟通用
-        private static readonly string[] DescendantPrefixes = {
-            "炎黄", "华夏", "神州", "中华", "黑星", "龙", "星辰", "昆仑",
-            "蓬莱", "方丈", "九州", "五岳", "长江", "黄河", "青龙", "朱雀"
-        };
-        private static readonly string[] NativePrefixes = {
-            "虚灵", "机械", "赤色", "圣约", "萌芽", "血金", "暗网", "银辉",
-            "苍穹", "星渊", "破晓", "雷霆", "寒霜", "铁血", "暗夜", "星辉",
-            "曜日", "苍蓝", "紫金", "破碎", "永恒", "自由", "荣耀", "深渊",
-            "极光", "混沌", "虚空", "曜石", "赤焰", "幽影"
-        };
-        private static readonly string[] FactionSuffixes = {
-            "军团", "教派", "协会", "组织", "联盟", "帝国", "商会", "共和国",
-            "联邦", "王朝", "神国", "公社", "王国", "公国", "教廷", "议会",
-            "财团", "集团", "学院", "研究院", "佣兵公会", "家族", "圣殿",
-            "舰队", "共同体", "联合体", "阵线", "骑士团", "兄弟会", "评议会",
-            "元老院", "部落", "氏族", "帮会", "密社", "隐修会", "堡垒",
-            "道统", "冒险团", "护卫队", "革命军"
-        };
 
         /// <summary>每tick处理势力创建和加入</summary>
         public static void TickFactions()
@@ -375,21 +353,18 @@ namespace SuperMech.Code
 
         private static void CreateFaction(Actor leader)
         {
-            _nameCounter++;
-            string id = "faction_" + _nameCounter;
+            int idNum = FactionNameGenerator.GetNextId();
+            string id = "faction_" + idNum;
 
             // 降临者(地球穿越者)用地球文化前缀，原住民用异星科幻前缀；后缀通用
             bool isDescendant = leader.hasTrait(SuperMechTraits.Descendant);
-            var prefixes = isDescendant ? DescendantPrefixes : NativePrefixes;
-            string prefix = prefixes[Random.Range(0, prefixes.Length)];
-            string suffix = FactionSuffixes[Random.Range(0, FactionSuffixes.Length)];
-            string name = prefix + suffix;
+            string name = FactionNameGenerator.GenerateName(isDescendant);
 
             // v0.61.0 根据后缀选择政体（原著：教派=宗教制，协会/议会=议会制，军团/帝国=领袖制）
             FactionGovernment gov = FactionGovernment.Autocracy;
-            if (suffix.Contains("教派") || suffix.Contains("教廷") || suffix.Contains("神国") || suffix.Contains("道统") || suffix.Contains("圣殿"))
+            if (name.Contains("教派") || name.Contains("教廷") || name.Contains("神国") || name.Contains("道统") || name.Contains("圣殿"))
                 gov = FactionGovernment.Theocracy;
-            else if (suffix.Contains("协会") || suffix.Contains("议会") || suffix.Contains("评议会") || suffix.Contains("元老院") || suffix.Contains("共同体") || suffix.Contains("联合体"))
+            else if (name.Contains("协会") || name.Contains("议会") || name.Contains("评议会") || name.Contains("元老院") || name.Contains("共同体") || name.Contains("联合体"))
                 gov = FactionGovernment.Council;
 
             var f = new FactionData
@@ -721,8 +696,8 @@ namespace SuperMech.Code
                 foreach (var mid in f.memberIds)
                     _actorFaction[mid] = f.id;
                 // 保持nameCounter不重复
-                if (int.TryParse(e.id.Replace("faction_", ""), out var n) && n > _nameCounter)
-                    _nameCounter = n;
+                if (int.TryParse(e.id.Replace("faction_", ""), out var n) && n > FactionNameGenerator.GetCurrentId())
+                    FactionNameGenerator.SetCounter(n);
             }
             // 注：加载时Actor可能尚未恢复，不强制同步到ActorContext。
             // GetActorFactionId有回退到_actorFaction的逻辑，运行时首次访问会自动填充。

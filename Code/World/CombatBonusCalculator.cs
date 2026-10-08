@@ -1,6 +1,4 @@
-using UnityEngine;
-
-namespace SuperMech.Code.World
+namespace SuperMech.Code
 {
     /// <summary>
     /// 战斗属性加成计算器
