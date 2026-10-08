@@ -112,8 +112,8 @@ namespace SuperMech.Code
             hanxiao.base_stats["experience"] = 3.0f; // 经验值获取三倍
             hanxiao.base_stats["intelligence"] = 5;
             hanxiao.base_stats["warfare"] = 3;
-            LocalizedTextManager.add("trait_sm_player_hanxiao", "韩萧化身", pReplace: true);
-            LocalizedTextManager.add("trait_sm_player_hanxiao_info", "超脱者韩萧投放的化身，保留前世记忆，机械系天赋极高", pReplace: true);
+            LocalizedTextManager.add("trait_sm_player_hanxiao", LocalizedTextManager.getText("sm_player_hanxiao_name"), pReplace: true);
+            LocalizedTextManager.add("trait_sm_player_hanxiao_info", LocalizedTextManager.getText("sm_player_hanxiao_desc"), pReplace: true);
             AssetManager.traits.add(hanxiao);
 
             // 内部标记特质（不显示在面板，仅用于代码判断）
@@ -131,7 +131,7 @@ namespace SuperMech.Code
                     base_stats = new BaseStats()
                 };
                 LocalizedTextManager.add("trait_" + mid, mid, pReplace: true);
-                LocalizedTextManager.add("trait_" + mid + "_info", "内部标记", pReplace: true);
+                LocalizedTextManager.add("trait_" + mid + "_info", LocalizedTextManager.getText("sm_internal_marker"), pReplace: true);
                 AssetManager.traits.add(mt);
             }
         }

@@ -4273,5 +4273,8 @@
   "sm_med_mana_meditation": "法力冥想",
   "sm_med_mana_meditation_info": "魔法系冥想修炼，持续提升智力与法力",
   "sm_med_mind_train": "心念训练",
-  "sm_med_mind_train_info": "念力系冥想修炼，持续提升智力"
+  "sm_med_mind_train_info": "念力系冥想修炼，持续提升智力",
+  "sm_player_hanxiao_name": "韩萧化身",
+  "sm_player_hanxiao_desc": "超脱者韩萧投放的化身，保留前世记忆，机械系天赋极高",
+  "sm_internal_marker": "内部标记"
 }
