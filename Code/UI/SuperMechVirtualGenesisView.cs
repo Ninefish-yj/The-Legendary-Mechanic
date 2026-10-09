@@ -107,6 +107,27 @@ namespace SuperMech.Code
             br.anchoredPosition = new Vector2(0, -y);
             if (!canSummon) btn.interactable = false;
 
+            // 研究逆向（原著：造临时产物反向推导技术）
+            y += 42;
+            float researchMult = SuperMechVirtualGenesis.GetResearchCostMultiplier(a);
+            AddStatRow(ref y, LocalizedTextManager.getText("sm_ui_vg_research_speed"),
+                string.Format("{0:F0}%", (1f / researchMult) * 100f));
+
+            // 虚拟推演按钮
+            int researchCost = state.level == SuperMechVirtualGenesis.GenesisLevel.True ?
+                SuperMechVirtualGenesis.VirtualResearchCostTrue : SuperMechVirtualGenesis.VirtualResearchCostBasic;
+            y += 8;
+            bool canResearch = potential >= researchCost;
+            var researchBtn = SuperMechUiSkin.MakeButton(_content,
+                string.Format("{0} ({1})", LocalizedTextManager.getText("sm_ui_vg_virtual_research"), researchCost), 12,
+                () => { SuperMechVirtualGenesis.VirtualResearch(a); RefreshAll(); });
+            var rbr = researchBtn.GetComponent<RectTransform>();
+            rbr.anchorMin = new Vector2(0.5f, 1);
+            rbr.anchorMax = new Vector2(0.5f, 1);
+            rbr.sizeDelta = new Vector2(220, 32);
+            rbr.anchoredPosition = new Vector2(0, -y);
+            if (!canResearch) researchBtn.interactable = false;
+
             // 世界观描述（原著：虚实转化）
             y += 48;
             var lore = SuperMechUiSkin.MakeText(_content, LocalizedTextManager.getText("sm_ui_vg_lore"), 10, TextAnchor.UpperLeft);

@@ -104,6 +104,46 @@ namespace SuperMech.Code
             return state != null && state.level == GenesisLevel.True;
         }
 
+        // === 研究逆向（原著：造出临时产物反向推导技术，效率提升千百倍）===
+        public const float PseudoResearchCostMultiplier = 0.5f;  // 伪：研究消耗减半
+        public const float TrueResearchCostMultiplier = 0.2f;    // 真：研究消耗20%
+        public const int VirtualResearchCostBasic = 30;          // 虚拟推演基础消耗
+        public const int VirtualResearchCostTrue = 80;           // 虚拟推演（真）消耗
+
+        /// <summary>获取知识研究消耗倍率（虚拟创世研究逆向）</summary>
+        public static float GetResearchCostMultiplier(Actor a)
+        {
+            var state = GetState(a);
+            if (state == null) return 1f;
+            if (state.level == GenesisLevel.True) return TrueResearchCostMultiplier;
+            return PseudoResearchCostMultiplier;
+        }
+
+        /// <summary>虚拟推演：直接解锁下一个未解锁知识（原著：造临时产物反向推导）</summary>
+        public static bool VirtualResearch(Actor researcher)
+        {
+            if (researcher == null || !researcher.isAlive()) return false;
+            if (!HasGenesis(researcher)) return false;
+
+            var state = GetState(researcher);
+            bool isTrue = state.level == GenesisLevel.True;
+            int cost = isTrue ? VirtualResearchCostTrue : VirtualResearchCostBasic;
+
+            if (SuperMechPotential.GetPotential(researcher) < cost) return false;
+
+            // 找到下一个未解锁的知识
+            string prefix = SuperMechKnowledge.GetClassPrefixByTraits(researcher);
+            string nextId = SuperMechKnowledge.GetNextKnowledgeId(researcher, prefix);
+            if (nextId == null) return false;
+
+            SuperMechPotential.SpendPotential(researcher, cost);
+            SuperMechKnowledge.Unlock(researcher, nextId);
+            SuperMechAwakened.AddXp(researcher, 1000f);
+
+            Debug.Log($"[超神机械师]【虚拟创世】{researcher.getName()} 虚拟推理解锁知识：{nextId}，消耗{cost}潜能点");
+            return true;
+        }
+
         /// <summary>召唤机械单位（虚实转化：直接从虚拟设计图转化为实物）</summary>
         public static bool SummonMechUnit(Actor summoner)
         {

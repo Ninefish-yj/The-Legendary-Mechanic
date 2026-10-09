@@ -139,6 +139,10 @@ namespace SuperMech.Code
             if (a == null || a.stats == null) return baseCost;
             if (SuperMechTalent.IsFiveSystemGenius(a)) return baseCost;
 
+            // 虚拟创世研究逆向：造临时产物反向推导，效率提升千百倍（原著）
+            float vgMult = SuperMechVirtualGenesis.GetResearchCostMultiplier(a);
+            baseCost = Mathf.Max(1, (int)(baseCost * vgMult));
+
             string prefix = GetKnowledgePrefix(nodeId);
             string mainClass = SuperMechProfession.GetClass(a);
             string mainPrefix = string.IsNullOrEmpty(mainClass) ? "" : SuperMechKnowledge.GetPrefixForClass(mainClass);
