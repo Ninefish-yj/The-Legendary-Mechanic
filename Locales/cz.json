@@ -3947,5 +3947,17 @@
   "sm_ui_modify_success": "改装成功",
   "sm_ui_modify_fail": "改装失败",
   "sm_ui_san_appointed_day": "约定之日",
-  "sm_ui_san_appointed_now": "已到"
+  "sm_ui_san_appointed_now": "已到",
+  "sm_relic_094_desc": "劣化的机械指环，残留微弱能量波动",
+  "sm_relic_095_desc": "磁力推进装置改装的战靴，提升机动性",
+  "sm_relic_096_desc": "神经链接接口头盔，提升反应与感知",
+  "sm_relic_097_desc": "淡能复合装甲，能量抗性较强",
+  "sm_relic_098_desc": "紫晶粒子战刃，切割力极强",
+  "sm_relic_099_desc": "珍稀能量护符，持续恢复能量",
+  "sm_relic_100_desc": "传说级歼星炮，一炮可毁灭星球",
+  "sm_relic_101_desc": "使徒级银橙战铠，防御力惊人",
+  "sm_relic_102_desc": "宇宙宝物级金核，蕴含庞大能量",
+  "sm_relic_103_desc": "虚空暗能机甲，虚空生物科技结晶",
+  "sm_relic_104_desc": "进化者结晶，可加速基因进化",
+  "sm_relic_105_desc": "时空剪切器，可切割空间"
 }

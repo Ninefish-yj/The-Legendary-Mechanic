@@ -11,6 +11,7 @@ namespace SuperMech.Code
         {
             public string id;
             public string name;
+            public string desc;
             public int qualityLevel;
             public Rarity rarity;
             public string icon;
@@ -22,19 +23,19 @@ namespace SuperMech.Code
 
         public static readonly List<EquipDef> Equipments = new List<EquipDef>
         {
-            new EquipDef { id="sm_eq_gray_ring",    name="sm_relic_094", qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f, slotType=EquipmentType.Ring },
-            new EquipDef { id="sm_eq_green_boots",  name="sm_relic_095", qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f, slotType=EquipmentType.Boots },
-            new EquipDef { id="sm_eq_blue_helmet",  name="sm_relic_096", qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f, slotType=EquipmentType.Helmet },
-            new EquipDef { id="sm_eq_lp_armor",     name="sm_relic_097", qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.7f, hpMul=1.5f, slotType=EquipmentType.Armor },
-            new EquipDef { id="sm_eq_purple_weapon",name="sm_relic_098", qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.2f, hpMul=1.8f, slotType=EquipmentType.Weapon },
-            new EquipDef { id="sm_eq_pink_amulet",  name="sm_relic_099", qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=3.0f, hpMul=2.5f, slotType=EquipmentType.Amulet },
-            new EquipDef { id="sm_eq_orange_weapon",name="sm_relic_100", qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f, slotType=EquipmentType.Weapon },
-            new EquipDef { id="sm_eq_so_armor",     name="sm_relic_101", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f, slotType=EquipmentType.Armor },
-            new EquipDef { id="sm_eq_gold_amulet",  name="sm_relic_102", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f, slotType=EquipmentType.Amulet },
+            new EquipDef { id="sm_eq_gray_ring",    name="sm_relic_094", desc="sm_relic_094_desc", qualityLevel=0, rarity=Rarity.R0_Normal,    icon="ui/Icons/actor_traits/iconBlessing", dmgMul=0.8f, hpMul=0.8f, slotType=EquipmentType.Ring },
+            new EquipDef { id="sm_eq_green_boots",  name="sm_relic_095", desc="sm_relic_095_desc", qualityLevel=1, rarity=Rarity.R1_Rare,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.0f, hpMul=1.0f, slotType=EquipmentType.Boots },
+            new EquipDef { id="sm_eq_blue_helmet",  name="sm_relic_096", desc="sm_relic_096_desc", qualityLevel=2, rarity=Rarity.R2_Epic,      icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.3f, hpMul=1.2f, slotType=EquipmentType.Helmet },
+            new EquipDef { id="sm_eq_lp_armor",     name="sm_relic_097", desc="sm_relic_097_desc", qualityLevel=3, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=1.7f, hpMul=1.5f, slotType=EquipmentType.Armor },
+            new EquipDef { id="sm_eq_purple_weapon",name="sm_relic_098", desc="sm_relic_098_desc", qualityLevel=4, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconBlessing", dmgMul=2.2f, hpMul=1.8f, slotType=EquipmentType.Weapon },
+            new EquipDef { id="sm_eq_pink_amulet",  name="sm_relic_099", desc="sm_relic_099_desc", qualityLevel=5, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=3.0f, hpMul=2.5f, slotType=EquipmentType.Amulet },
+            new EquipDef { id="sm_eq_orange_weapon",name="sm_relic_100", desc="sm_relic_100_desc", qualityLevel=6, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=4.5f, hpMul=3.5f, slotType=EquipmentType.Weapon },
+            new EquipDef { id="sm_eq_so_armor",     name="sm_relic_101", desc="sm_relic_101_desc", qualityLevel=7, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=7.0f, hpMul=5.0f, slotType=EquipmentType.Armor },
+            new EquipDef { id="sm_eq_gold_amulet",  name="sm_relic_102", desc="sm_relic_102_desc", qualityLevel=8, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=12.0f, hpMul=8.0f, slotType=EquipmentType.Amulet },
             // v0.63.0 独特装备（原著风格，固定属性+特殊效果，仅高阶掉落）
-            new EquipDef { id="sm_eq_void_armor",   name="sm_relic_103", qualityLevel=9,  rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=15.0f, hpMul=10.0f, slotType=EquipmentType.Armor,  specialEffect="void_mech" },
-            new EquipDef { id="sm_eq_evolution_cube",name="sm_relic_104", qualityLevel=10, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconGenius",    dmgMul=8.0f,  hpMul=8.0f,  slotType=EquipmentType.Amulet, specialEffect="evolution_cube" },
-            new EquipDef { id="sm_eq_timespace_cutter",name="sm_relic_105", qualityLevel=11, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconRage",    dmgMul=20.0f, hpMul=6.0f,  slotType=EquipmentType.Weapon, specialEffect="timespace_cutter" },
+            new EquipDef { id="sm_eq_void_armor",   name="sm_relic_103", desc="sm_relic_103_desc", qualityLevel=9,  rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconChosenOne", dmgMul=15.0f, hpMul=10.0f, slotType=EquipmentType.Armor,  specialEffect="void_mech" },
+            new EquipDef { id="sm_eq_evolution_cube",name="sm_relic_104", desc="sm_relic_104_desc", qualityLevel=10, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconGenius",    dmgMul=8.0f,  hpMul=8.0f,  slotType=EquipmentType.Amulet, specialEffect="evolution_cube" },
+            new EquipDef { id="sm_eq_timespace_cutter",name="sm_relic_105", desc="sm_relic_105_desc", qualityLevel=11, rarity=Rarity.R3_Legendary, icon="ui/Icons/actor_traits/iconRage",    dmgMul=20.0f, hpMul=6.0f,  slotType=EquipmentType.Weapon, specialEffect="timespace_cutter" },
         };
 
         private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
@@ -79,10 +80,10 @@ namespace SuperMech.Code
 
                 LocalizedTextManager.add("item_" + def.id, LocalizedTextManager.getText(def.name), pReplace: true);
                 LocalizedTextManager.add("item_" + def.id + "_desc",
-                    LocalizedTextManager.getText("sm_relic_103"), pReplace: true);
+                    LocalizedTextManager.getText(def.desc), pReplace: true);
                 // v0.75.11: 游戏 EquipItem.getDescriptionID() 查 {id}_description，注册同键避免装备详情missing text
                 LocalizedTextManager.add(def.id + "_description",
-                    LocalizedTextManager.getText("sm_relic_103"), pReplace: true);
+                    LocalizedTextManager.getText(def.desc), pReplace: true);
                 registered++;
             }
 

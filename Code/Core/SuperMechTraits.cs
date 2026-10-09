@@ -117,7 +117,7 @@ namespace SuperMech.Code
             AssetManager.traits.add(hanxiao);
 
             // 内部标记特质（不显示在面板，仅用于代码判断）
-            string[] internalMarkers = { "sm_berserk", "sm_cosmic_relic_owner", "sm_summoned", "sm_talent", "sm_void_boost" };
+            string[] internalMarkers = { "sm_berserk", "sm_cosmic_relic_owner", "sm_summoned", "sm_talent", "sm_void_boost", "sm_supera_council", "sm_supera_purge" };
             foreach (string mid in internalMarkers)
             {
                 var mt = new ActorTrait

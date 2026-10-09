@@ -379,7 +379,12 @@ namespace SuperMech.Code
 
             // ⑤超A级协会（阶级联合）：超A阶级总力量达霸主文明60%（ch1016麦尼逊阶级觉醒，
             //   联合="拧成一股…高级文明更加忌惮"）——提供联合加成，但不免疫清算（会被打压）
-            _councilFormed = classPower >= civPower * CouncilPowerRatio;
+            bool newCouncil = classPower >= civPower * CouncilPowerRatio;
+            if (newCouncil != _councilFormed)
+            {
+                _councilFormed = newCouncil;
+                ApplyCouncilTrait(newCouncil);
+            }
 
             // ⑥高阶超能者群体威胁：非霸主高阶觉醒者力量达霸主文明20%→警惕（收编压力）
             if (awakenedPower >= civPower * VigilantPowerRatio)
@@ -407,6 +412,25 @@ namespace SuperMech.Code
 
         /// <summary>清算标记应用：只作用于超星团级/民间超A个体（原著巅峰之殇ch1002：清超星团级盟友的
         /// 超A，三大文明嫡系不清算；清算目的是把超A收编为嫡系战略武器）</summary>
+        /// <summary>协会成立/解散时给自由超A添加/移除成员标记</summary>
+        private static void ApplyCouncilTrait(bool council)
+        {
+            if (World.world == null || World.world.units == null) return;
+            foreach (Actor a in World.world.units.units_only_alive)
+            {
+                if (a == null || !IsSuperA(a) || IsDynasty(a)) continue;
+                if (council)
+                {
+                    if (!a.hasTrait(CouncilTrait)) a.addTrait(CouncilTrait);
+                }
+                else
+                {
+                    if (a.hasTrait(CouncilTrait)) a.removeTrait(CouncilTrait);
+                }
+            }
+        }
+
+        /// <summary>清算标记应用：清算风暴时给自由超A添加压制标记</summary>
         private static void ApplyPurgeTrait(bool purge)
         {
             if (World.world == null || World.world.units == null) return;

@@ -370,5 +370,17 @@ namespace SuperMech.Code
         public static void SetEventLogIterationEnabled(bool val) { EventLogIterationEnabled = val; }
         public static void SetEventLogResurrectionEnabled(bool val) { EventLogResurrectionEnabled = val; }
         public static void SetEventLogConceptReshapeEnabled(bool val) { EventLogConceptReshapeEnabled = val; }
+
+        // === 旧版本配置兼容层（对应已删除系统，玩家本地config可能残留） ===
+        public static void SetCosmicBeastInterval(float val) { }
+        public static void SetCosmicBeastEnabled(bool val) { }
+        public static void SetSanctuaryAutoSave(bool val) { }
+        public static void SetSuppressIntensity(float val) { }
+        public static void SetTradeEnabled(bool val) { }
+        public static void SetGeneticsEnabled(bool val) { }
+        public static void SetStarGateEnabled(bool val) { }
+        public static void SetIntelEnabled(bool val) { }
+        public static void SetCombatEnhanceEnabled(bool val) { }
+        public static void SetLegionEnabled(bool val) { }
     }
 }
