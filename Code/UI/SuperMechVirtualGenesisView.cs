@@ -3,7 +3,9 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>虚拟创世窗口（原著：韩萧融合世界树后的标志性能力）</summary>
+    /// <summary>虚拟创世窗口（原著：机械师虚拟分支超神级专属能力）
+    /// 核心功能：虚实转化——将虚拟设计图直接转化为实物，省略制造过程
+    /// </summary>
     public class SuperMechVirtualGenesisView : MonoBehaviour
     {
         public static Actor OverrideActor;
@@ -67,7 +69,7 @@ namespace SuperMech.Code
                 tr.anchorMin = new Vector2(0, 1);
                 tr.anchorMax = new Vector2(1, 1);
                 tr.offsetMin = new Vector2(4, -8);
-                tr.offsetMax = new Vector2(-4, -60);
+                tr.offsetMax = new Vector2(-4, -80);
                 return;
             }
 
@@ -78,41 +80,41 @@ namespace SuperMech.Code
                 LocalizedTextManager.getText("sm_ui_vg_title"), levelName);
 
             float y = 0;
-            // 空间等级
-            AddStatRow(ref y, LocalizedTextManager.getText("sm_ui_vg_level"),
-                string.Format("{0}/10", state.spaceLevel));
-            // 创世能量
-            AddStatRow(ref y, LocalizedTextManager.getText("sm_ui_vg_energy"),
-                string.Format("{0:F0}/10000", state.energy));
-            // 修炼加成
-            AddStatRow(ref y, LocalizedTextManager.getText("sm_ui_vg_cultivation_bonus"),
-                string.Format("{0:F1}x", SuperMechVirtualGenesis.GetCultivationBonus(a)));
-            // 经验加成
-            AddStatRow(ref y, LocalizedTextManager.getText("sm_ui_vg_exp_bonus"),
-                string.Format("{0:F1}x", SuperMechVirtualGenesis.GetExpBonus(a)));
+            // 制造加速倍率（虚实转化：省略制造过程）
+            float craftMult = SuperMechVirtualGenesis.GetCraftSpeedMultiplier(a);
+            string craftText = SuperMechVirtualGenesis.CanInstantCraft(a) ?
+                LocalizedTextManager.getText("sm_ui_vg_instant") : string.Format("{0:F0}x", craftMult);
+            AddStatRow(ref y, LocalizedTextManager.getText("sm_ui_vg_craft_speed"), craftText);
 
-            // 升级按钮
+            // 召唤消耗
+            int summonCost = state.level == SuperMechVirtualGenesis.GenesisLevel.True ?
+                SuperMechVirtualGenesis.SummonCostTrue : SuperMechVirtualGenesis.SummonCostBasic;
+            AddStatRow(ref y, LocalizedTextManager.getText("sm_ui_vg_summon_cost"),
+                string.Format("{0} {1}", summonCost, LocalizedTextManager.getText("sm_ui_vg_potential")));
+
+            // 召唤机械单位按钮
             y += 10;
-            float cost = SuperMechVirtualGenesis.EnergyPerSpaceLevel * state.spaceLevel;
-            bool canUpgrade = state.spaceLevel < 10 && state.energy >= cost;
-            var btn = SuperMechUiSkin.MakeButton(_content,
-                string.Format("{0} ({1:F0})", LocalizedTextManager.getText("sm_ui_vg_upgrade"), cost), 12,
-                () => { SuperMechVirtualGenesis.UpgradeSpace(a); RefreshAll(); });
+            int potential = SuperMechPotential.GetPotential(a);
+            bool canSummon = potential >= summonCost;
+            string summonLabel = state.level == SuperMechVirtualGenesis.GenesisLevel.True ?
+                LocalizedTextManager.getText("sm_ui_vg_summon_true") : LocalizedTextManager.getText("sm_ui_vg_summon_basic");
+            var btn = SuperMechUiSkin.MakeButton(_content, summonLabel, 12,
+                () => { SuperMechVirtualGenesis.SummonMechUnit(a); RefreshAll(); });
             var br = btn.GetComponent<RectTransform>();
             br.anchorMin = new Vector2(0.5f, 1);
             br.anchorMax = new Vector2(0.5f, 1);
-            br.sizeDelta = new Vector2(200, 30);
+            br.sizeDelta = new Vector2(220, 32);
             br.anchoredPosition = new Vector2(0, -y);
-            if (!canUpgrade) btn.interactable = false;
+            if (!canSummon) btn.interactable = false;
 
-            // 世界观描述
-            y += 45;
+            // 世界观描述（原著：虚实转化）
+            y += 48;
             var lore = SuperMechUiSkin.MakeText(_content, LocalizedTextManager.getText("sm_ui_vg_lore"), 10, TextAnchor.UpperLeft);
             var lr = lore.GetComponent<RectTransform>();
             lr.anchorMin = new Vector2(0, 1);
             lr.anchorMax = new Vector2(1, 1);
             lr.offsetMin = new Vector2(4, -y);
-            lr.offsetMax = new Vector2(-4, -y - 50);
+            lr.offsetMax = new Vector2(-4, -y - 70);
         }
 
         private void AddStatRow(ref float y, string label, string value)

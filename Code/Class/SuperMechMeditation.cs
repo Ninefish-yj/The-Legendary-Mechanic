@@ -74,25 +74,22 @@ namespace SuperMech.Code
                 var s = SuperMechStats.Of(a);
                 if (s == null) continue;
 
-                // 虚拟创世修炼加成（原著：韩萧虚拟创世内修炼加速）
-                float cultBonus = SuperMechVirtualGenesis.GetCultivationBonus(a);
-
                 if (_psiResonance.Contains(a.id) && a.hasTrait(SuperMechTraits.ClassPsi))
                 {
                     float cur = s["intelligence"];
-                    if (cur < 200) s["intelligence"] = cur + 0.5f * cultBonus;
+                    if (cur < 200) s["intelligence"] = cur + 0.5f;
                 }
                 if (_manaMeditation.Contains(a.id) && a.hasTrait(SuperMechTraits.ClassMage))
                 {
                     float cur = s["intelligence"];
-                    if (cur < 200) s["intelligence"] = cur + 0.6f * cultBonus;
+                    if (cur < 200) s["intelligence"] = cur + 0.6f;
                     float mana = s["mana"];
-                    if (mana < 1000) s["mana"] = mana + 3f * cultBonus;
+                    if (mana < 1000) s["mana"] = mana + 3f;
                 }
                 if (_mindTrain.Contains(a.id) && a.hasTrait(SuperMechTraits.ClassMind))
                 {
                     float cur = s["intelligence"];
-                    if (cur < 200) s["intelligence"] = cur + 0.5f * cultBonus;
+                    if (cur < 200) s["intelligence"] = cur + 0.5f;
                 }
             }
         }

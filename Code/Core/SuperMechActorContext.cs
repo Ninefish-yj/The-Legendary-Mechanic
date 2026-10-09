@@ -45,6 +45,7 @@ namespace SuperMech.Code
         public string factionId = null;
         public bool isFactionLeader = false;
         public long summonerId = -1;       // v0.57.0 召唤者ID（召唤物专用）
+        public float expireAge = -1f;      // 召唤物过期年龄（虚拟创世暂时性产物）
 
         // === 状态标记 ===
         public bool isDescendant = false; // 降临者

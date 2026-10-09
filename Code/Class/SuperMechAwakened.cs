@@ -364,8 +364,6 @@ namespace SuperMech.Code
                 float xpGain = 20f;
                 if (a.data != null && a.data.health < a.getMaxHealth() * 0.95f)
                     xpGain += 80f;
-                // 虚拟创世经验加成（原著：韩萧虚拟创世内修炼加速）
-                xpGain *= SuperMechVirtualGenesis.GetExpBonus(a);
                 AddXp(a, xpGain);
             }
         }

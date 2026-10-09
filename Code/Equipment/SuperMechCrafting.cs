@@ -156,6 +156,9 @@ namespace SuperMech.Code
 
 
             float cdTime = Mathf.Max(2f, 5f - intel * 0.2f);
+            // 虚拟创世：虚实转化省略制造过程（原著：十分适合暴兵）
+            cdTime /= SuperMechVirtualGenesis.GetCraftSpeedMultiplier(maker);
+            if (SuperMechVirtualGenesis.CanInstantCraft(maker)) cdTime = 0f;
             _cooldown[maker.id] = now + cdTime;
             return true;
         }

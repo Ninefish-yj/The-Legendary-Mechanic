@@ -206,7 +206,7 @@ namespace SuperMech.Code
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_dim_entry"), "iconDivineLight",
                 new Color(0.75f, 0.55f, 0.95f), () => SuperMechWindowManager.OpenDimension(a));
 
-            // v0.86.0 虚拟创世：韩萧融合世界树后的能力（原著：虚拟创世）
+            // v0.86.1 虚拟创世：机械师虚拟分支转职超神机械师时领悟（原著：虚实转化）
             if (SuperMechVirtualGenesis.HasGenesis(a))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_virtual_genesis"), "iconChosenOne",

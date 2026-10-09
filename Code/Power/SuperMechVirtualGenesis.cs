@@ -3,9 +3,11 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>虚拟创世系统（原著：韩萧融合世界树后的标志性能力）
-    /// 原著设定：韩萧融合世界树后获得【虚拟创世（伪）】，超神级后去"伪"
-    /// 可以创造虚拟空间，空间内修炼加速、存储单位、模拟文明
+    /// <summary>虚拟创世系统（原著：机械师虚拟分支超神级专属能力）
+    /// 原著设定：韩萧转职【超神机械师】时领悟【虚拟创世（伪）】
+    /// 核心功能：虚实转化——将虚拟设计图直接转化为实物，省略制造过程
+    /// 限制（伪）：不知道的不能造、违背规律不能造、需消耗等量资源
+    /// 去伪：超神级后补完，限制减少
     /// </summary>
     public static class SuperMechVirtualGenesis
     {
@@ -14,17 +16,22 @@ namespace SuperMech.Code
         public class GenesisState
         {
             public GenesisLevel level = GenesisLevel.None;
-            public int spaceLevel = 0;           // 虚拟空间等级（1-10）
-            public float energy = 0f;            // 创世能量
-            public long createdAt = 0;           // 创造时间
-            public int storedUnits = 0;          // 存储单位数
+            public long awakenTime = 0;
         }
 
         private static readonly Dictionary<long, GenesisState> _states = new Dictionary<long, GenesisState>();
 
-        public const int MinRankForPseudo = 10;   // S阶（超A级）可获得虚拟创世（伪）
-        public const int MinRankForTrue = 13;     // X阶（超神级）去伪成真
-        public const float EnergyPerSpaceLevel = 100f;
+        // 原著：虚拟创世是机械师虚拟分支转职超神机械师时领悟
+        public const int StageForPseudo = 14;  // 阶段14=超神机械师
+        public const int RankForTrue = 13;     // X阶去伪成真
+
+        // 制造加速倍率（原著：省略制造过程，十分适合暴兵）
+        public const float PseudoCraftSpeedMultiplier = 5f;   // 伪：5倍速
+        public const float TrueCraftSpeedMultiplier = 999f;   // 真：瞬发
+
+        // 召唤机械单位的资源消耗
+        public const int SummonCostBasic = 50;   // 伪：召唤普通机械单位消耗
+        public const int SummonCostTrue = 200;   // 真：召唤超神机械单位消耗
 
         /// <summary>检查单位是否拥有虚拟创世能力</summary>
         public static bool HasGenesis(Actor a)
@@ -41,86 +48,114 @@ namespace SuperMech.Code
             return null;
         }
 
-        /// <summary>尝试觉醒虚拟创世（伪）——韩萧融合世界树后获得</summary>
-        public static bool TryAwakenPseudo(Actor a)
+        /// <summary>检查是否满足虚拟创世觉醒条件（机械师+虚拟分支+超神机械师阶段）</summary>
+        public static bool CanAwaken(Actor a)
         {
             if (a == null || !a.isAlive()) return false;
-            // 只有降临者（韩萧化身）可以获得
-            if (!SuperMechAwakened.IsAwakened(a)) return false;
-            if (SuperMechActorContextRegistry.GetRank(a) < MinRankForPseudo) return false;
+            if (!a.hasTrait(SuperMechTraits.ClassMech)) return false;
+            if (!SuperMechBranch.HasBranch(a, SuperMechBranch.BranchMech)) return false;
+            if (!SuperMechBranchMastery.HasSpec(a, SuperMechBranchMastery.SpecVirtual)) return false;
+            if (SuperMechStage.GetStage(a) < StageForPseudo) return false;
+            return true;
+        }
+
+        /// <summary>转职超神机械师时觉醒虚拟创世（伪）</summary>
+        public static bool TryAwakenPseudo(Actor a)
+        {
+            if (!CanAwaken(a)) return false;
             if (HasGenesis(a)) return false;
 
             _states[a.id] = new GenesisState
             {
                 level = GenesisLevel.Pseudo,
-                spaceLevel = 1,
-                energy = 50f,
-                createdAt = System.DateTime.Now.Ticks
+                awakenTime = System.DateTime.Now.Ticks
             };
 
-            Debug.Log($"[超神机械师]【虚拟创世】{a.getName()} 融合世界树，觉醒【虚拟创世（伪）】！");
+            Debug.Log($"[超神机械师]【虚拟创世】{a.getName()} 转职超神机械师，领悟【虚拟创世（伪）】！");
             return true;
         }
 
-        /// <summary>尝试去伪成真——X阶后虚拟创世进化</summary>
+        /// <summary>X阶后去伪成真</summary>
         public static bool TryAscendToTrue(Actor a)
         {
             if (a == null) return false;
             var state = GetState(a);
             if (state == null || state.level != GenesisLevel.Pseudo) return false;
-            if (SuperMechActorContextRegistry.GetRank(a) < MinRankForTrue) return false;
+            if (SuperMechActorContextRegistry.GetRank(a) < RankForTrue) return false;
 
             state.level = GenesisLevel.True;
-            state.spaceLevel = 10;
-            state.energy = 1000f;
-
             Debug.Log($"[超神机械师]【虚拟创世】{a.getName()} 达到超神级，【虚拟创世（伪）】去伪成真！");
             return true;
         }
 
-        /// <summary>获取虚拟空间内的修炼加成</summary>
-        public static float GetCultivationBonus(Actor a)
+        /// <summary>获取制造速度倍率（虚实转化：省略制造过程）</summary>
+        public static float GetCraftSpeedMultiplier(Actor a)
         {
             var state = GetState(a);
             if (state == null) return 1f;
-            // 虚拟创世（伪）：1.5倍，每级+0.1；虚拟创世（真）：3倍
-            if (state.level == GenesisLevel.True) return 3f;
-            return 1.5f + (state.spaceLevel - 1) * 0.1f;
+            if (state.level == GenesisLevel.True) return TrueCraftSpeedMultiplier;
+            return PseudoCraftSpeedMultiplier;
         }
 
-        /// <summary>获取虚拟空间内的经验加成</summary>
-        public static float GetExpBonus(Actor a)
+        /// <summary>是否可以瞬造（虚拟创世真）</summary>
+        public static bool CanInstantCraft(Actor a)
         {
             var state = GetState(a);
-            if (state == null) return 1f;
-            if (state.level == GenesisLevel.True) return 5f;
-            return 2f + (state.spaceLevel - 1) * 0.2f;
+            return state != null && state.level == GenesisLevel.True;
         }
 
-        /// <summary>消耗创世能量升级虚拟空间</summary>
-        public static bool UpgradeSpace(Actor a)
+        /// <summary>召唤机械单位（虚实转化：直接从虚拟设计图转化为实物）</summary>
+        public static bool SummonMechUnit(Actor summoner)
         {
-            var state = GetState(a);
-            if (state == null || state.level == GenesisLevel.None) return false;
-            if (state.spaceLevel >= 10) return false;
-            float cost = EnergyPerSpaceLevel * state.spaceLevel;
-            if (state.energy < cost) return false;
+            if (summoner == null || !summoner.isAlive()) return false;
+            if (!HasGenesis(summoner)) return false;
 
-            state.energy -= cost;
-            state.spaceLevel++;
+            var state = GetState(summoner);
+            bool isTrue = state.level == GenesisLevel.True;
+            int cost = isTrue ? SummonCostTrue : SummonCostBasic;
+
+            // 消耗资源（原著：转化需要消耗等量资源）
+            // 简化：消耗潜能点作为资源
+            if (SuperMechPotential.GetPotential(summoner) < cost) return false;
+            SuperMechPotential.SpendPotential(summoner, cost);
+
+            // 在召唤者身边生成机械单位
+            WorldTile tile = summoner.currentTile;
+            if (tile == null) tile = World.world.GetRandomTile();
+            if (tile == null) return false;
+
+            Actor summoned = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
+            if (summoned == null) return false;
+
+            summoned.addTrait(SuperMechTraits.ClassMech);
+            summoned.addTrait("aggressive");
+            summoned.addTrait("sm_summoned");
+
+            // 虚拟创世真：召唤超神级机械单位
+            if (isTrue)
+            {
+                summoned.addTrait("sm_void_boost");
+                SuperMechAdvancement.SetExactRank(summoned, 10); // S阶
+            }
+            else
+            {
+                int rank = Mathf.Max(0, SuperMechActorContextRegistry.GetRank(summoner) - 1);
+                SuperMechAdvancement.SetExactRank(summoned, rank);
+            }
+
+            // 记录召唤者
+            var ctx = SuperMechActorContextRegistry.Get(summoned);
+            if (ctx != null) ctx.summonerId = summoner.id;
+
+            // 短寿命消散（原著：虚拟转化的暂时性产物）
+            var sctx = SuperMechActorContextRegistry.Get(summoned);
+            if (sctx != null) sctx.expireAge = summoned.age + 600; // 600岁后消散
+
+            Debug.Log($"[超神机械师]【虚拟创世】{summoner.getName()} 虚实转化召唤机械单位（{(isTrue ? "超神级" : "普通")}），消耗{cost}潜能点");
             return true;
         }
 
-        /// <summary>增加创世能量（修炼/战斗获得）</summary>
-        public static void AddEnergy(Actor a, float amount)
-        {
-            var state = GetState(a);
-            if (state == null) return;
-            state.energy += amount;
-            if (state.energy > 10000f) state.energy = 10000f;
-        }
-
-        /// <summary>Tick：自动恢复创世能量，检查去伪条件</summary>
+        /// <summary>Tick：检查去伪条件</summary>
         public static void Tick()
         {
             if (World.world == null || World.world.units == null) return;
@@ -132,30 +167,10 @@ namespace SuperMech.Code
                 if (a == null || !a.isAlive()) continue;
 
                 var state = kv.Value;
-                // 缓慢恢复创世能量
-                state.energy += 0.1f * state.spaceLevel;
-                if (state.energy > 10000f) state.energy = 10000f;
-
-                // 检查去伪条件
                 if (state.level == GenesisLevel.Pseudo &&
-                    SuperMechActorContextRegistry.GetRank(a) >= MinRankForTrue)
+                    SuperMechActorContextRegistry.GetRank(a) >= RankForTrue)
                 {
                     TryAscendToTrue(a);
-                }
-            }
-        }
-
-        /// <summary>世界树融合事件：所有降临者有机会觉醒虚拟创世</summary>
-        public static void OnWorldTreeUnion()
-        {
-            if (World.world == null || World.world.units == null) return;
-            foreach (Actor a in World.world.units)
-            {
-                if (a == null || !a.isAlive()) continue;
-                if (SuperMechAwakened.IsAwakened(a) &&
-                    SuperMechActorContextRegistry.GetRank(a) >= MinRankForPseudo)
-                {
-                    TryAwakenPseudo(a);
                 }
             }
         }
@@ -176,10 +191,7 @@ namespace SuperMech.Code
         {
             public long id;
             public int level;
-            public int spaceLevel;
-            public float energy;
-            public long createdAt;
-            public int storedUnits;
+            public long awakenTime;
         }
 
         public static List<GenesisSaveData> Save()
@@ -191,10 +203,7 @@ namespace SuperMech.Code
                 {
                     id = kv.Key,
                     level = (int)kv.Value.level,
-                    spaceLevel = kv.Value.spaceLevel,
-                    energy = kv.Value.energy,
-                    createdAt = kv.Value.createdAt,
-                    storedUnits = kv.Value.storedUnits
+                    awakenTime = kv.Value.awakenTime
                 });
             }
             return list;
@@ -209,10 +218,7 @@ namespace SuperMech.Code
                 _states[d.id] = new GenesisState
                 {
                     level = (GenesisLevel)d.level,
-                    spaceLevel = d.spaceLevel,
-                    energy = d.energy,
-                    createdAt = d.createdAt,
-                    storedUnits = d.storedUnits
+                    awakenTime = d.awakenTime
                 };
             }
         }

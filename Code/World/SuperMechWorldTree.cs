@@ -182,8 +182,6 @@ namespace SuperMech.Code
             if (target.hasTrait(TreeKingTrait))
             {
                 _data.killedKings++;
-                // 树王被击杀：降临者融合世界树力量，觉醒虚拟创世（原著：韩萧融合世界树）
-                SuperMechVirtualGenesis.OnWorldTreeUnion();
             }
         }
 

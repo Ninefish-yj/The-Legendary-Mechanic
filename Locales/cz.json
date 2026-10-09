@@ -3931,13 +3931,14 @@
   "sm_ui_vg_none": "未觉醒",
   "sm_ui_vg_pseudo": "虚拟创世（伪）",
   "sm_ui_vg_true": "虚拟创世",
-  "sm_ui_vg_level": "空间等级",
-  "sm_ui_vg_energy": "创世能量",
-  "sm_ui_vg_cultivation_bonus": "修炼加成",
-  "sm_ui_vg_exp_bonus": "经验加成",
-  "sm_ui_vg_upgrade": "升级空间",
   "sm_ui_vg_awaken": "觉醒虚拟创世",
-  "sm_ui_vg_desc_pseudo": "融合世界树后获得的能力，可创造虚拟空间加速修炼",
-  "sm_ui_vg_desc_true": "超神级去伪成真，可创造真实虚拟世界",
-  "sm_ui_vg_lore": "原著：韩萧融合世界树后获得【虚拟创世（伪）】，超神级后去伪"
+  "sm_ui_vg_desc_pseudo": "机械师虚拟分支转职超神机械师时领悟的能力，可将虚拟设计图直接转化为实物",
+  "sm_ui_vg_desc_true": "超神级去伪成真，虚实转化无限制，可瞬造任何已知装备",
+  "sm_ui_vg_lore": "原著：韩萧转职【超神机械师】时领悟【虚拟创世（伪）】，类似于世界树的虚实转化能力，可将虚拟世界中创造的东西转化为实物，省略制造过程，十分适合暴兵。限制：不知道的不能造、违背规律不能造、需消耗等量资源。",
+  "sm_ui_vg_craft_speed": "制造加速",
+  "sm_ui_vg_instant": "瞬发",
+  "sm_ui_vg_summon_cost": "召唤消耗",
+  "sm_ui_vg_potential": "潜能点",
+  "sm_ui_vg_summon_basic": "召唤机械单位",
+  "sm_ui_vg_summon_true": "召唤超神机械单位"
 }

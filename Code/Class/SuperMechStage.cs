@@ -329,6 +329,12 @@ namespace SuperMech.Code
             // 同步到ActorContext
             var ctx = SuperMechActorContextRegistry.Get(a);
             if (ctx != null) ctx.stage = clamped;
+
+            // 转职超神机械师时：机械师虚拟分支领悟虚拟创世（原著）
+            if (clamped >= 14)
+            {
+                SuperMechVirtualGenesis.TryAwakenPseudo(a);
+            }
         }
 
         public static bool Advance(Actor a)
