@@ -30,6 +30,12 @@ namespace SuperMech.Code
         // 默许 / 警惕（高阶超能者群体收编压力） / 清算风暴（巅峰之殇：清超星团级文明超A） /
         // 协会（超A阶级联合） / 超能圣域（与三大文明同层次，对等共存终局）
 
+        /// <summary>超A政治倾向（原著：秩序派投靠文明=安全部干部，中立派保持独立，混乱派=自由散人）</summary>
+        public enum PoliticalAlignment { Order = 0, Neutral = 1, Chaos = 2 }
+        private static readonly Dictionary<long, PoliticalAlignment> _alignment = new Dictionary<long, PoliticalAlignment>();
+        private const int DefectionInterval = 16;  // 每16 tick检查一次投靠
+        private const float DefectionChance = 0.15f; // 秩序派投靠概率（每次检查）
+
         // 力量对比制（威胁=力量比值，非单位数量）：力量指数=onar/1000（SS巅峰超A≈83，X超神级≈149）；
         // 文明力量=科技点+Lv×100；超A级=S/S+/SS（ch1040韩萧82600=SS），X=超神级（ch1402超A之上）
         private const float VigilantPowerRatio = 0.20f;  // 非霸主高阶觉醒者力量≥霸主文明20%→警惕（收编压力，ch1018超能者总数只会一直增加）
@@ -266,6 +272,7 @@ namespace SuperMech.Code
             if (World.world == null || World.world.units == null) return;
 
             _tick++;
+            if (_tick % DefectionInterval == 0) TickDefections();
             if (_tick % RecalcInterval != 0) return;
 
             float threatPower = GetThreatPower();    // 超星团级文明超A力量（清算对象=他文明资产）
@@ -448,6 +455,56 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>获取超A政治倾向（首次访问时随机决定：50%秩序/30%中立/20%混乱）</summary>
+        public static PoliticalAlignment GetAlignment(Actor a)
+        {
+            if (a == null) return PoliticalAlignment.Neutral;
+            if (!_alignment.TryGetValue(a.id, out var align))
+            {
+                float r = Random.value;
+                align = r < 0.5f ? PoliticalAlignment.Order : r < 0.8f ? PoliticalAlignment.Neutral : PoliticalAlignment.Chaos;
+                _alignment[a.id] = align;
+            }
+            return align;
+        }
+
+        /// <summary>超A投靠文明：秩序派超A主动投靠强大文明获得庇护（原著：超A选择投靠星际财团/虚灵教派/光辉联邦）</summary>
+        private static void TickDefections()
+        {
+            if (World.world == null || World.world.units == null || World.world.kingdoms == null) return;
+            var topCivs = GetTopCivilizations(3);
+            if (topCivs.Count == 0) return;
+
+            foreach (Actor a in World.world.units.units_only_alive)
+            {
+                if (a == null || !IsSuperA(a)) continue;
+                if (GetAlignment(a) != PoliticalAlignment.Order) continue; // 只有秩序派主动投靠
+                if (a.kingdom != null && (int)SuperMechCivilization.GetCivLevelFromKingdom(a.kingdom) >= 2) continue; // 已在星团级+文明
+
+                // 绝户计残留期：超A不敢投靠超星团级文明（ch1002）
+                bool avoidSuperCluster = _aftermathTicksLeft > 0;
+
+                // 找最近的强大文明（星团级+，绝户计期间避开超星团级）
+                Kingdom target = null;
+                float bestDist = float.MaxValue;
+                foreach (var k in World.world.kingdoms.kingdoms)
+                {
+                    if (k == null || k.id == a.kingdom?.id) continue;
+                    int lvl = (int)SuperMechCivilization.GetCivLevelFromKingdom(k);
+                    if (lvl < 2) continue; // 至少星团级
+                    if (avoidSuperCluster && lvl >= 3) continue; // 绝户计期间避开超星团级
+                    float dist = (a.currentPosition - k.capital.position).sqrMagnitude;
+                    if (dist < bestDist) { bestDist = dist; target = k; }
+                }
+
+                if (target != null && Random.value < DefectionChance)
+                {
+                    a.joinKingdom(target);
+                    Debug.Log($"[超神机械师] 超A投靠：{a.name} → {target.name}（秩序派）");
+                }
+            }
+        }
+
         /// <summary>混乱时代历法名（玩家可在配置选择/修改历法风格，v0.76.13）：
         /// 0=原著历法"探索历"；1=文明历法"混沌时代"；2=时代历法"混沌历"</summary>
         public static string GetEraChaosName()
@@ -505,6 +562,7 @@ namespace SuperMech.Code
             _bureaucratized = false;
             _allianceFormed = false;
             _purgeCount = 0;
+            _alignment.Clear();
         }
     }
 }
