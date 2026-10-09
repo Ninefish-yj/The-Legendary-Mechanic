@@ -3959,5 +3959,10 @@
   "sm_relic_102_desc": "宇宙宝物级金核，蕴含庞大能量",
   "sm_relic_103_desc": "虚空暗能机甲，虚空生物科技结晶",
   "sm_relic_104_desc": "进化者结晶，可加速基因进化",
-  "sm_relic_105_desc": "时空剪切器，可切割空间"
+  "sm_relic_105_desc": "时空剪切器，可切割空间",
+  "sm_inal": "伊纳尔",
+  "sm_inal_balance": "伊纳尔存款",
+  "sm_inal_salary": "俸禄",
+  "sm_inal_confiscate": "清算没收",
+  "sm_inal_desc": "主宇宙通用货币，超A俸禄与悬赏的结算单位"
 }

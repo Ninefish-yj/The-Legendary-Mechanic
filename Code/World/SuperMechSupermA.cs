@@ -381,6 +381,7 @@ namespace SuperMech.Code
                 _purgeTicksLeft = PurgeDuration;
                 _purgeCount++;
                 ApplyPurgeTrait(true);
+                SuperMechInal.ConfiscateDuringPurge(); // 没收超星团级非嫡系超A的伊纳尔存款（经济动机）
                 return;
             }
 
@@ -484,17 +485,18 @@ namespace SuperMech.Code
                 // 绝户计残留期：超A不敢投靠超星团级文明（ch1002）
                 bool avoidSuperCluster = _aftermathTicksLeft > 0;
 
-                // 找最近的强大文明（星团级+，绝户计期间避开超星团级）
+                // 找待遇最好的强大文明（星团级+，绝户计期间避开超星团级）
+                // 原著：超A选择投靠待遇最好的文明（俸禄+资源+庇护），不是最近的
                 Kingdom target = null;
-                float bestDist = float.MaxValue;
+                int bestSalary = 0;
                 foreach (var k in World.world.kingdoms.kingdoms)
                 {
                     if (k == null || k.id == a.kingdom?.id) continue;
                     int lvl = (int)SuperMechCivilization.GetCivLevelFromKingdom(k);
                     if (lvl < 2) continue; // 至少星团级
                     if (avoidSuperCluster && lvl >= 3) continue; // 绝户计期间避开超星团级
-                    float dist = (a.currentPosition - k.capital.position).sqrMagnitude;
-                    if (dist < bestDist) { bestDist = dist; target = k; }
+                    int salary = SuperMechInal.CalcSalary(a, k);
+                    if (salary > bestSalary) { bestSalary = salary; target = k; }
                 }
 
                 if (target != null && Random.value < DefectionChance)

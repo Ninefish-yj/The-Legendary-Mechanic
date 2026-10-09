@@ -102,6 +102,7 @@ namespace SuperMech.Code
                 SafeRun("玩家降临", () => SuperMechPlayer.TickPlayer(1.25f));
                 SafeRun("世界树入侵", () => SuperMechWorldTree.TickWorldTree(1.25f));
                 SafeRun("个体伟力", () => SuperMechSupermA.Tick(1.25f));
+                SafeRun("伊纳尔俸禄", () => SuperMechInal.TickSalary());
             }
 
             float now = Time.time;
@@ -212,6 +213,7 @@ namespace SuperMech.Code
             try { SuperMechPlayer.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPlayer"); }
             try { SuperMechWorldTree.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechWorldTree"); }
             try { SuperMechSupermA.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechSupermA"); }
+            try { SuperMechInal.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechInal"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
         }
     }
