@@ -115,7 +115,6 @@ namespace SuperMech.Code
                 }
             }
 
-            // 记录死亡信息态
             foreach (var id in deadIds)
             {
                 if (_aliveSnapshot.TryGetValue(id, out var record))
@@ -159,17 +158,14 @@ namespace SuperMech.Code
                 deathAge = a.age,
             };
 
-            // 职业和分支
             if (a.hasTrait(SuperMechTraits.ClassMech)) record.classTrait = "mech";
             else if (a.hasTrait(SuperMechTraits.ClassMartial)) record.classTrait = "martial";
             else if (a.hasTrait(SuperMechTraits.ClassPsi)) record.classTrait = "psi";
             else if (a.hasTrait(SuperMechTraits.ClassMage)) record.classTrait = "mage";
             else if (a.hasTrait(SuperMechTraits.ClassMind)) record.classTrait = "mind";
 
-            // 分支特质
             record.branchTrait = SuperMechBranch.GetBranchId(a);
 
-            // 知识
             var unlockedKnowledge = SuperMechKnowledge.GetUnlockedList(a, "mech");
             record.knowledge = new List<string>();
             if (unlockedKnowledge != null)
@@ -177,7 +173,6 @@ namespace SuperMech.Code
                 foreach (var k in unlockedKnowledge) record.knowledge.Add(k.id);
             }
 
-            // 遗力来源
             var legacySources = SuperMechTranscendence.GetLegacySources(a);
             record.legacySourceNames = new List<string>();
             record.legacySourceRanks = new List<int>();
@@ -194,7 +189,6 @@ namespace SuperMech.Code
                 }
             }
 
-            // 技能
             record.skills = new List<string>();
             var learnedSkills = SuperMechSkills.GetLearned(a);
             if (learnedSkills != null)
@@ -202,7 +196,6 @@ namespace SuperMech.Code
                 foreach (var s in learnedSkills) record.skills.Add(s.id);
             }
 
-            // 特质（自定义特质）
             record.traits = new List<string>();
             if (a.data.saved_traits != null)
             {

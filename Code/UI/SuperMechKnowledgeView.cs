@@ -18,7 +18,6 @@ namespace SuperMech.Code
         public static Actor OverrideActor;
         private static Actor SelectedActor => OverrideActor != null ? OverrideActor : SelectedUnit.unit;
 
-        // 标签页控制
         private GameObject _knowledgePanel;
         private GameObject _fusionPanel;
         private Button _tabKnowledge;
@@ -55,9 +54,7 @@ namespace SuperMech.Code
             var barImg = barGo.AddComponent<Image>();
             barImg.color = new Color(0.08f, 0.1f, 0.16f, 0.9f);
 
-            // 知识标签
             _tabKnowledge = CreateTabButton(barGo.transform, "sm_ui_knowledge", 0);
-            // 融合标签
             _tabFusion = CreateTabButton(barGo.transform, "sm_ui_fusion", 1);
         }
 
@@ -98,7 +95,6 @@ namespace SuperMech.Code
             _knowledgePanel.SetActive(isKnowledge);
             _fusionPanel.SetActive(!isKnowledge);
 
-            // 标签高亮
             if (_tabKnowledgeText != null)
             {
                 _tabKnowledgeText.color = isKnowledge ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;

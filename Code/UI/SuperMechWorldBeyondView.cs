@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using NeoModLoader.General;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -48,22 +47,14 @@ namespace SuperMech.Code
         private static List<Message> _messages;
         private static List<Message> Messages => _messages ??= new List<Message>
         {
-            // 早期
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_early"), WorldState.Early),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_roubao"), LocalizedTextManager.getText("sm_wb_msg_earth_early"), WorldState.Early),
-            // 出现X阶
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_xrank"), WorldState.XRankAppeared),
-            // 秩序确立
             new Message(LocalizedTextManager.getText("sm_wb_speaker_kuangdao"), LocalizedTextManager.getText("sm_wb_msg_earth_order"), WorldState.OrderEstablished),
-            // 超A协会成立
             new Message(LocalizedTextManager.getText("sm_wb_speaker_jile"), LocalizedTextManager.getText("sm_wb_msg_earth_assoc"), WorldState.CouncilFormed),
-            // 清算风暴
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_purge"), WorldState.PurgeStorm),
-            // 超星团同盟
             new Message(LocalizedTextManager.getText("sm_wb_speaker_feiyun"), LocalizedTextManager.getText("sm_wb_msg_earth_alliance"), WorldState.SuperclusterAlliance),
-            // 体制化
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_system"), WorldState.Institutionalized),
-            // 超能圣域
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_balance"), WorldState.SanctuaryRealm),
         };
 
@@ -117,12 +108,10 @@ namespace SuperMech.Code
             if (content == null) return;
             _root = content;
 
-            // 清空
             var children = new List<GameObject>();
             foreach (Transform c in content) children.Add(c.gameObject);
             foreach (var go in children) Object.DestroyImmediate(go);
 
-            // 背景
             var bg = new GameObject("WBBg", typeof(RectTransform), typeof(Image));
             bg.transform.SetParent(content, false);
             var bgRect = bg.GetComponent<RectTransform>();
@@ -139,7 +128,6 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 28);
             title.color = new Color(0.6f, 0.8f, 1f);
 
-            // 引言题词
             var quote = SuperMechUiSkin.MakeText(content,
                 LocalizedTextManager.getText("sm_wb_quote"),
                 11, TextAnchor.MiddleCenter);
@@ -150,7 +138,6 @@ namespace SuperMech.Code
             quoteRect.sizeDelta = new Vector2(0, 20);
             quote.color = new Color(0.5f, 0.5f, 0.6f);
 
-            // 子页签栏
             string[] subTabs = { LocalizedTextManager.getText("sm_wb_tab_messages"), LocalizedTextManager.getText("sm_wb_tab_monitor") };
             float subX = 10f;
             for (int i = 0; i < subTabs.Length; i++)
@@ -166,7 +153,6 @@ namespace SuperMech.Code
                 subX += 106f;
             }
 
-            // 内容区
             var areaGo = new GameObject("WBArea", typeof(RectTransform));
             areaGo.transform.SetParent(content, false);
             var area = areaGo.GetComponent<RectTransform>();
@@ -249,7 +235,6 @@ namespace SuperMech.Code
 
                 if (!sameAsLast) y -= 8f;
 
-                // 头像
                 var avatarGo = new GameObject("Avatar", typeof(RectTransform), typeof(Image));
                 avatarGo.transform.SetParent(msgGo.transform, false);
                 var ar = avatarGo.GetComponent<RectTransform>();
@@ -267,7 +252,6 @@ namespace SuperMech.Code
                 atRect.anchorMin = Vector2.zero; atRect.anchorMax = Vector2.one;
                 atRect.offsetMin = Vector2.zero; atRect.offsetMax = Vector2.zero;
 
-                // 用户名
                 if (!sameAsLast)
                 {
                     var nameGo = new GameObject("Name", typeof(RectTransform));
@@ -282,7 +266,6 @@ namespace SuperMech.Code
                     nameTxt.color = isHanXiao ? new Color(0.5f, 0.75f, 1f, isCurrent ? 1f : 0.5f) : new Color(0.5f, 0.9f, 0.6f, isCurrent ? 1f : 0.5f);
                 }
 
-                // 消息气泡
                 var bubbleGo = new GameObject("Bubble", typeof(RectTransform), typeof(Image));
                 bubbleGo.transform.SetParent(msgGo.transform, false);
                 var br = bubbleGo.GetComponent<RectTransform>();
@@ -304,7 +287,6 @@ namespace SuperMech.Code
                 ctRect.anchorMin = Vector2.zero; ctRect.anchorMax = Vector2.one;
                 ctRect.offsetMin = new Vector2(10, 4); ctRect.offsetMax = new Vector2(-10, -4);
 
-                // 当前状态标记
                 if (isCurrent)
                 {
                     var markGo = new GameObject("CurrentMark", typeof(RectTransform));
@@ -323,7 +305,6 @@ namespace SuperMech.Code
             }
             cr.sizeDelta = new Vector2(0, -y + 20);
 
-            // 底部清除历史按钮
             var clearBtnGo = new GameObject("ClearBtn", typeof(RectTransform), typeof(Image), typeof(Button));
             clearBtnGo.transform.SetParent(area, false);
             var cbr = clearBtnGo.GetComponent<RectTransform>();

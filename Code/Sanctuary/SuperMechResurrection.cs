@@ -259,7 +259,6 @@ namespace SuperMech.Code
 
             Debug.Log($"[超神机械师] 复活成功: {state.name} (完整度{integrity:F0%}, 原阶位{state.rankIndex}→{restoredRank}, 神性{state.divinityLevel}, 遗力{state.legacyPower}, 技能{state.skills?.Count ?? 0}, 消耗能量{cost:F0})");
 
-            // 推送复活事件到原生事件日志
             int reviveCount = state.reviveCount + 1;
             string tPartial = LocalizedTextManager.getText("sm_res_partial_lost");
             string tFull = LocalizedTextManager.getText("sm_res_full_keep");

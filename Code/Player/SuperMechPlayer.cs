@@ -213,7 +213,7 @@ namespace SuperMech.Code
         /// <summary>韩萧化身：唯一，机械系，更高初始属性，前世记忆</summary>
         private static void SpawnHanXiaoAvatar()
         {
-            WorldTile tile = FindEdgeTile();
+            WorldTile tile = SMWorldUtils.FindEdgeTile();
             if (tile == null) return;
             Actor p = World.world.units.spawnNewUnit("human", tile, false, true, 6f, null, false, true);
             if (p == null) return;
@@ -252,7 +252,7 @@ namespace SuperMech.Code
         /// <summary>地球玩家化身：多个，随机五系职业，普通玩家水平</summary>
         private static void SpawnEarthPlayerAvatar()
         {
-            WorldTile tile = FindEdgeTile();
+            WorldTile tile = SMWorldUtils.FindEdgeTile();
             if (tile == null) return;
             // 先选好玩家ID（生成单位后立即设置，避免WorldBox默认名字闪烁）
             string playerID = PickEarthPlayerID();
@@ -306,7 +306,7 @@ namespace SuperMech.Code
         {
             try
             {
-                WorldTile tile = FindEdgeTile();
+                WorldTile tile = SMWorldUtils.FindEdgeTile();
                 if (tile == null) return;
                 Actor p = World.world.units.spawnNewUnit("human", tile, false, true, 6f, null, false, true);
                 if (p == null) return;
@@ -368,19 +368,6 @@ namespace SuperMech.Code
         }
 
         /// <summary>地图边缘虚空生成点（参照宇宙异兽）</summary>
-        private static WorldTile FindEdgeTile()
-        {
-            if (World.world == null) return null;
-            int w = MapBox.width, h = MapBox.height;
-            for (int attempt = 0; attempt < 60; attempt++)
-            {
-                int x = Random.value < 0.5f ? Random.Range(0, Mathf.Max(1, w / 8)) : Random.Range(w - w / 8, w);
-                int y = Random.Range(0, h);
-                if (x < 0 || y < 0 || x >= w || y >= h) continue;
-                WorldTile t = World.world.GetTile(x, y);
-                if (t != null && t.Type != TileLibrary.deep_ocean && t.Type != TileLibrary.close_ocean && t.Type != TileLibrary.mountains)
-                    return t;
-            }
             return null;
         }
 
@@ -429,7 +416,7 @@ namespace SuperMech.Code
                 // 最强文明作为任务发布者
                 string publisher = "星海公会";
                 int tech = 0;
-                Kingdom top = FindStrongestKingdom();
+                Kingdom top = SMWorldUtils.FindStrongestKingdom();
                 if (top != null)
                 {
                     publisher = top.name;
@@ -451,7 +438,7 @@ namespace SuperMech.Code
                 {
                     id = "task_" + _data.nextTaskId++,
                     type = TaskType.Hunt,
-                    targetLabel = "讨伐敌对单位",
+                    targetLabel = LocalizedTextManager.getText("sm_player_task_hunt_label"),
                     targetCount = targetCount,
                     rewardPool = pool,
                     entryCost = pool * EntryCostRatio,
@@ -538,23 +525,7 @@ namespace SuperMech.Code
             return result;
         }
 
-        private static Kingdom FindStrongestKingdom()
-        {
-            try
-            {
-                if (World.world == null || World.world.kingdoms == null || World.world.kingdoms.list == null) return null;
-                Kingdom best = null;
-                int bestLevel = -1;
-                foreach (var k in World.world.kingdoms.list)
-                {
-                    if (k == null || k.wild || !k.isCiv()) continue;
-                    int lv = (int)SuperMechCivilization.GetCivLevelFromKingdom(k);
-                    if (lv > bestLevel) { bestLevel = lv; best = k; }
-                }
-                return best;
-            }
-            catch { return null; }
-        }
+        
 
         private static Actor FindActorById(long id)
         {
@@ -636,4 +607,3 @@ namespace SuperMech.Code
             return removed;
         }
     }
-}

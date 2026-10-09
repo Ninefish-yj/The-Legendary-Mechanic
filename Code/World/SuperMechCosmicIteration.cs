@@ -100,7 +100,6 @@ namespace SuperMech.Code
             // 结束当前文明记录
             SuperMechCivilizationData.EndIteration();
 
-            // 计算遗产
             _pendingHeritage = CalculateHeritage();
 
             // 迭代次数+1
@@ -108,7 +107,6 @@ namespace SuperMech.Code
 
             Debug.Log($"[超神机械师] 宇宙大重启! 进入第{CurrentIteration}轮迭代，遗产碎片{_pendingHeritage.retainedFragments}");
 
-            // 推送事件日志
             float retentionRate = CalculateRetentionRate();
             string civSummary = "";
             var history = SuperMechCivilizationData.GetHistory();

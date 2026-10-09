@@ -299,7 +299,6 @@ namespace SuperMech.Code
             int sanctuaryIndex = FindMatchingSanctuary(a);
             if (sanctuaryIndex < 0) return;
 
-            // 检查圣所是否已解锁
             if ((SuperMechSanctuary.Data.unlocked_sanctuaries & (1 << sanctuaryIndex)) == 0) return;
 
             // 自动访问圣所（获得知识和权限）
@@ -365,6 +364,8 @@ namespace SuperMech.Code
                 float xpGain = 20f;
                 if (a.data != null && a.data.health < a.getMaxHealth() * 0.95f)
                     xpGain += 80f;
+                // 虚拟创世经验加成（原著：韩萧虚拟创世内修炼加速）
+                xpGain *= SuperMechVirtualGenesis.GetExpBonus(a);
                 AddXp(a, xpGain);
             }
         }

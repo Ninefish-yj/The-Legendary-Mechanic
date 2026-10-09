@@ -199,7 +199,6 @@ namespace SuperMech.Code
         /// <summary>添加立体描边（顶高光+底阴影）</summary>
         public static void Add3DEdges(RectTransform target)
         {
-            // 顶高光
             var topGo = new GameObject("EdgeTop");
             topGo.transform.SetParent(target, false);
             var topRect = topGo.AddComponent<RectTransform>();
@@ -210,7 +209,6 @@ namespace SuperMech.Code
             topRect.anchoredPosition = Vector2.zero;
             topGo.AddComponent<Image>().color = EdgeLight;
 
-            // 底阴影
             var botGo = new GameObject("EdgeBottom");
             botGo.transform.SetParent(target, false);
             var botRect = botGo.AddComponent<RectTransform>();

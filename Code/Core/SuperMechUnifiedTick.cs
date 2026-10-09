@@ -94,6 +94,7 @@ namespace SuperMech.Code
                 SafeRun("自动收藏", () => SuperMechFavorite.TickAutoFavorite());
                 SafeRun("光环", () => SuperMechAura.TickAura());
                 SafeRun("维度增益", () => SuperMechDimension.TickDimensionBuffs());
+                SafeRun("虚拟创世", () => SuperMechVirtualGenesis.Tick());
                 SafeRun("内空间脉冲", () => SuperMechInnerSpace.TickPulse());
                 SafeRun("内空间负面效果", () => SuperMechInnerSpace.TickDomainEffects());
                 SafeRun("势力系统", () => SuperMechFaction.TickFactions());
@@ -145,6 +146,7 @@ namespace SuperMech.Code
             removed += SuperMechIntuition.CleanupDead(alive);
             removed += SuperMechTranscendence.CleanupDead(alive);
             removed += SuperMechDimension.CleanupDead(alive);
+            removed += SuperMechVirtualGenesis.CleanupDead(alive);
             removed += SuperMechMageTower.CleanupDead(alive);
             removed += SuperMechRelic.CleanupDead(alive);
             removed += SuperMechCosmicRelic.CleanupDead(alive);
@@ -197,11 +199,13 @@ namespace SuperMech.Code
             try { SuperMechWindowManager.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理窗口缓存失败"); }
             try { SuperMechEventLogger.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理日志资源失败"); }
             try { SuperMechRankView.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理排行榜缓存失败"); }
-            try { SuperMechCleanup.ClearUiStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理AwakenWindow失败"); }
+            try { SuperMechCleanup.ClearUiStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理UI静态状态失败"); }
             try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
             try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }
             try { SuperMechAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAI"); }
+            try { SuperMechDimension.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechDimension"); }
+            try { SuperMechVirtualGenesis.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechVirtualGenesis"); }
             try { SuperMechFaction.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechFaction"); }
             try { SuperMechPlayer.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPlayer"); }
             try { SuperMechWorldTree.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechWorldTree"); }

@@ -233,7 +233,6 @@ namespace SuperMech.Code
                 }
 
                 _lastSanctuaryVisitAge[a.id] = a.age;
-                // 消耗钥匙进入圣所
                 int cost = SuperMechSanctuary.GetEnterCost();
                 SuperMechSanctuary.Data.key_fragments -= cost;
 
@@ -374,7 +373,15 @@ namespace SuperMech.Code
         {
             int removed = SuperMechCleanup.CleanDict(_lastCompetitionAge, alive);
             removed += SuperMechCleanup.CleanDict(_lastNpcKnowledgeAge, alive);
+            removed += SuperMechCleanup.CleanDict(_lastSanctuaryVisitAge, alive);
             return removed;
+        }
+
+        public static void Clear()
+        {
+            _lastCompetitionAge.Clear();
+            _lastNpcKnowledgeAge.Clear();
+            _lastSanctuaryVisitAge.Clear();
         }
     }
 }

@@ -116,7 +116,6 @@ namespace SuperMech.Code
             detailScrollRect.horizontal = false;
             detailScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
-            // 详情文字
             var textGo = new GameObject("DetailText");
             textGo.transform.SetParent(detailContentGo.transform, false);
             var textRect = textGo.AddComponent<RectTransform>();

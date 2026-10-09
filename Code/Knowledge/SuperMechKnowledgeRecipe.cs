@@ -346,19 +346,15 @@ namespace SuperMech.Code
         {
             if (!CanFuse(a, recipe)) return false;
 
-            // 消耗气力
             float cost = Mathf.Max(10, recipe.qiBonus * 0.5f);
             SuperMechQi.AddQi(a, -cost);
 
-            // 成功率判定
             bool success = Random.value < recipe.successRate;
             if (success)
             {
-                // 记录融合结果
                 if (!_fusedByActor.ContainsKey(a.data.id))
                     _fusedByActor[a.data.id] = new HashSet<string>();
                 _fusedByActor[a.data.id].Add(recipe.id);
-                // 气力奖励
                 SuperMechQi.AddQi(a, recipe.qiBonus);
                 Debug.Log($"[超神机械师] 融合成功: {a.name} → {recipe.id}");
             }

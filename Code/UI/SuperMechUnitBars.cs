@@ -44,7 +44,6 @@ namespace SuperMech.Code
             // 动态调整位置：基于当前显示的最后一个条
             UpdateQiBarPosition(tab);
 
-            // 更新气力值
             float qi = SuperMechQi.GetQi(actor);
             float qiMax = SuperMechQi.GetQiMax(actor);
             if (qiMax <= 0) qiMax = 1f;
@@ -60,7 +59,6 @@ namespace SuperMech.Code
         {
             try
             {
-                // 获取所有原版条
                 var manaField = typeof(SelectedUnitTab).GetField("_bar_mana",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 var staminaField = typeof(SelectedUnitTab).GetField("_bar_stamina",

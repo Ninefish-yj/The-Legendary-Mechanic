@@ -132,7 +132,7 @@ namespace SuperMech.Code
         {
             for (int i = 0; i < count; i++)
             {
-                WorldTile tile = FindEdgeTile();
+                WorldTile tile = SMWorldUtils.FindEdgeTile();
                 if (tile == null) continue;
                 Actor unit = World.world.units.spawnNewUnit("human", tile, false, true, 6f, null, false, true);
                 if (unit == null) continue;
@@ -151,7 +151,7 @@ namespace SuperMech.Code
             if (repelled)
             {
                 // 击退奖励：最强文明科技+60，全体觉醒单位潜能+3（原著：战后超A级种子受益）
-                Kingdom top = FindStrongestKingdom();
+                Kingdom top = SMWorldUtils.FindStrongestKingdom();
                 if (top != null) SuperMechCivilization.AddTechPoints(top, TechRewardPerInvasion);
 
                 if (World.world.units != null)
@@ -179,44 +179,19 @@ namespace SuperMech.Code
         {
             if (target == null || !target.hasTrait(TreeTrait)) return;
             _data.killedTrees++;
-            if (target.hasTrait(TreeKingTrait)) _data.killedKings++;
+            if (target.hasTrait(TreeKingTrait))
+            {
+                _data.killedKings++;
+                // 树王被击杀：降临者融合世界树力量，觉醒虚拟创世（原著：韩萧融合世界树）
+                SuperMechVirtualGenesis.OnWorldTreeUnion();
+            }
         }
 
         // ============ 工具 ============
-
-        private static WorldTile FindEdgeTile()
-        {
-            if (World.world == null) return null;
-            int w = MapBox.width, h = MapBox.height;
-            for (int attempt = 0; attempt < 60; attempt++)
-            {
-                int x = Random.value < 0.5f ? Random.Range(0, Mathf.Max(1, w / 8)) : Random.Range(w - w / 8, w);
-                int y = Random.Range(0, h);
-                if (x < 0 || y < 0 || x >= w || y >= h) continue;
-                WorldTile t = World.world.GetTile(x, y);
-                if (t != null && t.Type != TileLibrary.deep_ocean && t.Type != TileLibrary.close_ocean && t.Type != TileLibrary.mountains)
-                    return t;
-            }
             return null;
         }
 
-        private static Kingdom FindStrongestKingdom()
-        {
-            try
-            {
-                if (World.world == null || World.world.kingdoms == null || World.world.kingdoms.list == null) return null;
-                Kingdom best = null;
-                int bestLevel = -1;
-                foreach (var k in World.world.kingdoms.list)
-                {
-                    if (k == null || k.wild || !k.isCiv()) continue;
-                    int lv = (int)SuperMechCivilization.GetCivLevelFromKingdom(k);
-                    if (lv > bestLevel) { bestLevel = lv; best = k; }
-                }
-                return best;
-            }
-            catch { return null; }
-        }
+        
 
         // ============ 存档 ============
 
@@ -244,4 +219,3 @@ namespace SuperMech.Code
             _data.killedKings = 0;
         }
     }
-}

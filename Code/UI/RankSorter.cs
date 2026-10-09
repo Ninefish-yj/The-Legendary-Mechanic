@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using UnityEngine;
 
 namespace SuperMech.Code
 {
@@ -36,7 +35,7 @@ namespace SuperMech.Code
                     scoreCache[a.getID()] = GetScore(a, sortType);
             }
             try { list.Sort((a, b) => scoreCache[b.getID()].CompareTo(scoreCache[a.getID()])); }
-            catch { }
+            catch (System.Exception e) { Debug.LogWarning("[超神机械师] 排行榜排序失败: " + e.Message); }
         }
 
         /// <summary>计算阶位分布统计</summary>

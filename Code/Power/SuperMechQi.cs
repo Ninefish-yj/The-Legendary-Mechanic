@@ -109,7 +109,6 @@ namespace SuperMech.Code
                 stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) / oldDmg;
             if (_qiHpMul.TryGetValue(a.id, out float oldHp) && oldHp > 0f)
                 stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) / oldHp;
-            // 添加新的气力倍率加成
             stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) * newDmgMul;
             stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) * newHpMul;
             _qiDmgMul[a.id] = newDmgMul;

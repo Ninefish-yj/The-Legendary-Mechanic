@@ -25,11 +25,9 @@ namespace SuperMech.Code
                 if (IsOnCooldown(attacker.id, def.id)) continue;
                 if (def.qiCost > 0 && SuperMechQi.GetQi(attacker) < def.qiCost) continue;
 
-                // 消耗气力
                 if (def.qiCost > 0)
                     SuperMechQi.SetQi(attacker, SuperMechQi.GetQi(attacker) - def.qiCost);
 
-                // 设置冷却
                 SetCooldown(attacker.id, def.id, def.cooldown);
 
                 // 执行效果

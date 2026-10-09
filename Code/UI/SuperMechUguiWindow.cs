@@ -26,7 +26,6 @@ namespace SuperMech.Code
         private const int BorderWidth = 2;
         private const int ResizeHandleSize = 16;
 
-        // 伸缩限制
         public Vector2 MinSize = new Vector2(400, 300);
         public Vector2 MaxSize = new Vector2(1200, 800);
 
@@ -84,13 +83,11 @@ namespace SuperMech.Code
             _bgImage.color = SuperMechUiSkin.BgColor;
             _bgImage.raycastTarget = true;
 
-            // 边框：4个冰蓝细边
             AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, BorderWidth), new Vector2(0, 0));
             AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, BorderWidth), new Vector2(0, 0));
             AddBorder("LeftBorder", new Vector2(0, 0), new Vector2(0, 1), new Vector2(0, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0));
             AddBorder("RightBorder", new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0));
 
-            // 标题栏背景
             var titleBarGo = new GameObject("TitleBar");
             titleBarGo.transform.SetParent(transform, false);
             var titleBarRect = titleBarGo.AddComponent<RectTransform>();
@@ -104,7 +101,6 @@ namespace SuperMech.Code
             var titleDrag = titleBarGo.AddComponent<SuperMechDragHandler>();
             titleDrag.Target = this;
 
-            // 标题文字
             _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), 16, TextAnchor.MiddleCenter);
             _titleText.fontStyle = FontStyle.Bold;
             _titleText.color = SuperMechUiSkin.AccentColor;
@@ -114,7 +110,6 @@ namespace SuperMech.Code
             titleRect.offsetMin = new Vector2(CloseBtnSize + CloseBtnMargin * 2, 0);
             titleRect.offsetMax = new Vector2(-(CloseBtnSize + CloseBtnMargin * 2), 0);
 
-            // 关闭按钮
             var closeGo = new GameObject("CloseBtn");
             closeGo.transform.SetParent(titleBarGo.transform, false);
             var closeRect = closeGo.AddComponent<RectTransform>();
@@ -140,7 +135,6 @@ namespace SuperMech.Code
             closeTextRect.offsetMax = Vector2.zero;
             _closeBtn.onClick.AddListener(Close);
 
-            // 内容区域
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(transform, false);
             Content = contentGo.AddComponent<RectTransform>();
@@ -150,7 +144,6 @@ namespace SuperMech.Code
             Content.offsetMin = new Vector2(ContentMargin + BorderWidth, ContentMargin + BorderWidth);
             Content.offsetMax = new Vector2(-(ContentMargin + BorderWidth), -(TitleBarHeight + ContentMargin + BorderWidth));
 
-            // 右下角伸缩手柄
             var resizeGo = new GameObject("ResizeHandle");
             resizeGo.transform.SetParent(transform, false);
             var resizeRect = resizeGo.AddComponent<RectTransform>();

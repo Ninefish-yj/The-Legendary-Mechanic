@@ -1,7 +1,7 @@
 using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
 using UnityEngine;
 
 namespace SuperMech.Code
@@ -48,6 +48,7 @@ namespace SuperMech.Code
             public SuperMechPlayer.PlayerSaveData player = new SuperMechPlayer.PlayerSaveData();
             public SuperMechWorldTree.WorldTreeSaveData worldTree = new SuperMechWorldTree.WorldTreeSaveData();
             public SuperMechWorldBeyond.WorldBeyondSaveData worldBeyond = new SuperMechWorldBeyond.WorldBeyondSaveData();
+            public List<SuperMechVirtualGenesis.GenesisSaveData> virtualGenesis = new List<SuperMechVirtualGenesis.GenesisSaveData>();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -280,6 +281,8 @@ namespace SuperMech.Code
                 data.worldTree = SuperMechWorldTree.Save();
                 // 保存世界之外（暗面宇宙）数据（v0.76.78）
                 data.worldBeyond = SuperMechWorldBeyond.Save();
+                // 保存虚拟创世数据（v0.86.0）
+                data.virtualGenesis = SuperMechVirtualGenesis.Save();
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -327,10 +330,11 @@ namespace SuperMech.Code
                 if (data.worldTree != null) SuperMechWorldTree.Load(data.worldTree);
                 // 加载世界之外（暗面宇宙）数据（v0.76.78）
                 if (data.worldBeyond != null) SuperMechWorldBeyond.Load(data.worldBeyond);
+                // 加载虚拟创世数据（v0.86.0）
+                if (data.virtualGenesis != null) SuperMechVirtualGenesis.Load(data.virtualGenesis);
                 _pendingLoad = data;
                 _loadPending = true;
 
-                // 初始化宇宙迭代系统
                 SuperMechCosmicIteration.Initialize(data.cosmicIteration, data.civilizationData);
                 // 加载世界遗力池（v0.37.0）
                 SuperMechTranscendence.SetWorldLegacyPool(DeserializeWorldLegacyPool(data.worldLegacyPool));

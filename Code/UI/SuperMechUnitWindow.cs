@@ -1,6 +1,6 @@
 using System;
-using NeoModLoader.services;
 using HarmonyLib;
+using NeoModLoader.services;
 using UnityEngine;
 
 namespace SuperMech.Code
@@ -205,6 +205,13 @@ namespace SuperMech.Code
             // v0.76.48 次级维度：高阶超能者进入维度获得增益（原著：次级维度修炼）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_dim_entry"), "iconDivineLight",
                 new Color(0.75f, 0.55f, 0.95f), () => SuperMechWindowManager.OpenDimension(a));
+
+            // v0.86.0 虚拟创世：韩萧融合世界树后的能力（原著：虚拟创世）
+            if (SuperMechVirtualGenesis.HasGenesis(a))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_virtual_genesis"), "iconChosenOne",
+                    new Color(0.5f, 0.9f, 0.8f), () => SuperMechWindowManager.OpenVirtualGenesis(a));
+            }
 
         }
 

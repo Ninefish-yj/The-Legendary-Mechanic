@@ -505,9 +505,9 @@ namespace SuperMech.Code
                 float cd;
                 if (_cooldown.TryGetValue(a.id, out cd) && Time.time < cd)
                     return text + $" {LocalizedTextManager.getText("sm_transcendence_cooldown")}{cd - Time.time:F0}s";
-                return text + "sm_transcendence_1239";
+                return text + LocalizedTextManager.getText("sm_transcendence_ready");
             }
-            return text + "sm_transcendence_1240";
+            return text + LocalizedTextManager.getText("sm_transcendence_not_ready");
         }
 
         public static void Clear()

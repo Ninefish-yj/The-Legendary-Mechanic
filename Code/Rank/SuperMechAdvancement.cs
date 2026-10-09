@@ -260,7 +260,6 @@ namespace SuperMech.Code
             if (_onarHpBonus.TryGetValue(a.id, out float oldHp) && oldHp > 0f)
                 s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / (1f + oldHp);
 
-            // 计算当前阶位内的能级进度
             double currentFloor = SuperMechRanks.All[rankIdx].onarFloor;
             double nextFloor = rankIdx + 1 < SuperMechRanks.All.Count ? SuperMechRanks.All[rankIdx + 1].onarFloor : currentFloor * 1.5;
             float progress = nextFloor > currentFloor ? (float)((onar - currentFloor) / (nextFloor - currentFloor)) : 0f;

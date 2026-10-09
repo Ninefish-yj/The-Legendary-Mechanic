@@ -127,7 +127,6 @@ namespace SuperMech.Code
                 stats["intelligence"] = mindLv * 3f;
             }
 
-            // 添加新的核心能力倍率加成
             if (newDmgMul > 1f)
                 stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) * newDmgMul;
             _coreDmgMul[a.id] = newDmgMul;

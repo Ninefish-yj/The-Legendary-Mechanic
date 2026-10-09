@@ -259,13 +259,11 @@ namespace SuperMech.Code
             var spell = GetSpell(spellId);
             if (spell == null) return false;
 
-            // 检查前置法术
             foreach (var pre in spell.prerequisites)
             {
                 if (!IsLearned(a, pre)) return false;
             }
 
-            // 检查属性要求
             float intVal = a.stats["intelligence"];
             float mysVal = SuperMechCustomStats.GetStat(a, SuperMechCustomStats.StatMystery);
             if (intVal < spell.intRequirement) return false;
@@ -334,15 +332,12 @@ namespace SuperMech.Code
             if (progress.learned) return false;
             if (progress.currentPhase >= spell.totalPhases) return false;
 
-            // 检查经验
             int xpCost = spell.xpCostPerPhase[progress.currentPhase];
             int currentXp = (int)SuperMechAwakened.GetXp(a);
             if (currentXp < xpCost) return false;
 
-            // 消耗经验
             SuperMechAwakened.AddXp(a, -xpCost);
 
-            // 判定成功率
             float rate = GetLearnSuccessRate(a, spellId);
             if (Random.value > rate)
             {
@@ -351,13 +346,11 @@ namespace SuperMech.Code
                 return false;
             }
 
-            // 学习成功
             progress.currentPhase++;
             if (progress.currentPhase >= spell.totalPhases)
             {
                 progress.learned = true;
                 Debug.Log($"[超神机械师] {a.name} 学会了法术 {spell.nameKey}");
-                // 推送事件日志
                 SuperMechEventLogger.LogSpellLearned(a, spell.nameKey);
             }
             return true;

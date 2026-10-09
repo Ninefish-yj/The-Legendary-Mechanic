@@ -1,5 +1,4 @@
 using System;
-using NeoModLoader.General;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,7 +25,6 @@ namespace SuperMech.Code
             {
                 _rootContent = content;
 
-                // 深色底
                 var bg = new GameObject("OverviewBg", typeof(RectTransform), typeof(Image));
                 bg.transform.SetParent(content, false);
                 var bgRect = bg.GetComponent<RectTransform>();
@@ -159,7 +157,6 @@ namespace SuperMech.Code
 
             if (active)
             {
-                // 顶部选中条
                 var barGo = new GameObject("ActiveBar", typeof(RectTransform), typeof(Image));
                 barGo.transform.SetParent(go.transform, false);
                 var bar = barGo.GetComponent<Image>();

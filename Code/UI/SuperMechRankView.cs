@@ -327,7 +327,6 @@ namespace SuperMech.Code
                 }
             }
 
-            // 排序
             _sortedList.Clear();
             _sortedList.AddRange(_candidatePool);
             _scoreCache.Clear();
@@ -342,7 +341,6 @@ namespace SuperMech.Code
 
             _sessionPopulated = true;
 
-            // 更新UI
             if (_listContent != null)
                 _listContent.sizeDelta = new Vector2(0, (_sortedList.Count + 1) * 34f);
             if (_emptyText != null)
@@ -442,7 +440,6 @@ namespace SuperMech.Code
             }
             _cardInstances.RemoveAll(c => c == null);
 
-            // 创建可见卡片
             for (int i = startIdx; i <= endIdx; i++)
             {
                 if (!_cardByIndex.ContainsKey(i))

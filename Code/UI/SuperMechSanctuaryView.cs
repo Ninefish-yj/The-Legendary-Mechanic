@@ -17,13 +17,11 @@ namespace SuperMech.Code
         private RectTransform _rootRect;
         private Text _statusText;
 
-        // 两层视图
         private GameObject _selectLayer;    // 圣所选择层
         private GameObject _interiorLayer;  // 圣所内部层
         private GameObject _resurrectionLayer; // 复活面板层（内嵌信息态库）
         private int _currentSanctuary = -1; // 当前进入的圣所
 
-        // 内部层光球
         private readonly List<GameObject> _lightOrbs = new();
         private readonly List<SanctuaryOrbInfo> _orbInfos = new();
         private RectTransform _orbContainer;
@@ -118,7 +116,6 @@ namespace SuperMech.Code
             var topImg = topGo.AddComponent<Image>();
             topImg.color = new Color(0.05f, 0.08f, 0.15f, 0.9f);
 
-            // 返回世界按钮
             var backGo = new GameObject("BackBtn");
             backGo.transform.SetParent(topGo.transform, false);
             var backRect = backGo.AddComponent<RectTransform>();
@@ -141,7 +138,6 @@ namespace SuperMech.Code
             backTextRect.offsetMax = Vector2.zero;
             backBtn.onClick.AddListener(Close);
 
-            // 标题
             var titleText = SuperMechUiSkin.MakeText(topGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_space_title"), 18, TextAnchor.MiddleCenter);
             titleText.color = new Color(0.4f, 0.7f, 1.0f);
@@ -185,7 +181,6 @@ namespace SuperMech.Code
             rect.offsetMin = new Vector2(0, 60);
             rect.offsetMax = new Vector2(0, -60);
 
-            // 提示文字
             var hintText = SuperMechUiSkin.MakeText(_selectLayer.transform,
                 LocalizedTextManager.getText("sm_ui_san_select_hint"), 14, TextAnchor.UpperCenter);
             hintText.color = new Color(0.6f, 0.8f, 1.0f);
@@ -219,7 +214,6 @@ namespace SuperMech.Code
                 float y = (rows[i] == 0 ? 60 : -100);
                 entryRect.anchoredPosition = new Vector2(x, y);
 
-                // 背景
                 var entryBg = entryGo.AddComponent<Image>();
                 entryBg.color = new Color(0.08f, 0.1f, 0.18f, 0.9f);
                 entryBg.raycastTarget = true;
@@ -238,14 +232,12 @@ namespace SuperMech.Code
                 borderImg.color = new Color(borderColor.r, borderColor.g, borderColor.b, 0.6f);
                 borderImg.raycastTarget = false;
 
-                // 按钮
                 var btn = entryGo.AddComponent<Button>();
                 btn.targetGraphic = entryBg;
                 int sanctuaryIdx = idx;
                 btn.onClick.AddListener(() => EnterSanctuary(sanctuaryIdx));
                 _sanctuaryButtons.Add(btn);
 
-                // 圣所名称
                 var nameText = SuperMechUiSkin.MakeText(entryGo.transform,
                     $"<color={colors[i]}>{name}</color>", 15, TextAnchor.UpperCenter);
                 nameText.fontStyle = FontStyle.Bold;
@@ -256,7 +248,6 @@ namespace SuperMech.Code
                 nameRect.sizeDelta = new Vector2(0, 25);
                 nameRect.anchoredPosition = new Vector2(0, -10);
 
-                // 知识方向
                 var classText = SuperMechUiSkin.MakeText(entryGo.transform, cls, 11, TextAnchor.UpperCenter);
                 classText.color = new Color(0.8f, 0.8f, 0.8f);
                 var classRect = classText.GetComponent<RectTransform>();
@@ -266,7 +257,6 @@ namespace SuperMech.Code
                 classRect.sizeDelta = new Vector2(0, 20);
                 classRect.anchoredPosition = new Vector2(0, -38);
 
-                // 类型
                 var typeText = SuperMechUiSkin.MakeText(entryGo.transform, typeName, 10, TextAnchor.UpperCenter);
                 typeText.color = new Color(0.6f, 0.6f, 0.6f);
                 var typeRect = typeText.GetComponent<RectTransform>();
@@ -276,7 +266,6 @@ namespace SuperMech.Code
                 typeRect.sizeDelta = new Vector2(0, 18);
                 typeRect.anchoredPosition = new Vector2(0, -58);
 
-                // 进入按钮文字
                 var enterText = SuperMechUiSkin.MakeText(entryGo.transform,
                     LocalizedTextManager.getText("sm_ui_san_enter"), 12, TextAnchor.LowerCenter);
                 enterText.color = new Color(0.4f, 0.7f, 1.0f);
@@ -305,7 +294,6 @@ namespace SuperMech.Code
             interiorBg.color = new Color(0.9f, 0.92f, 0.95f, 0.97f);
             interiorBg.raycastTarget = true;
 
-            // 标题
             _interiorTitle = SuperMechUiSkin.MakeText(_interiorLayer.transform, "", 16, TextAnchor.UpperCenter);
             _interiorTitle.color = new Color(0.2f, 0.3f, 0.5f);
             _interiorTitle.fontStyle = FontStyle.Bold;
@@ -350,7 +338,6 @@ namespace SuperMech.Code
             detailBorderImg.color = new Color(0.3f, 0.4f, 0.6f, 0.5f);
             detailBorderImg.raycastTarget = false;
 
-            // 详情文本
             _orbDetailText = SuperMechUiSkin.MakeText(_orbDetailPanel.transform,
                 LocalizedTextManager.getText("sm_ui_san_orb_hint"), 12, TextAnchor.UpperLeft);
             _orbDetailText.supportRichText = true;
@@ -482,7 +469,6 @@ namespace SuperMech.Code
             if (orbIndex >= _orbInfos.Count) return;
             var info = _orbInfos[orbIndex];
 
-            // 显示详情面板
             if (_orbDetailPanel != null) _orbDetailPanel.SetActive(true);
             string tType = LocalizedTextManager.getText("sm_ui_san_type");
             _orbDetailText.text =
@@ -527,7 +513,6 @@ namespace SuperMech.Code
             bgImg.color = new Color(0.03f, 0.03f, 0.08f, 0.95f);
             bgImg.raycastTarget = true;
 
-            // 标题
             var titleText = SuperMechUiSkin.MakeText(_resurrectionLayer.transform,
                 LocalizedTextManager.getText("sm_ui_san_info_library"), 16, TextAnchor.UpperCenter);
             titleText.color = new Color(0.6f, 0.8f, 1.0f);
@@ -539,7 +524,6 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 30);
             titleRect.anchoredPosition = new Vector2(0, -10);
 
-            // 返回按钮
             var backGo = new GameObject("BackBtn");
             backGo.transform.SetParent(_resurrectionLayer.transform, false);
             var backRect = backGo.AddComponent<RectTransform>();
@@ -658,7 +642,6 @@ namespace SuperMech.Code
             bg.color = new Color(0.85f, 0.88f, 0.95f, 0.92f); // 半透明光幕
             bg.raycastTarget = true;
 
-            // 标题
             var titleText = SuperMechUiSkin.MakeText(panel.transform,
                 LocalizedTextManager.getText("sm_ui_san_msg_board_title"), 18, TextAnchor.UpperCenter);
             titleText.color = new Color(0.2f, 0.25f, 0.5f);
@@ -670,7 +653,6 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 30);
             titleRect.anchoredPosition = new Vector2(0, -10);
 
-            // 权限提示
             int perm = SuperMechSanctuary.Data.total_permission;
             string tPerm = LocalizedTextManager.getText("sm_ui_san_permission");
             string tVisible = LocalizedTextManager.getText("sm_ui_san_visible");
@@ -705,7 +687,6 @@ namespace SuperMech.Code
             // 构建留言内容（业务逻辑已提取到SanctuaryMessageBoard）
             contentText.text = SanctuaryMessageBoard.BuildDisplayContent(perm);
 
-            // 关闭按钮
             var closeBtnGo = new GameObject("CloseBtn");
             closeBtnGo.transform.SetParent(panel.transform, false);
             var closeRect = closeBtnGo.AddComponent<RectTransform>();

@@ -66,7 +66,6 @@ namespace SuperMech.Code
             ttRect.offsetMin = new Vector2(8, 4);
             ttRect.offsetMax = new Vector2(-8, -4);
 
-            // 底部说明
             var bottomBar = SuperMechUiBuilder.CreatePanel(transform, "BottomBar", new Color(0, 0, 0, 0.2f), 4, 4, 0, 0);
             var bRect = bottomBar.GetComponent<RectTransform>();
             bRect.anchorMin = new Vector2(0, 0);

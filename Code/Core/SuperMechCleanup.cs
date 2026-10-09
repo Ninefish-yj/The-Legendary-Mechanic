@@ -24,7 +24,7 @@ namespace SuperMech.Code
         /// <summary>清理UI静态状态（世界切换时调用）</summary>
         public static void ClearUiStaticState()
         {
-            // 觉醒窗口已停用，保留此方法用于未来扩展
+            // 当前无UI静态状态需清理；保留入口供未来UI系统扩展
         }
     }
 }

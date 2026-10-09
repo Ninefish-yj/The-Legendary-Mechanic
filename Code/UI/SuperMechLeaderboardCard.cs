@@ -33,7 +33,6 @@ namespace SuperMech.Code
             Color rankColor = rankIdx >= 0 && rankIdx < RankColors.Length ? RankColors[rankIdx] : Color.white;
             string rankName = SuperMechRanks.GetRankName(actor);
 
-            // 背景
             var bg = gameObject.GetComponent<Image>();
             if (bg == null) bg = gameObject.AddComponent<Image>();
             if (rank <= 3)

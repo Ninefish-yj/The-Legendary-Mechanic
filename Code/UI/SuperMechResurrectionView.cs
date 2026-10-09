@@ -41,7 +41,6 @@ namespace SuperMech.Code
             _infoText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _infoText.supportRichText = true;
 
-            // 列表面板
             var listGo = new GameObject("ListPanel");
             listGo.transform.SetParent(transform, false);
             var listRect = listGo.AddComponent<RectTransform>();
@@ -106,7 +105,6 @@ namespace SuperMech.Code
                 var itemImg = itemGo.AddComponent<Image>();
                 itemImg.color = canRes ? SuperMechUiSkin.RowEven : SuperMechUiSkin.RowOdd;
 
-                // 信息文字
                 var textGo = new GameObject("Text");
                 textGo.transform.SetParent(itemGo.transform, false);
                 var textRect = textGo.AddComponent<RectTransform>();
