@@ -3942,5 +3942,8 @@
   "sm_ui_vg_summon_basic": "召唤机械单位",
   "sm_ui_vg_summon_true": "召唤超神机械单位",
   "sm_ui_vg_research_speed": "研究效率",
-  "sm_ui_vg_virtual_research": "虚拟推演"
+  "sm_ui_vg_virtual_research": "虚拟推演",
+  "sm_ui_modify": "改装",
+  "sm_ui_modify_success": "改装成功",
+  "sm_ui_modify_fail": "改装失败"
 }

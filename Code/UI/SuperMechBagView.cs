@@ -10,6 +10,7 @@ namespace SuperMech.Code
         private Text _detailText;
         private Button _equipBtn;
         private Button _unequipBtn;
+        private Button _modifyBtn;
         private string _selectedItemId;
         // 可指定查看单位（从单位面板打开时设置），不指定则用全局选中
         public static Actor OverrideActor;
@@ -124,6 +125,7 @@ namespace SuperMech.Code
 
             _equipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_equip"), 11, OnEquipClick);
             _unequipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_unequip"), 11, OnUnequipClick);
+            _modifyBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_modify"), 11, OnModifyClick);
             UpdateButtonStates();
         }
 
@@ -224,6 +226,24 @@ namespace SuperMech.Code
             UpdateButtonStates();
         }
 
+        private void OnModifyClick()
+        {
+            if (SelectedActor == null) return;
+            int before = SuperMechEquipModify.GetModifyLevel(SelectedActor);
+            bool success = SuperMechEquipModify.TryModify(SelectedActor);
+            int after = SuperMechEquipModify.GetModifyLevel(SelectedActor);
+            if (success)
+            {
+                _detailText.text = string.Format("{0} +{1} → +{2} ({3}%)",
+                    LocalizedTextManager.getText("sm_ui_modify_success"), before, after, after * 10);
+            }
+            else
+            {
+                _detailText.text = LocalizedTextManager.getText("sm_ui_modify_fail");
+            }
+            UpdateButtonStates();
+        }
+
         private void UpdateButtonStates()
         {
             if (_equipBtn != null)
@@ -239,6 +259,19 @@ namespace SuperMech.Code
                 _unequipBtn.interactable = canUnequip;
                 var img = _unequipBtn.GetComponent<Image>();
                 if (img != null) img.color = canUnequip ? new Color(0.5f, 0.3f, 0.2f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+            }
+            if (_modifyBtn != null)
+            {
+                bool canModify = SelectedActor != null &&
+                    SuperMechRelic.GetCurrentEquipIndex(SelectedActor) >= 0 &&
+                    SuperMechEquipModify.GetModifyLevel(SelectedActor) < SuperMechEquipModify.MaxModifyLevel &&
+                    SuperMechPotential.GetPotential(SelectedActor) >= SuperMechEquipModify.GetModifyCost(SelectedActor);
+                int level = SelectedActor != null ? SuperMechEquipModify.GetModifyLevel(SelectedActor) : 0;
+                _modifyBtn.GetComponentInChildren<Text>().text = string.Format("{0} +{1}",
+                    LocalizedTextManager.getText("sm_ui_modify"), level);
+                _modifyBtn.interactable = canModify;
+                var img = _modifyBtn.GetComponent<Image>();
+                if (img != null) img.color = canModify ? new Color(0.3f, 0.5f, 0.6f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
             }
         }
     }

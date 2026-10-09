@@ -137,6 +137,7 @@ namespace SuperMech.Code
             removed += SuperMechCorePower.CleanupDead(alive);
             removed += SuperMechInfoState.CleanupDead(alive);
             removed += SuperMechEquipBag.CleanupDead(alive);
+            removed += SuperMechEquipModify.CleanupDead(alive);
             removed += SuperMechAura.CleanupDead(alive);
             removed += SuperMechInnerSpace.CleanupDead(alive);
             removed += SuperMechCrafting.CleanupDead(alive);
@@ -189,6 +190,7 @@ namespace SuperMech.Code
             try { SuperMechRelic.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechRelic"); }
             try { SuperMechCosmicRelic.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCosmicRelic"); }
             try { SuperMechEquipBag.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEquipBag"); }
+            try { SuperMechEquipModify.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEquipModify"); }
             try { SuperMechRace.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechRace"); }
             try { SuperMechAdvancement.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAdvancement"); }
             try { SuperMechAura.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAura"); }

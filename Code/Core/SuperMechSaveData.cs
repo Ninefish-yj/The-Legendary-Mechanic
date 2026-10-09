@@ -107,6 +107,7 @@ namespace SuperMech.Code
             public int switchCount;
             public bool fiveSystemGenius;
             public string equippedAffixes;
+            public int modifyLevel;  // 装备改装等级（v0.86.3）
             public string durability;
             public int refineCount;
             public int emRefineCount;
@@ -227,6 +228,7 @@ namespace SuperMech.Code
                             switchCount = SuperMechProfession.GetSwitchCount(a),
                             fiveSystemGenius = SuperMechTalent.IsFiveSystemGenius(a),
                             equippedAffixes = SerializeAffixes(a),
+                            modifyLevel = SuperMechEquipModify.GetModifyLevel(a),
                             durability = SuperMechEquipBreak.GetDurability(a).ToString(),
                             refineCount = SuperMechQiRefine.GetRefineCount(a),
                             emRefineCount = SuperMechQiRefine.GetEmRefineCount(a),
@@ -703,6 +705,12 @@ namespace SuperMech.Code
                 {
                     var dict = SuperMechEquipBreak._durability;
                     if (dict != null) dict[a.id] = dur;
+                }
+
+                if (ad.modifyLevel > 0)
+                {
+                    var dict = SuperMechEquipModify._modifyLevels;
+                    if (dict != null) dict[a.id] = ad.modifyLevel;
                 }
 
                 if (ad.refineCount > 0)

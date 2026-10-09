@@ -105,17 +105,21 @@ namespace SuperMech.Code
             var stats = SuperMechStats.Of(a);
             if (stats == null) return;
 
+            // 装备改装：每级词缀数值+10%（原著：机械师改装装备部件）
+            float modifyMult = SuperMechEquipModify.GetAffixMultiplier(a);
+
             foreach (var affix in affixes)
             {
+                float value = affix.value * modifyMult;
                 if (affix.isMultiplier)
                 {
                     float cur = stats[affix.statKey];
                     if (cur <= 0f) cur = 1f;
-                    stats[affix.statKey] = cur * (1f + affix.value);
+                    stats[affix.statKey] = cur * (1f + value);
                 }
                 else
                 {
-                    stats[affix.statKey] = stats[affix.statKey] + affix.value;
+                    stats[affix.statKey] = stats[affix.statKey] + value;
                 }
             }
         }

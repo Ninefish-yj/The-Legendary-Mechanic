@@ -52,6 +52,7 @@ namespace SuperMech.Code
             if (newIdx >= 0)
             {
                 SuperMechRelic.EquipItem(a, newIdx);
+                SuperMechEquipModify.OnEquip(a);
                 return true;
             }
             return false;
@@ -75,6 +76,7 @@ namespace SuperMech.Code
                 }
             }
             SuperMechEquipAffix.OnUnequip(a);
+            SuperMechEquipModify.OnUnequip(a);
             return true;
         }
 
