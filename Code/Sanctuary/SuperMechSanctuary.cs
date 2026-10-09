@@ -92,6 +92,7 @@ namespace SuperMech.Code
             public float sanctuary_energy = 5000f;  // 圣所能量（复活媒介消耗）
             public List<IterationArchive> iteration_archives = new List<IterationArchive>(); // v0.76.12 跨迭代传承档案
             public bool beyond_message_given = false; // v0.76.23 高维留言是否已写入（一次性·跨迭代保留）
+            public float next_available_day = 0f;  // v0.86.4 约定之日：下次可进入圣所的游戏时间（原著：约定之日无固定周期）
         }
 
         /// <summary>跨迭代档案（v0.76.12 圣所跨迭代传承：原著ch1211圣所=上一迭代遗产融入新生宇宙，
@@ -378,6 +379,15 @@ namespace SuperMech.Code
         public static bool EnterSanctuary(Actor a, int sanctuaryIndex = -1)
         {
             if (!SuperMechConfig.SanctuaryEnabled) return false;
+
+            // v0.86.4 约定之日：原著"约定之日没有既定周期，不知道多少年才能碰见下一次"
+            if (!IsAppointedDay())
+            {
+                float remaining = GetRemainingDays();
+                Debug.Log($"[超神机械师] 未到约定之日，还需{remaining:F0}天");
+                return false;
+            }
+
             int cost = GetEnterCost();
             if (Data.key_fragments < cost)
             {
@@ -393,6 +403,8 @@ namespace SuperMech.Code
             }
             Data.key_fragments -= cost;
             Data.total_visits++;
+            // v0.86.4 约定之日：进入后设置下次可进入时间（原著：无固定周期）
+            SetNextAppointedDay();
             // v0.75.21: 留言板默认全解锁（原著chapter1267：韩萧首次进圣所即见光幕留言板，无访问次数门槛）
             // 内容分级按圣所权限（权限高→空缺少→留言全，原著"权限高了才能减少空缺"）在 ShowMessageBoard 内实现
 
@@ -525,6 +537,32 @@ namespace SuperMech.Code
         // 钥匙（key_fragments）：进入圣所消耗，由钥匙材料合成
         // 钥匙材料（key_materials）：击杀S阶及以上超能者掉落
         // 权限/碎片（_unitAuthority / sanctuary_fragments）：进入圣所后积累，影响奖励，神性蜕变直接获得
+
+        // === v0.86.4 约定之日（原著：约定之日没有既定周期，不知道多少年才能碰见下一次）===
+        public const float MinAppointedDayInterval = 365f;  // 最小间隔（游戏天）
+        public const float MaxAppointedDayInterval = 730f;  // 最大间隔（游戏天）
+
+        /// <summary>是否处于约定之日（可以进入圣所）</summary>
+        public static bool IsAppointedDay()
+        {
+            if (World.world == null) return true;
+            return World.world.worldTime >= Data.next_available_day;
+        }
+
+        /// <summary>获取距离下次约定之日的剩余天数</summary>
+        public static float GetRemainingDays()
+        {
+            if (World.world == null) return 0f;
+            return Mathf.Max(0f, Data.next_available_day - World.world.worldTime);
+        }
+
+        /// <summary>设置下次约定之日（进入圣所后调用）</summary>
+        private static void SetNextAppointedDay()
+        {
+            if (World.world == null) return;
+            float interval = UnityEngine.Random.Range(MinAppointedDayInterval, MaxAppointedDayInterval);
+            Data.next_available_day = World.world.worldTime + interval;
+        }
 
         /// <summary>授予钥匙材料，达到合成阈值时自动合成钥匙（v0.46.0，原著：钥匙由稀有材料合成）</summary>
         public static void GrantKeyMaterials(int amount, string source)
