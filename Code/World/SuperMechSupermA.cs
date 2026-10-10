@@ -67,6 +67,13 @@ namespace SuperMech.Code
         private static bool _allianceFormed = false;   // 超星团同盟（超星团级文明被清算后抱团制衡）
         private static int _purgeCount = 0;            // 清算风暴发生次数
 
+        // 力量缓存：一次遍历计算4个值，避免重复遍历全图（性能优化）
+        private static float _cachedThreatPower = 0f;
+        private static float _cachedClassPower = 0f;
+        private static float _cachedAwakenedPower = 0f;
+        private static float _cachedCivPower = 0f;
+        private static bool _powersDirty = true;
+
         // ============ 状态查询 ============
 
         public static Attitude CurrentAttitude => _attitude;
@@ -155,29 +162,18 @@ namespace SuperMech.Code
         /// 绝户计残留期×0.8：超A担心人身安全不敢投靠超星团级→流失向霸主文明，ch1002）</summary>
         public static float GetThreatPower()
         {
-            if (World.world == null || World.world.units == null) return 0f;
-            float power = 0f;
-            foreach (Actor a in World.world.units.units_only_alive)
-            {
-                if (a == null || !IsSuperA(a) || IsDynasty(a)) continue;
-                if (a.kingdom == null || (int)SuperMechCivilization.GetCivLevelFromKingdom(a.kingdom) < 3) continue;
-                power += GetPowerIndex(a);
-            }
-            return _aftermathTicksLeft > 0 ? power * AftermathPowerMult : power;
+            if (!_powersDirty) return _cachedThreatPower;
+            RecalculatePowers();
+            return _cachedThreatPower;
         }
 
         /// <summary>超A阶级总力量（全体超A，含霸主文明嫡系——原著ch1016麦尼逊"为超A级所代表的阶级
         /// 谋求福利"，阶级=所有超A级个体，不分阵营）</summary>
         public static float GetClassPower()
         {
-            if (World.world == null || World.world.units == null) return 0f;
-            float power = 0f;
-            foreach (Actor a in World.world.units.units_only_alive)
-            {
-                if (a == null || !IsSuperA(a)) continue;
-                power += GetPowerIndex(a);
-            }
-            return power;
+            if (!_powersDirty) return _cachedClassPower;
+            RecalculatePowers();
+            return _cachedClassPower;
         }
 
         /// <summary>民间自由超A力量（圣域收编对象：低层文明/无文明的自然觉醒散人）</summary>
@@ -197,28 +193,58 @@ namespace SuperMech.Code
         /// 低阶超能者（F~B+）对文明无威胁（原著ch1004：凡人埃文斯弄死E级阶位恶徒），威胁只看高阶</summary>
         public static float GetAwakenedPower()
         {
-            if (World.world == null || World.world.units == null) return 0f;
-            float power = 0f;
-            foreach (Actor a in World.world.units.units_only_alive)
-            {
-                if (a == null || !SuperMechAwakened.IsAwakened(a) || IsDynasty(a)) continue;
-                if (SuperMechAdvancement.GetExactRankIndex(a) < 8) continue; // A级以下=低阶，不算威胁
-                power += GetPowerIndex(a);
-            }
-            return power;
+            if (!_powersDirty) return _cachedAwakenedPower;
+            RecalculatePowers();
+            return _cachedAwakenedPower;
         }
 
         /// <summary>霸主文明力量：科技点总和+科技Lv×100（集体伟力；科技点0~1000+随发展持续增长）</summary>
         public static float GetCivPower()
         {
-            float power = 0f;
+            if (!_powersDirty) return _cachedCivPower;
+            RecalculatePowers();
+            return _cachedCivPower;
+        }
+
+        /// <summary>一次遍历计算4个力量值（性能优化：避免4次重复遍历全图）</summary>
+        private static void RecalculatePowers()
+        {
+            _powersDirty = false;
+            float threat = 0f, classP = 0f, awakened = 0f, civ = 0f;
+            if (World.world != null && World.world.units != null)
+            {
+                foreach (Actor a in World.world.units.units_only_alive)
+                {
+                    if (a == null) continue;
+                    bool isSuperA = IsSuperA(a);
+                    bool isDynasty = IsDynasty(a);
+                    float powerIdx = isSuperA ? GetPowerIndex(a) : 0f;
+                    if (isSuperA)
+                    {
+                        classP += powerIdx;
+                        if (!isDynasty)
+                        {
+                            if (a.kingdom != null && (int)SuperMechCivilization.GetCivLevelFromKingdom(a.kingdom) >= 3)
+                                threat += powerIdx; // 超星团级文明超A=清算对象
+                        }
+                    }
+                    if (SuperMechAwakened.IsAwakened(a) && !isDynasty && SuperMechAdvancement.GetExactRankIndex(a) >= 8)
+                        awakened += GetPowerIndex(a);
+                }
+            }
+            _cachedThreatPower = _aftermathTicksLeft > 0 ? threat * AftermathPowerMult : threat;
+            _cachedClassPower = classP;
+            _cachedAwakenedPower = awakened;
             foreach (var k in GetTopCivilizations(3))
             {
                 if (k == null) continue;
-                power += SuperMechCivilization.GetTechPointsFromKingdom(k) + SuperMechCivilization.GetTechLevelFromKingdom(k) * 100f;
+                civ += SuperMechCivilization.GetTechPointsFromKingdom(k) + SuperMechCivilization.GetTechLevelFromKingdom(k) * 100f;
             }
-            return Mathf.Max(50f, power); // 最低保底，避免空世界误触发
+            _cachedCivPower = Mathf.Max(50f, civ);
         }
+
+        /// <summary>标记力量缓存失效（单位死亡/阶位变化/文明变化时调用）</summary>
+        public static void MarkPowersDirty() { _powersDirty = true; }
 
         /// <summary>三大文明：科技最强的3个王国（原著三大超级文明，集体伟力代表）</summary>
         public static List<Kingdom> GetTopCivilizations(int limit = 3)
@@ -275,6 +301,7 @@ namespace SuperMech.Code
             if (_tick % DefectionInterval == 0) TickDefections();
             if (_tick % RecalcInterval != 0) return;
 
+            _powersDirty = true; // 每8tick重算力量（一次遍历算4个值）
             float threatPower = GetThreatPower();    // 超星团级文明超A力量（清算对象=他文明资产）
             float classPower = GetClassPower();      // 超A阶级总力量（含霸主文明嫡系）
             float awakenedPower = GetAwakenedPower();// 非霸主高阶超能者群体力量

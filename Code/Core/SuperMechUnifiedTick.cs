@@ -16,6 +16,7 @@ namespace SuperMech.Code
         private static void SafeRun(string name, System.Action action)
         {
             if (_disabled.Contains(name)) return;
+            SuperMechPerformanceMonitor.Begin(name);
             try
             {
                 action();
@@ -35,6 +36,10 @@ namespace SuperMech.Code
                 {
                     Debug.LogError($"[超神机械师] 子系统[{name}]异常(第{next}次): {e.Message}");
                 }
+            }
+            finally
+            {
+                SuperMechPerformanceMonitor.End();
             }
         }
 
@@ -113,6 +118,7 @@ namespace SuperMech.Code
                 SafeRun("文明统计更新", () => SuperMechCosmicIteration.TickUpdate());
                 SafeRun("自动存档", () => SuperMechSaveData.Save());
                 SafeRun("死单位清理", () => CleanupDeadActors());
+                SuperMechPerformanceMonitor.Tick(); // 每60秒输出性能报告
             }
         }
 

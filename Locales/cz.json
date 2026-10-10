@@ -782,5 +782,7 @@
   "sm_ui_san_appointed_day": "约定之日",
   "sm_ui_san_appointed_now": "已到",
   "sm_inal_balance": "伊纳尔存款",
-  "sm_company_title": "降临者公司"
+  "sm_company_title": "降临者公司",
+  "sm_config_enable_profiler": "性能监控",
+  "sm_config_enable_profiler_desc": "开启后记录各子系统Tick耗时，每60秒输出到日志（调试用，影响性能）"
 }

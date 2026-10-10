@@ -35,6 +35,14 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetLogVerbose",
       "Name": "sm_config_log_verbose",
       "Desc": "sm_config_log_verbose_desc"
+    },
+    {
+      "Id": "enable_profiler",
+      "Type": "SWITCH",
+      "BoolVal": false,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetEnableProfiler",
+      "Name": "sm_config_enable_profiler",
+      "Desc": "sm_config_enable_profiler_desc"
     }
   ],
   "awakening": [

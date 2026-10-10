@@ -93,6 +93,7 @@ namespace SuperMech.Code
         public static float TickInterval = 1.25f;
         public static int MaxTrackedActors = 500;
         public static bool LogVerbose = false;
+        public static bool EnableProfiler = false; // 性能监控开关（默认关闭，开启后记录各子系统耗时）
 
         public static bool RelicDropEnabled = true;
         public static float RelicDropRate = 0.01f;
@@ -325,6 +326,7 @@ namespace SuperMech.Code
         public static void SetTickInterval(float val) { TickInterval = Mathf.Clamp(val, 1f, 60f); }
         public static void SetMaxTrackedActors(int val) { MaxTrackedActors = Mathf.Clamp(val, 50, 5000); }
         public static void SetLogVerbose(bool val) { LogVerbose = val; }
+        public static void SetEnableProfiler(bool val) { EnableProfiler = val; }
 
         public static void SetRelicDropEnabled(bool val) { RelicDropEnabled = val; }
         public static void SetRelicDropRate(float val) { RelicDropRate = Mathf.Clamp01(val); }
