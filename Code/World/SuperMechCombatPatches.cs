@@ -19,44 +19,6 @@ namespace SuperMech.Code
             AttackType.None
         };
 
-        /// <summary>能级压制等级枚举（用于UI显示和日志）</summary>
-        public enum SuppressionLevel
-        {
-            None = 0,        // 无压制（能级比<1.1）
-            Minor = 1,       // 轻微压制（1.1~1.5）
-            Moderate = 2,    // 明显压制（1.5~2）
-            Strong = 3,      // 强烈压制（2~5）
-            Overwhelm = 4,   // 碾压（5~10）
-            Annihilate = 5   // 秒杀级（>10）
-        }
-
-        /// <summary>获取能级压制等级</summary>
-        public static SuppressionLevel GetSuppressionLevel(float attackerEnergy, float defenderEnergy)
-        {
-            if (attackerEnergy <= 0 || defenderEnergy <= 0) return SuppressionLevel.None;
-            float ratio = attackerEnergy / defenderEnergy;
-            if (ratio >= 10f) return SuppressionLevel.Annihilate;
-            if (ratio >= 5f) return SuppressionLevel.Overwhelm;
-            if (ratio >= 2f) return SuppressionLevel.Strong;
-            if (ratio >= 1.5f) return SuppressionLevel.Moderate;
-            if (ratio >= 1.1f) return SuppressionLevel.Minor;
-            return SuppressionLevel.None;
-        }
-
-        /// <summary>获取能级压制描述（用于UI/日志）</summary>
-        public static string GetSuppressionDescription(SuppressionLevel level)
-        {
-            switch (level)
-            {
-                case SuppressionLevel.Minor: return LocalizedTextManager.getText("sm_combat_suppress_minor");
-                case SuppressionLevel.Moderate: return LocalizedTextManager.getText("sm_combat_suppress_moderate");
-                case SuppressionLevel.Strong: return LocalizedTextManager.getText("sm_combat_suppress_strong");
-                case SuppressionLevel.Overwhelm: return LocalizedTextManager.getText("sm_combat_suppress_overwhelm");
-                case SuppressionLevel.Annihilate: return LocalizedTextManager.getText("sm_combat_suppress_annihilate");
-                default: return LocalizedTextManager.getText("sm_combat_suppress_none");
-            }
-        }
-
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Actor), nameof(Actor.getHit))]
         [HarmonyPriority(Priority.Low)]
@@ -172,7 +134,7 @@ namespace SuperMech.Code
                         target.data.health -= (int)(pDamage * (proxyBonus - 1f));
                     }
                     // v0.56.0 法术实际战斗效果
-                    ApplySpellCombatEffects(attacker, target, pDamage);
+                    CombatEffects.ApplySpellEffects(attacker, target, pDamage);
                 }
 
                 // 战斗加成区：专属专长 + 世界树 + 超A级协会联合
@@ -186,7 +148,7 @@ namespace SuperMech.Code
                     }
                     SuperMechExclusiveTrait.TryInstantKill(attacker, target);
                     // v0.76.86 专精实际战斗机制
-                    ApplySpecialtyCombatEffects(attacker, target, pDamage);
+                    CombatEffects.ApplySpecialtyEffects(attacker, target, pDamage);
                     // 世界树入侵：星际联合军加成 / 世界树单位凶性
                     float unionBonus = SuperMechWorldTree.GetUnionDamageBonus(attacker);
                     if (unionBonus != 1f)
@@ -523,130 +485,6 @@ namespace SuperMech.Code
                 {
                     _postfixErrorLogged = true;
                     Debug.LogWarning($"[超神机械师] 战斗Postfix异常(仅记录首次): {e.Message}");
-                }
-            }
-        }
-
-        /// <summary>v0.56.0 法术实际战斗效果</summary>
-        private static void ApplySpellCombatEffects(Actor attacker, Actor target, float pDamage)
-        {
-            if (attacker == null || target == null) return;
-            if (!attacker.hasTrait(SuperMechTraits.ClassMage)) return;
-
-            // 攻击型法术：20%概率释放，造成额外伤害
-            if (Random.value < 0.20f)
-            {
-                string[] attackSpells = {
-                    "sm_spell_fireball", "sm_spell_lightning_storm", "sm_spell_meteor_swarm",
-                    "sm_spell_arcane_blast", "sm_spell_energy_beam", "sm_spell_evocation_storm",
-                    "sm_spell_death_curse", "sm_spell_energy_bolt", "sm_spell_fire_bolt"
-                };
-                foreach (var sid in attackSpells)
-                {
-                    if (SuperMechSpell.IsLearned(attacker, sid))
-                    {
-                        var spell = SuperMechSpell.GetSpell(sid);
-                        float bonus = spell != null ? 0.1f + spell.tier * 0.05f : 0.15f;
-                        // v0.62.0 魔法系终极知识：法术伤害+20%
-                        if (SuperMechKnowledge.HasUltimateKnowledge(attacker, "mage")) bonus *= 1.2f;
-                        // v0.76.48 法师类型强度加成（魔网/秘法专精匹配分支伤害×1.5）
-                        bonus *= SuperMechMageType.GetSpellPowerBonus(attacker, sid);
-                        target.data.health -= (int)(pDamage * bonus);
-                        break;
-                    }
-                }
-            }
-
-            // 防御型法术：目标学会后有概率减伤
-            if (target.hasTrait(SuperMechTraits.ClassMage) && Random.value < 0.15f)
-            {
-                string[] defenseSpells = {
-                    "sm_spell_minor_ward", "sm_spell_mage_armor", "sm_spell_antimagic_field",
-                    "sm_spell_ice_shield"
-                };
-                foreach (var sid in defenseSpells)
-                {
-                    if (SuperMechSpell.IsLearned(target, sid))
-                    {
-                        var spell = SuperMechSpell.GetSpell(sid);
-                        float reduce = spell != null ? 0.05f + spell.tier * 0.03f : 0.1f;
-                        target.data.health += (int)(pDamage * reduce); // 回血=减伤
-                        break;
-                    }
-                }
-            }
-        }
-
-        /// <summary>v0.76.86 专精实际战斗机制（原著：枪炮师/械武者独有专精专长）</summary>
-        private static void ApplySpecialtyCombatEffects(Actor attacker, Actor target, float pDamage)
-        {
-            if (attacker == null || target == null) return;
-            string spec = SuperMechSpecialty.GetSpecialty(attacker);
-            if (spec == null) return;
-
-            // === 枪炮师专精 ===
-            if (spec == SuperMechSpecialty.SpecGunEagle)
-            {
-                // 鹰眼射手：20%概率必中暴击（超远程狙击，无视闪避，伤害×1.5）
-                if (Random.value < 0.20f)
-                    target.data.health -= (int)(pDamage * 0.5f);
-            }
-            else if (spec == SuperMechSpecialty.SpecGunFire)
-            {
-                // 火力手：15%概率范围溅射（重火力覆盖，额外伤害）
-                if (Random.value < 0.15f)
-                    target.data.health -= (int)(pDamage * 0.4f);
-            }
-            else if (spec == SuperMechSpecialty.SpecGunDancer)
-            {
-                // 枪斗士：10%概率灵活连击（中近距离机动，伤害×2）
-                if (Random.value < 0.10f)
-                    target.data.health -= (int)(pDamage * 1.0f);
-            }
-
-            // === 械武者专精 ===
-            else if (spec == SuperMechSpecialty.SpecMartialWeapon)
-            {
-                // 武器大师：15%概率连击（额外50%伤害）
-                if (Random.value < 0.15f)
-                    target.data.health -= (int)(pDamage * 0.5f);
-            }
-            else if (spec == SuperMechSpecialty.SpecMartialFight)
-            {
-                // 格斗：20%概率触发格斗连击（额外30%伤害+减速）
-                if (Random.value < 0.20f)
-                {
-                    target.data.health -= (int)(pDamage * 0.3f);
-                    target.addTrait("slow");
-                }
-            }
-            else if (spec == SuperMechSpecialty.SpecMartialHeavy)
-            {
-                // 重装：10%概率眩晕敌人（原著：械武者控制技能多）
-                if (Random.value < 0.10f)
-                    target.addTrait("stunned");
-            }
-
-            // === 机械师专精 ===
-            else if (spec == SuperMechSpecialty.SpecMechArmed)
-            {
-                // 武装分支：10%概率破甲（无视50%护甲）
-                if (Random.value < 0.10f)
-                    target.data.health -= (int)(pDamage * 0.3f);
-            }
-            else if (spec == SuperMechSpecialty.SpecMechEnergy)
-            {
-                // 能量分支：气力充足时伤害+10%
-                if (SuperMechQi.GetQi(attacker) > SuperMechQi.GetQiMax(attacker) * 0.5f)
-                    target.data.health -= (int)(pDamage * 0.1f);
-            }
-            else if (spec == SuperMechSpecialty.SpecMechVirtual)
-            {
-                // 虚拟分支：15%概率入侵目标系统（减速+持续伤害）
-                if (Random.value < 0.15f)
-                {
-                    target.addTrait("slow");
-                    target.data.health -= (int)(pDamage * 0.2f);
                 }
             }
         }

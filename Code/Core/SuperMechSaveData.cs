@@ -59,6 +59,7 @@ namespace SuperMech.Code
             public string worldLegacyPool = "";   // 世界游离遗力池（JSON序列化）
             // === v0.39.7 首位突破记录 ===
             public List<string> firstBreakthroughRanks = new List<string>(); // 已首次突破的阶位（全图只记一次）
+            public string companyData = "";  // 公司数据（JSON序列化，v0.87.0）
         }
 
         [Serializable]
@@ -127,6 +128,7 @@ namespace SuperMech.Code
             public List<string> learnedSkills;
             public int towerLevel;
             public string subXpData;
+            public int inal = 0;  // 伊纳尔余额（v0.87.0）
             public string subLevelData;
             public int craftCount;
             // === v0.31.0 预留字段 ===
@@ -249,7 +251,8 @@ namespace SuperMech.Code
                             towerLevel = SuperMechMageTower.GetTowerLevel(a),
                             subXpData = SerializeSubXp(a),
                             subLevelData = SerializeSubLevels(a),
-                            craftCount = SuperMechStageTask.GetCraftCount(a)
+                            craftCount = SuperMechStageTask.GetCraftCount(a),
+                            inal = SuperMechInal.GetInal(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -285,6 +288,8 @@ namespace SuperMech.Code
                 data.worldBeyond = SuperMechWorldBeyond.Save();
                 // 保存虚拟创世数据（v0.86.0）
                 data.virtualGenesis = SuperMechVirtualGenesis.Save();
+                // 保存公司数据（v0.87.0）
+                data.companyData = JsonConvert.SerializeObject(SuperMechCompany.GetAllForSave());
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -334,6 +339,16 @@ namespace SuperMech.Code
                 if (data.worldBeyond != null) SuperMechWorldBeyond.Load(data.worldBeyond);
                 // 加载虚拟创世数据（v0.86.0）
                 if (data.virtualGenesis != null) SuperMechVirtualGenesis.Load(data.virtualGenesis);
+                // 加载公司数据（v0.87.0）
+                if (!string.IsNullOrEmpty(data.companyData))
+                {
+                    try
+                    {
+                        var companyList = JsonConvert.DeserializeObject<List<SuperMechCompany.CompanySaveData>>(data.companyData);
+                        SuperMechCompany.LoadFromSave(companyList);
+                    }
+                    catch (Exception e) { Debug.LogWarning($"[超神机械师] 公司数据加载失败: {e.Message}"); }
+                }
                 _pendingLoad = data;
                 _loadPending = true;
 
@@ -420,6 +435,7 @@ namespace SuperMech.Code
                         a.addTrait(ad.subclass);
                         SuperMechSubClass.AddSubXp(a, ad.subclass, 0);
                     }
+                    if (ad.inal > 0) SuperMechInal.SetInal(a, ad.inal);
                     if (ad.knowledge != null)
                     {
                         foreach (string kid in ad.knowledge)

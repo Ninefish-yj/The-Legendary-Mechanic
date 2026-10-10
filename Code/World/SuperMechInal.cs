@@ -36,6 +36,13 @@ namespace SuperMech.Code
             return true;
         }
 
+        /// <summary>直接设置伊纳尔余额（用于存档恢复）</summary>
+        public static void SetInal(Actor a, int amount)
+        {
+            if (a == null) return;
+            _balance[a.id] = Mathf.Clamp(amount, 0, 99999999);
+        }
+
         /// <summary>计算超A在某文明的期望俸禄（文明等级×阶位系数）</summary>
         public static int CalcSalary(Actor superA, Kingdom k)
         {
@@ -46,7 +53,7 @@ namespace SuperMech.Code
             return BaseSalary * (civLevel + 1) * (rank + 1);
         }
 
-        /// <summary>俸禄发放Tick：投靠文明的超A获得伊纳尔俸禄</summary>
+        /// <summary>俸禄发放Tick：投靠文明的超A获得伊纳尔俸禄（从公司金库支出）</summary>
         public static void TickSalary()
         {
             _salaryTick++;
@@ -58,9 +65,28 @@ namespace SuperMech.Code
                 if (a == null || !SuperMechSupermA.IsSuperA(a)) continue;
                 if (a.kingdom == null) continue;
                 int salary = CalcSalary(a, a.kingdom);
-                if (salary > 0)
+                if (salary <= 0) continue;
+
+                // 从对应公司金库支出：韩萧化身→黑星公司，地球人→地球商会，普通超A→两家按比例
+                var company = SuperMechCompany.GetCompanyByActor(a);
+                if (company != null)
                 {
-                    AddInal(a, salary);
+                    if (SuperMechCompany.PaySalary(company, salary))
+                        AddInal(a, salary);
+                    else
+                        AddInal(a, salary / 2);  // 金库不足时俸禄减半
+                }
+                else
+                {
+                    // 普通超A：从黑星公司支出60%，地球商会40%
+                    var bs = SuperMechCompany.GetCompany(SuperMechCompany.BlackStarCorp);
+                    var ec = SuperMechCompany.GetCompany(SuperMechCompany.EarthChamber);
+                    int bsPart = salary * 6 / 10;
+                    int ecPart = salary - bsPart;
+                    bool bsOk = bs != null && SuperMechCompany.PaySalary(bs, bsPart);
+                    bool ecOk = ec != null && SuperMechCompany.PaySalary(ec, ecPart);
+                    int actual = (bsOk ? bsPart : bsPart / 2) + (ecOk ? ecPart : ecPart / 2);
+                    AddInal(a, actual);
                 }
             }
         }

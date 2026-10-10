@@ -177,6 +177,16 @@ namespace SuperMech.Code
                 string tplText = SuperMechExclusiveTrait.GetTemplateDisplay(a);
                 if (tplText != null)
                     ShowRow(window, LocalizedTextManager.getText("sm_ui_templates"), tplText, null, new Color(0.9f, 0.6f, 0.9f));
+
+            // 伊纳尔余额（星际层货币，超A俸禄/佣金/悬赏）
+            int inal = SuperMechInal.GetInal(a);
+            if (inal > 0 || SuperMechSupermA.IsSuperA(a))
+                ShowRow(window, LocalizedTextManager.getText("sm_inal_balance"), inal.ToString("N0"), null, new Color(1f, 0.85f, 0.3f));
+
+            // 降临者公司信息
+            var company = SuperMechCompany.GetCompanyByActor(a);
+            if (company != null)
+                ShowRow(window, LocalizedTextManager.getText("sm_company_title"), SuperMechCompany.GetDisplayText(company), null, new Color(0.6f, 0.9f, 0.7f));
         }
 
         private static void ShowEntryButtons(UnitWindow window, Actor a)

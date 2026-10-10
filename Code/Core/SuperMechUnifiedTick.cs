@@ -102,6 +102,7 @@ namespace SuperMech.Code
                 SafeRun("玩家降临", () => SuperMechPlayer.TickPlayer(1.25f));
                 SafeRun("世界树入侵", () => SuperMechWorldTree.TickWorldTree(1.25f));
                 SafeRun("个体伟力", () => SuperMechSupermA.Tick(1.25f));
+                SafeRun("公司发行", () => SuperMechCompany.TickIssue());
                 SafeRun("伊纳尔俸禄", () => SuperMechInal.TickSalary());
             }
 

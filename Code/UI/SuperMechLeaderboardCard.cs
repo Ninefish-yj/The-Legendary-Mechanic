@@ -113,6 +113,26 @@ namespace SuperMech.Code
             onarText.text = onar >= 10000 ? $"{onar / 10000f:F1}w" : $"{onar:F0}";
             onarText.color = new Color(0.83f, 0.72f, 0.50f);
 
+            // === 伊纳尔（能级下方，仅超A或有存款时显示）===
+            int inal = SuperMechInal.GetInal(actor);
+            if (inal > 0 || SuperMechSupermA.IsSuperA(actor))
+            {
+                var inalGo = new GameObject("Inal");
+                inalGo.transform.SetParent(transform, false);
+                var inalRect = inalGo.AddComponent<RectTransform>();
+                inalRect.anchorMin = new Vector2(1, 0);
+                inalRect.anchorMax = new Vector2(1, 0);
+                inalRect.pivot = new Vector2(1, 0);
+                inalRect.sizeDelta = new Vector2(70, 12);
+                inalRect.anchoredPosition = new Vector2(-4, 1);
+                var inalText = inalGo.AddComponent<Text>();
+                inalText.font = SuperMechUiSkin.DefaultFont;
+                inalText.fontSize = 9;
+                inalText.alignment = TextAnchor.UpperRight;
+                inalText.text = inal >= 10000 ? $"{inal / 10000f:F1}w" : inal.ToString();
+                inalText.color = new Color(1f, 0.85f, 0.3f);
+            }
+
             // === 点击按钮 ===
             _button = gameObject.AddComponent<Button>();
             _button.targetGraphic = bg;

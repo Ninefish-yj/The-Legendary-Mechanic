@@ -24,36 +24,9 @@ namespace SuperMech
             SuperMechConfig.Init();
             SuperMechConfig.ApplyFromNML(GetConfig()); // v0.75.22: 启动全量同步配置值到静态字段（修复改配置不生效）
             SuperMechEventLogger.Init();
-            SuperMechTraitGroups.Register();
-            SuperMechCustomStats.Register();
-            SuperMechTraits.Register();
-            SuperMechSkills.Register();
-            SuperMechKnowledge.Register();
-            SuperMechKnowledgeSynergy.Register();
-            SuperMechKnowledgeFusion.Register();
-            SuperMechKnowledgeRecipe.RegisterBaseRecipes();
-            SuperMechQi.Register();
-            SuperMechCorePower.Register();
-            SuperMechSubClass.Register();
-            SuperMechBranch.Register();
-            SuperMechBranchMastery.Register();
-            SuperMechSpecialty.Register();
-            SuperMechExclusiveTrait.Register();
-            SuperMechMageType.Register();
-            SuperMechSpell.RegisterAll();
-            SuperMechMeditation.Register();
-            SuperMechQiRefine.Register();
-            SuperMechRelic.Register();
-            SuperMechCosmicRelic.Register();
-            SuperMechMageTower.Register();
-            SuperMechAwakened.Register();
-            SuperMechStageTask.Register();
-            SuperMechElement.Register();
-            SuperMechRankTrait.Register();
-            SuperMechRace.Register();
-            SuperMechSanctuary.Register();
-            SuperMechCrafting.Register();
-            SuperMechPowers.Register();
+
+            // 统一系统注册（开闭原则：新增系统只需在SystemBootstrapper添加一行）
+            SystemBootstrapper.Bootstrap();
 
             // 事件总线订阅：解耦系统间直接调用
             RegisterEventSubscriptions();
