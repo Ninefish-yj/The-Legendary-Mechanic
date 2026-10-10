@@ -139,6 +139,29 @@ namespace SuperMech.Code
             return weighted[Random.Range(0, weighted.Count)];
         }
 
+        /// <summary>获取单位可进化的种族列表</summary>
+        public static List<string> GetEvolvableSpecies(long actorId)
+        {
+            var result = new List<string>();
+            var all = SuperMechSpecies.GetAllSpecies();
+            foreach (var s in all.Values)
+            {
+                if (CanEvolve(actorId, s.Id))
+                {
+                    result.Add(s.Id);
+                }
+            }
+            return result;
+        }
+
+        /// <summary>自动进化到第一个可用种族（UI快捷操作）</summary>
+        public static bool AutoEvolve(long actorId)
+        {
+            var evolvable = GetEvolvableSpecies(actorId);
+            if (evolvable.Count == 0) return false;
+            return Evolve(actorId, evolvable[0]);
+        }
+
         /// <summary>获取单位名（辅助方法）</summary>
         private static string GetActorName(long actorId)
         {

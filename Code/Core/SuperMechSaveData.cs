@@ -95,6 +95,7 @@ namespace SuperMech.Code
             public bool destinyCompleted;
             public string branch;
             public string subclass;
+            public string species = "human";  // 种族ID（v0.89.1 自定义生物系统）
             public int subclassLevel;
             public List<string> knowledge;
             public List<string> equipBag;
@@ -217,6 +218,7 @@ namespace SuperMech.Code
                             lastDeed = SuperMechLegend.GetLastDeed(a),
                             branch = SuperMechBranch.GetBranchId(a),
                             subclass = GetActiveSubClassId(a),
+                            species = SuperMechSpeciesEvolution.GetSpeciesId(a.data.id),
                             subclassLevel = GetActiveSubLevel(a),
                             knowledge = GetUnlockedKnowledgeList(a),
                             equipBag = new List<string>(SuperMechEquipBag.GetBag(a)),
@@ -430,6 +432,8 @@ namespace SuperMech.Code
                     if (ad.legend > 0) SuperMechLegend.AddLegend(a, ad.legend, ad.lastDeed);
                     if (!string.IsNullOrEmpty(ad.branch))
                         SuperMechBranch.SetBranch(a, ad.branch);
+                    if (!string.IsNullOrEmpty(ad.species) && ad.species != "human")
+                        SuperMechSpeciesEvolution.SetSpecies(a.data.id, ad.species);
                     if (!string.IsNullOrEmpty(ad.subclass) && !a.hasTrait(ad.subclass))
                     {
                         a.addTrait(ad.subclass);

@@ -807,5 +807,7 @@
   "sm_species_black_star_desc": "韩萧超A级时诞生的专属种族，可自命名，专属天赋【机械天才】可遗传后代。从Ⅰ型宇宙人族进化而来。",
   "sm_ui_species": "种族",
   "sm_ui_species_talent": "种族天赋",
-  "species_human": "人类"
+  "species_human": "人类",
+  "sm_ui_species_evolve": "种族进化",
+  "sm_ui_species_evolve_done": "已达最高种族"
 }

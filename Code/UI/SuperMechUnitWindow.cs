@@ -234,6 +234,14 @@ namespace SuperMech.Code
                     new Color(0.5f, 0.9f, 0.8f), () => SuperMechWindowManager.OpenVirtualGenesis(a));
             }
 
+            // v0.89.1 种族进化：非人类种族且有可进化目标时显示
+            var evolvable = SuperMechSpeciesEvolution.GetEvolvableSpecies(a.data.id);
+            if (evolvable.Count > 0)
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_species_evolve"), "iconDivineLight",
+                    new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
+            }
+
         }
 
         private static void ShowEntryButton(UnitWindow window, string label, string iconPath, Color color, System.Action onClick)
