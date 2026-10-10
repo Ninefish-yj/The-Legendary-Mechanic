@@ -1,402 +1,335 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 自定义种族注册中心
-    /// 对照原著：Ⅰ型宇宙人族/卢翰兽人/精灵/矮人/虫族/银灵人/机械族/虚空龙族/星游兽/黑星族
-    /// 美术通过ISpeciesRenderer接口预留，当前用人类精灵图占位
+    /// 种族注册中心 - 管理所有自定义种族的注册和查询
+    /// 使用WB原生ActorAsset+ActorAssetLibrary.add()注册
+    /// 美术资源通过ISpeciesRenderer接口抽象，当前用人类占位
     /// </summary>
     public static class SuperMechSpecies
     {
-        private static bool _registered = false;
-        private static readonly Dictionary<string, SpeciesDef> _species = new Dictionary<string, SpeciesDef>();
-        private static readonly Dictionary<string, ISpeciesRenderer> _renderers = new Dictionary<string, ISpeciesRenderer>();
+        private static Dictionary<string, SpeciesData> _species = new Dictionary<string, SpeciesData>();
+        private static ISpeciesRenderer _renderer = new DefaultSpeciesRenderer();
+        private static bool _initialized;
 
-        // === 种族ID常量 ===
-        public const string HumanCosmic = "sm_species_human_cosmic";   // Ⅰ型宇宙人族
-        public const string OrcLuhan    = "sm_species_orc_luhan";      // 卢翰兽人
-        public const string Elf         = "sm_species_elf";            // 精灵
-        public const string Dwarf       = "sm_species_dwarf";          // 矮人
-        public const string Zerg        = "sm_species_zerg";           // 虫族
-        public const string SilverSpirit= "sm_species_silver_spirit";  // 银灵人
-        public const string MechLife    = "sm_species_mech_life";      // 机械族
-        public const string VoidDragon  = "sm_species_void_dragon";    // 虚空龙族
-        public const string StarBeast   = "sm_species_star_beast";     // 星游兽
-        public const string BlackStar   = "sm_species_black_star";     // 黑星族（韩萧专属）
-
-        /// <summary>注册所有自定义种族（模组加载时调用一次）</summary>
+        /// <summary>初始化所有种族定义并注册到WB</summary>
         public static void Register()
         {
-            if (_registered) return;
-            _registered = true;
+            if (_initialized) return;
+            _initialized = true;
 
-            // 定义种族数据
-            DefineSpecies();
+            RegisterSpeciesDefinitions();
+            RegisterToWorldBox();
+            Debug.Log($"[超神机械师] 种族系统初始化完成，共注册{_species.Count}个种族");
+        }
 
-            // 注册到WB ActorAssetLibrary
+        /// <summary>注册所有种族定义（对照原著）</summary>
+        private static void RegisterSpeciesDefinitions()
+        {
+            // P0: 基础种族（自然生成）
+            RegisterHumanCosmic();
+            RegisterOrcLuhan();
+            RegisterElf();
+
+            // P1: 进阶种族（进化解锁）
+            RegisterDwarf();
+            RegisterZerg();
+            RegisterSilverSpirit();
+
+            // P2: 高级种族（特殊条件）
+            RegisterMechLife();
+            RegisterVoidDragon();
+            RegisterStarBeast();
+
+            // P3: 专属种族（超A诞生）
+            RegisterBlackStar();
+        }
+
+        // ========== P0 基础种族 ==========
+
+        /// <summary>Ⅰ型宇宙人族 - 原著ch265，人类长期星际生活进化形态</summary>
+        private static void RegisterHumanCosmic()
+        {
+            var s = new SpeciesData("human_cosmic", "Ⅰ型宇宙人族", "P0")
+            {
+                Description = "人类种族长期在星际间生活，接触宇宙能量与不同星球环境后进化的形态，适应性极强",
+                WildKingdomId = "humans",
+                CivKingdomId = "humans",
+                IsSpecial = false,
+                RacialTalent = "适应性群体：全属性均衡，环境适应力强",
+                EvolutionCondition = "地球人通过进化方块进化",
+                NovelReference = "ch265 种族变更为Ⅰ型宇宙人族",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 5}, {"Agility", 5}, {"Endurance", 5},
+                    {"Intelligence", 8}, {"Mystery", 3}, {"Charisma", 3}
+                }
+            };
+            s.EvolutionTargets.Add("void_shadow");
+            s.EvolutionTargets.Add("human_cosmic_2");
+            _species[s.Id] = s;
+        }
+
+        /// <summary>卢翰兽人 - 原著战斗种族，身高三米多，浑身毛茸茸像熊人</summary>
+        private static void RegisterOrcLuhan()
+        {
+            var s = new SpeciesData("orc_luhan", "卢翰兽人", "P0")
+            {
+                Description = "凶猛的战斗种族，身高三米多，浑身毛茸茸，看上去像熊人，长相还挺萌",
+                WildKingdomId = "orcs",
+                CivKingdomId = "orcs",
+                IsSpecial = false,
+                RacialTalent = "战斗种族：力量+30%，耐力+20%",
+                NovelReference = "原著 哈蒙·崩岩·索诺丁 卢翰兽人",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 20}, {"Agility", 5}, {"Endurance", 15},
+                    {"Intelligence", -5}, {"Mystery", 0}, {"Charisma", -3}
+                },
+                Traits = new List<string> {"Strong"}
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>精灵 - 原著中有精灵血统的种族，尖耳朵</summary>
+        private static void RegisterElf()
+        {
+            var s = new SpeciesData("elf", "精灵", "P0")
+            {
+                Description = "具有精灵血统的种族，耳朵尖长，擅长神秘学与敏捷",
+                WildKingdomId = "elves",
+                CivKingdomId = "elves",
+                IsSpecial = false,
+                RacialTalent = "精灵血统：敏捷+25%，神秘+20%，魅力+15%",
+                NovelReference = "原著 有精灵血统的角色 耳朵尖长",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", -3}, {"Agility", 15}, {"Endurance", -5},
+                    {"Intelligence", 10}, {"Mystery", 15}, {"Charisma", 10}
+                },
+                Traits = new List<string> {"Fast"}
+            };
+            _species[s.Id] = s;
+        }
+
+        // ========== P1 进阶种族 ==========
+
+        /// <summary>矮人 - 原著中的矮人佣兵，大胡子</summary>
+        private static void RegisterDwarf()
+        {
+            var s = new SpeciesData("dwarf", "矮人", "P1")
+            {
+                Description = "大胡子矮人，擅长锻造和近战，耐力极强",
+                WildKingdomId = "dwarves",
+                CivKingdomId = "dwarves",
+                IsSpecial = false,
+                RacialTalent = "矮人坚韧：耐力+30%，力量+15%，敏捷-10%",
+                NovelReference = "原著 矮人佣兵",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 12}, {"Agility", -8}, {"Endurance", 20},
+                    {"Intelligence", 5}, {"Mystery", -5}, {"Charisma", 0}
+                },
+                Traits = new List<string> {"Tough"}
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>虫族 - 原著中海尔的种族，狰狞外貌</summary>
+        private static void RegisterZerg()
+        {
+            var s = new SpeciesData("zerg", "虫族", "P1")
+            {
+                Description = "虫族，狰狞外貌，繁殖力强，擅长群体作战",
+                WildKingdomId = "zergs",
+                CivKingdomId = "",
+                IsSpecial = false,
+                RacialTalent = "虫群：力量+20%，敏捷+20%，繁殖+50%，智力-20%",
+                NovelReference = "原著 海尔 虫族",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 12}, {"Agility", 12}, {"Endurance", 8},
+                    {"Intelligence", -15}, {"Mystery", -5}, {"Charisma", -10}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>银灵人 - 原著ch364，星灵之海高级文明种族，繁殖力弱</summary>
+        private static void RegisterSilverSpirit()
+        {
+            var s = new SpeciesData("silver_spirit", "银灵人", "P1")
+            {
+                Description = "星灵之海的高级文明种族，种族进化程度高，繁殖力比较弱，总数不庞大",
+                WildKingdomId = "silver_spirits",
+                CivKingdomId = "silver_spirits",
+                IsSpecial = false,
+                RacialTalent = "高进化种族：神秘+30%，智力+25%，繁殖力-50%",
+                NovelReference = "ch364 银灵人 星灵之海高级文明种族",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", -5}, {"Agility", 5}, {"Endurance", -5},
+                    {"Intelligence", 18}, {"Mystery", 22}, {"Charisma", 8}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        // ========== P2 高级种族 ==========
+
+        /// <summary>机械族 - 韩萧的机械军团，机械生命形态</summary>
+        private static void RegisterMechLife()
+        {
+            var s = new SpeciesData("mech_life", "机械族", "P2")
+            {
+                Description = "机械生命形态，韩萧机械军团的产物，无需食物，免疫疾病",
+                WildKingdomId = "",
+                CivKingdomId = "",
+                IsSpecial = true,
+                RacialTalent = "机械生命：力量+25%，耐力+25%，无需食物，免疫疾病",
+                NovelReference = "原著 机械族群 暴兵是机械族强项",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 18}, {"Agility", 0}, {"Endurance", 18},
+                    {"Intelligence", 10}, {"Mystery", -10}, {"Charisma", -5}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>虚空龙族 - 原著星际生物，身躯成千上万米，生活在宇宙</summary>
+        private static void RegisterVoidDragon()
+        {
+            var s = new SpeciesData("void_dragon", "虚空龙族", "P2")
+            {
+                Description = "星际生物，身躯成千上万米，生活在宇宙中，暗能量如同空气对于人类",
+                WildKingdomId = "void_dragons",
+                CivKingdomId = "",
+                IsSpecial = true,
+                ActorSize = "S17_Dragon",
+                RacialTalent = "虚空巨龙：全属性+40%，可飞行，体型巨大",
+                NovelReference = "原著 虚空龙族 星际生物 身躯成千上万米",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 40}, {"Agility", 20}, {"Endurance", 40},
+                    {"Intelligence", 15}, {"Mystery", 30}, {"Charisma", 10}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>星游兽 - 原著星际生物，能肉身穿行宇宙</summary>
+        private static void RegisterStarBeast()
+        {
+            var s = new SpeciesData("star_beast", "星游兽", "P2")
+            {
+                Description = "能够肉身穿行宇宙的星际生物，别指望能轻松伤到它",
+                WildKingdomId = "star_beasts",
+                CivKingdomId = "",
+                IsSpecial = true,
+                RacialTalent = "宇宙生存：耐力+50%，可在宇宙生存，低智力",
+                NovelReference = "原著 星游兽 肉身穿行宇宙",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 25}, {"Agility", 10}, {"Endurance", 35},
+                    {"Intelligence", -10}, {"Mystery", 5}, {"Charisma", -5}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        // ========== P3 专属种族 ==========
+
+        /// <summary>黑星族 - 韩萧超A时诞生的专属种族，ch770</summary>
+        private static void RegisterBlackStar()
+        {
+            var s = new SpeciesData("black_star", "黑星族", "P3")
+            {
+                Description = "韩萧超A级时诞生的专属种族，可自命名，专属天赋可遗传后代",
+                WildKingdomId = "",
+                CivKingdomId = "",
+                IsSpecial = true,
+                RacialTalent = "机械天才：机械亲和度提升，专属天赋可遗传",
+                EvolutionCondition = "机械系超A级自动诞生",
+                NovelReference = "ch770 专属种族诞生 黑星族",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 30}, {"Agility", 25}, {"Endurance", 35},
+                    {"Intelligence", 40}, {"Mystery", 30}, {"Charisma", 20}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        // ========== 注册到WB ==========
+
+        /// <summary>将所有种族注册到WB的ActorAssetLibrary</summary>
+        private static void RegisterToWorldBox()
+        {
             foreach (var kvp in _species)
             {
-                RegisterActorAsset(kvp.Value);
-            }
+                var species = kvp.Value;
+                if (species.IsRegistered) continue;
 
-            Debug.Log($"[超神机械师] 自定义种族注册完成：{_species.Count}个种族");
-        }
-
-        /// <summary>定义所有种族数据（对照原著）</summary>
-        private static void DefineSpecies()
-        {
-            // P0：Ⅰ型宇宙人族（原著ch265，人类长期星际生活进化形态）
-            _species[HumanCosmic] = new SpeciesDef {
-                id = HumanCosmic,
-                nameKey = "sm_species_human_cosmic_name",
-                descKey = "sm_species_human_cosmic_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S13_Human,
-                scale = 0.1f,
-                isCivilized = true,
-                canReproduce = true,
-                hasSoul = true,
-                flying = false,
-                colorHex = "#FFD700",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 120f}, {"damage", 12f}, {"speed", 45f},
-                    {"attack_speed", 2.5f}, {"stamina", 120f}, {"armor", 5f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 1,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P0：卢翰兽人（原著，身高三米多，毛茸茸像熊人，凶猛战斗种族）
-            _species[OrcLuhan] = new SpeciesDef {
-                id = OrcLuhan,
-                nameKey = "sm_species_orc_luhan_name",
-                descKey = "sm_species_orc_luhan_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S15_Large,
-                scale = 0.13f,
-                isCivilized = true,
-                canReproduce = true,
-                hasSoul = true,
-                flying = false,
-                colorHex = "#8B4513",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 200f}, {"damage", 20f}, {"speed", 35f},
-                    {"attack_speed", 1.8f}, {"stamina", 180f}, {"armor", 15f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 1,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P0：精灵（原著，有精灵血统，尖耳朵，紫色眼眸）
-            _species[Elf] = new SpeciesDef {
-                id = Elf,
-                nameKey = "sm_species_elf_name",
-                descKey = "sm_species_elf_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S13_Human,
-                scale = 0.095f,
-                isCivilized = true,
-                canReproduce = true,
-                hasSoul = true,
-                flying = false,
-                colorHex = "#9370DB",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 90f}, {"damage", 10f}, {"speed", 55f},
-                    {"attack_speed", 3f}, {"stamina", 100f}, {"armor", 3f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 2,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P1：矮人（原著，大胡子矮人佣兵）
-            _species[Dwarf] = new SpeciesDef {
-                id = Dwarf,
-                nameKey = "sm_species_dwarf_name",
-                descKey = "sm_species_dwarf_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S10_Medium,
-                scale = 0.085f,
-                isCivilized = true,
-                canReproduce = true,
-                hasSoul = true,
-                flying = false,
-                colorHex = "#CD853F",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 160f}, {"damage", 15f}, {"speed", 30f},
-                    {"attack_speed", 2f}, {"stamina", 160f}, {"armor", 20f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 1,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P1：虫族（原著，海尔是虫族，狰狞外貌，地底异种有虫族特征）
-            _species[Zerg] = new SpeciesDef {
-                id = Zerg,
-                nameKey = "sm_species_zerg_name",
-                descKey = "sm_species_zerg_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S13_Human,
-                scale = 0.1f,
-                isCivilized = true,
-                canReproduce = true,
-                hasSoul = true,
-                flying = false,
-                colorHex = "#228B22",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 140f}, {"damage", 18f}, {"speed", 50f},
-                    {"attack_speed", 2.8f}, {"stamina", 140f}, {"armor", 12f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 2,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P1：银灵人（原著ch364，星灵之海高级文明种族，繁殖力弱，高进化种族）
-            _species[SilverSpirit] = new SpeciesDef {
-                id = SilverSpirit,
-                nameKey = "sm_species_silver_spirit_name",
-                descKey = "sm_species_silver_spirit_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S13_Human,
-                scale = 0.1f,
-                isCivilized = true,
-                canReproduce = false,  // 繁殖力弱
-                hasSoul = true,
-                flying = false,
-                colorHex = "#C0C0C0",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 100f}, {"damage", 12f}, {"speed", 48f},
-                    {"attack_speed", 2.5f}, {"stamina", 110f}, {"armor", 8f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 3,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P2：机械族（原著，韩萧机械军团，机械族群暴兵强项）
-            _species[MechLife] = new SpeciesDef {
-                id = MechLife,
-                nameKey = "sm_species_mech_life_name",
-                descKey = "sm_species_mech_life_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S13_Human,
-                scale = 0.1f,
-                isCivilized = false,
-                canReproduce = false,  // 无性繁殖/量产
-                hasSoul = false,       // 机械生命无灵魂
-                flying = false,
-                colorHex = "#708090",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 180f}, {"damage", 16f}, {"speed", 40f},
-                    {"attack_speed", 2.2f}, {"stamina", 200f}, {"armor", 25f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 2,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P2：虚空龙族（原著，星际生物，身躯成千上万米，生活在宇宙）
-            _species[VoidDragon] = new SpeciesDef {
-                id = VoidDragon,
-                nameKey = "sm_species_void_dragon_name",
-                descKey = "sm_species_void_dragon_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S17_Dragon,
-                scale = 0.15f,
-                isCivilized = false,
-                canReproduce = true,
-                hasSoul = true,
-                flying = true,
-                colorHex = "#4B0082",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 500f}, {"damage", 40f}, {"speed", 60f},
-                    {"attack_speed", 1.5f}, {"stamina", 400f}, {"armor", 30f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 3,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P2：星游兽（原著，星际生物，能肉身穿行宇宙）
-            _species[StarBeast] = new SpeciesDef {
-                id = StarBeast,
-                nameKey = "sm_species_star_beast_name",
-                descKey = "sm_species_star_beast_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S15_Large,
-                scale = 0.12f,
-                isCivilized = false,
-                canReproduce = true,
-                hasSoul = true,
-                flying = true,
-                colorHex = "#00CED1",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 350f}, {"damage", 25f}, {"speed", 55f},
-                    {"attack_speed", 1.8f}, {"stamina", 300f}, {"armor", 20f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 2,
-                evolutionFrom = null,
-                evolutionTo = null
-            };
-
-            // P3：黑星族（原著ch770，韩萧超A时诞生的专属种族，可自命名，天赋可遗传）
-            _species[BlackStar] = new SpeciesDef {
-                id = BlackStar,
-                nameKey = "sm_species_black_star_name",
-                descKey = "sm_species_black_star_desc",
-                templateId = "human",
-                texturePath = "",
-                actorSize = ActorSize.S13_Human,
-                scale = 0.1f,
-                isCivilized = true,
-                canReproduce = true,
-                hasSoul = true,
-                flying = false,
-                colorHex = "#000000",
-                baseStats = new Dictionary<string, float> {
-                    {"health", 250f}, {"damage", 30f}, {"speed", 50f},
-                    {"attack_speed", 2.5f}, {"stamina", 250f}, {"armor", 15f}
-                },
-                defaultTraits = new List<string>(),
-                defaultSkills = new List<string>(),
-                rarity = 3,
-                evolutionFrom = HumanCosmic,  // 从宇宙人族进化
-                evolutionTo = null
-            };
-        }
-
-        /// <summary>注册单个种族到WB ActorAssetLibrary</summary>
-        private static void RegisterActorAsset(SpeciesDef def)
-        {
-            if (string.IsNullOrEmpty(def.id) || AssetManager.actor_library == null) return;
-            if (AssetManager.actor_library.get(def.id) != null) return;
-
-            // 克隆模板生物
-            ActorAsset asset = AssetManager.actor_library.clone(def.id, def.templateId);
-            if (asset == null)
-            {
-                asset = AssetManager.actor_library.clone(def.id, "human");
-                if (asset == null) return;
-            }
-
-            // 基础设置
-            asset.name_locale = def.id;
-            asset.use_phenotypes = false;
-            asset.actor_size = (ActorSize)def.actorSize;
-            asset.can_be_inspected = true;
-            asset.can_edit_traits = true;
-            asset.has_soul = def.hasSoul;
-            asset.flying = def.flying;
-            asset.color_hex = def.colorHex;
-            asset.color = Toolbox.makeColor(def.colorHex);
-
-            // 文明/繁殖设置
-            asset.auto_civ = def.isCivilized;
-            asset.can_reproduce = def.canReproduce;
-
-            // 预留美术渲染器接入
-            ISpeciesRenderer renderer = GetRenderer(def.id);
-            if (renderer != null && renderer.HasCustomArt)
-            {
-                // 后续补美术时走这里
-                asset.texture_asset = new ActorTextureSubAsset(renderer.TexturePath, false);
-                asset.texture_asset.texture_path_main = renderer.TexturePath.TrimEnd('/', '\\');
-                asset.animation_idle = renderer.IdleFrames;
-                asset.animation_walk = renderer.WalkFrames;
-                asset.animation_swim = renderer.SwimFrames;
-            }
-            // else: 用克隆模板的默认纹理（人类占位）
-
-            // 基础属性覆盖
-            if (asset.base_stats != null && def.baseStats != null)
-            {
-                foreach (var stat in def.baseStats)
+                try
                 {
-                    asset.base_stats[stat.Key] = stat.Value;
+                    var asset = new ActorAsset
+                    {
+                        id = species.Id,
+                        kingdom_id_wild = species.WildKingdomId,
+                        kingdom_id_civilization = species.CivKingdomId,
+                        special = species.IsSpecial,
+                        actor_size = (ActorSize)System.Enum.Parse(typeof(ActorSize), species.ActorSize),
+                        icon = _renderer.GetIcon(species.Id),
+                        avatar_prefab = _renderer.GetAvatarPrefab(species.Id),
+                        traits = new List<string>(species.Traits)
+                    };
+
+                    // 注册本地化文本
+                    LocalizedTextManager.add($"species_{species.Id}", species.Name, pReplace: true);
+                    LocalizedTextManager.add($"species_{species.Id}_desc", species.Description, pReplace: true);
+
+                    // 注册到WB资源库
+                    AssetManager.actor_library.add(asset);
+
+                    species.IsRegistered = true;
                 }
-                asset.base_stats["scale"] = def.scale;
+                catch (System.Exception e)
+                {
+                    Debug.LogWarning($"[超神机械师] 种族{species.Id}注册失败: {e.Message}");
+                }
             }
-
-            // 默认特质
-            if (def.defaultTraits != null && def.defaultTraits.Count > 0)
-            {
-                asset.default_subspecies_traits = new List<string>(def.defaultTraits);
-            }
-
-            // 加载纹理
-            AssetManager.actor_library.loadTexturesAndSprites(asset);
         }
 
-        /// <summary>注册种族美术渲染器（后续补美术时调用）</summary>
-        public static void RegisterRenderer(string speciesId, ISpeciesRenderer renderer)
-        {
-            _renderers[speciesId] = renderer;
-        }
+        // ========== 查询接口 ==========
 
-        /// <summary>获取种族渲染器（未注册时返回默认人类占位）</summary>
-        public static ISpeciesRenderer GetRenderer(string speciesId)
+        /// <summary>根据ID获取种族数据</summary>
+        public static SpeciesData GetSpecies(string id)
         {
-            if (_renderers.TryGetValue(speciesId, out var r))
-                return r;
-            return new DefaultSpeciesRenderer(speciesId);
-        }
-
-        /// <summary>获取种族定义</summary>
-        public static SpeciesDef GetSpecies(string id)
-        {
-            _species.TryGetValue(id, out var def);
-            return def;
+            _species.TryGetValue(id, out var species);
+            return species;
         }
 
         /// <summary>获取所有种族</summary>
-        public static IReadOnlyDictionary<string, SpeciesDef> GetAllSpecies()
-        {
-            return _species;
-        }
+        public static Dictionary<string, SpeciesData> GetAllSpecies() => _species;
 
-        /// <summary>获取指定稀有度的种族</summary>
-        public static List<SpeciesDef> GetSpeciesByRarity(int rarity)
+        /// <summary>按优先级获取种族</summary>
+        public static List<SpeciesData> GetSpeciesByPriority(string priority)
         {
-            var result = new List<SpeciesDef>();
-            foreach (var def in _species.Values)
+            var result = new List<SpeciesData>();
+            foreach (var s in _species.Values)
             {
-                if (def.rarity == rarity) result.Add(def);
+                if (s.Priority == priority) result.Add(s);
             }
             return result;
+        }
+
+        /// <summary>设置渲染器（后续补美术时调用）</summary>
+        public static void SetRenderer(ISpeciesRenderer renderer)
+        {
+            _renderer = renderer ?? new DefaultSpeciesRenderer();
         }
     }
 }

@@ -1,51 +1,43 @@
+using UnityEngine;
+
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 种族美术渲染接口（预留）
-    /// 当前所有种族用人类精灵图占位，后续补美术时实现此接口
-    /// 设计原则：种族数据与美术完全解耦，补美术时只改Renderer不碰逻辑
+    /// 种族美术渲染接口 - 预留，后续补美术资源时实现
+    /// 当前所有种族使用人类精灵图占位
     /// </summary>
     public interface ISpeciesRenderer
     {
-        /// <summary>种族ID</summary>
-        string SpeciesId { get; }
+        /// <summary>获取种族行走动画帧</summary>
+        Sprite[] GetWalkFrames(string speciesId);
 
-        /// <summary>纹理资源根路径（如GameResources/actors/human_cosmic/）</summary>
-        string TexturePath { get; }
+        /// <summary>获取种族游泳动画帧</summary>
+        Sprite[] GetSwimFrames(string speciesId);
 
-        /// <summary>待机动画帧列表</summary>
-        string[] IdleFrames { get; }
+        /// <summary>获取种族头像预制体路径</summary>
+        string GetAvatarPrefab(string speciesId);
 
-        /// <summary>行走动画帧列表</summary>
-        string[] WalkFrames { get; }
+        /// <summary>获取种族图标</summary>
+        string GetIcon(string speciesId);
 
-        /// <summary>游泳动画帧列表</summary>
-        string[] SwimFrames { get; }
+        /// <summary>获取种族体型（ActorSize枚举名）</summary>
+        string GetActorSize(string speciesId);
 
-        /// <summary>头像/图标Sprite</summary>
-        string IconPath { get; }
-
-        /// <summary>是否已加载美术资源（false=用人类占位）</summary>
-        bool HasCustomArt { get; }
+        /// <summary>是否有自定义美术资源</summary>
+        bool HasCustomArt(string speciesId);
     }
 
     /// <summary>
-    /// 默认渲染器：用人类精灵图占位
-    /// 所有未实现自定义美术的种族都走这个
+    /// 默认渲染器 - 使用人类精灵图占位
+    /// 后续替换为具体美术资源时，新建SpeciesRenderer实现此接口
     /// </summary>
     public class DefaultSpeciesRenderer : ISpeciesRenderer
     {
-        public string SpeciesId { get; private set; }
-        public string TexturePath => "";  // 空路径=用人类默认纹理
-        public string[] IdleFrames => null;
-        public string[] WalkFrames => null;
-        public string[] SwimFrames => null;
-        public string IconPath => "";
-        public bool HasCustomArt => false;
-
-        public DefaultSpeciesRenderer(string speciesId)
-        {
-            SpeciesId = speciesId;
-        }
+        public Sprite[] GetWalkFrames(string speciesId) => null;
+        public Sprite[] GetSwimFrames(string speciesId) => null;
+        public string GetAvatarPrefab(string speciesId) => "";
+        public string GetIcon(string speciesId) => "iconQuestionMark";
+        public string GetActorSize(string speciesId) => "S13_Human";
+        public bool HasCustomArt(string speciesId) => false;
     }
 }
