@@ -109,6 +109,26 @@ namespace SuperMech.Code
             {
                 stats[StatMechAffinity] = SuperMechQiLayer.GetMechAffinityBonus(a);
             }
+
+            // v0.89.2 种族属性加成（对照原著：不同种族有不同的属性倾向）
+            string speciesId = SuperMechSpeciesEvolution.GetSpeciesId(a.data.id);
+            if (speciesId != "human")
+            {
+                var species = SuperMechSpecies.GetSpecies(speciesId);
+                if (species != null && species.BaseStats != null && species.BaseStats.Count > 0)
+                {
+                    if (species.BaseStats.TryGetValue("Strength", out float str))
+                        stats[StatStrength] += str;
+                    if (species.BaseStats.TryGetValue("Agility", out float agi))
+                        stats[StatAgility] += agi;
+                    if (species.BaseStats.TryGetValue("Endurance", out float end))
+                        stats[StatEndurance] += end;
+                    if (species.BaseStats.TryGetValue("Intelligence", out float intel))
+                        stats[StatIntelligence] += intel;
+                    if (species.BaseStats.TryGetValue("Mystery", out float mys))
+                        stats[StatMystery] += mys;
+                }
+            }
         }
 
         public static float GetStat(Actor a, string statId)

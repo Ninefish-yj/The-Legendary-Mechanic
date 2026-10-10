@@ -231,6 +231,54 @@ namespace SuperMech.Code
             stats["armor"] = (stats["armor"]) + 10f * layers;
             stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) + 0.05f * layers;
             stats["lifespan"] = (stats["lifespan"]) + 500f * layers;
+
+            // v0.89.2 神性蜕变种族路线对接自定义生物种族（对照原著：不同种族的神性蜕变方向不同）
+            string speciesId = SuperMechSpeciesEvolution.GetSpeciesId(a.data.id);
+            if (speciesId != "human")
+            {
+                switch (speciesId)
+                {
+                    case "orc_luhan":  // 卢翰兽人：力量+耐力
+                        stats["damage"] = (stats["damage"]) + 30f * layers;
+                        stats["health"] = (stats["health"]) + 100f * layers;
+                        break;
+                    case "elf":  // 精灵：敏捷+神秘
+                        stats["attack_speed"] = (stats["attack_speed"]) + 0.03f * layers;
+                        stats["mana"] = (stats["mana"]) + 50f * layers;
+                        break;
+                    case "dwarf":  // 矮人：耐力+护甲
+                        stats["armor"] = (stats["armor"]) + 15f * layers;
+                        stats["health"] = (stats["health"]) + 150f * layers;
+                        break;
+                    case "zerg":  // 虫族：力量+繁殖
+                        stats["damage"] = (stats["damage"]) + 25f * layers;
+                        stats["lifespan"] = (stats["lifespan"]) + 200f * layers;
+                        break;
+                    case "silver_spirit":  // 银灵人：神秘+智力
+                        stats["mana"] = (stats["mana"]) + 100f * layers;
+                        stats["intelligence"] = (stats["intelligence"]) + 20f * layers;
+                        break;
+                    case "mech_life":  // 机械族：全属性均衡
+                        stats["damage"] = (stats["damage"]) + 15f * layers;
+                        stats["armor"] = (stats["armor"]) + 10f * layers;
+                        stats["health"] = (stats["health"]) + 50f * layers;
+                        break;
+                    case "void_dragon":  // 虚空龙族：全属性大幅提升
+                        stats["damage"] = (stats["damage"]) + 50f * layers;
+                        stats["health"] = (stats["health"]) + 300f * layers;
+                        stats["armor"] = (stats["armor"]) + 25f * layers;
+                        break;
+                    case "star_beast":  // 星游兽：耐力+寿命
+                        stats["stamina"] = (stats["stamina"]) + 200f * layers;
+                        stats["lifespan"] = (stats["lifespan"]) + 1000f * layers;
+                        break;
+                    case "black_star":  // 黑星族：全属性+机械亲和
+                        stats["damage"] = (stats["damage"]) + 40f * layers;
+                        stats["health"] = (stats["health"]) + 200f * layers;
+                        stats["intelligence"] = (stats["intelligence"]) + 30f * layers;
+                        break;
+                }
+            }
         }
 
         public static void Clear() { _points.Clear(); _profLayers.Clear(); _speciesLayers.Clear(); }
