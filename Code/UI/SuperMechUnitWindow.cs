@@ -170,6 +170,17 @@ namespace SuperMech.Code
             if (isAwakened)
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
 
+            // v0.89.0 种族：自定义生物系统，非人类种族显示种族名和天赋
+            string speciesId = SuperMechSpeciesEvolution.GetSpeciesId(a.data.id);
+            if (speciesId != "human")
+            {
+                string speciesName = SuperMechSpeciesEvolution.GetSpeciesName(a.data.id);
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_species"), speciesName, null, new Color(0.8f, 0.9f, 0.6f));
+                string talent = SuperMechSpeciesEvolution.GetSpeciesTalent(a.data.id);
+                if (!string.IsNullOrEmpty(talent))
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_species_talent"), talent, null, new Color(0.7f, 0.85f, 0.5f));
+            }
+
             // v0.76.57 专属专长：超A级个体独有的专属能力（原著：专属被动/专属能力），显示于单位面板
             string specText = SuperMechExclusiveTrait.GetDisplay(a);
             if (!string.IsNullOrEmpty(specText))

@@ -80,6 +80,7 @@ namespace SuperMech.Code
                 SafeRun("自动访问圣所", () => SuperMechAI.TickVisitSanctuary());
                 SafeRun("机械军团AI", () => SuperMechAI.TickMechLegion());
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
+                SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }
             else if (group == 2)
             {
@@ -169,6 +170,7 @@ namespace SuperMech.Code
             removed += SuperMechFaction.CleanupDead(alive);
             removed += SuperMechPlayer.CleanupDead(alive);
             removed += SuperMechActorContextRegistry.CleanupDead(alive);
+            SuperMechSpeciesEvolution.CleanupDead(alive);
         }
 
         public static void ClearAll()
