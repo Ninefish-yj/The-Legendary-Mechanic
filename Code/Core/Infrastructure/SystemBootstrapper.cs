@@ -58,6 +58,9 @@ namespace SuperMech.Code
             SystemRegistry.RegisterAction("Powers", () => SuperMechPowers.Register());
             SystemRegistry.RegisterAction("Company", () => SuperMechCompany.Register());
 
+            // === 自定义生物（原著种族） ===
+            SystemRegistry.RegisterAction("Species", () => SuperMechSpecies.Register());
+
             // 执行所有注册
             SystemRegistry.RegisterAll();
         }
