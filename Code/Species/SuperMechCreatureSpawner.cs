@@ -23,15 +23,20 @@ namespace SuperMech.Code
         private const float StarBeastSpawnChance = 0.25f;     // 25%概率生成
         private const int StarBeastMaxAlive = 3;              // 同时最多3只
 
-        /// <summary>Tick：检查稀有生物生成</summary>
+        /// <summary>Tick：检查稀有生物生成
+        /// v0.100.0 科技→单位互动：星际生物需要航天科技才能发现</summary>
         public static void Tick()
         {
             if (World.world == null || World.world.units == null) return;
 
             CleanupDead();
 
-            // 虚空巨龙
-            if (Time.time >= _nextVoidDragonCheck)
+            // 检查是否有文明研究了足够的航天科技
+            bool canDiscoverStarBeast = HasAnyKingdomResearched("space_t3"); // 亚光速飞船
+            bool canDiscoverVoidDragon = HasAnyKingdomResearched("space_t4"); // 曲速引擎
+
+            // 虚空巨龙（需要曲速引擎才能发现）
+            if (canDiscoverVoidDragon && Time.time >= _nextVoidDragonCheck)
             {
                 _nextVoidDragonCheck = Time.time + VoidDragonCheckInterval;
                 if (CountCreatureType("sm_void_dragon_marker") < VoidDragonMaxAlive && Random.value < VoidDragonSpawnChance)
@@ -40,8 +45,8 @@ namespace SuperMech.Code
                 }
             }
 
-            // 星游兽
-            if (Time.time >= _nextStarBeastCheck)
+            // 星游兽（需要亚光速飞船才能发现）
+            if (canDiscoverStarBeast && Time.time >= _nextStarBeastCheck)
             {
                 _nextStarBeastCheck = Time.time + StarBeastCheckInterval;
                 if (CountCreatureType("sm_star_beast_marker") < StarBeastMaxAlive && Random.value < StarBeastSpawnChance)
@@ -49,6 +54,18 @@ namespace SuperMech.Code
                     SpawnStarBeast();
                 }
             }
+        }
+
+        /// <summary>检查是否有任意文明研究了指定科技</summary>
+        private static bool HasAnyKingdomResearched(string techId)
+        {
+            if (World.world?.kingdoms?.list == null) return false;
+            foreach (var k in World.world.kingdoms.list)
+            {
+                if (k != null && SuperMechTech.IsResearched(k.getID(), techId))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>生成虚空巨龙（原著：星际生物，身躯成千上万米）</summary>

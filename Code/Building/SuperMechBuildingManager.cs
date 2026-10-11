@@ -36,10 +36,12 @@ namespace SuperMech.Code
             RunBuildingEffects();
         }
 
-        /// <summary>尝试建造机械工厂：文明有机械系B阶超能者时</summary>
+        /// <summary>尝试建造机械工厂：文明有机械系B阶超能者+研究mech_t3时</summary>
         private static void TryBuildMechFactory(City city)
         {
             if (HasBuilding(city, SuperMechBuilding.MechFactory)) return;
+            long kid = city.city?.kingdom != null ? city.city.kingdom.getID() : 0;
+            if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.MechFactory)) return;
 
             bool hasMechB = false;
             foreach (var a in city.city.units)
@@ -58,10 +60,12 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>尝试建造佣兵公会：文明有≥10个觉醒者时</summary>
+        /// <summary>尝试建造佣兵公会：文明有≥10个觉醒者+研究info_t3时</summary>
         private static void TryBuildMercGuild(City city)
         {
             if (HasBuilding(city, SuperMechBuilding.MercGuild)) return;
+            long kid = city.city?.kingdom != null ? city.city.kingdom.getID() : 0;
+            if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.MercGuild)) return;
 
             int awakenedCount = 0;
             foreach (var a in city.city.units)
@@ -80,10 +84,12 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>尝试建造星际银行：文明有≥1个A阶超能者时</summary>
+        /// <summary>尝试建造星际银行：文明有≥1个A阶超能者+研究space_t3时</summary>
         private static void TryBuildStarBank(City city)
         {
             if (HasBuilding(city, SuperMechBuilding.StarBank)) return;
+            long kid = city.city?.kingdom != null ? city.city.kingdom.getID() : 0;
+            if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.StarBank)) return;
 
             bool hasA = false;
             foreach (var a in city.city.units)
@@ -182,10 +188,12 @@ namespace SuperMech.Code
 
             City city = hanXiao.city.city;
             if (city == null) return;
+            long kid = city.kingdom != null ? city.kingdom.getID() : 0;
+            if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.BlackStarPalace)) return;
             BuildBuilding(city, SuperMechBuilding.BlackStarPalace);
         }
 
-        /// <summary>尝试建造降临者公司总部：有≥3个降临者时，在降临者最多的城市建造</summary>
+        /// <summary>尝试建造降临者公司总部：有≥3个降临者+研究info_t5时，在降临者最多的城市建造</summary>
         private static void TryBuildCompanyHQ()
         {
             if (World.world?.buildings == null) return;
@@ -217,6 +225,8 @@ namespace SuperMech.Code
 
             if (bestCount >= 3 && bestCity != null)
             {
+                long kid = bestCity.city?.kingdom != null ? bestCity.city.kingdom.getID() : 0;
+                if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.CompanyHQ)) return;
                 BuildBuilding(bestCity, SuperMechBuilding.CompanyHQ);
             }
         }
