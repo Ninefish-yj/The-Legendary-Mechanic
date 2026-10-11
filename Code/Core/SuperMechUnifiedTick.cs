@@ -229,6 +229,7 @@ namespace SuperMech.Code
             try { SuperMechCreatureSpawner.Reset(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCreatureSpawner"); }
             try { SuperMechSupermA.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechSupermA"); }
             try { SuperMechInal.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechInal"); }
+            try { SuperMechTech.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTech"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
         }
     }

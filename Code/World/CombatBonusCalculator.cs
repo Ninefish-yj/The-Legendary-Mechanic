@@ -38,6 +38,20 @@ namespace SuperMech.Code
 
             // 8. 法师塔属性加成
             SuperMechMageTower.ApplyTowerBonus(actor, stats);
+
+            // 9. 文明科技树加成（v0.99.1 对照原著：三大文明科技路线给全文明属性加成）
+            ApplyTechBonus(actor, stats);
+        }
+
+        /// <summary>v0.99.1 文明科技树加成：已研究科技给全文明单位提供伤害/生命/速度加成</summary>
+        private static void ApplyTechBonus(Actor actor, BaseStats stats)
+        {
+            if (actor == null || actor.kingdom == null) return;
+            long kid = actor.kingdom.getID();
+            var (dmg, hp, spd) = SuperMechTech.GetBonuses(kid);
+            if (dmg > 0) stats["damage"] *= (1f + dmg);
+            if (hp > 0) stats["health"] *= (1f + hp);
+            if (spd > 0) stats["speed"] *= (1f + spd);
         }
 
         /// <summary>

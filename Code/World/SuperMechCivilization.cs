@@ -168,6 +168,22 @@ namespace SuperMech.Code
             _kingdomTechPoints[kid] += amount;
         }
 
+        /// <summary>v0.99.1 通过王国ID获取科技点（供科技系统使用）</summary>
+        public static float GetTechPointsFromKingdomById(long kingdomId)
+        {
+            if (_kingdomTechPoints.TryGetValue(kingdomId, out var points)) return points;
+            return 0f;
+        }
+
+        /// <summary>v0.99.1 消耗科技点（研究科技）</summary>
+        public static bool SpendTechPoints(long kingdomId, float amount)
+        {
+            if (amount <= 0) return false;
+            if (!_kingdomTechPoints.TryGetValue(kingdomId, out var points) || points < amount) return false;
+            _kingdomTechPoints[kingdomId] = points - amount;
+            return true;
+        }
+
         /// <summary>文明等级名称</summary>
         public static string GetLevelName(CivLevel level)
         {
