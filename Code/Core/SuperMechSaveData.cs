@@ -171,7 +171,7 @@ namespace SuperMech.Code
             }
             catch
             {
-                return Path.Combine(Application.dataPath, "Mods", "sm_savedata_985");
+                return Path.Combine(Application.persistentDataPath, "sm_savedata_985.json");
             }
         }
 

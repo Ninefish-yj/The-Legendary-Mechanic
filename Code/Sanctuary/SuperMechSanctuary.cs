@@ -73,7 +73,7 @@ namespace SuperMech.Code
         };
 
         private static readonly string DataPath =
-            Path.Combine(Application.dataPath, "sm_sanctuary_970");
+            Path.Combine(Application.persistentDataPath, "sm_sanctuary_970.json");
 
         public static SanctuaryData Data = new SanctuaryData();
         private static readonly HashSet<long> _divinityTriggered = new HashSet<long>();

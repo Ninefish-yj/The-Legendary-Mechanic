@@ -31,6 +31,11 @@ namespace SuperMech.Code
         private static void RegisterDisasterTrait()
         {
             if (_disasterTraitRegistered) return;
+            if (AssetManager.traits.get("sm_disaster_infected") != null)
+            {
+                _disasterTraitRegistered = true;
+                return;
+            }
             _disasterTraitRegistered = true;
             try
             {
@@ -46,7 +51,6 @@ namespace SuperMech.Code
                     can_be_removed = true,
                     base_stats = new BaseStats()
                 };
-                // 微生物异化强化：狂暴化 + 血肉畸变
                 t.base_stats["multiplier_damage"] = 1.8f;
                 t.base_stats["multiplier_health"] = 1.4f;
                 AssetManager.traits.add(t);

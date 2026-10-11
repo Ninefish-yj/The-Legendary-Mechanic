@@ -181,7 +181,7 @@ namespace SuperMech.Code
         /// <summary>恶魔族 - 原著ch?，混乱种族，个体战斗力极强</summary>
         private static void RegisterDemon()
         {
-            var s = new SpeciesData("demon", "恶魔族", "P1")
+            var s = new SpeciesData("sm_demon", "恶魔族", "P1")
             {
                 Description = "原著混乱种族，个体战斗力极强，性格暴躁，难以驯服",
                 WildKingdomId = "demons",
@@ -295,6 +295,11 @@ namespace SuperMech.Code
             {
                 var species = kvp.Value;
                 if (species.IsRegistered) continue;
+                if (AssetManager.actor_library.get(species.Id) != null)
+                {
+                    species.IsRegistered = true;
+                    continue;
+                }
 
                 try
                 {
