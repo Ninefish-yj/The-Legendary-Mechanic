@@ -176,7 +176,8 @@ namespace SuperMech.Code
         {
             var available = SuperMechMechLegion.GetAvailableTypes(summoner);
             if (available == null || available.Count == 0) return "mech_ranger";
-            return available[UnityEngine.Random.Range(0, available.Count)];
+            var def = available[UnityEngine.Random.Range(0, available.Count)];
+            return def.id;
         }
 
         /// <summary>Tick：检查去伪条件</summary>
