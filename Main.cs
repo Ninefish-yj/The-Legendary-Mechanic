@@ -3,6 +3,9 @@ using NeoModLoader.services;
 using SuperMech.Code;
 using UnityEngine;
 using HarmonyLib;
+using System.IO;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 
 namespace SuperMech
 {
@@ -21,6 +24,10 @@ namespace SuperMech
             Instance = this;
             ModPath = GetDeclaration().FolderPath;
             Debug.Log("[超神机械师] 模组加载: " + ModPath);
+
+            // 手动加载本地化文件（确保cz.json被NML本地化系统识别）
+            LoadLocales();
+
             SuperMechConfig.Init();
             SuperMechConfig.ApplyFromNML(GetConfig()); // v0.75.22: 启动全量同步配置值到静态字段（修复改配置不生效）
             SuperMechEventLogger.Init();
@@ -40,6 +47,33 @@ namespace SuperMech
             SuperMechUnitBars.Init();
 
             Debug.Log("[超神机械师] Phase 1 系统注册完成");
+        }
+
+        /// <summary>手动加载Locales/cz.json到NML本地化系统</summary>
+        private void LoadLocales()
+        {
+            try
+            {
+                string localePath = Path.Combine(ModPath, "Locales", "cz.json");
+                if (!File.Exists(localePath))
+                {
+                    Debug.LogWarning("[超神机械师] 本地化文件不存在: " + localePath);
+                    return;
+                }
+                string json = File.ReadAllText(localePath, System.Text.Encoding.UTF8);
+                var dict = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                int count = 0;
+                foreach (var kv in dict)
+                {
+                    LocalizedTextManager.add(kv.Key, kv.Value, pReplace: true);
+                    count++;
+                }
+                Debug.Log($"[超神机械师] 本地化加载完成: {count}条文本");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 本地化加载失败: " + e.Message);
+            }
         }
 
         private void Update()
