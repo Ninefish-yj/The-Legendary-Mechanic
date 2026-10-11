@@ -61,6 +61,9 @@ namespace SuperMech.Code
             // === v0.39.7 首位突破记录 ===
             public List<string> firstBreakthroughRanks = new List<string>(); // 已首次突破的阶位（全图只记一次）
             public string companyData = "";  // 公司数据（JSON序列化，v0.87.0）
+            // === v0.102.0 星际+科技存档 ===
+            public string starSystemData = "";  // 星际系统数据（JSON序列化）
+            public string techData = "";        // 科技系统数据（JSON序列化）
         }
 
         [Serializable]
@@ -295,6 +298,10 @@ namespace SuperMech.Code
                 data.mechLegion = SuperMechMechLegion.Save();
                 // 保存公司数据（v0.87.0）
                 data.companyData = JsonConvert.SerializeObject(SuperMechCompany.GetAllForSave());
+                // 保存星际系统数据（v0.102.0）
+                data.starSystemData = SuperMechStarSystem.SerializeForSave();
+                // 保存科技系统数据（v0.102.0）
+                data.techData = SuperMechTech.SerializeForSave();
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -355,6 +362,18 @@ namespace SuperMech.Code
                         SuperMechCompany.LoadFromSave(companyList);
                     }
                     catch (Exception e) { Debug.LogWarning($"[超神机械师] 公司数据加载失败: {e.Message}"); }
+                }
+                // 加载星际系统数据（v0.102.0）
+                if (!string.IsNullOrEmpty(data.starSystemData))
+                {
+                    try { SuperMechStarSystem.LoadFromSave(data.starSystemData); }
+                    catch (Exception e) { Debug.LogWarning($"[超神机械师] 星际数据加载失败: {e.Message}"); }
+                }
+                // 加载科技系统数据（v0.102.0）
+                if (!string.IsNullOrEmpty(data.techData))
+                {
+                    try { SuperMechTech.LoadFromSave(data.techData); }
+                    catch (Exception e) { Debug.LogWarning($"[超神机械师] 科技数据加载失败: {e.Message}"); }
                 }
                 _pendingLoad = data;
                 _loadPending = true;

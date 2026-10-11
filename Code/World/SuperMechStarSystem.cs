@@ -115,6 +115,24 @@ namespace SuperMech.Code
             return list;
         }
 
+        public static List<PlanetData> GetUndiscoveredPlanets()
+        {
+            var list = new List<PlanetData>();
+            foreach (var p in _planets.Values)
+                if (!p.discovered && p.id != MAIN_PLANET) list.Add(p);
+            return list;
+        }
+
+        public static void DiscoverPlanet(string planetId, string discoverer)
+        {
+            if (_planets.TryGetValue(planetId, out var p))
+            {
+                p.discovered = true;
+                if (string.IsNullOrEmpty(p.ownerKingdom))
+                    p.ownerKingdom = discoverer;
+            }
+        }
+
         public static void DiscoverPlanets(int techTier)
         {
             int discoverCount = techTier * 2;
@@ -342,6 +360,107 @@ namespace SuperMech.Code
                 if (tile != null && tile.Type.ground && !tile.Type.liquid) return tile;
             }
             return null;
+        }
+
+        // ═════════════════════ 存档序列化（v0.102.0）═════════════════════
+
+        [Serializable]
+        public class StarSystemSaveData
+        {
+            public List<PlanetSaveData> planets = new List<PlanetSaveData>();
+            public List<VoyageSaveData> voyages = new List<VoyageSaveData>();
+        }
+
+        [Serializable]
+        public class PlanetSaveData
+        {
+            public string id;
+            public string name;
+            public int type;
+            public float x, y;
+            public float resource, maxResource;
+            public string ownerKingdom;
+            public int colonyLevel;
+            public bool discovered;
+            public List<ActorSnapshot> units = new List<ActorSnapshot>();
+        }
+
+        [Serializable]
+        public class VoyageSaveData
+        {
+            public ActorSnapshot snapshot;
+            public string fromPlanet;
+            public string toPlanet;
+            public float progress;
+            public float speed;
+        }
+
+        public static string SerializeForSave()
+        {
+            try
+            {
+                var save = new StarSystemSaveData();
+                foreach (var p in _planets.Values)
+                {
+                    save.planets.Add(new PlanetSaveData
+                    {
+                        id = p.id, name = p.name, type = (int)p.type,
+                        x = p.x, y = p.y, resource = p.resource, maxResource = p.maxResource,
+                        ownerKingdom = p.ownerKingdom, colonyLevel = p.colonyLevel,
+                        discovered = p.discovered, units = new List<ActorSnapshot>(p.units)
+                    });
+                }
+                foreach (var v in _voyages)
+                {
+                    save.voyages.Add(new VoyageSaveData
+                    {
+                        snapshot = v.snapshot, fromPlanet = v.fromPlanet, toPlanet = v.toPlanet,
+                        progress = v.progress, speed = v.speed
+                    });
+                }
+                return Newtonsoft.Json.JsonConvert.SerializeObject(save);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 星际系统存档序列化失败: " + e.Message);
+                return "";
+            }
+        }
+
+        public static void LoadFromSave(string json)
+        {
+            try
+            {
+                var save = Newtonsoft.Json.JsonConvert.DeserializeObject<StarSystemSaveData>(json);
+                if (save == null) return;
+                _planets.Clear();
+                _voyages.Clear();
+                foreach (var ps in save.planets)
+                {
+                    var p = new PlanetData
+                    {
+                        id = ps.id, name = ps.name, type = (PlanetType)ps.type,
+                        x = ps.x, y = ps.y, resource = ps.resource, maxResource = ps.maxResource,
+                        ownerKingdom = ps.ownerKingdom, colonyLevel = ps.colonyLevel,
+                        discovered = ps.discovered, units = ps.units ?? new List<ActorSnapshot>()
+                    };
+                    _planets[p.id] = p;
+                }
+                foreach (var vs in save.voyages)
+                {
+                    _voyages.Add(new VoyageData
+                    {
+                        snapshot = vs.snapshot, fromPlanet = vs.fromPlanet, toPlanet = vs.toPlanet,
+                        progress = vs.progress, speed = vs.speed
+                    });
+                }
+                _initialized = true;
+                Debug.Log($"[超神机械师] 星际系统存档加载：{_planets.Count}星球/{_voyages.Count}航行");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 星际系统存档加载失败: " + e.Message);
+            }
         }
 
         public static void ClearAll()

@@ -376,6 +376,109 @@ namespace SuperMech.Code
             return removed;
         }
 
+        // ═════════════════════ AI文明科技研究（v0.102.0）═════════════════════
+
+        /// <summary>记录每个文明上次研究科技的时间（世界时间）</summary>
+        private static readonly Dictionary<long, float> _lastTechResearch = new Dictionary<long, float>();
+        /// <summary>每次Tick最多研究科技的文明数</summary>
+        private const int MaxTechResearchPerTick = 2;
+        /// <summary>科技研究间隔（世界时间）</summary>
+        private const float TechResearchInterval = 50f;
+
+        /// <summary>AI文明自动研究科技：每个文明定期研究可研究的科技</summary>
+        public static void TickTechResearch()
+        {
+            if (!SuperMechConfig.TechEnabled) return;
+            if (World.world == null || World.world.kingdoms == null) return;
+
+            int researched = 0;
+            foreach (var kingdom in World.world.kingdoms.list)
+            {
+                if (kingdom == null || kingdom.id == null) continue;
+                if (researched >= MaxTechResearchPerTick) break;
+
+                long kid = kingdom.id;
+                float now = World.world.getCurWorldTime();
+
+                // 间隔过滤
+                if (_lastTechResearch.TryGetValue(kid, out float last))
+                {
+                    if (now - last < TechResearchInterval) continue;
+                }
+
+                // 查找可研究的科技
+                var available = new List<SuperMechTech.TechDef>();
+                foreach (var def in SuperMechTech.GetAllDefs())
+                {
+                    if (SuperMechTech.IsResearched(kid, def.id)) continue;
+                    if (SuperMechTech.CanResearch(kid, def.id))
+                        available.Add(def);
+                }
+
+                if (available.Count == 0) continue;
+
+                // 随机选择一个研究（优先低tier）
+                available.Sort((a, b) => a.tier.CompareTo(b.tier));
+                var target = available[Random.Range(0, Mathf.Min(3, available.Count))];
+
+                if (SuperMechTech.Research(kid, target.id))
+                {
+                    _lastTechResearch[kid] = now;
+                    researched++;
+                    if (SuperMechConfig.LogVerbose)
+                        Debug.Log($"[超神机械师]【AI科技】{kingdom.name} 研究完成：{target.name}");
+                }
+            }
+        }
+
+        // ═════════════════════ AI文明星际探索（v0.102.0）═════════════════════
+
+        /// <summary>记录每个文明上次星际探索的时间</summary>
+        private static readonly Dictionary<long, float> _lastStarExploration = new Dictionary<long, float>();
+        /// <summary>每次Tick最多探索的文明数</summary>
+        private const int MaxStarExplorationPerTick = 1;
+        /// <summary>星际探索间隔</summary>
+        private const float StarExplorationInterval = 100f;
+
+        /// <summary>AI文明自动探索星球：高阶文明定期发现新星球</summary>
+        public static void TickStarExploration()
+        {
+            if (!SuperMechConfig.StarSystemEnabled) return;
+            if (World.world == null || World.world.kingdoms == null) return;
+
+            int explored = 0;
+            foreach (var kingdom in World.world.kingdoms.list)
+            {
+                if (kingdom == null || kingdom.id == null) continue;
+                if (explored >= MaxStarExplorationPerTick) break;
+
+                long kid = kingdom.id;
+                float now = World.world.getCurWorldTime();
+
+                // 间隔过滤
+                if (_lastStarExploration.TryGetValue(kid, out float last))
+                {
+                    if (now - last < StarExplorationInterval) continue;
+                }
+
+                // 只有科技达到一定水平的文明才能探索星际
+                int techTier = SuperMechTech.GetMaxTier(kid);
+                if (techTier < 2) continue; // 需要至少T2科技
+
+                // 发现新星球
+                var undiscovered = SuperMechStarSystem.GetUndiscoveredPlanets();
+                if (undiscovered.Count == 0) continue;
+
+                var planet = undiscovered[Random.Range(0, undiscovered.Count)];
+                SuperMechStarSystem.DiscoverPlanet(planet.id, kingdom.name);
+                _lastStarExploration[kid] = now;
+                explored++;
+
+                if (SuperMechConfig.LogVerbose)
+                    Debug.Log($"[超神机械师]【AI星际】{kingdom.name} 发现新星球：{planet.name}");
+            }
+        }
+
         public static void Clear()
         {
             _lastCompetitionAge.Clear();

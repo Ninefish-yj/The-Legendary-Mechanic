@@ -108,6 +108,23 @@ namespace SuperMech.Code
             return _defs.TryGetValue(id, out var def) ? def : null;
         }
 
+        public static List<TechDef> GetAllDefs()
+        {
+            return new List<TechDef>(_defs.Values);
+        }
+
+        public static int GetMaxTier(long kingdomId)
+        {
+            if (!_researched.TryGetValue(kingdomId, out var set)) return 0;
+            int maxTier = 0;
+            foreach (var id in set)
+            {
+                var def = GetDef(id);
+                if (def != null && def.tier > maxTier) maxTier = def.tier;
+            }
+            return maxTier;
+        }
+
         public static List<TechDef> GetByBranch(TechBranch branch)
         {
             var list = new List<TechDef>();
@@ -169,6 +186,52 @@ namespace SuperMech.Code
         public static void ClearAll()
         {
             _researched.Clear();
+        }
+
+        // ═════════════════════ 存档序列化（v0.102.0）═════════════════════
+
+        [Serializable]
+        public class TechSaveData
+        {
+            // kingdomId -> 已研究科技ID列表
+            public Dictionary<long, List<string>> researched = new Dictionary<long, List<string>>();
+        }
+
+        public static string SerializeForSave()
+        {
+            try
+            {
+                var save = new TechSaveData();
+                foreach (var kv in _researched)
+                {
+                    save.researched[kv.Key] = new List<string>(kv.Value);
+                }
+                return Newtonsoft.Json.JsonConvert.SerializeObject(save);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 科技系统存档序列化失败: " + e.Message);
+                return "";
+            }
+        }
+
+        public static void LoadFromSave(string json)
+        {
+            try
+            {
+                var save = Newtonsoft.Json.JsonConvert.DeserializeObject<TechSaveData>(json);
+                if (save == null) return;
+                _researched.Clear();
+                foreach (var kv in save.researched)
+                {
+                    _researched[kv.Key] = new HashSet<string>(kv.Value);
+                }
+                Debug.Log($"[超神机械师] 科技系统存档加载：{_researched.Count}个文明的研究进度");
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 科技系统存档加载失败: " + e.Message);
+            }
         }
     }
 }

@@ -95,6 +95,10 @@ namespace SuperMech.Code
         public static bool LogVerbose = false;
         public static bool EnableProfiler = false; // 性能监控开关（默认关闭，开启后记录各子系统耗时）
 
+        // === v0.102.0 星际+科技系统开关 ===
+        public static bool TechEnabled = true;         // 文明级科技树系统
+        public static bool StarSystemEnabled = true;   // 多星球星际系统
+
         public static bool RelicDropEnabled = true;
         public static float RelicDropRate = 0.01f;
 

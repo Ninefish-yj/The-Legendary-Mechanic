@@ -79,6 +79,8 @@ namespace SuperMech.Code
                 SafeRun("NPC自动修炼", () => SuperMechAI.TickNpcKnowledge());
                 SafeRun("自动访问圣所", () => SuperMechAI.TickVisitSanctuary());
                 SafeRun("机械军团AI", () => SuperMechAI.TickMechLegion());
+                SafeRun("AI文明科技研究", () => SuperMechAI.TickTechResearch());
+                SafeRun("AI文明星际探索", () => SuperMechAI.TickStarExploration());
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
                 SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }

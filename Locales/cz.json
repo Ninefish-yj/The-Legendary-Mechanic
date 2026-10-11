@@ -3361,9 +3361,9 @@
   "sm_ui_fuse_success": "界面",
   "sm_ui_fusion": "界面",
   "sm_ui_rank_window_title": "界面",
-  "sm_ui_section_combat": "界面",
-  "sm_ui_section_core": "界面",
-  "sm_ui_section_special": "界面",
+  "sm_ui_section_combat": "战斗数值",
+  "sm_ui_section_core": "核心档案",
+  "sm_ui_section_special": "特殊信息",
   "sm_ui_world_beyond_title": "界面",
   "sm_unitwindow_1146": "模组内容",
   "sm_unitwindow_1147": "模组内容",
@@ -3390,5 +3390,7 @@
   "sm_powers_926_description": "神权能力",
   "sm_powers_927_description": "神权能力",
   "sm_powers_928_description": "神权能力",
-  "sm_powers_929_description": "神权能力"
+  "sm_powers_929_description": "神权能力",
+  "sm_ui_section_entry": "操作入口",
+  "sm_ui_section_social": "社会关系"
 }
