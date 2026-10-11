@@ -27,14 +27,14 @@ namespace SuperMech.Code
             new[] { "sm_know_033","sm_know_034","sm_know_035","","" },
         };
         private static readonly string[][] MechTop = {
-            new[] { "sm_know_036","sm_know_037","sm_know_038","","" },
-            new[] { "sm_know_039","sm_know_040","sm_know_041","","" },
-            new[] { "sm_know_042","sm_know_043","sm_know_044","","" },
+            new[] { "sm_know_036","sm_know_037","sm_know_038","sm_know_270","sm_know_271" },
+            new[] { "sm_know_039","sm_know_040","sm_know_041","sm_know_272","sm_know_273" },
+            new[] { "sm_know_042","sm_know_043","sm_know_044","sm_know_274","sm_know_275" },
         };
         private static readonly string[][] MechUlt = {
-            new[] { "sm_know_045","sm_know_046","","","" },
-            new[] { "sm_know_047","sm_know_048","","","" },
-            new[] { "sm_know_049","sm_know_050","","","" },
+            new[] { "sm_know_045","sm_know_046","sm_know_276","sm_know_277","" },
+            new[] { "sm_know_047","sm_know_048","sm_know_278","sm_know_279","" },
+            new[] { "sm_know_049","sm_know_050","sm_know_280","sm_know_281","" },
         };
 
         private static readonly string[][] Martial = {
