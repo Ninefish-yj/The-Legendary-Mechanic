@@ -3,35 +3,45 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>星际系统（v1.0）：多星球数据+航行+殖民
-    /// 主星球是当前WorldBox地图，其他星球是简化数据
+    /// <summary>星际系统（v1.1）：多星球数据+航行+殖民，支持主星球↔其他星球双向航行
+    /// 主星球是当前WorldBox地图，其他星球是简化数据（Actor快照）
     /// 对照原著：破碎星环/柯尔顿星区/西斯特尔星区等星区设定</summary>
     public static class SuperMechStarSystem
     {
         public enum PlanetType { Rocky, Gas, Ice, Lava, Ocean, Desert, Forest }
+
+        /// <summary>Actor快照：单位离开主星球时保存关键数据，到达时恢复</summary>
+        public class ActorSnapshot
+        {
+            public long id;
+            public string assetId; // 种族asset ID
+            public string name;
+            public string kingdomName;
+            public int age;
+        }
 
         public class PlanetData
         {
             public string id;
             public string name;
             public PlanetType type;
-            public float x; // 星图坐标
+            public float x;
             public float y;
-            public float resource; // 资源量
+            public float resource;
             public float maxResource;
-            public string ownerKingdom; // 所属文明ID
-            public List<long> units = new List<long>(); // 驻留单位ID
-            public int colonyLevel; // 殖民等级0=未殖民
+            public string ownerKingdom;
+            public List<ActorSnapshot> units = new List<ActorSnapshot>(); // 驻留单位快照
+            public int colonyLevel;
             public bool discovered;
         }
 
         public class VoyageData
         {
-            public long unitId;
+            public ActorSnapshot snapshot; // 航行中的单位快照
             public string fromPlanet;
             public string toPlanet;
-            public float progress; // 0-1
-            public float speed; // 每秒进度
+            public float progress;
+            public float speed;
         }
 
         private static readonly Dictionary<string, PlanetData> _planets = new Dictionary<string, PlanetData>();
@@ -39,7 +49,7 @@ namespace SuperMech.Code
         private static bool _initialized;
         private static float _tickTimer;
 
-        public const string MAIN_PLANET = "main"; // 主星球（当前WorldBox地图）
+        public const string MAIN_PLANET = "main";
 
         public static void Init()
         {
@@ -48,10 +58,8 @@ namespace SuperMech.Code
             GeneratePlanets();
         }
 
-        /// <summary>生成星系星球（对照原著破碎星环设定）</summary>
         private static void GeneratePlanets()
         {
-            // 主星球
             _planets[MAIN_PLANET] = new PlanetData
             {
                 id = MAIN_PLANET,
@@ -64,10 +72,9 @@ namespace SuperMech.Code
                 discovered = true
             };
 
-            // 周边星球（随机生成8-12个）
-            string[] planetNames = { "艾莫尔", "科尔基斯", "苏尼尔星", "黑灵星", "泰尔克斯", "星瞳星", "卢翰星", "昆德星", "诺里欧斯", "加里奥特", "银灵星", "赤岩星" };
+            string[] planetNames = { "艾莫尔", "科尔基斯", "苏尼尔星", "黑灵星", "泰尔克斯", "星瞳星", "卢翰星", "昆德星", "诺里欧斯", "加里奥特" };
             PlanetType[] types = { PlanetType.Rocky, PlanetType.Gas, PlanetType.Ice, PlanetType.Lava, PlanetType.Ocean, PlanetType.Desert, PlanetType.Forest };
-            System.Random rng = new System.Random(42); // 固定种子，每次生成一致
+            System.Random rng = new System.Random(42);
 
             for (int i = 0; i < 10; i++)
             {
@@ -108,10 +115,9 @@ namespace SuperMech.Code
             return list;
         }
 
-        /// <summary>研究航天科技后发现新星球</summary>
         public static void DiscoverPlanets(int techTier)
         {
-            int discoverCount = techTier * 2; // T1发现2个，T2发现4个...
+            int discoverCount = techTier * 2;
             int count = 0;
             foreach (var p in _planets.Values)
             {
@@ -124,24 +130,48 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>派遣单位航行到目标星球</summary>
+        /// <summary>派遣单位航行（支持主星球↔其他星球双向）</summary>
         public static bool SendUnit(long unitId, string fromPlanet, string toPlanet)
         {
             if (fromPlanet == toPlanet) return false;
             var from = GetPlanet(fromPlanet);
             var to = GetPlanet(toPlanet);
             if (from == null || to == null || !to.discovered) return false;
-            if (!from.units.Contains(unitId)) return false;
 
-            // 计算航行速度（基于科技等级）
-            float speed = 0.01f; // 基础100秒
+            ActorSnapshot snapshot = null;
+
+            // 从主星球出发：从WorldBox地图中找到Actor，保存快照，移除Actor
+            if (fromPlanet == MAIN_PLANET)
+            {
+                var actor = World.world?.units?.GetUnit(unitId);
+                if (actor == null) return false;
+                snapshot = new ActorSnapshot
+                {
+                    id = unitId,
+                    assetId = actor.asset.id,
+                    name = actor.data.name,
+                    kingdomName = actor.kingdom?.data?.name,
+                    age = actor.data.age
+                };
+                // 从WorldBox地图移除
+                World.world.units.killUnit(actor, true);
+            }
+            else
+            {
+                // 从其他星球出发：从快照列表中找到并移除
+                snapshot = from.units.Find(u => u.id == unitId);
+                if (snapshot == null) return false;
+                from.units.Remove(snapshot);
+            }
+
+            // 计算航行速度
+            float speed = 0.01f;
             int spaceTier = GetSpaceTechTier();
-            speed += spaceTier * 0.005f; // 每级科技加速
+            speed += spaceTier * 0.005f;
 
-            from.units.Remove(unitId);
             _voyages.Add(new VoyageData
             {
-                unitId = unitId,
+                snapshot = snapshot,
                 fromPlanet = fromPlanet,
                 toPlanet = toPlanet,
                 progress = 0,
@@ -150,7 +180,6 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>获取当前文明的航天科技等级</summary>
         private static int GetSpaceTechTier()
         {
             int tier = 0;
@@ -164,11 +193,11 @@ namespace SuperMech.Code
             return tier;
         }
 
-        /// <summary>航行Tick（每秒调用）</summary>
+        /// <summary>航行Tick（支持到达主星球时生成Actor）</summary>
         public static void TickVoyages(float dt)
         {
             _tickTimer += dt;
-            if (_tickTimer < 1f) return; // 每秒更新一次
+            if (_tickTimer < 1f) return;
             _tickTimer = 0;
 
             for (int i = _voyages.Count - 1; i >= 0; i--)
@@ -177,19 +206,22 @@ namespace SuperMech.Code
                 v.progress += v.speed;
                 if (v.progress >= 1f)
                 {
-                    // 到达目标星球
                     var to = GetPlanet(v.toPlanet);
                     if (to != null)
                     {
-                        to.units.Add(v.unitId);
-                        // 自动建立殖民地
-                        if (to.colonyLevel == 0)
+                        if (v.toPlanet == MAIN_PLANET)
                         {
-                            to.colonyLevel = 1;
-                            var actor = World.world?.units?.GetUnit(v.unitId);
-                            if (actor != null && actor.kingdom != null)
+                            // 到达主星球：在WorldBox地图中生成Actor
+                            SpawnActorOnMainPlanet(v.snapshot);
+                        }
+                        else
+                        {
+                            // 到达其他星球：保存快照
+                            to.units.Add(v.snapshot);
+                            if (to.colonyLevel == 0)
                             {
-                                to.ownerKingdom = actor.kingdom.data.name;
+                                to.colonyLevel = 1;
+                                to.ownerKingdom = v.snapshot.kingdomName;
                             }
                         }
                     }
@@ -198,7 +230,22 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>殖民地资源产出（每秒调用）</summary>
+        /// <summary>在主星球生成Actor（根据快照）</summary>
+        private static void SpawnActorOnMainPlanet(ActorSnapshot snapshot)
+        {
+            if (World.world == null || snapshot == null) return;
+            // 找一个随机地块生成
+            var tile = World.world.map.tiles.GetRandom();
+            if (tile == null) return;
+            var actor = World.world.units.createNewUnit(snapshot.assetId, tile, pMiracleSpawn: false, 0f, null, null, pSpawnWithItems: true, pAdultAge: true);
+            if (actor != null)
+            {
+                actor.data.name = snapshot.name;
+                actor.data.age = snapshot.age;
+                Debug.Log($"[超神机械师] 单位 {snapshot.name} 从星际航行到达主星球");
+            }
+        }
+
         public static void TickColonies(float dt)
         {
             foreach (var p in _planets.Values)
@@ -210,7 +257,6 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>从殖民地运回资源</summary>
         public static float TransportResource(string planetId, float amount)
         {
             var p = GetPlanet(planetId);
@@ -220,10 +266,22 @@ namespace SuperMech.Code
             return taken;
         }
 
-        /// <summary>获取航行中的单位</summary>
         public static List<VoyageData> GetVoyages()
         {
             return new List<VoyageData>(_voyages);
+        }
+
+        /// <summary>获取主星球可派遣的单位（WorldBox地图中的单位）</summary>
+        public static List<Actor> GetMainPlanetUnits()
+        {
+            var list = new List<Actor>();
+            if (World.world?.units == null) return list;
+            foreach (var a in World.world.units)
+            {
+                if (a != null && a.asset != null && a.asset.id != null)
+                    list.Add(a);
+            }
+            return list;
         }
 
         public static void ClearAll()
