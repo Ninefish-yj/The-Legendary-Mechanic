@@ -29,6 +29,10 @@ namespace SuperMech.Code
                 TryBuildStarBank(city);
             }
 
+            // 专属建筑：全局唯一，只检查一次
+            TryBuildBlackStarPalace();
+            TryBuildCompanyHQ();
+
             RunBuildingEffects();
         }
 
@@ -153,6 +157,70 @@ namespace SuperMech.Code
             return null;
         }
 
+        /// <summary>尝试建造黑星行宫：韩萧化身存在时，在韩萧所在城市建造</summary>
+        private static void TryBuildBlackStarPalace()
+        {
+            if (World.world?.buildings == null) return;
+            foreach (var b in World.world.buildings)
+            {
+                if (b != null && b.asset != null && b.asset.id == SuperMechBuilding.BlackStarPalace)
+                    return; // 已存在
+            }
+
+            Actor hanXiao = null;
+            foreach (var a in World.world.units)
+            {
+                if (a == null) continue;
+                if (a.hasTrait("sm_player_hanxiao"))
+                {
+                    hanXiao = a;
+                    break;
+                }
+            }
+
+            if (hanXiao == null || hanXiao.city == null) return;
+
+            City city = hanXiao.city.city;
+            if (city == null) return;
+            BuildBuilding(city, SuperMechBuilding.BlackStarPalace);
+        }
+
+        /// <summary>尝试建造降临者公司总部：有≥3个降临者时，在降临者最多的城市建造</summary>
+        private static void TryBuildCompanyHQ()
+        {
+            if (World.world?.buildings == null) return;
+            foreach (var b in World.world.buildings)
+            {
+                if (b != null && b.asset != null && b.asset.id == SuperMechBuilding.CompanyHQ)
+                    return; // 已存在
+            }
+
+            City bestCity = null;
+            int bestCount = 0;
+
+            foreach (var city in World.world.cities)
+            {
+                if (city?.city?.units == null) continue;
+                int count = 0;
+                foreach (var a in city.city.units)
+                {
+                    if (a == null) continue;
+                    if (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao"))
+                        count++;
+                }
+                if (count > bestCount)
+                {
+                    bestCount = count;
+                    bestCity = city;
+                }
+            }
+
+            if (bestCount >= 3 && bestCity != null)
+            {
+                BuildBuilding(bestCity, SuperMechBuilding.CompanyHQ);
+            }
+        }
+
         /// <summary>运行建筑效果</summary>
         private static void RunBuildingEffects()
         {
@@ -172,6 +240,12 @@ namespace SuperMech.Code
                         break;
                     case SuperMechBuilding.StarBank:
                         RunStarBank(building);
+                        break;
+                    case SuperMechBuilding.BlackStarPalace:
+                        RunBlackStarPalace(building);
+                        break;
+                    case SuperMechBuilding.CompanyHQ:
+                        RunCompanyHQ(building);
                         break;
                 }
             }
@@ -238,6 +312,67 @@ namespace SuperMech.Code
                 {
                     int inal = SuperMechInal.GetInal(a);
                     SuperMechInal.SetInal(a, inal + 10);
+                }
+            }
+        }
+
+        /// <summary>黑星行宫运行：周围机械系单位大幅加经验，韩萧复活点</summary>
+        private static void RunBlackStarPalace(Building building)
+        {
+            if (Time.frameCount % 128 != 0) return;
+
+            foreach (var a in World.world.units)
+            {
+                if (a == null) continue;
+                float dist = Vector2.Distance(a.current_position, building.current_position);
+                if (dist < 50f && a.hasTrait(SuperMechTraits.ClassMech))
+                {
+                    SuperMechAwakened.AddXp(a, 15f);
+                }
+            }
+
+            // 韩萧濒死保护：行宫周围的韩萧化身获得额外恢复
+            foreach (var a in World.world.units)
+            {
+                if (a == null) continue;
+                if (!a.hasTrait("sm_player_hanxiao")) continue;
+                float dist = Vector2.Distance(a.current_position, building.current_position);
+                if (dist < 50f && a.data.health < a.data.health_max)
+                {
+                    a.data.health = Mathf.Min(a.data.health_max, a.data.health + a.data.health_max * 0.05f);
+                }
+            }
+        }
+
+        /// <summary>降临者公司总部运行：定期发行伊纳尔，周围降临者加经验</summary>
+        private static void RunCompanyHQ(Building building)
+        {
+            if (Time.frameCount % 256 != 0) return;
+
+            int playerCount = 0;
+            foreach (var a in World.world.units)
+            {
+                if (a == null) continue;
+                float dist = Vector2.Distance(a.current_position, building.current_position);
+                if (dist < 50f && (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao")))
+                {
+                    playerCount++;
+                    SuperMechAwakened.AddXp(a, 10f);
+                }
+            }
+
+            // 公司总部定期发行伊纳尔给周围降临者
+            if (playerCount > 0 && Time.frameCount % 512 == 0)
+            {
+                foreach (var a in World.world.units)
+                {
+                    if (a == null) continue;
+                    float dist = Vector2.Distance(a.current_position, building.current_position);
+                    if (dist < 50f && (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao")))
+                    {
+                        int inal = SuperMechInal.GetInal(a);
+                        SuperMechInal.SetInal(a, inal + 50 * playerCount);
+                    }
                 }
             }
         }
