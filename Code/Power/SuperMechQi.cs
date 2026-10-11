@@ -50,6 +50,7 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _appliedLevel = new Dictionary<long, int>();
         private static readonly Dictionary<long, float> _qiDmgMul = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _qiHpMul = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _qiLifespanBonus = new Dictionary<long, float>();
 
         public static void Register()
         {
@@ -98,7 +99,14 @@ namespace SuperMech.Code
             stats["stamina"] = endurance * 4f;
             stats["intelligence"] = intel * 0.3f + skillBonus.intelligence;
             stats["warfare"] = strength * 0.1f + agility * 0.05f;
-            stats["lifespan"] = endurance * 0.5f;
+
+            // 寿命加成：气力耐力提升寿命（叠加方式，不能直接覆盖，否则会覆盖阶位/神性/维度的寿命加成）
+            float newLifespanBonus = endurance * 0.5f;
+            if (_qiLifespanBonus.TryGetValue(a.id, out float oldLifespan) && oldLifespan > 0f)
+                stats["lifespan"] = Mathf.Max(10f, stats["lifespan"] - oldLifespan);
+            if (stats["lifespan"] <= 0f) stats["lifespan"] = 80f;
+            stats["lifespan"] += newLifespanBonus;
+            _qiLifespanBonus[a.id] = newLifespanBonus;
 
             // 倍率加成（知识/技能/融合，这些是额外加成）
             // 必须先除旧再乘新，避免重复叠加；且不能直接覆盖，否则会覆盖阶位/能级/神性/维度等系统的加成
@@ -133,6 +141,9 @@ namespace SuperMech.Code
             _lastHealth.Remove(a.id);
             _combatTimer.Remove(a.id);
             _appliedLevel.Remove(a.id);
+            _qiDmgMul.Remove(a.id);
+            _qiHpMul.Remove(a.id);
+            _qiLifespanBonus.Remove(a.id);
         }
 
         public static float GetQi(Actor a)

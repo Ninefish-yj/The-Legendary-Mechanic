@@ -344,8 +344,8 @@ namespace SuperMech.Code
         {
             if (a == null || rankIdx < 0) return;
 
-            // X阶（超神级）才是真正的不死不灭
-            if (rankIdx >= 14)
+            // X阶（超神级）才是真正的不死不灭（索引13，共14阶0-13）
+            if (rankIdx >= 13)
             {
                 if (!a.hasTrait("immortal")) a.addTrait("immortal");
                 _appliedLifespanRank[a.id] = rankIdx;
