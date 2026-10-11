@@ -32,52 +32,45 @@ namespace SuperMech.Code
                 bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
                 bg.GetComponent<Image>().color = SuperMechUiSkin.SciBg;
 
-                // ═══ 顶部页签栏（横向滚动）═══
-                var tabScrollGo = new GameObject("TabScroll", typeof(RectTransform), typeof(Image), typeof(ScrollRect));
-                tabScrollGo.transform.SetParent(content, false);
-                var tsr = tabScrollGo.GetComponent<RectTransform>();
-                tsr.anchorMin = new Vector2(0, 1); tsr.anchorMax = new Vector2(1, 1);
-                tsr.pivot = new Vector2(0.5f, 1);
-                tsr.anchoredPosition = Vector2.zero;
-                tsr.sizeDelta = new Vector2(0, 44);
-                var tImg = tabScrollGo.GetComponent<Image>();
+                // ═══ 顶部页签栏（两排布局，每排4个，避免超出界面）═══
+                var tabBarGo = new GameObject("TabBar", typeof(RectTransform), typeof(Image));
+                tabBarGo.transform.SetParent(content, false);
+                var tbr = tabBarGo.GetComponent<RectTransform>();
+                tbr.anchorMin = new Vector2(0, 1); tbr.anchorMax = new Vector2(1, 1);
+                tbr.pivot = new Vector2(0.5f, 1);
+                tbr.anchoredPosition = Vector2.zero;
+                tbr.sizeDelta = new Vector2(0, 88);  // 两排，每排44
+                var tImg = tabBarGo.GetComponent<Image>();
                 tImg.color = new Color(0.04f, 0.06f, 0.10f, 0.9f);
                 tImg.raycastTarget = true;
 
-                var tabContentGo = new GameObject("TabContent", typeof(RectTransform));
-                tabContentGo.transform.SetParent(tabScrollGo.transform, false);
-                var tcr = tabContentGo.GetComponent<RectTransform>();
-                tcr.anchorMin = new Vector2(0, 1); tcr.anchorMax = new Vector2(0, 1);
-                tcr.pivot = new Vector2(0, 1);
-                tcr.anchoredPosition = Vector2.zero;
-                tcr.sizeDelta = new Vector2(0, 44);
-
-                var tScroll = tabScrollGo.GetComponent<ScrollRect>();
-                tScroll.content = tcr;
-                tScroll.horizontal = true;
-                tScroll.vertical = false;
-                tScroll.movementType = ScrollRect.MovementType.Elastic;
-                tScroll.scrollSensitivity = 30f;
-
                 var tabs = SuperMechWindowManager.OverviewTabs;
-                float tx = 6f;
+                int perRow = 4;  // 每排4个
+                float tabW = 168f;  // 每个标签宽度
+                float tabH = 36f;
+                float gapX = 6f;    // 横向间距
+                float gapY = 4f;    // 纵向间距
+                float startX = 8f;  // 左边距
+                float startY = -6f; // 顶部边距
+
                 for (int i = 0; i < tabs.Length; i++)
                 {
                     int idx = i;
                     string label = LocalizedTextManager.getText(tabs[i].key);
                     bool active = idx == _tabIndex;
-                    var b = MakeTabButton(tabContentGo.transform, label, active);
+                    var b = MakeTabButton(tabBarGo.transform, label, active);
                     var br = b.GetComponent<RectTransform>();
-                    br.anchorMin = new Vector2(0, 0); br.anchorMax = new Vector2(0, 1);
-                    br.pivot = new Vector2(0, 0.5f);
-                    br.anchoredPosition = new Vector2(tx, 0);
-                    float w = 24f + label.Length * 13f + 20f;
-                    br.sizeDelta = new Vector2(w, 36);
+                    br.anchorMin = new Vector2(0, 1); br.anchorMax = new Vector2(0, 1);
+                    br.pivot = new Vector2(0, 1);
+                    int row = i / perRow;
+                    int col = i % perRow;
+                    float x = startX + col * (tabW + gapX);
+                    float y = startY - row * (tabH + gapY);
+                    br.anchoredPosition = new Vector2(x, y);
+                    br.sizeDelta = new Vector2(tabW, tabH);
                     var btn = b.GetComponent<Button>();
                     btn.onClick.AddListener(() => SelectTab(idx));
-                    tx += w + 3f;
                 }
-                tcr.sizeDelta = new Vector2(tx + 6f, 0);
 
                 // ═══ 内容区（全拉伸，各页签自己创建滚动视图）═══
                 var areaContentGo = new GameObject("ContentArea", typeof(RectTransform));
@@ -86,7 +79,7 @@ namespace SuperMech.Code
                 acr.anchorMin = Vector2.zero; acr.anchorMax = Vector2.one;
                 acr.pivot = new Vector2(0.5f, 0.5f);
                 acr.offsetMin = new Vector2(6, 6);
-                acr.offsetMax = new Vector2(-6, -50);
+                acr.offsetMax = new Vector2(-6, -94);  // 顶部留94给两排标签栏(88+6边距)
 
                 DrawCurrent(acr);
             }
