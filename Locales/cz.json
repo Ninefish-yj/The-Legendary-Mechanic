@@ -3360,5 +3360,11 @@
   "sm_config_sanctuary": "圣所系统",
   "sm_config_ai": "AI行为",
   "sm_config_world": "世界系统",
-  "sm_config_player": "玩家系统"
+  "sm_config_player": "玩家系统",
+  "sm_rank_reduction_none": "无阶位压制",
+  "sm_rank_reduction_minor": "轻微压制",
+  "sm_rank_reduction_moderate": "明显压制",
+  "sm_rank_reduction_strong": "强烈压制",
+  "sm_rank_reduction_overwhelm": "碾压级压制",
+  "sm_rank_reduction_annihilate": "毁灭性压制"
 }

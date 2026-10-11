@@ -217,6 +217,24 @@ namespace SuperMech.Code
                     target.data.health = Mathf.Min(target.getMaxHealth(), target.data.health + (int)absorbed);
                 }
 
+                // v0.106.0 阶位差距伤害减免（对照原著：高阶位对低阶位攻击有极高防御）
+                // 原著依据："一般天灾级攻击对他而言已经是挠痒痒了，甚至稍弱一点的天灾级还破不了他的防御"
+                // 设计：高减免但不免疫，差距越大减免越多，最高92%（永远留8%最低伤害）
+                if (attacker != null && attacker.isAlive())
+                {
+                    int atkRankIdx = SuperMechAdvancement.GetExactRankIndex(attacker);
+                    int defRankIdx = SuperMechAdvancement.GetExactRankIndex(target);
+                    float rankReduction = CombatSuppression.GetRankDamageReduction(atkRankIdx, defRankIdx);
+                    if (rankReduction > 0f)
+                    {
+                        int reducedDamage = (int)(pDamage * rankReduction);
+                        if (reducedDamage > 0)
+                        {
+                            target.data.health = Mathf.Min(target.getMaxHealth(), target.data.health + reducedDamage);
+                        }
+                    }
+                }
+
                 int targetRank = SuperMechAdvancement.GetExactRankIndex(target);
                 if (targetRank >= 13 && attacker != null && attacker.isAlive())
                 {
