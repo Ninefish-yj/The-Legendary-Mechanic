@@ -112,6 +112,7 @@ namespace SuperMech.Code
                 SafeRun("伊纳尔俸禄", () => SuperMechInal.TickSalary());
                 SafeRun("建筑系统", () => SuperMechBuildingManager.Tick());
                 SafeRun("建筑升级", () => SuperMechBuildingUpgrade.Tick());
+                SafeRun("自定义生物生成", () => SuperMechCreatureSpawner.Tick());
             }
 
             float now = Time.time;
@@ -225,6 +226,7 @@ namespace SuperMech.Code
             try { SuperMechFaction.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechFaction"); }
             try { SuperMechPlayer.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPlayer"); }
             try { SuperMechWorldTree.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechWorldTree"); }
+            try { SuperMechCreatureSpawner.Reset(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCreatureSpawner"); }
             try { SuperMechSupermA.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechSupermA"); }
             try { SuperMechInal.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechInal"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }

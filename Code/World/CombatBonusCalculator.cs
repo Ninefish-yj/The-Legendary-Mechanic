@@ -33,7 +33,10 @@ namespace SuperMech.Code
             // 6. 装备/宝物属性加成
             SuperMechCosmicRelic.ApplyEquipBonus(actor, stats);
 
-            // 7. 法师塔属性加成
+            // 7. 装备词缀属性加成（对照原著：装备词缀提供伤害/生命/速度/护甲等加成）
+            SuperMechEquipAffix.ApplyAffixesToStats(actor, stats);
+
+            // 8. 法师塔属性加成
             SuperMechMageTower.ApplyTowerBonus(actor, stats);
         }
 

@@ -101,11 +101,16 @@ namespace SuperMech.Code
 
         public static void ApplyAffixes(Actor a)
         {
-            if (a == null || !_equippedAffixes.TryGetValue(a.id, out var affixes)) return;
-            var stats = SuperMechStats.Of(a);
-            if (stats == null) return;
+            if (a == null) return;
+            ApplyAffixesToStats(a, SuperMechStats.Of(a));
+        }
 
-            // 装备改装：每级词缀数值+10%（原著：机械师改装装备部件）
+        /// <summary>应用词缀到指定stats（由CombatBonusCalculator在updateStats Postfix中调用）</summary>
+        public static void ApplyAffixesToStats(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            if (!_equippedAffixes.TryGetValue(a.id, out var affixes)) return;
+
             float modifyMult = SuperMechEquipModify.GetAffixMultiplier(a);
 
             foreach (var affix in affixes)

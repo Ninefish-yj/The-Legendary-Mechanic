@@ -891,5 +891,9 @@
   "sm_sort_rank": "阶位",
   "sm_sort_knowledge": "知识数",
   "sm_sort_stage": "职业阶段",
-  "sm_ui_building_count": "座"
+  "sm_ui_building_count": "座",
+  "sm_creature_void_dragon": "虚空巨龙",
+  "sm_creature_star_beast": "星游兽",
+  "sm_creature_infected": "异化怪物",
+  "sm_creature_worldtree_soldier": "世界树战士"
 }

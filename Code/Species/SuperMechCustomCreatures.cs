@@ -197,7 +197,7 @@ namespace SuperMech.Code
                     {"damage", 20f}, {"health", 100f}, {"armor", 15f},
                     {"speed", 1.0f}, {"attack_speed", 1.0f}
                 },
-                Traits = new List<string> { "Strong", "Tough", "sm_worldtree" }
+                Traits = new List<string> { "Strong", "Tough", "sm_world_tree" }
             };
             _creatures[c.Id] = c;
         }
