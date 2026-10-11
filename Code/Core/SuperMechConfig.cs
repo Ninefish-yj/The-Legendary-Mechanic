@@ -318,6 +318,9 @@ namespace SuperMech.Code
         public static void SetInnerSpaceDamageReduction(float val) { InnerSpaceDamageReduction = Mathf.Clamp01(val); }
         public static void SetFactionEnabled(bool val) { FactionEnabled = val; }
 
+        public static void SetTechEnabled(bool val) { TechEnabled = val; }
+        public static void SetStarSystemEnabled(bool val) { StarSystemEnabled = val; }
+
         public static void SetMechSummonEnabled(bool val) { MechSummonEnabled = val; }
         public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); }
 

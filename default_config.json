@@ -9,6 +9,204 @@
       "Desc": "sm_config_mod_enabled_desc"
     },
     {
+      "Id": "event_log_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogEnabled",
+      "Name": "sm_config_event_log",
+      "Desc": "sm_config_event_log_desc"
+    }
+  ],
+  "growth": [
+    {
+      "Id": "auto_awakening",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoAwakening",
+      "Name": "sm_config_auto_awaken",
+      "Desc": "sm_config_auto_awaken_desc"
+    },
+    {
+      "Id": "awakening_chance",
+      "Type": "SLIDER",
+      "FloatVal": 0.05,
+      "MinVal": 0.0,
+      "MaxVal": 1.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningChance",
+      "Name": "sm_config_awaken_chance",
+      "Desc": "sm_config_awaken_chance_desc"
+    },
+    {
+      "Id": "qi_growth_rate",
+      "Type": "SLIDER",
+      "FloatVal": 1.0,
+      "MinVal": 0.1,
+      "MaxVal": 10.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetQiGrowthRate",
+      "Name": "sm_config_qi_growth",
+      "Desc": "sm_config_qi_growth_desc"
+    },
+    {
+      "Id": "qi_unlimited",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetQiUnlimited",
+      "Name": "sm_config_qi_unlimited",
+      "Desc": "sm_config_qi_unlimited_desc"
+    },
+    {
+      "Id": "auto_promotion",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotion",
+      "Name": "sm_config_auto_promotion",
+      "Desc": "sm_config_auto_promotion_desc"
+    },
+    {
+      "Id": "promotion_speed",
+      "Type": "SLIDER",
+      "FloatVal": 1.0,
+      "MinVal": 0.1,
+      "MaxVal": 10.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetPromotionSpeed",
+      "Name": "sm_config_promotion_speed",
+      "Desc": "sm_config_promotion_speed_desc"
+    },
+    {
+      "Id": "ona_multiplier",
+      "Type": "SLIDER",
+      "FloatVal": 1.0,
+      "MinVal": 0.1,
+      "MaxVal": 10.0,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetOnaMultiplier",
+      "Name": "sm_config_ona_mult",
+      "Desc": "sm_config_ona_mult_desc"
+    }
+  ],
+  "combat": [
+    {
+      "Id": "combat_suppression_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetCombatSuppressionEnabled",
+      "Name": "sm_config_combat_suppress",
+      "Desc": "sm_config_combat_suppress_desc"
+    },
+    {
+      "Id": "spirit_pierce_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceEnabled",
+      "Name": "sm_config_spirit_pierce",
+      "Desc": "sm_config_spirit_pierce_desc"
+    },
+    {
+      "Id": "mech_summon_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetMechSummonEnabled",
+      "Name": "sm_config_mech_summon",
+      "Desc": "sm_config_mech_summon_desc"
+    }
+  ],
+  "sanctuary": [
+    {
+      "Id": "sanctuary_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnabled",
+      "Name": "sm_config_sanctuary",
+      "Desc": "sm_config_sanctuary_desc"
+    },
+    {
+      "Id": "sanctuary_key_drop_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryKeyDropEnabled",
+      "Name": "sm_config_key_drop",
+      "Desc": "sm_config_key_drop_desc"
+    }
+  ],
+  "ai": [
+    {
+      "Id": "auto_competition",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoCompetition",
+      "Name": "sm_config_auto_compete",
+      "Desc": "sm_config_auto_compete_desc"
+    },
+    {
+      "Id": "npc_auto_knowledge",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetNpcAutoKnowledge",
+      "Name": "sm_config_npc_knowledge",
+      "Desc": "sm_config_npc_knowledge_desc"
+    },
+    {
+      "Id": "auto_favorite_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled",
+      "Name": "sm_config_auto_favorite",
+      "Desc": "sm_config_auto_favorite_desc"
+    }
+  ],
+  "world": [
+    {
+      "Id": "world_tree_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeEnabled",
+      "Name": "sm_config_world_tree",
+      "Desc": "sm_config_world_tree_desc"
+    },
+    {
+      "Id": "super_a_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetSuperAEnabled",
+      "Name": "sm_config_super_a",
+      "Desc": "sm_config_super_a_desc"
+    },
+    {
+      "Id": "faction_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetFactionEnabled",
+      "Name": "sm_config_faction",
+      "Desc": "sm_config_faction_desc"
+    },
+    {
+      "Id": "tech_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetTechEnabled",
+      "Name": "sm_config_tech",
+      "Desc": "sm_config_tech_desc"
+    },
+    {
+      "Id": "star_system_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetStarSystemEnabled",
+      "Name": "sm_config_star_system",
+      "Desc": "sm_config_star_system_desc"
+    }
+  ],
+  "player": [
+    {
+      "Id": "player_enabled",
+      "Type": "SWITCH",
+      "BoolVal": true,
+      "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerEnabled",
+      "Name": "sm_config_player",
+      "Desc": "sm_config_player_desc"
+    }
+  ],
+  "advanced": [
+    {
       "Id": "tick_interval",
       "Type": "SLIDER",
       "FloatVal": 1.25,
@@ -43,280 +241,6 @@
       "Callback": "SuperMech.Code.SuperMechConfig:SetEnableProfiler",
       "Name": "sm_config_enable_profiler",
       "Desc": "sm_config_enable_profiler_desc"
-    }
-  ],
-  "awakening": [
-    {
-      "Id": "auto_awakening",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoAwakening",
-      "Name": "sm_config_auto_awaken",
-      "Desc": "sm_config_auto_awaken_desc"
-    },
-    {
-      "Id": "awakening_chance",
-      "Type": "SLIDER",
-      "FloatVal": 0.05,
-      "MinVal": 0.0,
-      "MaxVal": 1.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningChance",
-      "Name": "sm_config_awaken_chance",
-      "Desc": "sm_config_awaken_chance_desc"
-    },
-    {
-      "Id": "awakening_min_age",
-      "Type": "INT_SLIDER",
-      "IntVal": 16,
-      "MinIntVal": 0,
-      "MaxIntVal": 100,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAwakeningMinAge",
-      "Name": "sm_config_awaken_age",
-      "Desc": "sm_config_awaken_age_desc"
-    }
-  ],
-  "growth": [
-    {
-      "Id": "qi_growth_rate",
-      "Type": "SLIDER",
-      "FloatVal": 1.0,
-      "MinVal": 0.1,
-      "MaxVal": 10.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetQiGrowthRate",
-      "Name": "sm_config_qi_rate",
-      "Desc": "sm_config_qi_rate_desc"
-    },
-    {
-      "Id": "qi_unlimited",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetQiUnlimited",
-      "Name": "sm_config_qi_unlimited",
-      "Desc": "sm_config_qi_unlimited_desc"
-    },
-    {
-      "Id": "auto_promotion",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoPromotion",
-      "Name": "sm_config_auto_promote",
-      "Desc": "sm_config_auto_promote_desc"
-    },
-    {
-      "Id": "promotion_speed",
-      "Type": "SLIDER",
-      "FloatVal": 1.0,
-      "MinVal": 0.1,
-      "MaxVal": 10.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetPromotionSpeed",
-      "Name": "sm_config_promote_speed",
-      "Desc": "sm_config_promote_speed_desc"
-    },
-    {
-      "Id": "ona_multiplier",
-      "Type": "SLIDER",
-      "FloatVal": 1.0,
-      "MinVal": 0.1,
-      "MaxVal": 10.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetOnaMultiplier",
-      "Name": "sm_config_ona_mult",
-      "Desc": "sm_config_ona_mult_desc"
-    }
-  ],
-  "combat": [
-    {
-      "Id": "combat_suppression_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetCombatSuppressionEnabled",
-      "Name": "sm_config_suppress",
-      "Desc": "sm_config_suppress_desc"
-    },
-    {
-      "Id": "spirit_pierce_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceEnabled",
-      "Name": "sm_config_spirit_pierce",
-      "Desc": "sm_config_spirit_pierce_desc"
-    },
-    {
-      "Id": "spirit_pierce_ratio",
-      "Type": "SLIDER",
-      "FloatVal": 0.3,
-      "MinVal": 0.0,
-      "MaxVal": 1.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSpiritPierceRatio",
-      "Name": "sm_config_pierce_ratio",
-      "Desc": "sm_config_pierce_ratio_desc"
-    },
-    {
-      "Id": "mech_summon_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMechSummonEnabled",
-      "Name": "sm_config_mech_summon",
-      "Desc": "sm_config_mech_summon_desc"
-    },
-    {
-      "Id": "max_summoned_units",
-      "Type": "INT_SLIDER",
-      "IntVal": 50,
-      "MinIntVal": 0,
-      "MaxIntVal": 500,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetMaxSummonedUnits",
-      "Name": "sm_config_max_summon",
-      "Desc": "sm_config_max_summon_desc"
-    }
-  ],
-  "sanctuary": [
-    {
-      "Id": "sanctuary_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnabled",
-      "Name": "sm_config_sanctuary",
-      "Desc": "sm_config_sanctuary_desc"
-    },
-    {
-      "Id": "sanctuary_key_drop_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryKeyDropEnabled",
-      "Name": "sm_config_key_drop",
-      "Desc": "sm_config_key_drop_desc"
-    },
-    {
-      "Id": "key_drop_min_rank",
-      "Type": "INT_SLIDER",
-      "IntVal": 10,
-      "MinIntVal": 0,
-      "MaxIntVal": 13,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetKeyDropMinRank",
-      "Name": "sm_config_key_rank",
-      "Desc": "sm_config_key_rank_desc"
-    },
-    {
-      "Id": "sanctuary_energy_regen",
-      "Type": "SLIDER",
-      "FloatVal": 1.0,
-      "MinVal": 0.0,
-      "MaxVal": 10.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSanctuaryEnergyRegen",
-      "Name": "sm_config_san_regen",
-      "Desc": "sm_config_san_regen_desc"
-    }
-  ],
-  "ai": [
-    {
-      "Id": "auto_competition",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoCompetition",
-      "Name": "sm_config_auto_compete",
-      "Desc": "sm_config_auto_compete_desc"
-    },
-    {
-      "Id": "npc_auto_knowledge",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetNpcAutoKnowledge",
-      "Name": "sm_config_npc_knowledge",
-      "Desc": "sm_config_npc_knowledge_desc"
-    },
-    {
-      "Id": "auto_favorite_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteEnabled",
-      "Name": "sm_config_auto_fav",
-      "Desc": "sm_config_auto_fav_desc"
-    },
-    {
-      "Id": "auto_favorite_min_rank",
-      "Type": "INT_SLIDER",
-      "IntVal": 9,
-      "MinIntVal": 0,
-      "MaxIntVal": 13,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetAutoFavoriteMinRank",
-      "Name": "sm_config_fav_rank",
-      "Desc": "sm_config_fav_rank_desc"
-    }
-  ],
-  "player": [
-    {
-      "Id": "player_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerEnabled",
-      "Name": "sm_config_player",
-      "Desc": "sm_config_player_desc"
-    },
-    {
-      "Id": "player_spawn_interval",
-      "Type": "INT_SLIDER",
-      "IntVal": 60,
-      "MinIntVal": 20,
-      "MaxIntVal": 600,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetPlayerSpawnIntervalTicks",
-      "Name": "sm_config_player_interval",
-      "Desc": "sm_config_player_interval_desc"
-    }
-  ],
-  "world": [
-    {
-      "Id": "world_tree_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeEnabled",
-      "Name": "sm_config_world_tree",
-      "Desc": "sm_config_world_tree_desc"
-    },
-    {
-      "Id": "world_tree_interval",
-      "Type": "SLIDER",
-      "FloatVal": 400.0,
-      "MinVal": 200.0,
-      "MaxVal": 2000.0,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetWorldTreeInterval",
-      "Name": "sm_config_tree_interval",
-      "Desc": "sm_config_tree_interval_desc"
-    },
-    {
-      "Id": "super_a_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetSuperAEnabled",
-      "Name": "sm_config_super_a",
-      "Desc": "sm_config_super_a_desc"
-    },
-    {
-      "Id": "faction_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetFactionEnabled",
-      "Name": "sm_config_faction",
-      "Desc": "sm_config_faction_desc"
-    }
-  ],
-  "event_log": [
-    {
-      "Id": "event_log_enabled",
-      "Type": "SWITCH",
-      "BoolVal": true,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogEnabled",
-      "Name": "sm_config_event_log",
-      "Desc": "sm_config_event_log_desc"
-    },
-    {
-      "Id": "event_log_promotion_min_rank",
-      "Type": "INT_SLIDER",
-      "IntVal": 7,
-      "MinIntVal": 0,
-      "MaxIntVal": 13,
-      "Callback": "SuperMech.Code.SuperMechConfig:SetEventLogPromotionMinRank",
-      "Name": "sm_config_log_promote",
-      "Desc": "sm_config_log_promote_desc"
     }
   ]
 }

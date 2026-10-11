@@ -3392,5 +3392,18 @@
   "sm_powers_928_description": "神权能力",
   "sm_powers_929_description": "神权能力",
   "sm_ui_section_entry": "操作入口",
-  "sm_ui_section_social": "社会关系"
+  "sm_ui_section_social": "社会关系",
+  "sm_config_tech": "科技系统",
+  "sm_config_tech_desc": "文明级科技树研究，AI文明自动研究科技",
+  "sm_config_star_system": "星际系统",
+  "sm_config_star_system_desc": "多星球星际殖民，单位可航行至其他星球",
+  "sm_config_advanced": "高级设置",
+  "sm_config_advanced_desc": "调试与性能相关参数，普通玩家无需修改",
+  "sm_config_general": "基础设置",
+  "sm_config_growth": "成长体系",
+  "sm_config_combat": "战斗系统",
+  "sm_config_sanctuary": "圣所系统",
+  "sm_config_ai": "AI行为",
+  "sm_config_world": "世界系统",
+  "sm_config_player": "玩家系统"
 }
