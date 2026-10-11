@@ -51,6 +51,8 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, float> _qiDmgMul = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _qiHpMul = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _qiLifespanBonus = new Dictionary<long, float>();
+        // 固定值属性加成记录（key=actorId, value=属性名→旧加成值），用于先减旧再加新，避免覆盖其他系统加成
+        private static readonly Dictionary<long, Dictionary<string, float>> _qiFlatBonuses = new Dictionary<long, Dictionary<string, float>>();
 
         public static void Register()
         {
@@ -91,14 +93,19 @@ namespace SuperMech.Code
             float spdMul = synBonus.speedMul * knowFusion.speedMul * skillBonus.speedMul;
 
             // 固定数值加成（原著方式）：力量→伤害/护甲，敏捷→速度/攻速/暴击，耐力→生命/体力，智力→智力
-            stats["damage"] = strength * 0.25f;
-            stats["armor"] = Mathf.Min(100f, strength * 0.15f);
-            stats["speed"] = agility * 0.04f;
-            stats["attack_speed"] = agility * 0.003f;
-            stats["health"] = endurance * 8f;
-            stats["stamina"] = endurance * 4f;
-            stats["intelligence"] = intel * 0.3f + skillBonus.intelligence;
-            stats["warfare"] = strength * 0.1f + agility * 0.05f;
+            // v0.111.0: 改为叠加方式，不能直接覆盖，否则会覆盖阶位特质/神性/传承/子职业的属性加成
+            ApplyFlatBonus(a, stats, "damage", strength * 0.25f);
+            ApplyFlatBonus(a, stats, "armor", Mathf.Min(100f, strength * 0.15f));
+            ApplyFlatBonus(a, stats, "speed", agility * 0.04f);
+            ApplyFlatBonus(a, stats, "attack_speed", agility * 0.003f);
+            ApplyFlatBonus(a, stats, "health", endurance * 8f);
+            ApplyFlatBonus(a, stats, "stamina", endurance * 4f);
+            ApplyFlatBonus(a, stats, "intelligence", intel * 0.3f + skillBonus.intelligence);
+            ApplyFlatBonus(a, stats, "warfare", strength * 0.1f + agility * 0.05f);
+            if (level >= 6)
+            {
+                ApplyFlatBonus(a, stats, "critical_chance", (level - 5) * 0.005f);
+            }
 
             // 寿命加成：气力耐力提升寿命（叠加方式，不能直接覆盖，否则会覆盖阶位/神性/维度的寿命加成）
             float newLifespanBonus = endurance * 0.5f;
@@ -126,11 +133,27 @@ namespace SuperMech.Code
             stats["multiplier_crit"] = 1f + level * 0.01f;
             stats["experience"] = 1f + level * 0.01f;
 
-            if (level >= 6)
-            {
-                stats["critical_chance"] = (level - 5) * 0.005f;
-            }
             _appliedLevel[a.id] = level;
+        }
+
+        /// <summary>
+        /// 应用气力固定值属性加成（先减旧再加新，避免覆盖阶位/神性/传承/子职业等其他系统的加成）
+        /// </summary>
+        private static void ApplyFlatBonus(Actor a, BaseStats stats, string statName, float newValue)
+        {
+            if (!_qiFlatBonuses.TryGetValue(a.id, out var bonuses))
+            {
+                bonuses = new Dictionary<string, float>();
+                _qiFlatBonuses[a.id] = bonuses;
+            }
+            // 移除旧加成
+            if (bonuses.TryGetValue(statName, out float oldVal) && oldVal > 0f)
+            {
+                stats[statName] = Mathf.Max(0f, stats[statName] - oldVal);
+            }
+            // 应用新加成
+            stats[statName] += newValue;
+            bonuses[statName] = newValue;
         }
 
         public static void Clear(Actor a)
@@ -144,6 +167,7 @@ namespace SuperMech.Code
             _qiDmgMul.Remove(a.id);
             _qiHpMul.Remove(a.id);
             _qiLifespanBonus.Remove(a.id);
+            _qiFlatBonuses.Remove(a.id);
         }
 
         public static float GetQi(Actor a)
@@ -395,6 +419,10 @@ namespace SuperMech.Code
             _lastHealth.Clear();
             _combatTimer.Clear();
             _appliedLevel.Clear();
+            _qiDmgMul.Clear();
+            _qiHpMul.Clear();
+            _qiLifespanBonus.Clear();
+            _qiFlatBonuses.Clear();
         }
 
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
@@ -405,6 +433,10 @@ namespace SuperMech.Code
             removed += SuperMechCleanup.CleanDict(_lastHealth, alive);
             removed += SuperMechCleanup.CleanDict(_combatTimer, alive);
             removed += SuperMechCleanup.CleanDict(_appliedLevel, alive);
+            removed += SuperMechCleanup.CleanDict(_qiDmgMul, alive);
+            removed += SuperMechCleanup.CleanDict(_qiHpMul, alive);
+            removed += SuperMechCleanup.CleanDict(_qiLifespanBonus, alive);
+            removed += SuperMechCleanup.CleanDict(_qiFlatBonuses, alive);
             return removed;
         }
     }
