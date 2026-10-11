@@ -112,7 +112,7 @@ namespace SuperMech.Code
             if (a == null || a.kingdom == null) return false;
             foreach (var k in GetTopCivilizations(3))
             {
-                if (k != null && k.id == a.kingdom.id) return true;
+                if (k != null && k.getID() == a.kingdom.getID()) return true;
             }
             return false;
         }

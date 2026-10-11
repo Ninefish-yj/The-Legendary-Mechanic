@@ -39,10 +39,8 @@ namespace SuperMech.Code
         /// <summary>获取城市所属王国ID</summary>
         private static long GetKingdomId(City city)
         {
-            if (city == null) return 0;
-            if (city.kingdom != null) return city.kingdom.getID();
-            if (city.data != null) return city.data.kingdomID;
-            return 0;
+            if (city == null || city.data == null) return 0;
+            return city.data.kingdomID;
         }
 
         /// <summary>获取城市中的单位列表（通过遍历全局单位）</summary>

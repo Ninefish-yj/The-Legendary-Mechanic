@@ -211,7 +211,7 @@ namespace SuperMech.Code
                 {
                     if (enemy == null || !enemy.isAlive() || enemy.current_tile == null) continue;
                     if (enemy.id == caster.id) continue;
-                    if (enemy.kingdom != null && caster.kingdom != null && enemy.kingdom.id == caster.kingdom.id) continue;
+                    if (enemy.kingdom != null && caster.kingdom != null && enemy.kingdom.getID() == caster.kingdom.getID()) continue;
                     int dist = Mathf.Abs(enemy.current_tile.x - cx) + Mathf.Abs(enemy.current_tile.y - cy);
                     if (dist > SuperMechFormulas.InnerSpacePulseRange) continue;
                     try { enemy.getHit(dmg, true, AttackType.Other, caster); } catch (System.Exception e) { if (!_warnedHit) { _warnedHit = true; Debug.LogWarning($"[超神机械师] 内空间脉冲伤害异常(仅首次): {e.Message}"); } }
