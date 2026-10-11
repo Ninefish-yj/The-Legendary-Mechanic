@@ -312,11 +312,18 @@ namespace SuperMech.Code
         }
 
         /// <summary>找到匹配单位体系的圣所索引</summary>
+        /// <summary>找到匹配单位体系的圣所索引（六大圣所对应五大超能体系+信息态）
+        /// 第一圣所·虚拟技术=机械系，第二圣所·念力=念力系，第三圣所·苏醒计划=异能系，
+        /// 第四圣所·武道=武道系，第五圣所·魔法=魔法系，第六圣所·信息态=无体系/特殊</summary>
         private static int FindMatchingSanctuary(Actor a)
         {
-            if (a.hasTrait(SuperMechTraits.ClassMech)) return 0; // 机械系→第一圣所
-            if (a.hasTrait(SuperMechTraits.ClassMind) || a.hasTrait(SuperMechTraits.ClassPsi)) return 2; // 异能/念力→第三圣所
-            // 其他体系随机选择已解锁的圣所
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return 0;    // 机械系→第一圣所·虚拟技术
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return 1;    // 念力系→第二圣所·念力
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return 2;     // 异能系→第三圣所·苏醒计划
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return 3; // 武道系→第四圣所·武道
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return 4;    // 魔法系→第五圣所·魔法
+            // 无体系/特殊单位→第六圣所·信息态，或随机选择已解锁圣所
+            if ((SuperMechSanctuary.Data.unlocked_sanctuaries & (1 << 5)) != 0) return 5;
             var unlocked = new List<int>();
             for (int i = 0; i < 6; i++)
             {
