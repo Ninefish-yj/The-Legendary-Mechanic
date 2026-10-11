@@ -61,6 +61,7 @@ namespace SuperMech.Code
             // === 自定义生物（原著种族） ===
             SystemRegistry.RegisterAction("Species", () => SuperMechSpecies.Register());
             SystemRegistry.RegisterAction("SpeciesEvolution", () => SuperMechSpeciesEvolution.Initialize());
+            SystemRegistry.RegisterAction("CustomCreatures", () => SuperMechCustomCreatures.Register());
 
             // === 建筑系统（原著设施） ===
             SystemRegistry.RegisterAction("Building", () => SuperMechBuilding.Register());
