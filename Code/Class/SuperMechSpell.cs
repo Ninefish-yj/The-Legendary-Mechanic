@@ -381,6 +381,20 @@ namespace SuperMech.Code
             return count;
         }
 
+        /// <summary>获取单位已学会的法术ID列表（供AI施法使用）</summary>
+        public static List<string> GetLearnedSpells(Actor a)
+        {
+            var result = new List<string>();
+            if (a == null) return result;
+            long id = a.data.id;
+            if (!_unitProgress.TryGetValue(id, out var dict)) return result;
+            foreach (var kv in dict)
+            {
+                if (kv.Value.learned) result.Add(kv.Key);
+            }
+            return result;
+        }
+
         private static SpellProgress GetProgress(Actor a, string spellId)
         {
             long id = a.data.id;

@@ -8,6 +8,7 @@ namespace SuperMech.Code
     public static class SuperMechCombatPatches
     {
         private static bool _warnedSkill; // 一次性异常警告
+        private static bool _warnedSpell; // 法术释放一次性异常警告
         private static bool _prefixErrorLogged;
         private static bool _postfixErrorLogged;
         private static readonly HashSet<AttackType> PhysicalAttacks = new HashSet<AttackType>
@@ -51,6 +52,12 @@ namespace SuperMech.Code
                 if (attacker != null && attacker.isAlive() && Random.value < 0.3f)
                 {
                     try { SuperMechSkillRuntime.TryCastSkill(attacker, target); } catch (System.Exception e) { if (!_warnedSkill) { _warnedSkill = true; Debug.LogWarning($"[超神机械师] 技能释放异常(仅首次): {e.Message}"); } }
+                }
+
+                // v0.112.0 法术自动释放：学会法术的单位在战斗中自动施法（有冷却控制）
+                if (attacker != null && attacker.isAlive())
+                {
+                    try { SuperMechSpellRuntime.TryAutoCast(attacker, target); } catch (System.Exception e) { if (!_warnedSpell) { _warnedSpell = true; Debug.LogWarning($"[超神机械师] 法术释放异常(仅首次): {e.Message}"); } }
                 }
 
                 // v0.47.0 超神内空间：X阶单位战斗时放出内空间
