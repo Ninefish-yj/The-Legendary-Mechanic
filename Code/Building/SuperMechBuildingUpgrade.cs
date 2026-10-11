@@ -125,14 +125,10 @@ namespace SuperMech.Code
             return count;
         }
 
-        /// <summary>判断是否是模组自定义建筑</summary>
+        /// <summary>判断是否是模组自定义建筑（v0.95.0 移至SuperMechBuilding）</summary>
         private static bool IsCustomBuilding(string id)
         {
-            return id == SuperMechBuilding.MechFactory
-                || id == SuperMechBuilding.MercGuild
-                || id == SuperMechBuilding.StarBank
-                || id == SuperMechBuilding.BlackStarPalace
-                || id == SuperMechBuilding.CompanyHQ;
+            return SuperMechBuilding.IsCustomBuilding(id);
         }
     }
 }

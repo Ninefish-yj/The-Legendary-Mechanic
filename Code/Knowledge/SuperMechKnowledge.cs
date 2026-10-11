@@ -242,6 +242,30 @@ namespace SuperMech.Code
             return false;
         }
 
+        /// <summary>v0.95.0 检查是否满足知识前置条件（原著：循序渐进，高阶知识需要低阶基础）
+        /// tier 0: 无前置；tier 1: 需1个tier0；tier 2: 需2个tier1；tier 3: 需2个tier2；tier 4: 需2个tier3</summary>
+        public static bool CanUnlock(Actor a, string knowledgeId)
+        {
+            if (a == null || !_allKnowledge.TryGetValue(knowledgeId, out var def)) return false;
+            if (def.tier <= 0) return true; // 入门知识无前置
+
+            int requiredTier = def.tier - 1;
+            int requiredCount = def.tier >= 2 ? 2 : 1;
+            int learned = GetTierKnowledgeCount(a, def.prefix, requiredTier);
+            return learned >= requiredCount;
+        }
+
+        /// <summary>获取知识前置条件描述（用于UI显示）</summary>
+        public static string GetPrerequisiteText(string knowledgeId)
+        {
+            if (!_allKnowledge.TryGetValue(knowledgeId, out var def)) return "";
+            if (def.tier <= 0) return "";
+            int requiredTier = def.tier - 1;
+            int requiredCount = def.tier >= 2 ? 2 : 1;
+            string tierName = requiredTier == 0 ? "入门" : requiredTier == 1 ? "进阶" : requiredTier == 2 ? "高阶" : "顶级";
+            return $"需先学习{requiredCount}个{tierName}知识";
+        }
+
         /// <summary>v0.62.0 是否学习了某分支的终极知识（tier 4），用于触发特殊被动效果</summary>
         public static bool HasUltimateKnowledge(Actor a, string prefix)
         {
@@ -257,6 +281,8 @@ namespace SuperMech.Code
         public static bool Unlock(Actor a, string knowledgeId)
         {
             if (a == null || !_allKnowledge.ContainsKey(knowledgeId)) return false;
+            // v0.95.0 前置条件检查（原著：循序渐进）
+            if (!CanUnlock(a, knowledgeId)) return false;
             if (!_unlocked.TryGetValue(a.id, out var set))
             {
                 set = new HashSet<string>();

@@ -181,6 +181,20 @@ namespace SuperMech.Code
                     ShowRow(window, LocalizedTextManager.getText("sm_ui_species_talent"), talent, null, new Color(0.7f, 0.85f, 0.5f));
             }
 
+            // v0.95.0 机械军团单位：显示类型/制造者/剩余寿命
+            string mechType = SuperMechMechLegion.GetUnitType(a);
+            if (!string.IsNullOrEmpty(mechType))
+            {
+                string mechName = SuperMechMechLegion.GetUnitName(mechType);
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_mech_type"), mechName, null, new Color(0.7f, 0.8f, 1.0f));
+                string summoner = SuperMechMechLegion.GetSummonerName(a);
+                if (!string.IsNullOrEmpty(summoner))
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_mech_summoner"), summoner, null, new Color(0.6f, 0.7f, 0.9f));
+                int lifeLeft = SuperMechMechLegion.GetLifeLeft(a);
+                if (lifeLeft > 0)
+                    ShowRow(window, LocalizedTextManager.getText("sm_ui_mech_life"), $"{lifeLeft}", null, new Color(0.8f, 0.7f, 0.6f));
+            }
+
             // v0.76.57 专属专长：超A级个体独有的专属能力（原著：专属被动/专属能力），显示于单位面板
             string specText = SuperMechExclusiveTrait.GetDisplay(a);
             if (!string.IsNullOrEmpty(specText))
@@ -232,6 +246,13 @@ namespace SuperMech.Code
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_virtual_genesis"), "iconChosenOne",
                     new Color(0.5f, 0.9f, 0.8f), () => SuperMechWindowManager.OpenVirtualGenesis(a));
+            }
+
+            // v0.95.0 机械军团：机械师分支可制造机械单位（原著：机械师核心特色）
+            if (SuperMechBranch.HasBranch(a, SuperMechBranch.BranchMech))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_mech_legion"), "iconWeapon",
+                    new Color(0.7f, 0.8f, 1.0f), () => SuperMechWindowManager.OpenMechLegion(a));
             }
 
             // v0.89.1 种族进化：非人类种族且有可进化目标时显示

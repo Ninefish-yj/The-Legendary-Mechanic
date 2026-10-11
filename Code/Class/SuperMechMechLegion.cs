@@ -189,6 +189,25 @@ namespace SuperMech.Code
             return LocalizedTextManager.getText(def.name);
         }
 
+        /// <summary>获取机械单位的召唤者名称</summary>
+        public static string GetSummonerName(Actor a)
+        {
+            if (a == null) return null;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx == null || ctx.summonerId == 0) return null;
+            var summoner = World.world.units.getUnit(ctx.summonerId);
+            return summoner != null ? summoner.getName() : null;
+        }
+
+        /// <summary>获取机械单位的剩余寿命（岁）</summary>
+        public static int GetLifeLeft(Actor a)
+        {
+            if (a == null) return 0;
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx == null || ctx.expireAge <= 0) return 0;
+            return Mathf.Max(0, (int)(ctx.expireAge - a.age));
+        }
+
         /// <summary>制造机械单位（机械工厂/虚拟创世调用）</summary>
         public static Actor SpawnMechUnit(Actor creator, string mechTypeId, WorldTile tile)
         {

@@ -866,5 +866,14 @@
   "sm_know_323": "物质操控",
   "sm_know_324": "异能成神",
   "sm_know_325": "异能巅峰",
-  "sm_know_326": "终极异能"
+  "sm_know_326": "终极异能",
+  "sm_ui_mech_legion": "机械军团",
+  "sm_ui_mech_legion_title": "机械军团制造",
+  "sm_ui_mech_none": "阶位不足，暂无可制造的机械单位",
+  "sm_ui_mech_cost": "制造成本",
+  "sm_ui_building_title": "建筑管理",
+  "sm_ui_building_none": "当前世界暂无自定义建筑",
+  "sm_ui_mech_type": "机械类型",
+  "sm_ui_mech_summoner": "制造者",
+  "sm_ui_mech_life": "剩余寿命"
 }

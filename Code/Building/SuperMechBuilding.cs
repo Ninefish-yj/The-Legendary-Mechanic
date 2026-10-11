@@ -234,5 +234,15 @@ namespace SuperMech.Code
             LocalizedTextManager.add($"building_{CompanyHQ}", "降临者公司总部", pReplace: true);
             LocalizedTextManager.add($"building_{CompanyHQ}_desc", "黑星公司与地球商会的联合总部，伊纳尔发行机构", pReplace: true);
         }
+
+        /// <summary>判断是否是模组自定义建筑（v0.95.0 移至此处供UI和升级系统共用）</summary>
+        public static bool IsCustomBuilding(string id)
+        {
+            return id == MechFactory
+                || id == MercGuild
+                || id == StarBank
+                || id == BlackStarPalace
+                || id == CompanyHQ;
+        }
     }
 }
