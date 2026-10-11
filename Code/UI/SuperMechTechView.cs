@@ -331,10 +331,10 @@ namespace SuperMech.Code
             bool canResearch = kid > 0 && SuperMechTech.CanResearch(kid, id);
             float points = kid > 0 ? SuperMechCivilization.GetTechPointsFromKingdomById(kid) : 0;
 
-            _detailText.text = $"<b><size=16><color=#59a5ff>{def.name}</color></size></b>\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tier")}:</color> T{def.tier}\n\n" +
+            _detailText.text = $"<b><size=16><color=#E8C36A>{def.name}</color></size></b>\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_tier")}:</color> T{def.tier}\n\n" +
                 $"{def.desc}\n\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_effect")}:</color> ";
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_effect")}:</color> ";
             var effects = new List<string>();
             if (def.dmgBonus > 0) effects.Add($"{LocalizedTextManager.getText("sm_ui_damage")}+{def.dmgBonus * 100:F0}%");
             if (def.hpBonus > 0) effects.Add($"{LocalizedTextManager.getText("sm_ui_health")}+{def.hpBonus * 100:F0}%");
@@ -343,11 +343,11 @@ namespace SuperMech.Code
             if (!string.IsNullOrEmpty(def.prerequisite))
             {
                 var pre = SuperMechTech.GetDef(def.prerequisite);
-                _detailText.text += $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_prerequisite")}:</color> {(pre != null ? pre.name : def.prerequisite)}\n";
+                _detailText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_prerequisite")}:</color> {(pre != null ? pre.name : def.prerequisite)}\n";
             }
-            _detailText.text += $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {def.cost} {LocalizedTextManager.getText("sm_ui_tech_points")}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_current")}:</color> {points:F0}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
+            _detailText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {def.cost} {LocalizedTextManager.getText("sm_ui_tech_points")}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_current")}:</color> {points:F0}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
                 $"<color={(researched ? "#66ff99" : (canResearch ? "#ffcc66" : "#ff6666"))}>" +
                 $"{(researched ? LocalizedTextManager.getText("sm_ui_researched") : (canResearch ? LocalizedTextManager.getText("sm_ui_available") : LocalizedTextManager.getText("sm_ui_locked")))}</color>";
 

@@ -330,13 +330,13 @@ namespace SuperMech.Code
             string tHealth = LocalizedTextManager.getText("sm_ui_fusion_health");
             string tSpeed = LocalizedTextManager.getText("sm_ui_fusion_speed");
             string tQi = LocalizedTextManager.getText("sm_ui_fusion_qi");
-            _detailText.text = $"<b><size=16><color=#59a5ff>{LocalizedTextManager.getText(recipe.nameKey)}</color></size></b>\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText(recipe.descKey)}</color>\n\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_branch")}:</color> {SuperMechKnowledgeRecipe.GetBranchName(recipe.branch)}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {recipe.tier}\n\n" +
+            _detailText.text = $"<b><size=16><color=#E8C36A>{LocalizedTextManager.getText(recipe.nameKey)}</color></size></b>\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText(recipe.descKey)}</color>\n\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_branch")}:</color> {SuperMechKnowledgeRecipe.GetBranchName(recipe.branch)}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {recipe.tier}\n\n" +
                 $"<b>{LocalizedTextManager.getText("sm_ui_required_knowledge")}</b>\n{reqKnowText}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_qi_cost")}:</color> {qiCost:F0} ({tCurrent}: {qi:F0})\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_success_rate")}:</color> {(recipe.successRate * 100):F0}%\n\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_qi_cost")}:</color> {qiCost:F0} ({tCurrent}: {qi:F0})\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_success_rate")}:</color> {(recipe.successRate * 100):F0}%\n\n" +
                 $"<b>{LocalizedTextManager.getText("sm_ui_result")}</b>\n" +
                 $"  {tDamage} ×{recipe.dmgMul:F1}\n" +
                 $"  {tHealth} ×{recipe.hpMul:F1}\n" +

@@ -208,12 +208,12 @@ namespace SuperMech.Code
             };
 
             _infoText.text = $"<b><size=15><color=#ffd700>{p.name}</color></size></b>\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_planet_type")}:</color> {typeName}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_planet_resource")}:</color> {p.resource:F0}/{p.maxResource:F0}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_planet_colony")}:</color> {p.colonyLevel}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_planet_units")}:</color> {p.units.Count}\n" +
-                (p.colonyLevel > 0 ? $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_planet_owner")}:</color> {p.ownerKingdom}\n" : "\n") +
-                $"\n<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_planet_coord")}:</color> ({p.x:F0}, {p.y:F0})\n";
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_type")}:</color> {typeName}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_resource")}:</color> {p.resource:F0}/{p.maxResource:F0}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_colony")}:</color> {p.colonyLevel}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_units")}:</color> {p.units.Count}\n" +
+                (p.colonyLevel > 0 ? $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_owner")}:</color> {p.ownerKingdom}\n" : "\n") +
+                $"\n<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_coord")}:</color> ({p.x:F0}, {p.y:F0})\n";
 
             if (p.id != SuperMechStarSystem.MAIN_PLANET && p.colonyLevel == 0)
             {

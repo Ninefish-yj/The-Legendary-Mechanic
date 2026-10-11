@@ -191,8 +191,8 @@ namespace SuperMech.Code
             hintRect.sizeDelta = new Vector2(0, 30);
             hintRect.anchoredPosition = new Vector2(0, -20);
 
-            // 6个圣所入口（2行3列）
-            string[] colors = { "#4db8ff", "#ff9933", "#4dff88", "#b366ff", "#ff66b3", "#33e6e6" };
+            // 6个圣所入口（2行3列）— 调亮颜色确保深色背景上清晰可读
+            string[] colors = { "#5bc0ff", "#ffaa44", "#55ff99", "#c084fc", "#ff88cc", "#44eeee" };
             int[] positions = { -1, 0, 1, -1, 0, 1 }; // x位置
             int[] rows = { 0, 0, 0, 1, 1, 1 }; // y行
 
@@ -289,13 +289,13 @@ namespace SuperMech.Code
             rect.offsetMin = new Vector2(0, 60);
             rect.offsetMax = new Vector2(0, -60);
 
-            // 白茫茫背景（原著：无边无际的白茫茫世界）
+            // 圣所内部背景（深色科幻风，和整体UI一致；用光晕暗示原著"白茫茫"的感觉）
             var interiorBg = _interiorLayer.AddComponent<Image>();
-            interiorBg.color = new Color(0.9f, 0.92f, 0.95f, 0.97f);
+            interiorBg.color = new Color(0.05f, 0.07f, 0.12f, 0.97f);
             interiorBg.raycastTarget = true;
 
             _interiorTitle = SuperMechUiSkin.MakeText(_interiorLayer.transform, "", 16, TextAnchor.UpperCenter);
-            _interiorTitle.color = new Color(0.2f, 0.3f, 0.5f);
+            _interiorTitle.color = SuperMechUiSkin.SciGold;  // 金色标题
             _interiorTitle.fontStyle = FontStyle.Bold;
             var titleRect = _interiorTitle.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0, 1);
@@ -322,7 +322,7 @@ namespace SuperMech.Code
             detailRect.offsetMin = new Vector2(10, 60);
             detailRect.offsetMax = new Vector2(-20, -20);
             var detailBg = _orbDetailPanel.AddComponent<Image>();
-            detailBg.color = new Color(0.95f, 0.96f, 0.98f, 0.9f);
+            detailBg.color = SuperMechUiSkin.SciCard;  // 深色卡片
             detailBg.raycastTarget = true;
 
             // 详情面板边框
@@ -335,7 +335,7 @@ namespace SuperMech.Code
             detailBorderRect.offsetMin = new Vector2(-1, -1);
             detailBorderRect.offsetMax = new Vector2(1, 1);
             var detailBorderImg = detailBorderGo.AddComponent<Image>();
-            detailBorderImg.color = new Color(0.3f, 0.4f, 0.6f, 0.5f);
+            detailBorderImg.color = SuperMechUiSkin.SciBorder;
             detailBorderImg.raycastTarget = false;
 
             _orbDetailText = SuperMechUiSkin.MakeText(_orbDetailPanel.transform,
@@ -343,7 +343,7 @@ namespace SuperMech.Code
             _orbDetailText.supportRichText = true;
             _orbDetailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _orbDetailText.verticalOverflow = VerticalWrapMode.Truncate;
-            _orbDetailText.color = new Color(0.2f, 0.25f, 0.35f);
+            _orbDetailText.color = SuperMechUiSkin.SciText;  // 浅色文字
             var detailTextRect = _orbDetailText.GetComponent<RectTransform>();
             detailTextRect.anchorMin = Vector2.zero;
             detailTextRect.anchorMax = Vector2.one;
@@ -606,11 +606,11 @@ namespace SuperMech.Code
                 : $"<color=#88ff88>{LocalizedTextManager.getText("sm_ui_san_appointed_day")}:</color> {LocalizedTextManager.getText("sm_ui_san_appointed_now")}  ";
 
             _statusText.text =
-                $"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_unlocked")}:</color> {unlocked}/6  " +
-                $"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_fragments")}:</color> {data.key_fragments}  " +
+                $"<color=#49D7E3>{LocalizedTextManager.getText("sm_ui_san_unlocked")}:</color> {unlocked}/6  " +
+                $"<color=#49D7E3>{LocalizedTextManager.getText("sm_ui_san_fragments")}:</color> {data.key_fragments}  " +
                 $"<color=#88cc88>{LocalizedTextManager.getText("sm_ui_san_materials")}:</color> {data.key_materials}/{SuperMechConfig.KeyMaterialsPerKey}  " +
                 appointedDayText +
-                $"<color=#6ab7ff>{LocalizedTextManager.getText("sm_ui_san_total_visits")}:</color> {data.total_visits}  " +
+                $"<color=#49D7E3>{LocalizedTextManager.getText("sm_ui_san_total_visits")}:</color> {data.total_visits}  " +
                 $"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_san_iteration")}:</color> {SuperMechCosmicIteration.CurrentIteration}  " +
                 $"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_san_divinity")}:</color> {data.total_divinity_ascensions}  " +
                 $"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_san_revive_count")}:</color> {data.total_resurrections}";
@@ -645,12 +645,12 @@ namespace SuperMech.Code
             rect.pivot = new Vector2(0.5f, 0.5f);
             rect.sizeDelta = new Vector2(560, 520);
             var bg = panel.AddComponent<Image>();
-            bg.color = new Color(0.85f, 0.88f, 0.95f, 0.92f); // 半透明光幕
+            bg.color = SuperMechUiSkin.SciBg;  // 深色背景
             bg.raycastTarget = true;
 
             var titleText = SuperMechUiSkin.MakeText(panel.transform,
                 LocalizedTextManager.getText("sm_ui_san_msg_board_title"), 18, TextAnchor.UpperCenter);
-            titleText.color = new Color(0.2f, 0.25f, 0.5f);
+            titleText.color = SuperMechUiSkin.SciGold;  // 金色标题
             titleText.fontStyle = FontStyle.Bold;
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0, 1);
@@ -665,7 +665,7 @@ namespace SuperMech.Code
             var permText = SuperMechUiSkin.MakeText(panel.transform,
                 $"{tPerm}:{perm}  |  {tVisible}:{SanctuaryMessageBoard.GetVisibleCount(perm)}/{SanctuaryMessageBoard.TotalCount}",
                 11, TextAnchor.UpperCenter);
-            permText.color = new Color(0.4f, 0.4f, 0.6f);
+            permText.color = SuperMechUiSkin.SciMuted;  // 次要文字
             var permRect = permText.GetComponent<RectTransform>();
             permRect.anchorMin = new Vector2(0, 1);
             permRect.anchorMax = new Vector2(1, 1);
@@ -684,7 +684,7 @@ namespace SuperMech.Code
             var contentText = contentGo.AddComponent<Text>();
             contentText.font = titleText.font;
             contentText.fontSize = 12;
-            contentText.color = new Color(0.15f, 0.2f, 0.35f);
+            contentText.color = SuperMechUiSkin.SciText;  // 正文浅色
             contentText.alignment = TextAnchor.UpperLeft;
             contentText.horizontalOverflow = HorizontalWrapMode.Wrap;
             contentText.verticalOverflow = VerticalWrapMode.Truncate;

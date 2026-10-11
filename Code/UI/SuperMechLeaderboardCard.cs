@@ -95,7 +95,7 @@ namespace SuperMech.Code
             infoText.horizontalOverflow = HorizontalWrapMode.Overflow;
             infoText.verticalOverflow = VerticalWrapMode.Truncate;
             // 名称米白 + 阶位带色 + 体系暗金
-            infoText.text = $"<color=#ebe0cc>{displayName}</color>  <color=#{ColorUtility.ToHtmlStringRGB(rankColor)}>{rankName}</color>  <color=#9a8a6e>{className}</color>";
+            infoText.text = $"<color=#ebe0cc>{displayName}</color>  <color=#{ColorUtility.ToHtmlStringRGB(rankColor)}>{rankName}</color>  <color=#A6947A>{className}</color>";
 
             // === 能级（右侧）===
             var onarGo = new GameObject("Onar");

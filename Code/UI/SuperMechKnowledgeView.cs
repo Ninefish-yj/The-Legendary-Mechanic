@@ -356,11 +356,11 @@ namespace SuperMech.Code
             if (kn == null) return;
             bool unlocked = SelectedActor != null && SuperMechKnowledge.IsUnlocked(SelectedActor, id);
             bool canUnlock = SelectedActor != null && SuperMechKnowledge.CanUnlock(SelectedActor, id);
-            _detailText.text = $"<b><size=16><color=#59a5ff>{kn.name}</color></size></b>\n\n" +
+            _detailText.text = $"<b><size=16><color=#E8C36A>{kn.name}</color></size></b>\n\n" +
                 $"{kn.desc}\n\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {kn.tier}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {kn.cost}\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {kn.tier}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {kn.cost}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
                 $"<color={(unlocked ? "#66ff99" : "#ff9966")}>{(unlocked ? LocalizedTextManager.getText("sm_ui_unlocked") : LocalizedTextManager.getText("sm_ui_locked"))}</color>";
 
             // 更新学习按钮

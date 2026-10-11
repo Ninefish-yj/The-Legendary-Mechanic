@@ -79,9 +79,9 @@ namespace SuperMech.Code
                 ? string.Format(LocalizedTextManager.getText("sm_ui_res_inherit_info"),
                     totalArchives, lastLabel, last.superACount, (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f))
                 : string.Format(LocalizedTextManager.getText("sm_ui_res_inherit_none"), (int)((SuperMechSanctuary.GetInheritanceBonus() - 1f) * 100f));
-            _infoText.text = $"<color=#6ab7ff>{tEnergy}:</color> {SuperMechSanctuary.Data.sanctuary_energy:F0}  " +
-                $"<color=#6ab7ff>{tCond}:</color> S+ 20%\n" +
-                $"<color=#8fa8c8>{tDeadRecord}: {deadStates.Count} | {tResurrectable}: {SuperMechResurrection.GetResurrectableStates().Count}</color>\n" +
+            _infoText.text = $"<color=#49D7E3>{tEnergy}:</color> {SuperMechSanctuary.Data.sanctuary_energy:F0}  " +
+                $"<color=#49D7E3>{tCond}:</color> S+ 20%\n" +
+                $"<color=#93A4BC>{tDeadRecord}: {deadStates.Count} | {tResurrectable}: {SuperMechResurrection.GetResurrectableStates().Count}</color>\n" +
                 $"<color=#7fc97f>{tInherit}: {inheritInfo}</color>";
 
             if (deadStates.Count == 0)
@@ -127,8 +127,8 @@ namespace SuperMech.Code
                 string tQi = LocalizedTextManager.getText("sm_ui_res_qi");
                 string tIntegrity = LocalizedTextManager.getText("sm_ui_res_integrity");
                 string tReviveCount = LocalizedTextManager.getText("sm_ui_res_revive_count");
-                text.text = $"<b>{state.name}</b>  <color=#8fa8c8>{rankName}</color>\n" +
-                    $"<color=#8fa8c8>{tQi}:{state.qi:F0} {tIntegrity}:{integrity:F0%} {tReviveCount}:{state.reviveCount}</color>" +
+                text.text = $"<b>{state.name}</b>  <color=#93A4BC>{rankName}</color>\n" +
+                    $"<color=#93A4BC>{tQi}:{state.qi:F0} {tIntegrity}:{integrity:F0%} {tReviveCount}:{state.reviveCount}</color>" +
                     (string.IsNullOrEmpty(reason) ? "" : $"\n<color=#ff9966>{reason}</color>");
 
                 // 复活按钮
