@@ -83,56 +83,7 @@ namespace SuperMech.Code
 
             int created = 0;
 
-            // 1. 召唤降临者（玩家化身，需要点击地图，用GodPower按钮）
-            if (PowerButton.get(SummonDescendant) == null && AssetManager.powers.get(SummonDescendant) != null)
-            {
-                try
-                {
-                    Sprite icon = AssetManager.powers.get(SummonDescendant).getIconSprite()
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateGodPowerButton(SummonDescendant, icon);
-                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
-            }
-
-            // 2. 异化之灾（需要点击地图，用GodPower按钮）
-            if (PowerButton.get(DisasterAlien) == null && AssetManager.powers.get(DisasterAlien) != null)
-            {
-                try
-                {
-                    Sprite icon = AssetManager.powers.get(DisasterAlien).getIconSprite()
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateGodPowerButton(DisasterAlien, icon);
-                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异化按钮失败: {e.Message}"); }
-            }
-
-            // 3. 圣所（窗口按钮，用SimpleButton直接绑定Action）
-            // v0.75.27: 圣所恢复为神权栏单独按钮；窗口入口聚合在「星海总览」大面板（下方按钮4）
-
-            // 6. 宇宙迭代（大重启）
-            if (PowerButton.get("sm_great_restart") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_great_restart", () =>
-                    {
-                        SuperMechCosmicIteration.TriggerGreatRestart();
-                    }, icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_great_restart_title", "sm_great_restart_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 宇宙迭代按钮失败: {e.Message}"); }
-            }
-
-            // 4. 星海总览（窗口按钮，点击打开17个系统窗口入口总览）
+            // 1. 星海总览（最常用：所有系统入口）
             if (PowerButton.get("sm_overview_open") == null)
             {
                 try
@@ -152,7 +103,7 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星海总览按钮失败: {e.Message}"); }
             }
 
-            // 5. 圣所（窗口按钮，点击打开圣所：钥匙/留言板/文明遗产）
+            // 2. 进入圣所（核心功能：六大圣所修炼）
             if (PowerButton.get("sm_sanctuary_open") == null)
             {
                 try
@@ -170,6 +121,52 @@ namespace SuperMech.Code
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 圣所按钮失败: {e.Message}"); }
+            }
+
+            // 3. 召唤降临者（玩家化身，需要点击地图）
+            if (PowerButton.get(SummonDescendant) == null && AssetManager.powers.get(SummonDescendant) != null)
+            {
+                try
+                {
+                    Sprite icon = AssetManager.powers.get(SummonDescendant).getIconSprite()
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateGodPowerButton(SummonDescendant, icon);
+                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
+            }
+
+            // 4. 异化之灾（灾害玩法，需要点击地图）
+            if (PowerButton.get(DisasterAlien) == null && AssetManager.powers.get(DisasterAlien) != null)
+            {
+                try
+                {
+                    Sprite icon = AssetManager.powers.get(DisasterAlien).getIconSprite()
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateGodPowerButton(DisasterAlien, icon);
+                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异化按钮失败: {e.Message}"); }
+            }
+
+            // 5. 大重启（宇宙迭代，高级功能放最后）
+            if (PowerButton.get("sm_great_restart") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_great_restart", () =>
+                    {
+                        SuperMechCosmicIteration.TriggerGreatRestart();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_great_restart_title", "sm_great_restart_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 宇宙迭代按钮失败: {e.Message}"); }
             }
 
             if (created > 0)

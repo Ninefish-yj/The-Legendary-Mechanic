@@ -53,6 +53,7 @@ namespace SuperMech.Code
             if (window == null) return;
             try
             {
+                // 方式1：反射调用 updateStatsRows() 方法
                 var method = window.GetType().GetMethod("updateStatsRows",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 if (method != null)
@@ -60,20 +61,28 @@ namespace SuperMech.Code
                     method.Invoke(window, null);
                     return;
                 }
-                // 回退：直接找到 stats_rows_container 切换显隐
-                var containerField = window.GetType().GetField("stats_rows_container",
+                // 方式2：通过属性获取 stats_rows_container（它是property不是field）
+                var prop = window.GetType().GetProperty("stats_rows_container",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-                if (containerField != null && containerField.GetValue(window) is GameObject container)
+                if (prop != null && prop.GetValue(window) is StatsRowsContainer container)
                 {
-                    container.SetActive(false);
-                    container.SetActive(true);
+                    container.gameObject.SetActive(false);
+                    container.gameObject.SetActive(true);
                     return;
                 }
-                Debug.LogWarning("[超神机械师] 未找到updateStatsRows方法和stats_rows_container，类型: " + window.GetType().Name);
+                // 方式3：通过Transform查找
+                var contentStats = window.transform.FindRecursive("content_stats");
+                if (contentStats != null)
+                {
+                    contentStats.gameObject.SetActive(false);
+                    contentStats.gameObject.SetActive(true);
+                    return;
+                }
+                Debug.LogWarning("[超神机械师] 重建面板失败: 未找到updateStatsRows/stats_rows_container/content_stats");
             }
             catch (System.Exception e)
             {
-                Debug.LogWarning($"[超神机械师] 重建面板失败: {e.Message}\n{e.StackTrace}");
+                Debug.LogWarning($"[超神机械师] 重建面板异常: {e.Message}\n{e.StackTrace}");
             }
         }
 
@@ -85,24 +94,31 @@ namespace SuperMech.Code
         /// </summary>
         public static void BuildHeader(StatsWindow window, long actorId, string sectionId, string titleKey)
         {
-            bool expanded = IsExpanded(actorId, sectionId);
-            string arrow = expanded ? "▼" : "▶";
-            string title = $"{arrow} {LocalizedTextManager.getText(titleKey)}";
-
-            var row = window.showStatRow(title, "", null, MetaType.None, -1L,
-                pColorText: false, pIconPath: null, pTooltipId: null, pTooltipData: null, pLocalize: false);
-
-            if (row != null)
+            try
             {
-                row.on_click_value = () =>
+                bool expanded = IsExpanded(actorId, sectionId);
+                string arrow = expanded ? "▼" : "▶";
+                string title = $"{arrow} {LocalizedTextManager.getText(titleKey)}";
+
+                var row = window.showStatRow(title, "", null, MetaType.None, -1L,
+                    pColorText: false, pIconPath: null, pTooltipId: null, pTooltipData: null, pLocalize: false);
+
+                if (row != null)
                 {
-                    Toggle(actorId, sectionId);
-                    RebuildPanel(window);
-                };
+                    row.on_click_value = () =>
+                    {
+                        Toggle(actorId, sectionId);
+                        RebuildPanel(window);
+                    };
+                }
+                else
+                {
+                    Debug.LogWarning($"[超神机械师] 折叠标题行创建失败: section={sectionId}, actor={actorId}");
+                }
             }
-            else
+            catch (System.Exception e)
             {
-                Debug.LogWarning($"[超神机械师] 折叠标题行创建失败: section={sectionId}, actor={actorId}");
+                Debug.LogWarning($"[超神机械师] BuildHeader异常(section={sectionId}): {e.Message}");
             }
         }
 
