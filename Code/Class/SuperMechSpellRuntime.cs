@@ -59,8 +59,8 @@ namespace SuperMech.Code
         /// </summary>
         private static string SelectBestSpell(Actor caster, Actor target, List<string> learnedSpells)
         {
-            float targetHpPct = target.data.health / Mathf.Max(1f, target.data.max_health);
-            float casterHpPct = caster.data.health / Mathf.Max(1f, caster.data.max_health);
+            float targetHpPct = target.getHealthRatio();
+            float casterHpPct = caster.getHealthRatio();
             float casterInt = SuperMechStats.Of(caster)["intelligence"];
 
             // 低血量时优先防御
