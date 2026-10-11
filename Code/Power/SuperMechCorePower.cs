@@ -28,6 +28,8 @@ namespace SuperMech.Code
 
         // 追踪旧倍率加成，避免重复叠加
         private static readonly Dictionary<long, float> _coreDmgMul = new Dictionary<long, float>();
+        // 追踪旧固定值加成，避免直接覆盖清空其他系统加成
+        private static readonly Dictionary<long, Dictionary<string, float>> _coreFlatBonuses = new Dictionary<long, Dictionary<string, float>>();
 
         public static void Register()
         {
@@ -107,24 +109,43 @@ namespace SuperMech.Code
             if (_coreDmgMul.TryGetValue(a.id, out float oldDmg) && oldDmg > 0f)
                 stats["multiplier_damage"] = ((stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"])) / oldDmg;
 
+            // 先移除旧的固定值加成
+            if (_coreFlatBonuses.TryGetValue(a.id, out var oldFlat))
+            {
+                foreach (var kv in oldFlat)
+                    stats[kv.Key] = Mathf.Max(0f, stats[kv.Key] - kv.Value);
+                oldFlat.Clear();
+            }
+            else
+            {
+                oldFlat = new Dictionary<string, float>();
+                _coreFlatBonuses[a.id] = oldFlat;
+            }
+
             float newDmgMul = 1f;
 
             if (a.hasTrait(SuperMechTraits.ClassPsi) && _geneStage.TryGetValue(a.id, out int geneLv))
             {
                 newDmgMul *= 1f + geneLv * 0.10f;
-                stats["attack_speed"] = geneLv * 0.05f;
+                float atkSpdBonus = geneLv * 0.05f;
+                stats["attack_speed"] += atkSpdBonus;
+                oldFlat["attack_speed"] = atkSpdBonus;
             }
 
             if (a.hasTrait(SuperMechTraits.ClassMage) && _manaStage.TryGetValue(a.id, out int manaLv))
             {
                 newDmgMul *= 1f + manaLv * 0.12f;
-                stats["mana"] = manaLv * 20f;
+                float manaBonus = manaLv * 20f;
+                stats["mana"] += manaBonus;
+                oldFlat["mana"] = manaBonus;
             }
 
             if (a.hasTrait(SuperMechTraits.ClassMind) && _mindStage.TryGetValue(a.id, out int mindLv))
             {
                 newDmgMul *= 1f + mindLv * 0.10f;
-                stats["intelligence"] = mindLv * 3f;
+                float intBonus = mindLv * 3f;
+                stats["intelligence"] += intBonus;
+                oldFlat["intelligence"] = intBonus;
             }
 
             if (newDmgMul > 1f)
@@ -230,6 +251,11 @@ namespace SuperMech.Code
             _geneStage.Clear();
             _manaStage.Clear();
             _mindStage.Clear();
+            _geneProgress.Clear();
+            _manaProgress.Clear();
+            _mindProgress.Clear();
+            _coreDmgMul.Clear();
+            _coreFlatBonuses.Clear();
         }
 
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
@@ -238,6 +264,11 @@ namespace SuperMech.Code
             removed += SuperMechCleanup.CleanDict(_geneStage, alive);
             removed += SuperMechCleanup.CleanDict(_manaStage, alive);
             removed += SuperMechCleanup.CleanDict(_mindStage, alive);
+            removed += SuperMechCleanup.CleanDict(_geneProgress, alive);
+            removed += SuperMechCleanup.CleanDict(_manaProgress, alive);
+            removed += SuperMechCleanup.CleanDict(_mindProgress, alive);
+            removed += SuperMechCleanup.CleanDict(_coreDmgMul, alive);
+            removed += SuperMechCleanup.CleanDict(_coreFlatBonuses, alive);
             return removed;
         }
     }
