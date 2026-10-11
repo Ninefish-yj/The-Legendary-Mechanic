@@ -18,6 +18,7 @@ namespace SuperMech.Code
             new GroupInfo("sm_race",           "sm_traitgroups_1031", "#9932CC"),
             new GroupInfo("sm_rank_specialty", "sm_traitgroups_1029", "#FF4500"),
             new GroupInfo("sm_templates",      "sm_traitgroups_1044", "#DA70D6"),
+            new GroupInfo("sm_disaster",       "sm_traitgroups_1047", "#8B0000"),
         };
 
         public static void Register()

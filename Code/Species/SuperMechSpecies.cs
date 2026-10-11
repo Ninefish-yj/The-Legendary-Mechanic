@@ -7,6 +7,7 @@ namespace SuperMech.Code
     /// 种族注册中心 - 管理所有自定义种族的注册和查询
     /// 使用WB原生ActorAsset+ActorAssetLibrary.add()注册
     /// 美术资源通过ISpeciesRenderer接口抽象，当前用人类占位
+    /// 对照原著：仅保留原著明确出现的种族，原创种族标注IsOriginal=true
     /// </summary>
     public static class SuperMechSpecies
     {
@@ -28,20 +29,21 @@ namespace SuperMech.Code
         /// <summary>注册所有种族定义（对照原著）</summary>
         private static void RegisterSpeciesDefinitions()
         {
-            // P0: 基础种族（自然生成）
+            // P0: 基础种族（自然生成，原著常见文明种族）
             RegisterHumanCosmic();
-            RegisterOrcLuhan();
-            RegisterElf();
+            RegisterKunde();
+            RegisterSunir();
+            RegisterBlackSpirit();
 
-            // P1: 进阶种族（进化解锁）
-            RegisterDwarf();
-            RegisterZerg();
-            RegisterSilverSpirit();
+            // P1: 进阶种族（进化解锁，原著高级文明种族）
+            RegisterStarPupilGod();
+            RegisterTelkes();
+            RegisterDemon();
 
-            // P2: 高级种族（特殊条件）
-            RegisterMechLife();
+            // P2: 高级种族（特殊条件，原著星际生物）
             RegisterVoidDragon();
             RegisterStarBeast();
+            RegisterLuhanOrc();
 
             // P3: 专属种族（超A诞生）
             RegisterBlackStar();
@@ -72,42 +74,62 @@ namespace SuperMech.Code
             _species[s.Id] = s;
         }
 
-        /// <summary>卢翰兽人 - 原著战斗种族，身高三米多，浑身毛茸茸像熊人</summary>
-        private static void RegisterOrcLuhan()
+        /// <summary>昆德族 - 原著高频种族，战争种族，繁衍能力强</summary>
+        private static void RegisterKunde()
         {
-            var s = new SpeciesData("orc_luhan", "卢翰兽人", "P0")
+            var s = new SpeciesData("kunde", "昆德族", "P0")
             {
-                Description = "凶猛的战斗种族，身高三米多，浑身毛茸茸，看上去像熊人，长相还挺萌",
-                WildKingdomId = "orcs",
-                CivKingdomId = "orcs",
+                Description = "原著高频出现的战争种族，繁衍能力极强，个体战斗力中等但数量庞大，是星际战争的常见炮灰",
+                WildKingdomId = "kundes",
+                CivKingdomId = "kundes",
                 IsSpecial = false,
-                RacialTalent = "战斗种族：力量+30%，耐力+20%",
-                NovelReference = "原著 哈蒙·崩岩·索诺丁 卢翰兽人",
+                RacialTalent = "战争种族：力量+15%，耐力+15%，繁殖+40%，智力-10%",
+                NovelReference = "原著 昆德族 高频出现 战争种族",
                 BaseStats = new Dictionary<string, float>
                 {
-                    {"Strength", 20}, {"Agility", 5}, {"Endurance", 15},
-                    {"Intelligence", -5}, {"Mystery", 0}, {"Charisma", -3}
+                    {"Strength", 12}, {"Agility", 8}, {"Endurance", 12},
+                    {"Intelligence", -3}, {"Mystery", 0}, {"Charisma", -5}
                 },
                 Traits = new List<string> {"Strong"}
             };
             _species[s.Id] = s;
         }
 
-        /// <summary>精灵 - 原著中有精灵血统的种族，尖耳朵</summary>
-        private static void RegisterElf()
+        /// <summary>苏尼尔族 - 原著ch?，高级文明种族，擅长外交和商业</summary>
+        private static void RegisterSunir()
         {
-            var s = new SpeciesData("elf", "精灵", "P0")
+            var s = new SpeciesData("sunir", "苏尼尔族", "P0")
             {
-                Description = "具有精灵血统的种族，耳朵尖长，擅长神秘学与敏捷",
-                WildKingdomId = "elves",
-                CivKingdomId = "elves",
+                Description = "原著高级文明种族，擅长外交和商业，在星际政坛有重要影响力",
+                WildKingdomId = "sunirs",
+                CivKingdomId = "sunirs",
                 IsSpecial = false,
-                RacialTalent = "精灵血统：敏捷+25%，神秘+20%，魅力+15%",
-                NovelReference = "原著 有精灵血统的角色 耳朵尖长",
+                RacialTalent = "外交种族：魅力+30%，智力+15%，力量-10%",
+                NovelReference = "原著 苏尼尔族 高级文明 外交商业",
                 BaseStats = new Dictionary<string, float>
                 {
-                    {"Strength", -3}, {"Agility", 15}, {"Endurance", -5},
-                    {"Intelligence", 10}, {"Mystery", 15}, {"Charisma", 10}
+                    {"Strength", -5}, {"Agility", 5}, {"Endurance", 0},
+                    {"Intelligence", 15}, {"Mystery", 10}, {"Charisma", 25}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>黑灵族 - 原著ch?，暗属性种族，擅长隐匿和暗杀</summary>
+        private static void RegisterBlackSpirit()
+        {
+            var s = new SpeciesData("black_spirit", "黑灵族", "P0")
+            {
+                Description = "原著暗属性种族，擅长隐匿和暗杀，个体战斗力强但数量稀少",
+                WildKingdomId = "black_spirits",
+                CivKingdomId = "black_spirits",
+                IsSpecial = false,
+                RacialTalent = "暗影种族：敏捷+25%，神秘+20%，可隐匿，魅力-15%",
+                NovelReference = "原著 黑灵族 暗属性 隐匿暗杀",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 5}, {"Agility", 20}, {"Endurance", 5},
+                    {"Intelligence", 10}, {"Mystery", 18}, {"Charisma", -10}
                 },
                 Traits = new List<string> {"Fast"}
             };
@@ -116,88 +138,68 @@ namespace SuperMech.Code
 
         // ========== P1 进阶种族 ==========
 
-        /// <summary>矮人 - 原著中的矮人佣兵，大胡子</summary>
-        private static void RegisterDwarf()
+        /// <summary>星瞳神族 - 原著ch?，顶级文明种族，瞳术能力极强</summary>
+        private static void RegisterStarPupilGod()
         {
-            var s = new SpeciesData("dwarf", "矮人", "P1")
+            var s = new SpeciesData("star_pupil_god", "星瞳神族", "P1")
             {
-                Description = "大胡子矮人，擅长锻造和近战，耐力极强",
-                WildKingdomId = "dwarves",
-                CivKingdomId = "dwarves",
+                Description = "原著顶级文明种族，拥有强大的瞳术能力，种族进化程度极高，繁殖力弱",
+                WildKingdomId = "star_pupil_gods",
+                CivKingdomId = "star_pupil_gods",
                 IsSpecial = false,
-                RacialTalent = "矮人坚韧：耐力+30%，力量+15%，敏捷-10%",
-                NovelReference = "原著 矮人佣兵",
+                RacialTalent = "瞳术种族：神秘+35%，智力+25%，繁殖力-40%，瞳术伤害+50%",
+                NovelReference = "原著 星瞳神族 顶级文明 瞳术",
                 BaseStats = new Dictionary<string, float>
                 {
-                    {"Strength", 12}, {"Agility", -8}, {"Endurance", 20},
-                    {"Intelligence", 5}, {"Mystery", -5}, {"Charisma", 0}
-                },
-                Traits = new List<string> {"Tough"}
+                    {"Strength", 0}, {"Agility", 10}, {"Endurance", 5},
+                    {"Intelligence", 20}, {"Mystery", 30}, {"Charisma", 15}
+                }
             };
             _species[s.Id] = s;
         }
 
-        /// <summary>虫族 - 原著中海尔的种族，狰狞外貌</summary>
-        private static void RegisterZerg()
+        /// <summary>泰尔克斯族 - 原著ch?，科技种族，擅长机械和工程</summary>
+        private static void RegisterTelkes()
         {
-            var s = new SpeciesData("zerg", "虫族", "P1")
+            var s = new SpeciesData("telkes", "泰尔克斯族", "P1")
             {
-                Description = "虫族，狰狞外貌，繁殖力强，擅长群体作战",
-                WildKingdomId = "zergs",
+                Description = "原著科技种族，擅长机械和工程学，与机械系相性极佳",
+                WildKingdomId = "telkes",
+                CivKingdomId = "telkes",
+                IsSpecial = false,
+                RacialTalent = "科技种族：智力+25%，机械亲和+30%，力量-5%",
+                NovelReference = "原著 泰尔克斯族 科技种族 机械工程",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 0}, {"Agility", 5}, {"Endurance", 5},
+                    {"Intelligence", 22}, {"Mystery", 8}, {"Charisma", 5}
+                }
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>恶魔族 - 原著ch?，混乱种族，个体战斗力极强</summary>
+        private static void RegisterDemon()
+        {
+            var s = new SpeciesData("demon", "恶魔族", "P1")
+            {
+                Description = "原著混乱种族，个体战斗力极强，性格暴躁，难以驯服",
+                WildKingdomId = "demons",
                 CivKingdomId = "",
                 IsSpecial = false,
-                RacialTalent = "虫群：力量+20%，敏捷+20%，繁殖+50%，智力-20%",
-                NovelReference = "原著 海尔 虫族",
+                RacialTalent = "恶魔血统：全属性+20%，狂暴时伤害+50%，智力-15%",
+                NovelReference = "原著 恶魔族 混乱种族 个体战力强",
                 BaseStats = new Dictionary<string, float>
                 {
-                    {"Strength", 12}, {"Agility", 12}, {"Endurance", 8},
-                    {"Intelligence", -15}, {"Mystery", -5}, {"Charisma", -10}
-                }
-            };
-            _species[s.Id] = s;
-        }
-
-        /// <summary>银灵人 - 原著ch364，星灵之海高级文明种族，繁殖力弱</summary>
-        private static void RegisterSilverSpirit()
-        {
-            var s = new SpeciesData("silver_spirit", "银灵人", "P1")
-            {
-                Description = "星灵之海的高级文明种族，种族进化程度高，繁殖力比较弱，总数不庞大",
-                WildKingdomId = "silver_spirits",
-                CivKingdomId = "silver_spirits",
-                IsSpecial = false,
-                RacialTalent = "高进化种族：神秘+30%，智力+25%，繁殖力-50%",
-                NovelReference = "ch364 银灵人 星灵之海高级文明种族",
-                BaseStats = new Dictionary<string, float>
-                {
-                    {"Strength", -5}, {"Agility", 5}, {"Endurance", -5},
-                    {"Intelligence", 18}, {"Mystery", 22}, {"Charisma", 8}
-                }
+                    {"Strength", 20}, {"Agility", 15}, {"Endurance", 18},
+                    {"Intelligence", -5}, {"Mystery", 15}, {"Charisma", -10}
+                },
+                Traits = new List<string> {"Strong", "Aggressive"}
             };
             _species[s.Id] = s;
         }
 
         // ========== P2 高级种族 ==========
-
-        /// <summary>机械族 - 韩萧的机械军团，机械生命形态</summary>
-        private static void RegisterMechLife()
-        {
-            var s = new SpeciesData("mech_life", "机械族", "P2")
-            {
-                Description = "机械生命形态，韩萧机械军团的产物，无需食物，免疫疾病",
-                WildKingdomId = "",
-                CivKingdomId = "",
-                IsSpecial = true,
-                RacialTalent = "机械生命：力量+25%，耐力+25%，无需食物，免疫疾病",
-                NovelReference = "原著 机械族群 暴兵是机械族强项",
-                BaseStats = new Dictionary<string, float>
-                {
-                    {"Strength", 18}, {"Agility", 0}, {"Endurance", 18},
-                    {"Intelligence", 10}, {"Mystery", -10}, {"Charisma", -5}
-                }
-            };
-            _species[s.Id] = s;
-        }
 
         /// <summary>虚空龙族 - 原著星际生物，身躯成千上万米，生活在宇宙</summary>
         private static void RegisterVoidDragon()
@@ -236,6 +238,27 @@ namespace SuperMech.Code
                     {"Strength", 25}, {"Agility", 10}, {"Endurance", 35},
                     {"Intelligence", -10}, {"Mystery", 5}, {"Charisma", -5}
                 }
+            };
+            _species[s.Id] = s;
+        }
+
+        /// <summary>卢翰兽人 - 原著战斗种族，身高三米多，浑身毛茸茸像熊人</summary>
+        private static void RegisterLuhanOrc()
+        {
+            var s = new SpeciesData("orc_luhan", "卢翰兽人", "P2")
+            {
+                Description = "凶猛的战斗种族，身高三米多，浑身毛茸茸，看上去像熊人，长相还挺萌",
+                WildKingdomId = "orcs",
+                CivKingdomId = "orcs",
+                IsSpecial = false,
+                RacialTalent = "战斗种族：力量+30%，耐力+20%",
+                NovelReference = "原著 哈蒙·崩岩·索诺丁 卢翰兽人",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 20}, {"Agility", 5}, {"Endurance", 15},
+                    {"Intelligence", -5}, {"Mystery", 0}, {"Charisma", -3}
+                },
+                Traits = new List<string> {"Strong"}
             };
             _species[s.Id] = s;
         }
@@ -287,13 +310,10 @@ namespace SuperMech.Code
                         traits = new List<string>(species.Traits)
                     };
 
-                    // 注册本地化文本
                     LocalizedTextManager.add($"species_{species.Id}", species.Name, pReplace: true);
                     LocalizedTextManager.add($"species_{species.Id}_desc", species.Description, pReplace: true);
 
-                    // 注册到WB资源库
                     AssetManager.actor_library.add(asset);
-
                     species.IsRegistered = true;
                 }
                 catch (System.Exception e)

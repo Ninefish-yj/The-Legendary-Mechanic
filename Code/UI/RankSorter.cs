@@ -64,7 +64,8 @@ namespace SuperMech.Code
             return stats;
         }
 
-        /// <summary>排序类型名称（用于UI下拉框）</summary>
-        public static readonly string[] SortNames = { "能级", "气力", "阶位", "知识数", "职业阶段" };
+        /// <summary>排序类型名称（用于UI下拉框，通过本地化获取）</summary>
+        public static readonly string[] SortKeys = { "sm_sort_onar", "sm_sort_qi", "sm_sort_rank", "sm_sort_knowledge", "sm_sort_stage" };
+        public static string[] SortNames => System.Array.ConvertAll(SortKeys, k => LocalizedTextManager.getText(k));
     }
 }

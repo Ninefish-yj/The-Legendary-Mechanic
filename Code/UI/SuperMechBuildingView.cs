@@ -80,8 +80,9 @@ namespace SuperMech.Code
                     }
                 }
 
+                var unit = LocalizedTextManager.getText("sm_ui_building_count");
                 var row = SuperMechUiSkin.MakeText(_content,
-                    $"{name}: {kv.Value}座  ({levelInfo.Trim()})",
+                    $"{name}: {kv.Value}{unit}  ({levelInfo.Trim()})",
                     13, TextAnchor.UpperLeft);
                 var rowRect = row.GetComponent<RectTransform>();
                 rowRect.anchorMin = new Vector2(0, 1);

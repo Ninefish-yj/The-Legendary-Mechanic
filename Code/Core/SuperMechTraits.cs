@@ -116,7 +116,7 @@ namespace SuperMech.Code
             LocalizedTextManager.add("trait_sm_player_hanxiao_info", LocalizedTextManager.getText("sm_player_hanxiao_desc"), pReplace: true);
             AssetManager.traits.add(hanxiao);
 
-            // 内部标记特质（不显示在面板，仅用于代码判断）
+            // 内部标记特质（不显示在面板，仅用于代码判断，不注册到可见分组）
             string[] internalMarkers = { "sm_berserk", "sm_cosmic_relic_owner", "sm_summoned", "sm_talent", "sm_void_boost", "sm_supera_council", "sm_supera_purge" };
             foreach (string mid in internalMarkers)
             {
@@ -124,10 +124,11 @@ namespace SuperMech.Code
                 {
                     id = mid,
                     path_icon = "actor_traits/iconUnknown",
-                    group_id = "sm_awakened",
+                    group_id = "",
                     needs_to_be_explored = false,
                     can_be_given = false,
                     can_be_removed = false,
+                    hidden = true,
                     base_stats = new BaseStats()
                 };
                 LocalizedTextManager.add("trait_" + mid, mid, pReplace: true);
