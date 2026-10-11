@@ -141,6 +141,12 @@ namespace SuperMech.Code
                 _researched[kingdomId] = set;
             }
             set.Add(techId);
+            // 研究航天科技后发现新星球
+            if (techId.StartsWith("space_t"))
+            {
+                int tier = int.Parse(techId.Split('_')[1].Substring(1));
+                SuperMechStarSystem.DiscoverPlanets(tier);
+            }
             return true;
         }
 

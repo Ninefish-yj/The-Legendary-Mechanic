@@ -925,5 +925,22 @@
   "sm_ui_tech_info": "信息",
   "sm_ui_tech_bio": "生物",
   "sm_ui_tech_military": "军事",
-  "sm_ui_none": "无"
+  "sm_ui_none": "无",
+  "sm_ui_star": "星际",
+  "sm_ui_select_planet": "选择星球查看详情",
+  "sm_ui_planet_type": "类型",
+  "sm_ui_planet_resource": "资源",
+  "sm_ui_planet_colony": "殖民等级",
+  "sm_ui_planet_units": "驻留单位",
+  "sm_ui_planet_owner": "所属",
+  "sm_ui_planet_coord": "坐标",
+  "sm_ui_planet_uncolonized": "未殖民，派遣单位到达后自动建立殖民地",
+  "sm_ui_planet_rocky": "岩石行星",
+  "sm_ui_planet_gas": "气态巨行星",
+  "sm_ui_planet_ice": "冰冻行星",
+  "sm_ui_planet_lava": "熔岩行星",
+  "sm_ui_planet_ocean": "海洋行星",
+  "sm_ui_planet_desert": "沙漠行星",
+  "sm_ui_planet_forest": "森林行星",
+  "sm_ui_unknown": "未知"
 }
