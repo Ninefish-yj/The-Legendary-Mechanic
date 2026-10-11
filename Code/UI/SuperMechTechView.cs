@@ -4,16 +4,18 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>科技树窗口：5系科技树，显示已研究/可研究/未解锁状态，点击研究</summary>
+    /// <summary>科技树窗口：参考族谱树状图设计，5系标签+垂直树状节点+连线+详情</summary>
     public class SuperMechTechView : MonoBehaviour
     {
-        private RectTransform _listContent;
+        private RectTransform _treeContent;
         private Text _detailText;
         private Button _researchBtn;
         private Text _researchBtnText;
         private string _selectedId;
         private SuperMechTech.TechBranch _currentBranch = SuperMechTech.TechBranch.Mech;
         private static Kingdom _selectedKingdom;
+        private readonly Dictionary<string, Image> _nodeImages = new Dictionary<string, Image>();
+        private readonly Dictionary<string, Text> _nodeTexts = new Dictionary<string, Text>();
 
         public static Kingdom SelectedKingdom
         {
@@ -65,67 +67,66 @@ namespace SuperMech.Code
                 txt.alignment = TextAnchor.MiddleCenter;
                 txt.text = LocalizedTextManager.getText(branches[i]);
                 int idx = i;
-                btn.onClick.AddListener(() => SwitchBranch(idx, btnImg));
+                btn.onClick.AddListener(() => SwitchBranch(idx));
             }
 
-            // 左侧科技列表
-            var listGo = new GameObject("TechList");
-            listGo.transform.SetParent(transform, false);
-            var listRect = listGo.AddComponent<RectTransform>();
-            listRect.anchorMin = Vector2.zero;
-            listRect.anchorMax = new Vector2(0.5f, 1);
-            listRect.pivot = new Vector2(0, 0.5f);
-            listRect.offsetMin = new Vector2(0, 0);
-            listRect.offsetMax = new Vector2(0, -32);
+            // 左侧树状图区域
+            var treeGo = new GameObject("TreeArea");
+            treeGo.transform.SetParent(transform, false);
+            var treeRect = treeGo.AddComponent<RectTransform>();
+            treeRect.anchorMin = Vector2.zero;
+            treeRect.anchorMax = new Vector2(0.45f, 1);
+            treeRect.offsetMin = Vector2.zero;
+            treeRect.offsetMax = new Vector2(0, -32);
 
-            var listScrollGo = new GameObject("Scroll");
-            listScrollGo.transform.SetParent(listGo.transform, false);
-            var listScrollRect = listScrollGo.AddComponent<ScrollRect>();
-            var lsr = listScrollGo.GetComponent<RectTransform>();
-            lsr.anchorMin = Vector2.zero; lsr.anchorMax = Vector2.one;
-            lsr.offsetMin = new Vector2(4, 4); lsr.offsetMax = new Vector2(-4, -4);
-            var listMaskImg = listScrollGo.AddComponent<Image>();
-            listMaskImg.color = new Color(0f, 0f, 0f, 0.01f);
-            listMaskImg.raycastTarget = false;
-            var listMask = listScrollGo.AddComponent<Mask>();
-            listMask.showMaskGraphic = true;
+            var treeScrollGo = new GameObject("Scroll");
+            treeScrollGo.transform.SetParent(treeGo.transform, false);
+            var treeScrollRect = treeScrollGo.AddComponent<ScrollRect>();
+            var tsr = treeScrollGo.GetComponent<RectTransform>();
+            tsr.anchorMin = Vector2.zero; tsr.anchorMax = Vector2.one;
+            tsr.offsetMin = new Vector2(4, 4); tsr.offsetMax = new Vector2(-4, -4);
+            var treeMaskImg = treeScrollGo.AddComponent<Image>();
+            treeMaskImg.color = new Color(0f, 0f, 0f, 0.01f);
+            treeMaskImg.raycastTarget = false;
+            var treeMask = treeScrollGo.AddComponent<Mask>();
+            treeMask.showMaskGraphic = true;
 
-            var listViewportGo = new GameObject("Viewport");
-            listViewportGo.transform.SetParent(listScrollGo.transform, false);
-            var listViewportRt = listViewportGo.AddComponent<RectTransform>();
-            listViewportRt.anchorMin = Vector2.zero; listViewportRt.anchorMax = Vector2.one;
-            listViewportRt.offsetMin = Vector2.zero; listViewportRt.offsetMax = Vector2.zero;
+            var treeViewportGo = new GameObject("Viewport");
+            treeViewportGo.transform.SetParent(treeScrollGo.transform, false);
+            var treeViewportRt = treeViewportGo.AddComponent<RectTransform>();
+            treeViewportRt.anchorMin = Vector2.zero; treeViewportRt.anchorMax = Vector2.one;
+            treeViewportRt.offsetMin = Vector2.zero; treeViewportRt.offsetMax = Vector2.zero;
 
-            var listContentGo = new GameObject("Content");
-            listContentGo.transform.SetParent(listViewportGo.transform, false);
-            _listContent = listContentGo.AddComponent<RectTransform>();
-            _listContent.anchorMin = new Vector2(0, 1);
-            _listContent.anchorMax = new Vector2(1, 1);
-            _listContent.pivot = new Vector2(0, 1);
-            _listContent.sizeDelta = new Vector2(0, 0);
-            var listContentHit = listContentGo.AddComponent<Image>();
-            listContentHit.color = new Color(0f, 0f, 0f, 0f);
-            listContentHit.raycastTarget = true;
-            var listVlg = listContentGo.AddComponent<VerticalLayoutGroup>();
-            listVlg.spacing = 2;
-            listVlg.padding = new RectOffset(4, 4, 4, 4);
-            listVlg.childControlHeight = true;
-            listVlg.childControlWidth = true;
-            listVlg.childForceExpandWidth = true;
-            listVlg.childForceExpandHeight = false;
-            var listFitter = listContentGo.AddComponent<ContentSizeFitter>();
-            listFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            listScrollRect.content = _listContent;
-            listScrollRect.viewport = listViewportRt;
-            listScrollRect.vertical = true;
-            listScrollRect.horizontal = false;
-            listScrollRect.movementType = ScrollRect.MovementType.Clamped;
+            var treeContentGo = new GameObject("Content");
+            treeContentGo.transform.SetParent(treeViewportGo.transform, false);
+            _treeContent = treeContentGo.AddComponent<RectTransform>();
+            _treeContent.anchorMin = new Vector2(0, 1);
+            _treeContent.anchorMax = new Vector2(1, 1);
+            _treeContent.pivot = new Vector2(0, 1);
+            _treeContent.sizeDelta = new Vector2(0, 0);
+            var treeContentHit = treeContentGo.AddComponent<Image>();
+            treeContentHit.color = new Color(0f, 0f, 0f, 0f);
+            treeContentHit.raycastTarget = true;
+            var treeVlg = treeContentGo.AddComponent<VerticalLayoutGroup>();
+            treeVlg.spacing = 0;
+            treeVlg.padding = new RectOffset(10, 10, 10, 10);
+            treeVlg.childControlHeight = false;
+            treeVlg.childControlWidth = true;
+            treeVlg.childForceExpandWidth = true;
+            treeVlg.childForceExpandHeight = false;
+            var treeFitter = treeContentGo.AddComponent<ContentSizeFitter>();
+            treeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            treeScrollRect.content = _treeContent;
+            treeScrollRect.viewport = treeViewportRt;
+            treeScrollRect.vertical = true;
+            treeScrollRect.horizontal = false;
+            treeScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
             // 右侧详情
             var detailGo = new GameObject("Detail");
             detailGo.transform.SetParent(transform, false);
             var detailRect = detailGo.AddComponent<RectTransform>();
-            detailRect.anchorMin = new Vector2(0.5f, 0);
+            detailRect.anchorMin = new Vector2(0.45f, 0);
             detailRect.anchorMax = Vector2.one;
             detailRect.offsetMin = Vector2.zero;
             detailRect.offsetMax = new Vector2(0, -32);
@@ -173,14 +174,13 @@ namespace SuperMech.Code
             _researchBtn.onClick.AddListener(OnResearchClicked);
             researchBtnGo.SetActive(false);
 
-            RefreshList();
+            RefreshTree();
         }
 
-        private void SwitchBranch(int idx, Image btnImg)
+        private void SwitchBranch(int idx)
         {
             _currentBranch = (SuperMechTech.TechBranch)idx;
             _selectedId = null;
-            // 更新标签颜色
             var barGo = transform.Find("BranchBar");
             if (barGo != null)
             {
@@ -191,44 +191,96 @@ namespace SuperMech.Code
                     if (img != null) img.color = i == idx ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.15f, 0.18f, 0.25f, 0.9f);
                 }
             }
-            RefreshList();
+            RefreshTree();
             if (_detailText != null) _detailText.text = LocalizedTextManager.getText("sm_ui_select_tech");
             if (_researchBtn != null) _researchBtn.gameObject.SetActive(false);
         }
 
-        private void RefreshList()
+        /// <summary>构建树状图：节点+连线交替排列</summary>
+        private void RefreshTree()
         {
-            if (_listContent == null) return;
-            foreach (Transform child in _listContent) Destroy(child.gameObject);
+            if (_treeContent == null) return;
+            foreach (Transform child in _treeContent) Destroy(child.gameObject);
+            _nodeImages.Clear();
+            _nodeTexts.Clear();
 
             var kingdom = SelectedKingdom;
             long kid = kingdom != null ? kingdom.getID() : 0;
             var techs = SuperMechTech.GetByBranch(_currentBranch);
 
-            foreach (var tech in techs)
+            for (int i = 0; i < techs.Count; i++)
             {
-                var go = new GameObject($"Tech_{tech.id}");
-                go.transform.SetParent(_listContent, false);
-                go.AddComponent<RectTransform>().sizeDelta = new Vector2(0, 28);
-                var btn = go.AddComponent<Button>();
-                var img = go.AddComponent<Image>();
+                var tech = techs[i];
                 bool researched = kid > 0 && SuperMechTech.IsResearched(kid, tech.id);
-                bool selected = _selectedId == tech.id;
-                img.color = selected ? SuperMechUiSkin.AccentDim :
-                              researched ? new Color(0.15f, 0.3f, 0.2f, 0.9f) : SuperMechUiSkin.RowOdd;
+                bool canResearch = kid > 0 && SuperMechTech.CanResearch(kid, tech.id);
+
+                // 节点
+                var nodeGo = new GameObject($"Node_{tech.id}");
+                nodeGo.transform.SetParent(_treeContent, false);
+                var nodeRect = nodeGo.AddComponent<RectTransform>();
+                nodeRect.sizeDelta = new Vector2(0, 44);
+                var nodeBtn = nodeGo.AddComponent<Button>();
+                var nodeImg = nodeGo.AddComponent<Image>();
+                nodeImg.color = researched ? new Color(0.15f, 0.35f, 0.2f, 0.95f) :
+                                canResearch ? new Color(0.3f, 0.25f, 0.1f, 0.95f) :
+                                new Color(0.18f, 0.18f, 0.22f, 0.95f);
+                _nodeImages[tech.id] = nodeImg;
+
+                // 节点左侧状态圆点
+                var dotGo = new GameObject("Dot");
+                dotGo.transform.SetParent(nodeGo.transform, false);
+                var dotRect = dotGo.AddComponent<RectTransform>();
+                dotRect.anchorMin = new Vector2(0, 0.5f);
+                dotRect.anchorMax = new Vector2(0, 0.5f);
+                dotRect.pivot = new Vector2(0.5f, 0.5f);
+                dotRect.sizeDelta = new Vector2(14, 14);
+                dotRect.anchoredPosition = new Vector2(16, 0);
+                var dotImg = dotGo.AddComponent<Image>();
+                dotImg.color = researched ? new Color(0.4f, 1f, 0.5f) :
+                              canResearch ? new Color(1f, 0.8f, 0.3f) :
+                              new Color(0.5f, 0.5f, 0.5f);
+                // 圆点用圆形Sprite
+                dotImg.sprite = Resources.GetBuiltinResource<Sprite>("Background");
+
+                // 节点文本
                 var txtGo = new GameObject("Text");
-                txtGo.transform.SetParent(go.transform, false);
-                var tr = txtGo.AddComponent<RectTransform>();
-                tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
-                tr.offsetMin = new Vector2(8, 0); tr.offsetMax = Vector2.zero;
+                txtGo.transform.SetParent(nodeGo.transform, false);
+                var txtRect = txtGo.AddComponent<RectTransform>();
+                txtRect.anchorMin = Vector2.zero; txtRect.anchorMax = Vector2.one;
+                txtRect.offsetMin = new Vector2(36, 0); txtRect.offsetMax = new Vector2(-8, 0);
                 var txt = txtGo.AddComponent<Text>();
                 txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                txt.fontSize = 12;
-                txt.color = researched ? new Color(0.5f, 1f, 0.6f) : SuperMechUiSkin.TextColor;
+                txt.fontSize = 13;
+                txt.color = researched ? new Color(0.6f, 1f, 0.7f) :
+                            canResearch ? SuperMechUiSkin.TextColor :
+                            SuperMechUiSkin.TextDim;
                 txt.alignment = TextAnchor.MiddleLeft;
-                txt.text = (researched ? "✓ " : "○ ") + tech.name + $"  <color=#8fa8c8>[{tech.cost}]</color>";
+                txt.text = tech.name;
+                _nodeTexts[tech.id] = txt;
+
                 string tid = tech.id;
-                btn.onClick.AddListener(() => SelectTech(tid));
+                nodeBtn.onClick.AddListener(() => SelectTech(tid));
+
+                // 连线（除最后一个节点外）
+                if (i < techs.Count - 1)
+                {
+                    var lineGo = new GameObject($"Line_{i}");
+                    lineGo.transform.SetParent(_treeContent, false);
+                    var lineRect = lineGo.AddComponent<RectTransform>();
+                    lineRect.sizeDelta = new Vector2(0, 16);
+                    var lineImg = lineGo.AddComponent<Image>();
+                    // 竖线：在圆点正下方
+                    var lineContainer = new GameObject("LineContainer");
+                    lineContainer.transform.SetParent(lineGo.transform, false);
+                    var lcRect = lineContainer.AddComponent<RectTransform>();
+                    lcRect.anchorMin = new Vector2(0, 0);
+                    lcRect.anchorMax = new Vector2(0, 1);
+                    lcRect.pivot = new Vector2(0.5f, 0.5f);
+                    lcRect.sizeDelta = new Vector2(2, 0);
+                    lcRect.anchoredPosition = new Vector2(16, 0);
+                    var lcImg = lineContainer.AddComponent<Image>();
+                    lcImg.color = researched ? new Color(0.4f, 1f, 0.5f, 0.6f) : new Color(0.4f, 0.4f, 0.5f, 0.4f);
+                }
             }
         }
 
@@ -260,7 +312,18 @@ namespace SuperMech.Code
                 var img = _researchBtn.GetComponent<Image>();
                 if (img != null) img.color = canResearch ? new Color(0.2f, 0.5f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.9f);
             }
-            RefreshList();
+
+            // 高亮选中节点
+            foreach (var kv in _nodeImages)
+            {
+                bool isSelected = kv.Key == id;
+                bool r = kid > 0 && SuperMechTech.IsResearched(kid, kv.Key);
+                bool cr = kid > 0 && SuperMechTech.CanResearch(kid, kv.Key);
+                kv.Value.color = isSelected ? SuperMechUiSkin.AccentDim :
+                                 r ? new Color(0.15f, 0.35f, 0.2f, 0.95f) :
+                                 cr ? new Color(0.3f, 0.25f, 0.1f, 0.95f) :
+                                 new Color(0.18f, 0.18f, 0.22f, 0.95f);
+            }
         }
 
         private void OnResearchClicked()
@@ -270,6 +333,7 @@ namespace SuperMech.Code
             long kid = kingdom.getID();
             if (SuperMechTech.Research(kid, _selectedId))
             {
+                RefreshTree();
                 SelectTech(_selectedId);
             }
         }
