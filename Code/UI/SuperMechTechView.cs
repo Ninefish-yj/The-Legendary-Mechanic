@@ -4,16 +4,17 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>科技树窗口（v0.99.4重构：多分支布局，参考文明/钢铁雄心）
-    /// T1共同基础在左，3分支向右展开，节点间有连线</summary>
+    /// <summary>文明科技树窗口（v0.99.5重构：6系文明科技，垂直线性布局）
+    /// 能源/航天/信息/机械/生物/军事，每系5级，对照原著+现实科技路线</summary>
     public class SuperMechTechView : MonoBehaviour
     {
         private RectTransform _treeContent;
         private Text _detailText;
         private Button _researchBtn;
         private Text _researchBtnText;
+        private Text _kingdomNameText;
         private string _selectedId;
-        private SuperMechTech.TechBranch _currentBranch = SuperMechTech.TechBranch.Mech;
+        private SuperMechTech.TechBranch _currentBranch = SuperMechTech.TechBranch.Energy;
         private static Kingdom _selectedKingdom;
         private readonly Dictionary<string, Image> _nodeImages = new Dictionary<string, Image>();
 
@@ -31,34 +32,61 @@ namespace SuperMech.Code
 
         private void BuildUI()
         {
-            // 顶部系别标签
+            // 顶部标题栏：文明科技树 + 当前文明名称
+            var titleGo = new GameObject("TitleBar");
+            titleGo.transform.SetParent(transform, false);
+            var titleRect = titleGo.AddComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0, 1);
+            titleRect.anchorMax = new Vector2(1, 1);
+            titleRect.pivot = new Vector2(0.5f, 1);
+            titleRect.sizeDelta = new Vector2(0, 28);
+            titleRect.anchoredPosition = Vector2.zero;
+            var titleImg = titleGo.AddComponent<Image>();
+            titleImg.color = new Color(0.08f, 0.1f, 0.16f, 0.95f);
+
+            var titleTextGo = new GameObject("Title");
+            titleTextGo.transform.SetParent(titleGo.transform, false);
+            var titleTextRect = titleTextGo.AddComponent<RectTransform>();
+            titleTextRect.anchorMin = Vector2.zero; titleTextRect.anchorMax = Vector2.one;
+            titleTextRect.offsetMin = new Vector2(8, 0); titleTextRect.offsetMax = new Vector2(-8, 0);
+            var titleText = titleTextGo.AddComponent<Text>();
+            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.fontSize = 14;
+            titleText.color = new Color(0.8f, 0.9f, 1f);
+            titleText.alignment = TextAnchor.MiddleLeft;
+            titleText.fontStyle = FontStyle.Bold;
+            titleText.text = LocalizedTextManager.getText("sm_ui_civ_tech_tree");
+
+            _kingdomNameText = titleText; // 复用，后面更新
+
+            // 系别标签栏
             var barGo = new GameObject("BranchBar");
             barGo.transform.SetParent(transform, false);
             var barRect = barGo.AddComponent<RectTransform>();
             barRect.anchorMin = new Vector2(0, 1);
             barRect.anchorMax = new Vector2(1, 1);
             barRect.pivot = new Vector2(0.5f, 1);
-            barRect.sizeDelta = new Vector2(0, 32);
-            barRect.anchoredPosition = Vector2.zero;
+            barRect.sizeDelta = new Vector2(0, 30);
+            barRect.anchoredPosition = new Vector2(0, -28);
             var barImg = barGo.AddComponent<Image>();
-            barImg.color = new Color(0.08f, 0.1f, 0.16f, 0.9f);
+            barImg.color = new Color(0.06f, 0.08f, 0.12f, 0.9f);
 
-            string[] branches = { "sm_ui_tech_mech", "sm_ui_tech_martial", "sm_ui_tech_mage", "sm_ui_tech_psi", "sm_ui_tech_mind" };
+            string[] branches = { "sm_ui_tech_energy", "sm_ui_tech_space", "sm_ui_tech_info", "sm_ui_tech_mech", "sm_ui_tech_bio", "sm_ui_tech_military" };
             for (int i = 0; i < branches.Length; i++)
             {
                 var btnGo = new GameObject($"Branch_{i}");
                 btnGo.transform.SetParent(barGo.transform, false);
                 var btnRect = btnGo.AddComponent<RectTransform>();
-                btnRect.anchorMin = new Vector2(i * 0.2f, 0);
-                btnRect.anchorMax = new Vector2((i + 1) * 0.2f, 1);
+                btnRect.anchorMin = new Vector2(i / 6f, 0);
+                btnRect.anchorMax = new Vector2((i + 1) / 6f, 1);
                 btnRect.offsetMin = Vector2.zero;
                 btnRect.offsetMax = Vector2.zero;
                 var btn = btnGo.AddComponent<Button>();
                 var btnImg = btnGo.AddComponent<Image>();
-                btnImg.color = i == 0 ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.15f, 0.18f, 0.25f, 0.9f);
+                btnImg.color = i == 0 ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.12f, 0.15f, 0.2f, 0.9f);
                 var txt = btnGo.AddComponent<Text>();
                 txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                txt.fontSize = 12;
+                txt.fontSize = 11;
                 txt.color = Color.white;
                 txt.alignment = TextAnchor.MiddleCenter;
                 txt.text = LocalizedTextManager.getText(branches[i]);
@@ -66,14 +94,14 @@ namespace SuperMech.Code
                 btn.onClick.AddListener(() => SwitchBranch(idx));
             }
 
-            // 左侧树状图区域（60%宽度，支持横向滚动）
+            // 左侧树状图区域（55%宽度）
             var treeGo = new GameObject("TreeArea");
             treeGo.transform.SetParent(transform, false);
             var treeRect = treeGo.AddComponent<RectTransform>();
             treeRect.anchorMin = Vector2.zero;
-            treeRect.anchorMax = new Vector2(0.6f, 1);
+            treeRect.anchorMax = new Vector2(0.55f, 1);
             treeRect.offsetMin = Vector2.zero;
-            treeRect.offsetMax = new Vector2(0, -32);
+            treeRect.offsetMax = new Vector2(0, -58);
 
             var treeScrollGo = new GameObject("Scroll");
             treeScrollGo.transform.SetParent(treeGo.transform, false);
@@ -96,27 +124,27 @@ namespace SuperMech.Code
             var treeContentGo = new GameObject("Content");
             treeContentGo.transform.SetParent(treeViewportGo.transform, false);
             _treeContent = treeContentGo.AddComponent<RectTransform>();
-            _treeContent.anchorMin = new Vector2(0, 0.5f);
-            _treeContent.anchorMax = new Vector2(0, 0.5f);
-            _treeContent.pivot = new Vector2(0, 0.5f);
-            _treeContent.sizeDelta = new Vector2(900, 400);
+            _treeContent.anchorMin = new Vector2(0, 1);
+            _treeContent.anchorMax = new Vector2(0, 1);
+            _treeContent.pivot = new Vector2(0, 1);
+            _treeContent.sizeDelta = new Vector2(300, 400);
             var treeContentHit = treeContentGo.AddComponent<Image>();
             treeContentHit.color = new Color(0f, 0f, 0f, 0f);
             treeContentHit.raycastTarget = true;
             treeScrollRect.content = _treeContent;
             treeScrollRect.viewport = treeViewportRt;
             treeScrollRect.vertical = true;
-            treeScrollRect.horizontal = true;
+            treeScrollRect.horizontal = false;
             treeScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
             // 右侧详情
             var detailGo = new GameObject("Detail");
             detailGo.transform.SetParent(transform, false);
             var detailRect = detailGo.AddComponent<RectTransform>();
-            detailRect.anchorMin = new Vector2(0.6f, 0);
+            detailRect.anchorMin = new Vector2(0.55f, 0);
             detailRect.anchorMax = Vector2.one;
             detailRect.offsetMin = Vector2.zero;
-            detailRect.offsetMax = new Vector2(0, -32);
+            detailRect.offsetMax = new Vector2(0, -58);
 
             var cardGo = new GameObject("Card");
             cardGo.transform.SetParent(detailGo.transform, false);
@@ -162,6 +190,15 @@ namespace SuperMech.Code
             researchBtnGo.SetActive(false);
 
             RefreshTree();
+            UpdateKingdomName();
+        }
+
+        private void UpdateKingdomName()
+        {
+            if (_kingdomNameText == null) return;
+            var k = SelectedKingdom;
+            string kName = k != null ? k.data.name : LocalizedTextManager.getText("sm_ui_none");
+            _kingdomNameText.text = $"{LocalizedTextManager.getText("sm_ui_civ_tech_tree")} - {kName}";
         }
 
         private void SwitchBranch(int idx)
@@ -175,7 +212,7 @@ namespace SuperMech.Code
                 {
                     var child = barGo.GetChild(i);
                     var img = child.GetComponent<Image>();
-                    if (img != null) img.color = i == idx ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.15f, 0.18f, 0.25f, 0.9f);
+                    if (img != null) img.color = i == idx ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.12f, 0.15f, 0.2f, 0.9f);
                 }
             }
             RefreshTree();
@@ -183,7 +220,7 @@ namespace SuperMech.Code
             if (_researchBtn != null) _researchBtn.gameObject.SetActive(false);
         }
 
-        /// <summary>构建多分支树状图：T1在左，3分支向右展开</summary>
+        /// <summary>构建垂直线性树状图</summary>
         private void RefreshTree()
         {
             if (_treeContent == null) return;
@@ -194,52 +231,28 @@ namespace SuperMech.Code
             long kid = kingdom != null ? kingdom.getID() : 0;
             var techs = SuperMechTech.GetByBranch(_currentBranch);
 
-            // 布局参数
-            float colWidth = 160f;
-            float rowHeight = 70f;
+            float nodeWidth = 260f;
+            float nodeHeight = 56f;
+            float spacing = 14f;
             float startX = 20f;
-            float centerY = 200f;
+            float startY = -20f;
 
-            // 按tier和subBranch分组
-            var t1 = techs.Find(t => t.tier == 1);
-            var branchA = techs.FindAll(t => t.subBranch == SuperMechTech.TechSubBranch.A);
-            var branchB = techs.FindAll(t => t.subBranch == SuperMechTech.TechSubBranch.B);
-            var branchC = techs.FindAll(t => t.subBranch == SuperMechTech.TechSubBranch.C);
-            branchA.Sort((a, b) => a.tier.CompareTo(b.tier));
-            branchB.Sort((a, b) => a.tier.CompareTo(b.tier));
-            branchC.Sort((a, b) => a.tier.CompareTo(b.tier));
+            _treeContent.sizeDelta = new Vector2(300, techs.Count * (nodeHeight + spacing) + 40);
 
-            // T1节点（左侧居中）
-            if (t1 != null)
+            for (int i = 0; i < techs.Count; i++)
             {
-                CreateNode(t1, startX, centerY, kid);
-                // T1到3个分支T2的连线
-                CreateLine(startX + 60, centerY, startX + colWidth - 10, centerY - rowHeight);
-                CreateLine(startX + 60, centerY, startX + colWidth - 10, centerY);
-                CreateLine(startX + 60, centerY, startX + colWidth - 10, centerY + rowHeight);
-            }
-
-            // 3分支（A上/B中/C下）
-            float[] branchY = { centerY - rowHeight, centerY, centerY + rowHeight };
-            var branches = new List<List<SuperMechTech.TechDef>> { branchA, branchB, branchC };
-            for (int b = 0; b < 3; b++)
-            {
-                for (int i = 0; i < branches[b].Count; i++)
+                var tech = techs[i];
+                float y = startY - i * (nodeHeight + spacing);
+                CreateNode(tech, startX, y, nodeWidth, nodeHeight, kid);
+                // 连线
+                if (i < techs.Count - 1)
                 {
-                    var tech = branches[b][i];
-                    float x = startX + colWidth + i * colWidth;
-                    float y = branchY[b];
-                    CreateNode(tech, x, y, kid);
-                    // 分支内连线
-                    if (i > 0)
-                    {
-                        CreateLine(x - colWidth + 60, y, x - 10, y);
-                    }
+                    CreateVerticalLine(startX + nodeWidth / 2, y - nodeHeight / 2, y - nodeHeight / 2 - spacing);
                 }
             }
         }
 
-        private void CreateNode(SuperMechTech.TechDef tech, float x, float y, long kid)
+        private void CreateNode(SuperMechTech.TechDef tech, float x, float y, float w, float h, long kid)
         {
             bool researched = kid > 0 && SuperMechTech.IsResearched(kid, tech.id);
             bool canResearch = kid > 0 && SuperMechTech.CanResearch(kid, tech.id);
@@ -247,16 +260,16 @@ namespace SuperMech.Code
             var nodeGo = new GameObject($"Node_{tech.id}");
             nodeGo.transform.SetParent(_treeContent, false);
             var nodeRect = nodeGo.AddComponent<RectTransform>();
-            nodeRect.anchorMin = new Vector2(0, 0.5f);
-            nodeRect.anchorMax = new Vector2(0, 0.5f);
-            nodeRect.pivot = new Vector2(0, 0.5f);
-            nodeRect.sizeDelta = new Vector2(140, 50);
+            nodeRect.anchorMin = new Vector2(0, 1);
+            nodeRect.anchorMax = new Vector2(0, 1);
+            nodeRect.pivot = new Vector2(0, 1);
+            nodeRect.sizeDelta = new Vector2(w, h);
             nodeRect.anchoredPosition = new Vector2(x, y);
             var nodeBtn = nodeGo.AddComponent<Button>();
             var nodeImg = nodeGo.AddComponent<Image>();
-            nodeImg.color = researched ? new Color(0.15f, 0.35f, 0.2f, 0.95f) :
-                            canResearch ? new Color(0.3f, 0.25f, 0.1f, 0.95f) :
-                            new Color(0.18f, 0.18f, 0.22f, 0.95f);
+            nodeImg.color = researched ? new Color(0.12f, 0.3f, 0.18f, 0.95f) :
+                            canResearch ? new Color(0.25f, 0.2f, 0.08f, 0.95f) :
+                            new Color(0.15f, 0.15f, 0.18f, 0.95f);
             _nodeImages[tech.id] = nodeImg;
 
             // 状态圆点
@@ -266,50 +279,45 @@ namespace SuperMech.Code
             dotRect.anchorMin = new Vector2(0, 0.5f);
             dotRect.anchorMax = new Vector2(0, 0.5f);
             dotRect.pivot = new Vector2(0.5f, 0.5f);
-            dotRect.sizeDelta = new Vector2(10, 10);
-            dotRect.anchoredPosition = new Vector2(10, 0);
+            dotRect.sizeDelta = new Vector2(12, 12);
+            dotRect.anchoredPosition = new Vector2(12, 0);
             var dotImg = dotGo.AddComponent<Image>();
             dotImg.color = researched ? new Color(0.4f, 1f, 0.5f) :
                           canResearch ? new Color(1f, 0.8f, 0.3f) :
                           new Color(0.5f, 0.5f, 0.5f);
             dotImg.sprite = Resources.GetBuiltinResource<Sprite>("Background");
 
-            // 科技名称
+            // 科技名称+层级
             var txtGo = new GameObject("Text");
             txtGo.transform.SetParent(nodeGo.transform, false);
             var txtRect = txtGo.AddComponent<RectTransform>();
             txtRect.anchorMin = Vector2.zero; txtRect.anchorMax = Vector2.one;
-            txtRect.offsetMin = new Vector2(24, 0); txtRect.offsetMax = new Vector2(-4, 0);
+            txtRect.offsetMin = new Vector2(30, 0); txtRect.offsetMax = new Vector2(-8, 0);
             var txt = txtGo.AddComponent<Text>();
             txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            txt.fontSize = 11;
+            txt.fontSize = 12;
             txt.color = researched ? new Color(0.6f, 1f, 0.7f) :
                         canResearch ? SuperMechUiSkin.TextColor :
                         SuperMechUiSkin.TextDim;
             txt.alignment = TextAnchor.MiddleLeft;
-            txt.text = tech.name;
+            txt.text = $"T{tech.tier} {tech.name}";
 
             string tid = tech.id;
             nodeBtn.onClick.AddListener(() => SelectTech(tid));
         }
 
-        private void CreateLine(float x1, float y1, float x2, float y2)
+        private void CreateVerticalLine(float x, float yTop, float yBottom)
         {
             var lineGo = new GameObject("Line");
             lineGo.transform.SetParent(_treeContent, false);
             var lineRect = lineGo.AddComponent<RectTransform>();
-            lineRect.anchorMin = new Vector2(0, 0.5f);
-            lineRect.anchorMax = new Vector2(0, 0.5f);
-            lineRect.pivot = new Vector2(0, 0.5f);
-            float dx = x2 - x1;
-            float dy = y2 - y1;
-            float len = Mathf.Sqrt(dx * dx + dy * dy);
-            float angle = Mathf.Atan2(dy, dx) * Mathf.Rad2Deg;
-            lineRect.sizeDelta = new Vector2(len, 2);
-            lineRect.anchoredPosition = new Vector2(x1, y1);
-            lineRect.localRotation = Quaternion.Euler(0, 0, angle);
+            lineRect.anchorMin = new Vector2(0, 1);
+            lineRect.anchorMax = new Vector2(0, 1);
+            lineRect.pivot = new Vector2(0.5f, 1);
+            lineRect.sizeDelta = new Vector2(2, yTop - yBottom);
+            lineRect.anchoredPosition = new Vector2(x, yTop);
             var lineImg = lineGo.AddComponent<Image>();
-            lineImg.color = new Color(0.4f, 0.4f, 0.5f, 0.5f);
+            lineImg.color = new Color(0.4f, 0.4f, 0.5f, 0.4f);
         }
 
         private void SelectTech(string id)
@@ -323,13 +331,8 @@ namespace SuperMech.Code
             bool canResearch = kid > 0 && SuperMechTech.CanResearch(kid, id);
             float points = kid > 0 ? SuperMechCivilization.GetTechPointsFromKingdomById(kid) : 0;
 
-            string branchName = def.subBranch == SuperMechTech.TechSubBranch.Common ? LocalizedTextManager.getText("sm_ui_tech_common") :
-                               def.subBranch == SuperMechTech.TechSubBranch.A ? LocalizedTextManager.getText("sm_ui_tech_branch_a") :
-                               def.subBranch == SuperMechTech.TechSubBranch.B ? LocalizedTextManager.getText("sm_ui_tech_branch_b") :
-                               LocalizedTextManager.getText("sm_ui_tech_branch_c");
-
             _detailText.text = $"<b><size=16><color=#59a5ff>{def.name}</color></size></b>\n" +
-                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tech_branch")}:</color> {branchName} | <color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tier")}:</color> T{def.tier}\n\n" +
+                $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tier")}:</color> T{def.tier}\n\n" +
                 $"{def.desc}\n\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_effect")}:</color> ";
             var effects = new List<string>();
@@ -342,7 +345,7 @@ namespace SuperMech.Code
                 var pre = SuperMechTech.GetDef(def.prerequisite);
                 _detailText.text += $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_prerequisite")}:</color> {(pre != null ? pre.name : def.prerequisite)}\n";
             }
-            _detailText.text += $"<color=#8fa8c8>消耗:</color> {def.cost} {LocalizedTextManager.getText("sm_ui_tech_points")}\n" +
+            _detailText.text += $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {def.cost} {LocalizedTextManager.getText("sm_ui_tech_points")}\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_current")}:</color> {points:F0}\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
                 $"<color={(researched ? "#66ff99" : (canResearch ? "#ffcc66" : "#ff6666"))}>" +
@@ -364,9 +367,9 @@ namespace SuperMech.Code
                 bool r = kid > 0 && SuperMechTech.IsResearched(kid, kv.Key);
                 bool cr = kid > 0 && SuperMechTech.CanResearch(kid, kv.Key);
                 kv.Value.color = isSelected ? SuperMechUiSkin.AccentDim :
-                                 r ? new Color(0.15f, 0.35f, 0.2f, 0.95f) :
-                                 cr ? new Color(0.3f, 0.25f, 0.1f, 0.95f) :
-                                 new Color(0.18f, 0.18f, 0.22f, 0.95f);
+                                 r ? new Color(0.12f, 0.3f, 0.18f, 0.95f) :
+                                 cr ? new Color(0.25f, 0.2f, 0.08f, 0.95f) :
+                                 new Color(0.15f, 0.15f, 0.18f, 0.95f);
             }
         }
 

@@ -918,5 +918,12 @@
   "sm_ui_damage": "伤害",
   "sm_ui_health": "生命",
   "sm_ui_speed": "速度",
-  "sm_ui_prerequisite": "前置"
+  "sm_ui_prerequisite": "前置",
+  "sm_ui_civ_tech_tree": "文明科技树",
+  "sm_ui_tech_energy": "能源",
+  "sm_ui_tech_space": "航天",
+  "sm_ui_tech_info": "信息",
+  "sm_ui_tech_bio": "生物",
+  "sm_ui_tech_military": "军事",
+  "sm_ui_none": "无"
 }
