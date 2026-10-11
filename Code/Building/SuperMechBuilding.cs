@@ -19,6 +19,31 @@ namespace SuperMech.Code
         public const string BlackStarPalace = "sm_blackstar_palace"; // 黑星行宫
         public const string CompanyHQ = "sm_company_hq";           // 降临者公司总部
 
+        /// <summary>建筑科技前置条件（v0.99.9 科技→建筑系统互动）
+        /// 研究对应科技后才能建造对应建筑</summary>
+        private static readonly Dictionary<string, string> _buildingTechPrereq = new Dictionary<string, string>
+        {
+            { MechFactory, "mech_t3" },      // 机械工厂需要机械T3（械兵与械兽）
+            { MercGuild, "info_t3" },        // 佣兵公会需要信息T3（人工智能）
+            { StarBank, "space_t3" },        // 星际银行需要航天T3（亚光速飞船）
+            { BlackStarPalace, "mech_t6" },  // 黑星行宫需要机械T6（神之零件）
+            { CompanyHQ, "info_t5" },        // 降临者公司总部需要信息T5（虚拟世界）
+        };
+
+        /// <summary>检查建筑是否已通过科技解锁</summary>
+        public static bool IsUnlocked(long kingdomId, string buildingId)
+        {
+            if (!_buildingTechPrereq.TryGetValue(buildingId, out var techId))
+                return true; // 无前置条件的建筑默认解锁
+            return SuperMechTech.IsResearched(kingdomId, techId);
+        }
+
+        /// <summary>获取建筑的科技前置条件ID</summary>
+        public static string GetTechPrereq(string buildingId)
+        {
+            return _buildingTechPrereq.TryGetValue(buildingId, out var techId) ? techId : null;
+        }
+
         /// <summary>注册所有自定义建筑</summary>
         public static void Register()
         {

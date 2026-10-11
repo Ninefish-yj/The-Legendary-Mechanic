@@ -246,6 +246,8 @@ namespace SuperMech.Code
             }
         }
 
+        private static float _colonyTechTimer;
+
         public static void TickColonies(float dt)
         {
             foreach (var p in _planets.Values)
@@ -255,6 +257,40 @@ namespace SuperMech.Code
                     p.resource = Mathf.Min(p.maxResource, p.resource + p.colonyLevel * 0.1f * dt);
                 }
             }
+
+            // 殖民地资源转化为文明科技点（每10秒转化一次）
+            _colonyTechTimer += dt;
+            if (_colonyTechTimer >= 10f)
+            {
+                _colonyTechTimer = 0;
+                foreach (var p in _planets.Values)
+                {
+                    if (p.colonyLevel > 0 && p.id != MAIN_PLANET && !string.IsNullOrEmpty(p.ownerKingdom))
+                    {
+                        var kingdom = FindKingdomByName(p.ownerKingdom);
+                        if (kingdom != null)
+                        {
+                            float techGain = p.resource * 0.05f; // 每次转化5%资源
+                            if (techGain > 0.1f)
+                            {
+                                p.resource -= techGain;
+                                SuperMechCivilization.AddTechPoints(kingdom, techGain);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>通过名称查找Kingdom</summary>
+        private static Kingdom FindKingdomByName(string name)
+        {
+            if (World.world?.kingdoms?.list == null) return null;
+            foreach (var k in World.world.kingdoms.list)
+            {
+                if (k != null && k.data != null && k.data.name == name) return k;
+            }
+            return null;
         }
 
         public static float TransportResource(string planetId, float amount)

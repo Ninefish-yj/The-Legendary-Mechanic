@@ -111,32 +111,51 @@ namespace SuperMech.Code
             return species?.RacialTalent ?? "";
         }
 
-        /// <summary>自然生成时随机分配种族（对照原著：不同星域有不同种族分布）</summary>
-        public static string RollRandomSpecies()
+        /// <summary>自然生成时随机分配种族（对照原著：不同星域有不同种族分布）
+        /// v0.99.9 生物科技→种族互动：研究生物科技后高级种族出现概率提升</summary>
+        public static string RollRandomSpecies(long kingdomId = 0)
         {
             var all = SuperMechSpecies.GetAllSpecies();
             var candidates = new List<SpeciesData>();
 
-            // 只有P0/P1种族自然生成，P2/P3需要特殊条件
+            // 基础：只有P0/P1种族自然生成
+            // 生物T5（种族优化与变异）后P2也可自然生成
+            // 生物T7（意识转移）后P3也可自然生成
+            bool allowP2 = kingdomId > 0 && SuperMechTech.IsResearched(kingdomId, "bio_t5");
+            bool allowP3 = kingdomId > 0 && SuperMechTech.IsResearched(kingdomId, "bio_t7");
+
             foreach (var s in all.Values)
             {
                 if (s.Priority == "P0" || s.Priority == "P1")
-                {
                     candidates.Add(s);
-                }
+                else if (s.Priority == "P2" && allowP2)
+                    candidates.Add(s);
+                else if (s.Priority == "P3" && allowP3)
+                    candidates.Add(s);
             }
 
             if (candidates.Count == 0) return "human";
 
-            // P0权重高，P1权重低
+            // P0权重高，P1权重低，P2/P3权重更低
+            // 生物T3（基因药剂）后P1权重提升
+            bool boostP1 = kingdomId > 0 && SuperMechTech.IsResearched(kingdomId, "bio_t3");
+
             var weighted = new List<string>();
             foreach (var c in candidates)
             {
-                int weight = c.Priority == "P0" ? 70 : 30;
+                int weight = c.Priority switch
+                {
+                    "P0" => 70,
+                    "P1" => boostP1 ? 35 : 20,
+                    "P2" => 8,
+                    "P3" => 2,
+                    _ => 10
+                };
                 for (int i = 0; i < weight; i++) weighted.Add(c.Id);
             }
 
-            return weighted[Random.Range(0, weighted.Count)];
+            if (weighted.Count == 0) return "human";
+            return weighted[UnityEngine.Random.Range(0, weighted.Count)];
         }
 
         /// <summary>获取单位可进化的种族列表</summary>
@@ -187,7 +206,8 @@ namespace SuperMech.Code
                     }
                     else
                     {
-                        string species = RollRandomSpecies();
+                        long kid = a.kingdom != null ? a.kingdom.getID() : 0;
+                        string species = RollRandomSpecies(kid);
                         SetSpecies(a.data.id, species);
                     }
                 }

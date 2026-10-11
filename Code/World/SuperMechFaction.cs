@@ -478,10 +478,23 @@ namespace SuperMech.Code
             return GetRelation(fa, fb) == FactionRelation.Hostile;
         }
 
-        /// <summary>敌对势力战斗加成（攻击方伤害+15%）</summary>
+        /// <summary>敌对势力战斗加成（攻击方伤害+15%）
+        /// v0.99.9 军事科技→战争互动：攻击方文明研究军事科技后额外增加伤害</summary>
         public static float GetHostileBonus(Actor attacker, Actor target)
         {
-            return IsHostile(attacker, target) ? 1.15f : 1f;
+            if (!IsHostile(attacker, target)) return 1f;
+            float bonus = 1.15f; // 基础敌对加成
+            // 军事科技额外加成：每级军事科技+2%伤害
+            if (attacker != null && attacker.kingdom != null)
+            {
+                long kid = attacker.kingdom.getID();
+                for (int t = 1; t <= 8; t++)
+                {
+                    if (SuperMechTech.IsResearched(kid, $"mil_t{t}"))
+                        bonus += 0.02f;
+                }
+            }
+            return bonus;
         }
 
         /// <summary>v0.54.0 代理战争：不同文明势力间伤害+5%，文明交战时额外+10%</summary>

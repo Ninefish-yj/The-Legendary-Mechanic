@@ -47,6 +47,9 @@ namespace SuperMech.Code
 
             // 9. 文明科技树加成（v0.99.1 对照原著：三大文明科技路线给全文明属性加成）
             ApplyTechBonus(actor, stats);
+
+            // 10. 机械科技→械兵额外加成（v0.99.9 系统互动：械兵享受机械科技额外加成）
+            ApplyMechTechBonus(actor, stats);
         }
 
         /// <summary>v0.99.1 文明科技树加成：已研究科技给全文明单位提供伤害/生命/速度加成</summary>
@@ -58,6 +61,41 @@ namespace SuperMech.Code
             if (dmg > 0) stats["damage"] *= (1f + dmg);
             if (hp > 0) stats["health"] *= (1f + hp);
             if (spd > 0) stats["speed"] *= (1f + spd);
+        }
+
+        /// <summary>v0.99.9 机械科技→械兵额外加成：械兵单位享受机械科技额外50%加成
+        /// 对照原著：机械师的械兵随科技进步而强化</summary>
+        private static void ApplyMechTechBonus(Actor actor, BaseStats stats)
+        {
+            if (actor == null || actor.kingdom == null) return;
+            // 检查是否是械兵（有sm_mech_*特质）
+            bool isMechUnit = false;
+            if (actor.data?.traits != null)
+            {
+                foreach (var t in actor.data.traits)
+                {
+                    if (t != null && t.id != null && t.id.StartsWith("sm_mech_"))
+                    {
+                        isMechUnit = true;
+                        break;
+                    }
+                }
+            }
+            if (!isMechUnit) return;
+
+            long kid = actor.kingdom.getID();
+            // 机械科技额外50%加成
+            float mechBonus = 0;
+            for (int t = 1; t <= 8; t++)
+            {
+                if (SuperMechTech.IsResearched(kid, $"mech_t{t}"))
+                    mechBonus += 0.02f; // 每级机械科技额外+2%伤害
+            }
+            if (mechBonus > 0)
+            {
+                stats["damage"] *= (1f + mechBonus);
+                stats["health"] *= (1f + mechBonus * 0.5f);
+            }
         }
 
         /// <summary>
