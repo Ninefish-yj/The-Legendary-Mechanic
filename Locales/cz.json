@@ -908,5 +908,15 @@
   "sm_ui_researched": "已研究",
   "sm_ui_available": "可研究",
   "sm_ui_tech_points": "科技点",
-  "sm_ui_current": "当前"
+  "sm_ui_current": "当前",
+  "sm_ui_tech_common": "共同基础",
+  "sm_ui_tech_branch_a": "军团路线",
+  "sm_ui_tech_branch_b": "虚拟路线",
+  "sm_ui_tech_branch_c": "神械路线",
+  "sm_ui_tech_branch": "分支",
+  "sm_ui_effect": "效果",
+  "sm_ui_damage": "伤害",
+  "sm_ui_health": "生命",
+  "sm_ui_speed": "速度",
+  "sm_ui_prerequisite": "前置"
 }
