@@ -254,31 +254,28 @@ namespace SuperMech.Code
         /// <summary>机械工厂运行：周围有机械系超能者时，定期产出机械军团单位</summary>
         private static void RunMechFactory(Building building)
         {
-            // 每256tick（约64秒）检查一次
             if (Time.frameCount % 256 != 0) return;
+
+            float range = SuperMechBuildingUpgrade.GetRange(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
 
             int mechCount = 0;
             foreach (var a in World.world.units)
             {
                 if (a == null) continue;
                 float dist = Vector2.Distance(a.current_position, building.current_position);
-                if (dist < 30f && a.hasTrait(SuperMechTraits.ClassMech))
-                {
+                if (dist < range && a.hasTrait(SuperMechTraits.ClassMech))
                     mechCount++;
-                }
             }
 
             if (mechCount > 0)
             {
-                // 机械工厂产出：给周围机械系超能者加经验
                 foreach (var a in World.world.units)
                 {
                     if (a == null) continue;
                     float dist = Vector2.Distance(a.current_position, building.current_position);
-                    if (dist < 30f && a.hasTrait(SuperMechTraits.ClassMech))
-                    {
-                        SuperMechAwakened.AddXp(a, 5f * mechCount);
-                    }
+                    if (dist < range && a.hasTrait(SuperMechTraits.ClassMech))
+                        SuperMechAwakened.AddXp(a, 5f * mechCount * mult);
                 }
             }
         }
@@ -288,14 +285,15 @@ namespace SuperMech.Code
         {
             if (Time.frameCount % 256 != 0) return;
 
+            float range = SuperMechBuildingUpgrade.GetRange(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+
             foreach (var a in World.world.units)
             {
                 if (a == null) continue;
                 float dist = Vector2.Distance(a.current_position, building.current_position);
-                if (dist < 40f && SuperMechAwakened.IsAwakened(a))
-                {
-                    SuperMechAwakened.AddXp(a, 3f);
-                }
+                if (dist < range && SuperMechAwakened.IsAwakened(a))
+                    SuperMechAwakened.AddXp(a, 3f * mult);
             }
         }
 
@@ -304,14 +302,17 @@ namespace SuperMech.Code
         {
             if (Time.frameCount % 512 != 0) return;
 
+            float range = SuperMechBuildingUpgrade.GetRange(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+
             foreach (var a in World.world.units)
             {
                 if (a == null) continue;
                 float dist = Vector2.Distance(a.current_position, building.current_position);
-                if (dist < 40f && SuperMechAdvancement.GetExactRankIndex(a) >= 4)
+                if (dist < range && SuperMechAdvancement.GetExactRankIndex(a) >= 4)
                 {
                     int inal = SuperMechInal.GetInal(a);
-                    SuperMechInal.SetInal(a, inal + 10);
+                    SuperMechInal.SetInal(a, inal + (int)(10 * mult));
                 }
             }
         }
@@ -321,26 +322,24 @@ namespace SuperMech.Code
         {
             if (Time.frameCount % 128 != 0) return;
 
+            float range = SuperMechBuildingUpgrade.GetRange(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+
             foreach (var a in World.world.units)
             {
                 if (a == null) continue;
                 float dist = Vector2.Distance(a.current_position, building.current_position);
-                if (dist < 50f && a.hasTrait(SuperMechTraits.ClassMech))
-                {
-                    SuperMechAwakened.AddXp(a, 15f);
-                }
+                if (dist < range && a.hasTrait(SuperMechTraits.ClassMech))
+                    SuperMechAwakened.AddXp(a, 15f * mult);
             }
 
-            // 韩萧濒死保护：行宫周围的韩萧化身获得额外恢复
             foreach (var a in World.world.units)
             {
                 if (a == null) continue;
                 if (!a.hasTrait("sm_player_hanxiao")) continue;
                 float dist = Vector2.Distance(a.current_position, building.current_position);
-                if (dist < 50f && a.data.health < a.data.health_max)
-                {
-                    a.data.health = Mathf.Min(a.data.health_max, a.data.health + a.data.health_max * 0.05f);
-                }
+                if (dist < range && a.data.health < a.data.health_max)
+                    a.data.health = Mathf.Min(a.data.health_max, a.data.health + a.data.health_max * 0.05f * mult);
             }
         }
 
@@ -349,29 +348,31 @@ namespace SuperMech.Code
         {
             if (Time.frameCount % 256 != 0) return;
 
+            float range = SuperMechBuildingUpgrade.GetRange(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+
             int playerCount = 0;
             foreach (var a in World.world.units)
             {
                 if (a == null) continue;
                 float dist = Vector2.Distance(a.current_position, building.current_position);
-                if (dist < 50f && (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao")))
+                if (dist < range && (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao")))
                 {
                     playerCount++;
-                    SuperMechAwakened.AddXp(a, 10f);
+                    SuperMechAwakened.AddXp(a, 10f * mult);
                 }
             }
 
-            // 公司总部定期发行伊纳尔给周围降临者
             if (playerCount > 0 && Time.frameCount % 512 == 0)
             {
                 foreach (var a in World.world.units)
                 {
                     if (a == null) continue;
                     float dist = Vector2.Distance(a.current_position, building.current_position);
-                    if (dist < 50f && (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao")))
+                    if (dist < range && (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao")))
                     {
                         int inal = SuperMechInal.GetInal(a);
-                        SuperMechInal.SetInal(a, inal + 50 * playerCount);
+                        SuperMechInal.SetInal(a, inal + (int)(50 * playerCount * mult));
                     }
                 }
             }

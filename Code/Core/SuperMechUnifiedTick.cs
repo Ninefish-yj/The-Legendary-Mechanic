@@ -111,6 +111,7 @@ namespace SuperMech.Code
                 SafeRun("公司发行", () => SuperMechCompany.TickIssue());
                 SafeRun("伊纳尔俸禄", () => SuperMechInal.TickSalary());
                 SafeRun("建筑系统", () => SuperMechBuildingManager.Tick());
+                SafeRun("建筑升级", () => SuperMechBuildingUpgrade.Tick());
             }
 
             float now = Time.time;
