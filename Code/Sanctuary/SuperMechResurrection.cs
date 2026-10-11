@@ -247,7 +247,6 @@ namespace SuperMech.Code
             // 重塑肉身=身体恢复巅峰状态（属性/战力不受年龄影响），但年龄保持死亡时年龄（角色连续性）
             // 寿命 = 死亡时年龄 + 阶位寿命加成 × 信息完整度（续命，不是返老还童）
             int deathAge = state.deathAge > 0 ? state.deathAge : GetPeakAgeForRank(restoredRank);
-            newActor.data.age = deathAge;
             float rankBonus = SuperMechAdvancement.GetLifespanBonus(restoredRank);
             float newLifespan = deathAge + rankBonus * integrity;
             newActor.stats["lifespan"] = newLifespan;

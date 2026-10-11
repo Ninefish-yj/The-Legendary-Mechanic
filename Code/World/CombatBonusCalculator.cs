@@ -74,7 +74,7 @@ namespace SuperMech.Code
             {
                 foreach (var t in actor.data.saved_traits)
                 {
-                    if (t != null && t.id != null && t.id.StartsWith("sm_mech_"))
+                    if (t != null && t.StartsWith("sm_mech_"))
                     {
                         isMechUnit = true;
                         break;

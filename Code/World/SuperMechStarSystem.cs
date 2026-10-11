@@ -151,7 +151,7 @@ namespace SuperMech.Code
                     assetId = actor.asset.id,
                     name = actor.data.name,
                     kingdomName = actor.kingdom?.data?.name,
-                    age = actor.data.age
+                    age = actor.age
                 };
                 // 从WorldBox地图移除
                 actor.dieSimpleNone();
@@ -241,7 +241,6 @@ namespace SuperMech.Code
             if (actor != null)
             {
                 actor.data.name = snapshot.name;
-                actor.data.age = snapshot.age;
                 Debug.Log($"[超神机械师] 单位 {snapshot.name} 从星际航行到达主星球");
             }
         }
@@ -337,10 +336,10 @@ namespace SuperMech.Code
             if (World.world?.map == null) return null;
             for (int i = 0; i < 50; i++)
             {
-                int x = UnityEngine.Random.Range(0, World.world.map.Width);
-                int y = UnityEngine.Random.Range(0, World.world.map.Height);
-                var tile = World.world.map.GetTile(x, y);
-                if (tile != null && tile.Type == TileType.Land) return tile;
+                int x = UnityEngine.Random.Range(0, World.world.width);
+                int y = UnityEngine.Random.Range(0, World.world.height);
+                var tile = World.world.GetTile(x, y);
+                if (tile != null && tile.Type.ground && !tile.Type.liquid) return tile;
             }
             return null;
         }

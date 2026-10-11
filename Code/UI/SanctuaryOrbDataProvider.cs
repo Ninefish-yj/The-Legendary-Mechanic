@@ -54,7 +54,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>构建文明名称</summary>
-        private static string BuildCivilizationName(CivilizationSnapshot snap, int iter)
+        private static string BuildCivilizationName(SuperMechCivilizationData.CivilizationSnapshot snap, int iter)
         {
             if (snap != null && snap.notableUnits != null && snap.notableUnits.Count > 0)
                 return snap.notableUnits[0] + LocalizedTextManager.getText("sm_san_civ_era");
@@ -64,7 +64,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>构建成就描述</summary>
-        private static string BuildAchievement(CivilizationSnapshot snap)
+        private static string BuildAchievement(SuperMechCivilizationData.CivilizationSnapshot snap)
         {
             if (snap != null)
             {

@@ -377,13 +377,13 @@ namespace SuperMech.Code
                 int x, y;
                 switch (edge)
                 {
-                    case 0: x = UnityEngine.Random.Range(0, World.world.map.Width); y = 0; break;
-                    case 1: x = UnityEngine.Random.Range(0, World.world.map.Width); y = World.world.map.Height - 1; break;
-                    case 2: x = 0; y = UnityEngine.Random.Range(0, World.world.map.Height); break;
-                    default: x = World.world.map.Width - 1; y = UnityEngine.Random.Range(0, World.world.map.Height); break;
+                    case 0: x = UnityEngine.Random.Range(0, World.world.width); y = 0; break;
+                    case 1: x = UnityEngine.Random.Range(0, World.world.width); y = World.world.height - 1; break;
+                    case 2: x = 0; y = UnityEngine.Random.Range(0, World.world.height); break;
+                    default: x = World.world.width - 1; y = UnityEngine.Random.Range(0, World.world.height); break;
                 }
-                var tile = World.world.map.GetTile(x, y);
-                if (tile != null && tile.Type == TileType.Land) return tile;
+                var tile = World.world.GetTile(x, y);
+                if (tile != null && tile.Type.ground && !tile.Type.liquid) return tile;
             }
             return null;
         }

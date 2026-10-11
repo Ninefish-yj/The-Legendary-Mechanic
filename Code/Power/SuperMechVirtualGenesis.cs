@@ -206,10 +206,10 @@ namespace SuperMech.Code
             if (World.world?.map == null) return null;
             for (int i = 0; i < 50; i++)
             {
-                int x = UnityEngine.Random.Range(0, World.world.map.Width);
-                int y = UnityEngine.Random.Range(0, World.world.map.Height);
-                var tile = World.world.map.GetTile(x, y);
-                if (tile != null && tile.Type == TileType.Land) return tile;
+                int x = UnityEngine.Random.Range(0, World.world.width);
+                int y = UnityEngine.Random.Range(0, World.world.height);
+                var tile = World.world.GetTile(x, y);
+                if (tile != null && tile.Type.ground && !tile.Type.liquid) return tile;
             }
             return null;
         }

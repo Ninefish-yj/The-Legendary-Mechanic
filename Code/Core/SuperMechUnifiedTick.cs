@@ -162,7 +162,7 @@ namespace SuperMech.Code
             removed += SuperMechTranscendence.CleanupDead(alive);
             removed += SuperMechDimension.CleanupDead(alive);
             removed += SuperMechVirtualGenesis.CleanupDead(alive);
-            removed += SuperMechMechLegion.CleanupDead(alive);
+            SuperMechMechLegion.CleanupDead(alive);
             removed += SuperMechMageTower.CleanupDead(alive);
             removed += SuperMechRelic.CleanupDead(alive);
             removed += SuperMechCosmicRelic.CleanupDead(alive);

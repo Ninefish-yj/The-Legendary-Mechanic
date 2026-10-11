@@ -177,8 +177,8 @@ namespace SuperMech.Code
                 {
                     for (int dy = -r; dy <= r; dy++)
                     {
-                        var tile = World.world.map.GetTile(center.x + dx, center.y + dy);
-                        if (tile != null && tile.Type == TileType.Land && tile.building == null)
+                        var tile = World.world.GetTile(center.x + dx, center.y + dy);
+                        if (tile != null && tile.Type.ground && !tile.Type.liquid && tile.building == null)
                             return tile;
                     }
                 }

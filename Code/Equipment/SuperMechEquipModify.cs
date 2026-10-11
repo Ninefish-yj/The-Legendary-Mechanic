@@ -15,7 +15,7 @@ namespace SuperMech.Code
         public const float BaseSuccessRate = 0.70f; // 基础成功率
         public const float MechSuccessBonus = 0.20f; // 机械师成功率加成
 
-        private static readonly Dictionary<long, int> _modifyLevels = new Dictionary<long, int>();
+        public static readonly Dictionary<long, int> _modifyLevels = new Dictionary<long, int>();
 
         /// <summary>获取单位当前装备的改装等级</summary>
         public static int GetModifyLevel(Actor a)
