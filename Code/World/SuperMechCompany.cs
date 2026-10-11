@@ -63,9 +63,9 @@ namespace SuperMech.Code
         {
             if (c == null) return 0;
             // 基础发行量 = 等级 × 100，黑星公司额外+50%（机械制造利润高）
-            int base = c.level * 100;
-            if (c.id == BlackStarCorp) base = (int)(base * 1.5f);
-            return base;
+            int baseAmount = c.level * 100;
+            if (c.id == BlackStarCorp) baseAmount = (int)(baseAmount * 1.5f);
+            return baseAmount;
         }
 
         /// <summary>发行Tick：公司产生伊纳尔存入金库</summary>

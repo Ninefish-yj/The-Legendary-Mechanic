@@ -70,9 +70,9 @@ namespace SuperMech.Code
             if (actor == null || actor.kingdom == null) return;
             // 检查是否是械兵（有sm_mech_*特质）
             bool isMechUnit = false;
-            if (actor.data?.traits != null)
+            if (actor.data?.saved_traits != null)
             {
-                foreach (var t in actor.data.traits)
+                foreach (var t in actor.data.saved_traits)
                 {
                     if (t != null && t.id != null && t.id.StartsWith("sm_mech_"))
                     {

@@ -110,7 +110,7 @@ namespace SuperMech.Code
                     string typeId = def.id;
                     btn.onClick.AddListener(() =>
                     {
-                        SuperMechMechLegion.SpawnMechUnit(a, typeId, a.currentTile);
+                        SuperMechMechLegion.SpawnMechUnit(a, typeId, a.current_tile);
                         RefreshAll();
                     });
                 }

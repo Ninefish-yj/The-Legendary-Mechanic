@@ -368,6 +368,23 @@ namespace SuperMech.Code
         }
 
         /// <summary>地图边缘虚空生成点（参照宇宙异兽）</summary>
+        private static WorldTile FindEdgeTile()
+        {
+            if (World.world?.map == null) return null;
+            for (int attempt = 0; attempt < 50; attempt++)
+            {
+                int edge = UnityEngine.Random.Range(0, 4);
+                int x, y;
+                switch (edge)
+                {
+                    case 0: x = UnityEngine.Random.Range(0, World.world.map.Width); y = 0; break;
+                    case 1: x = UnityEngine.Random.Range(0, World.world.map.Width); y = World.world.map.Height - 1; break;
+                    case 2: x = 0; y = UnityEngine.Random.Range(0, World.world.map.Height); break;
+                    default: x = World.world.map.Width - 1; y = UnityEngine.Random.Range(0, World.world.map.Height); break;
+                }
+                var tile = World.world.map.GetTile(x, y);
+                if (tile != null && tile.Type == TileType.Land) return tile;
+            }
             return null;
         }
 
@@ -607,3 +624,4 @@ namespace SuperMech.Code
             return removed;
         }
     }
+}

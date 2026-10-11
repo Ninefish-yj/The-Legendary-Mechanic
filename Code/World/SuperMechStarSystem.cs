@@ -78,8 +78,8 @@ namespace SuperMech.Code
 
             for (int i = 0; i < 10; i++)
             {
-                float angle = (i / 10f) * Mathf.PI * 2 + rng.NextFloat(-0.3f, 0.3f);
-                float dist = 150 + rng.NextFloat(50, 250);
+                float angle = (i / 10f) * Mathf.PI * 2 + (float)(rng.NextDouble() * 0.6 - 0.3);
+                float dist = 150 + (float)(rng.NextDouble() * 200);
                 string pid = $"planet_{i}";
                 _planets[pid] = new PlanetData
                 {
@@ -143,7 +143,7 @@ namespace SuperMech.Code
             // 从主星球出发：从WorldBox地图中找到Actor，保存快照，移除Actor
             if (fromPlanet == MAIN_PLANET)
             {
-                var actor = World.world?.units?.GetUnit(unitId);
+                Actor actor = FindActorById(unitId);
                 if (actor == null) return false;
                 snapshot = new ActorSnapshot
                 {
@@ -154,7 +154,7 @@ namespace SuperMech.Code
                     age = actor.data.age
                 };
                 // 从WorldBox地图移除
-                World.world.units.killUnit(actor, true);
+                actor.dieSimpleNone();
             }
             else
             {
@@ -234,8 +234,8 @@ namespace SuperMech.Code
         private static void SpawnActorOnMainPlanet(ActorSnapshot snapshot)
         {
             if (World.world == null || snapshot == null) return;
-            // 找一个随机地块生成
-            var tile = World.world.map.tiles.GetRandom();
+            // 找一个随机陆地地块生成
+            var tile = GetRandomLandTile();
             if (tile == null) return;
             var actor = World.world.units.createNewUnit(snapshot.assetId, tile, pMiracleSpawn: false, 0f, null, null, pSpawnWithItems: true, pAdultAge: true);
             if (actor != null)
@@ -318,6 +318,31 @@ namespace SuperMech.Code
                     list.Add(a);
             }
             return list;
+        }
+
+        /// <summary>通过ID查找单位</summary>
+        private static Actor FindActorById(long id)
+        {
+            if (World.world?.units == null) return null;
+            foreach (var u in World.world.units)
+            {
+                if (u != null && u.id == id) return u;
+            }
+            return null;
+        }
+
+        /// <summary>获取随机陆地地块</summary>
+        private static WorldTile GetRandomLandTile()
+        {
+            if (World.world?.map == null) return null;
+            for (int i = 0; i < 50; i++)
+            {
+                int x = UnityEngine.Random.Range(0, World.world.map.Width);
+                int y = UnityEngine.Random.Range(0, World.world.map.Height);
+                var tile = World.world.map.GetTile(x, y);
+                if (tile != null && tile.Type == TileType.Land) return tile;
+            }
+            return null;
         }
 
         public static void ClearAll()

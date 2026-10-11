@@ -58,11 +58,11 @@ namespace SuperMech.Code
                 list.Add((kv.Key, kv.Value, _callCount[kv.Key]));
             list.Sort((a, b) => b.total.CompareTo(a.total));
 
-            Debug.Log("[超神机械师] 性能报告（60秒累计）:");
+            UnityEngine.Debug.Log("[超神机械师] 性能报告（60秒累计）:");
             foreach (var (name, total, count) in list)
             {
                 double avgMs = total.TotalMilliseconds / count;
-                Debug.Log($"  {name,-30} 总耗时:{total.TotalMilliseconds,8:F1}ms  次数:{count,5}  平均:{avgMs,6:F2}ms");
+                UnityEngine.Debug.Log($"  {name,-30} 总耗时:{total.TotalMilliseconds,8:F1}ms  次数:{count,5}  平均:{avgMs,6:F2}ms");
             }
             _totalTime.Clear();
             _callCount.Clear();

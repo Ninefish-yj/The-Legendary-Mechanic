@@ -23,7 +23,7 @@ namespace SuperMech.Code
 
             foreach (var city in World.world.cities)
             {
-                if (city == null || city.city == null) continue;
+                if (city == null) continue;
                 TryBuildMechFactory(city);
                 TryBuildMercGuild(city);
                 TryBuildStarBank(city);
@@ -36,17 +36,38 @@ namespace SuperMech.Code
             RunBuildingEffects();
         }
 
+        /// <summary>获取城市所属王国ID</summary>
+        private static long GetKingdomId(City city)
+        {
+            if (city == null) return 0;
+            if (city.kingdom != null) return city.kingdom.getID();
+            if (city.data != null) return city.data.kingdomID;
+            return 0;
+        }
+
+        /// <summary>获取城市中的单位列表（通过遍历全局单位）</summary>
+        private static List<Actor> GetCityUnits(City city)
+        {
+            var result = new List<Actor>();
+            if (city == null || World.world?.units == null) return result;
+            foreach (var a in World.world.units)
+            {
+                if (a != null && a.isAlive() && a.city == city)
+                    result.Add(a);
+            }
+            return result;
+        }
+
         /// <summary>尝试建造机械工厂：文明有机械系B阶超能者+研究mech_t3时</summary>
         private static void TryBuildMechFactory(City city)
         {
             if (HasBuilding(city, SuperMechBuilding.MechFactory)) return;
-            long kid = city.city?.kingdom != null ? city.city.kingdom.getID() : 0;
+            long kid = GetKingdomId(city);
             if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.MechFactory)) return;
 
             bool hasMechB = false;
-            foreach (var a in city.city.units)
+            foreach (var a in GetCityUnits(city))
             {
-                if (a == null) continue;
                 if (a.hasTrait(SuperMechTraits.ClassMech) && SuperMechAdvancement.GetExactRankIndex(a) >= 6)
                 {
                     hasMechB = true;
@@ -64,13 +85,12 @@ namespace SuperMech.Code
         private static void TryBuildMercGuild(City city)
         {
             if (HasBuilding(city, SuperMechBuilding.MercGuild)) return;
-            long kid = city.city?.kingdom != null ? city.city.kingdom.getID() : 0;
+            long kid = GetKingdomId(city);
             if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.MercGuild)) return;
 
             int awakenedCount = 0;
-            foreach (var a in city.city.units)
+            foreach (var a in GetCityUnits(city))
             {
-                if (a == null) continue;
                 if (SuperMechAwakened.IsAwakened(a))
                 {
                     awakenedCount++;
@@ -88,13 +108,12 @@ namespace SuperMech.Code
         private static void TryBuildStarBank(City city)
         {
             if (HasBuilding(city, SuperMechBuilding.StarBank)) return;
-            long kid = city.city?.kingdom != null ? city.city.kingdom.getID() : 0;
+            long kid = GetKingdomId(city);
             if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.StarBank)) return;
 
             bool hasA = false;
-            foreach (var a in city.city.units)
+            foreach (var a in GetCityUnits(city))
             {
-                if (a == null) continue;
                 if (SuperMechAdvancement.GetExactRankIndex(a) >= 8)
                 {
                     hasA = true;
@@ -111,8 +130,8 @@ namespace SuperMech.Code
         /// <summary>检查城市是否已有某建筑</summary>
         private static bool HasBuilding(City city, string buildingId)
         {
-            if (city?.city?.buildings == null) return false;
-            foreach (var b in city.city.buildings)
+            if (city?.buildings == null) return false;
+            foreach (var b in city.buildings)
             {
                 if (b != null && b.asset != null && b.asset.id == buildingId)
                     return true;
@@ -135,7 +154,7 @@ namespace SuperMech.Code
                     return;
 
                 World.world.buildings.addBuilding(asset, tile);
-                Debug.Log($"[超神机械师] 城市{city.city.name}建造了{buildingId}");
+                Debug.Log($"[超神机械师] 城市建造了{buildingId}");
             }
             catch (System.Exception e)
             {
@@ -143,18 +162,22 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>找到城市中可建造的地块</summary>
+        /// <summary>找到城市中可建造的地块（在城市建筑附近找空地）</summary>
         private static WorldTile FindBuildableTile(City city)
         {
-            if (city?.city?.center_tile == null) return null;
-            var center = city.city.center_tile;
+            if (city?.buildings == null || city.buildings.Count == 0) return null;
+            // 从城市已有建筑附近找可建造地块
+            var refBuilding = city.buildings[0];
+            if (refBuilding == null || refBuilding.current_tile == null) return null;
+            var center = refBuilding.current_tile;
+
             for (int r = 1; r < 8; r++)
             {
                 for (int dx = -r; dx <= r; dx++)
                 {
                     for (int dy = -r; dy <= r; dy++)
                     {
-                        var tile = World.world.getTile(center.x + dx, center.y + dy);
+                        var tile = World.world.map.GetTile(center.x + dx, center.y + dy);
                         if (tile != null && tile.Type == TileType.Land && tile.building == null)
                             return tile;
                     }
@@ -186,9 +209,9 @@ namespace SuperMech.Code
 
             if (hanXiao == null || hanXiao.city == null) return;
 
-            City city = hanXiao.city.city;
+            City city = hanXiao.city;
             if (city == null) return;
-            long kid = city.kingdom != null ? city.kingdom.getID() : 0;
+            long kid = GetKingdomId(city);
             if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.BlackStarPalace)) return;
             BuildBuilding(city, SuperMechBuilding.BlackStarPalace);
         }
@@ -208,11 +231,10 @@ namespace SuperMech.Code
 
             foreach (var city in World.world.cities)
             {
-                if (city?.city?.units == null) continue;
+                if (city == null) continue;
                 int count = 0;
-                foreach (var a in city.city.units)
+                foreach (var a in GetCityUnits(city))
                 {
-                    if (a == null) continue;
                     if (a.hasTrait("sm_player") || a.hasTrait("sm_player_hanxiao"))
                         count++;
                 }
@@ -225,7 +247,7 @@ namespace SuperMech.Code
 
             if (bestCount >= 3 && bestCity != null)
             {
-                long kid = bestCity.city?.kingdom != null ? bestCity.city.kingdom.getID() : 0;
+                long kid = GetKingdomId(bestCity);
                 if (!SuperMechBuilding.IsUnlocked(kid, SuperMechBuilding.CompanyHQ)) return;
                 BuildBuilding(bestCity, SuperMechBuilding.CompanyHQ);
             }
@@ -341,15 +363,6 @@ namespace SuperMech.Code
                 float dist = Vector2.Distance(a.current_position, building.current_position);
                 if (dist < range && a.hasTrait(SuperMechTraits.ClassMech))
                     SuperMechAwakened.AddXp(a, 15f * mult);
-            }
-
-            foreach (var a in World.world.units)
-            {
-                if (a == null) continue;
-                if (!a.hasTrait("sm_player_hanxiao")) continue;
-                float dist = Vector2.Distance(a.current_position, building.current_position);
-                if (dist < range && a.data.health < a.data.health_max)
-                    a.data.health = Mathf.Min(a.data.health_max, a.data.health + a.data.health_max * 0.05f * mult);
             }
         }
 

@@ -43,7 +43,9 @@ namespace SuperMech.Code
             // 专属种族需要超A阶位
             if (target.Priority == "P3")
             {
-                var rank = SuperMechRankSystem.GetRank(actorId);
+                Actor actor = FindActorById(actorId);
+                if (actor == null) return false;
+                int rank = SuperMechAdvancement.GetExactRankIndex(actor);
                 return rank >= 10; // S阶（超A级）
             }
 
@@ -224,6 +226,17 @@ namespace SuperMech.Code
         public static void Load(Dictionary<long, string> data)
         {
             _store.LoadAll(data);
+        }
+
+        /// <summary>通过ID查找单位</summary>
+        private static Actor FindActorById(long id)
+        {
+            if (World.world?.units == null) return null;
+            foreach (var u in World.world.units)
+            {
+                if (u != null && u.id == id) return u;
+            }
+            return null;
         }
 
         /// <summary>清理死亡单位数据</summary>

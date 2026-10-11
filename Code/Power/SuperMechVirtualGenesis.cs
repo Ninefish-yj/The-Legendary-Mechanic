@@ -154,8 +154,8 @@ namespace SuperMech.Code
             bool isTrue = state.level == GenesisLevel.True;
 
             // 在召唤者身边生成机械单位（v0.94.3：接入机械军团系统，使用8种原著机械单位）
-            WorldTile tile = summoner.currentTile;
-            if (tile == null) tile = World.world.GetRandomTile();
+            WorldTile tile = summoner.current_tile;
+            if (tile == null) tile = GetRandomLandTile();
             if (tile == null) return false;
 
             // 虚拟创世真：可召唤最高级机械战神；普通：根据阶位解锁
@@ -198,6 +198,20 @@ namespace SuperMech.Code
                     TryAscendToTrue(a);
                 }
             }
+        }
+
+        /// <summary>获取随机陆地地块</summary>
+        private static WorldTile GetRandomLandTile()
+        {
+            if (World.world?.map == null) return null;
+            for (int i = 0; i < 50; i++)
+            {
+                int x = UnityEngine.Random.Range(0, World.world.map.Width);
+                int y = UnityEngine.Random.Range(0, World.world.map.Height);
+                var tile = World.world.map.GetTile(x, y);
+                if (tile != null && tile.Type == TileType.Land) return tile;
+            }
+            return null;
         }
 
         public static void Clear()

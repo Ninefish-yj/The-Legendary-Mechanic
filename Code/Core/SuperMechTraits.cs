@@ -128,7 +128,6 @@ namespace SuperMech.Code
                     needs_to_be_explored = false,
                     can_be_given = false,
                     can_be_removed = false,
-                    hidden = true,
                     base_stats = new BaseStats()
                 };
                 LocalizedTextManager.add("trait_" + mid, mid, pReplace: true);

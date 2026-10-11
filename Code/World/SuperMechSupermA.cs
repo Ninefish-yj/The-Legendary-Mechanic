@@ -516,7 +516,7 @@ namespace SuperMech.Code
                 // 原著：超A选择投靠待遇最好的文明（俸禄+资源+庇护），不是最近的
                 Kingdom target = null;
                 int bestSalary = 0;
-                foreach (var k in World.world.kingdoms.kingdoms)
+                foreach (var k in World.world.kingdoms.list)
                 {
                     if (k == null || k.id == a.kingdom?.id) continue;
                     int lvl = (int)SuperMechCivilization.GetCivLevelFromKingdom(k);

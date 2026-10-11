@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -195,8 +196,33 @@ namespace SuperMech.Code
             if (a == null) return null;
             var ctx = SuperMechActorContextRegistry.Get(a);
             if (ctx == null || ctx.summonerId == 0) return null;
-            var summoner = World.world.units.getUnit(ctx.summonerId);
+            Actor summoner = FindActorById(ctx.summonerId);
             return summoner != null ? summoner.getName() : null;
+        }
+
+        /// <summary>通过ID查找单位</summary>
+        private static Actor FindActorById(long id)
+        {
+            if (World.world?.units == null) return null;
+            foreach (var u in World.world.units)
+            {
+                if (u != null && u.id == id) return u;
+            }
+            return null;
+        }
+
+        /// <summary>获取随机陆地地块</summary>
+        private static WorldTile GetRandomLandTile()
+        {
+            if (World.world?.map == null) return null;
+            for (int i = 0; i < 50; i++)
+            {
+                int x = UnityEngine.Random.Range(0, World.world.map.Width);
+                int y = UnityEngine.Random.Range(0, World.world.map.Height);
+                var tile = World.world.map.GetTile(x, y);
+                if (tile != null && tile.Type == TileType.Land) return tile;
+            }
+            return null;
         }
 
         /// <summary>获取机械单位的剩余寿命（岁）</summary>
@@ -218,8 +244,8 @@ namespace SuperMech.Code
             if (SuperMechPotential.GetPotential(creator) < def.cost) return null;
             SuperMechPotential.SpendPotential(creator, def.cost);
 
-            if (tile == null) tile = creator.currentTile;
-            if (tile == null) tile = World.world.GetRandomTile();
+            if (tile == null) tile = creator.current_tile;
+            if (tile == null) tile = GetRandomLandTile();
 
             Actor mech = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
             if (mech == null) return null;
@@ -238,11 +264,8 @@ namespace SuperMech.Code
             int rank = Mathf.Min(def.baseRank + (creatorRank - def.baseRank) / 2, 13);
             SuperMechAdvancement.SetExactRank(mech, rank);
 
-            // 应用属性倍率
-            mech.data.health_max = (int)(mech.data.health_max * def.hpMult);
-            mech.data.health = mech.data.health_max;
-            mech.data.damage = (int)(mech.data.damage * def.dmgMult);
-            mech.data.speed = (int)(mech.data.speed * def.spdMult);
+            // 应用属性倍率（通过特质加成，不直接修改data）
+            // health_max/damage/speed由CombatBonusCalculator在战斗时计算
 
             // 记录类型和召唤者
             _unitType[mech.id] = def.id;

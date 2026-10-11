@@ -546,14 +546,14 @@ namespace SuperMech.Code
         public static bool IsAppointedDay()
         {
             if (World.world == null) return true;
-            return World.world.worldTime >= Data.next_available_day;
+            return World.world.getCurWorldTime() >= Data.next_available_day;
         }
 
         /// <summary>获取距离下次约定之日的剩余天数</summary>
         public static float GetRemainingDays()
         {
             if (World.world == null) return 0f;
-            return Mathf.Max(0f, Data.next_available_day - World.world.worldTime);
+            return Mathf.Max(0f, (float)(Data.next_available_day - World.world.getCurWorldTime()));
         }
 
         /// <summary>设置下次约定之日（进入圣所后调用）</summary>
@@ -561,7 +561,7 @@ namespace SuperMech.Code
         {
             if (World.world == null) return;
             float interval = UnityEngine.Random.Range(MinAppointedDayInterval, MaxAppointedDayInterval);
-            Data.next_available_day = World.world.worldTime + interval;
+            Data.next_available_day = (float)(World.world.getCurWorldTime() + interval);
         }
 
         /// <summary>授予钥匙材料，达到合成阈值时自动合成钥匙（v0.46.0，原著：钥匙由稀有材料合成）</summary>

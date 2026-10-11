@@ -197,13 +197,12 @@ namespace SuperMech.Code
             if (_activeDimension.ContainsKey(a.id)) return false;
             if (dim.classTrait != null && !a.hasTrait(dim.classTrait)) return false;
             if (SuperMechActorContextRegistry.GetRank(a) < dim.minRankIndex) return false;
+            long now = System.DateTime.Now.Ticks;
             if (_cooldown.TryGetValue(a.id, out long cdEnd))
             {
-                long now = System.DateTime.Now.Ticks;
                 if (now < cdEnd) return false;
             }
             // 维度跳跃负荷检查（原著：连续跳跃承受空间乱流撕扯，休息后恢复）
-            long now = System.DateTime.Now.Ticks;
             if (_jumpCount.TryGetValue(a.id, out int jumps) && jumps >= MaxJumpsBeforeRest)
             {
                 // 检查是否超过恢复时间

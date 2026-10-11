@@ -185,12 +185,6 @@ namespace SuperMech.Code
             }
         }
 
-        // ============ 工具 ============
-            return null;
-        }
-
-        
-
         // ============ 存档 ============
 
         public static WorldTreeSaveData Save() => _data;
@@ -217,3 +211,4 @@ namespace SuperMech.Code
             _data.killedKings = 0;
         }
     }
+}

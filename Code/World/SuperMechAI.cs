@@ -368,12 +368,6 @@ namespace SuperMech.Code
             return null;
         }
 
-        public static void Clear()
-        {
-            _lastCompetitionAge.Clear();
-            _lastNpcKnowledgeAge.Clear();
-        }
-
         public static int CleanupDead(HashSet<long> alive)
         {
             int removed = SuperMechCleanup.CleanDict(_lastCompetitionAge, alive);
