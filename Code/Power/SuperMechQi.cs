@@ -50,6 +50,10 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, int> _appliedLevel = new Dictionary<long, int>();
         private static readonly Dictionary<long, float> _qiDmgMul = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _qiHpMul = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _qiStaminaMul = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _qiSpeedMul = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _qiCritMul = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _qiExpMul = new Dictionary<long, float>();
         private static readonly Dictionary<long, float> _qiLifespanBonus = new Dictionary<long, float>();
         // 固定值属性加成记录（key=actorId, value=属性名→旧加成值），用于先减旧再加新，避免覆盖其他系统加成
         private static readonly Dictionary<long, Dictionary<string, float>> _qiFlatBonuses = new Dictionary<long, Dictionary<string, float>>();
@@ -128,10 +132,31 @@ namespace SuperMech.Code
             stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) * newHpMul;
             _qiDmgMul[a.id] = newDmgMul;
             _qiHpMul[a.id] = newHpMul;
-            stats["multiplier_stamina"] = 1.1f;
-            stats["multiplier_speed"] = spdMul;
-            stats["multiplier_crit"] = 1f + level * 0.01f;
-            stats["experience"] = 1f + level * 0.01f;
+
+            // 倍率加成：体力/速度/暴击/经验（先除旧再乘新，避免覆盖其他系统加成）
+            float newStaminaMul = 1.1f;
+            float newSpeedMul = spdMul;
+            float newCritMul = 1f + level * 0.01f;
+            float newExpMul = 1f + level * 0.01f;
+
+            if (_qiStaminaMul.TryGetValue(a.id, out float oldSta) && oldSta > 0f)
+                stats["multiplier_stamina"] = ((stats["multiplier_stamina"] == 0f ? 1f : stats["multiplier_stamina"])) / oldSta;
+            if (_qiSpeedMul.TryGetValue(a.id, out float oldSpd) && oldSpd > 0f)
+                stats["multiplier_speed"] = ((stats["multiplier_speed"] == 0f ? 1f : stats["multiplier_speed"])) / oldSpd;
+            if (_qiCritMul.TryGetValue(a.id, out float oldCrit) && oldCrit > 0f)
+                stats["multiplier_crit"] = ((stats["multiplier_crit"] == 0f ? 1f : stats["multiplier_crit"])) / oldCrit;
+            if (_qiExpMul.TryGetValue(a.id, out float oldExp) && oldExp > 0f)
+                stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) / oldExp;
+
+            stats["multiplier_stamina"] = ((stats["multiplier_stamina"] == 0f ? 1f : stats["multiplier_stamina"])) * newStaminaMul;
+            stats["multiplier_speed"] = ((stats["multiplier_speed"] == 0f ? 1f : stats["multiplier_speed"])) * newSpeedMul;
+            stats["multiplier_crit"] = ((stats["multiplier_crit"] == 0f ? 1f : stats["multiplier_crit"])) * newCritMul;
+            stats["experience"] = ((stats["experience"] == 0f ? 1f : stats["experience"])) * newExpMul;
+
+            _qiStaminaMul[a.id] = newStaminaMul;
+            _qiSpeedMul[a.id] = newSpeedMul;
+            _qiCritMul[a.id] = newCritMul;
+            _qiExpMul[a.id] = newExpMul;
 
             _appliedLevel[a.id] = level;
         }
@@ -166,6 +191,10 @@ namespace SuperMech.Code
             _appliedLevel.Remove(a.id);
             _qiDmgMul.Remove(a.id);
             _qiHpMul.Remove(a.id);
+            _qiStaminaMul.Remove(a.id);
+            _qiSpeedMul.Remove(a.id);
+            _qiCritMul.Remove(a.id);
+            _qiExpMul.Remove(a.id);
             _qiLifespanBonus.Remove(a.id);
             _qiFlatBonuses.Remove(a.id);
         }
@@ -421,6 +450,10 @@ namespace SuperMech.Code
             _appliedLevel.Clear();
             _qiDmgMul.Clear();
             _qiHpMul.Clear();
+            _qiStaminaMul.Clear();
+            _qiSpeedMul.Clear();
+            _qiCritMul.Clear();
+            _qiExpMul.Clear();
             _qiLifespanBonus.Clear();
             _qiFlatBonuses.Clear();
         }
@@ -435,6 +468,10 @@ namespace SuperMech.Code
             removed += SuperMechCleanup.CleanDict(_appliedLevel, alive);
             removed += SuperMechCleanup.CleanDict(_qiDmgMul, alive);
             removed += SuperMechCleanup.CleanDict(_qiHpMul, alive);
+            removed += SuperMechCleanup.CleanDict(_qiStaminaMul, alive);
+            removed += SuperMechCleanup.CleanDict(_qiSpeedMul, alive);
+            removed += SuperMechCleanup.CleanDict(_qiCritMul, alive);
+            removed += SuperMechCleanup.CleanDict(_qiExpMul, alive);
             removed += SuperMechCleanup.CleanDict(_qiLifespanBonus, alive);
             removed += SuperMechCleanup.CleanDict(_qiFlatBonuses, alive);
             return removed;
