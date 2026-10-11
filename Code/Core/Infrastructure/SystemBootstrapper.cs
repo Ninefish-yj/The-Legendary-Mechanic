@@ -65,6 +65,9 @@ namespace SuperMech.Code
             // === 建筑系统（原著设施） ===
             SystemRegistry.RegisterAction("Building", () => SuperMechBuilding.Register());
 
+            // === 机械军团系统（原著机械师核心特色） ===
+            SystemRegistry.RegisterAction("MechLegion", () => SuperMechMechLegion.Register());
+
             // 执行所有注册
             SystemRegistry.RegisterAll();
         }
