@@ -53,14 +53,14 @@ namespace SuperMech.Code
             new[] { "sm_know_085","sm_know_086","sm_know_087","","" },
         };
         private static readonly string[][] MartialTop = {
-            new[] { "sm_know_088","sm_know_089","sm_know_090","","" },
-            new[] { "sm_know_091","sm_know_092","sm_know_093","","" },
-            new[] { "sm_know_094","sm_know_095","sm_know_096","","" },
+            new[] { "sm_know_088","sm_know_089","sm_know_090","sm_know_282","sm_know_283" },
+            new[] { "sm_know_091","sm_know_092","sm_know_093","sm_know_284","sm_know_285" },
+            new[] { "sm_know_094","sm_know_095","sm_know_096","sm_know_286","sm_know_287" },
         };
         private static readonly string[][] MartialUlt = {
-            new[] { "sm_know_097","sm_know_098","","","" },
-            new[] { "sm_know_099","sm_know_100","","","" },
-            new[] { "sm_know_101","sm_know_102","","","" },
+            new[] { "sm_know_097","sm_know_098","sm_know_288","sm_know_289","" },
+            new[] { "sm_know_099","sm_know_100","sm_know_290","sm_know_291","" },
+            new[] { "sm_know_101","sm_know_102","sm_know_292","sm_know_293","" },
         };
 
         private static readonly string[][] Mage = {
@@ -79,14 +79,14 @@ namespace SuperMech.Code
             new[] { "sm_know_135","sm_know_136","sm_know_137","","" },
         };
         private static readonly string[][] MageTop = {
-            new[] { "sm_know_138","sm_know_139","sm_know_140","","" },
-            new[] { "sm_know_141","sm_know_142","sm_know_143","","" },
-            new[] { "sm_know_144","sm_know_145","sm_know_146","","" },
+            new[] { "sm_know_138","sm_know_139","sm_know_140","sm_know_294","sm_know_295" },
+            new[] { "sm_know_141","sm_know_142","sm_know_143","sm_know_296","sm_know_297" },
+            new[] { "sm_know_144","sm_know_145","sm_know_146","sm_know_298","sm_know_299" },
         };
         private static readonly string[][] MageUlt = {
-            new[] { "sm_know_147","sm_know_148","","","" },
-            new[] { "sm_know_149","sm_know_150","","","" },
-            new[] { "sm_know_151","sm_know_152","","","" },
+            new[] { "sm_know_147","sm_know_148","sm_know_300","sm_know_301","" },
+            new[] { "sm_know_149","sm_know_150","sm_know_302","sm_know_303","" },
+            new[] { "sm_know_151","sm_know_152","sm_know_304","sm_know_305","" },
         };
 
         private static readonly string[][] Mind = {
@@ -105,14 +105,14 @@ namespace SuperMech.Code
             new[] { "sm_know_185","sm_know_186","sm_know_187","sm_know_188","" },
         };
         private static readonly string[][] MindTop = {
-            new[] { "sm_know_189","sm_know_190","sm_know_191","","" },
-            new[] { "sm_know_192","sm_know_193","sm_know_194","","" },
-            new[] { "sm_know_195","sm_know_196","sm_know_197","","" },
+            new[] { "sm_know_189","sm_know_190","sm_know_191","sm_know_306","sm_know_307" },
+            new[] { "sm_know_192","sm_know_193","sm_know_194","sm_know_308","sm_know_309" },
+            new[] { "sm_know_195","sm_know_196","sm_know_197","sm_know_310","sm_know_311" },
         };
         private static readonly string[][] MindUlt = {
-            new[] { "sm_know_198","sm_know_199","","","" },
-            new[] { "sm_know_200","sm_know_201","","","" },
-            new[] { "sm_know_202","sm_know_203","","","" },
+            new[] { "sm_know_198","sm_know_199","sm_know_312","sm_know_313","" },
+            new[] { "sm_know_200","sm_know_201","sm_know_314","sm_know_315","" },
+            new[] { "sm_know_202","sm_know_203","sm_know_316","sm_know_317","" },
         };
 
         private static readonly string[][] Psi = {
@@ -131,14 +131,14 @@ namespace SuperMech.Code
             new[] { "sm_know_228","sm_know_229","sm_know_230","","" },
         };
         private static readonly string[][] PsiTop = {
-            new[] { "sm_know_231","sm_know_232","sm_know_233","","" },
-            new[] { "sm_know_234","sm_know_235","sm_know_236","","" },
-            new[] { "sm_know_237","sm_know_238","sm_know_239","","" },
+            new[] { "sm_know_231","sm_know_232","sm_know_233","sm_know_318","sm_know_319" },
+            new[] { "sm_know_234","sm_know_235","sm_know_236","sm_know_320","sm_know_321" },
+            new[] { "sm_know_237","sm_know_238","sm_know_239","sm_know_322","sm_know_323" },
         };
         private static readonly string[][] PsiUlt = {
-            new[] { "sm_know_240","sm_know_241","sm_know_242","","" },
-            new[] { "sm_know_243","sm_know_244","sm_know_245","","" },
-            new[] { "sm_know_246","sm_know_247","sm_know_248","","" },
+            new[] { "sm_know_240","sm_know_241","sm_know_242","sm_know_324","" },
+            new[] { "sm_know_243","sm_know_244","sm_know_245","sm_know_325","" },
+            new[] { "sm_know_246","sm_know_247","sm_know_248","sm_know_326","" },
         };
 
         public class KnowledgeDef
