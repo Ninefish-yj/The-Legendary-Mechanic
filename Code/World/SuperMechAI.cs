@@ -271,6 +271,14 @@ namespace SuperMech.Code
             var attackTargetField = typeof(Actor).GetField("attack_target",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
+            // 性能优化：先构建召唤者ID->Actor的字典缓存，避免O(n²)嵌套循环
+            var unitById = new Dictionary<long, Actor>();
+            foreach (var u in units)
+            {
+                if (u != null && u.isAlive())
+                    unitById[u.id] = u;
+            }
+
             foreach (var a in units)
             {
                 if (a == null || !a.isAlive()) continue;
@@ -279,12 +287,9 @@ namespace SuperMech.Code
                 var ctx = SuperMechActorContextRegistry.Get(a);
                 if (ctx == null || ctx.summonerId <= 0) continue;
 
-                // 找到召唤者
+                // 从字典缓存查找召唤者（O(1)查找，替代O(n)遍历）
                 Actor summoner = null;
-                foreach (var s in units)
-                {
-                    if (s != null && s.isAlive() && s.id == ctx.summonerId) { summoner = s; break; }
-                }
+                unitById.TryGetValue(ctx.summonerId, out summoner);
 
                 if (summoner == null || !summoner.isAlive())
                 {
