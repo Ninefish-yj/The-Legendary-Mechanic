@@ -262,6 +262,30 @@ namespace SuperMech.Code
             _unitType.Clear();
         }
 
+        /// <summary>存档数据结构</summary>
+        [Serializable]
+        public class MechLegionSaveData
+        {
+            public Dictionary<long, string> unitType = new Dictionary<long, string>();
+        }
+
+        /// <summary>保存机械军团数据</summary>
+        public static MechLegionSaveData Save()
+        {
+            return new MechLegionSaveData { unitType = new Dictionary<long, string>(_unitType) };
+        }
+
+        /// <summary>加载机械军团数据</summary>
+        public static void Load(MechLegionSaveData data)
+        {
+            _unitType.Clear();
+            if (data?.unitType != null)
+            {
+                foreach (var kv in data.unitType)
+                    _unitType[kv.Key] = kv.Value;
+            }
+        }
+
         // === 默认名称（对照原著） ===
         private static string GetDefaultName(string id)
         {

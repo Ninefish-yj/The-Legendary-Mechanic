@@ -49,6 +49,7 @@ namespace SuperMech.Code
             public SuperMechWorldTree.WorldTreeSaveData worldTree = new SuperMechWorldTree.WorldTreeSaveData();
             public SuperMechWorldBeyond.WorldBeyondSaveData worldBeyond = new SuperMechWorldBeyond.WorldBeyondSaveData();
             public List<SuperMechVirtualGenesis.GenesisSaveData> virtualGenesis = new List<SuperMechVirtualGenesis.GenesisSaveData>();
+            public SuperMechMechLegion.MechLegionSaveData mechLegion = new SuperMechMechLegion.MechLegionSaveData();
             public string worldSeed = "";
             public long savedAt = 0;
             // === v0.31.0 预留字段 ===
@@ -290,6 +291,8 @@ namespace SuperMech.Code
                 data.worldBeyond = SuperMechWorldBeyond.Save();
                 // 保存虚拟创世数据（v0.86.0）
                 data.virtualGenesis = SuperMechVirtualGenesis.Save();
+                // 保存机械军团数据（v0.94.2）
+                data.mechLegion = SuperMechMechLegion.Save();
                 // 保存公司数据（v0.87.0）
                 data.companyData = JsonConvert.SerializeObject(SuperMechCompany.GetAllForSave());
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
@@ -341,6 +344,8 @@ namespace SuperMech.Code
                 if (data.worldBeyond != null) SuperMechWorldBeyond.Load(data.worldBeyond);
                 // 加载虚拟创世数据（v0.86.0）
                 if (data.virtualGenesis != null) SuperMechVirtualGenesis.Load(data.virtualGenesis);
+                // 加载机械军团数据（v0.94.2）
+                if (data.mechLegion != null) SuperMechMechLegion.Load(data.mechLegion);
                 // 加载公司数据（v0.87.0）
                 if (!string.IsNullOrEmpty(data.companyData))
                 {
