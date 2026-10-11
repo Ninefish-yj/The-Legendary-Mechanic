@@ -398,7 +398,7 @@ namespace SuperMech.Code
                 if (researched >= MaxTechResearchPerTick) break;
 
                 long kid = kingdom.id;
-                float now = World.world.getCurWorldTime();
+                double now = World.world.getCurWorldTime();
 
                 // 间隔过滤
                 if (_lastTechResearch.TryGetValue(kid, out float last))
@@ -453,7 +453,7 @@ namespace SuperMech.Code
                 if (explored >= MaxStarExplorationPerTick) break;
 
                 long kid = kingdom.id;
-                float now = World.world.getCurWorldTime();
+                double now = World.world.getCurWorldTime();
 
                 // 间隔过滤
                 if (_lastStarExploration.TryGetValue(kid, out float last))
