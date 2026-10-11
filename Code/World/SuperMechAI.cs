@@ -423,7 +423,7 @@ namespace SuperMech.Code
 
                 if (SuperMechTech.Research(kid, target.id))
                 {
-                    _lastTechResearch[kid] = now;
+                    _lastTechResearch[kid] = (float)now;
                     researched++;
                     if (SuperMechConfig.LogVerbose)
                         Debug.Log($"[超神机械师]【AI科技】{kingdom.name} 研究完成：{target.name}");
@@ -471,7 +471,7 @@ namespace SuperMech.Code
 
                 var planet = undiscovered[Random.Range(0, undiscovered.Count)];
                 SuperMechStarSystem.DiscoverPlanet(planet.id, kingdom.name);
-                _lastStarExploration[kid] = now;
+                _lastStarExploration[kid] = (float)now;
                 explored++;
 
                 if (SuperMechConfig.LogVerbose)
