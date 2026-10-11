@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>子职业系统：职业分支下的细分路线（区别于 Profession=五系身份、Branch=分支）</summary>
+    /// <summary>子职业系统：职业分支下的细分路线（独立数据存储，不注册为特质）</summary>
     public static class SuperMechSubClass
     {
         public const string SubAgent       = "sm_sub_agent";
@@ -18,9 +18,21 @@ namespace SuperMech.Code
 
         public const int MaxSubLevel = 10;
 
+        public class SubClassDef
+        {
+            public string id;
+            public string nameKey;
+            public string descKey;
+            public int intBonus;
+            public int dmgAdd;
+            public float dmgMul;
+        }
+
+        private static readonly Dictionary<string, SubClassDef> _defs = new Dictionary<string, SubClassDef>();
+        private static readonly Dictionary<long, HashSet<string>> _unitSubClasses = new Dictionary<long, HashSet<string>>();
         public static readonly Dictionary<long, Dictionary<string, float>> _subXp = new Dictionary<long, Dictionary<string, float>>();
         public static readonly Dictionary<long, Dictionary<string, int>> _subLevel = new Dictionary<long, Dictionary<string, int>>();
-        public static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
+        private static readonly Dictionary<long, float> _lastHealth = new Dictionary<long, float>();
 
         public static readonly int[] LevelThresholds = { 100, 300, 600, 1000, 1500, 2200, 3000, 4000, 5500, 7500 };
 
@@ -30,16 +42,72 @@ namespace SuperMech.Code
 
         public static void Register()
         {
-            AddSubClass(SubAgent,     "sm_subclass_064",     0, 0, 0.05f,  "sm_subclass_065");
-            AddSubClass(SubNinja,    "sm_subclass_066", 0, 0, 0.08f,  "sm_subclass_067");
-            AddSubClass(SubHacker,   "sm_subclass_068",     5, 0, 0f,       "sm_subclass_069");
-            AddSubClass(SubMerchant, "sm_subclass_070",     2, 0, 0f,       "sm_subclass_071");
-            AddSubClass(SubDoctor,   "sm_subclass_072",     3, 0, 0f,       "sm_subclass_073");
-            AddSubClass(SubEngineer, "sm_subclass_074",   4, 0, 0.05f,    "sm_subclass_075");
-            AddSubClass(SubScribe,   "sm_subclass_076",     6, 0, 0f,       "sm_subclass_077");
-            AddSubClass(SubScout,    "sm_subclass_078",   0, 2, 0.03f,    "sm_subclass_079");
+            AddDef(SubAgent,     "sm_subclass_064",     0, 0, 0.05f,  "sm_subclass_065");
+            AddDef(SubNinja,    "sm_subclass_066", 0, 0, 0.08f,  "sm_subclass_067");
+            AddDef(SubHacker,   "sm_subclass_068",     5, 0, 0f,       "sm_subclass_069");
+            AddDef(SubMerchant, "sm_subclass_070",     2, 0, 0f,       "sm_subclass_071");
+            AddDef(SubDoctor,   "sm_subclass_072",     3, 0, 0f,       "sm_subclass_073");
+            AddDef(SubEngineer, "sm_subclass_074",   4, 0, 0.05f,    "sm_subclass_075");
+            AddDef(SubScribe,   "sm_subclass_076",     6, 0, 0f,       "sm_subclass_077");
+            AddDef(SubScout,    "sm_subclass_078",   0, 2, 0.03f,    "sm_subclass_079");
+        }
 
+        private static void AddDef(string id, string nameKey, int intell, int dmgAdd, float dmgMul, string descKey)
+        {
+            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(nameKey), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(descKey), pReplace: true);
+            _defs[id] = new SubClassDef { id = id, nameKey = nameKey, descKey = descKey, intBonus = intell, dmgAdd = dmgAdd, dmgMul = dmgMul };
+        }
 
+        public static SubClassDef GetDef(string id)
+        {
+            return _defs.TryGetValue(id, out var def) ? def : null;
+        }
+
+        public static bool HasSubClass(Actor a, string subId)
+        {
+            if (a == null) return false;
+            return _unitSubClasses.TryGetValue(a.id, out var set) && set.Contains(subId);
+        }
+
+        public static void AddSubClass(Actor a, string subId)
+        {
+            if (a == null || string.IsNullOrEmpty(subId)) return;
+            if (!_unitSubClasses.TryGetValue(a.id, out var set))
+            {
+                set = new HashSet<string>();
+                _unitSubClasses[a.id] = set;
+            }
+            set.Add(subId);
+        }
+
+        public static void RemoveSubClass(Actor a, string subId)
+        {
+            if (a == null) return;
+            if (_unitSubClasses.TryGetValue(a.id, out var set))
+                set.Remove(subId);
+        }
+
+        public static List<string> GetSubClasses(Actor a)
+        {
+            if (a == null) return new List<string>();
+            if (_unitSubClasses.TryGetValue(a.id, out var set))
+                return new List<string>(set);
+            return new List<string>();
+        }
+
+        /// <summary>应用子职业基础属性加成（在CombatBonusCalculator中调用）</summary>
+        public static void ApplyBaseBonus(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            if (!_unitSubClasses.TryGetValue(a.id, out var set)) return;
+            foreach (var subId in set)
+            {
+                if (!_defs.TryGetValue(subId, out var def)) continue;
+                if (def.intBonus > 0) stats["intelligence"] += def.intBonus;
+                if (def.dmgAdd > 0) stats["damage"] += def.dmgAdd;
+                if (def.dmgMul > 0) stats["multiplier_damage"] = (stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"]) * (1f + def.dmgMul);
+            }
         }
 
         public static void TickSubLevels()
@@ -63,7 +131,7 @@ namespace SuperMech.Code
 
                 foreach (string subId in AllSubClasses)
                 {
-                    if (!a.hasTrait(subId)) continue;
+                    if (!HasSubClass(a, subId)) continue;
 
                     float xpGain = (2f + SuperMechQi.GetLevel(SuperMechQi.GetQi(a)) * 0.3f) * tickInterval;
                     AddSubXp(a, subId, xpGain);
@@ -100,7 +168,7 @@ namespace SuperMech.Code
                 int lv;
                 if (lvMap.TryGetValue(subId, out lv)) return lv;
             }
-            return a.hasTrait(subId) ? 1 : 0;
+            return HasSubClass(a, subId) ? 1 : 0;
         }
 
         private static void SetSubLevel(Actor a, string subId, int level)
@@ -148,7 +216,7 @@ namespace SuperMech.Code
             var parts = new List<string>();
             foreach (string subId in AllSubClasses)
             {
-                if (a.hasTrait(subId))
+                if (HasSubClass(a, subId))
                 {
                     int lv = GetSubLevel(a, subId);
                     string name = LocalizedTextManager.getText("trait_" + subId);
@@ -158,23 +226,9 @@ namespace SuperMech.Code
             return string.Join(" ", parts);
         }
 
-        private static void AddSubClass(string id, string name, int intell, int dmgAdd, float dmgMul, string desc)
-        {
-            LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(desc), pReplace: true);
-            var t = new ActorTrait
-            {
-                id = id, path_icon = "ui/Icons/actor_traits/iconAmbitious", group_id = "sm_subclass",
-                needs_to_be_explored = false, base_stats = new BaseStats()
-            };
-            t.base_stats["intelligence"] = intell;
-            if (dmgAdd > 0) t.base_stats["damage"] = dmgAdd;
-            if (dmgMul > 0) t.base_stats["multiplier_damage"] = 1f + dmgMul;
-            AssetManager.traits.add(t);
-        }
-
         public static void Clear()
         {
+            _unitSubClasses.Clear();
             _subXp.Clear();
             _subLevel.Clear();
             _lastHealth.Clear();
@@ -183,6 +237,7 @@ namespace SuperMech.Code
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
             int removed = 0;
+            removed += SuperMechCleanup.CleanDict(_unitSubClasses, alive);
             removed += SuperMechCleanup.CleanDict(_subLevel, alive);
             return removed;
         }

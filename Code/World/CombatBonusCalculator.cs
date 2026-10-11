@@ -21,8 +21,14 @@ namespace SuperMech.Code
             // 2. 职业方向属性加成（分支不再注册为特质，需手动应用）
             SuperMechBranch.ApplyBranchBonus(actor, stats);
 
+            // 2.5 子职业基础属性加成（v0.99.3 子职业不再注册为特质，独立存储）
+            SuperMechSubClass.ApplyBaseBonus(actor, stats);
+
             // 3. 专精属性加成
             SuperMechBranchMastery.ApplySpecBonus(actor, stats);
+
+            // 3.5 专长生命加成（v0.99.3 专长不再注册为特质，独立存储）
+            SuperMechExclusiveTrait.ApplyHpBonus(actor, stats);
 
             // 4. 通用专长属性加成
             SuperMechElement.ApplyAllSpecBonus(actor, stats);

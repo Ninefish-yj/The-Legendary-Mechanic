@@ -386,7 +386,7 @@ namespace SuperMech.Code
             if (a == null) return null;
             foreach (string subId in SuperMechSubClass.AllSubClasses)
             {
-                if (a.hasTrait(subId)) return subId;
+                if (SuperMechSubClass.HasSubClass(a, subId)) return subId;
             }
             return null;
         }
@@ -439,9 +439,9 @@ namespace SuperMech.Code
                         SuperMechBranch.SetBranch(a, ad.branch);
                     if (!string.IsNullOrEmpty(ad.species) && ad.species != "human")
                         SuperMechSpeciesEvolution.SetSpecies(a.data.id, ad.species);
-                    if (!string.IsNullOrEmpty(ad.subclass) && !a.hasTrait(ad.subclass))
+                    if (!string.IsNullOrEmpty(ad.subclass) && !SuperMechSubClass.HasSubClass(a, ad.subclass))
                     {
-                        a.addTrait(ad.subclass);
+                        SuperMechSubClass.AddSubClass(a, ad.subclass);
                         SuperMechSubClass.AddSubXp(a, ad.subclass, 0);
                     }
                     if (ad.inal > 0) SuperMechInal.SetInal(a, ad.inal);

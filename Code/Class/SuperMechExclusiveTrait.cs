@@ -5,10 +5,10 @@ using UnityEngine;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 专长系统（对照原著）：
+    /// 专长系统（对照原著，v0.99.3重构：不再注册为特质，独立数据存储）：
     /// - 模板专长（Template Feat）：NPC/BOSS/职业类别专长，原著第104章起明确出现
     /// - 专属专长（Exclusive Feat）：超A级个人独有，原著第1294章"首个专属专长"，玩家不存在这种能力
-    /// 专长注册为真实特质（ActorTrait），战斗效果挂接攻击伤害乘区。
+    /// 生命加成由CombatBonusCalculator手动应用，攻击加成挂接攻击伤害乘区。
     /// </summary>
     public static class SuperMechExclusiveTrait
     {
@@ -63,40 +63,40 @@ namespace SuperMech.Code
 
         private static bool _markBurstJustHappened = false;
 
-        // === 注册 ===
+        // === 注册（v0.99.3：不再注册为特质，只注册本地化文本） ===
         public static void Register()
         {
             foreach (var d in TemplateAll)
             {
                 LocalizedTextManager.add("trait_" + d.id, LocalizedTextManager.getText(d.nameKey), pReplace: true);
                 LocalizedTextManager.add("trait_" + d.id + "_info", LocalizedTextManager.getText(d.descKey), pReplace: true);
-                var t = new ActorTrait
-                {
-                    id = d.id,
-                    path_icon = "ui/Icons/actor_traits/iconChosenOne",
-                    group_id = "sm_templates",
-                    needs_to_be_explored = false,
-                    rarity = Rarity.R3_Legendary,
-                    base_stats = new BaseStats()
-                };
-                if (d.hpMul > 0f) t.base_stats["multiplier_health"] = 1f + d.hpMul;
-                AssetManager.traits.add(t);
             }
             foreach (var d in LegendaryAll)
             {
                 LocalizedTextManager.add("trait_" + d.id, LocalizedTextManager.getText(d.nameKey), pReplace: true);
                 LocalizedTextManager.add("trait_" + d.id + "_info", LocalizedTextManager.getText(d.descKey), pReplace: true);
-                var t = new ActorTrait
+            }
+        }
+
+        /// <summary>应用专长生命加成（在CombatBonusCalculator中调用）</summary>
+        public static void ApplyHpBonus(Actor a, BaseStats stats)
+        {
+            if (a == null || stats == null) return;
+            var list = GetSpecialties(a);
+            if (list == null || list.Count == 0) return;
+            foreach (string id in list)
+            {
+                var td = TemplateAll.Find(x => x.id == id);
+                if (td != null && td.hpMul > 0f)
                 {
-                    id = d.id,
-                    path_icon = "ui/Icons/actor_traits/iconChosenOne",
-                    group_id = "sm_specialties",
-                    needs_to_be_explored = false,
-                    rarity = Rarity.R3_Legendary,
-                    base_stats = new BaseStats()
-                };
-                if (d.hpMul > 0f) t.base_stats["multiplier_health"] = 1f + d.hpMul;
-                AssetManager.traits.add(t);
+                    stats["multiplier_health"] = (stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"]) * (1f + td.hpMul);
+                    continue;
+                }
+                var ld = LegendaryAll.Find(x => x.id == id);
+                if (ld != null && ld.hpMul > 0f)
+                {
+                    stats["multiplier_health"] = (stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"]) * (1f + ld.hpMul);
+                }
             }
         }
 
@@ -159,7 +159,6 @@ namespace SuperMech.Code
                             s = TryTemplateFormation(a, list);  // 后续：模板专长
                         if (s == null) break;
                         list.Add(s);
-                        if (!a.hasTrait(s)) a.addTrait(s);
                     }
                 }
                 catch (Exception e) { Debug.LogWarning("[超神机械师] 专长授予失败: " + e.Message); }
