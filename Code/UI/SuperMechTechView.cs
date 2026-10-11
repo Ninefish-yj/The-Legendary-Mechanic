@@ -27,7 +27,7 @@ namespace SuperMech.Code
         void Awake()
         {
             try { BuildUI(); SuperMechTech.Init(); }
-            catch (System.Exception e) { Debug.LogError("[超神机械师] TechView初始化失败: " + e.Message); }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] TechView初始化失败: " + e.Message + "\n" + e.StackTrace); }
         }
 
         private void BuildUI()

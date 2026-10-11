@@ -124,7 +124,7 @@ namespace SuperMech.Code
                 {
                     id = mid,
                     path_icon = "actor_traits/iconUnknown",
-                    group_id = "",
+                    group_id = "sm_internal",
                     needs_to_be_explored = false,
                     can_be_given = false,
                     can_be_removed = false,
