@@ -895,5 +895,6 @@
   "sm_creature_void_dragon": "虚空巨龙",
   "sm_creature_star_beast": "星游兽",
   "sm_creature_infected": "异化怪物",
-  "sm_creature_worldtree_soldier": "世界树战士"
+  "sm_creature_worldtree_soldier": "世界树战士",
+  "sm_ui_learn": "学习"
 }

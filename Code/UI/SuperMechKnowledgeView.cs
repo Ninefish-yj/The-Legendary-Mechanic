@@ -13,6 +13,8 @@ namespace SuperMech.Code
         private RectTransform _listContent;
         private RectTransform _detailContent;
         private Text _detailText;
+        private Button _learnBtn;
+        private Text _learnBtnText;
         private string _selectedId;
         private readonly Dictionary<string, bool> _folded = new Dictionary<string, bool>();
         public static Actor OverrideActor;
@@ -216,6 +218,23 @@ namespace SuperMech.Code
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
             _detailText.text = LocalizedTextManager.getText("sm_ui_select_knowledge");
 
+            // 学习按钮（原著：超能者通过学习知识提升实力）
+            var learnBtnGo = new GameObject("LearnBtn");
+            learnBtnGo.transform.SetParent(detailContentGo.transform, false);
+            var learnBtnRect = learnBtnGo.AddComponent<RectTransform>();
+            learnBtnRect.sizeDelta = new Vector2(0, 30);
+            _learnBtn = learnBtnGo.AddComponent<Button>();
+            var learnBtnImg = learnBtnGo.AddComponent<Image>();
+            learnBtnImg.color = new Color(0.2f, 0.4f, 0.7f, 0.9f);
+            _learnBtnText = learnBtnGo.AddComponent<Text>();
+            _learnBtnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _learnBtnText.fontSize = 14;
+            _learnBtnText.color = Color.white;
+            _learnBtnText.alignment = TextAnchor.MiddleCenter;
+            _learnBtnText.text = LocalizedTextManager.getText("sm_ui_learn");
+            _learnBtn.onClick.AddListener(OnLearnClicked);
+            learnBtnGo.SetActive(false);
+
             RefreshList();
         }
 
@@ -336,13 +355,41 @@ namespace SuperMech.Code
             var kn = SuperMechKnowledge.GetDef(id);
             if (kn == null) return;
             bool unlocked = SelectedActor != null && SuperMechKnowledge.IsUnlocked(SelectedActor, id);
+            bool canUnlock = SelectedActor != null && SuperMechKnowledge.CanUnlock(SelectedActor, id);
             _detailText.text = $"<b><size=16><color=#59a5ff>{kn.name}</color></size></b>\n\n" +
                 $"{kn.desc}\n\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {kn.tier}\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {kn.cost}\n" +
                 $"<color=#8fa8c8>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
                 $"<color={(unlocked ? "#66ff99" : "#ff9966")}>{(unlocked ? LocalizedTextManager.getText("sm_ui_unlocked") : LocalizedTextManager.getText("sm_ui_locked"))}</color>";
+
+            // 更新学习按钮
+            if (_learnBtn != null && _learnBtn.gameObject != null)
+            {
+                if (unlocked)
+                {
+                    _learnBtn.gameObject.SetActive(false);
+                }
+                else
+                {
+                    _learnBtn.gameObject.SetActive(true);
+                    _learnBtn.interactable = canUnlock;
+                    _learnBtnText.text = canUnlock ? LocalizedTextManager.getText("sm_ui_learn") : LocalizedTextManager.getText("sm_ui_locked");
+                    var img = _learnBtn.GetComponent<Image>();
+                    if (img != null) img.color = canUnlock ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.9f);
+                }
+            }
             RefreshList();
+        }
+
+        private void OnLearnClicked()
+        {
+            if (SelectedActor == null || string.IsNullOrEmpty(_selectedId)) return;
+            if (SuperMechKnowledge.Unlock(SelectedActor, _selectedId))
+            {
+                Debug.Log($"[超神机械师] {SelectedActor.getName()} 学习知识: {_selectedId}");
+                SelectKnowledge(_selectedId);
+            }
         }
     }
 }
