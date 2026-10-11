@@ -214,11 +214,11 @@ namespace SuperMech.Code
         /// <summary>获取随机陆地地块</summary>
         private static WorldTile GetRandomLandTile()
         {
-            if (World.world?.map == null) return null;
+            if (World.world == null) return null;
             for (int i = 0; i < 50; i++)
             {
-                int x = UnityEngine.Random.Range(0, World.world.width);
-                int y = UnityEngine.Random.Range(0, World.world.height);
+                int x = UnityEngine.Random.Range(0, MapBox.width);
+                int y = UnityEngine.Random.Range(0, MapBox.height);
                 var tile = World.world.GetTile(x, y);
                 if (tile != null && tile.Type.ground && !tile.Type.liquid) return tile;
             }

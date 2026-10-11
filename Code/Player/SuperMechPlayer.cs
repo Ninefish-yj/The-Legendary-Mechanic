@@ -370,17 +370,17 @@ namespace SuperMech.Code
         /// <summary>地图边缘虚空生成点（参照宇宙异兽）</summary>
         private static WorldTile FindEdgeTile()
         {
-            if (World.world?.map == null) return null;
+            if (World.world == null) return null;
             for (int attempt = 0; attempt < 50; attempt++)
             {
                 int edge = UnityEngine.Random.Range(0, 4);
                 int x, y;
                 switch (edge)
                 {
-                    case 0: x = UnityEngine.Random.Range(0, World.world.width); y = 0; break;
-                    case 1: x = UnityEngine.Random.Range(0, World.world.width); y = World.world.height - 1; break;
-                    case 2: x = 0; y = UnityEngine.Random.Range(0, World.world.height); break;
-                    default: x = World.world.width - 1; y = UnityEngine.Random.Range(0, World.world.height); break;
+                    case 0: x = UnityEngine.Random.Range(0, MapBox.width); y = 0; break;
+                    case 1: x = UnityEngine.Random.Range(0, MapBox.width); y = MapBox.height - 1; break;
+                    case 2: x = 0; y = UnityEngine.Random.Range(0, MapBox.height); break;
+                    default: x = MapBox.width - 1; y = UnityEngine.Random.Range(0, MapBox.height); break;
                 }
                 var tile = World.world.GetTile(x, y);
                 if (tile != null && tile.Type.ground && !tile.Type.liquid) return tile;
