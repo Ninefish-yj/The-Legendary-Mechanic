@@ -181,6 +181,14 @@ namespace SuperMech.Code
             return type;
         }
 
+        /// <summary>获取机械单位类型的显示名称（通过本地化系统）</summary>
+        public static string GetUnitName(string mechTypeId)
+        {
+            if (string.IsNullOrEmpty(mechTypeId)) return "机械单位";
+            if (!_defMap.TryGetValue(mechTypeId, out var def)) return mechTypeId;
+            return LocalizedTextManager.getText(def.name);
+        }
+
         /// <summary>制造机械单位（机械工厂/虚拟创世调用）</summary>
         public static Actor SpawnMechUnit(Actor creator, string mechTypeId, WorldTile tile)
         {

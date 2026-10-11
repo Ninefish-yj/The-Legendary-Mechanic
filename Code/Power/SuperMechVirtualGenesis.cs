@@ -152,47 +152,31 @@ namespace SuperMech.Code
 
             var state = GetState(summoner);
             bool isTrue = state.level == GenesisLevel.True;
-            int cost = isTrue ? SummonCostTrue : SummonCostBasic;
 
-            // 消耗资源（原著：转化需要消耗等量资源）
-            // 简化：消耗潜能点作为资源
-            if (SuperMechPotential.GetPotential(summoner) < cost) return false;
-            SuperMechPotential.SpendPotential(summoner, cost);
-
-            // 在召唤者身边生成机械单位
+            // 在召唤者身边生成机械单位（v0.94.3：接入机械军团系统，使用8种原著机械单位）
             WorldTile tile = summoner.currentTile;
             if (tile == null) tile = World.world.GetRandomTile();
             if (tile == null) return false;
 
-            Actor summoned = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
+            // 虚拟创世真：可召唤最高级机械战神；普通：根据阶位解锁
+            string mechType = isTrue ? "mech_god" : GetRandomAvailableType(summoner);
+            Actor summoned = SuperMechMechLegion.SpawnMechUnit(summoner, mechType, tile);
             if (summoned == null) return false;
 
-            summoned.addTrait(SuperMechTraits.ClassMech);
-            summoned.addTrait("aggressive");
-            summoned.addTrait("sm_summoned");
-
-            // 虚拟创世真：召唤超神级机械单位
-            if (isTrue)
-            {
-                summoned.addTrait("sm_void_boost");
-                SuperMechAdvancement.SetExactRank(summoned, 10); // S阶
-            }
-            else
-            {
-                int rank = Mathf.Max(0, SuperMechActorContextRegistry.GetRank(summoner) - 1);
-                SuperMechAdvancement.SetExactRank(summoned, rank);
-            }
-
-            // 记录召唤者
-            var ctx = SuperMechActorContextRegistry.Get(summoned);
-            if (ctx != null) ctx.summonerId = summoner.id;
-
-            // 短寿命消散（原著：虚拟转化的暂时性产物）
+            // 虚拟创世特色：短寿命消散（原著：虚拟转化的暂时性产物）
             var sctx = SuperMechActorContextRegistry.Get(summoned);
-            if (sctx != null) sctx.expireAge = summoned.age + 600; // 600岁后消散
+            if (sctx != null) sctx.expireAge = summoned.age + 600;
 
-            Debug.Log($"[超神机械师]【虚拟创世】{summoner.getName()} 虚实转化召唤机械单位（{(isTrue ? "超神级" : "普通")}），消耗{cost}潜能点");
+            Debug.Log($"[超神机械师]【虚拟创世】{summoner.getName()} 虚实转化召唤{SuperMechMechLegion.GetUnitName(mechType)}（{(isTrue ? "超神级" : "普通")}）");
             return true;
+        }
+
+        /// <summary>根据召唤者阶位随机选择可制造的机械单位类型</summary>
+        private static string GetRandomAvailableType(Actor summoner)
+        {
+            var available = SuperMechMechLegion.GetAvailableTypes(summoner);
+            if (available == null || available.Count == 0) return "mech_ranger";
+            return available[UnityEngine.Random.Range(0, available.Count)];
         }
 
         /// <summary>Tick：检查去伪条件</summary>
