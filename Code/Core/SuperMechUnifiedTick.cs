@@ -110,6 +110,7 @@ namespace SuperMech.Code
                 SafeRun("个体伟力", () => SuperMechSupermA.Tick(1.25f));
                 SafeRun("公司发行", () => SuperMechCompany.TickIssue());
                 SafeRun("伊纳尔俸禄", () => SuperMechInal.TickSalary());
+                SafeRun("建筑系统", () => SuperMechBuildingManager.Tick());
             }
 
             float now = Time.time;

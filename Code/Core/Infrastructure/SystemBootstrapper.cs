@@ -62,6 +62,9 @@ namespace SuperMech.Code
             SystemRegistry.RegisterAction("Species", () => SuperMechSpecies.Register());
             SystemRegistry.RegisterAction("SpeciesEvolution", () => SuperMechSpeciesEvolution.Initialize());
 
+            // === 建筑系统（原著设施） ===
+            SystemRegistry.RegisterAction("Building", () => SuperMechBuilding.Register());
+
             // 执行所有注册
             SystemRegistry.RegisterAll();
         }
