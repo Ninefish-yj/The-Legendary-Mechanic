@@ -33,6 +33,7 @@ namespace SuperMech.Code
             mapRect.offsetMax = Vector2.zero;
             var mapImg = mapGo.AddComponent<Image>();
             mapImg.color = new Color(0.02f, 0.03f, 0.08f, 0.95f); // 深空背景
+            mapImg.raycastTarget = false; // 纯装饰背景，不拦截鼠标（穿透给ScrollRect content处理）
 
             // 滚动视图
             var scrollGo = new GameObject("Scroll");
@@ -95,6 +96,7 @@ namespace SuperMech.Code
             infoRect.offsetMax = Vector2.zero;
             var infoImg = infoGo.AddComponent<Image>();
             infoImg.color = new Color(0.05f, 0.07f, 0.12f, 0.95f);
+            infoImg.raycastTarget = false; // 纯装饰背景，不拦截鼠标
 
             var infoTextGo = new GameObject("InfoText");
             infoTextGo.transform.SetParent(infoGo.transform, false);
@@ -241,6 +243,7 @@ namespace SuperMech.Code
             lineRect.localRotation = Quaternion.Euler(0, 0, angle);
             var lineImg = lineGo.AddComponent<Image>();
             lineImg.color = new Color(0.3f, 0.4f, 0.6f, 0.3f);
+            lineImg.raycastTarget = false; // 纯装饰连线，不拦截鼠标
         }
 
         private void SelectPlanet(string id)
