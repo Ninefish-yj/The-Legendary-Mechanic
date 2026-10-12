@@ -94,14 +94,14 @@ namespace SuperMech.Code
             RefreshMap();
         }
 
-        /// <summary>刷新星图，绘制星球节点</summary>
+        /// <summary>刷新星图，绘制星球节点（未发现的星球显示为灰色问号）</summary>
         public void RefreshMap()
         {
             if (_mapContent == null) return;
             foreach (Transform child in _mapContent) Destroy(child.gameObject);
             _planetNodes.Clear();
 
-            var planets = SuperMechStarSystem.GetDiscoveredPlanets();
+            var planets = SuperMechStarSystem.GetAllPlanets(); // 显示所有星球，未发现的显示为问号
             float centerX = 400, centerY = 400;
 
             // 绘制连线（主星球到其他星球）
@@ -136,22 +136,31 @@ namespace SuperMech.Code
 
             var btn = nodeGo.AddComponent<Button>();
             var img = nodeGo.AddComponent<Image>();
-            // 星球颜色按类型
-            Color planetColor = p.type switch
+
+            // 未发现的星球显示为灰色问号
+            if (!p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET)
             {
-                SuperMechStarSystem.PlanetType.Rocky => new Color(0.6f, 0.5f, 0.4f),
-                SuperMechStarSystem.PlanetType.Gas => new Color(0.8f, 0.7f, 0.4f),
-                SuperMechStarSystem.PlanetType.Ice => new Color(0.6f, 0.8f, 1f),
-                SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.4f, 0.2f),
-                SuperMechStarSystem.PlanetType.Ocean => new Color(0.3f, 0.5f, 0.9f),
-                SuperMechStarSystem.PlanetType.Desert => new Color(0.9f, 0.8f, 0.5f),
-                SuperMechStarSystem.PlanetType.Forest => new Color(0.3f, 0.7f, 0.4f),
-                _ => Color.gray
-            };
-            img.color = p.colonyLevel > 0 ? planetColor : new Color(planetColor.r * 0.5f, planetColor.g * 0.5f, planetColor.b * 0.5f, 0.7f);
+                img.color = new Color(0.3f, 0.3f, 0.35f, 0.6f);
+            }
+            else
+            {
+                // 星球颜色按类型
+                Color planetColor = p.type switch
+                {
+                    SuperMechStarSystem.PlanetType.Rocky => new Color(0.6f, 0.5f, 0.4f),
+                    SuperMechStarSystem.PlanetType.Gas => new Color(0.8f, 0.7f, 0.4f),
+                    SuperMechStarSystem.PlanetType.Ice => new Color(0.6f, 0.8f, 1f),
+                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.4f, 0.2f),
+                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.3f, 0.5f, 0.9f),
+                    SuperMechStarSystem.PlanetType.Desert => new Color(0.9f, 0.8f, 0.5f),
+                    SuperMechStarSystem.PlanetType.Forest => new Color(0.3f, 0.7f, 0.4f),
+                    _ => Color.gray
+                };
+                img.color = p.colonyLevel > 0 ? planetColor : new Color(planetColor.r * 0.5f, planetColor.g * 0.5f, planetColor.b * 0.5f, 0.7f);
+            }
             _planetNodes[p.id] = nodeGo;
 
-            // 星球名称
+            // 星球名称（未发现显示?）
             var nameGo = new GameObject("Name");
             nameGo.transform.SetParent(nodeGo.transform, false);
             var nameRect = nameGo.AddComponent<RectTransform>();
@@ -163,9 +172,17 @@ namespace SuperMech.Code
             var nameText = nameGo.AddComponent<Text>();
             nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             nameText.fontSize = 10;
-            nameText.color = p.id == SuperMechStarSystem.MAIN_PLANET ? new Color(1f, 0.9f, 0.5f) : new Color(0.7f, 0.8f, 0.9f);
+            if (!p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET)
+            {
+                nameText.color = new Color(0.5f, 0.5f, 0.55f);
+                nameText.text = "?";
+            }
+            else
+            {
+                nameText.color = p.id == SuperMechStarSystem.MAIN_PLANET ? new Color(1f, 0.9f, 0.5f) : new Color(0.7f, 0.8f, 0.9f);
+                nameText.text = p.name;
+            }
             nameText.alignment = TextAnchor.UpperCenter;
-            nameText.text = p.name;
 
             string pid = p.id;
             btn.onClick.AddListener(() => SelectPlanet(pid));

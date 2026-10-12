@@ -39,6 +39,7 @@ namespace SuperMech.Code
         public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 520, DrawPlayerContent); }
         public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 520, DrawWorldTreeContent); }
         public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 680, 520, DrawTechContent); }
+        public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
         public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent); }
 
@@ -54,7 +55,6 @@ namespace SuperMech.Code
             ("sm_ui_rank_window_title", DrawRankContent),
             ("sm_ui_building_title", DrawBuildingContent),
             ("sm_ui_tech", DrawTechContent),
-            ("sm_ui_star", DrawStarContent),
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)

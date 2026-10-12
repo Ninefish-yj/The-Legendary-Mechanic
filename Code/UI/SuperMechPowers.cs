@@ -103,7 +103,27 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星海总览按钮失败: {e.Message}"); }
             }
 
-            // 2. 进入圣所（核心功能：六大圣所修炼）
+            // 2. 星际星图（核心功能：多星球+航行+殖民，用户要求放神权栏）
+            if (PowerButton.get("sm_star_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_star_open", () =>
+                    {
+                        SuperMechWindowManager.OpenStar();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_star_open", "sm_star_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星际星图按钮失败: {e.Message}"); }
+            }
+
+            // 3. 进入圣所（核心功能：六大圣所修炼）
             if (PowerButton.get("sm_sanctuary_open") == null)
             {
                 try
