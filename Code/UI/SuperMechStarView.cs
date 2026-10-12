@@ -294,7 +294,7 @@ namespace SuperMech.Code
             infoRect.offsetMax = new Vector2(0, -TopBarHeight);
             var infoImg = infoGo.AddComponent<Image>();
             infoImg.color = new Color(0.02f, 0.03f, 0.06f, 0.95f);
-            infoImg.raycastTarget = false;
+            infoImg.raycastTarget = true; // 拦截鼠标，防止穿透到游戏
 
             var infoTextGo = new GameObject("InfoText");
             infoTextGo.transform.SetParent(infoGo.transform, false);
