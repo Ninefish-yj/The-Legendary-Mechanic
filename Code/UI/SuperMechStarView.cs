@@ -13,6 +13,7 @@ namespace SuperMech.Code
         private RectTransform _mapContent;
         private Text _infoText;
         private Text _coordText;
+        private RectTransform _buttonArea; // 交互按钮区域
         private string _selectedPlanet;
         private readonly Dictionary<string, GameObject> _planetNodes = new Dictionary<string, GameObject>();
         private const float MAP_SIZE = 2400f;
@@ -324,8 +325,8 @@ namespace SuperMech.Code
             var infoTextGo = new GameObject("InfoText");
             infoTextGo.transform.SetParent(infoGo.transform, false);
             var itRect = infoTextGo.AddComponent<RectTransform>();
-            itRect.anchorMin = Vector2.zero; itRect.anchorMax = Vector2.one;
-            itRect.offsetMin = new Vector2(8, 8); itRect.offsetMax = new Vector2(-8, -8);
+            itRect.anchorMin = new Vector2(0, 0.3f); itRect.anchorMax = Vector2.one;
+            itRect.offsetMin = new Vector2(8, 0); itRect.offsetMax = new Vector2(-8, -8);
             _infoText = infoTextGo.AddComponent<Text>();
             _infoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _infoText.fontSize = 12;
@@ -334,6 +335,15 @@ namespace SuperMech.Code
             _infoText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _infoText.verticalOverflow = VerticalWrapMode.Truncate;
             _infoText.text = LocalizedTextManager.getText("sm_ui_select_planet");
+
+            // 交互按钮区域（下半部分30%）
+            var btnAreaGo = new GameObject("ButtonArea");
+            btnAreaGo.transform.SetParent(infoGo.transform, false);
+            _buttonArea = btnAreaGo.AddComponent<RectTransform>();
+            _buttonArea.anchorMin = Vector2.zero;
+            _buttonArea.anchorMax = new Vector2(1, 0.3f);
+            _buttonArea.offsetMin = new Vector2(8, 8);
+            _buttonArea.offsetMax = new Vector2(-8, 0);
 
             RefreshMap();
 
@@ -757,6 +767,129 @@ namespace SuperMech.Code
             {
                 _infoText.text += "\n<color=#ffcc66>" + LocalizedTextManager.getText("sm_ui_planet_uncolonized") + "</color>";
             }
+
+            // 根据星球状态创建交互按钮
+            RefreshButtons(p);
+        }
+
+        /// <summary>根据星球状态刷新交互按钮</summary>
+        private void RefreshButtons(SuperMechStarSystem.PlanetData p)
+        {
+            if (_buttonArea == null) return;
+            // 清空旧按钮
+            foreach (Transform child in _buttonArea) Destroy(child.gameObject);
+
+            bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
+            float btnY = 0f;
+            const float btnHeight = 32f;
+            const float btnGap = 6f;
+
+            // 未发现：探索按钮
+            if (!p.discovered && !isMain)
+            {
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_explore"), new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
+                {
+                    SuperMechStarSystem.DiscoverPlanet(p.id, "player");
+                    SelectPlanet(p.id); // 刷新显示
+                    RefreshMap();
+                }, ref btnY, btnHeight, btnGap);
+            }
+
+            // 已发现但未殖民：建立殖民地
+            if (p.discovered && p.colonyLevel == 0 && !isMain)
+            {
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_colonize"), new Color(0.2f, 0.7f, 0.3f, 0.9f), () =>
+                {
+                    p.colonyLevel = 1;
+                    p.ownerKingdom = "player";
+                    SelectPlanet(p.id);
+                    RefreshMap();
+                }, ref btnY, btnHeight, btnGap);
+            }
+
+            // 已殖民：升级殖民地 + 派遣单位 + 采集资源
+            if (p.colonyLevel > 0 && !isMain)
+            {
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_upgrade_colony"), new Color(0.8f, 0.6f, 0.2f, 0.9f), () =>
+                {
+                    if (p.colonyLevel < 5)
+                    {
+                        p.colonyLevel++;
+                        SelectPlanet(p.id);
+                    }
+                }, ref btnY, btnHeight, btnGap);
+
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_send_unit"), new Color(0.5f, 0.3f, 0.8f, 0.9f), () =>
+                {
+                    // 派遣一个随机单位到该星球
+                    var units = World.world.units.getSimpleList();
+                    if (units.Count > 0)
+                    {
+                        var unit = units[UnityEngine.Random.Range(0, units.Count)];
+                        SuperMechStarSystem.SendUnit(unit.id, SuperMechStarSystem.MAIN_PLANET, p.id);
+                        SelectPlanet(p.id);
+                    }
+                }, ref btnY, btnHeight, btnGap);
+
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_collect_resource"), new Color(0.8f, 0.3f, 0.3f, 0.9f), () =>
+                {
+                    float collected = Mathf.Min(p.resource, 100f * p.colonyLevel);
+                    p.resource -= collected;
+                    SelectPlanet(p.id);
+                }, ref btnY, btnHeight, btnGap);
+            }
+
+            // 主世界：显示驻留单位数量
+            if (isMain)
+            {
+                var hintGo = new GameObject("Hint");
+                hintGo.transform.SetParent(_buttonArea, false);
+                var hintRect = hintGo.AddComponent<RectTransform>();
+                hintRect.anchorMin = new Vector2(0, 1);
+                hintRect.anchorMax = new Vector2(1, 1);
+                hintRect.pivot = new Vector2(0.5f, 1);
+                hintRect.sizeDelta = new Vector2(0, 20);
+                hintRect.anchoredPosition = new Vector2(0, -4);
+                var hintText = hintGo.AddComponent<Text>();
+                hintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                hintText.fontSize = 11;
+                hintText.color = new Color(0.6f, 0.7f, 0.8f);
+                hintText.alignment = TextAnchor.UpperCenter;
+                hintText.text = LocalizedTextManager.getText("sm_ui_main_planet_hint");
+                hintText.raycastTarget = false;
+            }
+        }
+
+        /// <summary>创建一个操作按钮</summary>
+        private void CreateActionButton(string text, Color bgColor, UnityEngine.Events.UnityAction action, ref float y, float height, float gap)
+        {
+            var btnGo = new GameObject("ActionBtn");
+            btnGo.transform.SetParent(_buttonArea, false);
+            var btnRect = btnGo.AddComponent<RectTransform>();
+            btnRect.anchorMin = new Vector2(0, 1);
+            btnRect.anchorMax = new Vector2(1, 1);
+            btnRect.pivot = new Vector2(0.5f, 1);
+            btnRect.sizeDelta = new Vector2(0, height);
+            btnRect.anchoredPosition = new Vector2(0, -y);
+            var btnImg = btnGo.AddComponent<Image>();
+            btnImg.color = bgColor;
+            var btn = btnGo.AddComponent<Button>();
+            btn.onClick.AddListener(action);
+
+            var textGo = new GameObject("Text");
+            textGo.transform.SetParent(btnGo.transform, false);
+            var textRect = textGo.AddComponent<RectTransform>();
+            textRect.anchorMin = Vector2.zero; textRect.anchorMax = Vector2.one;
+            textRect.offsetMin = Vector2.zero; textRect.offsetMax = Vector2.zero;
+            var btnText = textGo.AddComponent<Text>();
+            btnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            btnText.fontSize = 12;
+            btnText.color = Color.white;
+            btnText.alignment = TextAnchor.MiddleCenter;
+            btnText.text = text;
+            btnText.raycastTarget = false;
+
+            y += height + gap;
         }
     }
 }
