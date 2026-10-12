@@ -15,6 +15,9 @@ namespace SuperMech.Code
         private Text _coordText;
         private RectTransform _buttonArea; // 交互按钮区域
         private string _selectedPlanet;
+        private float _zoomLevel = 1f; // 当前缩放级别
+        private const float MinZoom = 0.5f;
+        private const float MaxZoom = 2f;
         private readonly Dictionary<string, GameObject> _planetNodes = new Dictionary<string, GameObject>();
         private const float MAP_SIZE = 2400f;
         private const float VIEW_RANGE = 1200f;
@@ -87,6 +90,31 @@ namespace SuperMech.Code
             if (_instance == this) _instance = null;
             Destroy(gameObject);
         }
+
+        /// <summary>每帧更新：处理滚轮缩放和航行单位位置刷新</summary>
+        private void Update()
+        {
+            // 滚轮缩放
+            float scroll = Input.GetAxis("Mouse ScrollWheel");
+            if (Mathf.Abs(scroll) > 0.01f)
+            {
+                _zoomLevel = Mathf.Clamp(_zoomLevel + scroll * 0.3f, MinZoom, MaxZoom);
+                if (_mapContent != null)
+                {
+                    _mapContent.localScale = new Vector3(_zoomLevel, _zoomLevel, 1f);
+                }
+            }
+
+            // 每秒刷新一次航行单位位置
+            _voyageRefreshTimer += Time.deltaTime;
+            if (_voyageRefreshTimer >= 1f)
+            {
+                _voyageRefreshTimer = 0f;
+                RefreshMap();
+            }
+        }
+
+        private float _voyageRefreshTimer;
 
         /// <summary>生成圆形光晕纹理（中心亮边缘透明的径向渐变）</summary>
         private static Sprite GetGlowSprite()
@@ -310,6 +338,62 @@ namespace SuperMech.Code
             _coordText.alignment = TextAnchor.LowerCenter;
             _coordText.text = "星海浩瀚，探索未知";
 
+            // 缩放控制按钮（右下角，手机端用）
+            var zoomGo = new GameObject("ZoomControls");
+            zoomGo.transform.SetParent(mapGo.transform, false);
+            var zoomRect = zoomGo.AddComponent<RectTransform>();
+            zoomRect.anchorMin = new Vector2(1, 0);
+            zoomRect.anchorMax = new Vector2(1, 0);
+            zoomRect.pivot = new Vector2(1, 0);
+            zoomRect.sizeDelta = new Vector2(80, 36);
+            zoomRect.anchoredPosition = new Vector2(-8, 28);
+
+            // 放大按钮
+            var zoomInGo = new GameObject("ZoomIn");
+            zoomInGo.transform.SetParent(zoomGo.transform, false);
+            var ziRect = zoomInGo.AddComponent<RectTransform>();
+            ziRect.anchorMin = new Vector2(0, 0);
+            ziRect.anchorMax = new Vector2(0.5f, 1);
+            ziRect.offsetMin = Vector2.zero; ziRect.offsetMax = Vector2.zero;
+            var ziImg = zoomInGo.AddComponent<Image>();
+            ziImg.color = new Color(0.15f, 0.25f, 0.4f, 0.8f);
+            var ziBtn = zoomInGo.AddComponent<Button>();
+            ziBtn.onClick.AddListener(() => {
+                _zoomLevel = Mathf.Clamp(_zoomLevel + 0.2f, MinZoom, MaxZoom);
+                if (_mapContent != null) _mapContent.localScale = new Vector3(_zoomLevel, _zoomLevel, 1f);
+            });
+            var ziTextGo = new GameObject("Text");
+            ziTextGo.transform.SetParent(zoomInGo.transform, false);
+            var ziTextRect = ziTextGo.AddComponent<RectTransform>();
+            ziTextRect.anchorMin = Vector2.zero; ziTextRect.anchorMax = Vector2.one;
+            var ziText = ziTextGo.AddComponent<Text>();
+            ziText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            ziText.fontSize = 16; ziText.color = Color.white;
+            ziText.alignment = TextAnchor.MiddleCenter; ziText.text = "+";
+
+            // 缩小按钮
+            var zoomOutGo = new GameObject("ZoomOut");
+            zoomOutGo.transform.SetParent(zoomGo.transform, false);
+            var zoRect = zoomOutGo.AddComponent<RectTransform>();
+            zoRect.anchorMin = new Vector2(0.5f, 0);
+            zoRect.anchorMax = new Vector2(1, 1);
+            zoRect.offsetMin = Vector2.zero; zoRect.offsetMax = Vector2.zero;
+            var zoImg = zoomOutGo.AddComponent<Image>();
+            zoImg.color = new Color(0.15f, 0.25f, 0.4f, 0.8f);
+            var zoBtn = zoomOutGo.AddComponent<Button>();
+            zoBtn.onClick.AddListener(() => {
+                _zoomLevel = Mathf.Clamp(_zoomLevel - 0.2f, MinZoom, MaxZoom);
+                if (_mapContent != null) _mapContent.localScale = new Vector3(_zoomLevel, _zoomLevel, 1f);
+            });
+            var zoTextGo = new GameObject("Text");
+            zoTextGo.transform.SetParent(zoomOutGo.transform, false);
+            var zoTextRect = zoTextGo.AddComponent<RectTransform>();
+            zoTextRect.anchorMin = Vector2.zero; zoTextRect.anchorMax = Vector2.one;
+            var zoText = zoTextGo.AddComponent<Text>();
+            zoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            zoText.fontSize = 16; zoText.color = Color.white;
+            zoText.alignment = TextAnchor.MiddleCenter; zoText.text = "-";
+
             // 右侧信息面板（从顶部栏下方开始）
             var infoGo = new GameObject("InfoPanel");
             infoGo.transform.SetParent(transform, false);
@@ -531,14 +615,14 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>刷新星图，绘制视野范围内的星球节点</summary>
+        /// <summary>刷新星图，绘制视野范围内的星球节点和航行单位</summary>
         public void RefreshMap()
         {
             if (_mapContent == null) return;
-            // 只销毁星球节点和连线，保留星空背景
+            // 只销毁星球节点、连线、航行单位，保留星空背景
             foreach (Transform child in _mapContent)
             {
-                if (child.name.StartsWith("Planet_") || child.name.StartsWith("Line_"))
+                if (child.name.StartsWith("Planet_") || child.name.StartsWith("Line_") || child.name.StartsWith("Voyage_"))
                     Destroy(child.gameObject);
             }
             _planetNodes.Clear();
@@ -562,12 +646,67 @@ namespace SuperMech.Code
                 CreatePlanetNode(p, p.x, -p.y);
             }
 
+            // 绘制航行中的单位（飞船）
+            var voyages = SuperMechStarSystem.GetVoyages();
+            foreach (var v in voyages)
+            {
+                var from = SuperMechStarSystem.GetPlanet(v.fromPlanet);
+                var to = SuperMechStarSystem.GetPlanet(v.toPlanet);
+                if (from == null || to == null) continue;
+                // 线性插值计算当前位置
+                float vx = from.x + (to.x - from.x) * v.progress;
+                float vy = -(from.y + (to.y - from.y) * v.progress);
+                CreateVoyageNode(v, vx, vy);
+            }
+
             if (_coordText != null)
             {
                 int discovered = SuperMechStarSystem.GetDiscoveredPlanets().Count;
                 int total = planets.Count;
-                _coordText.text = $"已探索星区：{discovered}/{total} 星球  |  拖动星图探索未知星海";
+                int voyageCount = voyages.Count;
+                _coordText.text = $"已探索星区：{discovered}/{total} 星球  |  航行中：{voyageCount}  |  拖动星图探索未知星海";
             }
+        }
+
+        /// <summary>创建航行中的单位节点（飞船图标）</summary>
+        private void CreateVoyageNode(SuperMechStarSystem.VoyageData v, float x, float y)
+        {
+            var nodeGo = new GameObject($"Voyage_{v.snapshot.id}");
+            nodeGo.transform.SetParent(_mapContent, false);
+            var nodeRect = nodeGo.AddComponent<RectTransform>();
+            nodeRect.anchorMin = new Vector2(0.5f, 0.5f);
+            nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
+            nodeRect.pivot = new Vector2(0.5f, 0.5f);
+            nodeRect.sizeDelta = new Vector2(20, 20);
+            nodeRect.anchoredPosition = new Vector2(x, y);
+
+            // 飞船图标（三角形，用Image+颜色）
+            var shipGo = new GameObject("Ship");
+            shipGo.transform.SetParent(nodeGo.transform, false);
+            var shipRect = shipGo.AddComponent<RectTransform>();
+            shipRect.anchorMin = Vector2.zero; shipRect.anchorMax = Vector2.one;
+            shipRect.offsetMin = Vector2.zero; shipRect.offsetMax = Vector2.zero;
+            var shipImg = shipGo.AddComponent<Image>();
+            shipImg.sprite = GetGlowSprite(); // 用圆形光晕代替飞船图标
+            shipImg.color = new Color(0.4f, 0.8f, 1f, 0.8f);
+            shipImg.raycastTarget = false;
+
+            // 单位名称标签
+            var labelGo = new GameObject("Label");
+            labelGo.transform.SetParent(nodeGo.transform, false);
+            var labelRect = labelGo.AddComponent<RectTransform>();
+            labelRect.anchorMin = new Vector2(0.5f, 0);
+            labelRect.anchorMax = new Vector2(0.5f, 0);
+            labelRect.pivot = new Vector2(0.5f, 1);
+            labelRect.sizeDelta = new Vector2(100, 14);
+            labelRect.anchoredPosition = new Vector2(0, -2);
+            var labelText = labelGo.AddComponent<Text>();
+            labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            labelText.fontSize = 9;
+            labelText.color = new Color(0.6f, 0.9f, 1f);
+            labelText.alignment = TextAnchor.UpperCenter;
+            labelText.text = $"{v.snapshot.name} ({(int)(v.progress * 100)}%)";
+            labelText.raycastTarget = false;
         }
 
         private void CreatePlanetNode(SuperMechStarSystem.PlanetData p, float x, float y)
