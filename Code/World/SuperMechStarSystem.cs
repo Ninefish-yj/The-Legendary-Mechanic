@@ -77,6 +77,202 @@ namespace SuperMech.Code
         public const int PLANETS_PER_CHUNK_MIN = 6;
         public const int PLANETS_PER_CHUNK_MAX = 12;
 
+        // ========== 星系结构配置（螺旋星系） ==========
+        public const float GALAXY_CENTER_X = 0f;
+        public const float GALAXY_CENTER_Y = 0f;
+        public const int GALAXY_ARM_COUNT = 4; // 4条螺旋臂（类似银河系）
+        public const float GALAXY_ARM_WIDTH = 200f; // 悬臂宽度
+        public const float GALAXY_ARM_TIGHTNESS = 0.3f; // 螺旋紧密度（越大越紧）
+        public const float GALAXY_CORE_RADIUS = 400f; // 核球半径（中心恒星密集区）
+        public const float GALAXY_DISK_RADIUS = 5000f; // 星系盘半径
+
+        /// <summary>计算位置到最近悬臂的距离（用于恒星分布密度）</summary>
+        public static float DistanceToNearestArm(float x, float y)
+        {
+            float dx = x - GALAXY_CENTER_X;
+            float dy = y - GALAXY_CENTER_Y;
+            float r = Mathf.Sqrt(dx * dx + dy * dy);
+            if (r < 1f) return 0f;
+            float theta = Mathf.Atan2(dy, dx);
+
+            // 对数螺旋线：r = a * e^(b*theta)，简化为角度偏移
+            float minDist = float.MaxValue;
+            for (int i = 0; i < GALAXY_ARM_COUNT; i++)
+            {
+                float armAngle = (i * Mathf.PI * 2f / GALAXY_ARM_COUNT) + r * GALAXY_ARM_TIGHTNESS * 0.01f;
+                float angleDiff = Mathf.Abs(Mathf.DeltaAngle(theta * Mathf.Rad2Deg, armAngle * Mathf.Rad2Deg));
+                float dist = angleDiff * Mathf.Deg2Rad * r; // 弧长距离
+                if (dist < minDist) minDist = dist;
+            }
+            return minDist;
+        }
+
+        /// <summary>计算位置的恒星密度系数（悬臂上密度高，核球密度最高，晕族密度低，星团密度极高）</summary>
+        public static float GetStarDensity(float x, float y)
+        {
+            float dx = x - GALAXY_CENTER_X;
+            float dy = y - GALAXY_CENTER_Y;
+            float r = Mathf.Sqrt(dx * dx + dy * dy);
+
+            // 核球区域：密度最高
+            if (r < GALAXY_CORE_RADIUS)
+            {
+                return 2.5f * (1f - r / GALAXY_CORE_RADIUS * 0.5f);
+            }
+
+            // 星系盘外：极低密度（晕族）
+            if (r > GALAXY_DISK_RADIUS) return 0.1f;
+
+            // 悬臂上：密度高
+            float armDist = DistanceToNearestArm(x, y);
+            float baseDensity;
+            if (armDist < GALAXY_ARM_WIDTH)
+            {
+                float armFactor = 1f - armDist / GALAXY_ARM_WIDTH;
+                baseDensity = 1.5f + armFactor * 1.5f; // 1.5-3.0
+            }
+            else
+            {
+                baseDensity = 0.3f; // 悬臂间：低密度
+            }
+
+            // 星团内：密度额外加成（疏散星团1.5x，球状星团2.5x）
+            var cluster = GetClusterAt(x, y);
+            if (cluster != null)
+            {
+                float clusterBoost = cluster.type == ClusterType.Globular ? 2.5f : 1.5f;
+                // 星团中心密度最高，边缘递减
+                float cdx = x - cluster.x, cdy = y - cluster.y;
+                float cdist = Mathf.Sqrt(cdx * cdx + cdy * cdy);
+                float centerFactor = 1f - cdist / cluster.radius * 0.5f;
+                baseDensity *= clusterBoost * centerFactor;
+            }
+
+            return baseDensity;
+        }
+
+        /// <summary>判断位置是否在星系悬臂上</summary>
+        public static bool IsInSpiralArm(float x, float y)
+        {
+            float dx = x - GALAXY_CENTER_X;
+            float dy = y - GALAXY_CENTER_Y;
+            float r = Mathf.Sqrt(dx * dx + dy * dy);
+            if (r < GALAXY_CORE_RADIUS) return true;
+            if (r > GALAXY_DISK_RADIUS) return false;
+            return DistanceToNearestArm(x, y) < GALAXY_ARM_WIDTH;
+        }
+
+        // ========== 星团系统（现实天体物理：疏散星团+球状星团） ==========
+        public enum ClusterType { Open, Globular } // 疏散星团/球状星团
+
+        public class StarCluster
+        {
+            public string id;
+            public string name;
+            public ClusterType type;
+            public float x;
+            public float y;
+            public float radius; // 星团半径
+            public int memberCount; // 成员恒星数量
+        }
+
+        private static List<StarCluster> _clusters;
+        private static bool _clustersGenerated;
+
+        /// <summary>预生成星团（沿旋臂分布疏散星团，晕族分布球状星团）</summary>
+        public static void GenerateClusters()
+        {
+            if (_clustersGenerated) return;
+            _clustersGenerated = true;
+            _clusters = new List<StarCluster>();
+
+            System.Random rng = new System.Random(_worldSeed + 99999);
+
+            // 疏散星团（Open Cluster）：沿旋臂分布，年轻恒星松散聚集
+            for (int i = 0; i < 30; i++)
+            {
+                // 在旋臂上随机找位置
+                float angle = (float)rng.NextDouble() * Mathf.PI * 2f;
+                float dist = GALAXY_CORE_RADIUS + (float)rng.NextDouble() * (GALAXY_DISK_RADIUS - GALAXY_CORE_RADIUS);
+                float cx = GALAXY_CENTER_X + Mathf.Cos(angle) * dist;
+                float cy = GALAXY_CENTER_Y + Mathf.Sin(angle) * dist;
+                // 微调让它在旋臂上
+                if (!IsInSpiralArm(cx, cy)) { i--; continue; }
+
+                _clusters.Add(new StarCluster
+                {
+                    id = $"open_{i}",
+                    name = GenerateClusterName(rng, "疏散"),
+                    type = ClusterType.Open,
+                    x = cx,
+                    y = cy,
+                    radius = 80f + (float)rng.NextDouble() * 120f, // 80-200
+                    memberCount = rng.Next(50, 500)
+                });
+            }
+
+            // 球状星团（Globular Cluster）：晕族中分布，古老恒星紧密聚集
+            for (int i = 0; i < 15; i++)
+            {
+                float angle = (float)rng.NextDouble() * Mathf.PI * 2f;
+                float dist = GALAXY_DISK_RADIUS * 0.5f + (float)rng.NextDouble() * GALAXY_DISK_RADIUS * 1.5f;
+                float cx = GALAXY_CENTER_X + Mathf.Cos(angle) * dist;
+                float cy = GALAXY_CENTER_Y + Mathf.Sin(angle) * dist;
+
+                _clusters.Add(new StarCluster
+                {
+                    id = $"glob_{i}",
+                    name = GenerateClusterName(rng, "球状"),
+                    type = ClusterType.Globular,
+                    x = cx,
+                    y = cy,
+                    radius = 150f + (float)rng.NextDouble() * 200f, // 150-350
+                    memberCount = rng.Next(1000, 100000)
+                });
+            }
+        }
+
+        private static string GenerateClusterName(System.Random rng, string prefix)
+        {
+            string[] greek = { "昴", "毕", "蟹", "猎", "仙", "英", "金", "银", "铜", "铁", "星", "云", "光", "影", "魂", "魄" };
+            string[] suffix = { "星团", "M", "NGC", "星协" };
+            return $"{prefix}{greek[rng.Next(greek.Length)]}{suffix[rng.Next(suffix.Length)]}";
+        }
+
+        /// <summary>获取所有星团</summary>
+        public static List<StarCluster> GetClusters()
+        {
+            GenerateClusters();
+            return _clusters;
+        }
+
+        /// <summary>获取范围内的星团</summary>
+        public static List<StarCluster> GetClustersInRange(float x, float y, float range)
+        {
+            GenerateClusters();
+            var result = new List<StarCluster>();
+            foreach (var c in _clusters)
+            {
+                float dx = c.x - x, dy = c.y - y;
+                if (dx * dx + dy * dy < (range + c.radius) * (range + c.radius))
+                    result.Add(c);
+            }
+            return result;
+        }
+
+        /// <summary>获取位置所在的星团（如果在星团内）</summary>
+        public static StarCluster GetClusterAt(float x, float y)
+        {
+            GenerateClusters();
+            foreach (var c in _clusters)
+            {
+                float dx = c.x - x, dy = c.y - y;
+                if (dx * dx + dy * dy < c.radius * c.radius)
+                    return c;
+            }
+            return null;
+        }
+
         // 星球名称生成器（前缀+后缀，模拟原著星海命名风格）
         private static readonly string[] NamePrefixes = {
             "艾", "科", "苏", "黑", "泰", "星", "卢", "昆", "诺", "加",
@@ -132,8 +328,18 @@ namespace SuperMech.Code
             bool isCenterChunk = (cx == 0 && cy == 0);
             System.Random rng = new System.Random(ChunkSeed(cx, cy));
 
-            // 每个星区生成1-2个恒星系
-            int starCount = rng.Next(1, 3);
+            // 根据星系结构计算恒星密度（悬臂密集、核球最密、晕族稀少）
+            float chunkCenterX = cx * CHUNK_SIZE + CHUNK_SIZE / 2f;
+            float chunkCenterY = cy * CHUNK_SIZE + CHUNK_SIZE / 2f;
+            float density = GetStarDensity(chunkCenterX, chunkCenterY);
+
+            // 恒星数量根据密度调整：核球3-5个，悬臂2-4个，悬臂间1-2个，晕族0-1个
+            int starCount;
+            if (density > 2f) starCount = rng.Next(3, 6);       // 核球
+            else if (density > 1.5f) starCount = rng.Next(2, 5); // 悬臂
+            else if (density > 0.5f) starCount = rng.Next(1, 3); // 悬臂间
+            else starCount = rng.Next(0, 2);                      // 晕族
+
             for (int s = 0; s < starCount; s++)
             {
                 // 恒星位置（块内随机，留边距）

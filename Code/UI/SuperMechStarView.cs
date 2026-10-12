@@ -531,54 +531,65 @@ namespace SuperMech.Code
 
             System.Random rng = new System.Random(20240501); // 固定种子，星空分布一致
 
-            // 第一层：远景星星（小、暗、数量多，1200颗）
-            for (int i = 0; i < 1200; i++)
+            // 第一层：远景星星（小、暗、数量多，沿旋臂分布）
+            int farStarCount = 0;
+            int farStarAttempts = 0;
+            while (farStarCount < 1200 && farStarAttempts < 10000)
             {
-                var starGo = new GameObject($"FarStar_{i}");
+                farStarAttempts++;
+                float sx = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f;
+                float sy = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f;
+                // 拒绝采样：旋臂上密度高，晕族密度低
+                float density = SuperMechStarSystem.GetStarDensity(sx, -sy);
+                if (rng.NextDouble() > density * 0.4f) continue;
+                farStarCount++;
+
+                var starGo = new GameObject($"FarStar_{farStarCount}");
                 starGo.transform.SetParent(starfieldGo.transform, false);
                 var starRect = starGo.AddComponent<RectTransform>();
                 starRect.anchorMin = new Vector2(0.5f, 0.5f);
                 starRect.anchorMax = new Vector2(0.5f, 0.5f);
                 starRect.pivot = new Vector2(0.5f, 0.5f);
 
-                float size = (float)(1 + rng.NextDouble() * 2); // 1-3像素
+                float size = (float)(1 + rng.NextDouble() * 2);
                 starRect.sizeDelta = new Vector2(size, size);
-                starRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f,
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f
-                );
+                starRect.anchoredPosition = new Vector2(sx, sy);
 
                 var starImg = starGo.AddComponent<Image>();
                 starImg.raycastTarget = false;
 
-                // 远景星星：偏暗，蓝白色为主
                 int colorRoll = rng.Next(100);
                 if (colorRoll < 80) starImg.color = new Color(0.8f, 0.85f, 1f, (float)(0.2 + rng.NextDouble() * 0.4));
                 else if (colorRoll < 95) starImg.color = new Color(1f, 0.95f, 0.8f, (float)(0.2 + rng.NextDouble() * 0.3));
                 else starImg.color = new Color(1f, 0.7f, 0.6f, (float)(0.2 + rng.NextDouble() * 0.3));
             }
 
-            // 第二层：近景亮星（大、亮、数量少，300颗）
-            for (int i = 0; i < 300; i++)
+            // 第二层：近景亮星（大、亮、数量少，沿旋臂分布，300颗）
+            int nearStarCount = 0;
+            int nearStarAttempts = 0;
+            while (nearStarCount < 300 && nearStarAttempts < 5000)
             {
-                var starGo = new GameObject($"NearStar_{i}");
+                nearStarAttempts++;
+                float sx = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f;
+                float sy = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f;
+                float density = SuperMechStarSystem.GetStarDensity(sx, -sy);
+                if (rng.NextDouble() > density * 0.5f) continue;
+                nearStarCount++;
+
+                var starGo = new GameObject($"NearStar_{nearStarCount}");
                 starGo.transform.SetParent(starfieldGo.transform, false);
                 var starRect = starGo.AddComponent<RectTransform>();
                 starRect.anchorMin = new Vector2(0.5f, 0.5f);
                 starRect.anchorMax = new Vector2(0.5f, 0.5f);
                 starRect.pivot = new Vector2(0.5f, 0.5f);
 
-                float size = (float)(3 + rng.NextDouble() * 5); // 3-8像素
+                float size = (float)(3 + rng.NextDouble() * 5);
                 starRect.sizeDelta = new Vector2(size, size);
-                starRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f,
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f
-                );
+                starRect.anchoredPosition = new Vector2(sx, sy);
 
                 var starImg = starGo.AddComponent<Image>();
                 starImg.raycastTarget = false;
 
-                // 近景亮星：高亮度，颜色丰富
                 int colorRoll = rng.Next(100);
                 if (colorRoll < 60) starImg.color = new Color(1f, 1f, 1f, (float)(0.6 + rng.NextDouble() * 0.4));
                 else if (colorRoll < 80) starImg.color = new Color(0.7f, 0.85f, 1f, (float)(0.5 + rng.NextDouble() * 0.4));
@@ -619,16 +630,24 @@ namespace SuperMech.Code
         public void RefreshMap()
         {
             if (_mapContent == null) return;
-            // 只销毁星球节点、连线、航行单位、轨道线，保留星空背景
+            // 只销毁星球节点、连线、航行单位、轨道线、星团标记，保留星空背景
             foreach (Transform child in _mapContent)
             {
                 if (child.name.StartsWith("Planet_") || child.name.StartsWith("Line_") ||
-                    child.name.StartsWith("Voyage_") || child.name.StartsWith("Orbit_"))
+                    child.name.StartsWith("Voyage_") || child.name.StartsWith("Orbit_") ||
+                    child.name.StartsWith("Cluster_"))
                     Destroy(child.gameObject);
             }
             _planetNodes.Clear();
 
             var planets = SuperMechStarSystem.GetPlanetsInRange(0, 0, VIEW_RANGE);
+
+            // 绘制星团标记（疏散星团=蓝色虚线圈，球状星团=橙色虚线圈）
+            var clusters = SuperMechStarSystem.GetClustersInRange(0, 0, VIEW_RANGE + 300);
+            foreach (var c in clusters)
+            {
+                CreateClusterMarker(c);
+            }
 
             // 绘制轨道线（行星围绕恒星的轨道）
             foreach (var p in planets)
@@ -934,6 +953,57 @@ namespace SuperMech.Code
             orbitImg.sprite = GetGlowSprite();
             orbitImg.color = new Color(0.3f, 0.4f, 0.6f, 0.08f); // 淡淡的圆圈
             orbitImg.raycastTarget = false;
+        }
+
+        /// <summary>创建星团标记（疏散星团=蓝色，球状星团=橙色）</summary>
+        private void CreateClusterMarker(SuperMechStarSystem.StarCluster c)
+        {
+            var clusterGo = new GameObject($"Cluster_{c.id}");
+            clusterGo.transform.SetParent(_mapContent, false);
+            var clusterRect = clusterGo.AddComponent<RectTransform>();
+            clusterRect.anchorMin = new Vector2(0.5f, 0.5f);
+            clusterRect.anchorMax = new Vector2(0.5f, 0.5f);
+            clusterRect.pivot = new Vector2(0.5f, 0.5f);
+            clusterRect.sizeDelta = new Vector2(c.radius * 2, c.radius * 2);
+            clusterRect.anchoredPosition = new Vector2(c.x, -c.y);
+
+            // 星团范围圆圈（半透明）
+            var circleImg = clusterGo.AddComponent<Image>();
+            circleImg.sprite = GetGlowSprite();
+            circleImg.raycastTarget = false;
+            if (c.type == SuperMechStarSystem.ClusterType.Globular)
+            {
+                circleImg.color = new Color(1f, 0.6f, 0.3f, 0.08f); // 球状星团：橙色
+            }
+            else
+            {
+                circleImg.color = new Color(0.4f, 0.7f, 1f, 0.08f); // 疏散星团：蓝色
+            }
+
+            // 星团名称标签
+            var labelGo = new GameObject("Label");
+            labelGo.transform.SetParent(clusterGo.transform, false);
+            var labelRect = labelGo.AddComponent<RectTransform>();
+            labelRect.anchorMin = new Vector2(0.5f, 0.5f);
+            labelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            labelRect.pivot = new Vector2(0.5f, 0.5f);
+            labelRect.sizeDelta = new Vector2(160, 18);
+            labelRect.anchoredPosition = new Vector2(0, c.radius + 10);
+            var labelText = labelGo.AddComponent<Text>();
+            labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            labelText.fontSize = 11;
+            labelText.alignment = TextAnchor.MiddleCenter;
+            labelText.raycastTarget = false;
+            if (c.type == SuperMechStarSystem.ClusterType.Globular)
+            {
+                labelText.color = new Color(1f, 0.7f, 0.4f, 0.7f);
+                labelText.text = $"◉ {c.name}";
+            }
+            else
+            {
+                labelText.color = new Color(0.6f, 0.8f, 1f, 0.7f);
+                labelText.text = $"◎ {c.name}";
+            }
         }
 
         private void SelectPlanet(string id)
