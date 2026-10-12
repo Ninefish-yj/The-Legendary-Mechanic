@@ -4,13 +4,16 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>星图窗口：显示星系星球，支持航行和殖民</summary>
+    /// <summary>星图窗口：无限星海，支持滚动探索和缩放</summary>
     public class SuperMechStarView : MonoBehaviour
     {
         private RectTransform _mapContent;
         private Text _infoText;
+        private Text _coordText;
         private string _selectedPlanet;
         private readonly Dictionary<string, GameObject> _planetNodes = new Dictionary<string, GameObject>();
+        private const float MAP_SIZE = 2400f; // 星图总大小（覆盖4x4个星区）
+        private const float VIEW_RANGE = 1200f; // 视野范围（生成这个范围内的星球）
 
         void Awake()
         {
@@ -56,7 +59,7 @@ namespace SuperMech.Code
             _mapContent.anchorMin = new Vector2(0.5f, 0.5f);
             _mapContent.anchorMax = new Vector2(0.5f, 0.5f);
             _mapContent.pivot = new Vector2(0.5f, 0.5f);
-            _mapContent.sizeDelta = new Vector2(800, 800);
+            _mapContent.sizeDelta = new Vector2(MAP_SIZE, MAP_SIZE);
             var contentHit = contentGo.AddComponent<Image>();
             contentHit.color = new Color(0f, 0f, 0f, 0f);
             contentHit.raycastTarget = true;
@@ -65,6 +68,22 @@ namespace SuperMech.Code
             scrollRect.vertical = true;
             scrollRect.horizontal = true;
             scrollRect.movementType = ScrollRect.MovementType.Clamped;
+
+            // 坐标显示（左下角）
+            var coordGo = new GameObject("CoordText");
+            coordGo.transform.SetParent(mapGo.transform, false);
+            var coordRect = coordGo.AddComponent<RectTransform>();
+            coordRect.anchorMin = new Vector2(0, 0);
+            coordRect.anchorMax = new Vector2(1, 0);
+            coordRect.pivot = new Vector2(0.5f, 0);
+            coordRect.sizeDelta = new Vector2(0, 20);
+            coordRect.anchoredPosition = new Vector2(0, 4);
+            _coordText = coordGo.AddComponent<Text>();
+            _coordText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _coordText.fontSize = 10;
+            _coordText.color = new Color(0.4f, 0.5f, 0.6f);
+            _coordText.alignment = TextAnchor.LowerCenter;
+            _coordText.text = "星海浩瀚，探索未知";
 
             // 右侧信息面板
             var infoGo = new GameObject("InfoPanel");
@@ -92,47 +111,65 @@ namespace SuperMech.Code
             _infoText.text = LocalizedTextManager.getText("sm_ui_select_planet");
 
             RefreshMap();
+
+            // 初始滚动到中心（主星球位置）
+            scrollRect.normalizedPosition = new Vector2(0.5f, 0.5f);
         }
 
-        /// <summary>刷新星图，绘制星球节点（未发现的星球显示为灰色问号）</summary>
+        /// <summary>刷新星图，绘制视野范围内的星球节点（未发现显示灰色问号）</summary>
         public void RefreshMap()
         {
             if (_mapContent == null) return;
             foreach (Transform child in _mapContent) Destroy(child.gameObject);
             _planetNodes.Clear();
 
-            var planets = SuperMechStarSystem.GetAllPlanets(); // 显示所有星球，未发现的显示为问号
-            float centerX = 400, centerY = 400;
+            // 获取视野范围内的星球（自动生成途经星区）
+            var planets = SuperMechStarSystem.GetPlanetsInRange(0, 0, VIEW_RANGE);
+            float halfMap = MAP_SIZE / 2f;
 
-            // 绘制连线（主星球到其他星球）
+            // 绘制连线（主星球到已发现的其他星球）
             var main = SuperMechStarSystem.GetPlanet(SuperMechStarSystem.MAIN_PLANET);
             if (main != null)
             {
                 foreach (var p in planets)
                 {
-                    if (p.id == SuperMechStarSystem.MAIN_PLANET) continue;
-                    CreateLine(centerX + main.x, centerY + main.y, centerX + p.x, centerY + p.y);
+                    if (p.id == SuperMechStarSystem.MAIN_PLANET || !p.discovered) continue;
+                    CreateLine(
+                        halfMap + main.x, halfMap - main.y,
+                        halfMap + p.x, halfMap - p.y
+                    );
                 }
             }
 
             // 绘制星球节点
             foreach (var p in planets)
             {
-                CreatePlanetNode(p, centerX, centerY);
+                // 星球坐标映射：世界坐标(-range~range) → 星图坐标(0~MAP_SIZE)
+                // Y轴翻转（Unity UI向上为正，星图向下为正）
+                float nodeX = halfMap + p.x;
+                float nodeY = halfMap - p.y;
+                CreatePlanetNode(p, nodeX, nodeY);
+            }
+
+            if (_coordText != null)
+            {
+                int discovered = SuperMechStarSystem.GetDiscoveredPlanets().Count;
+                int total = planets.Count;
+                _coordText.text = $"已探索星区：{discovered}/{total} 星球  |  拖动星图探索未知星海";
             }
         }
 
-        private void CreatePlanetNode(SuperMechStarSystem.PlanetData p, float cx, float cy)
+        private void CreatePlanetNode(SuperMechStarSystem.PlanetData p, float x, float y)
         {
             var nodeGo = new GameObject($"Planet_{p.id}");
             nodeGo.transform.SetParent(_mapContent, false);
             var nodeRect = nodeGo.AddComponent<RectTransform>();
-            nodeRect.anchorMin = new Vector2(0.5f, 0.5f);
-            nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
+            nodeRect.anchorMin = new Vector2(0, 1);
+            nodeRect.anchorMax = new Vector2(0, 1);
             nodeRect.pivot = new Vector2(0.5f, 0.5f);
             float size = p.id == SuperMechStarSystem.MAIN_PLANET ? 40 : 25;
             nodeRect.sizeDelta = new Vector2(size, size);
-            nodeRect.anchoredPosition = new Vector2(cx + p.x, cy + p.y);
+            nodeRect.anchoredPosition = new Vector2(x, y);
 
             var btn = nodeGo.AddComponent<Button>();
             var img = nodeGo.AddComponent<Image>();
@@ -193,8 +230,8 @@ namespace SuperMech.Code
             var lineGo = new GameObject("Line");
             lineGo.transform.SetParent(_mapContent, false);
             var lineRect = lineGo.AddComponent<RectTransform>();
-            lineRect.anchorMin = new Vector2(0.5f, 0.5f);
-            lineRect.anchorMax = new Vector2(0.5f, 0.5f);
+            lineRect.anchorMin = new Vector2(0, 1);
+            lineRect.anchorMax = new Vector2(0, 1);
             lineRect.pivot = new Vector2(0, 0.5f);
             float dx = x2 - x1, dy = y2 - y1;
             float len = Mathf.Sqrt(dx * dx + dy * dy);

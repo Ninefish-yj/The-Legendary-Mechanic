@@ -46,20 +46,42 @@ namespace SuperMech.Code
         }
 
         private static readonly Dictionary<string, PlanetData> _planets = new Dictionary<string, PlanetData>();
+        private static readonly HashSet<string> _generatedChunks = new HashSet<string>();
         private static readonly List<VoyageData> _voyages = new List<VoyageData>();
         private static bool _initialized;
         private static float _tickTimer;
+        private static int _worldSeed = 20240501; // 世界种子，同一存档星球分布一致
 
         public const string MAIN_PLANET = "main";
+        public const float CHUNK_SIZE = 600f; // 每个星区分块大小
+        public const int PLANETS_PER_CHUNK_MIN = 6;
+        public const int PLANETS_PER_CHUNK_MAX = 12;
+
+        // 星球名称生成器（前缀+后缀，模拟原著星海命名风格）
+        private static readonly string[] NamePrefixes = {
+            "艾", "科", "苏", "黑", "泰", "星", "卢", "昆", "诺", "加",
+            "塞", "维", "奥", "瑞", "卡", "米", "法", "尼", "克", "泽",
+            "安", "比", "达", "厄", "菲", "戈", "赫", "伊", "杰", "凯"
+        };
+        private static readonly string[] NameSuffixes = {
+            "莫尔", "尔基斯", "尼尔星", "灵星", "尔克斯", "瞳星", "翰星", "德星", "里欧斯", "里奥特",
+            "文托", "拉托", "德萨", "恩特", "罗萨", "塔尔", "隆德", "瓦纳", "斯托", "弗斯",
+            "塔因", "洛斯", "米亚", "诺尔", "菲亚", "兰德", "玛尔", "西斯", "塔克", "维尔"
+        };
 
         public static void Init()
         {
             if (_initialized) return;
             _initialized = true;
-            GeneratePlanets();
+            GenerateMainPlanet();
+            // 预生成主星球周围4个块（玩家初始视野内可见）
+            for (int cx = -1; cx <= 1; cx++)
+                for (int cy = -1; cy <= 1; cy++)
+                    GenerateChunk(cx, cy);
         }
 
-        private static void GeneratePlanets()
+        /// <summary>生成主星球（固定在原点）</summary>
+        private static void GenerateMainPlanet()
         {
             _planets[MAIN_PLANET] = new PlanetData
             {
@@ -72,30 +94,95 @@ namespace SuperMech.Code
                 colonyLevel = 5,
                 discovered = true
             };
+        }
 
-            string[] planetNames = { "艾莫尔", "科尔基斯", "苏尼尔星", "黑灵星", "泰尔克斯", "星瞳星", "卢翰星", "昆德星", "诺里欧斯", "加里奥特" };
-            PlanetType[] types = { PlanetType.Rocky, PlanetType.Gas, PlanetType.Ice, PlanetType.Lava, PlanetType.Ocean, PlanetType.Desert, PlanetType.Forest };
-            System.Random rng = new System.Random(42);
+        /// <summary>根据块坐标生成种子（保证同一块星球分布一致）</summary>
+        private static int ChunkSeed(int cx, int cy)
+        {
+            return _worldSeed + cx * 73856093 + cy * 19349663;
+        }
 
-            for (int i = 0; i < 10; i++)
+        /// <summary>生成一个星区分块内的星球（按需生成，已生成则跳过）</summary>
+        private static void GenerateChunk(int cx, int cy)
+        {
+            string key = $"{cx}_{cy}";
+            if (_generatedChunks.Contains(key)) return;
+            _generatedChunks.Add(key);
+
+            // 主星球所在块不重复生成主星球
+            bool isCenterChunk = (cx == 0 && cy == 0);
+
+            System.Random rng = new System.Random(ChunkSeed(cx, cy));
+            int count = rng.Next(PLANETS_PER_CHUNK_MIN, PLANETS_PER_CHUNK_MAX + 1);
+
+            for (int i = 0; i < count; i++)
             {
-                float angle = (i / 10f) * Mathf.PI * 2 + (float)(rng.NextDouble() * 0.6 - 0.3);
-                float dist = 150 + (float)(rng.NextDouble() * 200);
-                string pid = $"planet_{i}";
+                // 块内随机位置（留边距避免星球在边界重叠）
+                float localX = 40f + (float)rng.NextDouble() * (CHUNK_SIZE - 80f);
+                float localY = 40f + (float)rng.NextDouble() * (CHUNK_SIZE - 80f);
+                float worldX = cx * CHUNK_SIZE + localX;
+                float worldY = cy * CHUNK_SIZE + localY;
+
+                // 中心块跳过离主星球太近的位置
+                if (isCenterChunk)
+                {
+                    float distToMain = Mathf.Sqrt(worldX * worldX + worldY * worldY);
+                    if (distToMain < 80f) continue;
+                }
+
+                string pid = $"chunk_{cx}_{cy}_{i}";
+                if (_planets.ContainsKey(pid)) continue;
+
+                // 随机星球类型（森林类宜居星概率低，岩石/荒漠概率高）
+                PlanetType[] types = { PlanetType.Rocky, PlanetType.Rocky, PlanetType.Desert, PlanetType.Desert,
+                    PlanetType.Ice, PlanetType.Gas, PlanetType.Lava, PlanetType.Ocean, PlanetType.Forest };
+                PlanetType type = types[rng.Next(types.Length)];
+
+                // 随机名称（前缀+后缀）
+                string prefix = NamePrefixes[rng.Next(NamePrefixes.Length)];
+                string suffix = NameSuffixes[rng.Next(NameSuffixes.Length)];
+                string name = prefix + suffix;
+
                 _planets[pid] = new PlanetData
                 {
                     id = pid,
-                    name = planetNames[i % planetNames.Length],
-                    type = types[rng.Next(types.Length)],
-                    x = Mathf.Cos(angle) * dist,
-                    y = Mathf.Sin(angle) * dist,
-                    resource = rng.Next(200, 800),
+                    name = name,
+                    type = type,
+                    x = worldX,
+                    y = worldY,
+                    resource = rng.Next(100, 1000),
                     maxResource = 1000,
                     ownerKingdom = null,
                     colonyLevel = 0,
                     discovered = false
                 };
             }
+        }
+
+        /// <summary>获取指定范围内的所有星球（自动生成途经的星区）</summary>
+        public static List<PlanetData> GetPlanetsInRange(float centerX, float centerY, float range)
+        {
+            // 计算需要的块范围
+            int minCx = Mathf.FloorToInt((centerX - range) / CHUNK_SIZE);
+            int maxCx = Mathf.FloorToInt((centerX + range) / CHUNK_SIZE);
+            int minCy = Mathf.FloorToInt((centerY - range) / CHUNK_SIZE);
+            int maxCy = Mathf.FloorToInt((centerY + range) / CHUNK_SIZE);
+
+            // 按需生成块
+            for (int cx = minCx; cx <= maxCx; cx++)
+                for (int cy = minCy; cy <= maxCy; cy++)
+                    GenerateChunk(cx, cy);
+
+            // 收集范围内的星球
+            var list = new List<PlanetData>();
+            float rangeSq = range * range;
+            foreach (var p in _planets.Values)
+            {
+                float dx = p.x - centerX, dy = p.y - centerY;
+                if (dx * dx + dy * dy <= rangeSq)
+                    list.Add(p);
+            }
+            return list;
         }
 
         public static PlanetData GetPlanet(string id)
@@ -401,8 +488,14 @@ namespace SuperMech.Code
             try
             {
                 var save = new StarSystemSaveData();
+                // 无限星球：只保存有状态变化的星球（已发现/已殖民/有单位/资源变化）
+                // 未发现且未殖民的星球靠种子重新生成，不需要存档
                 foreach (var p in _planets.Values)
                 {
+                    bool hasState = p.discovered || p.colonyLevel > 0 || p.units.Count > 0
+                        || !string.IsNullOrEmpty(p.ownerKingdom) || p.resource != p.maxResource;
+                    if (!hasState && p.id != MAIN_PLANET) continue; // 跳过无状态变化的普通星球
+
                     save.planets.Add(new PlanetSaveData
                     {
                         id = p.id, name = p.name, type = (int)p.type,
@@ -434,7 +527,8 @@ namespace SuperMech.Code
             {
                 var save = Newtonsoft.Json.JsonConvert.DeserializeObject<StarSystemSaveData>(json);
                 if (save == null) return;
-                _planets.Clear();
+                // 先初始化基础星球（靠种子生成），再用存档覆盖有状态变化的星球
+                Init();
                 _voyages.Clear();
                 foreach (var ps in save.planets)
                 {
@@ -445,7 +539,7 @@ namespace SuperMech.Code
                         ownerKingdom = ps.ownerKingdom, colonyLevel = ps.colonyLevel,
                         discovered = ps.discovered, units = ps.units ?? new List<ActorSnapshot>()
                     };
-                    _planets[p.id] = p;
+                    _planets[ps.id] = p; // 覆盖或新增
                 }
                 foreach (var vs in save.voyages)
                 {
@@ -455,8 +549,6 @@ namespace SuperMech.Code
                         progress = vs.progress, speed = vs.speed
                     });
                 }
-                _initialized = true;
-                Debug.Log($"[超神机械师] 星际系统存档加载：{_planets.Count}星球/{_voyages.Count}航行");
             }
             catch (System.Exception e)
             {
