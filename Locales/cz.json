@@ -3377,5 +3377,16 @@
   "sm_ui_send_unit": "派遣单位",
   "sm_ui_collect_resource": "采集资源",
   "sm_ui_main_planet_hint": "主世界，无需操作",
-  "sm_ui_send_explorer": "派遣探险队"
+  "sm_ui_send_explorer": "派遣探险队",
+  "sm_ui_star_red_dwarf": "红矮星",
+  "sm_ui_star_yellow_dwarf": "黄矮星",
+  "sm_ui_star_blue_giant": "蓝巨星",
+  "sm_ui_star_red_giant": "红巨星",
+  "sm_ui_star_white_dwarf": "白矮星",
+  "sm_ui_star_neutron": "中子星",
+  "sm_ui_star_black_hole": "黑洞",
+  "sm_ui_planet_temp": "表面温度",
+  "sm_ui_habitable": "宜居带",
+  "sm_ui_not_habitable": "非宜居带",
+  "sm_ui_star_type": "恒星类型"
 }

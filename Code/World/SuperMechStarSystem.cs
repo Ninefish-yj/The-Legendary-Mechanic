@@ -11,6 +11,18 @@ namespace SuperMech.Code
     {
         public enum PlanetType { Rocky, Gas, Ice, Lava, Ocean, Desert, Forest, Star } // Star=恒星
 
+        /// <summary>恒星光谱类型（天体物理学分类）</summary>
+        public enum StarType
+        {
+            RedDwarf,    // 红矮星 M型：温度低，寿命极长，最常见
+            YellowDwarf, // 黄矮星 G型：类似太阳，温度适中
+            BlueGiant,   // 蓝巨星 O/B型：温度极高，质量大，寿命短
+            RedGiant,    // 红巨星：晚年恒星，体积巨大，温度低
+            WhiteDwarf,  // 白矮星：恒星残骸，密度极高
+            NeutronStar, // 中子星：超新星残骸，自转极快，强磁场
+            BlackHole    // 黑洞：引力极强，光无法逃逸
+        }
+
         /// <summary>Actor快照：单位离开主星球时保存关键数据，到达时恢复</summary>
         public class ActorSnapshot
         {
@@ -39,6 +51,9 @@ namespace SuperMech.Code
             public float orbitAngle; // 初始轨道角度
             public float orbitSpeed; // 公转速度
             public bool hasRing; // 是否有行星环
+            public StarType starType; // 恒星类型（仅恒星有）
+            public float temperature; // 行星表面温度（K，根据距恒星距离计算）
+            public bool inHabitableZone; // 是否在宜居带内
         }
 
         public class VoyageData
@@ -137,9 +152,22 @@ namespace SuperMech.Code
                 string starId = $"star_{cx}_{cy}_{s}";
                 if (_planets.ContainsKey(starId)) continue;
 
-                // 恒星名称（XX恒星）
+                // 恒星类型（参考真实宇宙分布：红矮星最常见，黑洞最稀有）
+                int starRoll = rng.Next(100);
+                StarType sType;
+                if (starRoll < 70) sType = StarType.RedDwarf;       // 70% 红矮星
+                else if (starRoll < 80) sType = StarType.YellowDwarf; // 10% 黄矮星
+                else if (starRoll < 85) sType = StarType.BlueGiant;   // 5% 蓝巨星
+                else if (starRoll < 90) sType = StarType.RedGiant;    // 5% 红巨星
+                else if (starRoll < 95) sType = StarType.WhiteDwarf;  // 5% 白矮星
+                else if (starRoll < 98) sType = StarType.NeutronStar; // 3% 中子星
+                else sType = StarType.BlackHole;                       // 2% 黑洞
+
+                // 恒星名称（根据类型加后缀）
                 string starPrefix = NamePrefixes[rng.Next(NamePrefixes.Length)];
-                string starName = starPrefix + "恒星";
+                string starName = starPrefix + (sType == StarType.BlackHole ? "黑洞" :
+                    sType == StarType.NeutronStar ? "中子星" :
+                    sType == StarType.WhiteDwarf ? "白矮星" : "恒星");
 
                 _planets[starId] = new PlanetData
                 {
@@ -154,7 +182,9 @@ namespace SuperMech.Code
                     colonyLevel = 0,
                     discovered = false,
                     parentStar = null,
-                    hasRing = false
+                    hasRing = false,
+                    starType = sType,
+                    temperature = GetStarBaseTemp(sType)
                 };
 
                 // 每个恒星周围生成2-4个行星
@@ -170,14 +200,24 @@ namespace SuperMech.Code
                     float orbitSpeed = 0.05f + (float)rng.NextDouble() * 0.1f;
                     bool hasRing = (rng.Next(5) == 0); // 20%概率有行星环
 
+                    // 计算行星温度（根据恒星类型和轨道半径，反平方定律）
+                    float planetTemp = CalculatePlanetTemp(sType, orbitRadius);
+                    bool habitable = planetTemp >= 273f && planetTemp <= 373f; // 0-100°C宜居
+
                     // 行星初始位置（围绕恒星）
                     float planetX = starX + Mathf.Cos(orbitAngle) * orbitRadius;
                     float planetY = starY + Mathf.Sin(orbitAngle) * orbitRadius;
 
-                    // 随机星球类型
-                    PlanetType[] types = { PlanetType.Rocky, PlanetType.Rocky, PlanetType.Desert, PlanetType.Desert,
-                        PlanetType.Ice, PlanetType.Gas, PlanetType.Lava, PlanetType.Ocean, PlanetType.Forest };
-                    PlanetType type = types[rng.Next(types.Length)];
+                    // 根据温度调整行星类型（太热→熔岩，太冷→冰，宜居→森林/海洋概率高）
+                    PlanetType type;
+                    if (planetTemp > 500f) type = PlanetType.Lava;
+                    else if (planetTemp < 200f) type = PlanetType.Ice;
+                    else if (habitable && rng.Next(2) == 0) type = rng.Next(2) == 0 ? PlanetType.Forest : PlanetType.Ocean;
+                    else
+                    {
+                        PlanetType[] types = { PlanetType.Rocky, PlanetType.Rocky, PlanetType.Desert, PlanetType.Gas };
+                        type = types[rng.Next(types.Length)];
+                    }
 
                     // 随机名称
                     string prefix = NamePrefixes[rng.Next(NamePrefixes.Length)];
@@ -200,10 +240,37 @@ namespace SuperMech.Code
                         orbitRadius = orbitRadius,
                         orbitAngle = orbitAngle,
                         orbitSpeed = orbitSpeed,
-                        hasRing = hasRing
+                        hasRing = hasRing,
+                        temperature = planetTemp,
+                        inHabitableZone = habitable
                     };
                 }
             }
+        }
+
+        /// <summary>获取恒星基础温度（K）</summary>
+        public static float GetStarBaseTemp(StarType t)
+        {
+            return t switch
+            {
+                StarType.RedDwarf => 3000f,
+                StarType.YellowDwarf => 5778f,
+                StarType.BlueGiant => 30000f,
+                StarType.RedGiant => 3500f,
+                StarType.WhiteDwarf => 10000f,
+                StarType.NeutronStar => 1000000f,
+                StarType.BlackHole => 0f,
+                _ => 5000f
+            };
+        }
+
+        /// <summary>计算行星表面温度（反平方定律：温度∝1/√距离）</summary>
+        public static float CalculatePlanetTemp(StarType starType, float orbitRadius)
+        {
+            float baseTemp = GetStarBaseTemp(starType);
+            // 简化模型：温度 = 基础温度 / sqrt(轨道半径/50) * 0.3（大气修正）
+            float temp = baseTemp / Mathf.Sqrt(orbitRadius / 50f) * 0.3f;
+            return Mathf.Round(temp * 10f) / 10f;
         }
 
         /// <summary>获取行星的实时位置（考虑公转）</summary>

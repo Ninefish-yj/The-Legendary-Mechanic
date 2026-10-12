@@ -769,9 +769,27 @@ namespace SuperMech.Code
 
             if (isStar)
             {
-                // 恒星：黄白色/橙红色，强烈发光
-                planetColor = new Color(1f, 0.9f, 0.6f);
-                glowImg.color = new Color(1f, 0.85f, 0.4f, 0.7f);
+                // 恒星根据光谱类型显示不同颜色
+                planetColor = p.starType switch
+                {
+                    SuperMechStarSystem.StarType.RedDwarf => new Color(1f, 0.45f, 0.25f),    // 红矮星：橙红
+                    SuperMechStarSystem.StarType.YellowDwarf => new Color(1f, 0.9f, 0.6f),   // 黄矮星：金黄（太阳色）
+                    SuperMechStarSystem.StarType.BlueGiant => new Color(0.5f, 0.75f, 1f),    // 蓝巨星：蓝白
+                    SuperMechStarSystem.StarType.RedGiant => new Color(1f, 0.35f, 0.2f),     // 红巨星：深红
+                    SuperMechStarSystem.StarType.WhiteDwarf => new Color(0.9f, 0.95f, 1f),   // 白矮星：纯白
+                    SuperMechStarSystem.StarType.NeutronStar => new Color(0.7f, 0.85f, 1f),  // 中子星：淡蓝
+                    SuperMechStarSystem.StarType.BlackHole => new Color(0.08f, 0.08f, 0.12f), // 黑洞：深黑
+                    _ => new Color(1f, 0.9f, 0.6f)
+                };
+                // 黑洞有吸积盘（特殊光晕）
+                if (p.starType == SuperMechStarSystem.StarType.BlackHole)
+                {
+                    glowImg.color = new Color(0.8f, 0.6f, 0.2f, 0.5f); // 吸积盘橙黄色
+                }
+                else
+                {
+                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.7f);
+                }
                 bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed);
             }
             else if (isUnknown)
@@ -946,12 +964,46 @@ namespace SuperMech.Code
                 SuperMechStarSystem.PlanetType.Ocean => LocalizedTextManager.getText("sm_ui_planet_ocean"),
                 SuperMechStarSystem.PlanetType.Desert => LocalizedTextManager.getText("sm_ui_planet_desert"),
                 SuperMechStarSystem.PlanetType.Forest => LocalizedTextManager.getText("sm_ui_planet_forest"),
+                SuperMechStarSystem.PlanetType.Star => LocalizedTextManager.getText("sm_ui_star_type"),
                 _ => "?"
             };
 
+            // 恒星类型名称
+            string starTypeName = p.starType switch
+            {
+                SuperMechStarSystem.StarType.RedDwarf => LocalizedTextManager.getText("sm_ui_star_red_dwarf"),
+                SuperMechStarSystem.StarType.YellowDwarf => LocalizedTextManager.getText("sm_ui_star_yellow_dwarf"),
+                SuperMechStarSystem.StarType.BlueGiant => LocalizedTextManager.getText("sm_ui_star_blue_giant"),
+                SuperMechStarSystem.StarType.RedGiant => LocalizedTextManager.getText("sm_ui_star_red_giant"),
+                SuperMechStarSystem.StarType.WhiteDwarf => LocalizedTextManager.getText("sm_ui_star_white_dwarf"),
+                SuperMechStarSystem.StarType.NeutronStar => LocalizedTextManager.getText("sm_ui_star_neutron"),
+                SuperMechStarSystem.StarType.BlackHole => LocalizedTextManager.getText("sm_ui_star_black_hole"),
+                _ => "?"
+            };
+
+            bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
             _infoText.text =
                 $"<color=#ffd700><size=14><b>{p.name}</b></size></color>\n" +
-                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_type")}:</color> {typeName}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_type")}:</color> {typeName}\n";
+
+            // 恒星显示光谱类型和温度
+            if (isStar)
+            {
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_type")}:</color> {starTypeName}\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_temp")}:</color> {p.temperature:F0}K\n";
+            }
+            else
+            {
+                // 行星显示温度和宜居带
+                string tempColor = p.inHabitableZone ? "#7fff7f" : (p.temperature > 500 ? "#ff7f7f" : "#7f7fff");
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_temp")}:</color> <color={tempColor}>{p.temperature:F0}K ({p.temperature - 273:F0}°C)</color>\n";
+                string habitableText = p.inHabitableZone
+                    ? $"<color=#7fff7f>{LocalizedTextManager.getText("sm_ui_habitable")}</color>"
+                    : $"<color=#aaaaaa>{LocalizedTextManager.getText("sm_ui_not_habitable")}</color>";
+                _infoText.text += $"<color=#93A4BC>宜居带:</color> {habitableText}\n";
+            }
+
+            _infoText.text +=
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_resource")}:</color> {p.resource:F0}/{p.maxResource:F0}\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_colony")}:</color> {p.colonyLevel}\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_units")}:</color> {p.units.Count}\n" +
