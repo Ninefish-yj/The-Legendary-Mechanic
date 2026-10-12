@@ -15,6 +15,89 @@ namespace SuperMech.Code
         private const float MAP_SIZE = 2400f;
         private const float VIEW_RANGE = 1200f;
         private const int STAR_COUNT = 800; // 星空背景星星数量
+        private static readonly Dictionary<string, Sprite> _planetSpriteCache = new Dictionary<string, Sprite>();
+        private static Sprite _glowSprite;
+
+        /// <summary>生成圆形光晕纹理（中心亮边缘透明的径向渐变）</summary>
+        private static Sprite GetGlowSprite()
+        {
+            if (_glowSprite != null) return _glowSprite;
+            int size = 128;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    float dx = x - size / 2f;
+                    float dy = y - size / 2f;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy) / (size / 2f);
+                    float alpha = dist < 1f ? Mathf.Pow(1f - dist, 2f) : 0f;
+                    tex.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+                }
+            }
+            tex.Apply();
+            _glowSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+            return _glowSprite;
+        }
+
+        /// <summary>生成圆形星球纹理（带光照渐变+表面噪声，纯代码实现）</summary>
+        private static Sprite GetPlanetSprite(Color baseColor, int seed, bool isUnknown = false)
+        {
+            string key = $"{baseColor.r:F2}_{baseColor.g:F2}_{baseColor.b:F2}_{seed}_{isUnknown}";
+            if (_planetSpriteCache.TryGetValue(key, out var cached)) return cached;
+
+            int size = 64;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var rng = new System.Random(seed);
+
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    float dx = x - size / 2f;
+                    float dy = y - size / 2f;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy) / (size / 2f);
+
+                    if (dist > 1f)
+                    {
+                        tex.SetPixel(x, y, Color.clear);
+                        continue;
+                    }
+
+                    if (isUnknown)
+                    {
+                        // 未知星球：灰色半透明
+                        tex.SetPixel(x, y, new Color(0.3f, 0.3f, 0.35f, 0.4f * (1f - dist * 0.3f)));
+                        continue;
+                    }
+
+                    // 光照：左上光源，右下暗
+                    float nx = dx / (size / 2f);
+                    float ny = dy / (size / 2f);
+                    float light = 1f - (nx * 0.5f + ny * 0.5f) * 0.4f;
+                    light = Mathf.Clamp01(light);
+
+                    // 表面噪声（模拟星球纹理）
+                    float noise = (float)(rng.NextDouble() - 0.5) * 0.15f;
+
+                    // 边缘暗化（球体感）
+                    float edge = 1f - dist * dist * 0.5f;
+
+                    Color c = baseColor * light * edge;
+                    c.r = Mathf.Clamp01(c.r + noise);
+                    c.g = Mathf.Clamp01(c.g + noise);
+                    c.b = Mathf.Clamp01(c.b + noise);
+                    c.a = 1f;
+                    tex.SetPixel(x, y, c);
+                }
+            }
+            tex.Apply();
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+            _planetSpriteCache[key] = sprite;
+            return sprite;
+        }
 
         void Awake()
         {
@@ -249,23 +332,27 @@ namespace SuperMech.Code
             glowRect.offsetMin = new Vector2(-8, -8); glowRect.offsetMax = new Vector2(8, 8);
             var glowImg = glowGo.AddComponent<Image>();
             glowImg.raycastTarget = false;
+            glowImg.sprite = GetGlowSprite(); // 圆形径向渐变光晕
 
-            // 星球本体（圆形）
+            // 星球本体（圆形纹理）
             var bodyGo = new GameObject("Body");
             bodyGo.transform.SetParent(nodeGo.transform, false);
             var bodyRect = bodyGo.AddComponent<RectTransform>();
             bodyRect.anchorMin = Vector2.zero; bodyRect.anchorMax = Vector2.one;
             bodyRect.offsetMin = Vector2.zero; bodyRect.offsetMax = Vector2.zero;
             var bodyImg = bodyGo.AddComponent<Image>();
+            bodyImg.raycastTarget = false;
 
             // 未发现的星球显示为灰色问号
             bool isUnknown = !p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET;
             Color planetColor;
+            int planetSeed = p.id.GetHashCode();
 
             if (isUnknown)
             {
                 planetColor = new Color(0.25f, 0.25f, 0.3f, 0.5f);
                 glowImg.color = new Color(0.3f, 0.3f, 0.35f, 0.15f);
+                bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed, true);
             }
             else
             {
@@ -294,9 +381,10 @@ namespace SuperMech.Code
                 if (p.id == SuperMechStarSystem.MAIN_PLANET)
                 {
                     glowImg.color = new Color(1f, 0.85f, 0.4f, 0.5f);
+                    planetColor = new Color(0.9f, 0.8f, 0.5f);
                 }
+                bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed);
             }
-            bodyImg.color = planetColor;
             _planetNodes[p.id] = nodeGo;
 
             // 按钮（放在最上层接收点击）
