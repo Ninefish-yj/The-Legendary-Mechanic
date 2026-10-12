@@ -203,6 +203,88 @@ namespace SuperMech.Code
 
             // 初始滚动到中心（主星球位置）
             scrollRect.normalizedPosition = new Vector2(0.5f, 0.5f);
+
+            // 科幻风格外框装饰（最上层）
+            AddSciFiFrame();
+        }
+
+        /// <summary>添加科幻风格外框：角落L形边框+顶部/底部渐变条</summary>
+        private void AddSciFiFrame()
+        {
+            var frameGo = new GameObject("SciFiFrame");
+            frameGo.transform.SetParent(transform, false);
+            frameGo.transform.SetAsLastSibling(); // 最上层
+            var frameRect = frameGo.AddComponent<RectTransform>();
+            frameRect.anchorMin = Vector2.zero;
+            frameRect.anchorMax = Vector2.one;
+            frameRect.offsetMin = Vector2.zero;
+            frameRect.offsetMax = Vector2.zero;
+
+            Color frameColor = new Color(0.3f, 0.6f, 0.9f, 0.8f); // 科技蓝
+            int cornerLen = 24; // 角落L形长度
+            int cornerThick = 2; // 角落边框粗细
+
+            // 四个角落L形边框
+            CreateCorner(frameGo.transform, new Vector2(0, 1), new Vector2(1, 1), cornerLen, cornerThick, frameColor); // 左上
+            CreateCorner(frameGo.transform, new Vector2(1, 1), new Vector2(0, 1), cornerLen, cornerThick, frameColor); // 右上
+            CreateCorner(frameGo.transform, new Vector2(0, 0), new Vector2(1, 0), cornerLen, cornerThick, frameColor); // 左下
+            CreateCorner(frameGo.transform, new Vector2(1, 0), new Vector2(0, 0), cornerLen, cornerThick, frameColor); // 右下
+
+            // 顶部渐变条
+            var topBarGo = new GameObject("TopGlow");
+            topBarGo.transform.SetParent(frameGo.transform, false);
+            var topBarRect = topBarGo.AddComponent<RectTransform>();
+            topBarRect.anchorMin = new Vector2(0, 1);
+            topBarRect.anchorMax = new Vector2(1, 1);
+            topBarRect.pivot = new Vector2(0.5f, 1);
+            topBarRect.sizeDelta = new Vector2(0, 3);
+            topBarRect.anchoredPosition = Vector2.zero;
+            var topBarImg = topBarGo.AddComponent<Image>();
+            topBarImg.color = new Color(0.3f, 0.6f, 0.9f, 0.6f);
+            topBarImg.raycastTarget = false;
+
+            // 底部渐变条
+            var botBarGo = new GameObject("BottomGlow");
+            botBarGo.transform.SetParent(frameGo.transform, false);
+            var botBarRect = botBarGo.AddComponent<RectTransform>();
+            botBarRect.anchorMin = new Vector2(0, 0);
+            botBarRect.anchorMax = new Vector2(1, 0);
+            botBarRect.pivot = new Vector2(0.5f, 0);
+            botBarRect.sizeDelta = new Vector2(0, 3);
+            botBarRect.anchoredPosition = Vector2.zero;
+            var botBarImg = botBarGo.AddComponent<Image>();
+            botBarImg.color = new Color(0.3f, 0.6f, 0.9f, 0.6f);
+            botBarImg.raycastTarget = false;
+        }
+
+        /// <summary>创建单个角落L形边框</summary>
+        private void CreateCorner(Transform parent, Vector2 anchor, Vector2 pivot, int len, int thick, Color color)
+        {
+            // 水平段
+            var hGo = new GameObject("CornerH");
+            hGo.transform.SetParent(parent, false);
+            var hRect = hGo.AddComponent<RectTransform>();
+            hRect.anchorMin = anchor;
+            hRect.anchorMax = anchor;
+            hRect.pivot = pivot;
+            hRect.sizeDelta = new Vector2(len, thick);
+            hRect.anchoredPosition = Vector2.zero;
+            var hImg = hGo.AddComponent<Image>();
+            hImg.color = color;
+            hImg.raycastTarget = false;
+
+            // 垂直段
+            var vGo = new GameObject("CornerV");
+            vGo.transform.SetParent(parent, false);
+            var vRect = vGo.AddComponent<RectTransform>();
+            vRect.anchorMin = anchor;
+            vRect.anchorMax = anchor;
+            vRect.pivot = pivot;
+            vRect.sizeDelta = new Vector2(thick, len);
+            vRect.anchoredPosition = Vector2.zero;
+            var vImg = vGo.AddComponent<Image>();
+            vImg.color = color;
+            vImg.raycastTarget = false;
         }
 
         /// <summary>生成程序化星空背景（随机星星+星云）</summary>
