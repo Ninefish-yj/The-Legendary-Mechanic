@@ -21,6 +21,31 @@ namespace SuperMech.Code
         private const int TopBarHeight = 50;
         private static readonly Dictionary<string, Sprite> _planetSpriteCache = new Dictionary<string, Sprite>();
         private static Sprite _glowSprite;
+        private static Sprite _nebulaSprite; // 圆形星云渐变纹理
+
+        /// <summary>生成圆形星云纹理（大尺寸柔和径向渐变）</summary>
+        private static Sprite GetNebulaSprite()
+        {
+            if (_nebulaSprite != null) return _nebulaSprite;
+            int size = 256;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            for (int x = 0; x < size; x++)
+            {
+                for (int y = 0; y < size; y++)
+                {
+                    float dx = x - size / 2f;
+                    float dy = y - size / 2f;
+                    float dist = Mathf.Sqrt(dx * dx + dy * dy) / (size / 2f);
+                    // 柔和的星云渐变：中心较亮，边缘渐隐，带一点噪声感
+                    float alpha = dist < 1f ? Mathf.Pow(1f - dist, 1.5f) * 0.4f : 0f;
+                    tex.SetPixel(x, y, new Color(1f, 1f, 1f, alpha));
+                }
+            }
+            tex.Apply();
+            _nebulaSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f));
+            return _nebulaSprite;
+        }
 
         /// <summary>切换星图显示（全屏模式）</summary>
         public static void Toggle()
@@ -412,36 +437,64 @@ namespace SuperMech.Code
 
             System.Random rng = new System.Random(20240501); // 固定种子，星空分布一致
 
-            // 生成星星（不同大小、亮度、颜色）
-            for (int i = 0; i < STAR_COUNT; i++)
+            // 第一层：远景星星（小、暗、数量多，1200颗）
+            for (int i = 0; i < 1200; i++)
             {
-                var starGo = new GameObject($"Star_{i}");
+                var starGo = new GameObject($"FarStar_{i}");
                 starGo.transform.SetParent(starfieldGo.transform, false);
                 var starRect = starGo.AddComponent<RectTransform>();
                 starRect.anchorMin = new Vector2(0.5f, 0.5f);
                 starRect.anchorMax = new Vector2(0.5f, 0.5f);
                 starRect.pivot = new Vector2(0.5f, 0.5f);
 
-                float size = rng.Next(1, 4); // 1-3像素
+                float size = (float)(1 + rng.NextDouble() * 2); // 1-3像素
                 starRect.sizeDelta = new Vector2(size, size);
                 starRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE,
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f
                 );
 
                 var starImg = starGo.AddComponent<Image>();
                 starImg.raycastTarget = false;
 
-                // 星星颜色：白/蓝/黄/红，大部分白色
+                // 远景星星：偏暗，蓝白色为主
                 int colorRoll = rng.Next(100);
-                if (colorRoll < 70) starImg.color = new Color(1f, 1f, 1f, (float)(0.3 + rng.NextDouble() * 0.7));
-                else if (colorRoll < 85) starImg.color = new Color(0.7f, 0.8f, 1f, (float)(0.3 + rng.NextDouble() * 0.6));
-                else if (colorRoll < 95) starImg.color = new Color(1f, 0.9f, 0.7f, (float)(0.3 + rng.NextDouble() * 0.6));
-                else starImg.color = new Color(1f, 0.6f, 0.5f, (float)(0.3 + rng.NextDouble() * 0.5));
+                if (colorRoll < 80) starImg.color = new Color(0.8f, 0.85f, 1f, (float)(0.2 + rng.NextDouble() * 0.4));
+                else if (colorRoll < 95) starImg.color = new Color(1f, 0.95f, 0.8f, (float)(0.2 + rng.NextDouble() * 0.3));
+                else starImg.color = new Color(1f, 0.7f, 0.6f, (float)(0.2 + rng.NextDouble() * 0.3));
             }
 
-            // 生成几团星云（大的半透明圆形）
-            for (int i = 0; i < 8; i++)
+            // 第二层：近景亮星（大、亮、数量少，300颗）
+            for (int i = 0; i < 300; i++)
+            {
+                var starGo = new GameObject($"NearStar_{i}");
+                starGo.transform.SetParent(starfieldGo.transform, false);
+                var starRect = starGo.AddComponent<RectTransform>();
+                starRect.anchorMin = new Vector2(0.5f, 0.5f);
+                starRect.anchorMax = new Vector2(0.5f, 0.5f);
+                starRect.pivot = new Vector2(0.5f, 0.5f);
+
+                float size = (float)(3 + rng.NextDouble() * 5); // 3-8像素
+                starRect.sizeDelta = new Vector2(size, size);
+                starRect.anchoredPosition = new Vector2(
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f
+                );
+
+                var starImg = starGo.AddComponent<Image>();
+                starImg.raycastTarget = false;
+
+                // 近景亮星：高亮度，颜色丰富
+                int colorRoll = rng.Next(100);
+                if (colorRoll < 60) starImg.color = new Color(1f, 1f, 1f, (float)(0.6 + rng.NextDouble() * 0.4));
+                else if (colorRoll < 80) starImg.color = new Color(0.7f, 0.85f, 1f, (float)(0.5 + rng.NextDouble() * 0.4));
+                else if (colorRoll < 92) starImg.color = new Color(1f, 0.9f, 0.7f, (float)(0.5 + rng.NextDouble() * 0.4));
+                else starImg.color = new Color(1f, 0.6f, 0.5f, (float)(0.5 + rng.NextDouble() * 0.3));
+            }
+
+            // 生成星云（圆形柔和渐变，12团）
+            var nebulaSprite = GetNebulaSprite();
+            for (int i = 0; i < 12; i++)
             {
                 var nebulaGo = new GameObject($"Nebula_{i}");
                 nebulaGo.transform.SetParent(starfieldGo.transform, false);
@@ -449,20 +502,22 @@ namespace SuperMech.Code
                 nebulaRect.anchorMin = new Vector2(0.5f, 0.5f);
                 nebulaRect.anchorMax = new Vector2(0.5f, 0.5f);
                 nebulaRect.pivot = new Vector2(0.5f, 0.5f);
-                float nebulaSize = rng.Next(200, 500);
+                float nebulaSize = (float)(300 + rng.NextDouble() * 600); // 300-900像素
                 nebulaRect.sizeDelta = new Vector2(nebulaSize, nebulaSize);
                 nebulaRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 0.8f,
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 0.8f
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE
                 );
 
                 var nebulaImg = nebulaGo.AddComponent<Image>();
+                nebulaImg.sprite = nebulaSprite;
                 nebulaImg.raycastTarget = false;
-                // 星云颜色：紫/蓝/青，低透明度
-                int nebulaColor = rng.Next(3);
-                if (nebulaColor == 0) nebulaImg.color = new Color(0.3f, 0.1f, 0.5f, 0.08f);
-                else if (nebulaColor == 1) nebulaImg.color = new Color(0.1f, 0.2f, 0.5f, 0.08f);
-                else nebulaImg.color = new Color(0.1f, 0.4f, 0.4f, 0.06f);
+                // 星云颜色：紫/蓝/青/粉，柔和透明度
+                int nebulaColor = rng.Next(4);
+                if (nebulaColor == 0) nebulaImg.color = new Color(0.4f, 0.15f, 0.6f, 0.15f); // 紫
+                else if (nebulaColor == 1) nebulaImg.color = new Color(0.15f, 0.25f, 0.6f, 0.15f); // 蓝
+                else if (nebulaColor == 2) nebulaImg.color = new Color(0.1f, 0.45f, 0.45f, 0.12f); // 青
+                else nebulaImg.color = new Color(0.5f, 0.2f, 0.4f, 0.12f); // 粉
             }
         }
 
@@ -513,16 +568,19 @@ namespace SuperMech.Code
             nodeRect.anchorMin = new Vector2(0.5f, 0.5f);
             nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
             nodeRect.pivot = new Vector2(0.5f, 0.5f);
-            float size = p.id == SuperMechStarSystem.MAIN_PLANET ? 36 : 22;
+            bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
+            float size = isMain ? 48 : (p.discovered ? 30 : 24); // 主世界最大，已发现次之，未发现最小
             nodeRect.sizeDelta = new Vector2(size, size);
             nodeRect.anchoredPosition = new Vector2(x, y);
 
-            // 星球光晕（外层）
+            // 星球光晕（外层，主世界更大更亮）
             var glowGo = new GameObject("Glow");
             glowGo.transform.SetParent(nodeGo.transform, false);
             var glowRect = glowGo.AddComponent<RectTransform>();
             glowRect.anchorMin = Vector2.zero; glowRect.anchorMax = Vector2.one;
-            glowRect.offsetMin = new Vector2(-8, -8); glowRect.offsetMax = new Vector2(8, 8);
+            float glowExpand = isMain ? 20 : 10;
+            glowRect.offsetMin = new Vector2(-glowExpand, -glowExpand);
+            glowRect.offsetMax = new Vector2(glowExpand, glowExpand);
             var glowImg = glowGo.AddComponent<Image>();
             glowImg.raycastTarget = false;
             glowImg.sprite = GetGlowSprite(); // 圆形径向渐变光晕
@@ -537,48 +595,69 @@ namespace SuperMech.Code
             bodyImg.raycastTarget = false;
 
             // 未发现的星球显示为灰色问号
-            bool isUnknown = !p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET;
+            bool isUnknown = !p.discovered && !isMain;
             Color planetColor;
             int planetSeed = p.id.GetHashCode();
 
             if (isUnknown)
             {
-                planetColor = new Color(0.25f, 0.25f, 0.3f, 0.5f);
-                glowImg.color = new Color(0.3f, 0.3f, 0.35f, 0.15f);
+                planetColor = new Color(0.35f, 0.35f, 0.4f, 0.6f);
+                glowImg.color = new Color(0.4f, 0.4f, 0.45f, 0.2f);
                 bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed, true);
             }
             else
             {
                 planetColor = p.type switch
                 {
-                    SuperMechStarSystem.PlanetType.Rocky => new Color(0.65f, 0.55f, 0.45f),
-                    SuperMechStarSystem.PlanetType.Gas => new Color(0.85f, 0.75f, 0.45f),
-                    SuperMechStarSystem.PlanetType.Ice => new Color(0.65f, 0.85f, 1f),
-                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.45f, 0.25f),
-                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.35f, 0.55f, 0.95f),
-                    SuperMechStarSystem.PlanetType.Desert => new Color(0.9f, 0.8f, 0.5f),
-                    SuperMechStarSystem.PlanetType.Forest => new Color(0.35f, 0.75f, 0.45f),
+                    SuperMechStarSystem.PlanetType.Rocky => new Color(0.75f, 0.65f, 0.5f),
+                    SuperMechStarSystem.PlanetType.Gas => new Color(0.95f, 0.85f, 0.5f),
+                    SuperMechStarSystem.PlanetType.Ice => new Color(0.7f, 0.9f, 1f),
+                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.5f, 0.3f),
+                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.4f, 0.6f, 1f),
+                    SuperMechStarSystem.PlanetType.Desert => new Color(0.95f, 0.85f, 0.55f),
+                    SuperMechStarSystem.PlanetType.Forest => new Color(0.4f, 0.8f, 0.5f),
                     _ => Color.gray
                 };
-                // 已殖民的星球更亮，未殖民的暗一些
+                // 已殖民的星球更亮，有明显光晕
                 if (p.colonyLevel > 0)
                 {
-                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.4f);
+                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.5f);
                 }
                 else
                 {
-                    planetColor = new Color(planetColor.r * 0.6f, planetColor.g * 0.6f, planetColor.b * 0.6f, 0.8f);
-                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.15f);
+                    // 已发现但未殖民：中等亮度
+                    planetColor = new Color(planetColor.r * 0.75f, planetColor.g * 0.75f, planetColor.b * 0.75f, 0.9f);
+                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.2f);
                 }
-                // 主星球金色光晕
-                if (p.id == SuperMechStarSystem.MAIN_PLANET)
+                // 主星球：金色大光晕
+                if (isMain)
                 {
-                    glowImg.color = new Color(1f, 0.85f, 0.4f, 0.5f);
-                    planetColor = new Color(0.9f, 0.8f, 0.5f);
+                    glowImg.color = new Color(1f, 0.9f, 0.5f, 0.6f);
+                    planetColor = new Color(1f, 0.9f, 0.55f);
                 }
                 bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed);
             }
             _planetNodes[p.id] = nodeGo;
+
+            // 星球名称标签（主世界和已发现的显示）
+            if (!isUnknown)
+            {
+                var labelGo = new GameObject("Label");
+                labelGo.transform.SetParent(nodeGo.transform, false);
+                var labelRect = labelGo.AddComponent<RectTransform>();
+                labelRect.anchorMin = new Vector2(0.5f, 0);
+                labelRect.anchorMax = new Vector2(0.5f, 0);
+                labelRect.pivot = new Vector2(0.5f, 1);
+                labelRect.sizeDelta = new Vector2(120, 16);
+                labelRect.anchoredPosition = new Vector2(0, -4);
+                var labelText = labelGo.AddComponent<Text>();
+                labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                labelText.fontSize = isMain ? 14 : 11;
+                labelText.color = isMain ? new Color(1f, 0.9f, 0.5f) : new Color(0.8f, 0.85f, 0.95f);
+                labelText.alignment = TextAnchor.UpperCenter;
+                labelText.text = p.name;
+                labelText.raycastTarget = false;
+            }
 
             // 按钮（放在最上层接收点击）
             var btn = nodeGo.AddComponent<Button>();
