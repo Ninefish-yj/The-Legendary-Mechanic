@@ -9,7 +9,7 @@ namespace SuperMech.Code
     /// 对照原著：破碎星环/柯尔顿星区/西斯特尔星区等星区设定</summary>
     public static class SuperMechStarSystem
     {
-        public enum PlanetType { Rocky, Gas, Ice, Lava, Ocean, Desert, Forest }
+        public enum PlanetType { Rocky, Gas, Ice, Lava, Ocean, Desert, Forest, Star } // Star=恒星
 
         /// <summary>Actor快照：单位离开主星球时保存关键数据，到达时恢复</summary>
         public class ActorSnapshot
@@ -34,6 +34,11 @@ namespace SuperMech.Code
             public List<ActorSnapshot> units = new List<ActorSnapshot>(); // 驻留单位快照
             public int colonyLevel;
             public bool discovered;
+            public string parentStar; // 所属恒星ID（行星才有）
+            public float orbitRadius; // 公转轨道半径
+            public float orbitAngle; // 初始轨道角度
+            public float orbitSpeed; // 公转速度
+            public bool hasRing; // 是否有行星环
         }
 
         public class VoyageData
@@ -102,61 +107,119 @@ namespace SuperMech.Code
             return _worldSeed + cx * 73856093 + cy * 19349663;
         }
 
-        /// <summary>生成一个星区分块内的星球（按需生成，已生成则跳过）</summary>
+        /// <summary>生成一个星区分块内的星系（恒星+行星围绕）</summary>
         private static void GenerateChunk(int cx, int cy)
         {
             string key = $"{cx}_{cy}";
             if (_generatedChunks.Contains(key)) return;
             _generatedChunks.Add(key);
 
-            // 主星球所在块不重复生成主星球
             bool isCenterChunk = (cx == 0 && cy == 0);
-
             System.Random rng = new System.Random(ChunkSeed(cx, cy));
-            int count = rng.Next(PLANETS_PER_CHUNK_MIN, PLANETS_PER_CHUNK_MAX + 1);
 
-            for (int i = 0; i < count; i++)
+            // 每个星区生成1-2个恒星系
+            int starCount = rng.Next(1, 3);
+            for (int s = 0; s < starCount; s++)
             {
-                // 块内随机位置（留边距避免星球在边界重叠）
-                float localX = 40f + (float)rng.NextDouble() * (CHUNK_SIZE - 80f);
-                float localY = 40f + (float)rng.NextDouble() * (CHUNK_SIZE - 80f);
-                float worldX = cx * CHUNK_SIZE + localX;
-                float worldY = cy * CHUNK_SIZE + localY;
+                // 恒星位置（块内随机，留边距）
+                float starLocalX = 80f + (float)rng.NextDouble() * (CHUNK_SIZE - 160f);
+                float starLocalY = 80f + (float)rng.NextDouble() * (CHUNK_SIZE - 160f);
+                float starX = cx * CHUNK_SIZE + starLocalX;
+                float starY = cy * CHUNK_SIZE + starLocalY;
 
-                // 中心块跳过离主星球太近的位置
+                // 中心块跳过离主星球太近的恒星
                 if (isCenterChunk)
                 {
-                    float distToMain = Mathf.Sqrt(worldX * worldX + worldY * worldY);
-                    if (distToMain < 80f) continue;
+                    float distToMain = Mathf.Sqrt(starX * starX + starY * starY);
+                    if (distToMain < 150f) continue;
                 }
 
-                string pid = $"chunk_{cx}_{cy}_{i}";
-                if (_planets.ContainsKey(pid)) continue;
+                string starId = $"star_{cx}_{cy}_{s}";
+                if (_planets.ContainsKey(starId)) continue;
 
-                // 随机星球类型（森林类宜居星概率低，岩石/荒漠概率高）
-                PlanetType[] types = { PlanetType.Rocky, PlanetType.Rocky, PlanetType.Desert, PlanetType.Desert,
-                    PlanetType.Ice, PlanetType.Gas, PlanetType.Lava, PlanetType.Ocean, PlanetType.Forest };
-                PlanetType type = types[rng.Next(types.Length)];
+                // 恒星名称（XX恒星）
+                string starPrefix = NamePrefixes[rng.Next(NamePrefixes.Length)];
+                string starName = starPrefix + "恒星";
 
-                // 随机名称（前缀+后缀）
-                string prefix = NamePrefixes[rng.Next(NamePrefixes.Length)];
-                string suffix = NameSuffixes[rng.Next(NameSuffixes.Length)];
-                string name = prefix + suffix;
-
-                _planets[pid] = new PlanetData
+                _planets[starId] = new PlanetData
                 {
-                    id = pid,
-                    name = name,
-                    type = type,
-                    x = worldX,
-                    y = worldY,
-                    resource = rng.Next(100, 1000),
-                    maxResource = 1000,
+                    id = starId,
+                    name = starName,
+                    type = PlanetType.Star,
+                    x = starX,
+                    y = starY,
+                    resource = 0,
+                    maxResource = 0,
                     ownerKingdom = null,
                     colonyLevel = 0,
-                    discovered = false
+                    discovered = false,
+                    parentStar = null,
+                    hasRing = false
                 };
+
+                // 每个恒星周围生成2-4个行星
+                int planetCount = rng.Next(2, 5);
+                for (int p = 0; p < planetCount; p++)
+                {
+                    string pid = $"chunk_{cx}_{cy}_{s}_{p}";
+                    if (_planets.ContainsKey(pid)) continue;
+
+                    // 行星轨道参数
+                    float orbitRadius = 50f + p * 35f + (float)rng.NextDouble() * 15f;
+                    float orbitAngle = (float)rng.NextDouble() * Mathf.PI * 2f;
+                    float orbitSpeed = 0.05f + (float)rng.NextDouble() * 0.1f;
+                    bool hasRing = (rng.Next(5) == 0); // 20%概率有行星环
+
+                    // 行星初始位置（围绕恒星）
+                    float planetX = starX + Mathf.Cos(orbitAngle) * orbitRadius;
+                    float planetY = starY + Mathf.Sin(orbitAngle) * orbitRadius;
+
+                    // 随机星球类型
+                    PlanetType[] types = { PlanetType.Rocky, PlanetType.Rocky, PlanetType.Desert, PlanetType.Desert,
+                        PlanetType.Ice, PlanetType.Gas, PlanetType.Lava, PlanetType.Ocean, PlanetType.Forest };
+                    PlanetType type = types[rng.Next(types.Length)];
+
+                    // 随机名称
+                    string prefix = NamePrefixes[rng.Next(NamePrefixes.Length)];
+                    string suffix = NameSuffixes[rng.Next(NameSuffixes.Length)];
+                    string name = prefix + suffix;
+
+                    _planets[pid] = new PlanetData
+                    {
+                        id = pid,
+                        name = name,
+                        type = type,
+                        x = planetX,
+                        y = planetY,
+                        resource = rng.Next(100, 1000),
+                        maxResource = 1000,
+                        ownerKingdom = null,
+                        colonyLevel = 0,
+                        discovered = false,
+                        parentStar = starId,
+                        orbitRadius = orbitRadius,
+                        orbitAngle = orbitAngle,
+                        orbitSpeed = orbitSpeed,
+                        hasRing = hasRing
+                    };
+                }
             }
+        }
+
+        /// <summary>获取行星的实时位置（考虑公转）</summary>
+        public static Vector2 GetPlanetPosition(PlanetData p, float time)
+        {
+            if (p.parentStar == null || p.type == PlanetType.Star)
+            {
+                return new Vector2(p.x, p.y);
+            }
+            var star = GetPlanet(p.parentStar);
+            if (star == null) return new Vector2(p.x, p.y);
+            float angle = p.orbitAngle + time * p.orbitSpeed;
+            return new Vector2(
+                star.x + Mathf.Cos(angle) * p.orbitRadius,
+                star.y + Mathf.Sin(angle) * p.orbitRadius
+            );
         }
 
         /// <summary>获取指定范围内的所有星球（自动生成途经的星区）</summary>

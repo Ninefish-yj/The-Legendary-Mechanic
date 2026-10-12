@@ -619,15 +619,25 @@ namespace SuperMech.Code
         public void RefreshMap()
         {
             if (_mapContent == null) return;
-            // 只销毁星球节点、连线、航行单位，保留星空背景
+            // 只销毁星球节点、连线、航行单位、轨道线，保留星空背景
             foreach (Transform child in _mapContent)
             {
-                if (child.name.StartsWith("Planet_") || child.name.StartsWith("Line_") || child.name.StartsWith("Voyage_"))
+                if (child.name.StartsWith("Planet_") || child.name.StartsWith("Line_") ||
+                    child.name.StartsWith("Voyage_") || child.name.StartsWith("Orbit_"))
                     Destroy(child.gameObject);
             }
             _planetNodes.Clear();
 
             var planets = SuperMechStarSystem.GetPlanetsInRange(0, 0, VIEW_RANGE);
+
+            // 绘制轨道线（行星围绕恒星的轨道）
+            foreach (var p in planets)
+            {
+                if (p.parentStar == null || p.type == SuperMechStarSystem.PlanetType.Star) continue;
+                var star = SuperMechStarSystem.GetPlanet(p.parentStar);
+                if (star == null) continue;
+                CreateOrbitLine(star.x, -star.y, p.orbitRadius);
+            }
 
             // 绘制连线（主星球到已发现的其他星球）
             var main = SuperMechStarSystem.GetPlanet(SuperMechStarSystem.MAIN_PLANET);
@@ -640,10 +650,12 @@ namespace SuperMech.Code
                 }
             }
 
-            // 绘制星球节点
+            // 绘制星球节点（使用实时公转位置）
+            float time = Time.time;
             foreach (var p in planets)
             {
-                CreatePlanetNode(p, p.x, -p.y);
+                var pos = SuperMechStarSystem.GetPlanetPosition(p, time);
+                CreatePlanetNode(p, pos.x, -pos.y);
             }
 
             // 绘制航行中的单位（飞船）
@@ -718,21 +730,28 @@ namespace SuperMech.Code
             nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
             nodeRect.pivot = new Vector2(0.5f, 0.5f);
             bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
-            float size = isMain ? 48 : (p.discovered ? 30 : 24); // 主世界最大，已发现次之，未发现最小
+            bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
+
+            // 尺寸：恒星最大，主世界次之，已发现行星再次，未发现最小
+            float size;
+            if (isStar) size = 64;
+            else if (isMain) size = 48;
+            else if (p.discovered) size = 28;
+            else size = 22;
             nodeRect.sizeDelta = new Vector2(size, size);
             nodeRect.anchoredPosition = new Vector2(x, y);
 
-            // 星球光晕（外层，主世界更大更亮）
+            // 星球光晕（恒星最大最亮）
             var glowGo = new GameObject("Glow");
             glowGo.transform.SetParent(nodeGo.transform, false);
             var glowRect = glowGo.AddComponent<RectTransform>();
             glowRect.anchorMin = Vector2.zero; glowRect.anchorMax = Vector2.one;
-            float glowExpand = isMain ? 20 : 10;
+            float glowExpand = isStar ? 40 : (isMain ? 20 : 10);
             glowRect.offsetMin = new Vector2(-glowExpand, -glowExpand);
             glowRect.offsetMax = new Vector2(glowExpand, glowExpand);
             var glowImg = glowGo.AddComponent<Image>();
             glowImg.raycastTarget = false;
-            glowImg.sprite = GetGlowSprite(); // 圆形径向渐变光晕
+            glowImg.sprite = GetGlowSprite();
 
             // 星球本体（圆形纹理）
             var bodyGo = new GameObject("Body");
@@ -744,11 +763,18 @@ namespace SuperMech.Code
             bodyImg.raycastTarget = false;
 
             // 未发现的星球显示为灰色问号
-            bool isUnknown = !p.discovered && !isMain;
+            bool isUnknown = !p.discovered && !isMain && !isStar;
             Color planetColor;
             int planetSeed = p.id.GetHashCode();
 
-            if (isUnknown)
+            if (isStar)
+            {
+                // 恒星：黄白色/橙红色，强烈发光
+                planetColor = new Color(1f, 0.9f, 0.6f);
+                glowImg.color = new Color(1f, 0.85f, 0.4f, 0.7f);
+                bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed);
+            }
+            else if (isUnknown)
             {
                 planetColor = new Color(0.35f, 0.35f, 0.4f, 0.6f);
                 glowImg.color = new Color(0.4f, 0.4f, 0.45f, 0.2f);
@@ -767,18 +793,15 @@ namespace SuperMech.Code
                     SuperMechStarSystem.PlanetType.Forest => new Color(0.4f, 0.8f, 0.5f),
                     _ => Color.gray
                 };
-                // 已殖民的星球更亮，有明显光晕
                 if (p.colonyLevel > 0)
                 {
                     glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.5f);
                 }
                 else
                 {
-                    // 已发现但未殖民：中等亮度
                     planetColor = new Color(planetColor.r * 0.75f, planetColor.g * 0.75f, planetColor.b * 0.75f, 0.9f);
                     glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.2f);
                 }
-                // 主星球：金色大光晕
                 if (isMain)
                 {
                     glowImg.color = new Color(1f, 0.9f, 0.5f, 0.6f);
@@ -786,9 +809,25 @@ namespace SuperMech.Code
                 }
                 bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed);
             }
+
+            // 行星环（气态行星概率有环）
+            if (p.hasRing && !isStar && !isUnknown)
+            {
+                var ringGo = new GameObject("Ring");
+                ringGo.transform.SetParent(nodeGo.transform, false);
+                var ringRect = ringGo.AddComponent<RectTransform>();
+                ringRect.anchorMin = Vector2.zero; ringRect.anchorMax = Vector2.one;
+                ringRect.offsetMin = new Vector2(-size * 0.4f, -size * 0.15f);
+                ringRect.offsetMax = new Vector2(size * 0.4f, size * 0.15f);
+                var ringImg = ringGo.AddComponent<Image>();
+                ringImg.sprite = GetGlowSprite();
+                ringImg.color = new Color(planetColor.r * 0.8f, planetColor.g * 0.8f, planetColor.b * 0.8f, 0.4f);
+                ringImg.raycastTarget = false;
+            }
+
             _planetNodes[p.id] = nodeGo;
 
-            // 星球名称标签（主世界和已发现的显示）
+            // 星球名称标签（恒星和已发现的显示）
             if (!isUnknown)
             {
                 var labelGo = new GameObject("Label");
@@ -801,8 +840,8 @@ namespace SuperMech.Code
                 labelRect.anchoredPosition = new Vector2(0, -4);
                 var labelText = labelGo.AddComponent<Text>();
                 labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                labelText.fontSize = isMain ? 14 : 11;
-                labelText.color = isMain ? new Color(1f, 0.9f, 0.5f) : new Color(0.8f, 0.85f, 0.95f);
+                labelText.fontSize = isStar ? 13 : (isMain ? 14 : 10);
+                labelText.color = isStar ? new Color(1f, 0.9f, 0.6f) : (isMain ? new Color(1f, 0.9f, 0.5f) : new Color(0.7f, 0.75f, 0.85f));
                 labelText.alignment = TextAnchor.UpperCenter;
                 labelText.text = p.name;
                 labelText.raycastTarget = false;
@@ -860,6 +899,23 @@ namespace SuperMech.Code
             var lineImg = lineGo.AddComponent<Image>();
             lineImg.color = new Color(0.4f, 0.5f, 0.7f, 0.25f);
             lineImg.raycastTarget = false;
+        }
+
+        /// <summary>创建轨道线（行星围绕恒星的圆形轨道）</summary>
+        private void CreateOrbitLine(float centerX, float centerY, float radius)
+        {
+            var orbitGo = new GameObject("Orbit_");
+            orbitGo.transform.SetParent(_mapContent, false);
+            var orbitRect = orbitGo.AddComponent<RectTransform>();
+            orbitRect.anchorMin = new Vector2(0.5f, 0.5f);
+            orbitRect.anchorMax = new Vector2(0.5f, 0.5f);
+            orbitRect.pivot = new Vector2(0.5f, 0.5f);
+            orbitRect.sizeDelta = new Vector2(radius * 2, radius * 2);
+            orbitRect.anchoredPosition = new Vector2(centerX, centerY);
+            var orbitImg = orbitGo.AddComponent<Image>();
+            orbitImg.sprite = GetGlowSprite();
+            orbitImg.color = new Color(0.3f, 0.4f, 0.6f, 0.08f); // 淡淡的圆圈
+            orbitImg.raycastTarget = false;
         }
 
         private void SelectPlanet(string id)
