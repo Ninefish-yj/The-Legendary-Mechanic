@@ -39,6 +39,8 @@ namespace SuperMech.Code
             RegisterStarPupilGod();
             RegisterTelkes();
             RegisterDemon();
+            RegisterHumanCosmic2();
+            RegisterVoidShadow();
 
             // P2: 高级种族（特殊条件，原著星际生物）
             RegisterVoidDragon();
@@ -69,7 +71,9 @@ namespace SuperMech.Code
                     {"Intelligence", 8}, {"Mystery", 3}, {"Charisma", 3}
                 }
             };
-            s.EvolutionTargets.Add("void_shadow");
+            // 网状进化：人类可走星瞳/科技/自身进化三条路线
+            s.EvolutionTargets.Add("star_pupil_god");
+            s.EvolutionTargets.Add("telkes");
             s.EvolutionTargets.Add("human_cosmic_2");
             _species[s.Id] = s;
         }
@@ -92,6 +96,9 @@ namespace SuperMech.Code
                 },
                 Traits = new List<string> {"Strong"}
             };
+            // 网状进化：战争种族走恶魔/兽人路线
+            s.EvolutionTargets.Add("sm_demon");
+            s.EvolutionTargets.Add("orc_luhan");
             _species[s.Id] = s;
         }
 
@@ -112,6 +119,9 @@ namespace SuperMech.Code
                     {"Intelligence", 15}, {"Mystery", 10}, {"Charisma", 25}
                 }
             };
+            // 网状进化：外交种族走星瞳/科技路线
+            s.EvolutionTargets.Add("star_pupil_god");
+            s.EvolutionTargets.Add("telkes");
             _species[s.Id] = s;
         }
 
@@ -133,6 +143,9 @@ namespace SuperMech.Code
                 },
                 Traits = new List<string> {"Fast"}
             };
+            // 网状进化：暗影种族走恶魔/虚空暗影路线
+            s.EvolutionTargets.Add("sm_demon");
+            s.EvolutionTargets.Add("void_shadow");
             _species[s.Id] = s;
         }
 
@@ -155,6 +168,9 @@ namespace SuperMech.Code
                     {"Intelligence", 20}, {"Mystery", 30}, {"Charisma", 15}
                 }
             };
+            // 网状进化：瞳术种族走虚空龙/星游兽路线
+            s.EvolutionTargets.Add("void_dragon");
+            s.EvolutionTargets.Add("star_beast");
             _species[s.Id] = s;
         }
 
@@ -175,6 +191,9 @@ namespace SuperMech.Code
                     {"Intelligence", 22}, {"Mystery", 8}, {"Charisma", 5}
                 }
             };
+            // 网状进化：科技种族走虚空龙/兽人路线
+            s.EvolutionTargets.Add("void_dragon");
+            s.EvolutionTargets.Add("orc_luhan");
             _species[s.Id] = s;
         }
 
@@ -196,6 +215,57 @@ namespace SuperMech.Code
                 },
                 Traits = new List<string> {"Strong", "Aggressive"}
             };
+            // 网状进化：恶魔走虚空龙/星游兽路线
+            s.EvolutionTargets.Add("void_dragon");
+            s.EvolutionTargets.Add("star_beast");
+            _species[s.Id] = s;
+        }
+
+        /// <summary>Ⅱ型宇宙人族 - 原著人类进一步进化，宇宙能量深度融合</summary>
+        private static void RegisterHumanCosmic2()
+        {
+            var s = new SpeciesData("human_cosmic_2", "Ⅱ型宇宙人族", "P1")
+            {
+                Description = "Ⅰ型宇宙人族进一步进化，与宇宙能量深度融合，精神力大幅提升",
+                WildKingdomId = "humans",
+                CivKingdomId = "humans",
+                IsSpecial = false,
+                RacialTalent = "宇宙共鸣：全属性+15%，神秘+25%，经验获取+20%",
+                NovelReference = "原著 人类进化路线 Ⅱ型宇宙人族",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 8}, {"Agility", 8}, {"Endurance", 8},
+                    {"Intelligence", 15}, {"Mystery", 20}, {"Charisma", 8}
+                }
+            };
+            // 网状进化：人类高阶形态可走全部三条P2路线
+            s.EvolutionTargets.Add("void_dragon");
+            s.EvolutionTargets.Add("star_beast");
+            s.EvolutionTargets.Add("orc_luhan");
+            _species[s.Id] = s;
+        }
+
+        /// <summary>虚空暗影 - 黑灵族暗属性进化，隐匿与暗杀极致</summary>
+        private static void RegisterVoidShadow()
+        {
+            var s = new SpeciesData("void_shadow", "虚空暗影", "P1")
+            {
+                Description = "黑灵族暗属性极致进化，可融入虚空，暗杀能力极强",
+                WildKingdomId = "black_spirits",
+                CivKingdomId = "",
+                IsSpecial = false,
+                RacialTalent = "虚空行者：敏捷+40%，神秘+30%，可隐匿身形，暴击+50%",
+                NovelReference = "原著 黑灵族进化路线 虚空暗影",
+                BaseStats = new Dictionary<string, float>
+                {
+                    {"Strength", 8}, {"Agility", 30}, {"Endurance", 8},
+                    {"Intelligence", 15}, {"Mystery", 25}, {"Charisma", -5}
+                },
+                Traits = new List<string> {"Fast"}
+            };
+            // 网状进化：虚空暗影走虚空龙/星游兽路线
+            s.EvolutionTargets.Add("void_dragon");
+            s.EvolutionTargets.Add("star_beast");
             _species[s.Id] = s;
         }
 
@@ -219,6 +289,8 @@ namespace SuperMech.Code
                     {"Intelligence", 15}, {"Mystery", 30}, {"Charisma", 10}
                 }
             };
+            // 网状进化：虚空龙→黑星族
+            s.EvolutionTargets.Add("black_star");
             _species[s.Id] = s;
         }
 
@@ -239,6 +311,8 @@ namespace SuperMech.Code
                     {"Intelligence", -10}, {"Mystery", 5}, {"Charisma", -5}
                 }
             };
+            // 网状进化：星游兽→黑星族
+            s.EvolutionTargets.Add("black_star");
             _species[s.Id] = s;
         }
 
@@ -260,6 +334,8 @@ namespace SuperMech.Code
                 },
                 Traits = new List<string> {"Strong"}
             };
+            // 网状进化：卢翰兽人→黑星族
+            s.EvolutionTargets.Add("black_star");
             _species[s.Id] = s;
         }
 
