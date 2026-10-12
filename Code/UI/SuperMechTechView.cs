@@ -84,7 +84,13 @@ namespace SuperMech.Code
                 var btn = btnGo.AddComponent<Button>();
                 var btnImg = btnGo.AddComponent<Image>();
                 btnImg.color = i == 0 ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.12f, 0.15f, 0.2f, 0.9f);
-                var txt = btnGo.AddComponent<Text>();
+                // Text必须放在子对象上：Image和Text都是Graphic，同一GameObject只能有一个Graphic
+                var txtGo = new GameObject("Label");
+                txtGo.transform.SetParent(btnGo.transform, false);
+                var txtRect = txtGo.AddComponent<RectTransform>();
+                txtRect.anchorMin = Vector2.zero; txtRect.anchorMax = Vector2.one;
+                txtRect.offsetMin = Vector2.zero; txtRect.offsetMax = Vector2.zero;
+                var txt = txtGo.AddComponent<Text>();
                 txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 txt.fontSize = 11;
                 txt.color = Color.white;
@@ -180,7 +186,13 @@ namespace SuperMech.Code
             _researchBtn = researchBtnGo.AddComponent<Button>();
             var rbImg = researchBtnGo.AddComponent<Image>();
             rbImg.color = new Color(0.2f, 0.5f, 0.3f, 0.9f);
-            _researchBtnText = researchBtnGo.AddComponent<Text>();
+            // Text必须放在子对象上：Image和Text都是Graphic，同一GameObject只能有一个Graphic
+            var rbTxtGo = new GameObject("Label");
+            rbTxtGo.transform.SetParent(researchBtnGo.transform, false);
+            var rbTxtRect = rbTxtGo.AddComponent<RectTransform>();
+            rbTxtRect.anchorMin = Vector2.zero; rbTxtRect.anchorMax = Vector2.one;
+            rbTxtRect.offsetMin = Vector2.zero; rbTxtRect.offsetMax = Vector2.zero;
+            _researchBtnText = rbTxtGo.AddComponent<Text>();
             _researchBtnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _researchBtnText.fontSize = 14;
             _researchBtnText.color = Color.white;
