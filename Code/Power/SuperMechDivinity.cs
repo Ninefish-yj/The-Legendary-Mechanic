@@ -10,6 +10,9 @@ namespace SuperMech.Code
         public static readonly Dictionary<long, int> _speciesLayers = new Dictionary<long, int>();
         public static readonly Dictionary<long, float> _insightProgress = new Dictionary<long, float>();
         public static readonly Dictionary<long, bool> _awakened = new Dictionary<long, bool>();
+        // 追踪已应用的神性加成层数，避免存档加载后属性丢失或重复叠加
+        private static readonly Dictionary<long, int> _appliedProfLayers = new Dictionary<long, int>();
+        private static readonly Dictionary<long, int> _appliedSpeciesLayers = new Dictionary<long, int>();
 
         public const int PointsPerLayer = 3;
         public const int MaxLayers = 10;
@@ -76,6 +79,12 @@ namespace SuperMech.Code
             _speciesLayers[a.id] = s;
             var ctx = SuperMechActorContextRegistry.Get(a);
             if (ctx != null) { ctx.divinityProfLayers = p; ctx.divinitySpeciesLayers = s; }
+
+            // 存档加载后重新应用未应用的加成（修复属性丢失bug）
+            int appliedP = _appliedProfLayers.TryGetValue(a.id, out int ap) ? ap : 0;
+            int appliedS = _appliedSpeciesLayers.TryGetValue(a.id, out int as_) ? as_ : 0;
+            if (p > appliedP) { ApplyProfBonus(a, p - appliedP); _appliedProfLayers[a.id] = p; }
+            if (s > appliedS) { ApplySpeciesBonus(a, s - appliedS); _appliedSpeciesLayers[a.id] = s; }
         }
 
         public static bool SpendPoints(Actor a, string route, int layers = 1)
@@ -92,6 +101,7 @@ namespace SuperMech.Code
                 if (curLayers >= MaxLayers) return false;
                 _profLayers[a.id] = curLayers + layers;
                 ApplyProfBonus(a, layers);
+                _appliedProfLayers[a.id] = curLayers + layers;
             }
             else if (route == "species")
             {
@@ -99,6 +109,7 @@ namespace SuperMech.Code
                 if (curLayers >= MaxLayers) return false;
                 _speciesLayers[a.id] = curLayers + layers;
                 ApplySpeciesBonus(a, layers);
+                _appliedSpeciesLayers[a.id] = curLayers + layers;
             }
             _points[a.id] = cur - cost;
             return true;
@@ -172,11 +183,13 @@ namespace SuperMech.Code
                         {
                             _profLayers[a.id] = prof + 1;
                             ApplyProfBonus(a, 1);
+                            _appliedProfLayers[a.id] = prof + 1;
                         }
                         else if (spec < MaxLayers)
                         {
                             _speciesLayers[a.id] = spec + 1;
                             ApplySpeciesBonus(a, 1);
+                            _appliedSpeciesLayers[a.id] = spec + 1;
                         }
                     }
                 }
@@ -281,7 +294,7 @@ namespace SuperMech.Code
             }
         }
 
-        public static void Clear() { _points.Clear(); _profLayers.Clear(); _speciesLayers.Clear(); }
+        public static void Clear() { _points.Clear(); _profLayers.Clear(); _speciesLayers.Clear(); _appliedProfLayers.Clear(); _appliedSpeciesLayers.Clear(); }
 
         public static int CleanupDead(System.Collections.Generic.HashSet<long> alive)
         {
@@ -291,6 +304,8 @@ namespace SuperMech.Code
             removed += SuperMechCleanup.CleanDict(_speciesLayers, alive);
             removed += SuperMechCleanup.CleanDict(_insightProgress, alive);
             removed += SuperMechCleanup.CleanDict(_awakened, alive);
+            removed += SuperMechCleanup.CleanDict(_appliedProfLayers, alive);
+            removed += SuperMechCleanup.CleanDict(_appliedSpeciesLayers, alive);
             return removed;
         }
         public static void Clear(Actor a)
@@ -301,6 +316,8 @@ namespace SuperMech.Code
             _speciesLayers.Remove(a.id);
             _insightProgress.Remove(a.id);
             _awakened.Remove(a.id);
+            _appliedProfLayers.Remove(a.id);
+            _appliedSpeciesLayers.Remove(a.id);
         }
     }
 }
