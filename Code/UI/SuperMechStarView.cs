@@ -784,14 +784,21 @@ namespace SuperMech.Code
             const float btnHeight = 32f;
             const float btnGap = 6f;
 
-            // 未发现：探索按钮
+            // 未发现：派遣探险队（单位航行到达后才发现）
             if (!p.discovered && !isMain)
             {
-                CreateActionButton(LocalizedTextManager.getText("sm_ui_explore"), new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_send_explorer"), new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
                 {
-                    SuperMechStarSystem.DiscoverPlanet(p.id, "player");
-                    SelectPlanet(p.id); // 刷新显示
-                    RefreshMap();
+                    var units = World.world.units.getSimpleList();
+                    if (units.Count > 0)
+                    {
+                        var unit = units[UnityEngine.Random.Range(0, units.Count)];
+                        bool success = SuperMechStarSystem.SendUnit(unit.id, SuperMechStarSystem.MAIN_PLANET, p.id);
+                        if (success)
+                        {
+                            Debug.Log($"[超神机械师] 派遣探险队 {unit.data.name} 前往 {p.name}");
+                        }
+                    }
                 }, ref btnY, btnHeight, btnGap);
             }
 

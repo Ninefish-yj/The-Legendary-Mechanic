@@ -242,7 +242,8 @@ namespace SuperMech.Code
             if (fromPlanet == toPlanet) return false;
             var from = GetPlanet(fromPlanet);
             var to = GetPlanet(toPlanet);
-            if (from == null || to == null || !to.discovered) return false;
+            if (from == null || to == null) return false;
+            // 注意：允许派遣到未发现的星球（探险任务）
 
             ActorSnapshot snapshot = null;
 
@@ -324,6 +325,12 @@ namespace SuperMech.Code
                         {
                             // 到达其他星球：保存快照
                             to.units.Add(v.snapshot);
+                            // 如果是未发现的星球，探险队到达后自动发现
+                            if (!to.discovered)
+                            {
+                                to.discovered = true;
+                                Debug.Log($"[超神机械师] 探险队 {v.snapshot.name} 发现了星球 {to.name}");
+                            }
                             if (to.colonyLevel == 0)
                             {
                                 to.colonyLevel = 1;

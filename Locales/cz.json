@@ -3372,10 +3372,10 @@
   "sm_traitgroups_1048": "内部标记",
   "sm_ui_back": "返回世界",
   "sm_ui_star_map": "星际星图",
-  "sm_ui_explore": "探索星球",
   "sm_ui_colonize": "建立殖民地",
   "sm_ui_upgrade_colony": "升级殖民地",
   "sm_ui_send_unit": "派遣单位",
   "sm_ui_collect_resource": "采集资源",
-  "sm_ui_main_planet_hint": "主世界，无需操作"
+  "sm_ui_main_planet_hint": "主世界，无需操作",
+  "sm_ui_send_explorer": "派遣探险队"
 }
