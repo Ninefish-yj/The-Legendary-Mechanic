@@ -222,6 +222,7 @@ namespace SuperMech.Code
             try { SuperMechRankView.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理排行榜缓存失败"); }
             try { SuperMechCleanup.ClearUiStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理UI静态状态失败"); }
             try { SuperMechStatsIcon.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理StatsIcon失败"); }
+            try { SuperMechUnitBars.ClearStaticState(); } catch { Debug.LogWarning("[超神机械师] 清理UnitBars失败"); }
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
             try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }
             try { SuperMechAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAI"); }
