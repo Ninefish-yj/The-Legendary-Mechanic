@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>星图窗口：无限星海，支持滚动探索和缩放</summary>
+    /// <summary>星图窗口：无限星海，程序化星空背景+圆形星球+光晕</summary>
     public class SuperMechStarView : MonoBehaviour
     {
         private RectTransform _mapContent;
@@ -12,8 +12,9 @@ namespace SuperMech.Code
         private Text _coordText;
         private string _selectedPlanet;
         private readonly Dictionary<string, GameObject> _planetNodes = new Dictionary<string, GameObject>();
-        private const float MAP_SIZE = 2400f; // 星图总大小（覆盖4x4个星区）
-        private const float VIEW_RANGE = 1200f; // 视野范围（生成这个范围内的星球）
+        private const float MAP_SIZE = 2400f;
+        private const float VIEW_RANGE = 1200f;
+        private const int STAR_COUNT = 800; // 星空背景星星数量
 
         void Awake()
         {
@@ -32,8 +33,8 @@ namespace SuperMech.Code
             mapRect.offsetMin = Vector2.zero;
             mapRect.offsetMax = Vector2.zero;
             var mapImg = mapGo.AddComponent<Image>();
-            mapImg.color = new Color(0.02f, 0.03f, 0.08f, 0.95f); // 深空背景
-            mapImg.raycastTarget = false; // 纯装饰背景，不拦截鼠标（穿透给ScrollRect content处理）
+            mapImg.color = new Color(0.005f, 0.01f, 0.03f, 1f); // 极深太空黑
+            mapImg.raycastTarget = false;
 
             // 滚动视图
             var scrollGo = new GameObject("Scroll");
@@ -70,6 +71,9 @@ namespace SuperMech.Code
             scrollRect.horizontal = true;
             scrollRect.movementType = ScrollRect.MovementType.Clamped;
 
+            // 生成程序化星空背景
+            GenerateStarfield();
+
             // 坐标显示（左下角）
             var coordGo = new GameObject("CoordText");
             coordGo.transform.SetParent(mapGo.transform, false);
@@ -95,8 +99,8 @@ namespace SuperMech.Code
             infoRect.offsetMin = Vector2.zero;
             infoRect.offsetMax = Vector2.zero;
             var infoImg = infoGo.AddComponent<Image>();
-            infoImg.color = new Color(0.05f, 0.07f, 0.12f, 0.95f);
-            infoImg.raycastTarget = false; // 纯装饰背景，不拦截鼠标
+            infoImg.color = new Color(0.02f, 0.03f, 0.06f, 0.95f);
+            infoImg.raycastTarget = false;
 
             var infoTextGo = new GameObject("InfoText");
             infoTextGo.transform.SetParent(infoGo.transform, false);
@@ -118,14 +122,86 @@ namespace SuperMech.Code
             scrollRect.normalizedPosition = new Vector2(0.5f, 0.5f);
         }
 
-        /// <summary>刷新星图，绘制视野范围内的星球节点（未发现显示灰色问号）</summary>
+        /// <summary>生成程序化星空背景（随机星星+星云）</summary>
+        private void GenerateStarfield()
+        {
+            var starfieldGo = new GameObject("Starfield");
+            starfieldGo.transform.SetParent(_mapContent, false);
+            var sfRect = starfieldGo.AddComponent<RectTransform>();
+            sfRect.anchorMin = Vector2.zero;
+            sfRect.anchorMax = Vector2.one;
+            sfRect.offsetMin = Vector2.zero;
+            sfRect.offsetMax = Vector2.zero;
+            sfRect.SetAsFirstSibling(); // 放在最底层
+
+            System.Random rng = new System.Random(20240501); // 固定种子，星空分布一致
+
+            // 生成星星（不同大小、亮度、颜色）
+            for (int i = 0; i < STAR_COUNT; i++)
+            {
+                var starGo = new GameObject($"Star_{i}");
+                starGo.transform.SetParent(starfieldGo.transform, false);
+                var starRect = starGo.AddComponent<RectTransform>();
+                starRect.anchorMin = new Vector2(0.5f, 0.5f);
+                starRect.anchorMax = new Vector2(0.5f, 0.5f);
+                starRect.pivot = new Vector2(0.5f, 0.5f);
+
+                float size = rng.Next(1, 4); // 1-3像素
+                starRect.sizeDelta = new Vector2(size, size);
+                starRect.anchoredPosition = new Vector2(
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE
+                );
+
+                var starImg = starGo.AddComponent<Image>();
+                starImg.raycastTarget = false;
+
+                // 星星颜色：白/蓝/黄/红，大部分白色
+                int colorRoll = rng.Next(100);
+                if (colorRoll < 70) starImg.color = new Color(1f, 1f, 1f, (float)(0.3 + rng.NextDouble() * 0.7));
+                else if (colorRoll < 85) starImg.color = new Color(0.7f, 0.8f, 1f, (float)(0.3 + rng.NextDouble() * 0.6));
+                else if (colorRoll < 95) starImg.color = new Color(1f, 0.9f, 0.7f, (float)(0.3 + rng.NextDouble() * 0.6));
+                else starImg.color = new Color(1f, 0.6f, 0.5f, (float)(0.3 + rng.NextDouble() * 0.5));
+            }
+
+            // 生成几团星云（大的半透明圆形）
+            for (int i = 0; i < 8; i++)
+            {
+                var nebulaGo = new GameObject($"Nebula_{i}");
+                nebulaGo.transform.SetParent(starfieldGo.transform, false);
+                var nebulaRect = nebulaGo.AddComponent<RectTransform>();
+                nebulaRect.anchorMin = new Vector2(0.5f, 0.5f);
+                nebulaRect.anchorMax = new Vector2(0.5f, 0.5f);
+                nebulaRect.pivot = new Vector2(0.5f, 0.5f);
+                float nebulaSize = rng.Next(200, 500);
+                nebulaRect.sizeDelta = new Vector2(nebulaSize, nebulaSize);
+                nebulaRect.anchoredPosition = new Vector2(
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 0.8f,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 0.8f
+                );
+
+                var nebulaImg = nebulaGo.AddComponent<Image>();
+                nebulaImg.raycastTarget = false;
+                // 星云颜色：紫/蓝/青，低透明度
+                int nebulaColor = rng.Next(3);
+                if (nebulaColor == 0) nebulaImg.color = new Color(0.3f, 0.1f, 0.5f, 0.08f);
+                else if (nebulaColor == 1) nebulaImg.color = new Color(0.1f, 0.2f, 0.5f, 0.08f);
+                else nebulaImg.color = new Color(0.1f, 0.4f, 0.4f, 0.06f);
+            }
+        }
+
+        /// <summary>刷新星图，绘制视野范围内的星球节点</summary>
         public void RefreshMap()
         {
             if (_mapContent == null) return;
-            foreach (Transform child in _mapContent) Destroy(child.gameObject);
+            // 只销毁星球节点和连线，保留星空背景
+            foreach (Transform child in _mapContent)
+            {
+                if (child.name.StartsWith("Planet_") || child.name.StartsWith("Line_"))
+                    Destroy(child.gameObject);
+            }
             _planetNodes.Clear();
 
-            // 获取视野范围内的星球（自动生成途经星区）
             var planets = SuperMechStarSystem.GetPlanetsInRange(0, 0, VIEW_RANGE);
 
             // 绘制连线（主星球到已发现的其他星球）
@@ -135,12 +211,11 @@ namespace SuperMech.Code
                 foreach (var p in planets)
                 {
                     if (p.id == SuperMechStarSystem.MAIN_PLANET || !p.discovered) continue;
-                    // content中心锚点，Y轴翻转（UI向上为正，星图向下为正）
                     CreateLine(main.x, -main.y, p.x, -p.y);
                 }
             }
 
-            // 绘制星球节点（content中心锚点，直接用星球世界坐标，Y轴翻转）
+            // 绘制星球节点
             foreach (var p in planets)
             {
                 CreatePlanetNode(p, p.x, -p.y);
@@ -162,35 +237,73 @@ namespace SuperMech.Code
             nodeRect.anchorMin = new Vector2(0.5f, 0.5f);
             nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
             nodeRect.pivot = new Vector2(0.5f, 0.5f);
-            float size = p.id == SuperMechStarSystem.MAIN_PLANET ? 40 : 25;
+            float size = p.id == SuperMechStarSystem.MAIN_PLANET ? 36 : 22;
             nodeRect.sizeDelta = new Vector2(size, size);
             nodeRect.anchoredPosition = new Vector2(x, y);
 
-            var btn = nodeGo.AddComponent<Button>();
-            var img = nodeGo.AddComponent<Image>();
+            // 星球光晕（外层）
+            var glowGo = new GameObject("Glow");
+            glowGo.transform.SetParent(nodeGo.transform, false);
+            var glowRect = glowGo.AddComponent<RectTransform>();
+            glowRect.anchorMin = Vector2.zero; glowRect.anchorMax = Vector2.one;
+            glowRect.offsetMin = new Vector2(-8, -8); glowRect.offsetMax = new Vector2(8, 8);
+            var glowImg = glowGo.AddComponent<Image>();
+            glowImg.raycastTarget = false;
+
+            // 星球本体（圆形）
+            var bodyGo = new GameObject("Body");
+            bodyGo.transform.SetParent(nodeGo.transform, false);
+            var bodyRect = bodyGo.AddComponent<RectTransform>();
+            bodyRect.anchorMin = Vector2.zero; bodyRect.anchorMax = Vector2.one;
+            bodyRect.offsetMin = Vector2.zero; bodyRect.offsetMax = Vector2.zero;
+            var bodyImg = bodyGo.AddComponent<Image>();
 
             // 未发现的星球显示为灰色问号
-            if (!p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET)
+            bool isUnknown = !p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET;
+            Color planetColor;
+
+            if (isUnknown)
             {
-                img.color = new Color(0.3f, 0.3f, 0.35f, 0.6f);
+                planetColor = new Color(0.25f, 0.25f, 0.3f, 0.5f);
+                glowImg.color = new Color(0.3f, 0.3f, 0.35f, 0.15f);
             }
             else
             {
-                // 星球颜色按类型
-                Color planetColor = p.type switch
+                planetColor = p.type switch
                 {
-                    SuperMechStarSystem.PlanetType.Rocky => new Color(0.6f, 0.5f, 0.4f),
-                    SuperMechStarSystem.PlanetType.Gas => new Color(0.8f, 0.7f, 0.4f),
-                    SuperMechStarSystem.PlanetType.Ice => new Color(0.6f, 0.8f, 1f),
-                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.4f, 0.2f),
-                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.3f, 0.5f, 0.9f),
+                    SuperMechStarSystem.PlanetType.Rocky => new Color(0.65f, 0.55f, 0.45f),
+                    SuperMechStarSystem.PlanetType.Gas => new Color(0.85f, 0.75f, 0.45f),
+                    SuperMechStarSystem.PlanetType.Ice => new Color(0.65f, 0.85f, 1f),
+                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.45f, 0.25f),
+                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.35f, 0.55f, 0.95f),
                     SuperMechStarSystem.PlanetType.Desert => new Color(0.9f, 0.8f, 0.5f),
-                    SuperMechStarSystem.PlanetType.Forest => new Color(0.3f, 0.7f, 0.4f),
+                    SuperMechStarSystem.PlanetType.Forest => new Color(0.35f, 0.75f, 0.45f),
                     _ => Color.gray
                 };
-                img.color = p.colonyLevel > 0 ? planetColor : new Color(planetColor.r * 0.5f, planetColor.g * 0.5f, planetColor.b * 0.5f, 0.7f);
+                // 已殖民的星球更亮，未殖民的暗一些
+                if (p.colonyLevel > 0)
+                {
+                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.4f);
+                }
+                else
+                {
+                    planetColor = new Color(planetColor.r * 0.6f, planetColor.g * 0.6f, planetColor.b * 0.6f, 0.8f);
+                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.15f);
+                }
+                // 主星球金色光晕
+                if (p.id == SuperMechStarSystem.MAIN_PLANET)
+                {
+                    glowImg.color = new Color(1f, 0.85f, 0.4f, 0.5f);
+                }
             }
+            bodyImg.color = planetColor;
             _planetNodes[p.id] = nodeGo;
+
+            // 按钮（放在最上层接收点击）
+            var btn = nodeGo.AddComponent<Button>();
+            // 用透明Image作为点击区域
+            var hitImg = nodeGo.AddComponent<Image>();
+            hitImg.color = new Color(0f, 0f, 0f, 0f);
 
             // 星球名称（未发现显示?）
             var nameGo = new GameObject("Name");
@@ -199,19 +312,20 @@ namespace SuperMech.Code
             nameRect.anchorMin = new Vector2(0.5f, 0);
             nameRect.anchorMax = new Vector2(0.5f, 0);
             nameRect.pivot = new Vector2(0.5f, 1);
-            nameRect.sizeDelta = new Vector2(80, 16);
-            nameRect.anchoredPosition = new Vector2(0, -2);
+            nameRect.sizeDelta = new Vector2(100, 16);
+            nameRect.anchoredPosition = new Vector2(0, -4);
             var nameText = nameGo.AddComponent<Text>();
             nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             nameText.fontSize = 10;
-            if (!p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET)
+            if (isUnknown)
             {
-                nameText.color = new Color(0.5f, 0.5f, 0.55f);
+                nameText.color = new Color(0.45f, 0.45f, 0.5f);
                 nameText.text = "?";
             }
             else
             {
-                nameText.color = p.id == SuperMechStarSystem.MAIN_PLANET ? new Color(1f, 0.9f, 0.5f) : new Color(0.7f, 0.8f, 0.9f);
+                nameText.color = p.id == SuperMechStarSystem.MAIN_PLANET ?
+                    new Color(1f, 0.9f, 0.5f) : new Color(0.75f, 0.85f, 0.95f);
                 nameText.text = p.name;
             }
             nameText.alignment = TextAnchor.UpperCenter;
@@ -222,7 +336,7 @@ namespace SuperMech.Code
 
         private void CreateLine(float x1, float y1, float x2, float y2)
         {
-            var lineGo = new GameObject("Line");
+            var lineGo = new GameObject("Line_");
             lineGo.transform.SetParent(_mapContent, false);
             var lineRect = lineGo.AddComponent<RectTransform>();
             lineRect.anchorMin = new Vector2(0.5f, 0.5f);
@@ -235,15 +349,28 @@ namespace SuperMech.Code
             lineRect.anchoredPosition = new Vector2(x1, y1);
             lineRect.localRotation = Quaternion.Euler(0, 0, angle);
             var lineImg = lineGo.AddComponent<Image>();
-            lineImg.color = new Color(0.3f, 0.4f, 0.6f, 0.3f);
-            lineImg.raycastTarget = false; // 纯装饰连线，不拦截鼠标
+            lineImg.color = new Color(0.4f, 0.5f, 0.7f, 0.25f);
+            lineImg.raycastTarget = false;
         }
 
         private void SelectPlanet(string id)
         {
             _selectedPlanet = id;
             var p = SuperMechStarSystem.GetPlanet(id);
-            if (p == null) return;
+            if (p == null || _infoText == null) return;
+
+            // 高亮选中的星球（改光晕亮度）
+            foreach (var kv in _planetNodes)
+            {
+                var glow = kv.Value.transform.Find("Glow")?.GetComponent<Image>();
+                if (glow != null)
+                {
+                    if (kv.Key == id)
+                        glow.color = new Color(glow.color.r, glow.color.g, glow.color.b, 0.8f);
+                    else
+                        glow.color = new Color(glow.color.r, glow.color.g, glow.color.b, glow.color.a * 0.5f);
+                }
+            }
 
             string typeName = p.type switch
             {
@@ -254,10 +381,11 @@ namespace SuperMech.Code
                 SuperMechStarSystem.PlanetType.Ocean => LocalizedTextManager.getText("sm_ui_planet_ocean"),
                 SuperMechStarSystem.PlanetType.Desert => LocalizedTextManager.getText("sm_ui_planet_desert"),
                 SuperMechStarSystem.PlanetType.Forest => LocalizedTextManager.getText("sm_ui_planet_forest"),
-                _ => LocalizedTextManager.getText("sm_ui_unknown")
+                _ => "?"
             };
 
-            _infoText.text = $"<b><size=15><color=#ffd700>{p.name}</color></size></b>\n" +
+            _infoText.text =
+                $"<color=#ffd700><size=14><b>{p.name}</b></size></color>\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_type")}:</color> {typeName}\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_resource")}:</color> {p.resource:F0}/{p.maxResource:F0}\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_colony")}:</color> {p.colonyLevel}\n" +
@@ -265,20 +393,9 @@ namespace SuperMech.Code
                 (p.colonyLevel > 0 ? $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_owner")}:</color> {p.ownerKingdom}\n" : "\n") +
                 $"\n<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_coord")}:</color> ({p.x:F0}, {p.y:F0})\n";
 
-            if (p.id != SuperMechStarSystem.MAIN_PLANET && p.colonyLevel == 0)
+            if (!p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET)
             {
                 _infoText.text += "\n<color=#ffcc66>" + LocalizedTextManager.getText("sm_ui_planet_uncolonized") + "</color>";
-            }
-
-            // 高亮选中
-            foreach (var kv in _planetNodes)
-            {
-                var img = kv.Value.GetComponent<Image>();
-                if (img != null)
-                {
-                    bool selected = kv.Key == id;
-                    img.color = new Color(img.color.r, img.color.g, img.color.b, selected ? 1f : 0.7f);
-                }
             }
         }
     }
