@@ -297,7 +297,7 @@ namespace SuperMech.Code
             dotImg.color = researched ? new Color(0.4f, 1f, 0.5f) :
                           canResearch ? new Color(1f, 0.8f, 0.3f) :
                           new Color(0.5f, 0.5f, 0.5f);
-            dotImg.sprite = Resources.GetBuiltinResource<Sprite>("Background");
+            // 不设置sprite：Image无sprite时显示纯色方块，跨平台兼容（Android无内置Background资源）
 
             // 科技名称+层级
             var txtGo = new GameObject("Text");

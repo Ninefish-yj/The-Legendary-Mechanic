@@ -127,7 +127,6 @@ namespace SuperMech.Code
 
             // 获取视野范围内的星球（自动生成途经星区）
             var planets = SuperMechStarSystem.GetPlanetsInRange(0, 0, VIEW_RANGE);
-            float halfMap = MAP_SIZE / 2f;
 
             // 绘制连线（主星球到已发现的其他星球）
             var main = SuperMechStarSystem.GetPlanet(SuperMechStarSystem.MAIN_PLANET);
@@ -136,21 +135,15 @@ namespace SuperMech.Code
                 foreach (var p in planets)
                 {
                     if (p.id == SuperMechStarSystem.MAIN_PLANET || !p.discovered) continue;
-                    CreateLine(
-                        halfMap + main.x, halfMap - main.y,
-                        halfMap + p.x, halfMap - p.y
-                    );
+                    // content中心锚点，Y轴翻转（UI向上为正，星图向下为正）
+                    CreateLine(main.x, -main.y, p.x, -p.y);
                 }
             }
 
-            // 绘制星球节点
+            // 绘制星球节点（content中心锚点，直接用星球世界坐标，Y轴翻转）
             foreach (var p in planets)
             {
-                // 星球坐标映射：世界坐标(-range~range) → 星图坐标(0~MAP_SIZE)
-                // Y轴翻转（Unity UI向上为正，星图向下为正）
-                float nodeX = halfMap + p.x;
-                float nodeY = halfMap - p.y;
-                CreatePlanetNode(p, nodeX, nodeY);
+                CreatePlanetNode(p, p.x, -p.y);
             }
 
             if (_coordText != null)
@@ -166,8 +159,8 @@ namespace SuperMech.Code
             var nodeGo = new GameObject($"Planet_{p.id}");
             nodeGo.transform.SetParent(_mapContent, false);
             var nodeRect = nodeGo.AddComponent<RectTransform>();
-            nodeRect.anchorMin = new Vector2(0, 1);
-            nodeRect.anchorMax = new Vector2(0, 1);
+            nodeRect.anchorMin = new Vector2(0.5f, 0.5f);
+            nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
             nodeRect.pivot = new Vector2(0.5f, 0.5f);
             float size = p.id == SuperMechStarSystem.MAIN_PLANET ? 40 : 25;
             nodeRect.sizeDelta = new Vector2(size, size);
@@ -232,8 +225,8 @@ namespace SuperMech.Code
             var lineGo = new GameObject("Line");
             lineGo.transform.SetParent(_mapContent, false);
             var lineRect = lineGo.AddComponent<RectTransform>();
-            lineRect.anchorMin = new Vector2(0, 1);
-            lineRect.anchorMax = new Vector2(0, 1);
+            lineRect.anchorMin = new Vector2(0.5f, 0.5f);
+            lineRect.anchorMax = new Vector2(0.5f, 0.5f);
             lineRect.pivot = new Vector2(0, 0.5f);
             float dx = x2 - x1, dy = y2 - y1;
             float len = Mathf.Sqrt(dx * dx + dy * dy);
