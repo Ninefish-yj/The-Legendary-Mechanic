@@ -3369,5 +3369,7 @@
   "sm_rank_reduction_strong": "强烈压制",
   "sm_rank_reduction_overwhelm": "碾压级压制",
   "sm_rank_reduction_annihilate": "毁灭性压制",
-  "sm_traitgroups_1048": "内部标记"
+  "sm_traitgroups_1048": "内部标记",
+  "sm_ui_back": "返回世界",
+  "sm_ui_star_map": "星际星图"
 }

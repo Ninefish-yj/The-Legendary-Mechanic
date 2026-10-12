@@ -4,9 +4,12 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>星图窗口：无限星海，程序化星空背景+圆形星球+光晕</summary>
+    /// <summary>星图窗口：无限星海，全屏模式，程序化星空背景+圆形星球+光晕</summary>
     public class SuperMechStarView : MonoBehaviour
     {
+        private static SuperMechStarView _instance;
+        public static bool IsOpen => _instance != null;
+
         private RectTransform _mapContent;
         private Text _infoText;
         private Text _coordText;
@@ -15,8 +18,49 @@ namespace SuperMech.Code
         private const float MAP_SIZE = 2400f;
         private const float VIEW_RANGE = 1200f;
         private const int STAR_COUNT = 800; // 星空背景星星数量
+        private const int TopBarHeight = 50;
         private static readonly Dictionary<string, Sprite> _planetSpriteCache = new Dictionary<string, Sprite>();
         private static Sprite _glowSprite;
+
+        /// <summary>切换星图显示（全屏模式）</summary>
+        public static void Toggle()
+        {
+            if (_instance != null) _instance.Close();
+            else Open();
+        }
+
+        /// <summary>打开全屏星图</summary>
+        public static void Open()
+        {
+            if (_instance != null) return;
+            var canvas = SuperMechUguiWindow.GetCanvas();
+            var go = new GameObject("SMStarMapView");
+            go.transform.SetParent(canvas.transform, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+
+            _instance = go.AddComponent<SuperMechStarView>();
+            try
+            {
+                _instance.BuildUI();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 星图窗口构建失败: " + e);
+                _instance.Close();
+                _instance = null;
+            }
+        }
+
+        /// <summary>关闭星图</summary>
+        public void Close()
+        {
+            if (_instance == this) _instance = null;
+            Destroy(gameObject);
+        }
 
         /// <summary>生成圆形光晕纹理（中心亮边缘透明的径向渐变）</summary>
         private static Sprite GetGlowSprite()
@@ -99,22 +143,89 @@ namespace SuperMech.Code
             return sprite;
         }
 
-        void Awake()
+        /// <summary>构建顶部标题栏（返回按钮+标题）</summary>
+        private void BuildTopBar()
         {
-            try { BuildUI(); SuperMechStarSystem.Init(); }
-            catch (System.Exception e) { Debug.LogError("[超神机械师] StarView初始化失败: " + e.Message); }
+            var topGo = new GameObject("TopBar");
+            topGo.transform.SetParent(transform, false);
+            var topRect = topGo.AddComponent<RectTransform>();
+            topRect.anchorMin = new Vector2(0, 1);
+            topRect.anchorMax = new Vector2(1, 1);
+            topRect.pivot = new Vector2(0.5f, 1);
+            topRect.sizeDelta = new Vector2(0, TopBarHeight);
+            topRect.anchoredPosition = Vector2.zero;
+            var topImg = topGo.AddComponent<Image>();
+            topImg.color = new Color(0.02f, 0.04f, 0.08f, 0.95f);
+            topImg.raycastTarget = true;
+
+            // 返回按钮
+            var backGo = new GameObject("BackBtn");
+            backGo.transform.SetParent(topGo.transform, false);
+            var backRect = backGo.AddComponent<RectTransform>();
+            backRect.anchorMin = new Vector2(0, 0.5f);
+            backRect.anchorMax = new Vector2(0, 0.5f);
+            backRect.pivot = new Vector2(0, 0.5f);
+            backRect.sizeDelta = new Vector2(120, 34);
+            backRect.anchoredPosition = new Vector2(12, 0);
+            var backImg = backGo.AddComponent<Image>();
+            backImg.color = new Color(0.15f, 0.25f, 0.4f, 0.9f);
+            var backBtn = backGo.AddComponent<Button>();
+            backBtn.onClick.AddListener(Close);
+
+            var backTextGo = new GameObject("Text");
+            backTextGo.transform.SetParent(backGo.transform, false);
+            var btRect = backTextGo.AddComponent<RectTransform>();
+            btRect.anchorMin = Vector2.zero; btRect.anchorMax = Vector2.one;
+            btRect.offsetMin = Vector2.zero; btRect.offsetMax = Vector2.zero;
+            var backText = backTextGo.AddComponent<Text>();
+            backText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            backText.fontSize = 14;
+            backText.color = Color.white;
+            backText.alignment = TextAnchor.MiddleCenter;
+            backText.text = LocalizedTextManager.getText("sm_ui_back");
+
+            // 标题
+            var titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(topGo.transform, false);
+            var titleRect = titleGo.AddComponent<RectTransform>();
+            titleRect.anchorMin = Vector2.zero; titleRect.anchorMax = Vector2.one;
+            titleRect.offsetMin = new Vector2(140, 0); titleRect.offsetMax = new Vector2(-140, 0);
+            var titleText = titleGo.AddComponent<Text>();
+            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.fontSize = 18;
+            titleText.color = new Color(0.5f, 0.8f, 1f);
+            titleText.alignment = TextAnchor.MiddleCenter;
+            titleText.fontStyle = FontStyle.Bold;
+            titleText.text = LocalizedTextManager.getText("sm_ui_star_map");
         }
 
         private void BuildUI()
         {
-            // 星图区域（左侧70%）
+            SuperMechStarSystem.Init();
+
+            // 全屏深空背景
+            var bgGo = new GameObject("Bg");
+            bgGo.transform.SetParent(transform, false);
+            var bgRect = bgGo.AddComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero;
+            bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero;
+            bgRect.offsetMax = Vector2.zero;
+            var bgImg = bgGo.AddComponent<Image>();
+            bgImg.color = new Color(0.005f, 0.01f, 0.03f, 1f);
+            bgImg.raycastTarget = true; // 拦截鼠标穿透到游戏
+
+            // 顶部标题栏
+            BuildTopBar();
+
+            // 星图区域（左侧70%，从顶部栏下方开始）
             var mapGo = new GameObject("MapArea");
             mapGo.transform.SetParent(transform, false);
             var mapRect = mapGo.AddComponent<RectTransform>();
             mapRect.anchorMin = Vector2.zero;
             mapRect.anchorMax = new Vector2(0.7f, 1);
             mapRect.offsetMin = Vector2.zero;
-            mapRect.offsetMax = Vector2.zero;
+            mapRect.offsetMax = new Vector2(0, -TopBarHeight);
             var mapImg = mapGo.AddComponent<Image>();
             mapImg.color = new Color(0.005f, 0.01f, 0.03f, 1f); // 极深太空黑
             mapImg.raycastTarget = false;
@@ -173,14 +284,14 @@ namespace SuperMech.Code
             _coordText.alignment = TextAnchor.LowerCenter;
             _coordText.text = "星海浩瀚，探索未知";
 
-            // 右侧信息面板
+            // 右侧信息面板（从顶部栏下方开始）
             var infoGo = new GameObject("InfoPanel");
             infoGo.transform.SetParent(transform, false);
             var infoRect = infoGo.AddComponent<RectTransform>();
             infoRect.anchorMin = new Vector2(0.7f, 0);
             infoRect.anchorMax = Vector2.one;
             infoRect.offsetMin = Vector2.zero;
-            infoRect.offsetMax = Vector2.zero;
+            infoRect.offsetMax = new Vector2(0, -TopBarHeight);
             var infoImg = infoGo.AddComponent<Image>();
             infoImg.color = new Color(0.02f, 0.03f, 0.06f, 0.95f);
             infoImg.raycastTarget = false;

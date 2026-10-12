@@ -112,7 +112,7 @@ namespace SuperMech.Code
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateSimpleButton("sm_star_open", () =>
                     {
-                        SuperMechWindowManager.OpenStar();
+                        SuperMechStarView.Toggle();
                     }, icon);
                     if (pb != null)
                     {
