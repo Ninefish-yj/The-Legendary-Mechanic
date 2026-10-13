@@ -3501,5 +3501,14 @@
   "sm_wb_avatar_mannison": "械",
   "sm_wb_avatar_kesuye": "星",
   "sm_wb_avatar_sailaang": "协",
-  "sm_wb_avatar_aisi": "龙"
+  "sm_wb_avatar_aisi": "龙",
+  "sm_star_voyaging": "航行中",
+  "sm_star_progress": "进度",
+  "sm_star_destination": "目的地",
+  "sm_star_temperature": "温度",
+  "sm_star_mass": "质量",
+  "sm_star_habitable": "宜居带",
+  "sm_star_colony_level": "殖民地等级",
+  "sm_star_units": "单位",
+  "sm_star_unexplored": "未探索"
 }

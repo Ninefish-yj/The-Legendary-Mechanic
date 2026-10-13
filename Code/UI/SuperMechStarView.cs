@@ -1059,9 +1059,9 @@ namespace SuperMech.Code
             // 悬停提示
             var vTrigger = nodeGo.AddComponent<UnityEngine.EventSystems.EventTrigger>();
             string vTooltip = $"<b>{v.snapshot.name}</b>\n" +
-                $"<color=#88ccff>航行中</color>\n" +
-                $"进度: {(int)(v.progress * 100)}%\n" +
-                $"目的地: {SuperMechStarSystem.GetPlanet(v.toPlanet)?.name ?? "?"}";
+                $"<color=#88ccff>{LocalizedTextManager.getText("sm_star_voyaging")}</color>\n" +
+                $"{LocalizedTextManager.getText("sm_star_progress")}: {(int)(v.progress * 100)}%\n" +
+                $"{LocalizedTextManager.getText("sm_star_destination")}: {SuperMechStarSystem.GetPlanet(v.toPlanet)?.name ?? "?"}";
             var vEnter = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
             vEnter.callback.AddListener((data) => ShowTooltip(vTooltip));
             vTrigger.triggers.Add(vEnter);
@@ -1373,23 +1373,23 @@ namespace SuperMech.Code
             if (p.type == SuperMechStarSystem.PlanetType.Star)
             {
                 sb.Append("<color=#ffcc66>").Append(p.starType.ToString()).Append("</color>\n");
-                sb.Append("温度: ").Append(p.temperature.ToString("F0")).Append("K\n");
-                sb.Append("质量: ").Append(p.starMass.ToString("F2")).Append(" M☉");
+                sb.Append(LocalizedTextManager.getText("sm_star_temperature")).Append(": ").Append(p.temperature.ToString("F0")).Append("K\n");
+                sb.Append(LocalizedTextManager.getText("sm_star_mass")).Append(": ").Append(p.starMass.ToString("F2")).Append(" M☉");
             }
             else
             {
                 string typeName = p.type.ToString();
                 sb.Append("<color=#88ccff>").Append(typeName).Append("</color>\n");
-                sb.Append("温度: ").Append((p.temperature - 273).ToString("F0")).Append("°C\n");
-                if (p.inHabitableZone) sb.Append("<color=#7fff7f>宜居带</color>\n");
+                sb.Append(LocalizedTextManager.getText("sm_star_temperature")).Append(": ").Append((p.temperature - 273).ToString("F0")).Append("°C\n");
+                if (p.inHabitableZone) sb.Append("<color=#7fff7f>").Append(LocalizedTextManager.getText("sm_star_habitable")).Append("</color>\n");
                 if (p.discovered)
                 {
-                    sb.Append("殖民地等级: ").Append(p.colonyLevel);
-                    if (p.units.Count > 0) sb.Append(" | 单位: ").Append(p.units.Count);
+                    sb.Append(LocalizedTextManager.getText("sm_star_colony_level")).Append(": ").Append(p.colonyLevel);
+                    if (p.units.Count > 0) sb.Append(" | ").Append(LocalizedTextManager.getText("sm_star_units")).Append(": ").Append(p.units.Count);
                 }
                 else
                 {
-                    sb.Append("<color=#aaaaaa>未探索</color>");
+                    sb.Append("<color=#aaaaaa>").Append(LocalizedTextManager.getText("sm_star_unexplored")).Append("</color>");
                 }
             }
             return sb.ToString();
