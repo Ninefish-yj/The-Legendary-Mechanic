@@ -85,6 +85,11 @@ namespace SuperMech.Code
                 // 保存世界
                 SaveManager.saveWorldToDirectory(path, pCompress: true, pCheckFolder: false);
 
+                // 保存模组自定义数据（科技/阶位/知识/装备等）
+                // SuperMechSaveData.GetSavePath()使用current_world_seed_id作为文件名，
+                // 每个星球种子不同，自动分开存储
+                SuperMechSaveData.Save();
+
                 // 更新模拟状态
                 UpdateSimStateFromWorld(CurrentPlanetId);
 

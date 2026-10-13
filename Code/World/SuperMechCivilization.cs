@@ -304,5 +304,51 @@ namespace SuperMech.Code
             _kingdomTechPoints.Clear();
             _kingdomTechLevel.Clear();
         }
+
+        /// <summary>序列化文明数据（科技点+科技等级）用于存档</summary>
+        public static string SerializeForSave()
+        {
+            try
+            {
+                var data = new CivilizationSaveData
+                {
+                    techPoints = new Dictionary<string, float>(),
+                    techLevel = new Dictionary<string, int>()
+                };
+                foreach (var kv in _kingdomTechPoints)
+                    data.techPoints[kv.Key.ToString()] = kv.Value;
+                foreach (var kv in _kingdomTechLevel)
+                    data.techLevel[kv.Key.ToString()] = kv.Value;
+                return Newtonsoft.Json.JsonConvert.SerializeObject(data);
+            }
+            catch { return ""; }
+        }
+
+        /// <summary>从存档反序列化文明数据</summary>
+        public static void LoadFromSave(string json)
+        {
+            if (string.IsNullOrEmpty(json)) return;
+            try
+            {
+                var data = Newtonsoft.Json.JsonConvert.DeserializeObject<CivilizationSaveData>(json);
+                if (data == null) return;
+                _kingdomTechPoints.Clear();
+                _kingdomTechLevel.Clear();
+                if (data.techPoints != null)
+                    foreach (var kv in data.techPoints)
+                        _kingdomTechPoints[long.Parse(kv.Key)] = kv.Value;
+                if (data.techLevel != null)
+                    foreach (var kv in data.techLevel)
+                        _kingdomTechLevel[long.Parse(kv.Key)] = kv.Value;
+            }
+            catch (System.Exception e) { Debug.LogWarning("[超神机械师] 文明数据加载失败: " + e.Message); }
+        }
+
+        [Serializable]
+        public class CivilizationSaveData
+        {
+            public Dictionary<string, float> techPoints;
+            public Dictionary<string, int> techLevel;
+        }
     }
 }

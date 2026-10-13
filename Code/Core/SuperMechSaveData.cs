@@ -64,6 +64,8 @@ namespace SuperMech.Code
             // === v0.102.0 星际+科技存档 ===
             public string starSystemData = "";  // 星际系统数据（JSON序列化）
             public string techData = "";        // 科技系统数据（JSON序列化）
+            // === v0.152.8 文明科技点存档 ===
+            public string civilizationTechData = "";  // 文明科技点+科技等级（JSON序列化）
         }
 
         [Serializable]
@@ -302,6 +304,8 @@ namespace SuperMech.Code
                 data.starSystemData = SuperMechStarSystem.SerializeForSave();
                 // 保存科技系统数据（v0.102.0）
                 data.techData = SuperMechTech.SerializeForSave();
+                // 保存文明科技点+科技等级（v0.152.8）
+                data.civilizationTechData = SuperMechCivilization.SerializeForSave();
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -374,6 +378,12 @@ namespace SuperMech.Code
                 {
                     try { SuperMechTech.LoadFromSave(data.techData); }
                     catch (Exception e) { Debug.LogWarning($"[超神机械师] 科技数据加载失败: {e.Message}"); }
+                }
+                // 加载文明科技点+科技等级（v0.152.8）
+                if (!string.IsNullOrEmpty(data.civilizationTechData))
+                {
+                    try { SuperMechCivilization.LoadFromSave(data.civilizationTechData); }
+                    catch (Exception e) { Debug.LogWarning($"[超神机械师] 文明科技数据加载失败: {e.Message}"); }
                 }
                 _pendingLoad = data;
                 _loadPending = true;
