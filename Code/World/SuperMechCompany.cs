@@ -59,6 +59,12 @@ namespace SuperMech.Code
             return null;
         }
 
+        /// <summary>获取所有公司列表（v0.140.0 供CompanyAI使用）</summary>
+        public static List<CompanyDef> GetAllCompanies()
+        {
+            return new List<CompanyDef>(_companies.Values);
+        }
+
         /// <summary>公司等级决定每tick伊纳尔发行量</summary>
         public static int GetIssueAmount(CompanyDef c)
         {
