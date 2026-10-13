@@ -32,21 +32,21 @@ namespace SuperMech.Code
                 bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
                 bg.GetComponent<Image>().color = SuperMechUiSkin.SciBg;
 
-                // ═══ 顶部页签栏（两排布局，每排4个，避免超出界面）═══
+                // ═══ 顶部页签栏（两排布局，每排5个，9个页签刚好放下）═══
                 var tabBarGo = new GameObject("TabBar", typeof(RectTransform), typeof(Image));
                 tabBarGo.transform.SetParent(content, false);
                 var tbr = tabBarGo.GetComponent<RectTransform>();
                 tbr.anchorMin = new Vector2(0, 1); tbr.anchorMax = new Vector2(1, 1);
                 tbr.pivot = new Vector2(0.5f, 1);
                 tbr.anchoredPosition = Vector2.zero;
-                tbr.sizeDelta = new Vector2(0, 88);  // 两排，每排44
+                tbr.sizeDelta = new Vector2(0, 88);  // 两排，每排40+边距
                 var tImg = tabBarGo.GetComponent<Image>();
                 tImg.color = new Color(0.04f, 0.06f, 0.10f, 0.9f);
                 tImg.raycastTarget = true;
 
                 var tabs = SuperMechWindowManager.OverviewTabs;
-                int perRow = 4;  // 每排4个
-                float tabW = 168f;  // 每个标签宽度
+                int perRow = 5;  // 每排5个，9个页签两排放下
+                float tabW = 136f;  // 每个标签宽度（720窗口-边距-间距）/5
                 float tabH = 36f;
                 float gapX = 6f;    // 横向间距
                 float gapY = 4f;    // 纵向间距
