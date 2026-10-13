@@ -82,6 +82,9 @@ namespace SuperMech.Code
                 SafeRun("机械军团AI", () => SuperMechAI.TickMechLegion());
                 SafeRun("AI文明科技研究", () => SuperMechAI.TickTechResearch());
                 SafeRun("AI文明星际探索", () => SuperMechAI.TickStarExploration());
+                SafeRun("AI自动装备", () => SuperMechAIExtended.TickAutoEquip());
+                SafeRun("AI自动使用建筑", () => SuperMechAIExtended.TickAutoUseBuilding());
+                SafeRun("AI经济行为", () => SuperMechAIExtended.TickEconomy());
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
                 SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }
@@ -176,6 +179,7 @@ namespace SuperMech.Code
             removed += SuperMechQiAttribute.CleanupDead(alive);
             removed += SuperMechStageTask.CleanupDead(alive);
             removed += SuperMechAI.CleanupDead(alive);
+            removed += SuperMechAIExtended.CleanupDead(alive);
             removed += SuperMechFaction.CleanupDead(alive);
             removed += SuperMechPlayer.CleanupDead(alive);
             removed += SuperMechActorContextRegistry.CleanupDead(alive);
@@ -226,6 +230,7 @@ namespace SuperMech.Code
             try { SuperMechProfession.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechProfession"); }
             try { SuperMechTalent.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTalent"); }
             try { SuperMechAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAI"); }
+            try { SuperMechAIExtended.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechAIExtended"); }
             try { SuperMechDimension.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechDimension"); }
             try { SuperMechVirtualGenesis.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechVirtualGenesis"); }
             try { SuperMechMechLegion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechMechLegion"); }
