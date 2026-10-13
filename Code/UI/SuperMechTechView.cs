@@ -13,6 +13,7 @@ namespace SuperMech.Code
         private Button _researchBtn;
         private Text _researchBtnText;
         private Text _kingdomNameText;
+        private Text _kingdomLabelText;
         private string _selectedId;
         private SuperMechTech.TechBranch _currentBranch = SuperMechTech.TechBranch.Energy;
         private static Kingdom _selectedKingdom;
@@ -58,6 +59,70 @@ namespace SuperMech.Code
             titleText.text = LocalizedTextManager.getText("sm_ui_civ_tech_tree");
 
             _kingdomNameText = titleText; // 复用，后面更新
+
+            // 王国切换器（标题栏右侧）
+            var kingdomSwitchGo = new GameObject("KingdomSwitch");
+            kingdomSwitchGo.transform.SetParent(transform, false);
+            var ksRect = kingdomSwitchGo.AddComponent<RectTransform>();
+            ksRect.anchorMin = new Vector2(1, 1);
+            ksRect.anchorMax = new Vector2(1, 1);
+            ksRect.pivot = new Vector2(1, 1);
+            ksRect.sizeDelta = new Vector2(200, 24);
+            ksRect.anchoredPosition = new Vector2(-8, -4);
+
+            // 左箭头
+            var prevBtnGo = new GameObject("PrevBtn");
+            prevBtnGo.transform.SetParent(kingdomSwitchGo.transform, false);
+            var prevRect = prevBtnGo.AddComponent<RectTransform>();
+            prevRect.anchorMin = new Vector2(0, 0); prevRect.anchorMax = new Vector2(0, 1);
+            prevRect.sizeDelta = new Vector2(24, 0);
+            var prevBtn = prevBtnGo.AddComponent<Button>();
+            var prevImg = prevBtnGo.AddComponent<Image>();
+            prevImg.color = new Color(0.15f, 0.2f, 0.3f, 0.9f);
+            var prevTxtGo = new GameObject("Label");
+            prevTxtGo.transform.SetParent(prevBtnGo.transform, false);
+            var prevTxtRect = prevTxtGo.AddComponent<RectTransform>();
+            prevTxtRect.anchorMin = Vector2.zero; prevTxtRect.anchorMax = Vector2.one;
+            var prevTxt = prevTxtGo.AddComponent<Text>();
+            prevTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            prevTxt.fontSize = 14; prevTxt.color = Color.white;
+            prevTxt.alignment = TextAnchor.MiddleCenter;
+            prevTxt.text = "<";
+            prevBtn.onClick.AddListener(() => SwitchKingdom(-1));
+
+            // 王国名称显示
+            var kingdomLabelGo = new GameObject("KingdomLabel");
+            kingdomLabelGo.transform.SetParent(kingdomSwitchGo.transform, false);
+            var klRect = kingdomLabelGo.AddComponent<RectTransform>();
+            klRect.anchorMin = new Vector2(0, 0); klRect.anchorMax = new Vector2(1, 1);
+            klRect.offsetMin = new Vector2(28, 0); klRect.offsetMax = new Vector2(-28, 0);
+            var klImg = kingdomLabelGo.AddComponent<Image>();
+            klImg.color = new Color(0.08f, 0.1f, 0.15f, 0.9f);
+            _kingdomLabelText = kingdomLabelGo.AddComponent<Text>();
+            _kingdomLabelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _kingdomLabelText.fontSize = 11;
+            _kingdomLabelText.color = new Color(0.8f, 0.9f, 1f);
+            _kingdomLabelText.alignment = TextAnchor.MiddleCenter;
+
+            // 右箭头
+            var nextBtnGo = new GameObject("NextBtn");
+            nextBtnGo.transform.SetParent(kingdomSwitchGo.transform, false);
+            var nextRect = nextBtnGo.AddComponent<RectTransform>();
+            nextRect.anchorMin = new Vector2(1, 0); nextRect.anchorMax = new Vector2(1, 1);
+            nextRect.sizeDelta = new Vector2(24, 0);
+            var nextBtn = nextBtnGo.AddComponent<Button>();
+            var nextImg = nextBtnGo.AddComponent<Image>();
+            nextImg.color = new Color(0.15f, 0.2f, 0.3f, 0.9f);
+            var nextTxtGo = new GameObject("Label");
+            nextTxtGo.transform.SetParent(nextBtnGo.transform, false);
+            var nextTxtRect = nextTxtGo.AddComponent<RectTransform>();
+            nextTxtRect.anchorMin = Vector2.zero; nextTxtRect.anchorMax = Vector2.one;
+            var nextTxt = nextTxtGo.AddComponent<Text>();
+            nextTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            nextTxt.fontSize = 14; nextTxt.color = Color.white;
+            nextTxt.alignment = TextAnchor.MiddleCenter;
+            nextTxt.text = ">";
+            nextBtn.onClick.AddListener(() => SwitchKingdom(1));
 
             // 系别标签栏
             var barGo = new GameObject("BranchBar");
@@ -207,10 +272,32 @@ namespace SuperMech.Code
 
         private void UpdateKingdomName()
         {
-            if (_kingdomNameText == null) return;
             var k = SelectedKingdom;
             string kName = k != null ? k.data.name : LocalizedTextManager.getText("sm_ui_none");
-            _kingdomNameText.text = $"{LocalizedTextManager.getText("sm_ui_civ_tech_tree")} - {kName}";
+            if (_kingdomNameText != null)
+                _kingdomNameText.text = $"{LocalizedTextManager.getText("sm_ui_civ_tech_tree")} - {kName}";
+            if (_kingdomLabelText != null)
+                _kingdomLabelText.text = kName;
+        }
+
+        /// <summary>切换王国（direction: -1上一个, 1下一个）</summary>
+        private void SwitchKingdom(int direction)
+        {
+            if (World.world == null || World.world.kingdoms == null) return;
+            var kingdoms = World.world.kingdoms.list;
+            if (kingdoms.Count == 0) return;
+
+            var current = SelectedKingdom;
+            int idx = kingdoms.IndexOf(current);
+            if (idx < 0) idx = 0;
+            idx = (idx + direction + kingdoms.Count) % kingdoms.Count;
+            SelectedKingdom = kingdoms[idx];
+
+            _selectedId = null;
+            RefreshTree();
+            UpdateKingdomName();
+            if (_detailText != null) _detailText.text = LocalizedTextManager.getText("sm_ui_select_tech");
+            if (_researchBtn != null) _researchBtn.gameObject.SetActive(false);
         }
 
         private void SwitchBranch(int idx)
