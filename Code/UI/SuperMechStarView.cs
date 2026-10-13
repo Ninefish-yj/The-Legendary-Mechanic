@@ -777,27 +777,34 @@ namespace SuperMech.Code
             bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
             bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
 
-            // 尺寸：按真实物理半径对数缩放（恒星/行星大小差异巨大，用对数压缩）
+            // 尺寸：2D分级制（用颜色和光晕区分天体，大小只做简单分级）
             float size;
             if (isStar)
             {
-                // 恒星半径对数缩放：红矮星最小，红巨星最大，中子星/黑洞视觉上放大
-                float logRadius = Mathf.Log10(Mathf.Max(p.starRadius, 0.001f) + 1f);
-                size = 32 + logRadius * 16f; // 32-80像素
-                if (p.starType == SuperMechStarSystem.StarType.NeutronStar) size = 24; // 中子星小但可见
-                if (p.starType == SuperMechStarSystem.StarType.BlackHole) size = 36; // 黑洞视觉放大
+                // 恒星按类型分4级：矮星/巨星/超巨星/残骸
+                size = p.starType switch
+                {
+                    SuperMechStarSystem.StarType.RedDwarf => 28,        // 红矮星：小
+                    SuperMechStarSystem.StarType.YellowDwarf => 36,     // 黄矮星：中
+                    SuperMechStarSystem.StarType.WhiteDwarf => 24,      // 白矮星：小（残骸）
+                    SuperMechStarSystem.StarType.NeutronStar => 22,     // 中子星：极小（残骸）
+                    SuperMechStarSystem.StarType.BlackHole => 32,       // 黑洞：中（视觉放大）
+                    SuperMechStarSystem.StarType.RedGiant => 56,        // 红巨星：大
+                    SuperMechStarSystem.StarType.BlueGiant => 48,       // 蓝巨星：大
+                    _ => 36
+                };
             }
-            else if (isMain) size = 48;
+            else if (isMain) size = 44;
             else if (p.discovered)
             {
-                // 行星半径对数缩放：0.5-11 R⊕ → 20-40像素
-                size = 20 + Mathf.Log10(p.radius + 1f) * 12f;
+                // 行星按类型分2级：类地行星小，气态巨行星大
+                size = p.type == SuperMechStarSystem.PlanetType.Gas ? 32 : 24;
             }
-            else size = 22;
+            else size = 20;
             nodeRect.sizeDelta = new Vector2(size, size);
             nodeRect.anchoredPosition = new Vector2(x, y);
 
-            // 星球光晕（恒星发光强度根据光度）
+            // 星球光晕（2D风格：恒星有明显光晕，行星只有殖民地光晕）
             var glowGo = new GameObject("Glow");
             glowGo.transform.SetParent(nodeGo.transform, false);
             var glowRect = glowGo.AddComponent<RectTransform>();
@@ -805,11 +812,20 @@ namespace SuperMech.Code
             float glowExpand;
             if (isStar)
             {
-                // 恒星光晕根据光度：蓝巨星极大，红矮星小
-                glowExpand = 20 + Mathf.Log10(p.starLuminosity + 1f) * 15f;
-                glowExpand = Mathf.Clamp(glowExpand, 15f, 80f);
+                // 恒星光晕按类型分级（巨星光晕大，矮星光晕小）
+                glowExpand = p.starType switch
+                {
+                    SuperMechStarSystem.StarType.RedDwarf => 12,
+                    SuperMechStarSystem.StarType.YellowDwarf => 20,
+                    SuperMechStarSystem.StarType.BlueGiant => 40,
+                    SuperMechStarSystem.StarType.RedGiant => 50,
+                    SuperMechStarSystem.StarType.WhiteDwarf => 10,
+                    SuperMechStarSystem.StarType.NeutronStar => 8,
+                    SuperMechStarSystem.StarType.BlackHole => 35, // 吸积盘
+                    _ => 20
+                };
             }
-            else glowExpand = isMain ? 20 : 10;
+            else glowExpand = isMain ? 18 : (p.colonyLevel > 0 ? 12 : 6);
             glowRect.offsetMin = new Vector2(-glowExpand, -glowExpand);
             glowRect.offsetMax = new Vector2(glowExpand, glowExpand);
             var glowImg = glowGo.AddComponent<Image>();
