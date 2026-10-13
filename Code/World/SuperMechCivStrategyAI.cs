@@ -143,14 +143,14 @@ namespace SuperMech.Code
             {
                 switch (strategy)
                 {
-                    case StrategyType.Expansion: return "扩张型";
-                    case StrategyType.Technology: return "科技型";
-                    case StrategyType.Economy: return "经济型";
-                    case StrategyType.Cultural: return "文化型";
-                    case StrategyType.Balanced: return "平衡型";
+                    case StrategyType.Expansion: return LocalizedTextManager.getText("sm_civ_strategy_expansion");
+                    case StrategyType.Technology: return LocalizedTextManager.getText("sm_civ_strategy_technology");
+                    case StrategyType.Economy: return LocalizedTextManager.getText("sm_civ_strategy_economy");
+                    case StrategyType.Cultural: return LocalizedTextManager.getText("sm_civ_strategy_cultural");
+                    case StrategyType.Balanced: return LocalizedTextManager.getText("sm_civ_strategy_balanced");
                 }
             }
-            return "未定型";
+            return LocalizedTextManager.getText("sm_civ_strategy_undefined");
         }
 
         /// <summary>获取文明战略加成倍率</summary>

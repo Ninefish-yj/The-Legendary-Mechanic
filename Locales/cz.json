@@ -3445,5 +3445,11 @@
   "sm_ui_skill_stage_req": "阶段需求",
   "sm_ui_skill_status_learned": "已学",
   "sm_ui_skill_status_available": "可学",
-  "sm_ui_skill_status_locked": "未解锁"
+  "sm_ui_skill_status_locked": "未解锁",
+  "sm_civ_strategy_expansion": "扩张型",
+  "sm_civ_strategy_technology": "科技型",
+  "sm_civ_strategy_economy": "经济型",
+  "sm_civ_strategy_cultural": "文化型",
+  "sm_civ_strategy_balanced": "平衡型",
+  "sm_civ_strategy_undefined": "未定型"
 }
