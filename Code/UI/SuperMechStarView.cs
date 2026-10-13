@@ -1205,6 +1205,20 @@ namespace SuperMech.Code
                 return;
             }
 
+            // 已发现：进入星球（多世界系统）
+            if (p.discovered || isMain)
+            {
+                string enterLabel = isMain ?
+                    LocalizedTextManager.getText("sm_ui_enter_main_world") :
+                    LocalizedTextManager.getText("sm_ui_enter_planet");
+                CreateActionButton(enterLabel, new Color(0.9f, 0.7f, 0.2f, 0.9f), () =>
+                {
+                    if (SuperMechMultiWorld.IsSwitching) return;
+                    Close();
+                    SuperMechMultiWorld.SwitchToPlanet(p.id);
+                }, ref btnY, btnHeight, btnGap);
+            }
+
             // 未发现：派遣探险队（单位航行到达后才发现）
             if (!p.discovered && !isMain)
             {

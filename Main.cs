@@ -45,6 +45,7 @@ namespace SuperMech
             SuperMechSaveData.Load();
             SuperMechWindowManager.Init();
             SuperMechUnitBars.Init();
+            SuperMechMultiWorld.Init();
 
             Debug.Log("[超神机械师] Phase 1 系统注册完成");
         }

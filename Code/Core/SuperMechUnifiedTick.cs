@@ -95,6 +95,7 @@ namespace SuperMech.Code
                 SafeRun("资源AI", () => SuperMechResourceAI.Tick());
                 SafeRun("教育AI", () => SuperMechEducationAI.Tick());
                 SafeRun("情报AI", () => SuperMechIntelligenceAI.Tick());
+                SafeRun("多世界后台模拟", () => SuperMechMultiWorld.BackgroundSimTick(dt));
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
                 SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }
@@ -252,6 +253,7 @@ namespace SuperMech.Code
             try { SuperMechResourceAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechResourceAI"); }
             try { SuperMechEducationAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEducationAI"); }
             try { SuperMechIntelligenceAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechIntelligenceAI"); }
+            try { SuperMechMultiWorld.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechMultiWorld"); }
             try { SuperMechDimension.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechDimension"); }
             try { SuperMechVirtualGenesis.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechVirtualGenesis"); }
             try { SuperMechMechLegion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechMechLegion"); }

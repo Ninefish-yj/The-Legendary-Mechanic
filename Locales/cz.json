@@ -3452,5 +3452,11 @@
   "sm_civ_strategy_cultural": "文化型",
   "sm_civ_strategy_balanced": "平衡型",
   "sm_civ_strategy_undefined": "未定型",
-  "sm_culture_native": "本土文化"
+  "sm_culture_native": "本土文化",
+  "sm_ui_enter_planet": "进入星球",
+  "sm_ui_enter_main_world": "返回主世界",
+  "sm_multiworld_switching": "正在切换星球...",
+  "sm_multiworld_saving": "正在保存当前世界...",
+  "sm_multiworld_loading": "正在加载目标星球...",
+  "sm_multiworld_generating": "正在生成新星球地图..."
 }
