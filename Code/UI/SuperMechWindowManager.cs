@@ -59,7 +59,6 @@ namespace SuperMech.Code
             ("sm_ui_building_title", DrawBuildingContent),
             ("sm_ui_economy_title", DrawEconomyContent),
             ("sm_ui_skill_title", DrawSkillContent),
-            ("sm_ui_tech", DrawTechContent),
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)
