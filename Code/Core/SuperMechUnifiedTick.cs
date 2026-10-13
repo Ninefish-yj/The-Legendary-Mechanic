@@ -89,6 +89,12 @@ namespace SuperMech.Code
                 SafeRun("星际战争AI", () => SuperMechStarWarAI.Tick());
                 SafeRun("公司AI", () => SuperMechCompanyAI.Tick());
                 SafeRun("文明战略AI", () => SuperMechCivStrategyAI.Tick());
+                SafeRun("外交AI", () => SuperMechDiplomacyAI.Tick());
+                SafeRun("文化AI", () => SuperMechCultureAI.Tick());
+                SafeRun("人口AI", () => SuperMechPopulationAI.Tick());
+                SafeRun("资源AI", () => SuperMechResourceAI.Tick());
+                SafeRun("教育AI", () => SuperMechEducationAI.Tick());
+                SafeRun("情报AI", () => SuperMechIntelligenceAI.Tick());
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
                 SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }
@@ -240,6 +246,12 @@ namespace SuperMech.Code
             try { SuperMechStarWarAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarWarAI"); }
             try { SuperMechCompanyAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCompanyAI"); }
             try { SuperMechCivStrategyAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCivStrategyAI"); }
+            try { SuperMechDiplomacyAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechDiplomacyAI"); }
+            try { SuperMechCultureAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCultureAI"); }
+            try { SuperMechPopulationAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechPopulationAI"); }
+            try { SuperMechResourceAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechResourceAI"); }
+            try { SuperMechEducationAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechEducationAI"); }
+            try { SuperMechIntelligenceAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechIntelligenceAI"); }
             try { SuperMechDimension.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechDimension"); }
             try { SuperMechVirtualGenesis.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechVirtualGenesis"); }
             try { SuperMechMechLegion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechMechLegion"); }
