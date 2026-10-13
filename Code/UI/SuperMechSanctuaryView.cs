@@ -602,7 +602,7 @@ namespace SuperMech.Code
 
             float remainingDays = SuperMechSanctuary.GetRemainingDays();
             string appointedDayText = remainingDays > 0
-                ? $"<color=#ff8866>{LocalizedTextManager.getText("sm_ui_san_appointed_day")}:</color> {remainingDays:F0}天  "
+                ? $"<color=#ff8866>{LocalizedTextManager.getText("sm_ui_san_appointed_day")}:</color> {remainingDays:F0}{LocalizedTextManager.getText("sm_ui_sanctuary_days")}  "
                 : $"<color=#88ff88>{LocalizedTextManager.getText("sm_ui_san_appointed_day")}:</color> {LocalizedTextManager.getText("sm_ui_san_appointed_now")}  ";
 
             _statusText.text =

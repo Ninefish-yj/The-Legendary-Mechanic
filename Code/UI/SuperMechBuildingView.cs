@@ -93,7 +93,7 @@ namespace SuperMech.Code
                 y -= 30f;
             }
 
-            _headText.text = $"{LocalizedTextManager.getText("sm_ui_building_title")}  (共{total}座)";
+            _headText.text = $"{LocalizedTextManager.getText("sm_ui_building_title")}  {LocalizedTextManager.getText("sm_ui_building_total").Replace("{0}", total.ToString())}";
 
             if (total == 0)
             {

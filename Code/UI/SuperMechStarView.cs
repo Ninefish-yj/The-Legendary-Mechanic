@@ -351,7 +351,7 @@ namespace SuperMech.Code
             _coordText.fontSize = 10;
             _coordText.color = new Color(0.4f, 0.5f, 0.6f);
             _coordText.alignment = TextAnchor.LowerCenter;
-            _coordText.text = "星海浩瀚，探索未知";
+            _coordText.text = LocalizedTextManager.getText("sm_ui_star_empty");
 
             // 缩放控制按钮（右下角，手机端用）
             var zoomGo = new GameObject("ZoomControls");
@@ -721,7 +721,7 @@ namespace SuperMech.Code
                 int discovered = SuperMechStarSystem.GetDiscoveredPlanets().Count;
                 int total = planets.Count;
                 int voyageCount = voyages.Count;
-                _coordText.text = $"已探索星区：{discovered}/{total} 星球  |  航行中：{voyageCount}  |  拖动星图探索未知星海";
+                _coordText.text = string.Format(LocalizedTextManager.getText("sm_ui_star_footer"), discovered, total, voyageCount);
             }
         }
 
@@ -1121,10 +1121,10 @@ namespace SuperMech.Code
             {
                 _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_type")}:</color> {starTypeName}\n";
                 _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_temp")}:</color> {p.temperature:F0}K\n";
-                _infoText.text += $"<color=#93A4BC>质量:</color> {p.starMass:F2} M☉\n";
-                _infoText.text += $"<color=#93A4BC>半径:</color> {p.starRadius:F2} R☉\n";
-                _infoText.text += $"<color=#93A4BC>光度:</color> {p.starLuminosity:F2} L☉\n";
-                _infoText.text += $"<color=#93A4BC>年龄:</color> {p.starAge:F1} 亿年\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_mass")}:</color> {p.starMass:F2} M☉\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_radius")}:</color> {p.starRadius:F2} R☉\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_luminosity")}:</color> {p.starLuminosity:F2} L☉\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_age")}:</color> {p.starAge:F1} {LocalizedTextManager.getText("sm_ui_star_age_unit")}\n";
             }
             else
             {
@@ -1134,19 +1134,19 @@ namespace SuperMech.Code
                 string habitableText = p.inHabitableZone
                     ? $"<color=#7fff7f>{LocalizedTextManager.getText("sm_ui_habitable")}</color>"
                     : $"<color=#aaaaaa>{LocalizedTextManager.getText("sm_ui_not_habitable")}</color>";
-                _infoText.text += $"<color=#93A4BC>宜居带:</color> {habitableText}\n";
-                _infoText.text += $"<color=#93A4BC>质量:</color> {p.mass:F2} M⊕\n";
-                _infoText.text += $"<color=#93A4BC>半径:</color> {p.radius:F2} R⊕\n";
-                _infoText.text += $"<color=#93A4BC>重力:</color> {p.gravity:F2} g\n";
-                _infoText.text += $"<color=#93A4BC>密度:</color> {p.density:F1} g/cm³\n";
-                _infoText.text += $"<color=#93A4BC>自转:</color> {p.rotationPeriod:F1} 小时\n";
-                _infoText.text += $"<color=#93A4BC>黄赤交角:</color> {p.axialTilt:F1}°\n";
-                _infoText.text += $"<color=#93A4BC>卫星:</color> {p.moonCount} 颗\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_habitable")}:</color> {habitableText}\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_mass")}:</color> {p.mass:F2} M⊕\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_radius")}:</color> {p.radius:F2} R⊕\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_gravity")}:</color> {p.gravity:F2} g\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_density")}:</color> {p.density:F1} g/cm³\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_rotation")}:</color> {p.rotationPeriod:F1} {LocalizedTextManager.getText("sm_ui_hour")}\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_axial_tilt")}:</color> {p.axialTilt:F1}°\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_moon")}:</color> {p.moonCount} {LocalizedTextManager.getText("sm_ui_star_moon_unit")}\n";
                 if (p.tidallyLocked)
-                    _infoText.text += $"<color=#ff9966>潮汐锁定</color>\n";
-                _infoText.text += $"<color=#93A4BC>大气层:</color> {(p.atmosphere * 100):F0}%\n";
-                _infoText.text += $"<color=#93A4BC>磁场:</color> {(p.magneticField * 100):F0}%\n";
-                _infoText.text += $"<color=#93A4BC>轨道偏心率:</color> {p.eccentricity:F3}\n";
+                    _infoText.text += $"<color=#ff9966>{LocalizedTextManager.getText("sm_ui_star_tidally_locked")}</color>\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_atmosphere")}:</color> {(p.atmosphere * 100):F0}%\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_magnetic")}:</color> {(p.magneticField * 100):F0}%\n";
+                _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_eccentricity")}:</color> {p.eccentricity:F3}\n";
             }
 
             _infoText.text +=
@@ -1194,7 +1194,7 @@ namespace SuperMech.Code
                 hintText.fontSize = 11;
                 hintText.color = new Color(0.8f, 0.7f, 0.5f);
                 hintText.alignment = TextAnchor.UpperCenter;
-                hintText.text = "恒星无法登陆\n仅可观测";
+                hintText.text = LocalizedTextManager.getText("sm_ui_star_cannot_land");
                 hintText.raycastTarget = false;
                 return;
             }
@@ -1202,7 +1202,7 @@ namespace SuperMech.Code
             // 未发现：派遣探险队（单位航行到达后才发现）
             if (!p.discovered && !isMain)
             {
-                CreateActionButton("派遣探险队", new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_send_explorer"), new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
                 {
                     var units = World.world.units.getSimpleList();
                     if (units.Count > 0)
@@ -1221,7 +1221,7 @@ namespace SuperMech.Code
             // 已发现但未殖民：建立殖民地
             if (p.discovered && p.colonyLevel == 0 && !isMain)
             {
-                CreateActionButton("建立殖民地", new Color(0.2f, 0.7f, 0.3f, 0.9f), () =>
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_colonize"), new Color(0.2f, 0.7f, 0.3f, 0.9f), () =>
                 {
                     p.colonyLevel = 1;
                     p.ownerKingdom = "player";
@@ -1233,7 +1233,7 @@ namespace SuperMech.Code
             // 已殖民：升级殖民地 + 派遣单位 + 采集资源 + 运回资源 + 召回单位
             if (p.colonyLevel > 0 && !isMain)
             {
-                CreateActionButton($"升级殖民地 (Lv.{p.colonyLevel}/5)", new Color(0.8f, 0.6f, 0.2f, 0.9f), () =>
+                CreateActionButton(string.Format(LocalizedTextManager.getText("sm_ui_upgrade_colony"), p.colonyLevel), new Color(0.8f, 0.6f, 0.2f, 0.9f), () =>
                 {
                     if (p.colonyLevel < 5)
                     {
@@ -1242,7 +1242,7 @@ namespace SuperMech.Code
                     }
                 }, ref btnY, btnHeight, btnGap);
 
-                CreateActionButton("派遣单位", new Color(0.5f, 0.3f, 0.8f, 0.9f), () =>
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_send_unit"), new Color(0.5f, 0.3f, 0.8f, 0.9f), () =>
                 {
                     var units = World.world.units.getSimpleList();
                     if (units.Count > 0)
@@ -1256,7 +1256,7 @@ namespace SuperMech.Code
                 // 有驻留单位时显示召回按钮
                 if (p.units.Count > 0)
                 {
-                    CreateActionButton($"召回单位 ({p.units.Count})", new Color(0.3f, 0.5f, 0.7f, 0.9f), () =>
+                    CreateActionButton(string.Format(LocalizedTextManager.getText("sm_ui_recall_unit"), p.units.Count), new Color(0.3f, 0.5f, 0.7f, 0.9f), () =>
                     {
                         // 召回一个单位回主世界
                         if (p.units.Count > 0)
@@ -1271,7 +1271,7 @@ namespace SuperMech.Code
                     }, ref btnY, btnHeight, btnGap);
                 }
 
-                CreateActionButton($"采集资源 ({p.resource:F0})", new Color(0.8f, 0.3f, 0.3f, 0.9f), () =>
+                CreateActionButton(string.Format(LocalizedTextManager.getText("sm_ui_collect_resource"), p.resource), new Color(0.8f, 0.3f, 0.3f, 0.9f), () =>
                 {
                     float collected = Mathf.Min(p.resource, 100f * p.colonyLevel);
                     p.resource -= collected;
@@ -1298,7 +1298,7 @@ namespace SuperMech.Code
                 hintText.fontSize = 11;
                 hintText.color = new Color(0.7f, 0.8f, 0.9f);
                 hintText.alignment = TextAnchor.UpperCenter;
-                hintText.text = $"主世界\n资源: {p.resource:F0}\n选择其他星球进行探索和殖民";
+                hintText.text = string.Format(LocalizedTextManager.getText("sm_ui_main_planet_info"), p.resource);
                 hintText.raycastTarget = false;
             }
         }

@@ -65,7 +65,7 @@ namespace SuperMech.Code
                 icon_path = "ui/Icons/iconPurpleBook"
             };
             AssetManager.history_groups.add(group);
-            LocalizedTextManager.add("history_group_super_mech", "超能者", pReplace: true);
+            LocalizedTextManager.add("history_group_super_mech", LocalizedTextManager.getText("sm_ui_event_awakened"), pReplace: true);
         }
 
         /// <summary>延迟初始化：在Update中调用，确保world_log_library已就绪</summary>
