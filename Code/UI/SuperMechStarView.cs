@@ -29,6 +29,7 @@ namespace SuperMech.Code
         private readonly System.Collections.Generic.List<Image> _twinkleStars = new System.Collections.Generic.List<Image>();
         private readonly System.Collections.Generic.List<float> _twinklePhases = new System.Collections.Generic.List<float>();
         private float _twinkleTimer;
+        private float _twinkleUpdateTimer;
 
         /// <summary>生成圆形星云纹理（大尺寸柔和径向渐变）</summary>
         private static Sprite GetNebulaSprite()
@@ -108,16 +109,21 @@ namespace SuperMech.Code
                 }
             }
 
-            // 星星闪烁动画（每帧更新alpha）
+            // 星星闪烁动画（每0.1秒更新一次，避免每帧遍历300+Image产生开销）
             _twinkleTimer += Time.deltaTime;
-            for (int i = 0; i < _twinkleStars.Count; i++)
+            _twinkleUpdateTimer += Time.deltaTime;
+            if (_twinkleUpdateTimer >= 0.1f)
             {
-                if (_twinkleStars[i] == null) continue;
-                float baseAlpha = _twinkleStars[i].color.a;
-                float twinkle = Mathf.Sin(_twinkleTimer * 2f + _twinklePhases[i]) * 0.3f + 0.7f;
-                var c = _twinkleStars[i].color;
-                c.a = Mathf.Clamp01(baseAlpha * twinkle);
-                _twinkleStars[i].color = c;
+                _twinkleUpdateTimer = 0f;
+                for (int i = 0; i < _twinkleStars.Count; i++)
+                {
+                    if (_twinkleStars[i] == null) continue;
+                    float baseAlpha = _twinkleStars[i].color.a;
+                    float twinkle = Mathf.Sin(_twinkleTimer * 2f + _twinklePhases[i]) * 0.3f + 0.7f;
+                    var c = _twinkleStars[i].color;
+                    c.a = Mathf.Clamp01(baseAlpha * twinkle);
+                    _twinkleStars[i].color = c;
+                }
             }
 
             // 每秒刷新一次航行单位位置和行星公转
