@@ -104,7 +104,7 @@ namespace SuperMech.Code
                 txt.alignment = anchor;
                 txt.color = color ?? new Color(0.85f, 0.9f, 0.98f, 1f);
                 txt.horizontalOverflow = HorizontalWrapMode.Wrap;
-                txt.verticalOverflow = VerticalWrapMode.Overflow;
+                txt.verticalOverflow = VerticalWrapMode.Truncate;
                 return txt;
             }
             catch (System.Exception e)

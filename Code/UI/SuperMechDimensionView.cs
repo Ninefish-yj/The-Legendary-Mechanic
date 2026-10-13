@@ -107,7 +107,7 @@ namespace SuperMech.Code
                 string line = string.Format("{0}\n{1}", title, lore);
 
                 var txt = SuperMechUiSkin.MakeText(row, line, 11, TextAnchor.UpperLeft);
-                txt.verticalOverflow = VerticalWrapMode.Overflow;
+                txt.verticalOverflow = VerticalWrapMode.Truncate;
                 var tr = txt.GetComponent<RectTransform>();
                 tr.anchorMin = new Vector2(0, 0);
                 tr.anchorMax = new Vector2(1, 1);

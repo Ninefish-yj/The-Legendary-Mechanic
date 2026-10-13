@@ -79,7 +79,7 @@ namespace SuperMech.Code
                 string line = string.Format("{0}{1}\n{2}",
                     wonderMark, LocalizedTextManager.getText(r.name), LocalizedTextManager.getText(r.desc));
                 var txt = SuperMechUiSkin.MakeText(row, line, 12, TextAnchor.UpperLeft);
-                txt.verticalOverflow = VerticalWrapMode.Overflow;
+                txt.verticalOverflow = VerticalWrapMode.Truncate;
                 var tr = txt.GetComponent<RectTransform>();
                 tr.anchorMin = new Vector2(0, 0);
                 tr.anchorMax = new Vector2(1, 1);

@@ -92,7 +92,7 @@ namespace SuperMech.Code
             infoText.font = SuperMechUiSkin.DefaultFont;
             infoText.fontSize = 12;
             infoText.alignment = TextAnchor.MiddleLeft;
-            infoText.horizontalOverflow = HorizontalWrapMode.Overflow;
+            infoText.horizontalOverflow = HorizontalWrapMode.Truncate;
             infoText.verticalOverflow = VerticalWrapMode.Truncate;
             // 名称米白 + 阶位带色 + 体系暗金
             infoText.text = $"<color=#ebe0cc>{displayName}</color>  <color=#{ColorUtility.ToHtmlStringRGB(rankColor)}>{rankName}</color>  <color=#A6947A>{className}</color>";
