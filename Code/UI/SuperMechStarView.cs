@@ -106,7 +106,7 @@ namespace SuperMech.Code
                 UpdateTooltipPosition();
             }
 
-            // 滚轮缩放
+            // 滚轮缩放（PC）
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(scroll) > 0.01f)
             {
@@ -114,6 +114,27 @@ namespace SuperMech.Code
                 if (_mapContent != null)
                 {
                     _mapContent.localScale = new Vector3(_zoomLevel, _zoomLevel, 1f);
+                }
+            }
+
+            // 双指缩放（手机触屏）
+            if (Input.touchCount == 2)
+            {
+                Touch touch0 = Input.GetTouch(0);
+                Touch touch1 = Input.GetTouch(1);
+
+                // 计算两指当前距离和上一帧距离
+                Vector2 curDist = touch0.position - touch1.position;
+                Vector2 prevDist = (touch0.position - touch0.deltaPosition) - (touch1.position - touch1.deltaPosition);
+                float delta = curDist.magnitude - prevDist.magnitude;
+
+                if (Mathf.Abs(delta) > 0.5f)
+                {
+                    _zoomLevel = Mathf.Clamp(_zoomLevel + delta * 0.005f, MinZoom, MaxZoom);
+                    if (_mapContent != null)
+                    {
+                        _mapContent.localScale = new Vector3(_zoomLevel, _zoomLevel, 1f);
+                    }
                 }
             }
 
