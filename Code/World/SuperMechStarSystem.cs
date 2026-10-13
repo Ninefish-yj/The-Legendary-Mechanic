@@ -47,13 +47,31 @@ namespace SuperMech.Code
             public int colonyLevel;
             public bool discovered;
             public string parentStar; // 所属恒星ID（行星才有）
-            public float orbitRadius; // 公转轨道半径
+            public float orbitRadius; // 公转轨道半长轴
             public float orbitAngle; // 初始轨道角度
-            public float orbitSpeed; // 公转速度
+            public float orbitSpeed; // 公转速度（开普勒第三定律：越远越慢）
+            public float eccentricity; // 轨道偏心率（0=正圆，0.9=极扁椭圆）
+            public float inclination; // 轨道倾角（度）
             public bool hasRing; // 是否有行星环
             public StarType starType; // 恒星类型（仅恒星有）
-            public float temperature; // 行星表面温度（K，根据距恒星距离计算）
+            public float temperature; // 行星表面温度（K）
             public bool inHabitableZone; // 是否在宜居带内
+
+            // ========== 行星物理参数（现实天体物理） ==========
+            public float mass; // 质量（地球质量=1）
+            public float radius; // 半径（地球半径=1）
+            public float gravity; // 表面重力（g）
+            public float density; // 密度（g/cm³）
+            public float rotationPeriod; // 自转周期（小时）
+            public float axialTilt; // 黄赤交角（度，0=无季节，23.4=地球）
+            public int moonCount; // 卫星数量
+            public bool tidallyLocked; // 是否潮汐锁定（一面永远朝向恒星）
+            public float atmosphere; // 大气层厚度（0=无，1=地球）
+            public float magneticField; // 磁场强度（0=无，1=地球）
+            public float starMass; // 恒星质量（太阳质量=1，仅恒星有）
+            public float starRadius; // 恒星半径（太阳半径=1，仅恒星有）
+            public float starLuminosity; // 恒星光度（太阳=1，仅恒星有）
+            public float starAge; // 恒星年龄（亿年，仅恒星有）
         }
 
         public class VoyageData
@@ -375,6 +393,12 @@ namespace SuperMech.Code
                     sType == StarType.NeutronStar ? "中子星" :
                     sType == StarType.WhiteDwarf ? "白矮星" : "恒星");
 
+                // 计算恒星物理参数（质量、半径、光度、年龄）
+                float starMass = GetStarMass(sType);
+                float starRadiusPhys = GetStarRadius(sType);
+                float starLum = GetStarLuminosity(sType);
+                float starAge = (float)(rng.NextDouble() * 100); // 0-100亿年
+
                 _planets[starId] = new PlanetData
                 {
                     id = starId,
@@ -390,40 +414,100 @@ namespace SuperMech.Code
                     parentStar = null,
                     hasRing = false,
                     starType = sType,
-                    temperature = GetStarBaseTemp(sType)
+                    temperature = GetStarBaseTemp(sType),
+                    starMass = starMass,
+                    starRadius = starRadiusPhys,
+                    starLuminosity = starLum,
+                    starAge = starAge
                 };
 
-                // 每个恒星周围生成2-4个行星
-                int planetCount = rng.Next(2, 5);
+                // 按现实恒星系结构生成行星：内侧类地行星→小行星带→外侧气态巨行星
+                // 行星数量根据恒星质量调整（大质量恒星行星更多）
+                int planetCount = 2 + (int)(starMass * 2) + rng.Next(0, 3);
+                planetCount = Mathf.Clamp(planetCount, 2, 8);
+
                 for (int p = 0; p < planetCount; p++)
                 {
                     string pid = $"chunk_{cx}_{cy}_{s}_{p}";
                     if (_planets.ContainsKey(pid)) continue;
 
-                    // 行星轨道参数
-                    float orbitRadius = 50f + p * 35f + (float)rng.NextDouble() * 15f;
+                    // 轨道半径：内侧密集，外侧稀疏（对数分布）
+                    float orbitRadius = 40f + Mathf.Pow(p + 1, 1.3f) * 25f + (float)rng.NextDouble() * 10f;
                     float orbitAngle = (float)rng.NextDouble() * Mathf.PI * 2f;
-                    float orbitSpeed = 0.05f + (float)rng.NextDouble() * 0.1f;
-                    bool hasRing = (rng.Next(5) == 0); // 20%概率有行星环
+                    // 开普勒第三定律：公转速度 ∝ 1/√r（越远越慢）
+                    float orbitSpeed = 0.15f / Mathf.Sqrt(orbitRadius / 50f);
+                    // 轨道偏心率：内侧低（近圆），外侧高（椭圆）
+                    float eccentricity = 0.02f + (float)rng.NextDouble() * 0.15f * (p / (float)planetCount);
+                    float inclination = (float)(rng.NextDouble() * 15f); // 轨道倾角0-15度
 
-                    // 计算行星温度（根据恒星类型和轨道半径，反平方定律）
-                    float planetTemp = CalculatePlanetTemp(sType, orbitRadius);
-                    bool habitable = planetTemp >= 273f && planetTemp <= 373f; // 0-100°C宜居
+                    // 计算行星温度（根据恒星光度和轨道半径，反平方定律）
+                    float planetTemp = CalculatePlanetTempFromLuminosity(starLum, orbitRadius);
+                    bool habitable = planetTemp >= 273f && planetTemp <= 373f;
 
-                    // 行星初始位置（围绕恒星）
-                    float planetX = starX + Mathf.Cos(orbitAngle) * orbitRadius;
+                    // 行星初始位置（椭圆轨道）
+                    float planetX = starX + Mathf.Cos(orbitAngle) * orbitRadius * (1f + eccentricity * 0.3f);
                     float planetY = starY + Mathf.Sin(orbitAngle) * orbitRadius;
 
-                    // 根据温度调整行星类型（太热→熔岩，太冷→冰，宜居→森林/海洋概率高）
+                    // 根据轨道距离决定行星类型（现实结构：内侧类地，外侧气态）
                     PlanetType type;
-                    if (planetTemp > 500f) type = PlanetType.Lava;
-                    else if (planetTemp < 200f) type = PlanetType.Ice;
-                    else if (habitable && rng.Next(2) == 0) type = rng.Next(2) == 0 ? PlanetType.Forest : PlanetType.Ocean;
+                    float normalizedDist = orbitRadius / (40f + Mathf.Pow(planetCount, 1.3f) * 25f);
+                    if (normalizedDist < 0.35f)
+                    {
+                        // 内侧：类地行星（岩石/沙漠/熔岩）
+                        PlanetType[] inner = { PlanetType.Rocky, PlanetType.Desert, PlanetType.Lava };
+                        type = inner[rng.Next(inner.Length)];
+                    }
+                    else if (normalizedDist < 0.5f)
+                    {
+                        // 中间：小行星带区域，偶尔有矮行星
+                        type = rng.Next(3) == 0 ? PlanetType.Rocky : PlanetType.Desert;
+                    }
+                    else if (normalizedDist < 0.75f)
+                    {
+                        // 外侧：气态巨行星
+                        type = PlanetType.Gas;
+                    }
                     else
                     {
-                        PlanetType[] types = { PlanetType.Rocky, PlanetType.Rocky, PlanetType.Desert, PlanetType.Gas };
-                        type = types[rng.Next(types.Length)];
+                        // 最外侧：冰巨星/冰行星
+                        type = rng.Next(2) == 0 ? PlanetType.Ice : PlanetType.Gas;
                     }
+                    // 温度修正：太热强制熔岩，太冷强制冰
+                    if (planetTemp > 600f) type = PlanetType.Lava;
+                    else if (planetTemp < 150f) type = PlanetType.Ice;
+                    // 宜居带提高森林/海洋概率
+                    if (habitable && rng.Next(3) != 0)
+                        type = rng.Next(2) == 0 ? PlanetType.Forest : PlanetType.Ocean;
+
+                    // 计算行星物理参数
+                    float pMass, pRadius, pGravity, pDensity;
+                    CalculatePlanetPhysics(type, rng, out pMass, out pRadius, out pGravity, out pDensity);
+
+                    // 自转周期：类地行星10-40小时，气态巨行星5-15小时
+                    float rotationPeriod = type == PlanetType.Gas ?
+                        5f + (float)rng.NextDouble() * 10f :
+                        10f + (float)rng.NextDouble() * 30f;
+
+                    // 黄赤交角：0-45度（地球23.4度）
+                    float axialTilt = (float)(rng.NextDouble() * 45f);
+
+                    // 卫星数量：气态巨行星多（10-80），类地行星少（0-3）
+                    int moonCount = type == PlanetType.Gas ?
+                        rng.Next(10, 80) : rng.Next(0, 4);
+
+                    // 潮汐锁定：近距离行星（<0.3归一化距离）大概率被潮汐锁定
+                    bool tidallyLocked = normalizedDist < 0.25f && rng.Next(3) != 0;
+                    if (tidallyLocked) rotationPeriod = orbitSpeed * 24f; // 自转=公转
+
+                    // 行星环：气态巨行星概率高，类地行星概率低
+                    bool hasRing = type == PlanetType.Gas ? rng.Next(3) == 0 : rng.Next(20) == 0;
+
+                    // 大气层：质量大的行星大气层厚，冰行星大气层薄
+                    float atmosphere = Mathf.Clamp01(pMass * 0.5f + (type == PlanetType.Gas ? 0.5f : 0f));
+                    if (type == PlanetType.Ice) atmosphere *= 0.5f;
+
+                    // 磁场：快速自转+液态金属核=强磁场
+                    float magneticField = Mathf.Clamp01((24f / rotationPeriod) * 0.5f + pDensity * 0.1f);
 
                     // 随机名称
                     string prefix = NamePrefixes[rng.Next(NamePrefixes.Length)];
@@ -446,9 +530,21 @@ namespace SuperMech.Code
                         orbitRadius = orbitRadius,
                         orbitAngle = orbitAngle,
                         orbitSpeed = orbitSpeed,
+                        eccentricity = eccentricity,
+                        inclination = inclination,
                         hasRing = hasRing,
                         temperature = planetTemp,
-                        inHabitableZone = habitable
+                        inHabitableZone = habitable,
+                        mass = pMass,
+                        radius = pRadius,
+                        gravity = pGravity,
+                        density = pDensity,
+                        rotationPeriod = rotationPeriod,
+                        axialTilt = axialTilt,
+                        moonCount = moonCount,
+                        tidallyLocked = tidallyLocked,
+                        atmosphere = atmosphere,
+                        magneticField = magneticField
                     };
                 }
             }
@@ -474,12 +570,110 @@ namespace SuperMech.Code
         public static float CalculatePlanetTemp(StarType starType, float orbitRadius)
         {
             float baseTemp = GetStarBaseTemp(starType);
-            // 简化模型：温度 = 基础温度 / sqrt(轨道半径/50) * 0.3（大气修正）
             float temp = baseTemp / Mathf.Sqrt(orbitRadius / 50f) * 0.3f;
             return Mathf.Round(temp * 10f) / 10f;
         }
 
-        /// <summary>获取行星的实时位置（考虑公转）</summary>
+        /// <summary>根据恒星光度计算行星温度（更准确的反平方定律）</summary>
+        public static float CalculatePlanetTempFromLuminosity(float luminosity, float orbitRadius)
+        {
+            // 有效温度公式：T = 278 * (L/r²)^0.25（K），r以AU为单位
+            // 这里orbitRadius以游戏单位，50≈1AU
+            float au = orbitRadius / 50f;
+            float temp = 278f * Mathf.Pow(luminosity / (au * au), 0.25f);
+            return Mathf.Round(temp * 10f) / 10f;
+        }
+
+        /// <summary>获取恒星质量（太阳质量=1）</summary>
+        public static float GetStarMass(StarType type)
+        {
+            switch (type)
+            {
+                case StarType.RedDwarf: return 0.3f;       // 红矮星：0.08-0.5太阳质量
+                case StarType.YellowDwarf: return 1.0f;     // 黄矮星：1太阳质量
+                case StarType.BlueGiant: return 15f;        // 蓝巨星：10-50太阳质量
+                case StarType.RedGiant: return 1.2f;        // 红巨星：1-5太阳质量（膨胀后）
+                case StarType.WhiteDwarf: return 0.6f;      // 白矮星：0.5-1.4太阳质量
+                case StarType.NeutronStar: return 1.4f;     // 中子星：1.4-3太阳质量
+                case StarType.BlackHole: return 10f;        // 黑洞：>3太阳质量
+                default: return 1f;
+            }
+        }
+
+        /// <summary>获取恒星半径（太阳半径=1）</summary>
+        public static float GetStarRadius(StarType type)
+        {
+            switch (type)
+            {
+                case StarType.RedDwarf: return 0.4f;
+                case StarType.YellowDwarf: return 1.0f;
+                case StarType.BlueGiant: return 10f;
+                case StarType.RedGiant: return 50f;          // 红巨星体积巨大
+                case StarType.WhiteDwarf: return 0.01f;      // 白矮星：地球大小
+                case StarType.NeutronStar: return 0.00003f;  // 中子星：20km
+                case StarType.BlackHole: return 0.0001f;     // 黑洞：史瓦西半径
+                default: return 1f;
+            }
+        }
+
+        /// <summary>获取恒星光度（太阳光度=1）</summary>
+        public static float GetStarLuminosity(StarType type)
+        {
+            switch (type)
+            {
+                case StarType.RedDwarf: return 0.02f;        // 红矮星很暗
+                case StarType.YellowDwarf: return 1.0f;
+                case StarType.BlueGiant: return 10000f;      // 蓝巨星极亮
+                case StarType.RedGiant: return 100f;         // 红巨星亮但温度低
+                case StarType.WhiteDwarf: return 0.05f;      // 白矮星暗
+                case StarType.NeutronStar: return 0.1f;      // 中子星脉冲辐射
+                case StarType.BlackHole: return 0f;          // 黑洞不发光（吸积盘除外）
+                default: return 1f;
+            }
+        }
+
+        /// <summary>计算行星物理参数（质量、半径、重力、密度）</summary>
+        public static void CalculatePlanetPhysics(PlanetType type, System.Random rng,
+            out float mass, out float radius, out float gravity, out float density)
+        {
+            switch (type)
+            {
+                case PlanetType.Gas: // 气态巨行星：质量大、密度低
+                    mass = 50f + (float)rng.NextDouble() * 300f;  // 50-350地球质量
+                    radius = 4f + (float)rng.NextDouble() * 7f;   // 4-11地球半径
+                    density = 0.7f + (float)rng.NextDouble() * 0.8f; // 0.7-1.5 g/cm³
+                    break;
+                case PlanetType.Ice: // 冰巨星/冰行星
+                    mass = 10f + (float)rng.NextDouble() * 50f;
+                    radius = 2f + (float)rng.NextDouble() * 3f;
+                    density = 1.2f + (float)rng.NextDouble() * 0.8f;
+                    break;
+                case PlanetType.Lava: // 熔岩行星：高密度
+                    mass = 0.5f + (float)rng.NextDouble() * 3f;
+                    radius = 0.7f + (float)rng.NextDouble() * 1.5f;
+                    density = 5f + (float)rng.NextDouble() * 3f;
+                    break;
+                case PlanetType.Ocean: // 海洋行星
+                    mass = 0.8f + (float)rng.NextDouble() * 5f;
+                    radius = 0.9f + (float)rng.NextDouble() * 2f;
+                    density = 2f + (float)rng.NextDouble() * 2f;
+                    break;
+                case PlanetType.Forest: // 宜居类地行星
+                    mass = 0.5f + (float)rng.NextDouble() * 3f;
+                    radius = 0.8f + (float)rng.NextDouble() * 1.5f;
+                    density = 4f + (float)rng.NextDouble() * 2f;
+                    break;
+                default: // Rocky/Desert：岩石行星
+                    mass = 0.3f + (float)rng.NextDouble() * 2f;
+                    radius = 0.6f + (float)rng.NextDouble() * 1.2f;
+                    density = 3.5f + (float)rng.NextDouble() * 2.5f;
+                    break;
+            }
+            // 重力 = G*M/r²，地球=1
+            gravity = mass / (radius * radius);
+        }
+
+        /// <summary>获取行星的实时位置（考虑公转和椭圆轨道）</summary>
         public static Vector2 GetPlanetPosition(PlanetData p, float time)
         {
             if (p.parentStar == null || p.type == PlanetType.Star)
@@ -489,8 +683,10 @@ namespace SuperMech.Code
             var star = GetPlanet(p.parentStar);
             if (star == null) return new Vector2(p.x, p.y);
             float angle = p.orbitAngle + time * p.orbitSpeed;
+            // 椭圆轨道：x方向半径*(1+e*cos)，y方向半径
+            float r = p.orbitRadius * (1f + p.eccentricity * Mathf.Cos(angle));
             return new Vector2(
-                star.x + Mathf.Cos(angle) * p.orbitRadius,
+                star.x + Mathf.Cos(angle) * r,
                 star.y + Mathf.Sin(angle) * p.orbitRadius
             );
         }

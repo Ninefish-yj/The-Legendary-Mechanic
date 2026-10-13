@@ -1056,21 +1056,37 @@ namespace SuperMech.Code
                 $"<color=#ffd700><size=14><b>{p.name}</b></size></color>\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_type")}:</color> {typeName}\n";
 
-            // 恒星显示光谱类型和温度
+            // 恒星显示光谱类型、温度、质量、半径、光度、年龄
             if (isStar)
             {
                 _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_star_type")}:</color> {starTypeName}\n";
                 _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_temp")}:</color> {p.temperature:F0}K\n";
+                _infoText.text += $"<color=#93A4BC>质量:</color> {p.starMass:F2} M☉\n";
+                _infoText.text += $"<color=#93A4BC>半径:</color> {p.starRadius:F2} R☉\n";
+                _infoText.text += $"<color=#93A4BC>光度:</color> {p.starLuminosity:F2} L☉\n";
+                _infoText.text += $"<color=#93A4BC>年龄:</color> {p.starAge:F1} 亿年\n";
             }
             else
             {
-                // 行星显示温度和宜居带
+                // 行星显示温度、宜居带、物理参数
                 string tempColor = p.inHabitableZone ? "#7fff7f" : (p.temperature > 500 ? "#ff7f7f" : "#7f7fff");
                 _infoText.text += $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_temp")}:</color> <color={tempColor}>{p.temperature:F0}K ({p.temperature - 273:F0}°C)</color>\n";
                 string habitableText = p.inHabitableZone
                     ? $"<color=#7fff7f>{LocalizedTextManager.getText("sm_ui_habitable")}</color>"
                     : $"<color=#aaaaaa>{LocalizedTextManager.getText("sm_ui_not_habitable")}</color>";
                 _infoText.text += $"<color=#93A4BC>宜居带:</color> {habitableText}\n";
+                _infoText.text += $"<color=#93A4BC>质量:</color> {p.mass:F2} M⊕\n";
+                _infoText.text += $"<color=#93A4BC>半径:</color> {p.radius:F2} R⊕\n";
+                _infoText.text += $"<color=#93A4BC>重力:</color> {p.gravity:F2} g\n";
+                _infoText.text += $"<color=#93A4BC>密度:</color> {p.density:F1} g/cm³\n";
+                _infoText.text += $"<color=#93A4BC>自转:</color> {p.rotationPeriod:F1} 小时\n";
+                _infoText.text += $"<color=#93A4BC>黄赤交角:</color> {p.axialTilt:F1}°\n";
+                _infoText.text += $"<color=#93A4BC>卫星:</color> {p.moonCount} 颗\n";
+                if (p.tidallyLocked)
+                    _infoText.text += $"<color=#ff9966>潮汐锁定</color>\n";
+                _infoText.text += $"<color=#93A4BC>大气层:</color> {(p.atmosphere * 100):F0}%\n";
+                _infoText.text += $"<color=#93A4BC>磁场:</color> {(p.magneticField * 100):F0}%\n";
+                _infoText.text += $"<color=#93A4BC>轨道偏心率:</color> {p.eccentricity:F3}\n";
             }
 
             _infoText.text +=
