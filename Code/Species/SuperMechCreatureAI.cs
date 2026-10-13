@@ -80,8 +80,8 @@ namespace SuperMech.Code
             if (mech.asset.id == "sm_mech_immortal" && mech.getHealthRatio() < 0.5f)
             {
                 // 自我修复：恢复少量生命
-                float heal = mech.data.getMaxHealth() * 0.05f;
-                mech.data.health = Mathf.Min(mech.data.getMaxHealth(), mech.data.health + heal);
+                float heal = mech.getMaxHealth() * 0.05f;
+                mech.data.health = Mathf.Min(mech.getMaxHealth(), mech.data.health + heal);
                 return;
             }
 
@@ -150,7 +150,7 @@ namespace SuperMech.Code
                 if (nearbyInfected >= 3)
                 {
                     // 群体冲锋：提升移动速度
-                    infected.stats.setStat("speed", Mathf.Max(infected.stats.getStat("speed") * 1.2f, 1f));
+                    infected.stats["speed"] = Mathf.Max(infected.stats["speed"] * 1.2f, 1f);
                 }
                 AttackTarget(infected, target);
 
@@ -200,7 +200,7 @@ namespace SuperMech.Code
                 if (nearbyEnemies >= 3 && Random.value < 0.3f)
                 {
                     // 范围攻击：对附近所有敌人造成伤害
-                    AoEAttack(boss, 15f, boss.data.getDamage() * 0.5f);
+                    AoEAttack(boss, 15f, boss.base_stats["attack"] * 0.5f);
                 }
             }
             else
@@ -246,7 +246,7 @@ namespace SuperMech.Code
                 float dist = Vector2.Distance(GetPos(a), GetPos(other));
                 if (dist > maxDist) continue;
                 // 威胁值 = 攻击力 / 距离
-                float threat = other.data.getDamage() / Mathf.Max(dist, 1f);
+                float threat = other.base_stats["attack"] / Mathf.Max(dist, 1f);
                 if (threat > bestThreat)
                 {
                     bestThreat = threat;
@@ -360,7 +360,7 @@ namespace SuperMech.Code
             if (a == null || target == null) return;
             try
             {
-                WorldTile tile = World.world.getTile((int)target.currentPosition.x, (int)target.currentPosition.y);
+                WorldTile tile = World.world.GetTile((int)target.current_position.x, (int)target.current_position.y);
                 if (tile != null) a.goTo(tile, false, false);
             }
             catch { }
@@ -374,7 +374,7 @@ namespace SuperMech.Code
                 Vector2 pos = GetPos(a);
                 Vector2 threatPos = GetPos(threat);
                 Vector2 dir = (pos - threatPos).normalized;
-                WorldTile tile = World.world.getTile((int)(pos.x + dir.x * 10f), (int)(pos.y + dir.y * 10f));
+                WorldTile tile = World.world.GetTile((int)(pos.x + dir.x * 10f), (int)(pos.y + dir.y * 10f));
                 if (tile != null) a.goTo(tile, false, false);
             }
             catch { }
@@ -388,7 +388,7 @@ namespace SuperMech.Code
                 Vector2 pos = GetPos(a);
                 float angle = Random.Range(0f, Mathf.PI * 2f);
                 float dist = Random.Range(3f, 10f);
-                WorldTile tile = World.world.getTile((int)(pos.x + Mathf.Cos(angle) * dist), (int)(pos.y + Mathf.Sin(angle) * dist));
+                WorldTile tile = World.world.GetTile((int)(pos.x + Mathf.Cos(angle) * dist), (int)(pos.y + Mathf.Sin(angle) * dist));
                 if (tile != null) a.goTo(tile, false, false);
             }
             catch { }
@@ -397,7 +397,7 @@ namespace SuperMech.Code
         private static Vector2 GetPos(Actor a)
         {
             if (a == null) return Vector2.zero;
-            return new Vector2(a.currentPosition.x, a.currentPosition.y);
+            return new Vector2(a.current_position.x, a.current_position.y);
         }
 
         /// <summary>清理死亡单位数据</summary>

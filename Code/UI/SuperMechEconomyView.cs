@@ -106,8 +106,8 @@ namespace SuperMech.Code
                 {
                     var item = superAList[i];
                     string rankColor = i < 3 ? "#ffd700" : "#ffffff";
-                    string kingdomName = item.actor.kingdom != null && item.actor.kingdom.kingdom_name != null
-                        ? item.actor.kingdom.kingdom_name
+                    string kingdomName = item.actor.kingdom != null && item.actor.kingdom.name != null
+                        ? item.actor.kingdom.name
                         : LocalizedTextManager.getText("sm_ui_economy_no_kingdom");
                     sb.Append("<color=").Append(rankColor).Append(">").Append(i + 1).Append(".</color> ")
                       .Append(item.actor.name != null ? item.actor.name : "?")

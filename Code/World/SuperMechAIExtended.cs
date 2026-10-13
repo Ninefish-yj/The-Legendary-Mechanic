@@ -75,13 +75,13 @@ namespace SuperMech.Code
                 // 有概率自动制造装备（需要材料）
                 foreach (var recipe in recipes)
                 {
-                    if (recipe == null) continue;
+                    if (string.IsNullOrEmpty(recipe.id)) continue;
                     if (SuperMechCrafting.HasMaterials(a, recipe.cost))
                     {
                         // 在当前位置制造
-                        if (a.currentTile != null)
+                        if (a.current_tile != null)
                         {
-                            SuperMechCrafting.TryCraft(a, recipe.id, a.currentTile);
+                            SuperMechCrafting.TryCraft(a, recipe.id, a.current_tile);
                             break;
                         }
                     }

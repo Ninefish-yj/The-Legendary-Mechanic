@@ -150,7 +150,7 @@ namespace SuperMech.Code
             }
 
             // 文明等级
-            power += (int)SuperMechCivilization.GetLevel(k) * 20f;
+            power += (int)(int)SuperMechCivilization.GetCivLevelFromKingdom(k) * 20f;
 
             return power;
         }
@@ -159,7 +159,7 @@ namespace SuperMech.Code
         private static float GetKingdomDistance(Kingdom k1, Kingdom k2)
         {
             if (k1 == null || k2 == null || k1.capital == null || k2.capital == null) return 999f;
-            return Mathf.Abs(k1.capital.x - k2.capital.x) + Mathf.Abs(k1.capital.y - k2.capital.y);
+            return Mathf.Abs(k1.capital.getTile().x - k2.capital.getTile().x) + Mathf.Abs(k1.capital.getTile().y - k2.capital.getTile().y);
         }
 
         /// <summary>获取关系key</summary>

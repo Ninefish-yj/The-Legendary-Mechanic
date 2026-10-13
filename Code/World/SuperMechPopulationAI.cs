@@ -65,7 +65,7 @@ namespace SuperMech.Code
             float rate = 1.0f; // 基础增长率
 
             // 文明等级加成
-            rate += (int)SuperMechCivilization.GetLevel(k) * 0.1f;
+            rate += (int)(int)SuperMechCivilization.GetCivLevelFromKingdom(k) * 0.1f;
 
             // 城市数量加成
             if (k.cities != null) rate += k.cities.Count * 0.05f;
@@ -126,7 +126,7 @@ namespace SuperMech.Code
         private static float GetCapitalDistance(Kingdom k1, Kingdom k2)
         {
             if (k1?.capital == null || k2?.capital == null) return 999f;
-            return Mathf.Abs(k1.capital.x - k2.capital.x) + Mathf.Abs(k1.capital.y - k2.capital.y);
+            return Mathf.Abs(k1.capital.getTile().x - k2.capital.getTile().x) + Mathf.Abs(k1.capital.getTile().y - k2.capital.getTile().y);
         }
 
         /// <summary>获取文明人口增长率（供其他系统查询）</summary>

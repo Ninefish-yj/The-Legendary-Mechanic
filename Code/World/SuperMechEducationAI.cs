@@ -99,8 +99,8 @@ namespace SuperMech.Code
                 long studentId = kv.Key;
                 long mentorId = kv.Value;
 
-                Actor student = WorldAPI.getActor(studentId);
-                Actor mentor = WorldAPI.getActor(mentorId);
+                Actor student = FindActorById(studentId);
+                Actor mentor = FindActorById(mentorId);
 
                 if (student == null || !student.isAlive() || mentor == null || !mentor.isAlive())
                 {
@@ -173,6 +173,17 @@ namespace SuperMech.Code
         public static bool HasMentor(long actorId)
         {
             return _mentor.ContainsKey(actorId);
+        }
+
+        /// <summary>通过ID查找单位</summary>
+        private static Actor FindActorById(long id)
+        {
+            if (World.world?.units == null) return null;
+            foreach (var u in World.world.units)
+            {
+                if (u != null && u.id == id) return u;
+            }
+            return null;
         }
 
         /// <summary>清理数据</summary>

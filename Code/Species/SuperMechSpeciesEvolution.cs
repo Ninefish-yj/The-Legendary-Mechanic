@@ -182,7 +182,7 @@ namespace SuperMech.Code
             if (evolvable.Count == 0) return false;
 
             // 获取单位职业，智能选择进化方向
-            Actor a = WorldAPI.getActor(actorId);
+            Actor a = FindActorById(actorId);
             string cls = a != null ? SuperMechBranch.GetClass(a) : "";
 
             // 根据职业优先级排序进化目标

@@ -44,7 +44,7 @@ namespace SuperMech.Code
                 long kid = k.id;
 
                 // 文明等级2以上才能派遣间谍
-                int civLevel = (int)SuperMechCivilization.GetLevel(k);
+                int civLevel = (int)(int)SuperMechCivilization.GetCivLevelFromKingdom(k);
                 if (civLevel < 2) continue;
 
                 // 派遣间隔检查
@@ -89,7 +89,7 @@ namespace SuperMech.Code
 
                 // 目标评分：距离近+实力强+敌对关系
                 float score = 100f / Mathf.Max(1f, dist);
-                score += SuperMechCivilization.GetLevel(k) * 5f;
+                score += (int)SuperMechCivilization.GetCivLevelFromKingdom(k) * 5f;
 
                 if (SuperMechDiplomacyAI.IsHostile(self, k))
                     score += 20f;
@@ -114,7 +114,7 @@ namespace SuperMech.Code
             float baseGain = 5f + selfCivLevel * 2f;
 
             // 目标文明等级越高，情报越难获取
-            int targetLevel = (int)SuperMechCivilization.GetLevel(target);
+            int targetLevel = (int)(int)SuperMechCivilization.GetCivLevelFromKingdom(target);
             baseGain /= Mathf.Max(1f, targetLevel * 0.5f);
 
             // 反情报能力（目标也有情报系统）
@@ -141,7 +141,7 @@ namespace SuperMech.Code
         private static float GetCapitalDistance(Kingdom k1, Kingdom k2)
         {
             if (k1?.capital == null || k2?.capital == null) return 999f;
-            return Mathf.Abs(k1.capital.x - k2.capital.x) + Mathf.Abs(k1.capital.y - k2.capital.y);
+            return Mathf.Abs(k1.capital.getTile().x - k2.capital.getTile().x) + Mathf.Abs(k1.capital.getTile().y - k2.capital.getTile().y);
         }
 
         /// <summary>获取对目标文明的情报值（供其他系统查询）</summary>

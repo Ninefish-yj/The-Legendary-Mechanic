@@ -43,7 +43,7 @@ namespace SuperMech.Code
                 long kid = k.id;
 
                 float power = 5f; // 基础文化力
-                power += (int)SuperMechCivilization.GetLevel(k) * 10f; // 文明等级加成
+                power += (int)(int)SuperMechCivilization.GetCivLevelFromKingdom(k) * 10f; // 文明等级加成
 
                 // 超能者数量加成
                 if (World.world.units != null)
@@ -139,14 +139,14 @@ namespace SuperMech.Code
         private static float GetCapitalDistance(Kingdom k1, Kingdom k2)
         {
             if (k1?.capital == null || k2?.capital == null) return 999f;
-            return Mathf.Abs(k1.capital.x - k2.capital.x) + Mathf.Abs(k1.capital.y - k2.capital.y);
+            return Mathf.Abs(k1.capital.getTile().x - k2.capital.getTile().x) + Mathf.Abs(k1.capital.getTile().y - k2.capital.getTile().y);
         }
 
         /// <summary>获取单位到文明首都距离</summary>
         private static float GetUnitKingdomDistance(Actor a, Kingdom k)
         {
             if (a?.current_tile == null || k?.capital == null) return 999f;
-            return Mathf.Abs(a.current_tile.x - k.capital.x) + Mathf.Abs(a.current_tile.y - k.capital.y);
+            return Mathf.Abs(a.current_tile.x - k.capital.getTile().x) + Mathf.Abs(a.current_tile.y - k.capital.getTile().y);
         }
 
         /// <summary>获取文明文化实力（供其他系统查询）</summary>

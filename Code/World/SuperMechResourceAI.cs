@@ -60,7 +60,7 @@ namespace SuperMech.Code
                 AddResource(res, Stone, cities * 0.3f);
 
                 // 文明等级解锁高级资源
-                int civLevel = (int)SuperMechCivilization.GetLevel(k);
+                int civLevel = (int)(int)SuperMechCivilization.GetCivLevelFromKingdom(k);
                 if (civLevel >= 2) AddResource(res, Metal, cities * 0.2f);
                 if (civLevel >= 3) AddResource(res, Energy, pop * 0.05f);
                 if (civLevel >= 4) AddResource(res, Knowledge, pop * 0.02f);
@@ -107,7 +107,10 @@ namespace SuperMech.Code
                 if (lowestRatio < 0.3f)
                 {
                     if (SuperMechConfig.LogVerbose && Random.value < 0.1f)
-                        Debug.Log($"[超神机械师]【资源AI】{k.name} {mostNeeded}紧缺（储量{res.TryGetValue(mostNeeded, out float v) ? v : 0:F0}）");
+                    {
+                        float reserve = res.TryGetValue(mostNeeded, out float v2) ? v2 : 0f;
+                        Debug.Log($"[超神机械师]【资源AI】{k.name} {mostNeeded}紧缺（储量{reserve:F0}）");
+                    }
                 }
             }
         }
