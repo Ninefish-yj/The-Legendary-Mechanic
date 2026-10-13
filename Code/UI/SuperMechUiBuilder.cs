@@ -102,7 +102,7 @@ namespace SuperMech.Code
                 var f = GetFont(); if (f != null) txt.font = f; // 字体为null时用引擎默认，避免NRE白板
                 txt.fontSize = fontSize;
                 txt.alignment = anchor;
-                txt.color = color ?? new Color(0.1f, 0.15f, 0.25f, 1f);
+                txt.color = color ?? new Color(0.85f, 0.9f, 0.98f, 1f);
                 txt.horizontalOverflow = HorizontalWrapMode.Wrap;
                 txt.verticalOverflow = VerticalWrapMode.Overflow;
                 return txt;
@@ -204,10 +204,10 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
             var labelGo = CreateObject("Label", go.transform, typeof(RectTransform));
             var labelRt = AddRectTransform(labelGo);
             labelRt.sizeDelta = new Vector2(labelWidth, 0);
-            AddText(labelGo, label, 12, TextAnchor.MiddleLeft, new Color(0.3f, 0.35f, 0.45f, 1f));
+            AddText(labelGo, label, 12, TextAnchor.MiddleLeft, new Color(0.6f, 0.7f, 0.85f, 1f));
 
             var valueGo = CreateObject("Value", go.transform, typeof(RectTransform));
-            AddText(valueGo, value, 12, TextAnchor.MiddleLeft, new Color(0.1f, 0.15f, 0.25f, 1f));
+            AddText(valueGo, value, 12, TextAnchor.MiddleLeft, new Color(0.9f, 0.95f, 1f, 1f));
 
             return go;
         }
