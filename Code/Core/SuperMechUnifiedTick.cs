@@ -264,7 +264,6 @@ namespace SuperMech.Code
             try { SuperMechSupermA.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechSupermA"); }
             try { SuperMechInal.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechInal"); }
             try { SuperMechTech.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTech"); }
-            try { SuperMechCivilization.ClearCivIdCache(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCivilization.CivId"); }
             try { SuperMechStarSystem.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarSystem"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
         }

@@ -57,7 +57,7 @@ namespace SuperMech.Code
         {
             if (actor == null || actor.kingdom == null) return;
             long kid = actor.kingdom.getID();
-            var (dmg, hp, spd) = SuperMechTech.GetBonusesByKingdom(kid);
+            var (dmg, hp, spd) = SuperMechTech.GetBonuses(kid);
             if (dmg > 0) stats["damage"] *= (1f + dmg);
             if (hp > 0) stats["health"] *= (1f + hp);
             if (spd > 0) stats["speed"] *= (1f + spd);
@@ -88,7 +88,7 @@ namespace SuperMech.Code
             float mechBonus = 0;
             for (int t = 1; t <= 8; t++)
             {
-                if (SuperMechTech.IsResearchedByKingdom(kid, $"mech_t{t}"))
+                if (SuperMechTech.IsResearched(kid, $"mech_t{t}"))
                     mechBonus += 0.02f; // 每级机械科技额外+2%伤害
             }
             if (mechBonus > 0)

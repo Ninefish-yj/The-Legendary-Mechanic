@@ -35,7 +35,7 @@ namespace SuperMech.Code
         {
             if (!_buildingTechPrereq.TryGetValue(buildingId, out var techId))
                 return true; // 无前置条件的建筑默认解锁
-            return SuperMechTech.IsResearchedByKingdom(kingdomId, techId);
+            return SuperMechTech.IsResearched(kingdomId, techId);
         }
 
         /// <summary>获取建筑的科技前置条件ID</summary>

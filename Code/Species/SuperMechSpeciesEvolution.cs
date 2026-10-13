@@ -123,8 +123,8 @@ namespace SuperMech.Code
             // 基础：只有P0/P1种族自然生成
             // 生物T5（种族优化与变异）后P2也可自然生成
             // 生物T7（意识转移）后P3也可自然生成
-            bool allowP2 = kingdomId > 0 && SuperMechTech.IsResearchedByKingdom(kingdomId, "bio_t5");
-            bool allowP3 = kingdomId > 0 && SuperMechTech.IsResearchedByKingdom(kingdomId, "bio_t7");
+            bool allowP2 = kingdomId > 0 && SuperMechTech.IsResearched(kingdomId, "bio_t5");
+            bool allowP3 = kingdomId > 0 && SuperMechTech.IsResearched(kingdomId, "bio_t7");
 
             foreach (var s in all.Values)
             {
@@ -140,7 +140,7 @@ namespace SuperMech.Code
 
             // P0权重高，P1权重低，P2/P3权重更低
             // 生物T3（基因药剂）后P1权重提升
-            bool boostP1 = kingdomId > 0 && SuperMechTech.IsResearchedByKingdom(kingdomId, "bio_t3");
+            bool boostP1 = kingdomId > 0 && SuperMechTech.IsResearched(kingdomId, "bio_t3");
 
             var weighted = new List<string>();
             foreach (var c in candidates)

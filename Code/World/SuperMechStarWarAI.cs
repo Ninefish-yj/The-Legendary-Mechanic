@@ -37,7 +37,7 @@ namespace SuperMech.Code
                 long kid = kingdom.id;
 
                 // 只有科技达到T2以上的文明才能星际活动
-                int techTier = SuperMechTech.GetMaxTierByKingdom(kid);
+                int techTier = SuperMechTech.GetMaxTier(kid);
                 if (techTier < 2) continue;
 
                 // 殖民AI
@@ -154,7 +154,7 @@ namespace SuperMech.Code
             if (target == null) return false;
 
             // 计算双方实力（用文明科技等级和殖民地等级比较）
-            int attackerTech = SuperMechTech.GetMaxTierByKingdom(kingdom.id);
+            int attackerTech = SuperMechTech.GetMaxTier(kingdom.id);
             int defenderStrength = target.colonyLevel * 2;
 
             // 攻击方科技等级 > 防御方殖民地等级×2 时才能成功
