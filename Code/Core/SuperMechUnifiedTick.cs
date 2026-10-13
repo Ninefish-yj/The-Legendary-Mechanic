@@ -95,7 +95,7 @@ namespace SuperMech.Code
                 SafeRun("资源AI", () => SuperMechResourceAI.Tick());
                 SafeRun("教育AI", () => SuperMechEducationAI.Tick());
                 SafeRun("情报AI", () => SuperMechIntelligenceAI.Tick());
-                SafeRun("多世界后台模拟", () => SuperMechMultiWorld.BackgroundSimTick(dt));
+                SafeRun("多世界后台模拟", () => SuperMechMultiWorld.BackgroundSimTick(Time.deltaTime));
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
                 SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }

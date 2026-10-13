@@ -183,7 +183,7 @@ namespace SuperMech.Code
             statsRect.pivot = new Vector2(1, 0.5f);
             statsRect.sizeDelta = new Vector2(200, 20);
             statsRect.anchoredPosition = new Vector2(-106, 0);
-            _statsText.horizontalOverflow = HorizontalWrapMode.Truncate;
+            _statsText.horizontalOverflow = HorizontalWrapMode.Overflow;
 
             // === 中间：全宽滚动列表 ===
             var scrollGo = new GameObject("ScrollView");

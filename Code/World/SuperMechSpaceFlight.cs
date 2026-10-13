@@ -237,7 +237,7 @@ namespace SuperMech.Code
             {
                 // 创建覆盖层
                 _flightOverlay = new GameObject("SpaceFlightOverlay");
-                _flightOverlay.transform.SetParent(SuperMechWindowManager.GetCanvasTransform(), false);
+                _flightOverlay.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
 
                 var rt = _flightOverlay.AddComponent<RectTransform>();
                 rt.anchorMin = Vector2.zero;
