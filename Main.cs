@@ -46,6 +46,7 @@ namespace SuperMech
             SuperMechWindowManager.Init();
             SuperMechUnitBars.Init();
             SuperMechMultiWorld.Init();
+            _ = SuperMechUpdateDriver.Instance; // 初始化全局Update驱动
 
             Debug.Log("[超神机械师] Phase 1 系统注册完成");
         }

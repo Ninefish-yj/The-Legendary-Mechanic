@@ -3458,5 +3458,13 @@
   "sm_multiworld_switching": "正在切换星球...",
   "sm_multiworld_saving": "正在保存当前世界...",
   "sm_multiworld_loading": "正在加载目标星球...",
-  "sm_multiworld_generating": "正在生成新星球地图..."
+  "sm_multiworld_generating": "正在生成新星球地图...",
+  "sm_spaceflight_title": "太空飞行",
+  "sm_spaceflight_from_to": "{0} → {1}",
+  "sm_spaceflight_event_meteor": "陨石带",
+  "sm_spaceflight_event_pirate": "太空海盗",
+  "sm_spaceflight_event_signal": "异常信号",
+  "sm_spaceflight_event_solar_flare": "太阳耀斑",
+  "sm_spaceflight_event_derelict": "废弃飞船",
+  "sm_spaceflight_event_wormhole": "虫洞"
 }

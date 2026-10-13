@@ -122,10 +122,17 @@ namespace SuperMech.Code
             // 第一步：保存当前世界
             bool saved = SaveCurrentWorld();
 
-            // 第二步：加载目标星球
             if (saved)
             {
-                LoadPlanetWorld(planetId);
+                // 第二步：启动太空飞行动画（飞行完成后自动切换）
+                bool flightStarted = SuperMechSpaceFlight.StartFlight(CurrentPlanetId, planetId, null, true);
+
+                if (!flightStarted)
+                {
+                    // 飞行启动失败，直接切换
+                    LoadPlanetWorld(planetId);
+                }
+                // 如果飞行启动成功，由SuperMechSpaceFlight.CompleteFlight调用LoadPlanetWorld
             }
             else
             {
@@ -133,6 +140,12 @@ namespace SuperMech.Code
                 _pendingPlanetId = null;
                 Debug.LogError("[超神机械师]【多世界】保存失败，取消切换");
             }
+        }
+
+        /// <summary>飞行完成后实际加载星球（由SpaceFlight调用）</summary>
+        public static void OnFlightComplete(string planetId)
+        {
+            LoadPlanetWorld(planetId);
         }
 
         /// <summary>加载星球世界</summary>
