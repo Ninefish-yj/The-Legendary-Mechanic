@@ -81,6 +81,7 @@ namespace SuperMech.Code
             public string toPlanet;
             public float progress;
             public float speed;
+            public int totalTicks; // 总航行时间（tick）
         }
 
         private static readonly Dictionary<string, PlanetData> _planets = new Dictionary<string, PlanetData>();
@@ -825,7 +826,8 @@ namespace SuperMech.Code
                 fromPlanet = fromPlanet,
                 toPlanet = toPlanet,
                 progress = 0,
-                speed = speed
+                speed = speed,
+                totalTicks = (int)(1f / speed)
             });
             return true;
         }
@@ -1037,6 +1039,7 @@ namespace SuperMech.Code
             public string toPlanet;
             public float progress;
             public float speed;
+            public int totalTicks;
         }
 
         public static string SerializeForSave()
@@ -1065,7 +1068,7 @@ namespace SuperMech.Code
                     save.voyages.Add(new VoyageSaveData
                     {
                         snapshot = v.snapshot, fromPlanet = v.fromPlanet, toPlanet = v.toPlanet,
-                        progress = v.progress, speed = v.speed
+                        progress = v.progress, speed = v.speed, totalTicks = v.totalTicks
                     });
                 }
                 return Newtonsoft.Json.JsonConvert.SerializeObject(save);
@@ -1102,7 +1105,7 @@ namespace SuperMech.Code
                     _voyages.Add(new VoyageData
                     {
                         snapshot = vs.snapshot, fromPlanet = vs.fromPlanet, toPlanet = vs.toPlanet,
-                        progress = vs.progress, speed = vs.speed
+                        progress = vs.progress, speed = vs.speed, totalTicks = vs.totalTicks
                     });
                 }
             }
