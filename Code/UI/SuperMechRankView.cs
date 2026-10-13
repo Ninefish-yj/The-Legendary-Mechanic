@@ -92,6 +92,7 @@ namespace SuperMech.Code
             topRect.offsetMin = new Vector2(4, 0);
             topRect.offsetMax = new Vector2(-4, 0);
             var topBg = topBar.AddComponent<Image>();
+            topBg.raycastTarget = true; // 拦截鼠标穿透
             topBg.color = new Color(0, 0, 0, 0.2f);
 
             // 第一行：体系筛选按钮（横向）
