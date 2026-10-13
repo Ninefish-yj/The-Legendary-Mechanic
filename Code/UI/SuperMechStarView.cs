@@ -169,15 +169,57 @@ namespace SuperMech.Code
         }
 
         /// <summary>生成圆形星球纹理（带光照渐变+表面噪声，纯代码实现）</summary>
-        private static Sprite GetPlanetSprite(Color baseColor, int seed, bool isUnknown = false)
+        private static Sprite GetPlanetSprite(Color baseColor, int seed, bool isUnknown = false, SuperMechStarSystem.PlanetType planetType = SuperMechStarSystem.PlanetType.Rocky)
         {
-            string key = $"{baseColor.r:F2}_{baseColor.g:F2}_{baseColor.b:F2}_{seed}_{isUnknown}";
+            string key = $"{baseColor.r:F2}_{baseColor.g:F2}_{baseColor.b:F2}_{seed}_{isUnknown}_{planetType}";
             if (_planetSpriteCache.TryGetValue(key, out var cached)) return cached;
 
-            int size = 64;
+            int size = 128;
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
             tex.filterMode = FilterMode.Bilinear;
             var rng = new System.Random(seed);
+
+            // 预生成大陆噪声（低频）
+            float[,] continentNoise = new float[size, size];
+            for (int i = 0; i < 5; i++)
+            {
+                float cx = (float)rng.NextDouble() * size;
+                float cy = (float)rng.NextDouble() * size;
+                float radius = 15 + (float)rng.NextDouble() * 35;
+                for (int x = 0; x < size; x++)
+                {
+                    for (int y = 0; y < size; y++)
+                    {
+                        float dx = x - cx, dy = y - cy;
+                        float d = Mathf.Sqrt(dx * dx + dy * dy);
+                        if (d < radius)
+                        {
+                            continentNoise[x, y] += (1f - d / radius) * (0.5f + (float)rng.NextDouble() * 0.5f);
+                        }
+                    }
+                }
+            }
+
+            // 预生成云层噪声
+            float[,] cloudNoise = new float[size, size];
+            for (int i = 0; i < 8; i++)
+            {
+                float cx = (float)rng.NextDouble() * size;
+                float cy = (float)rng.NextDouble() * size;
+                float radius = 10 + (float)rng.NextDouble() * 25;
+                for (int x = 0; x < size; x++)
+                {
+                    for (int y = 0; y < size; y++)
+                    {
+                        float dx = x - cx, dy = y - cy;
+                        float d = Mathf.Sqrt(dx * dx + dy * dy);
+                        if (d < radius)
+                        {
+                            cloudNoise[x, y] += (1f - d / radius) * 0.4f;
+                        }
+                    }
+                }
+            }
 
             for (int x = 0; x < size; x++)
             {
@@ -195,24 +237,82 @@ namespace SuperMech.Code
 
                     if (isUnknown)
                     {
-                        // 未知星球：灰色半透明
                         tex.SetPixel(x, y, new Color(0.3f, 0.3f, 0.35f, 0.4f * (1f - dist * 0.3f)));
                         continue;
                     }
 
-                    // 光照：左上光源，右下暗
+                    // 光照：左上光源
                     float nx = dx / (size / 2f);
                     float ny = dy / (size / 2f);
-                    float light = 1f - (nx * 0.5f + ny * 0.5f) * 0.4f;
+                    float light = 1f - (nx * 0.5f + ny * 0.5f) * 0.45f;
                     light = Mathf.Clamp01(light);
 
-                    // 表面噪声（模拟星球纹理）
-                    float noise = (float)(rng.NextDouble() - 0.5) * 0.15f;
-
                     // 边缘暗化（球体感）
-                    float edge = 1f - dist * dist * 0.5f;
+                    float edge = 1f - dist * dist * 0.6f;
 
-                    Color c = baseColor * light * edge;
+                    Color c = baseColor;
+
+                    // 根据行星类型添加表面特征
+                    float cn = continentNoise[x, y];
+                    float cl = cloudNoise[x, y];
+                    float lat = Mathf.Abs(ny); // 纬度（用于极冠）
+
+                    switch (planetType)
+                    {
+                        case SuperMechStarSystem.PlanetType.Ocean:
+                            // 海洋行星：深蓝色海洋 + 少量岛屿
+                            if (cn > 0.6f) c = Color.Lerp(c, new Color(0.3f, 0.5f, 0.35f), 0.7f); // 岛屿
+                            else c = Color.Lerp(c, new Color(0.1f, 0.25f, 0.6f), 0.5f); // 深海
+                            break;
+                        case SuperMechStarSystem.PlanetType.Forest:
+                            // 森林行星：绿色大陆 + 蓝色海洋
+                            if (cn > 0.4f) c = Color.Lerp(c, new Color(0.2f, 0.55f, 0.25f), 0.6f); // 森林
+                            else c = Color.Lerp(c, new Color(0.15f, 0.3f, 0.55f), 0.4f); // 海洋
+                            break;
+                        case SuperMechStarSystem.PlanetType.Desert:
+                            // 沙漠行星：黄褐色 + 沙丘纹理
+                            c = Color.Lerp(c, new Color(0.85f, 0.7f, 0.4f), 0.5f);
+                            if (cn > 0.5f) c = Color.Lerp(c, new Color(0.9f, 0.8f, 0.55f), 0.4f);
+                            break;
+                        case SuperMechStarSystem.PlanetType.Ice:
+                            // 冰行星：白色冰原 + 蓝色裂缝
+                            c = Color.Lerp(c, new Color(0.85f, 0.95f, 1f), 0.6f);
+                            if (cn > 0.5f) c = Color.Lerp(c, new Color(0.6f, 0.8f, 0.95f), 0.5f);
+                            break;
+                        case SuperMechStarSystem.PlanetType.Lava:
+                            // 熔岩行星：黑色地壳 + 红色熔岩裂缝
+                            c = Color.Lerp(c, new Color(0.15f, 0.1f, 0.1f), 0.5f);
+                            if (cn > 0.45f) c = Color.Lerp(c, new Color(1f, 0.4f, 0.15f), 0.8f); // 熔岩
+                            break;
+                        case SuperMechStarSystem.PlanetType.Gas:
+                            // 气态巨行星：水平条纹
+                            float band = Mathf.Sin(ny * 8 + cn * 2) * 0.5f + 0.5f;
+                            c = Color.Lerp(baseColor * 0.7f, baseColor * 1.2f, band);
+                            if (cn > 0.7f) c = Color.Lerp(c, new Color(0.9f, 0.5f, 0.3f), 0.5f); // 大红斑
+                            break;
+                        default:
+                            // 岩石行星：灰色 + 陨石坑
+                            if (cn > 0.55f) c = Color.Lerp(c, new Color(0.5f, 0.45f, 0.4f), 0.4f);
+                            break;
+                    }
+
+                    // 极冠（高纬度地区变白，适用于有大气的行星）
+                    if (lat > 0.75f && planetType != SuperMechStarSystem.PlanetType.Lava && planetType != SuperMechStarSystem.PlanetType.Gas)
+                    {
+                        c = Color.Lerp(c, new Color(0.95f, 0.97f, 1f), (lat - 0.75f) * 3f);
+                    }
+
+                    // 云层覆盖（有大气的行星）
+                    if (cl > 0.5f && planetType != SuperMechStarSystem.PlanetType.Lava)
+                    {
+                        c = Color.Lerp(c, new Color(1f, 1f, 1f), (cl - 0.5f) * 0.6f);
+                    }
+
+                    // 应用光照和边缘
+                    c = c * light * edge;
+
+                    // 细微噪声
+                    float noise = (float)(rng.NextDouble() - 0.5) * 0.08f;
                     c.r = Mathf.Clamp01(c.r + noise);
                     c.g = Mathf.Clamp01(c.g + noise);
                     c.b = Mathf.Clamp01(c.b + noise);
@@ -588,17 +688,49 @@ namespace SuperMech.Code
 
             System.Random rng = new System.Random(20240501); // 固定种子，星空分布一致
 
-            // 第一层：远景星星（小、暗、数量多，沿旋臂分布）
+            // 深空背景渐变（不是纯黑，有微弱蓝紫色调）
+            var bgGo = new GameObject("DeepSpaceBG");
+            bgGo.transform.SetParent(starfieldGo.transform, false);
+            var bgRect = bgGo.AddComponent<RectTransform>();
+            bgRect.anchorMin = Vector2.zero; bgRect.anchorMax = Vector2.one;
+            bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
+            var bgImg = bgGo.AddComponent<Image>();
+            bgImg.raycastTarget = false;
+            bgImg.color = new Color(0.01f, 0.015f, 0.04f, 1f); // 极深太空蓝黑
+
+            // 宇宙尘埃层（微弱的暖色尘埃云）
+            var dustSprite = GetNebulaSprite();
+            for (int i = 0; i < 15; i++)
+            {
+                var dustGo = new GameObject($"Dust_{i}");
+                dustGo.transform.SetParent(starfieldGo.transform, false);
+                var dustRect = dustGo.AddComponent<RectTransform>();
+                dustRect.anchorMin = new Vector2(0.5f, 0.5f);
+                dustRect.anchorMax = new Vector2(0.5f, 0.5f);
+                dustRect.pivot = new Vector2(0.5f, 0.5f);
+                float dustSize = (float)(600 + rng.NextDouble() * 1000);
+                dustRect.sizeDelta = new Vector2(dustSize, dustSize * 0.6f);
+                dustRect.anchoredPosition = new Vector2(
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f
+                );
+                dustRect.localRotation = Quaternion.Euler(0, 0, (float)(rng.NextDouble() * 360));
+                var dustImg = dustGo.AddComponent<Image>();
+                dustImg.sprite = dustSprite;
+                dustImg.raycastTarget = false;
+                dustImg.color = new Color(0.15f, 0.1f, 0.08f, 0.08f); // 微弱暖棕色尘埃
+            }
+
+            // 第一层：远景星星（极小、极暗、数量极多，2000颗）
             int farStarCount = 0;
             int farStarAttempts = 0;
-            while (farStarCount < 1200 && farStarAttempts < 10000)
+            while (farStarCount < 2000 && farStarAttempts < 15000)
             {
                 farStarAttempts++;
-                float sx = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f;
-                float sy = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f;
-                // 拒绝采样：旋臂上密度高，晕族密度低
+                float sx = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.8f;
+                float sy = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.8f;
                 float density = SuperMechStarSystem.GetStarDensity(sx, -sy);
-                if (rng.NextDouble() > density * 0.4f) continue;
+                if (rng.NextDouble() > density * 0.35f) continue;
                 farStarCount++;
 
                 var starGo = new GameObject($"FarStar_{farStarCount}");
@@ -608,7 +740,7 @@ namespace SuperMech.Code
                 starRect.anchorMax = new Vector2(0.5f, 0.5f);
                 starRect.pivot = new Vector2(0.5f, 0.5f);
 
-                float size = (float)(1 + rng.NextDouble() * 2);
+                float size = (float)(0.8 + rng.NextDouble() * 1.2);
                 starRect.sizeDelta = new Vector2(size, size);
                 starRect.anchoredPosition = new Vector2(sx, sy);
 
@@ -616,28 +748,61 @@ namespace SuperMech.Code
                 starImg.raycastTarget = false;
 
                 int colorRoll = rng.Next(100);
-                if (colorRoll < 80) starImg.color = new Color(0.8f, 0.85f, 1f, (float)(0.2 + rng.NextDouble() * 0.4));
-                else if (colorRoll < 95) starImg.color = new Color(1f, 0.95f, 0.8f, (float)(0.2 + rng.NextDouble() * 0.3));
-                else starImg.color = new Color(1f, 0.7f, 0.6f, (float)(0.2 + rng.NextDouble() * 0.3));
+                if (colorRoll < 75) starImg.color = new Color(0.7f, 0.75f, 0.9f, (float)(0.15 + rng.NextDouble() * 0.25));
+                else if (colorRoll < 92) starImg.color = new Color(0.9f, 0.85f, 0.7f, (float)(0.15 + rng.NextDouble() * 0.2));
+                else starImg.color = new Color(0.9f, 0.6f, 0.5f, (float)(0.15 + rng.NextDouble() * 0.2));
+            }
 
-                // 记录闪烁引用（只有较大的星星闪烁）
-                if (size > 1.5f)
+            // 第二层：中景星星（中等大小、中等亮度，800颗）
+            int midStarCount = 0;
+            int midStarAttempts = 0;
+            while (midStarCount < 800 && midStarAttempts < 8000)
+            {
+                midStarAttempts++;
+                float sx = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f;
+                float sy = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.5f;
+                float density = SuperMechStarSystem.GetStarDensity(sx, -sy);
+                if (rng.NextDouble() > density * 0.45f) continue;
+                midStarCount++;
+
+                var starGo = new GameObject($"MidStar_{midStarCount}");
+                starGo.transform.SetParent(starfieldGo.transform, false);
+                var starRect = starGo.AddComponent<RectTransform>();
+                starRect.anchorMin = new Vector2(0.5f, 0.5f);
+                starRect.anchorMax = new Vector2(0.5f, 0.5f);
+                starRect.pivot = new Vector2(0.5f, 0.5f);
+
+                float size = (float)(1.5 + rng.NextDouble() * 2.5);
+                starRect.sizeDelta = new Vector2(size, size);
+                starRect.anchoredPosition = new Vector2(sx, sy);
+
+                var starImg = starGo.AddComponent<Image>();
+                starImg.raycastTarget = false;
+
+                int colorRoll = rng.Next(100);
+                if (colorRoll < 65) starImg.color = new Color(0.85f, 0.9f, 1f, (float)(0.3 + rng.NextDouble() * 0.4));
+                else if (colorRoll < 85) starImg.color = new Color(1f, 0.95f, 0.8f, (float)(0.3 + rng.NextDouble() * 0.35));
+                else if (colorRoll < 95) starImg.color = new Color(0.7f, 0.85f, 1f, (float)(0.3 + rng.NextDouble() * 0.3));
+                else starImg.color = new Color(1f, 0.65f, 0.5f, (float)(0.3 + rng.NextDouble() * 0.3));
+
+                // 中景星星部分闪烁
+                if (rng.NextDouble() < 0.4f)
                 {
                     _twinkleStars.Add(starImg);
                     _twinklePhases.Add((float)rng.NextDouble() * Mathf.PI * 2f);
                 }
             }
 
-            // 第二层：近景亮星（大、亮、数量少，沿旋臂分布，300颗）
+            // 第三层：近景亮星（大、亮、带十字光芒，200颗）
             int nearStarCount = 0;
             int nearStarAttempts = 0;
-            while (nearStarCount < 300 && nearStarAttempts < 5000)
+            while (nearStarCount < 200 && nearStarAttempts < 5000)
             {
                 nearStarAttempts++;
                 float sx = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f;
                 float sy = (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f;
                 float density = SuperMechStarSystem.GetStarDensity(sx, -sy);
-                if (rng.NextDouble() > density * 0.5f) continue;
+                if (rng.NextDouble() > density * 0.55f) continue;
                 nearStarCount++;
 
                 var starGo = new GameObject($"NearStar_{nearStarCount}");
@@ -647,35 +812,66 @@ namespace SuperMech.Code
                 starRect.anchorMax = new Vector2(0.5f, 0.5f);
                 starRect.pivot = new Vector2(0.5f, 0.5f);
 
-                float size = (float)(3 + rng.NextDouble() * 5);
+                float size = (float)(3 + rng.NextDouble() * 6);
                 starRect.sizeDelta = new Vector2(size, size);
                 starRect.anchoredPosition = new Vector2(sx, sy);
 
                 var starImg = starGo.AddComponent<Image>();
                 starImg.raycastTarget = false;
 
+                Color starColor;
                 int colorRoll = rng.Next(100);
-                if (colorRoll < 60) starImg.color = new Color(1f, 1f, 1f, (float)(0.6 + rng.NextDouble() * 0.4));
-                else if (colorRoll < 80) starImg.color = new Color(0.7f, 0.85f, 1f, (float)(0.5 + rng.NextDouble() * 0.4));
-                else if (colorRoll < 92) starImg.color = new Color(1f, 0.9f, 0.7f, (float)(0.5 + rng.NextDouble() * 0.4));
-                else starImg.color = new Color(1f, 0.6f, 0.5f, (float)(0.5 + rng.NextDouble() * 0.3));
+                if (colorRoll < 55) starColor = new Color(1f, 1f, 1f, (float)(0.7 + rng.NextDouble() * 0.3));
+                else if (colorRoll < 75) starColor = new Color(0.7f, 0.85f, 1f, (float)(0.6 + rng.NextDouble() * 0.35));
+                else if (colorRoll < 90) starColor = new Color(1f, 0.9f, 0.7f, (float)(0.6 + rng.NextDouble() * 0.35));
+                else starColor = new Color(1f, 0.6f, 0.5f, (float)(0.5 + rng.NextDouble() * 0.3));
+                starImg.color = starColor;
+
+                // 亮星添加十字光芒（较大的星星）
+                if (size > 5f && rng.NextDouble() < 0.5f)
+                {
+                    // 水平光芒
+                    var hFlareGo = new GameObject("HFlare");
+                    hFlareGo.transform.SetParent(starGo.transform, false);
+                    var hFlareRect = hFlareGo.AddComponent<RectTransform>();
+                    hFlareRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    hFlareRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    hFlareRect.pivot = new Vector2(0.5f, 0.5f);
+                    hFlareRect.sizeDelta = new Vector2(size * 6, 1.5f);
+                    var hFlareImg = hFlareGo.AddComponent<Image>();
+                    hFlareImg.raycastTarget = false;
+                    hFlareImg.color = new Color(starColor.r, starColor.g, starColor.b, 0.3f);
+
+                    // 垂直光芒
+                    var vFlareGo = new GameObject("VFlare");
+                    vFlareGo.transform.SetParent(starGo.transform, false);
+                    var vFlareRect = vFlareGo.AddComponent<RectTransform>();
+                    vFlareRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    vFlareRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    vFlareRect.pivot = new Vector2(0.5f, 0.5f);
+                    vFlareRect.sizeDelta = new Vector2(1.5f, size * 6);
+                    var vFlareImg = vFlareGo.AddComponent<Image>();
+                    vFlareImg.raycastTarget = false;
+                    vFlareImg.color = new Color(starColor.r, starColor.g, starColor.b, 0.3f);
+                }
 
                 // 近景星星全部闪烁
                 _twinkleStars.Add(starImg);
                 _twinklePhases.Add((float)rng.NextDouble() * Mathf.PI * 2f);
             }
 
-            // 生成星云（彩色柔和渐变，20团，更大更丰富）
+            // 生成星云（彩色柔和渐变，25团，更大更丰富）
             var nebulaSprite = GetNebulaSprite();
             Color[] nebulaColors = {
-                new Color(0.4f, 0.15f, 0.6f, 0.18f),  // 紫
-                new Color(0.15f, 0.25f, 0.6f, 0.18f),  // 蓝
-                new Color(0.1f, 0.45f, 0.45f, 0.15f),  // 青
-                new Color(0.5f, 0.2f, 0.4f, 0.15f),    // 粉
-                new Color(0.6f, 0.3f, 0.15f, 0.12f),   // 橙
+                new Color(0.4f, 0.15f, 0.6f, 0.22f),  // 紫
+                new Color(0.15f, 0.25f, 0.6f, 0.22f),  // 蓝
+                new Color(0.1f, 0.45f, 0.45f, 0.18f),  // 青
+                new Color(0.5f, 0.2f, 0.4f, 0.18f),    // 粉
+                new Color(0.6f, 0.3f, 0.15f, 0.15f),   // 橙
                 new Color(0.2f, 0.4f, 0.2f, 0.12f),    // 绿
+                new Color(0.5f, 0.15f, 0.3f, 0.15f),   // 红
             };
-            for (int i = 0; i < 20; i++)
+            for (int i = 0; i < 25; i++)
             {
                 var nebulaGo = new GameObject($"Nebula_{i}");
                 nebulaGo.transform.SetParent(starfieldGo.transform, false);
@@ -683,12 +879,13 @@ namespace SuperMech.Code
                 nebulaRect.anchorMin = new Vector2(0.5f, 0.5f);
                 nebulaRect.anchorMax = new Vector2(0.5f, 0.5f);
                 nebulaRect.pivot = new Vector2(0.5f, 0.5f);
-                float nebulaSize = (float)(400 + rng.NextDouble() * 800); // 400-1200像素
-                nebulaRect.sizeDelta = new Vector2(nebulaSize, nebulaSize);
+                float nebulaSize = (float)(500 + rng.NextDouble() * 1000); // 500-1500像素
+                nebulaRect.sizeDelta = new Vector2(nebulaSize, nebulaSize * (0.7f + (float)rng.NextDouble() * 0.6f));
                 nebulaRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f,
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.3f,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.3f
                 );
+                nebulaRect.localRotation = Quaternion.Euler(0, 0, (float)(rng.NextDouble() * 360));
 
                 var nebulaImg = nebulaGo.AddComponent<Image>();
                 nebulaImg.sprite = nebulaSprite;
@@ -696,8 +893,8 @@ namespace SuperMech.Code
                 nebulaImg.color = nebulaColors[rng.Next(nebulaColors.Length)];
             }
 
-            // 银河带效果（沿旋臂方向的淡光带）
-            for (int i = 0; i < 5; i++)
+            // 银河带效果（沿旋臂方向的淡光带，8条）
+            for (int i = 0; i < 8; i++)
             {
                 var bandGo = new GameObject($"GalaxyBand_{i}");
                 bandGo.transform.SetParent(starfieldGo.transform, false);
@@ -705,16 +902,16 @@ namespace SuperMech.Code
                 bandRect.anchorMin = new Vector2(0.5f, 0.5f);
                 bandRect.anchorMax = new Vector2(0.5f, 0.5f);
                 bandRect.pivot = new Vector2(0.5f, 0.5f);
-                bandRect.sizeDelta = new Vector2(MAP_SIZE * 1.5f, 150 + rng.Next(100));
+                bandRect.sizeDelta = new Vector2(MAP_SIZE * 1.8f, 100 + rng.Next(150));
                 bandRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * 400,
-                    (float)(rng.NextDouble() - 0.5) * 400
+                    (float)(rng.NextDouble() - 0.5) * 500,
+                    (float)(rng.NextDouble() - 0.5) * 500
                 );
-                bandRect.localRotation = Quaternion.Euler(0, 0, (float)(rng.NextDouble() * 30 - 15));
+                bandRect.localRotation = Quaternion.Euler(0, 0, (float)(rng.NextDouble() * 25 - 12.5));
                 var bandImg = bandGo.AddComponent<Image>();
                 bandImg.sprite = nebulaSprite;
                 bandImg.raycastTarget = false;
-                bandImg.color = new Color(0.3f, 0.35f, 0.5f, 0.06f);
+                bandImg.color = new Color(0.25f, 0.3f, 0.45f, 0.08f);
             }
         }
 
@@ -1018,7 +1215,7 @@ namespace SuperMech.Code
                     glowImg.color = new Color(1f, 0.9f, 0.5f, 0.6f);
                     planetColor = new Color(1f, 0.9f, 0.55f);
                 }
-                bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed);
+                bodyImg.sprite = GetPlanetSprite(planetColor, planetSeed, false, p.type);
             }
 
             // 行星环（气态行星概率有环）
