@@ -81,7 +81,7 @@ namespace SuperMech.Code
             {
                 // 自我修复：恢复少量生命
                 float heal = mech.getMaxHealth() * 0.05f;
-                mech.data.health = Mathf.Min(mech.getMaxHealth(), mech.data.health + heal);
+                mech.data.health = (int)Mathf.Min(mech.getMaxHealth(), mech.data.health + heal);
                 return;
             }
 
@@ -200,7 +200,7 @@ namespace SuperMech.Code
                 if (nearbyEnemies >= 3 && Random.value < 0.3f)
                 {
                     // 范围攻击：对附近所有敌人造成伤害
-                    AoEAttack(boss, 15f, boss.base_stats["attack"] * 0.5f);
+                    AoEAttack(boss, 15f, boss.stats["attack"] * 0.5f);
                 }
             }
             else
@@ -246,7 +246,7 @@ namespace SuperMech.Code
                 float dist = Vector2.Distance(GetPos(a), GetPos(other));
                 if (dist > maxDist) continue;
                 // 威胁值 = 攻击力 / 距离
-                float threat = other.base_stats["attack"] / Mathf.Max(dist, 1f);
+                float threat = other.stats["attack"] / Mathf.Max(dist, 1f);
                 if (threat > bestThreat)
                 {
                     bestThreat = threat;
