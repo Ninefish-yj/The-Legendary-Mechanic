@@ -49,13 +49,21 @@ namespace SuperMech.Code
         {
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_early"), WorldState.Early),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_roubao"), LocalizedTextManager.getText("sm_wb_msg_earth_early"), WorldState.Early),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_mannison"), LocalizedTextManager.getText("sm_wb_msg_mannison_early"), WorldState.Early),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_xrank"), WorldState.XRankAppeared),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_mannison"), LocalizedTextManager.getText("sm_wb_msg_mannison_xrank"), WorldState.XRankAppeared),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_kuangdao"), LocalizedTextManager.getText("sm_wb_msg_earth_order"), WorldState.OrderEstablished),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_sailaang"), LocalizedTextManager.getText("sm_wb_msg_sailaang_order"), WorldState.OrderEstablished),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_jile"), LocalizedTextManager.getText("sm_wb_msg_earth_assoc"), WorldState.CouncilFormed),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_kesuye"), LocalizedTextManager.getText("sm_wb_msg_kesuye_assoc"), WorldState.CouncilFormed),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_purge"), WorldState.PurgeStorm),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_kesuye"), LocalizedTextManager.getText("sm_wb_msg_kesuye_purge"), WorldState.PurgeStorm),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_feiyun"), LocalizedTextManager.getText("sm_wb_msg_earth_alliance"), WorldState.SuperclusterAlliance),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_aisi"), LocalizedTextManager.getText("sm_wb_msg_aisi_alliance"), WorldState.SuperclusterAlliance),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_system"), WorldState.Institutionalized),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_sailaang"), LocalizedTextManager.getText("sm_wb_msg_sailaang_system"), WorldState.Institutionalized),
             new Message(LocalizedTextManager.getText("sm_wb_speaker_hanxiao"), LocalizedTextManager.getText("sm_wb_msg_hanxiao_balance"), WorldState.SanctuaryRealm),
+            new Message(LocalizedTextManager.getText("sm_wb_speaker_aisi"), LocalizedTextManager.getText("sm_wb_msg_aisi_sanctuary"), WorldState.SanctuaryRealm),
         };
 
         /// <summary>检测当前世界状态</summary>
@@ -222,7 +230,33 @@ namespace SuperMech.Code
             {
                 bool isCurrent = msg.state == state;
                 bool isHanXiao = msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_hanxiao");
+                bool isMannison = msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_mannison");
+                bool isKesuye = msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_kesuye");
+                bool isSailaang = msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_sailaang");
+                bool isAisi = msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_aisi");
                 bool sameAsLast = lastSpeaker == msg.speaker;
+
+                // 角色颜色：韩萧蓝、麦尼逊橙、克苏耶紫、塞拉昂金、艾默丝绿、其他青
+                Color avatarColor = isHanXiao ? new Color(0.2f, 0.5f, 0.9f, isCurrent ? 0.9f : 0.4f)
+                    : isMannison ? new Color(0.9f, 0.6f, 0.2f, isCurrent ? 0.9f : 0.4f)
+                    : isKesuye ? new Color(0.7f, 0.4f, 0.9f, isCurrent ? 0.9f : 0.4f)
+                    : isSailaang ? new Color(0.9f, 0.8f, 0.3f, isCurrent ? 0.9f : 0.4f)
+                    : isAisi ? new Color(0.3f, 0.8f, 0.5f, isCurrent ? 0.9f : 0.4f)
+                    : new Color(0.3f, 0.7f, 0.8f, isCurrent ? 0.9f : 0.4f);
+                Color nameColor = isHanXiao ? new Color(0.5f, 0.75f, 1f, isCurrent ? 1f : 0.5f)
+                    : isMannison ? new Color(1f, 0.75f, 0.4f, isCurrent ? 1f : 0.5f)
+                    : isKesuye ? new Color(0.85f, 0.6f, 1f, isCurrent ? 1f : 0.5f)
+                    : isSailaang ? new Color(1f, 0.9f, 0.5f, isCurrent ? 1f : 0.5f)
+                    : isAisi ? new Color(0.5f, 0.95f, 0.65f, isCurrent ? 1f : 0.5f)
+                    : new Color(0.5f, 0.85f, 0.9f, isCurrent ? 1f : 0.5f);
+                Color bubbleColor = isCurrent
+                    ? (isHanXiao ? new Color(0.15f, 0.25f, 0.45f, 0.95f)
+                        : isMannison ? new Color(0.35f, 0.25f, 0.1f, 0.95f)
+                        : isKesuye ? new Color(0.3f, 0.15f, 0.4f, 0.95f)
+                        : isSailaang ? new Color(0.35f, 0.3f, 0.1f, 0.95f)
+                        : isAisi ? new Color(0.15f, 0.35f, 0.2f, 0.95f)
+                        : new Color(0.15f, 0.3f, 0.35f, 0.95f))
+                    : new Color(0.08f, 0.1f, 0.15f, 0.35f);
 
                 float msgHeight = 60f;
                 var msgGo = new GameObject("MsgItem", typeof(RectTransform));
@@ -244,8 +278,14 @@ namespace SuperMech.Code
                 ar.anchoredPosition = isHanXiao ? new Vector2(8, -4) : new Vector2(-8, -4);
                 ar.sizeDelta = new Vector2(32, 32);
                 var avatarImg = avatarGo.GetComponent<Image>();
-                avatarImg.color = isHanXiao ? new Color(0.2f, 0.5f, 0.9f, isCurrent ? 0.9f : 0.4f) : new Color(0.3f, 0.7f, 0.4f, isCurrent ? 0.9f : 0.4f);
-                var avatarTxt = SuperMechUiSkin.MakeText(avatarGo.transform, isHanXiao ? LocalizedTextManager.getText("sm_wb_avatar_hanxiao") : LocalizedTextManager.getText("sm_wb_avatar_player"), 14, TextAnchor.MiddleCenter);
+                avatarImg.color = avatarColor;
+                var avatarTxt = SuperMechUiSkin.MakeText(avatarGo.transform, 
+                    isHanXiao ? LocalizedTextManager.getText("sm_wb_avatar_hanxiao")
+                    : isMannison ? LocalizedTextManager.getText("sm_wb_avatar_mannison")
+                    : isKesuye ? LocalizedTextManager.getText("sm_wb_avatar_kesuye")
+                    : isSailaang ? LocalizedTextManager.getText("sm_wb_avatar_sailaang")
+                    : isAisi ? LocalizedTextManager.getText("sm_wb_avatar_aisi")
+                    : LocalizedTextManager.getText("sm_wb_avatar_player"), 14, TextAnchor.MiddleCenter);
                 avatarTxt.color = new Color(1, 1, 1, isCurrent ? 1f : 0.5f);
                 avatarTxt.fontStyle = FontStyle.Bold;
                 var atRect = avatarTxt.GetComponent<RectTransform>();
@@ -263,7 +303,7 @@ namespace SuperMech.Code
                     nr.anchoredPosition = isHanXiao ? new Vector2(48, -2) : new Vector2(-48, -2);
                     nr.sizeDelta = new Vector2(200, 16);
                     var nameTxt = SuperMechUiSkin.MakeText(nameGo.transform, msg.speaker, 11, isHanXiao ? TextAnchor.UpperLeft : TextAnchor.UpperRight);
-                    nameTxt.color = isHanXiao ? new Color(0.5f, 0.75f, 1f, isCurrent ? 1f : 0.5f) : new Color(0.5f, 0.9f, 0.6f, isCurrent ? 1f : 0.5f);
+                    nameTxt.color = nameColor;
                 }
 
                 var bubbleGo = new GameObject("Bubble", typeof(RectTransform), typeof(Image));
@@ -275,9 +315,7 @@ namespace SuperMech.Code
                 br.anchoredPosition = isHanXiao ? new Vector2(48, 4) : new Vector2(-48, 4);
                 br.sizeDelta = new Vector2(area.rect.width - 80, 40);
                 var bubbleImg = bubbleGo.GetComponent<Image>();
-                bubbleImg.color = isCurrent
-                    ? (isHanXiao ? new Color(0.15f, 0.25f, 0.45f, 0.95f) : new Color(0.15f, 0.35f, 0.2f, 0.95f))
-                    : new Color(0.08f, 0.1f, 0.15f, 0.35f); // 旧消息淡出
+                bubbleImg.color = bubbleColor;
 
                 var contentTxt = SuperMechUiSkin.MakeText(bubbleGo.transform, msg.content, 12, TextAnchor.MiddleLeft);
                 contentTxt.color = isCurrent ? new Color(0.95f, 0.95f, 1f) : new Color(0.5f, 0.55f, 0.6f, 0.6f);
@@ -339,8 +377,12 @@ namespace SuperMech.Code
                 $"{LocalizedTextManager.getText("sm_ui_worldbeyond_stage")}: {GetStateText(state)}",
                 $"{LocalizedTextManager.getText("sm_wb_supera_count")}: {superA}",
                 $"{LocalizedTextManager.getText("sm_wb_xrank_count")}: {xRank}",
-                $"{LocalizedTextManager.getText("sm_ui_worldbeyond_state")}: {GetBeyondStateText()}",
                 $"{LocalizedTextManager.getText("sm_wb_observer_focus")}: {GetObserverFocus(state)}",
+                "",
+                LocalizedTextManager.getText("sm_wb_dark_background_title"),
+                LocalizedTextManager.getText("sm_wb_dark_bg_1"),
+                LocalizedTextManager.getText("sm_wb_dark_bg_2"),
+                LocalizedTextManager.getText("sm_wb_dark_bg_3"),
             };
 
             var scrollGo = new GameObject("MonScroll", typeof(RectTransform), typeof(Image), typeof(ScrollRect));
@@ -405,20 +447,6 @@ namespace SuperMech.Code
                 WorldState.Institutionalized => LocalizedTextManager.getText("sm_wb_focus_system"),
                 WorldState.SanctuaryRealm => LocalizedTextManager.getText("sm_wb_focus_balance"),
                 _ => LocalizedTextManager.getText("sm_wb_focus_observing")
-            };
-        }
-
-        private static string GetBeyondStateText()
-        {
-            var phase = SuperMechWorldBeyond.CurrentPhase;
-            return phase switch
-            {
-                SuperMechWorldBeyond.BeyondPhase.None => LocalizedTextManager.getText("sm_wb_dark_notentered"),
-                SuperMechWorldBeyond.BeyondPhase.InformationStripping => LocalizedTextManager.getText("sm_wb_dark_peeling"),
-                SuperMechWorldBeyond.BeyondPhase.DarkIteration => $"{LocalizedTextManager.getText("sm_wb_dark_iterating")}（{SuperMechWorldBeyond.DarkIteration}/3）",
-                SuperMechWorldBeyond.BeyondPhase.Merging => LocalizedTextManager.getText("sm_wb_dark_overlapping"),
-                SuperMechWorldBeyond.BeyondPhase.Transcended => LocalizedTextManager.getText("sm_wb_dark_transcended"),
-                _ => LocalizedTextManager.getText("sm_wb_dark_unknown")
             };
         }
 
