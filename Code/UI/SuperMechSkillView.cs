@@ -82,7 +82,8 @@ namespace SuperMech.Code
             if (a != null)
             {
                 string cls = SuperMechBranch.GetClass(a);
-                string className = !string.IsNullOrEmpty(cls) ? LocalizedTextManager.getText(cls) : LocalizedTextManager.getText("sm_ui_skill_no_class");
+                // GetClass()已返回本地化中文，直接使用，不再二次getText
+                string className = !string.IsNullOrEmpty(cls) ? cls : LocalizedTextManager.getText("sm_ui_skill_no_class");
                 int stage = SuperMechStage.GetStage(a);
                 _actorText.text = $"{a.name} | {className} | {LocalizedTextManager.getText("sm_ui_skill_stage")} {stage}";
             }
