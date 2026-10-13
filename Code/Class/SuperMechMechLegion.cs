@@ -348,7 +348,7 @@ namespace SuperMech.Code
                 "mech_immortal" => "不灭械兵",
                 "mech_mecha" => "战斗机甲",
                 "mech_warship" => "星际战舰",
-                "mech_god" => "机械战神",
+                "mech_god" => "机械神灵",
                 _ => id
             };
         }
@@ -364,7 +364,7 @@ namespace SuperMech.Code
                 "mech_immortal" => "不灭械兵，高级机械士兵，难以摧毁",
                 "mech_mecha" => "大型战斗机甲，火力强大",
                 "mech_warship" => "星际战舰，超大型作战平台",
-                "mech_god" => "机械战神，终极机械生命体",
+                "mech_god" => "机械神灵，终极机械生命体",
                 _ => id
             };
         }

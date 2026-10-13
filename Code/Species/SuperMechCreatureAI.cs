@@ -85,7 +85,7 @@ namespace SuperMech.Code
                 return;
             }
 
-            // 低血量撤退（除了重装械兵和机械战神）
+            // 低血量撤退（除了重装械兵和机械神灵）
             if (mech.getHealthRatio() < 0.25f &&
                 mech.asset.id != "sm_mech_heavy" &&
                 mech.asset.id != "sm_mech_god")
@@ -174,7 +174,7 @@ namespace SuperMech.Code
 
         // ========== Boss级生物AI ==========
 
-        /// <summary>是否为Boss级生物（虚空龙、星兽、机械战神）</summary>
+        /// <summary>是否为Boss级生物（虚空龙、星兽、机械神灵）</summary>
         private static bool IsBossCreature(Actor a)
         {
             if (a == null || a.asset == null) return false;

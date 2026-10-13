@@ -123,7 +123,7 @@ namespace SuperMech.Code
                 new { Id = "sm_mech_immortal", Name = "不灭械兵", Clone = "skeleton", Size = ActorSize.S14_Cow, Dmg = 20f, Hp = 100f, Desc = "具备自我修复能力的机械单位" },
                 new { Id = "sm_mech_fighter", Name = "战斗机甲", Clone = "human", Size = ActorSize.S15_Bear, Dmg = 35f, Hp = 90f, Desc = "高机动战斗机甲，空中优势单位" },
                 new { Id = "sm_mech_ship", Name = "星际战舰", Clone = "UFO", Size = ActorSize.S16_Buffalo, Dmg = 60f, Hp = 200f, Desc = "星际战舰，远程火力支援" },
-                new { Id = "sm_mech_god", Name = "机械战神", Clone = "dragon", Size = ActorSize.S17_Dragon, Dmg = 100f, Hp = 500f, Desc = "机械军团终极单位，韩萧的王牌" }
+                new { Id = "sm_mech_god", Name = "机械神灵", Clone = "dragon", Size = ActorSize.S17_Dragon, Dmg = 100f, Hp = 500f, Desc = "机械军团终极单位，韩萧的王牌" }
             };
 
             foreach (var u in mechUnits)

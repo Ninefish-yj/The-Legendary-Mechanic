@@ -158,7 +158,7 @@ namespace SuperMech.Code
             if (tile == null) tile = GetRandomLandTile();
             if (tile == null) return false;
 
-            // 虚拟创世真：可召唤最高级机械战神；普通：根据阶位解锁
+            // 虚拟创世真：可召唤最高级机械神灵；普通：根据阶位解锁
             string mechType = isTrue ? "mech_god" : GetRandomAvailableType(summoner);
             Actor summoned = SuperMechMechLegion.SpawnMechUnit(summoner, mechType, tile);
             if (summoned == null) return false;
