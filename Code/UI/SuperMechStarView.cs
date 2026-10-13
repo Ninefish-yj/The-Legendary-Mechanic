@@ -665,9 +665,17 @@ namespace SuperMech.Code
                 _twinklePhases.Add((float)rng.NextDouble() * Mathf.PI * 2f);
             }
 
-            // 生成星云（圆形柔和渐变，12团）
+            // 生成星云（彩色柔和渐变，20团，更大更丰富）
             var nebulaSprite = GetNebulaSprite();
-            for (int i = 0; i < 12; i++)
+            Color[] nebulaColors = {
+                new Color(0.4f, 0.15f, 0.6f, 0.18f),  // 紫
+                new Color(0.15f, 0.25f, 0.6f, 0.18f),  // 蓝
+                new Color(0.1f, 0.45f, 0.45f, 0.15f),  // 青
+                new Color(0.5f, 0.2f, 0.4f, 0.15f),    // 粉
+                new Color(0.6f, 0.3f, 0.15f, 0.12f),   // 橙
+                new Color(0.2f, 0.4f, 0.2f, 0.12f),    // 绿
+            };
+            for (int i = 0; i < 20; i++)
             {
                 var nebulaGo = new GameObject($"Nebula_{i}");
                 nebulaGo.transform.SetParent(starfieldGo.transform, false);
@@ -675,22 +683,38 @@ namespace SuperMech.Code
                 nebulaRect.anchorMin = new Vector2(0.5f, 0.5f);
                 nebulaRect.anchorMax = new Vector2(0.5f, 0.5f);
                 nebulaRect.pivot = new Vector2(0.5f, 0.5f);
-                float nebulaSize = (float)(300 + rng.NextDouble() * 600); // 300-900像素
+                float nebulaSize = (float)(400 + rng.NextDouble() * 800); // 400-1200像素
                 nebulaRect.sizeDelta = new Vector2(nebulaSize, nebulaSize);
                 nebulaRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE,
-                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f,
+                    (float)(rng.NextDouble() - 0.5) * MAP_SIZE * 1.2f
                 );
 
                 var nebulaImg = nebulaGo.AddComponent<Image>();
                 nebulaImg.sprite = nebulaSprite;
                 nebulaImg.raycastTarget = false;
-                // 星云颜色：紫/蓝/青/粉，柔和透明度
-                int nebulaColor = rng.Next(4);
-                if (nebulaColor == 0) nebulaImg.color = new Color(0.4f, 0.15f, 0.6f, 0.15f); // 紫
-                else if (nebulaColor == 1) nebulaImg.color = new Color(0.15f, 0.25f, 0.6f, 0.15f); // 蓝
-                else if (nebulaColor == 2) nebulaImg.color = new Color(0.1f, 0.45f, 0.45f, 0.12f); // 青
-                else nebulaImg.color = new Color(0.5f, 0.2f, 0.4f, 0.12f); // 粉
+                nebulaImg.color = nebulaColors[rng.Next(nebulaColors.Length)];
+            }
+
+            // 银河带效果（沿旋臂方向的淡光带）
+            for (int i = 0; i < 5; i++)
+            {
+                var bandGo = new GameObject($"GalaxyBand_{i}");
+                bandGo.transform.SetParent(starfieldGo.transform, false);
+                var bandRect = bandGo.AddComponent<RectTransform>();
+                bandRect.anchorMin = new Vector2(0.5f, 0.5f);
+                bandRect.anchorMax = new Vector2(0.5f, 0.5f);
+                bandRect.pivot = new Vector2(0.5f, 0.5f);
+                bandRect.sizeDelta = new Vector2(MAP_SIZE * 1.5f, 150 + rng.Next(100));
+                bandRect.anchoredPosition = new Vector2(
+                    (float)(rng.NextDouble() - 0.5) * 400,
+                    (float)(rng.NextDouble() - 0.5) * 400
+                );
+                bandRect.localRotation = Quaternion.Euler(0, 0, (float)(rng.NextDouble() * 30 - 15));
+                var bandImg = bandGo.AddComponent<Image>();
+                bandImg.sprite = nebulaSprite;
+                bandImg.raycastTarget = false;
+                bandImg.color = new Color(0.3f, 0.35f, 0.5f, 0.06f);
             }
         }
 
@@ -1010,6 +1034,50 @@ namespace SuperMech.Code
                 ringImg.sprite = GetGlowSprite();
                 ringImg.color = new Color(planetColor.r * 0.8f, planetColor.g * 0.8f, planetColor.b * 0.8f, 0.4f);
                 ringImg.raycastTarget = false;
+            }
+
+            // 行星大气层（有大气的行星显示淡蓝色光晕边缘）
+            if (!isStar && !isUnknown && p.atmosphere > 0.3f)
+            {
+                var atmoGo = new GameObject("Atmosphere");
+                atmoGo.transform.SetParent(nodeGo.transform, false);
+                atmoGo.transform.SetSiblingIndex(1); // 在光晕之后、本体之前
+                var atmoRect = atmoGo.AddComponent<RectTransform>();
+                atmoRect.anchorMin = Vector2.zero; atmoRect.anchorMax = Vector2.one;
+                float atmoExpand = size * 0.15f * p.atmosphere;
+                atmoRect.offsetMin = new Vector2(-atmoExpand, -atmoExpand);
+                atmoRect.offsetMax = new Vector2(atmoExpand, atmoExpand);
+                var atmoImg = atmoGo.AddComponent<Image>();
+                atmoImg.sprite = GetGlowSprite();
+                atmoImg.raycastTarget = false;
+                // 大气层颜色：根据行星类型，蓝色为主
+                Color atmoColor = p.type switch
+                {
+                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.4f, 0.6f, 1f, 0.35f),
+                    SuperMechStarSystem.PlanetType.Forest => new Color(0.5f, 0.8f, 0.6f, 0.3f),
+                    SuperMechStarSystem.PlanetType.Ice => new Color(0.7f, 0.9f, 1f, 0.35f),
+                    SuperMechStarSystem.PlanetType.Gas => new Color(0.9f, 0.8f, 0.6f, 0.3f),
+                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.5f, 0.3f, 0.25f),
+                    _ => new Color(0.6f, 0.75f, 1f, 0.25f)
+                };
+                atmoImg.color = atmoColor;
+            }
+
+            // 恒星日冕（外层大气光晕，脉动效果）
+            if (isStar && p.starType != SuperMechStarSystem.StarType.BlackHole)
+            {
+                var coronaGo = new GameObject("Corona");
+                coronaGo.transform.SetParent(nodeGo.transform, false);
+                coronaGo.transform.SetSiblingIndex(0); // 最底层
+                var coronaRect = coronaGo.AddComponent<RectTransform>();
+                coronaRect.anchorMin = Vector2.zero; coronaRect.anchorMax = Vector2.one;
+                float coronaExpand = size * 0.8f;
+                coronaRect.offsetMin = new Vector2(-coronaExpand, -coronaExpand);
+                coronaRect.offsetMax = new Vector2(coronaExpand, coronaExpand);
+                var coronaImg = coronaGo.AddComponent<Image>();
+                coronaImg.sprite = GetGlowSprite();
+                coronaImg.raycastTarget = false;
+                coronaImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.25f);
             }
 
             _planetNodes[p.id] = nodeGo;
