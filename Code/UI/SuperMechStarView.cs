@@ -26,6 +26,9 @@ namespace SuperMech.Code
         private static readonly Dictionary<string, Sprite> _planetSpriteCache = new Dictionary<string, Sprite>();
         private static Sprite _glowSprite;
         private static Sprite _nebulaSprite; // 圆形星云渐变纹理
+        private readonly System.Collections.Generic.List<Image> _twinkleStars = new System.Collections.Generic.List<Image>();
+        private readonly System.Collections.Generic.List<float> _twinklePhases = new System.Collections.Generic.List<float>();
+        private float _twinkleTimer;
 
         /// <summary>生成圆形星云纹理（大尺寸柔和径向渐变）</summary>
         private static Sprite GetNebulaSprite()
@@ -91,7 +94,7 @@ namespace SuperMech.Code
             Destroy(gameObject);
         }
 
-        /// <summary>每帧更新：处理滚轮缩放和航行单位位置刷新</summary>
+        /// <summary>每帧更新：处理滚轮缩放、航行单位位置刷新、星星闪烁</summary>
         private void Update()
         {
             // 滚轮缩放
@@ -105,7 +108,19 @@ namespace SuperMech.Code
                 }
             }
 
-            // 每秒刷新一次航行单位位置
+            // 星星闪烁动画（每帧更新alpha）
+            _twinkleTimer += Time.deltaTime;
+            for (int i = 0; i < _twinkleStars.Count; i++)
+            {
+                if (_twinkleStars[i] == null) continue;
+                float baseAlpha = _twinkleStars[i].color.a;
+                float twinkle = Mathf.Sin(_twinkleTimer * 2f + _twinklePhases[i]) * 0.3f + 0.7f;
+                var c = _twinkleStars[i].color;
+                c.a = Mathf.Clamp01(baseAlpha * twinkle);
+                _twinkleStars[i].color = c;
+            }
+
+            // 每秒刷新一次航行单位位置和行星公转
             _voyageRefreshTimer += Time.deltaTime;
             if (_voyageRefreshTimer >= 1f)
             {
@@ -562,6 +577,13 @@ namespace SuperMech.Code
                 if (colorRoll < 80) starImg.color = new Color(0.8f, 0.85f, 1f, (float)(0.2 + rng.NextDouble() * 0.4));
                 else if (colorRoll < 95) starImg.color = new Color(1f, 0.95f, 0.8f, (float)(0.2 + rng.NextDouble() * 0.3));
                 else starImg.color = new Color(1f, 0.7f, 0.6f, (float)(0.2 + rng.NextDouble() * 0.3));
+
+                // 记录闪烁引用（只有较大的星星闪烁）
+                if (size > 1.5f)
+                {
+                    _twinkleStars.Add(starImg);
+                    _twinklePhases.Add((float)rng.NextDouble() * Mathf.PI * 2f);
+                }
             }
 
             // 第二层：近景亮星（大、亮、数量少，沿旋臂分布，300颗）
@@ -595,6 +617,10 @@ namespace SuperMech.Code
                 else if (colorRoll < 80) starImg.color = new Color(0.7f, 0.85f, 1f, (float)(0.5 + rng.NextDouble() * 0.4));
                 else if (colorRoll < 92) starImg.color = new Color(1f, 0.9f, 0.7f, (float)(0.5 + rng.NextDouble() * 0.4));
                 else starImg.color = new Color(1f, 0.6f, 0.5f, (float)(0.5 + rng.NextDouble() * 0.3));
+
+                // 近景星星全部闪烁
+                _twinkleStars.Add(starImg);
+                _twinklePhases.Add((float)rng.NextDouble() * Mathf.PI * 2f);
             }
 
             // 生成星云（圆形柔和渐变，12团）
@@ -751,21 +777,39 @@ namespace SuperMech.Code
             bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
             bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
 
-            // 尺寸：恒星最大，主世界次之，已发现行星再次，未发现最小
+            // 尺寸：按真实物理半径对数缩放（恒星/行星大小差异巨大，用对数压缩）
             float size;
-            if (isStar) size = 64;
+            if (isStar)
+            {
+                // 恒星半径对数缩放：红矮星最小，红巨星最大，中子星/黑洞视觉上放大
+                float logRadius = Mathf.Log10(Mathf.Max(p.starRadius, 0.001f) + 1f);
+                size = 32 + logRadius * 16f; // 32-80像素
+                if (p.starType == SuperMechStarSystem.StarType.NeutronStar) size = 24; // 中子星小但可见
+                if (p.starType == SuperMechStarSystem.StarType.BlackHole) size = 36; // 黑洞视觉放大
+            }
             else if (isMain) size = 48;
-            else if (p.discovered) size = 28;
+            else if (p.discovered)
+            {
+                // 行星半径对数缩放：0.5-11 R⊕ → 20-40像素
+                size = 20 + Mathf.Log10(p.radius + 1f) * 12f;
+            }
             else size = 22;
             nodeRect.sizeDelta = new Vector2(size, size);
             nodeRect.anchoredPosition = new Vector2(x, y);
 
-            // 星球光晕（恒星最大最亮）
+            // 星球光晕（恒星发光强度根据光度）
             var glowGo = new GameObject("Glow");
             glowGo.transform.SetParent(nodeGo.transform, false);
             var glowRect = glowGo.AddComponent<RectTransform>();
             glowRect.anchorMin = Vector2.zero; glowRect.anchorMax = Vector2.one;
-            float glowExpand = isStar ? 40 : (isMain ? 20 : 10);
+            float glowExpand;
+            if (isStar)
+            {
+                // 恒星光晕根据光度：蓝巨星极大，红矮星小
+                glowExpand = 20 + Mathf.Log10(p.starLuminosity + 1f) * 15f;
+                glowExpand = Mathf.Clamp(glowExpand, 15f, 80f);
+            }
+            else glowExpand = isMain ? 20 : 10;
             glowRect.offsetMin = new Vector2(-glowExpand, -glowExpand);
             glowRect.offsetMax = new Vector2(glowExpand, glowExpand);
             var glowImg = glowGo.AddComponent<Image>();
