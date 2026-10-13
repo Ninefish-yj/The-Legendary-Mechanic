@@ -88,6 +88,7 @@ namespace SuperMech.Code
                 SafeRun("自定义生物AI", () => SuperMechCreatureAI.Tick());
                 SafeRun("星际战争AI", () => SuperMechStarWarAI.Tick());
                 SafeRun("公司AI", () => SuperMechCompanyAI.Tick());
+                SafeRun("文明战略AI", () => SuperMechCivStrategyAI.Tick());
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
                 SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }
@@ -238,6 +239,7 @@ namespace SuperMech.Code
             try { SuperMechCreatureAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCreatureAI"); }
             try { SuperMechStarWarAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarWarAI"); }
             try { SuperMechCompanyAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCompanyAI"); }
+            try { SuperMechCivStrategyAI.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechCivStrategyAI"); }
             try { SuperMechDimension.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechDimension"); }
             try { SuperMechVirtualGenesis.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechVirtualGenesis"); }
             try { SuperMechMechLegion.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechMechLegion"); }
