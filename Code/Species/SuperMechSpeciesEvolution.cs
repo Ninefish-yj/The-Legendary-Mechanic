@@ -175,12 +175,50 @@ namespace SuperMech.Code
             return result;
         }
 
-        /// <summary>自动进化到第一个可用种族（UI快捷操作）</summary>
+        /// <summary>自动进化（v0.142.0智能版：根据职业选择最优进化方向）</summary>
         public static bool AutoEvolve(long actorId)
         {
             var evolvable = GetEvolvableSpecies(actorId);
             if (evolvable.Count == 0) return false;
-            return Evolve(actorId, evolvable[0]);
+
+            // 获取单位职业，智能选择进化方向
+            Actor a = WorldAPI.getActor(actorId);
+            string cls = a != null ? SuperMechBranch.GetClass(a) : "";
+
+            // 根据职业优先级排序进化目标
+            string best = evolvable[0];
+            float bestScore = 0f;
+            var all = SuperMechSpecies.GetAllSpecies();
+            foreach (var sid in evolvable)
+            {
+                if (!all.TryGetValue(sid, out var sd)) continue;
+                float score = 1f;
+
+                // 机械师优先机械相关种族
+                if (cls == SuperMechTraits.ClassMech && (sd.Id.Contains("mech") || sd.Id.Contains("cyborg") || sd.Id.Contains("robot")))
+                    score += 3f;
+                // 武道优先肉身强化种族
+                else if (cls == SuperMechTraits.ClassMartial && (sd.Id.Contains("dragon") || sd.Id.Contains("beast") || sd.Id.Contains("giant")))
+                    score += 3f;
+                // 法师优先元素/灵能种族
+                else if (cls == SuperMechTraits.ClassMage && (sd.Id.Contains("spirit") || sd.Id.Contains("element") || sd.Id.Contains("psi")))
+                    score += 3f;
+                // 异能者优先灵能种族
+                else if (cls == SuperMechTraits.ClassPsi && (sd.Id.Contains("psi") || sd.Id.Contains("spirit") || sd.Id.Contains("mind")))
+                    score += 3f;
+
+                // 阶位越高，优先选择高阶种族
+                int rank = a != null ? SuperMechAdvancement.GetExactRankIndex(a) : 0;
+                score += rank * 0.1f;
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    best = sid;
+                }
+            }
+
+            return Evolve(actorId, best);
         }
 
         /// <summary>获取单位名（辅助方法）</summary>
