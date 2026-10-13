@@ -3413,5 +3413,20 @@
   "sm_ui_building_total": " (共{0}座)",
   "sm_ui_sanctuary_days": "天",
   "sm_ui_event_awakened": "超能者",
-  "sm_ui_hour": "小时"
+  "sm_ui_hour": "小时",
+  "sm_ui_economy_title": "伊纳尔经济",
+  "sm_ui_economy_total": "总流通",
+  "sm_ui_economy_supera": "超A数量",
+  "sm_ui_economy_salary_interval": "俸禄周期",
+  "sm_ui_economy_rank": "超A俸禄排行榜",
+  "sm_ui_economy_no_supera": "暂无超A单位",
+  "sm_ui_economy_no_kingdom": "无所属文明",
+  "sm_ui_economy_balance": "余额",
+  "sm_ui_economy_salary": "俸禄",
+  "sm_ui_economy_more": "更多",
+  "sm_ui_economy_company": "公司金库",
+  "sm_ui_economy_treasury": "金库",
+  "sm_ui_economy_level": "等级",
+  "sm_ui_economy_reputation": "声望",
+  "sm_ui_economy_no_company": "暂无公司"
 }

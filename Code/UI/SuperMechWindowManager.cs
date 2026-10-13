@@ -38,6 +38,7 @@ namespace SuperMech.Code
         public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 620, 500, DrawFactionContent); }
         public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 520, DrawPlayerContent); }
         public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 520, DrawWorldTreeContent); }
+        public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 680, 520, DrawEconomyContent); }
         public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 680, 520, DrawTechContent); }
         public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
@@ -54,6 +55,7 @@ namespace SuperMech.Code
             ("sm_ui_world_beyond_title", DrawWorldBeyondContent),
             ("sm_ui_rank_window_title", DrawRankContent),
             ("sm_ui_building_title", DrawBuildingContent),
+            ("sm_ui_economy_title", DrawEconomyContent),
             ("sm_ui_tech", DrawTechContent),
         };
 
@@ -232,6 +234,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechWorldTreeView>();
+        }
+
+        internal static void DrawEconomyContent(RectTransform content)
+        {
+            var go = new GameObject("EconomyView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechEconomyView>();
         }
 
         internal static void DrawTechContent(RectTransform content)
