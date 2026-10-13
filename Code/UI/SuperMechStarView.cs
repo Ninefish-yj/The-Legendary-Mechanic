@@ -15,6 +15,8 @@ namespace SuperMech.Code
         private Text _coordText;
         private RectTransform _buttonArea; // 交互按钮区域
         private string _selectedPlanet;
+        private GameObject _tooltip; // 悬停提示
+        private Text _tooltipText;
         private float _zoomLevel = 1f; // 当前缩放级别
         private const float MinZoom = 0.5f;
         private const float MaxZoom = 2f;
@@ -98,6 +100,12 @@ namespace SuperMech.Code
         /// <summary>每帧更新：处理滚轮缩放、航行单位位置刷新、星星闪烁</summary>
         private void Update()
         {
+            // 悬停提示跟随鼠标
+            if (_tooltip != null && _tooltip.activeSelf)
+            {
+                UpdateTooltipPosition();
+            }
+
             // 滚轮缩放
             float scroll = Input.GetAxis("Mouse ScrollWheel");
             if (Mathf.Abs(scroll) > 0.01f)
@@ -455,6 +463,34 @@ namespace SuperMech.Code
             // 初始滚动到中心（主星球位置）
             scrollRect.normalizedPosition = new Vector2(0.5f, 0.5f);
 
+            // 悬停提示Tooltip（最上层，默认隐藏）
+            _tooltip = new GameObject("Tooltip");
+            _tooltip.transform.SetParent(transform, false);
+            _tooltip.transform.SetAsLastSibling();
+            var ttRect = _tooltip.AddComponent<RectTransform>();
+            ttRect.anchorMin = new Vector2(0, 1);
+            ttRect.anchorMax = new Vector2(0, 1);
+            ttRect.pivot = new Vector2(0, 1);
+            ttRect.sizeDelta = new Vector2(200, 60);
+            var ttImg = _tooltip.AddComponent<Image>();
+            ttImg.color = new Color(0.05f, 0.08f, 0.15f, 0.95f);
+            ttImg.raycastTarget = false;
+            var ttTextGo = new GameObject("Text");
+            ttTextGo.transform.SetParent(_tooltip.transform, false);
+            var ttTextRect = ttTextGo.AddComponent<RectTransform>();
+            ttTextRect.anchorMin = Vector2.zero;
+            ttTextRect.anchorMax = Vector2.one;
+            ttTextRect.offsetMin = new Vector2(6, 4);
+            ttTextRect.offsetMax = new Vector2(-6, -4);
+            _tooltipText = ttTextGo.AddComponent<Text>();
+            _tooltipText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _tooltipText.fontSize = 11;
+            _tooltipText.color = new Color(0.85f, 0.9f, 1f);
+            _tooltipText.alignment = TextAnchor.UpperLeft;
+            _tooltipText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _tooltipText.verticalOverflow = VerticalWrapMode.Truncate;
+            _tooltip.SetActive(false);
+
             // 科幻风格外框装饰（最上层）
             AddSciFiFrame();
         }
@@ -770,6 +806,54 @@ namespace SuperMech.Code
             labelText.alignment = TextAnchor.UpperCenter;
             labelText.text = $"{v.snapshot.name} ({(int)(v.progress * 100)}%)";
             labelText.raycastTarget = false;
+
+            // 航行单位点击：显示航行详情
+            var voyageBtn = nodeGo.AddComponent<Button>();
+            var voyageHit = nodeGo.AddComponent<Image>();
+            voyageHit.color = new Color(0f, 0f, 0f, 0f);
+            string voyageId = v.snapshot.id.ToString();
+            voyageBtn.onClick.AddListener(() => SelectVoyage(voyageId));
+
+            // 悬停提示
+            var vTrigger = nodeGo.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+            string vTooltip = $"<b>{v.snapshot.name}</b>\n" +
+                $"<color=#88ccff>航行中</color>\n" +
+                $"进度: {(int)(v.progress * 100)}%\n" +
+                $"目的地: {SuperMechStarSystem.GetPlanet(v.toPlanet)?.name ?? "?"}";
+            var vEnter = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
+            vEnter.callback.AddListener((data) => ShowTooltip(vTooltip));
+            vTrigger.triggers.Add(vEnter);
+            var vExit = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
+            vExit.callback.AddListener((data) => HideTooltip());
+            vTrigger.triggers.Add(vExit);
+        }
+
+        /// <summary>选中航行单位，显示航行详情</summary>
+        private void SelectVoyage(string voyageId)
+        {
+            long uid;
+            if (!long.TryParse(voyageId, out uid)) return;
+            var voyages = SuperMechStarSystem.GetVoyages();
+            foreach (var v in voyages)
+            {
+                if (v.snapshot.id != uid) continue;
+                var from = SuperMechStarSystem.GetPlanet(v.fromPlanet);
+                var to = SuperMechStarSystem.GetPlanet(v.toPlanet);
+                _infoText.text =
+                    $"<color=#ffd700><size=14><b>{v.snapshot.name}</b></size></color>\n" +
+                    $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_voyage_status")}:</color> <color=#66ccff>{LocalizedTextManager.getText("sm_ui_voyage_flying")}</color>\n" +
+                    $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_voyage_from")}:</color> {from?.name ?? "?"}\n" +
+                    $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_voyage_to")}:</color> {to?.name ?? "?"}\n" +
+                    $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_voyage_progress")}:</color> {(int)(v.progress * 100)}%\n" +
+                    $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_voyage_eta")}:</color> {(int)((1f - v.progress) * v.totalTicks)} {LocalizedTextManager.getText("sm_ui_tick")}\n";
+
+                // 清空按钮区域
+                if (_buttonArea != null)
+                {
+                    foreach (Transform child in _buttonArea) Destroy(child.gameObject);
+                }
+                return;
+            }
         }
 
         private void CreatePlanetNode(SuperMechStarSystem.PlanetData p, float x, float y)
@@ -983,6 +1067,70 @@ namespace SuperMech.Code
 
             string pid = p.id;
             btn.onClick.AddListener(() => SelectPlanet(pid));
+
+            // 悬停提示：显示星球名称+类型+温度
+            var trigger = nodeGo.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+            string tooltipText = BuildPlanetTooltip(p);
+            var enterEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
+            enterEntry.callback.AddListener((data) => ShowTooltip(tooltipText));
+            trigger.triggers.Add(enterEntry);
+            var exitEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
+            exitEntry.callback.AddListener((data) => HideTooltip());
+            trigger.triggers.Add(exitEntry);
+        }
+
+        /// <summary>构建星球悬停提示文本</summary>
+        private string BuildPlanetTooltip(SuperMechStarSystem.PlanetData p)
+        {
+            var sb = new System.Text.StringBuilder();
+            sb.Append("<b>").Append(p.name).Append("</b>\n");
+            if (p.type == SuperMechStarSystem.PlanetType.Star)
+            {
+                sb.Append("<color=#ffcc66>").Append(p.starType.ToString()).Append("</color>\n");
+                sb.Append("温度: ").Append(p.temperature.ToString("F0")).Append("K\n");
+                sb.Append("质量: ").Append(p.starMass.ToString("F2")).Append(" M☉");
+            }
+            else
+            {
+                string typeName = p.type.ToString();
+                sb.Append("<color=#88ccff>").Append(typeName).Append("</color>\n");
+                sb.Append("温度: ").Append((p.temperature - 273).ToString("F0")).Append("°C\n");
+                if (p.inHabitableZone) sb.Append("<color=#7fff7f>宜居带</color>\n");
+                if (p.discovered)
+                {
+                    sb.Append("殖民地等级: ").Append(p.colonyLevel);
+                    if (p.units.Count > 0) sb.Append(" | 单位: ").Append(p.units.Count);
+                }
+                else
+                {
+                    sb.Append("<color=#aaaaaa>未探索</color>");
+                }
+            }
+            return sb.ToString();
+        }
+
+        /// <summary>显示悬停提示（跟随鼠标）</summary>
+        private void ShowTooltip(string text)
+        {
+            if (_tooltip == null || _tooltipText == null) return;
+            _tooltipText.text = text;
+            _tooltip.SetActive(true);
+            UpdateTooltipPosition();
+        }
+
+        private void HideTooltip()
+        {
+            if (_tooltip != null) _tooltip.SetActive(false);
+        }
+
+        private void UpdateTooltipPosition()
+        {
+            if (_tooltip == null || !_tooltip.activeSelf) return;
+            Vector2 localPos;
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(
+                transform as RectTransform, Input.mousePosition, null, out localPos);
+            var ttRect = _tooltip.GetComponent<RectTransform>();
+            ttRect.anchoredPosition = new Vector2(localPos.x + 12, localPos.y - 12);
         }
 
         private void CreateLine(float x1, float y1, float x2, float y2)
@@ -1069,6 +1217,70 @@ namespace SuperMech.Code
             {
                 labelText.color = new Color(0.6f, 0.8f, 1f, 0.7f);
                 labelText.text = $"◎ {c.name}";
+            }
+
+            // 星团点击：显示星团信息
+            var clusterBtn = clusterGo.AddComponent<Button>();
+            var clusterHit = clusterGo.AddComponent<Image>();
+            clusterHit.color = new Color(0f, 0f, 0f, 0f);
+            string cid = c.id;
+            clusterBtn.onClick.AddListener(() => SelectCluster(cid));
+        }
+
+        /// <summary>选中星团，显示星团信息</summary>
+        private void SelectCluster(string clusterId)
+        {
+            var c = SuperMechStarSystem.GetCluster(clusterId);
+            if (c == null || _infoText == null) return;
+            _selectedPlanet = null;
+
+            string typeName = c.type == SuperMechStarSystem.ClusterType.Globular ?
+                LocalizedTextManager.getText("sm_ui_cluster_globular") :
+                LocalizedTextManager.getText("sm_ui_cluster_open");
+            string typeColor = c.type == SuperMechStarSystem.ClusterType.Globular ? "#ffaa66" : "#66aaff";
+
+            // 统计星团内星球
+            var allPlanets = SuperMechStarSystem.GetAllPlanets();
+            int starCount = 0, planetCount = 0, discovered = 0;
+            foreach (var p in allPlanets)
+            {
+                float dx = p.x - c.x, dy = p.y - c.y;
+                if (dx * dx + dy * dy <= c.radius * c.radius)
+                {
+                    if (p.type == SuperMechStarSystem.PlanetType.Star) starCount++;
+                    else planetCount++;
+                    if (p.discovered) discovered++;
+                }
+            }
+
+            _infoText.text =
+                $"<color=#ffd700><size=14><b>{c.name}</b></size></color>\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cluster_type")}:</color> <color={typeColor}>{typeName}</color>\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cluster_radius")}:</color> {c.radius:F0} ly\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cluster_stars")}:</color> {starCount}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cluster_planets")}:</color> {planetCount}\n" +
+                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cluster_discovered")}:</color> {discovered}/{starCount + planetCount}\n" +
+                $"\n<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_coord")}:</color> ({c.x:F0}, {c.y:F0})\n";
+
+            // 清空按钮区域
+            if (_buttonArea != null)
+            {
+                foreach (Transform child in _buttonArea) Destroy(child.gameObject);
+                var hintGo = new GameObject("Hint");
+                hintGo.transform.SetParent(_buttonArea, false);
+                var hintRect = hintGo.AddComponent<RectTransform>();
+                hintRect.anchorMin = new Vector2(0, 1);
+                hintRect.anchorMax = new Vector2(1, 1);
+                hintRect.pivot = new Vector2(0.5f, 1);
+                hintRect.sizeDelta = new Vector2(0, 40);
+                hintRect.anchoredPosition = new Vector2(0, -4);
+                var hintText = hintGo.AddComponent<Text>();
+                hintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                hintText.fontSize = 11;
+                hintText.color = new Color(0.8f, 0.7f, 0.5f);
+                hintText.alignment = TextAnchor.UpperCenter;
+                hintText.text = LocalizedTextManager.getText("sm_ui_cluster_hint");
+                hintText.raycastTarget = false;
             }
         }
 

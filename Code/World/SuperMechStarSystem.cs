@@ -291,6 +291,17 @@ namespace SuperMech.Code
             return null;
         }
 
+        /// <summary>按ID获取星团</summary>
+        public static StarCluster GetCluster(string id)
+        {
+            GenerateClusters();
+            foreach (var c in _clusters)
+            {
+                if (c.id == id) return c;
+            }
+            return null;
+        }
+
         // 星球名称生成器（前缀+后缀，模拟原著星海命名风格）
         private static readonly string[] NamePrefixes = {
             "艾", "科", "苏", "黑", "泰", "星", "卢", "昆", "诺", "加",

@@ -3466,5 +3466,20 @@
   "sm_spaceflight_event_signal": "异常信号",
   "sm_spaceflight_event_solar_flare": "太阳耀斑",
   "sm_spaceflight_event_derelict": "废弃飞船",
-  "sm_spaceflight_event_wormhole": "虫洞"
+  "sm_spaceflight_event_wormhole": "虫洞",
+  "sm_ui_cluster_type": "星团类型",
+  "sm_ui_cluster_globular": "球状星团",
+  "sm_ui_cluster_open": "疏散星团",
+  "sm_ui_cluster_radius": "半径",
+  "sm_ui_cluster_stars": "恒星数",
+  "sm_ui_cluster_planets": "行星数",
+  "sm_ui_cluster_discovered": "已探索",
+  "sm_ui_cluster_hint": "点击星团内星球查看详情",
+  "sm_ui_voyage_status": "状态",
+  "sm_ui_voyage_flying": "航行中",
+  "sm_ui_voyage_from": "出发地",
+  "sm_ui_voyage_to": "目的地",
+  "sm_ui_voyage_progress": "进度",
+  "sm_ui_voyage_eta": "预计到达",
+  "sm_ui_tick": "tick"
 }
