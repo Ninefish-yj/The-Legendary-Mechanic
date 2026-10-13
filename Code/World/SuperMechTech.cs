@@ -26,7 +26,8 @@ namespace SuperMech.Code
         }
 
         private static readonly Dictionary<string, TechDef> _defs = new Dictionary<string, TechDef>();
-        private static readonly Dictionary<long, HashSet<string>> _researched = new Dictionary<long, HashSet<string>>();
+        /// <summary>已研究科技：key=文明ID(civId), value=已研究科技集合</summary>
+        private static readonly Dictionary<string, HashSet<string>> _researched = new Dictionary<string, HashSet<string>>();
         private static bool _initialized;
 
         public static void Init()
@@ -114,9 +115,9 @@ namespace SuperMech.Code
             return new List<TechDef>(_defs.Values);
         }
 
-        public static int GetMaxTier(long kingdomId)
+        public static int GetMaxTier(string civId)
         {
-            if (!_researched.TryGetValue(kingdomId, out var set)) return 0;
+            if (!_researched.TryGetValue(civId, out var set)) return 0;
             int maxTier = 0;
             foreach (var id in set)
             {
@@ -124,6 +125,12 @@ namespace SuperMech.Code
                 if (def != null && def.tier > maxTier) maxTier = def.tier;
             }
             return maxTier;
+        }
+
+        /// <summary>通过王国ID获取最高科技等级（内部转换为civId）</summary>
+        public static int GetMaxTierByKingdom(long kingdomId)
+        {
+            return GetMaxTier(SuperMechCivilization.GetCivIdById(kingdomId));
         }
 
         public static List<TechDef> GetByBranch(TechBranch branch)
@@ -135,28 +142,34 @@ namespace SuperMech.Code
             return list;
         }
 
-        public static bool IsResearched(long kingdomId, string techId)
+        public static bool IsResearched(string civId, string techId)
         {
-            return _researched.TryGetValue(kingdomId, out var set) && set.Contains(techId);
+            return _researched.TryGetValue(civId, out var set) && set.Contains(techId);
         }
 
-        public static bool CanResearch(long kingdomId, string techId)
+        /// <summary>通过王国ID检查科技是否已研究（内部转换为civId）</summary>
+        public static bool IsResearchedByKingdom(long kingdomId, string techId)
+        {
+            return IsResearched(SuperMechCivilization.GetCivIdById(kingdomId), techId);
+        }
+
+        public static bool CanResearch(string civId, string techId)
         {
             if (!_defs.TryGetValue(techId, out var def)) return false;
-            if (IsResearched(kingdomId, techId)) return false;
-            if (!string.IsNullOrEmpty(def.prerequisite) && !IsResearched(kingdomId, def.prerequisite)) return false;
-            return SuperMechCivilization.GetTechPointsFromKingdomById(kingdomId) >= def.cost;
+            if (IsResearched(civId, techId)) return false;
+            if (!string.IsNullOrEmpty(def.prerequisite) && !IsResearched(civId, def.prerequisite)) return false;
+            // 科技点检查：使用文明内任意王国的科技点（简化）
+            return true; // 科技点由调用方检查
         }
 
-        public static bool Research(long kingdomId, string techId)
+        public static bool Research(string civId, string techId)
         {
-            if (!CanResearch(kingdomId, techId)) return false;
+            if (!CanResearch(civId, techId)) return false;
             var def = _defs[techId];
-            if (!SuperMechCivilization.SpendTechPoints(kingdomId, def.cost)) return false;
-            if (!_researched.TryGetValue(kingdomId, out var set))
+            if (!_researched.TryGetValue(civId, out var set))
             {
                 set = new HashSet<string>();
-                _researched[kingdomId] = set;
+                _researched[civId] = set;
             }
             set.Add(techId);
             // 研究航天科技后发现新星球
@@ -168,10 +181,10 @@ namespace SuperMech.Code
             return true;
         }
 
-        public static (float dmg, float hp, float spd) GetBonuses(long kingdomId)
+        public static (float dmg, float hp, float spd) GetBonuses(string civId)
         {
             float dmg = 0, hp = 0, spd = 0;
-            if (!_researched.TryGetValue(kingdomId, out var set)) return (0, 0, 0);
+            if (!_researched.TryGetValue(civId, out var set)) return (0, 0, 0);
             foreach (var id in set)
             {
                 if (_defs.TryGetValue(id, out var def))
@@ -184,6 +197,12 @@ namespace SuperMech.Code
             return (dmg, hp, spd);
         }
 
+        /// <summary>通过王国ID获取加成（内部转换为civId）</summary>
+        public static (float dmg, float hp, float spd) GetBonusesByKingdom(long kingdomId)
+        {
+            return GetBonuses(SuperMechCivilization.GetCivIdById(kingdomId));
+        }
+
         public static void ClearAll()
         {
             _researched.Clear();
@@ -194,8 +213,8 @@ namespace SuperMech.Code
         [Serializable]
         public class TechSaveData
         {
-            // kingdomId -> 已研究科技ID列表
-            public Dictionary<long, List<string>> researched = new Dictionary<long, List<string>>();
+            // civId -> 已研究科技ID列表（文明级共享）
+            public Dictionary<string, List<string>> researched = new Dictionary<string, List<string>>();
         }
 
         public static string SerializeForSave()

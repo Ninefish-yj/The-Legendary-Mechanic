@@ -132,6 +132,82 @@ namespace SuperMech.Code
             return CivLevel.Normal;
         }
 
+        /// <summary>文明ID常量（基于主导职业划分）</summary>
+        public const string CivMech = "civ_mech";        // 机械文明
+        public const string CivMartial = "civ_martial";  // 武道文明
+        public const string CivMage = "civ_mage";        // 法师文明
+        public const string CivMind = "civ_mind";        // 念力文明
+        public const string CivPsi = "civ_psi";          // 异能文明
+        public const string CivPrimitive = "civ_primitive"; // 原始文明（无觉醒者）
+
+        /// <summary>缓存王国文明ID（避免每帧遍历）</summary>
+        private static readonly Dictionary<long, string> _kingdomCivId = new Dictionary<long, string>();
+        private static readonly Dictionary<long, float> _civIdUpdateTime = new Dictionary<long, float>();
+
+        /// <summary>获取王国所属文明ID（基于主导职业，每30秒重算一次）</summary>
+        public static string GetCivId(Kingdom k)
+        {
+            if (k == null) return CivPrimitive;
+            long kid = k.getID();
+
+            // 缓存检查（30秒内不重算）
+            if (_civIdUpdateTime.TryGetValue(kid, out var lastTime) &&
+                Time.time - lastTime < 30f &&
+                _kingdomCivId.TryGetValue(kid, out var cached))
+            {
+                return cached;
+            }
+
+            // 统计各职业数量
+            int mech = 0, martial = 0, mage = 0, mind = 0, psi = 0;
+            if (World.world?.units != null)
+            {
+                foreach (var a in World.world.units)
+                {
+                    if (a == null || !a.isAlive() || a.kingdom != k) continue;
+                    if (a.hasTrait(SuperMechTraits.ClassMech)) mech++;
+                    else if (a.hasTrait(SuperMechTraits.ClassMartial)) martial++;
+                    else if (a.hasTrait(SuperMechTraits.ClassMage)) mage++;
+                    else if (a.hasTrait(SuperMechTraits.ClassMind)) mind++;
+                    else if (a.hasTrait(SuperMechTraits.ClassPsi)) psi++;
+                }
+            }
+
+            // 取主导职业
+            string civId = CivPrimitive;
+            int max = Mathf.Max(mech, martial, mage, mind, psi);
+            if (max > 0)
+            {
+                if (mech == max) civId = CivMech;
+                else if (martial == max) civId = CivMartial;
+                else if (mage == max) civId = CivMage;
+                else if (mind == max) civId = CivMind;
+                else if (psi == max) civId = CivPsi;
+            }
+
+            _kingdomCivId[kid] = civId;
+            _civIdUpdateTime[kid] = Time.time;
+            return civId;
+        }
+
+        /// <summary>通过王国ID获取文明ID</summary>
+        public static string GetCivIdById(long kingdomId)
+        {
+            if (World.world?.kingdoms == null) return CivPrimitive;
+            foreach (var k in World.world.kingdoms.list)
+            {
+                if (k != null && k.getID() == kingdomId) return GetCivId(k);
+            }
+            return CivPrimitive;
+        }
+
+        /// <summary>清理文明ID缓存</summary>
+        public static void ClearCivIdCache()
+        {
+            _kingdomCivId.Clear();
+            _civIdUpdateTime.Clear();
+        }
+
         /// <summary>获取单位所属文明科技等级</summary>
         public static int GetTechLevel(Actor a)
         {

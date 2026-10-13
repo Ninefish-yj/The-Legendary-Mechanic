@@ -827,7 +827,7 @@ namespace SuperMech.Code
             long kid = k[0].getID();
             for (int t = 1; t <= 8; t++)
             {
-                if (SuperMechTech.IsResearched(kid, $"space_t{t}")) tier = t;
+                if (SuperMechTech.IsResearchedByKingdom(kid, $"space_t{t}")) tier = t;
             }
             return tier;
         }

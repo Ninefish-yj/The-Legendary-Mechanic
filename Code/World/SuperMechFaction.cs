@@ -490,7 +490,7 @@ namespace SuperMech.Code
                 long kid = attacker.kingdom.getID();
                 for (int t = 1; t <= 8; t++)
                 {
-                    if (SuperMechTech.IsResearched(kid, $"mil_t{t}"))
+                    if (SuperMechTech.IsResearchedByKingdom(kid, $"mil_t{t}"))
                         bonus += 0.02f;
                 }
             }

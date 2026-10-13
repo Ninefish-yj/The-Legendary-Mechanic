@@ -266,8 +266,9 @@ namespace SuperMech.Code
 
         private void CreateNode(SuperMechTech.TechDef tech, float x, float y, float w, float h, long kid)
         {
-            bool researched = kid > 0 && SuperMechTech.IsResearched(kid, tech.id);
-            bool canResearch = kid > 0 && SuperMechTech.CanResearch(kid, tech.id);
+            string civId = kid > 0 ? SuperMechCivilization.GetCivIdById(kid) : SuperMechCivilization.CivPrimitive;
+            bool researched = kid > 0 && SuperMechTech.IsResearched(civId, tech.id);
+            bool canResearch = kid > 0 && SuperMechTech.CanResearch(civId, tech.id);
 
             var nodeGo = new GameObject($"Node_{tech.id}");
             nodeGo.transform.SetParent(_treeContent, false);
@@ -339,8 +340,9 @@ namespace SuperMech.Code
             if (def == null) return;
             var kingdom = SelectedKingdom;
             long kid = kingdom != null ? kingdom.getID() : 0;
-            bool researched = kid > 0 && SuperMechTech.IsResearched(kid, id);
-            bool canResearch = kid > 0 && SuperMechTech.CanResearch(kid, id);
+            string civId = kid > 0 ? SuperMechCivilization.GetCivIdById(kid) : SuperMechCivilization.CivPrimitive;
+            bool researched = kid > 0 && SuperMechTech.IsResearched(civId, id);
+            bool canResearch = kid > 0 && SuperMechTech.CanResearch(civId, id);
             float points = kid > 0 ? SuperMechCivilization.GetTechPointsFromKingdomById(kid) : 0;
 
             _detailText.text = $"<b><size=16><color=#E8C36A>{def.name}</color></size></b>\n" +
@@ -373,11 +375,12 @@ namespace SuperMech.Code
             }
 
             // 高亮选中节点
+            string civId = kid > 0 ? SuperMechCivilization.GetCivIdById(kid) : SuperMechCivilization.CivPrimitive;
             foreach (var kv in _nodeImages)
             {
                 bool isSelected = kv.Key == id;
-                bool r = kid > 0 && SuperMechTech.IsResearched(kid, kv.Key);
-                bool cr = kid > 0 && SuperMechTech.CanResearch(kid, kv.Key);
+                bool r = kid > 0 && SuperMechTech.IsResearched(civId, kv.Key);
+                bool cr = kid > 0 && SuperMechTech.CanResearch(civId, kv.Key);
                 kv.Value.color = isSelected ? SuperMechUiSkin.AccentDim :
                                  r ? new Color(0.12f, 0.3f, 0.18f, 0.95f) :
                                  cr ? new Color(0.25f, 0.2f, 0.08f, 0.95f) :
@@ -390,8 +393,14 @@ namespace SuperMech.Code
             var kingdom = SelectedKingdom;
             if (kingdom == null || string.IsNullOrEmpty(_selectedId)) return;
             long kid = kingdom.getID();
-            if (SuperMechTech.Research(kid, _selectedId))
+            string civId = SuperMechCivilization.GetCivIdById(kid);
+            // 检查科技点
+            var def = SuperMechTech.GetDef(_selectedId);
+            if (def != null && SuperMechCivilization.GetTechPointsFromKingdomById(kid) < def.cost) return;
+            if (SuperMechTech.Research(civId, _selectedId))
             {
+                // 扣除科技点
+                SuperMechCivilization.SpendTechPoints(kid, def.cost);
                 RefreshTree();
                 SelectTech(_selectedId);
             }

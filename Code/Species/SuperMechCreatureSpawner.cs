@@ -62,7 +62,7 @@ namespace SuperMech.Code
             if (World.world?.kingdoms?.list == null) return false;
             foreach (var k in World.world.kingdoms.list)
             {
-                if (k != null && SuperMechTech.IsResearched(k.getID(), techId))
+                if (k != null && SuperMechTech.IsResearchedByKingdom(k.getID(), techId))
                     return true;
             }
             return false;

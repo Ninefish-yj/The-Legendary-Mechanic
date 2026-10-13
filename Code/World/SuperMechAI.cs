@@ -407,11 +407,12 @@ namespace SuperMech.Code
                 }
 
                 // 查找可研究的科技
+                string civId = SuperMechCivilization.GetCivIdById(kid);
                 var available = new List<SuperMechTech.TechDef>();
                 foreach (var def in SuperMechTech.GetAllDefs())
                 {
-                    if (SuperMechTech.IsResearched(kid, def.id)) continue;
-                    if (SuperMechTech.CanResearch(kid, def.id))
+                    if (SuperMechTech.IsResearched(civId, def.id)) continue;
+                    if (SuperMechTech.CanResearch(civId, def.id))
                         available.Add(def);
                 }
 
@@ -421,8 +422,12 @@ namespace SuperMech.Code
                 available.Sort((a, b) => a.tier.CompareTo(b.tier));
                 var target = available[Random.Range(0, Mathf.Min(3, available.Count))];
 
-                if (SuperMechTech.Research(kid, target.id))
+                // 检查科技点
+                if (SuperMechCivilization.GetTechPointsFromKingdomById(kid) < target.cost) continue;
+
+                if (SuperMechTech.Research(civId, target.id))
                 {
+                    SuperMechCivilization.SpendTechPoints(kid, target.cost);
                     _lastTechResearch[kid] = (float)now;
                     researched++;
                     if (SuperMechConfig.LogVerbose)
@@ -462,7 +467,7 @@ namespace SuperMech.Code
                 }
 
                 // 只有科技达到一定水平的文明才能探索星际
-                int techTier = SuperMechTech.GetMaxTier(kid);
+                int techTier = SuperMechTech.GetMaxTierByKingdom(kid);
                 if (techTier < 2) continue; // 需要至少T2科技
 
                 // 发现新星球
