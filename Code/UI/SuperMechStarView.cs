@@ -1173,14 +1173,36 @@ namespace SuperMech.Code
             foreach (Transform child in _buttonArea) Destroy(child.gameObject);
 
             bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
+            bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
             float btnY = 0f;
-            const float btnHeight = 32f;
-            const float btnGap = 6f;
+            const float btnHeight = 30f;
+            const float btnGap = 5f;
+
+            // 恒星：只能查看信息，不能操作
+            if (isStar)
+            {
+                var hintGo = new GameObject("Hint");
+                hintGo.transform.SetParent(_buttonArea, false);
+                var hintRect = hintGo.AddComponent<RectTransform>();
+                hintRect.anchorMin = new Vector2(0, 1);
+                hintRect.anchorMax = new Vector2(1, 1);
+                hintRect.pivot = new Vector2(0.5f, 1);
+                hintRect.sizeDelta = new Vector2(0, 40);
+                hintRect.anchoredPosition = new Vector2(0, -4);
+                var hintText = hintGo.AddComponent<Text>();
+                hintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                hintText.fontSize = 11;
+                hintText.color = new Color(0.8f, 0.7f, 0.5f);
+                hintText.alignment = TextAnchor.UpperCenter;
+                hintText.text = "恒星无法登陆\n仅可观测";
+                hintText.raycastTarget = false;
+                return;
+            }
 
             // 未发现：派遣探险队（单位航行到达后才发现）
             if (!p.discovered && !isMain)
             {
-                CreateActionButton(LocalizedTextManager.getText("sm_ui_send_explorer"), new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
+                CreateActionButton("派遣探险队", new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
                 {
                     var units = World.world.units.getSimpleList();
                     if (units.Count > 0)
@@ -1190,6 +1212,7 @@ namespace SuperMech.Code
                         if (success)
                         {
                             Debug.Log($"[超神机械师] 派遣探险队 {unit.data.name} 前往 {p.name}");
+                            SelectPlanet(p.id);
                         }
                     }
                 }, ref btnY, btnHeight, btnGap);
@@ -1198,7 +1221,7 @@ namespace SuperMech.Code
             // 已发现但未殖民：建立殖民地
             if (p.discovered && p.colonyLevel == 0 && !isMain)
             {
-                CreateActionButton(LocalizedTextManager.getText("sm_ui_colonize"), new Color(0.2f, 0.7f, 0.3f, 0.9f), () =>
+                CreateActionButton("建立殖民地", new Color(0.2f, 0.7f, 0.3f, 0.9f), () =>
                 {
                     p.colonyLevel = 1;
                     p.ownerKingdom = "player";
@@ -1207,10 +1230,10 @@ namespace SuperMech.Code
                 }, ref btnY, btnHeight, btnGap);
             }
 
-            // 已殖民：升级殖民地 + 派遣单位 + 采集资源
+            // 已殖民：升级殖民地 + 派遣单位 + 采集资源 + 运回资源 + 召回单位
             if (p.colonyLevel > 0 && !isMain)
             {
-                CreateActionButton(LocalizedTextManager.getText("sm_ui_upgrade_colony"), new Color(0.8f, 0.6f, 0.2f, 0.9f), () =>
+                CreateActionButton($"升级殖民地 (Lv.{p.colonyLevel}/5)", new Color(0.8f, 0.6f, 0.2f, 0.9f), () =>
                 {
                     if (p.colonyLevel < 5)
                     {
@@ -1219,9 +1242,8 @@ namespace SuperMech.Code
                     }
                 }, ref btnY, btnHeight, btnGap);
 
-                CreateActionButton(LocalizedTextManager.getText("sm_ui_send_unit"), new Color(0.5f, 0.3f, 0.8f, 0.9f), () =>
+                CreateActionButton("派遣单位", new Color(0.5f, 0.3f, 0.8f, 0.9f), () =>
                 {
-                    // 派遣一个随机单位到该星球
                     var units = World.world.units.getSimpleList();
                     if (units.Count > 0)
                     {
@@ -1231,15 +1253,36 @@ namespace SuperMech.Code
                     }
                 }, ref btnY, btnHeight, btnGap);
 
-                CreateActionButton(LocalizedTextManager.getText("sm_ui_collect_resource"), new Color(0.8f, 0.3f, 0.3f, 0.9f), () =>
+                // 有驻留单位时显示召回按钮
+                if (p.units.Count > 0)
+                {
+                    CreateActionButton($"召回单位 ({p.units.Count})", new Color(0.3f, 0.5f, 0.7f, 0.9f), () =>
+                    {
+                        // 召回一个单位回主世界
+                        if (p.units.Count > 0)
+                        {
+                            var snapshot = p.units[0];
+                            p.units.RemoveAt(0);
+                            // 在主世界生成该单位
+                            SuperMechStarSystem.SpawnUnitAtMain(snapshot);
+                            SelectPlanet(p.id);
+                            RefreshMap();
+                        }
+                    }, ref btnY, btnHeight, btnGap);
+                }
+
+                CreateActionButton($"采集资源 ({p.resource:F0})", new Color(0.8f, 0.3f, 0.3f, 0.9f), () =>
                 {
                     float collected = Mathf.Min(p.resource, 100f * p.colonyLevel);
                     p.resource -= collected;
+                    // 资源运回主世界（加到主世界资源）
+                    var main = SuperMechStarSystem.GetPlanet(SuperMechStarSystem.MAIN_PLANET);
+                    if (main != null) main.resource += collected;
                     SelectPlanet(p.id);
                 }, ref btnY, btnHeight, btnGap);
             }
 
-            // 主世界：显示驻留单位数量
+            // 主世界：显示驻留单位数量和资源
             if (isMain)
             {
                 var hintGo = new GameObject("Hint");
@@ -1248,14 +1291,14 @@ namespace SuperMech.Code
                 hintRect.anchorMin = new Vector2(0, 1);
                 hintRect.anchorMax = new Vector2(1, 1);
                 hintRect.pivot = new Vector2(0.5f, 1);
-                hintRect.sizeDelta = new Vector2(0, 20);
+                hintRect.sizeDelta = new Vector2(0, 50);
                 hintRect.anchoredPosition = new Vector2(0, -4);
                 var hintText = hintGo.AddComponent<Text>();
                 hintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 hintText.fontSize = 11;
-                hintText.color = new Color(0.6f, 0.7f, 0.8f);
+                hintText.color = new Color(0.7f, 0.8f, 0.9f);
                 hintText.alignment = TextAnchor.UpperCenter;
-                hintText.text = LocalizedTextManager.getText("sm_ui_main_planet_hint");
+                hintText.text = $"主世界\n资源: {p.resource:F0}\n选择其他星球进行探索和殖民";
                 hintText.raycastTarget = false;
             }
         }

@@ -890,6 +890,12 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>公开接口：将单位快照生成到主星球（用于召回单位）</summary>
+        public static void SpawnUnitAtMain(ActorSnapshot snapshot)
+        {
+            SpawnActorOnMainPlanet(snapshot);
+        }
+
         private static float _colonyTechTimer;
 
         public static void TickColonies(float dt)
