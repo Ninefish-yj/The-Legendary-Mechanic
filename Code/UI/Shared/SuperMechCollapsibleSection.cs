@@ -78,7 +78,10 @@ namespace SuperMech.Code
                     contentStats.gameObject.SetActive(true);
                     return;
                 }
-                Debug.LogWarning("[超神机械师] 重建面板失败: 未找到updateStatsRows/stats_rows_container/content_stats");
+                // 方式4：直接禁用再启用窗口GameObject（最暴力但最可靠）
+                window.gameObject.SetActive(false);
+                window.gameObject.SetActive(true);
+                Debug.Log("[超神机械师] 重建面板: 使用方式4(禁用再启用窗口)");
             }
             catch (System.Exception e)
             {
@@ -100,7 +103,7 @@ namespace SuperMech.Code
                 string arrow = expanded ? "▼" : "▶";
                 string title = $"{arrow} {LocalizedTextManager.getText(titleKey)}";
 
-                var row = window.showStatRow(title, "", null, MetaType.None, -1L,
+                var row = window.showStatRow(title, "", "#ffd700", MetaType.None, -1L,
                     pColorText: false, pIconPath: null, pTooltipId: null, pTooltipData: null, pLocalize: false);
 
                 if (row != null)
