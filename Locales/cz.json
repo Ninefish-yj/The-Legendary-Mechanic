@@ -3584,5 +3584,7 @@
   "sm_ui_view_event": "查看事件",
   "sm_ui_close": "关闭",
   "sm_ui_building_upgrade": "升级",
-  "sm_ui_building_locked": "未解锁"
+  "sm_ui_building_locked": "未解锁",
+  "sm_star_evt_mercenary_name": "雇佣兵",
+  "sm_ui_colony_max": "殖民地已满级"
 }

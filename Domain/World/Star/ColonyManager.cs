@@ -291,7 +291,8 @@ namespace SuperMech.Code
         }
 
         /// <summary>升级建筑（消耗伊纳尔）</summary>
-        public static bool UpgradeBuilding(PlanetData planet, ColonyBuildingType type, float inalBalance)
+        /// <summary>升级建筑（消耗殖民地资源）</summary>
+        public static bool UpgradeBuilding(PlanetData planet, ColonyBuildingType type)
         {
             var def = GetDef(type);
             if (def == null) return false;
@@ -313,8 +314,9 @@ namespace SuperMech.Code
             if (building.isBuilding) return false;
 
             float cost = GetUpgradeCost(def, building.level);
-            if (inalBalance < cost) return false;
+            if (planet.resource < cost) return false;
 
+            planet.resource -= cost;
             building.isBuilding = true;
             building.buildProgress = 0f;
             return true;

@@ -1265,10 +1265,19 @@ namespace SuperMech.Code
             {
                 CreateActionButton(LocalizedTextManager.getText("sm_ui_send_explorer"), new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
                 {
-                    var units = World.world.units.getSimpleList();
-                    if (units.Count > 0)
+                    // 只选玩家的存活单位
+                    var allUnits = World.world.units.getSimpleList();
+                    var playerUnits = new System.Collections.Generic.List<Actor>();
+                    foreach (var u in allUnits)
                     {
-                        var unit = units[UnityEngine.Random.Range(0, units.Count)];
+                        if (u != null && u.isAlive() && u.kingdom != null && u.kingdom.name == "player")
+                        {
+                            playerUnits.Add(u);
+                        }
+                    }
+                    if (playerUnits.Count > 0)
+                    {
+                        var unit = playerUnits[UnityEngine.Random.Range(0, playerUnits.Count)];
                         bool success = SuperMechStarSystem.SendUnit(unit.id, SuperMechStarSystem.MAIN_PLANET, p.id);
                         if (success)
                         {
@@ -1294,10 +1303,16 @@ namespace SuperMech.Code
             // 已殖民：升级殖民地 + 派遣单位 + 采集资源 + 运回资源 + 召回单位
             if (p.colonyLevel > 0 && !isMain)
             {
-                CreateActionButton(string.Format(LocalizedTextManager.getText("sm_ui_upgrade_colony"), p.colonyLevel), new Color(0.8f, 0.6f, 0.2f, 0.9f), () =>
+                // 殖民地升级消耗资源（每级消耗递增）
+                int upgradeCost = p.colonyLevel * 200;
+                string upgradeLabel = p.colonyLevel < 5
+                    ? string.Format(LocalizedTextManager.getText("sm_ui_upgrade_colony"), p.colonyLevel) + $" ({upgradeCost})"
+                    : LocalizedTextManager.getText("sm_ui_colony_max");
+                CreateActionButton(upgradeLabel, new Color(0.8f, 0.6f, 0.2f, 0.9f), () =>
                 {
-                    if (p.colonyLevel < 5)
+                    if (p.colonyLevel < 5 && p.resource >= upgradeCost)
                     {
+                        p.resource -= upgradeCost;
                         p.colonyLevel++;
                         SelectPlanet(p.id);
                     }
@@ -1305,10 +1320,19 @@ namespace SuperMech.Code
 
                 CreateActionButton(LocalizedTextManager.getText("sm_ui_send_unit"), new Color(0.5f, 0.3f, 0.8f, 0.9f), () =>
                 {
-                    var units = World.world.units.getSimpleList();
-                    if (units.Count > 0)
+                    // 只选玩家的存活单位
+                    var allUnits = World.world.units.getSimpleList();
+                    var playerUnits = new System.Collections.Generic.List<Actor>();
+                    foreach (var u in allUnits)
                     {
-                        var unit = units[UnityEngine.Random.Range(0, units.Count)];
+                        if (u != null && u.isAlive() && u.kingdom != null && u.kingdom.name == "player")
+                        {
+                            playerUnits.Add(u);
+                        }
+                    }
+                    if (playerUnits.Count > 0)
+                    {
+                        var unit = playerUnits[UnityEngine.Random.Range(0, playerUnits.Count)];
                         SuperMechStarSystem.SendUnit(unit.id, SuperMechStarSystem.MAIN_PLANET, p.id);
                         SelectPlanet(p.id);
                     }
@@ -1640,9 +1664,7 @@ namespace SuperMech.Code
                     var btn = btnGo.AddComponent<Button>();
                     btn.onClick.AddListener(() =>
                     {
-                        // 检查伊纳尔余额（用玩家第一个单位的余额）
-                        float inalBalance = 99999f; // 上帝模式无限货币
-                        bool success = ColonyManager.UpgradeBuilding(planet, def.type, inalBalance);
+                        bool success = ColonyManager.UpgradeBuilding(planet, def.type);
                         if (success)
                         {
                             Destroy(panelGo);

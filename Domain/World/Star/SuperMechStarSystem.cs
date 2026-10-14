@@ -822,7 +822,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>通过名称查找Kingdom</summary>
-        private static Kingdom FindKingdomByName(string name)
+        public static Kingdom FindKingdomByName(string name)
         {
             if (World.world?.kingdoms?.list == null) return null;
             foreach (var k in World.world.kingdoms.list)

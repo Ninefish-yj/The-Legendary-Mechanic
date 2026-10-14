@@ -54,10 +54,11 @@ namespace SuperMech.Code
         public string eventName;
         public string eventDesc;
         public EventResultType resultType;
-        public string resultMessage; // 结果描述（本地化）
+        public string resultMessage;
         public float resourceGain;
         public int unitsLost;
-        public int techGain;
+        public int unitsGained;
+        public float techGain;
         public bool success;
     }
 
@@ -315,21 +316,63 @@ namespace SuperMech.Code
                     break;
 
                 case EventResultType.DamageUnit:
-                    result.resultMessage = LocalizedTextManager.getText("sm_star_evt_result_damage")
-                        .Replace("{percent}", Mathf.RoundToInt(evt.unitDamage * 100).ToString());
+                    // 单位快照无HP系统，改为按概率损失单位
+                    int dmgLost = 0;
+                    if (planet.units.Count > 0 && rng.NextDouble() < evt.unitDamage)
+                    {
+                        planet.units.RemoveAt(rng.Next(planet.units.Count));
+                        dmgLost = 1;
+                    }
+                    result.unitsLost = dmgLost;
+                    result.success = dmgLost == 0;
+                    result.resultMessage = dmgLost > 0
+                        ? LocalizedTextManager.getText("sm_star_evt_result_lose_unit").Replace("{count}", dmgLost.ToString())
+                        : LocalizedTextManager.getText("sm_star_evt_result_nothing");
                     break;
 
                 case EventResultType.GainTech:
+                    // 实际加到王国科技点
+                    if (!string.IsNullOrEmpty(planet.ownerKingdom))
+                    {
+                        var kingdom = SuperMechStarSystem.FindKingdomByName(planet.ownerKingdom);
+                        if (kingdom != null)
+                        {
+                            SuperMechCivilization.AddTechPoints(kingdom, evt.techGain);
+                        }
+                    }
                     result.techGain = evt.techGain;
                     result.resultMessage = LocalizedTextManager.getText("sm_star_evt_result_gain_tech")
                         .Replace("{amount}", evt.techGain.ToString());
                     break;
 
                 case EventResultType.UnlockPlanet:
-                    result.resultMessage = LocalizedTextManager.getText("sm_star_evt_result_unlock");
+                    // 实际解锁一个未发现的星球
+                    var allPlanets = SuperMechStarSystem.GetAllPlanets();
+                    var undiscovered = allPlanets.FindAll(p => !p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET && p.type != PlanetType.Star);
+                    if (undiscovered.Count > 0)
+                    {
+                        var target = undiscovered[rng.Next(undiscovered.Count)];
+                        target.discovered = true;
+                        result.resultMessage = LocalizedTextManager.getText("sm_star_evt_result_unlock") + "：" + target.name;
+                    }
+                    else
+                    {
+                        result.resultMessage = LocalizedTextManager.getText("sm_star_evt_result_nothing");
+                    }
                     break;
 
                 case EventResultType.GainUnit:
+                    // 实际添加一个单位快照（随机种族）
+                    var newSnapshot = new ActorSnapshot
+                    {
+                        id = System.DateTime.Now.Ticks,
+                        assetId = "actor_human",
+                        name = LocalizedTextManager.getText("sm_star_evt_mercenary_name"),
+                        kingdomName = planet.ownerKingdom,
+                        age = 20
+                    };
+                    planet.units.Add(newSnapshot);
+                    result.unitsGained = 1;
                     result.resultMessage = LocalizedTextManager.getText("sm_star_evt_result_gain_unit");
                     break;
 
