@@ -195,7 +195,7 @@ namespace SuperMech.Code
                 // 保存文明科技点+科技等级（v0.152.8）
                 data.civilizationTechData = SuperMechCivilization.SerializeForSave();
                 // 保存任务/成就/声望数据（v0.185）
-                data.questData = SuperMechQuestSystem.Save();
+                data.questData = JsonConvert.SerializeObject(SuperMechQuestSystem.Save());
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -460,7 +460,7 @@ namespace SuperMech.Code
         {
             var list = new List<string>();
             var learned = SuperMechKnowledgeFusion.GetLearnedRecipes(a);
-            foreach (var recipe in learned) list.Add(recipe.id);
+            foreach (var recipe in learned) list.Add(recipe);
             return list;
         }
 

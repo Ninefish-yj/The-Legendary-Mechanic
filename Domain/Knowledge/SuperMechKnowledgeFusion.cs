@@ -202,7 +202,7 @@ namespace SuperMech.Code
         public static void Register() { Init(); }
 
         /// <summary>清理死亡单位数据（新版无状态，空操作）</summary>
-        public static int CleanupDead(List<Actor> alive) { return 0; }
+        public static int CleanupDead(System.Collections.Generic.HashSet<long> alive) { return 0; }
 
         /// <summary>清空所有数据（新版无状态，空操作）</summary>
         public static void Clear() { }

@@ -276,7 +276,7 @@ namespace SuperMech.Code
 
             foreach (var r in learned)
             {
-                var rowGo = new GameObject("CE_"+r.id);
+                var rowGo = new GameObject("CE_"+r);
                 rowGo.transform.SetParent(_craftPanel, false);
                 var row = rowGo.AddComponent<RectTransform>();
                 row.anchorMin = new Vector2(0, 1);
@@ -285,11 +285,11 @@ namespace SuperMech.Code
                 row.sizeDelta = new Vector2(0, 28);
 
                 bool onCd = SuperMechKnowledgeFusion.IsCraftOnCooldown(actor);
-                string label = LocalizedTextManager.getText(r.equipName) + (onCd ? "（" + LocalizedTextManager.getText("sm_ui_craft_cd") + "）" : "");
+                string label = r + (onCd ? "（" + LocalizedTextManager.getText("sm_ui_craft_cd") + "）" : "");
                 SuperMechUiSkin.MakeText(row, label, 12, TextAnchor.MiddleLeft);
 
                 var btn = SuperMechUiSkin.MakeButton(row, LocalizedTextManager.getText("sm_ui_craft_equip_btn"), 12,
-                    () => { SuperMechKnowledgeFusion.CraftEquip(actor, r.id); RefreshCraftPanel(); });
+                    () => { SuperMechKnowledgeFusion.CraftEquip(actor, r); RefreshCraftPanel(); });
                 var br = btn.GetComponent<RectTransform>();
                 br.anchorMin = new Vector2(1, 0.5f);
                 br.anchorMax = new Vector2(1, 0.5f);

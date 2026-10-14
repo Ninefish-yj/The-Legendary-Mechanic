@@ -92,9 +92,9 @@ namespace SuperMech.Code
             var knowFusion = SuperMechKnowledgeFusion.GetFusionBonus(a);
             var skillBonus = SuperMechSkills.GetBonus(a);
 
-            float dmgMul = synBonus.dmgMul * fusionMul * knowFusion.dmgMul * skillBonus.dmgMul;
-            float hpMul = synBonus.hpMul * fusionMul * knowFusion.hpMul * skillBonus.hpMul;
-            float spdMul = synBonus.speedMul * knowFusion.speedMul * skillBonus.speedMul;
+            float dmgMul = synBonus.dmgMul * fusionMul * knowFusion * skillBonus.dmgMul;
+            float hpMul = synBonus.hpMul * fusionMul * knowFusion * skillBonus.hpMul;
+            float spdMul = synBonus.speedMul * knowFusion * skillBonus.speedMul;
 
             // 固定数值加成（原著方式）：力量→伤害/护甲，敏捷→速度/攻速/暴击，耐力→生命/体力，智力→智力
             // v0.111.0: 改为叠加方式，不能直接覆盖，否则会覆盖阶位特质/神性/传承/子职业的属性加成
