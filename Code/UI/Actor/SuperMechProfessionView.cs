@@ -29,7 +29,7 @@ namespace SuperMech.Code
             if (_instance == null)
             {
                 var go = new GameObject(typeof(SuperMechProfessionView).Name);
-                go.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+                go.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
                 var rect = go.AddComponent<RectTransform>();
                 rect.anchorMin = Vector2.zero;
                 rect.anchorMax = Vector2.one;
@@ -52,7 +52,7 @@ namespace SuperMech.Code
         private void BuildPanel()
         {
             var overlayGo = new GameObject("ProfessionOverlay");
-            overlayGo.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+            overlayGo.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
             overlayGo.transform.SetAsLastSibling();
             var overlayRect = overlayGo.AddComponent<RectTransform>();
             overlayRect.anchorMin = Vector2.zero;
@@ -150,13 +150,12 @@ namespace SuperMech.Code
             sb.Append($"<b>{_selected.name}</b>\n\n");
 
             // 主职业
-            string mainProf = SuperMechProfession.GetProfession(_selected);
-            if (!string.IsNullOrEmpty(mainProf))
+            var profType = SuperMechProfession.GetProfession(_selected);
+            string mainProf = SuperMechProfession.GetProfessionName(profType);
+            if (!string.IsNullOrEmpty(mainProf) && profType != SuperMechProfession.ProfessionType.None)
             {
-                int pLevel = SuperMechProfession.GetLevel(_selected, mainProf);
-                float pXp = SuperMechProfession.GetXp(_selected, mainProf);
-                sb.Append($"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_main_profession")}:</color> {mainProf} Lv{pLevel}\n");
-                sb.Append($"  XP: {pXp:F0}\n\n");
+                sb.Append($"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_main_profession")}:</color> {mainProf}\n");
+                sb.Append($"  {LocalizedTextManager.getText("sm_ui_switch_count")}: {SuperMechProfession.GetSwitchCount(_selected)}\n\n");
             }
 
             // 子职业
@@ -167,9 +166,11 @@ namespace SuperMech.Code
                 if (SuperMechSubClass.HasSubClass(_selected, subId))
                 {
                     hasSub = true;
-                    int lv = SuperMechSubClass.GetLevel(_selected, subId);
-                    float xp = SuperMechSubClass.GetXp(_selected, subId);
-                    string name = LocalizedTextManager.getText("sm_subclass_" + subId.Replace("sm_sub_", ""));
+                    int lv = SuperMechSubClass.GetSubLevel(_selected, subId);
+                    float xp = 0f;
+                    if (SuperMechSubClass._subXp.TryGetValue(_selected.id.value, out var xpDict) && xpDict.TryGetValue(subId, out var x)) xp = x;
+                    var def = SuperMechSubClass.GetDef(subId);
+                    string name = def != null ? LocalizedTextManager.getText(def.nameKey) : subId;
                     sb.Append($"  • {name} Lv{lv} (XP:{xp:F0})\n");
                 }
             }
@@ -181,7 +182,8 @@ namespace SuperMech.Code
             {
                 if (!SuperMechSubClass.HasSubClass(_selected, subId))
                 {
-                    string name = LocalizedTextManager.getText("sm_subclass_" + subId.Replace("sm_sub_", ""));
+                    var def = SuperMechSubClass.GetDef(subId);
+                    string name = def != null ? LocalizedTextManager.getText(def.nameKey) : subId;
                     sb.Append($"  ○ {name}\n");
                 }
             }

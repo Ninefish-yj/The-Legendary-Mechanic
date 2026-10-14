@@ -598,12 +598,9 @@ namespace SuperMech.Code
                 totalOutput += ColonyManager.CalculateResourceOutput(p);
                 totalUnits += p.units != null ? p.units.Count : 0;
                 string auto = p.autoTransport ? "<color=#66ff66>自动</color>" : "<color=#999999>手动</color>";
-                sb.Append($"{p.name} Lv{p.colonyLevel} | 资源:{p.resource:F0} | 单位:{p.units.Count} | {auto}
-");
+                sb.Append($"{p.name} Lv{p.colonyLevel} | 资源:{p.resource:F0} | 单位:{p.units.Count} | {auto}\n");
             }
-            contentText.text = $"殖民地总数: {totalColonies} | 总资源: {totalRes:F0} | 总产出: +{totalOutput:F1}/s | 驻留单位: {totalUnits}
-
-" + sb.ToString();
+            contentText.text = $"殖民地总数: {totalColonies} | 总资源: {totalRes:F0} | 总产出: +{totalOutput:F1}/s | 驻留单位: {totalUnits}\n\n" + sb.ToString();
         }
 
         /// <summary>添加科幻风格外框：角落L形边框+顶部/底部渐变条</summary>

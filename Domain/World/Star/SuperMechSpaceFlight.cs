@@ -211,7 +211,7 @@ namespace SuperMech.Code
                     // 异常信号：发现附近一颗未发现的星球（30%概率）
                     if (UnityEngine.Random.value < 0.3f)
                     {
-                        var undiscovered = new System.Collections.Generic.List<SuperMechStarSystem.PlanetData>();
+                        var undiscovered = new System.Collections.Generic.List<PlanetData>();
                         foreach (var p in SuperMechStarSystem.GetAllPlanets())
                         {
                             if (p != null && !p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET)

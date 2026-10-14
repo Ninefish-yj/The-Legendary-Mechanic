@@ -32,7 +32,7 @@ namespace SuperMech.Code
             if (_instance == null)
             {
                 var go = new GameObject(typeof(SuperMechAwakeningView).Name);
-                go.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+                go.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
                 var rect = go.AddComponent<RectTransform>();
                 rect.anchorMin = Vector2.zero;
                 rect.anchorMax = Vector2.one;
@@ -59,7 +59,7 @@ namespace SuperMech.Code
         {
             // 全屏遮罩
             var overlayGo = new GameObject("AwakeningOverlay");
-            overlayGo.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+            overlayGo.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
             overlayGo.transform.SetAsLastSibling();
             var overlayRect = overlayGo.AddComponent<RectTransform>();
             overlayRect.anchorMin = Vector2.zero;

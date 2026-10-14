@@ -799,7 +799,7 @@ namespace SuperMech.Code
                             if (evt != null)
                             {
                                 // 应用防御减伤：建筑防御+防御单位
-                                float defense = ColonyManager.CalculateDefenseReduction(p) + ColonyManager.CalculateDefenseFromUnits(p);
+                                float defense = ColonyManager.CalculateDefenseReduction(p) + ColonyManager.CalculateDefenseReduction(p);
                                 defense = System.Math.Min(0.9f, defense); // 最多90%减伤
                                 var result = StarEvents.ResolveEvent(evt, p, _eventRng);
                                 if (result.resultType == EventResultType.DamageUnit || result.resultType == EventResultType.LoseUnit)

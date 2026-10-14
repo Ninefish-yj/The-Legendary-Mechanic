@@ -27,7 +27,7 @@ namespace SuperMech.Code
             if (_instance == null)
             {
                 var go = new GameObject(typeof(SuperMechMarketView).Name);
-                go.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+                go.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
                 var rect = go.AddComponent<RectTransform>();
                 rect.anchorMin = Vector2.zero;
                 rect.anchorMax = Vector2.one;
@@ -50,7 +50,7 @@ namespace SuperMech.Code
         private void BuildPanel()
         {
             var overlayGo = new GameObject("MarketOverlay");
-            overlayGo.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+            overlayGo.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
             overlayGo.transform.SetAsLastSibling();
             var overlayRect = overlayGo.AddComponent<RectTransform>();
             overlayRect.anchorMin = Vector2.zero;
@@ -137,12 +137,13 @@ namespace SuperMech.Code
             sb.Append($"<b>{LocalizedTextManager.getText("sm_ui_economy_overview")}</b>\n\n");
 
             // 货币供应
-            float m2 = SuperMechEconomyService.GetM2();
-            float inflation = SuperMechEconomyService.GetInflationRate();
-            float baseRate = SuperMechEconomyService.GetBaseInterestRate();
-            sb.Append($"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_money_supply")}:</color> {m2:F0} ₡\n");
+            long totalM2 = 0; float avgRate = 0f;
+            var companies = SuperMechCompany.GetAllCompanies();
+            if (companies != null) { foreach (var c in companies) { if (c != null) { totalM2 += c.totalIssued; avgRate += c.baseInterestRate; } } if (companies.Count > 0) avgRate /= companies.Count; }
+            float inflation = SuperMechCompany.CalculateInflationRate();
+            sb.Append($"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_money_supply")}:</color> {totalM2:F0} ₡\n");
             sb.Append($"<color=#ff9966>{LocalizedTextManager.getText("sm_ui_inflation")}:</color> {inflation * 100:F1}%\n");
-            sb.Append($"<color=#66ccff>{LocalizedTextManager.getText("sm_ui_interest_rate")}:</color> {baseRate * 100:F1}%\n\n");
+            sb.Append($"<color=#66ccff>{LocalizedTextManager.getText("sm_ui_interest_rate")}:</color> {avgRate * 100:F1}%\n\n");
 
             // 公司列表
             sb.Append($"<b>{LocalizedTextManager.getText("sm_ui_companies")}:</b>\n");
@@ -152,9 +153,9 @@ namespace SuperMech.Code
                 foreach (var c in companies)
                 {
                     if (c == null) continue;
-                    string godMark = c.isGodCompany ? " [GOD]" : "";
-                    sb.Append($"  • {c.name}{godMark}\n");
-                    sb.Append($"    金库:{c.treasury:F0}₡ | 已发行:{c.totalIssued:F0} | 净利润:{c.netProfit:F0}\n");
+                    sb.Append($"  • {c.GetDisplayName()}{godMark}\n");
+                    sb.Append($"    金库:{c.treasury:F0}₡ | 已发行:{c.totalIssued:F0} | 利率:{c.baseInterestRate * 100:F0}%\n");
+                    sb.Append($"    金库:{c.treasury:F0}₡ | 已发行:{c.totalIssued:F0} | 利率:{c.baseInterestRate * 100:F0}%\n");
                 }
             }
             else sb.Append($"  <color=#888888>{LocalizedTextManager.getText("sm_ui_no_company")}</color>\n");

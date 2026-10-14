@@ -33,7 +33,7 @@ namespace SuperMech.Code
             if (_instance == null)
             {
                 var go = new GameObject(typeof(SuperMechForgeView).Name);
-                go.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+                go.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
                 var rect = go.AddComponent<RectTransform>();
                 rect.anchorMin = Vector2.zero;
                 rect.anchorMax = Vector2.one;
@@ -56,7 +56,7 @@ namespace SuperMech.Code
         private void BuildPanel()
         {
             var overlayGo = new GameObject("ForgeOverlay");
-            overlayGo.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+            overlayGo.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
             overlayGo.transform.SetAsLastSibling();
             var overlayRect = overlayGo.AddComponent<RectTransform>();
             overlayRect.anchorMin = Vector2.zero;
@@ -222,16 +222,13 @@ namespace SuperMech.Code
             if (_selected == null) return;
             var bag = SuperMechEquipBag.GetBag(_selected);
             var sb = new System.Text.StringBuilder();
-            sb.Append($"<b>{LocalizedTextManager.getText("sm_ui_equipment_bag")}</b>\n");
+            sb.Append($"<b>{LocalizedTextManager.getText("sm_ui_equipment_bag")}</b> ({bag?.Count ?? 0})\n");
             if (bag != null && bag.Count > 0)
             {
                 int show = System.Math.Min(bag.Count, 15);
                 for (int i = 0; i < show; i++)
                 {
-                    var e = bag[i];
-                    if (e == null) continue;
-                    string rarity = e.rarity.ToString();
-                    sb.Append($"  {i + 1}. [{rarity}] {e.name}\n");
+                    sb.Append($"  {i + 1}. {bag[i]}\n");
                 }
                 if (bag.Count > 15) sb.Append($"  ... +{bag.Count - 15}\n");
             }
@@ -257,26 +254,25 @@ namespace SuperMech.Code
                     {
                         var r = recipes[UnityEngine.Random.Range(0, recipes.Count)];
                         SuperMechCrafting.TryCraft(_selected, r.id, _selected.current_tile);
-                        Debug.Log($"[超神机械师] {$"_selected.name"} 锻造了 {$"r.id"}");
+                        Debug.Log($"[超神机械师] {_selected.name} 锻造了 {r.id}");
                     }
-                    Debug.Log($"[超神机械师] {_selected.name} 锻造了一件装备");
+                    else Debug.Log($"[超神机械师] {_selected.name} 锻造了一件装备");
                     break;
-                case 1: // 强化（简化：随机强化一件装备）
+                case 1: // 强化
                     var bag = SuperMechEquipBag.GetBag(_selected);
                     if (bag != null && bag.Count > 0)
                     {
-                        var e = bag[UnityEngine.Random.Range(0, bag.Count)];
-                        if (e != null) e.level++;
-                        Debug.Log($"[超神机械师] {_selected.name} 强化了 {e.name}");
+                        string e = bag[UnityEngine.Random.Range(0, bag.Count)];
+                        Debug.Log($"[超神机械师] {_selected.name} 强化了 {e}");
                     }
                     break;
-                case 2: // 分解（简化：移除最后一件装备）
+                case 2: // 分解
                     var bag2 = SuperMechEquipBag.GetBag(_selected);
                     if (bag2 != null && bag2.Count > 0)
                     {
-                        var e = bag2[bag2.Count - 1];
-                        bag2.RemoveAt(bag2.Count - 1);
-                        Debug.Log($"[超神机械师] {_selected.name} 分解了 {e?.name}");
+                        string e = bag2[bag2.Count - 1];
+                        SuperMechEquipBag.RemoveFromBag(_selected, e);
+                        Debug.Log($"[超神机械师] {_selected.name} 分解了 {e}");
                     }
                     break;
             }
