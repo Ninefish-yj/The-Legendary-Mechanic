@@ -89,13 +89,13 @@ namespace SuperMech.Code
                 var td = TemplateAll.Find(x => x.id == id);
                 if (td != null && td.hpMul > 0f)
                 {
-                    stats["multiplier_health"] = (stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"]) * (1f + td.hpMul);
+                    stats["multiplier_health"] += td.hpMul;
                     continue;
                 }
                 var ld = LegendaryAll.Find(x => x.id == id);
                 if (ld != null && ld.hpMul > 0f)
                 {
-                    stats["multiplier_health"] = (stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"]) * (1f + ld.hpMul);
+                    stats["multiplier_health"] += ld.hpMul;
                 }
             }
         }

@@ -462,7 +462,7 @@ namespace SuperMech.Code
                     {
                         s["intelligence"] = (s["intelligence"]) + 5f + visits;
                         s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.03f;
-                        s["attack_speed"] = ((s["attack_speed"] == 0f ? 1f : s["attack_speed"])) * 1.05f;
+                        s["multiplier_attack_speed"] += 0.05f;
                     }
                     if (SuperMechBranch.GetClass(a) == "sm_sanctuary_964")
                         SuperMechQi.AddQiMax(a, 200f + visits * 20f);

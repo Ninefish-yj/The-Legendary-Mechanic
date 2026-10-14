@@ -142,7 +142,7 @@ namespace SuperMech.Code
 
             stats["damage"] += strBonus * 0.1f;
             stats["speed"] += agiBonus * 0.05f;
-            stats["attack_speed"] += agiBonus * 0.02f;
+            stats["multiplier_attack_speed"] +=  agiBonus * 0.02f;
             stats["health"] += endBonus * 2f;
             stats["armor"] += endBonus * 0.1f;
             stats["intelligence"] += intBonus;

@@ -41,15 +41,15 @@ namespace SuperMech.Code
         public static void Register()
         {
             // === 机械系三职业方向 ===
-            AllBranches.Add(new BranchDef { id = BranchGunner, name = "sm_branch_511", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_512", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.3f; s["attack_speed"]=(s["attack_speed"])+0.2f; s["range"]=(s["range"])+2f; } });
+            AllBranches.Add(new BranchDef { id = BranchGunner, name = "sm_branch_511", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_512", applyBonus = s => { s["multiplier_damage"] += 0.3f; s["multiplier_attack_speed"] += 0.2f; s["range"]=(s["range"])+2f; } });
             AllBranches.Add(new BranchDef { id = BranchMech, name = "sm_branch_513", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_514", applyBonus = s => { s["experience"]=((s["experience"] == 0f ? 1f : s["experience"]))*1.5f; s["intelligence"]=(s["intelligence"])+10f; } });
-            AllBranches.Add(new BranchDef { id = BranchMartial, name = "sm_branch_515", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_516", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.4f; s["armor"]=(s["armor"])+5f; s["damage"]=(s["damage"])+10f; } });
+            AllBranches.Add(new BranchDef { id = BranchMartial, name = "sm_branch_515", classTrait = SuperMechTraits.ClassMech, desc = "sm_branch_516", applyBonus = s => { s["multiplier_health"] += 0.4f; s["armor"]=(s["armor"])+5f; s["damage"]=(s["damage"])+10f; } });
 
             // === 念力系四大方向（原著ch1384）===
             AllBranches.Add(new BranchDef { id = BranchPsiMind, name = "sm_branch_533", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_534", applyBonus = s => { s["intelligence"]=(s["intelligence"])+20f; s["critical_chance"]=(s["critical_chance"])+0.12f; } });
-            AllBranches.Add(new BranchDef { id = BranchPsiKinesis, name = "sm_branch_535", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_536", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.35f; s["damage"]=(s["damage"])+5f; s["health"]=(s["health"])+15f; s["intelligence"]=(s["intelligence"])+5f; } });
-            AllBranches.Add(new BranchDef { id = BranchPsiSense, name = "sm_branch_537", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_538", applyBonus = s => { s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.45f; s["armor"]=(s["armor"])+8f; s["damage"]=(s["damage"])+12f; } });
-            AllBranches.Add(new BranchDef { id = BranchPsiPotential, name = "sm_branch_psi_potential_name", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_psi_potential_desc", applyBonus = s => { s["multiplier_damage"]=((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]))*1.25f; s["multiplier_health"]=((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]))*1.25f; s["stamina"]=(s["stamina"])+30f; } });
+            AllBranches.Add(new BranchDef { id = BranchPsiKinesis, name = "sm_branch_535", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_536", applyBonus = s => { s["multiplier_damage"] += 0.35f; s["damage"]=(s["damage"])+5f; s["health"]=(s["health"])+15f; s["intelligence"]=(s["intelligence"])+5f; } });
+            AllBranches.Add(new BranchDef { id = BranchPsiSense, name = "sm_branch_537", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_538", applyBonus = s => { s["multiplier_health"] += 0.45f; s["armor"]=(s["armor"])+8f; s["damage"]=(s["damage"])+12f; } });
+            AllBranches.Add(new BranchDef { id = BranchPsiPotential, name = "sm_branch_psi_potential_name", classTrait = SuperMechTraits.ClassPsi, desc = "sm_branch_psi_potential_desc", applyBonus = s => { s["multiplier_damage"] += 0.25f; s["multiplier_health"] += 0.25f; s["stamina"]=(s["stamina"])+30f; } });
 
             // 武道系/魔法系/异能系无固定转职方向
         }

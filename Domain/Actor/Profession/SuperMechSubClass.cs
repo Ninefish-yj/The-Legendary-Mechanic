@@ -106,7 +106,7 @@ namespace SuperMech.Code
                 if (!_defs.TryGetValue(subId, out var def)) continue;
                 if (def.intBonus > 0) stats["intelligence"] += def.intBonus;
                 if (def.dmgAdd > 0) stats["damage"] += def.dmgAdd;
-                if (def.dmgMul > 0) stats["multiplier_damage"] = (stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"]) * (1f + def.dmgMul);
+                if (def.dmgMul > 0) stats["multiplier_damage"] += def.dmgMul;
             }
         }
 
@@ -196,7 +196,7 @@ namespace SuperMech.Code
                 }
                 else if (subId == SubDoctor)
                 {
-                    stats["multiplier_health"] = ((stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"])) + 0.03f;
+                    stats["multiplier_health"] += 0.03f;
                 }
                 else if (subId == SubEngineer)
                 {

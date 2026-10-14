@@ -73,8 +73,8 @@ namespace SuperMech.Code
                 ((ItemAsset)asset).quality = def.rarity;
                 ((ItemAsset)asset).rarity = def.qualityLevel;
                 ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
-                ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = def.dmgMul;
-                ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = def.hpMul;
+                ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = def.dmgMul - 1f;
+                ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = def.hpMul - 1f;
                 ((BaseUnlockableAsset)asset).path_icon = def.icon;
                 ((BaseUnlockableAsset)asset).unlock(true);
 

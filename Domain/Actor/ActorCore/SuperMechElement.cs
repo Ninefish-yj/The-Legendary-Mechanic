@@ -210,8 +210,8 @@ namespace SuperMech.Code
                 if (AllSpecs.TryGetValue(specId, out var def))
                 {
                     stats["intelligence"] = stats["intelligence"] + def.intelligence;
-                    if (def.dmgMul > 0) stats["multiplier_damage"] = (stats["multiplier_damage"] == 0f ? 1f : stats["multiplier_damage"]) * (1f + def.dmgMul);
-                    if (def.hpMul > 0) stats["multiplier_health"] = (stats["multiplier_health"] == 0f ? 1f : stats["multiplier_health"]) * (1f + def.hpMul);
+                    if (def.dmgMul > 0) stats["multiplier_damage"] += def.dmgMul;
+                    if (def.hpMul > 0) stats["multiplier_health"] += def.hpMul;
                 }
             }
         }

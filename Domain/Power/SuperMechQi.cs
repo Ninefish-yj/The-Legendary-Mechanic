@@ -101,7 +101,7 @@ namespace SuperMech.Code
             ApplyFlatBonus(a, stats, "damage", strength * 0.25f);
             ApplyFlatBonus(a, stats, "armor", Mathf.Min(100f, strength * 0.15f));
             ApplyFlatBonus(a, stats, "speed", agility * 0.04f);
-            ApplyFlatBonus(a, stats, "attack_speed", agility * 0.003f);
+            ApplyFlatBonus(a, stats, "multiplier_attack_speed", agility * 0.003f);
             ApplyFlatBonus(a, stats, "health", endurance * 8f);
             ApplyFlatBonus(a, stats, "stamina", endurance * 4f);
             ApplyFlatBonus(a, stats, "intelligence", intel * 0.3f + skillBonus.intelligence);

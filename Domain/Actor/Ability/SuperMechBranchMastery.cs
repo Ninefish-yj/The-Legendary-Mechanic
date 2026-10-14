@@ -43,8 +43,8 @@ namespace SuperMech.Code
                 highFormName = "sm_spec_form_emperor",
                 throneFormName = "sm_spec_throne_emperor",
                 applyBonus = s => {
-                    s["multiplier_damage"] = (s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]) * 1.25f;
-                    s["multiplier_health"] = (s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]) * 1.2f;
+                    s["multiplier_damage"] += 0.25f;
+                    s["multiplier_health"] += 0.2f;
                     s["armor"] = s["armor"] + 10f;
                 }
             });
@@ -58,9 +58,9 @@ namespace SuperMech.Code
                 highFormName = "sm_spec_form_origin",
                 throneFormName = "sm_spec_throne_origin",
                 applyBonus = s => {
-                    s["attack_speed"] = s["attack_speed"] + 0.3f;
+                    s["multiplier_attack_speed"] += 0.3f;
                     s["critical_chance"] = s["critical_chance"] + 0.1f;
-                    s["multiplier_damage"] = (s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]) * 1.15f;
+                    s["multiplier_damage"] += 0.15f;
                 }
             });
 

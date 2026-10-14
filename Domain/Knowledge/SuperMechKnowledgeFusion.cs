@@ -289,9 +289,9 @@ namespace SuperMech.Code
             ((ItemAsset)asset).is_pool_weapon = false;
             ((ItemAsset)asset).quality = Rarity.R3_Legendary;
             ((BaseUnlockableAsset)asset).base_stats = new BaseStats();
-            ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = recipe.dmgMul;
-            ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = recipe.hpMul;
-            ((BaseUnlockableAsset)asset).base_stats["multiplier_speed"] = recipe.speedMul;
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_damage"] = recipe.dmgMul - 1f;
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_health"] = recipe.hpMul - 1f;
+            ((BaseUnlockableAsset)asset).base_stats["multiplier_speed"] = recipe.speedMul - 1f;
             ((BaseUnlockableAsset)asset).unlock(true);
 
             LocalizedTextManager.add(craftedId, LocalizedTextManager.getText(recipe.equipName), pReplace: true);

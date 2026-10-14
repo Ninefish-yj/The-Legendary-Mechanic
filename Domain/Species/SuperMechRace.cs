@@ -283,8 +283,8 @@ namespace SuperMech.Code
                 needs_to_be_explored = false, rarity = rarity, base_stats = new BaseStats()
             };
             t.base_stats["intelligence"] = intel;
-            t.base_stats["multiplier_damage"] = 1f + dmg;
-            t.base_stats["multiplier_health"] = 1f + hp;
+            t.base_stats["multiplier_damage"] = dmg;
+            t.base_stats["multiplier_health"] = hp;
             t.addCombatAction("combat_dash");
             t.addCombatAction("combat_block");
             t.addCombatAction("combat_dodge");

@@ -63,8 +63,8 @@ namespace SuperMech.Code
                 needs_to_be_explored = false,
                 base_stats = new BaseStats()
             };
-            if (dmg > 0) t.base_stats["multiplier_damage"] = 1f + dmg;
-            if (hp > 0) t.base_stats["multiplier_health"] = 1f + hp;
+            if (dmg > 0) t.base_stats["multiplier_damage"] = dmg;
+            if (hp > 0) t.base_stats["multiplier_health"] = hp;
             if (intel > 0) t.base_stats["intelligence"] = intel;
             if (stamina > 0) t.base_stats["stamina"] = stamina;
             if (armor > 0) t.base_stats["armor"] = armor;

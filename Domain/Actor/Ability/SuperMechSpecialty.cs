@@ -49,12 +49,12 @@ namespace SuperMech.Code
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecMechArmed, name = "sm_spec_mech_armed_name", desc = "sm_spec_mech_armed_desc",
                 profession = "mech", classTrait = SuperMechTraits.ClassMech,
-                applyBonus = s => { s["multiplier_damage"] = (s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]) * 1.20f; s["attack_speed"] = s["attack_speed"] + 0.10f; }
+                applyBonus = s => { s["multiplier_damage"] += 0.20f; s["multiplier_attack_speed"] += 0.10f; }
             });
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecMechEnergy, name = "sm_spec_mech_energy_name", desc = "sm_spec_mech_energy_desc",
                 profession = "mech", classTrait = SuperMechTraits.ClassMech,
-                applyBonus = s => { s["stamina"] = s["stamina"] + 50f; s["multiplier_damage"] = (s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]) * 1.10f; s["range"] = s["range"] + 3f; }
+                applyBonus = s => { s["stamina"] = s["stamina"] + 50f; s["multiplier_damage"] += 0.10f; s["range"] = s["range"] + 3f; }
             });
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecMechVirtual, name = "sm_spec_mech_virtual_name", desc = "sm_spec_mech_virtual_desc",
@@ -71,29 +71,29 @@ namespace SuperMech.Code
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecGunFire, name = "sm_spec_gun_fire_name", desc = "sm_spec_gun_fire_desc",
                 profession = "gun", classTrait = SuperMechTraits.ClassMech,
-                applyBonus = s => { s["multiplier_damage"] = (s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]) * 1.25f; s["attack_speed"] = s["attack_speed"] - 0.05f; }
+                applyBonus = s => { s["multiplier_damage"] += 0.25f; s["multiplier_attack_speed"] -= 0.05f; }
             });
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecGunDancer, name = "sm_spec_gun_dancer_name", desc = "sm_spec_gun_dancer_desc",
                 profession = "gun", classTrait = SuperMechTraits.ClassMech,
-                applyBonus = s => { s["attack_speed"] = s["attack_speed"] + 0.20f; s["multiplier_speed"] = (s["multiplier_speed"] == 0f ? 1f : s["multiplier_speed"]) * 1.10f; s["multiplier_damage"] = (s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"]) * 1.10f; }
+                applyBonus = s => { s["multiplier_attack_speed"] += 0.20f; s["multiplier_speed"] += 0.10f; s["multiplier_damage"] += 0.10f; }
             });
 
             // === 械武者三专精（模组扩展）===
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecMartialWeapon, name = "sm_spec_martial_weapon_name", desc = "sm_spec_martial_weapon_desc",
                 profession = "martial", classTrait = SuperMechTraits.ClassMech,
-                applyBonus = s => { s["damage"] = s["damage"] + 15f; s["attack_speed"] = s["attack_speed"] + 0.15f; s["armor"] = s["armor"] + 5f; }
+                applyBonus = s => { s["damage"] = s["damage"] + 15f; s["multiplier_attack_speed"] += 0.15f; s["armor"] = s["armor"] + 5f; }
             });
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecMartialFight, name = "sm_spec_martial_fight_name", desc = "sm_spec_martial_fight_desc",
                 profession = "martial", classTrait = SuperMechTraits.ClassMech,
-                applyBonus = s => { s["damage"] = s["damage"] + 10f; s["multiplier_speed"] = (s["multiplier_speed"] == 0f ? 1f : s["multiplier_speed"]) * 1.15f; s["attack_speed"] = s["attack_speed"] + 0.10f; }
+                applyBonus = s => { s["damage"] = s["damage"] + 10f; s["multiplier_speed"] += 0.15f; s["multiplier_attack_speed"] += 0.10f; }
             });
             AllSpecialties.Add(new SpecialtyDef {
                 id = SpecMartialHeavy, name = "sm_spec_martial_heavy_name", desc = "sm_spec_martial_heavy_desc",
                 profession = "martial", classTrait = SuperMechTraits.ClassMech,
-                applyBonus = s => { s["armor"] = s["armor"] + 15f; s["multiplier_health"] = (s["multiplier_health"] == 0f ? 1f : s["multiplier_health"]) * 1.30f; s["damage"] = s["damage"] + 8f; }
+                applyBonus = s => { s["armor"] = s["armor"] + 15f; s["multiplier_health"] += 0.30f; s["damage"] = s["damage"] + 8f; }
             });
 
             // 不再注册为ActorTrait，专精是纯数据存储

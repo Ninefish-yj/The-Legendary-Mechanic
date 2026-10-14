@@ -104,7 +104,8 @@ namespace SuperMech.Code
                 {
                     stats["speed"] *= 0.5f;
                     stats["damage"] *= 0.7f;
-                    stats["attack_speed"] *= 0.6f;
+                    stats["attack_speed"] = 0f;
+                    stats["multiplier_attack_speed"] -= 0.4f;
                 }
                 if (stunned)
                 {

@@ -128,8 +128,8 @@ namespace SuperMech.Code
             {
                 newDmgMul *= 1f + geneLv * 0.10f;
                 float atkSpdBonus = geneLv * 0.05f;
-                stats["attack_speed"] += atkSpdBonus;
-                oldFlat["attack_speed"] = atkSpdBonus;
+                stats["multiplier_attack_speed"] += atkSpdBonus;
+                oldFlat["multiplier_attack_speed"] = atkSpdBonus;
             }
 
             if (a.hasTrait(SuperMechTraits.ClassMage) && _manaStage.TryGetValue(a.id, out int manaLv))

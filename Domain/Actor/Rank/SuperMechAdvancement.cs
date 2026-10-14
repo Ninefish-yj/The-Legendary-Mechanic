@@ -256,9 +256,9 @@ namespace SuperMech.Code
 
             // 移除之前的能级额外加成
             if (_onarDmgBonus.TryGetValue(a.id, out float oldDmg) && oldDmg > 0f)
-                s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / (1f + oldDmg);
+                s["multiplier_damage"] -= oldDmg;
             if (_onarHpBonus.TryGetValue(a.id, out float oldHp) && oldHp > 0f)
-                s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / (1f + oldHp);
+                s["multiplier_health"] -= oldHp;
 
             double currentFloor = SuperMechRanks.All[rankIdx].onarFloor;
             double nextFloor = rankIdx + 1 < SuperMechRanks.All.Count ? SuperMechRanks.All[rankIdx + 1].onarFloor : currentFloor * 1.5;
@@ -281,9 +281,9 @@ namespace SuperMech.Code
             float hpBonus = progress * bonusRate * 0.7f;
 
             if (dmgBonus > 0f)
-                s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * (1f + dmgBonus);
+                s["multiplier_damage"] += dmgBonus;
             if (hpBonus > 0f)
-                s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * (1f + hpBonus);
+                s["multiplier_health"] += hpBonus;
 
             _onarDmgBonus[a.id] = dmgBonus;
             _onarHpBonus[a.id] = hpBonus;
@@ -317,8 +317,8 @@ namespace SuperMech.Code
                     var oldMain = SuperMechRanks.All[oldIdx - 1];
                     float dmgInc = oldR.damageMul / oldMain.damageMul;
                     float hpInc = oldR.healthMul / oldMain.healthMul;
-                    if (dmgInc > 1f) s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / dmgInc;
-                    if (hpInc > 1f) s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) / hpInc;
+                    if (dmgInc > 1f) s["multiplier_damage"] -= (dmgInc - 1f);
+                    if (hpInc > 1f) s["multiplier_health"] -= (hpInc - 1f);
                 }
             }
 
@@ -328,8 +328,8 @@ namespace SuperMech.Code
                 var newMain = SuperMechRanks.All[newRankIdx - 1];
                 float dmgInc = newR.damageMul / newMain.damageMul;
                 float hpInc = newR.healthMul / newMain.healthMul;
-                if (dmgInc > 1f) s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * dmgInc;
-                if (hpInc > 1f) s["multiplier_health"] = ((s["multiplier_health"] == 0f ? 1f : s["multiplier_health"])) * hpInc;
+                if (dmgInc > 1f) s["multiplier_damage"] += (dmgInc - 1f);
+                if (hpInc > 1f) s["multiplier_health"] += (hpInc - 1f);
             }
             _appliedRankIdx[a.id] = newRankIdx;
 

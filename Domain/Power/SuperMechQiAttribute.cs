@@ -215,12 +215,12 @@ namespace SuperMech.Code
                     break;
                 case AttrFire:
                     stats["damage"] = (stats["damage"]) + 5f;
-                    stats["attack_speed"] = (stats["attack_speed"]) + 0.1f;
+                    stats["multiplier_attack_speed"] += 0.1f;
                     stats["critical_chance"] = (stats["critical_chance"]) + 0.05f;
                     break;
                 case AttrWind:
                     stats["speed"] = (stats["speed"]) + 0.5f;
-                    stats["attack_speed"] = (stats["attack_speed"]) + 0.15f;
+                    stats["multiplier_attack_speed"] += 0.15f;
                     break;
                 case AttrIron:
                     stats["armor"] = (stats["armor"]) + 5f;
@@ -232,7 +232,7 @@ namespace SuperMech.Code
                     break;
                 case AttrLightning:
                     stats["critical_chance"] = (stats["critical_chance"]) + 0.1f;
-                    stats["attack_speed"] = (stats["attack_speed"]) + 0.2f;
+                    stats["multiplier_attack_speed"] += 0.2f;
                     break;
                 case AttrDark:
                     stats["critical_chance"] = (stats["critical_chance"]) + 0.08f;

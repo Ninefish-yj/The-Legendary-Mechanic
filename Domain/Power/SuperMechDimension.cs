@@ -75,12 +75,12 @@ namespace SuperMech.Code
                 minRankIndex = 10,
                 applyBuff = s => {
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.35f;
-                    s["attack_speed"] = (s["attack_speed"]) + 0.2f;
+                    s["multiplier_attack_speed"] += 0.2f;
                 },
                 removeBuff = s => {
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / 1.35f;
                     if (Mathf.Approximately(s["multiplier_damage"], 1f)) s["multiplier_damage"] = 0f;
-                    s["attack_speed"] = (s["attack_speed"]) - 0.2f;
+                    s["multiplier_attack_speed"] -= 0.2f;
                 }
             },
             // === 人造维度 ===
@@ -129,12 +129,12 @@ namespace SuperMech.Code
                 type = DimensionType.Artificial,
                 classTrait = SuperMechTraits.ClassMartial,
                 applyBuff = s => {
-                    s["attack_speed"] = (s["attack_speed"]) + 0.3f;
+                    s["multiplier_attack_speed"] += 0.3f;
                     s["critical_chance"] = (s["critical_chance"]) + 0.15f;
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) * 1.2f;
                 },
                 removeBuff = s => {
-                    s["attack_speed"] = (s["attack_speed"]) - 0.3f;
+                    s["multiplier_attack_speed"] -= 0.3f;
                     s["critical_chance"] = (s["critical_chance"]) - 0.15f;
                     s["multiplier_damage"] = ((s["multiplier_damage"] == 0f ? 1f : s["multiplier_damage"])) / 1.2f;
                     if (Mathf.Approximately(s["multiplier_damage"], 1f)) s["multiplier_damage"] = 0f;

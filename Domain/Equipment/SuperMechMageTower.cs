@@ -86,8 +86,8 @@ namespace SuperMech.Code
             int lv = GetTowerLevel(a);
             if (lv <= 0 || lv > TowerBonus.Length) return;
             var b = TowerBonus[lv - 1];
-            stats["multiplier_damage"] *= 1f + b.dmg;
-            stats["multiplier_health"] *= 1f + b.hp;
+            stats["multiplier_damage"] += b.dmg;
+            stats["multiplier_health"] += b.hp;
             stats["intelligence"] += b.intel;
             stats["mana"] += b.mana;
         }

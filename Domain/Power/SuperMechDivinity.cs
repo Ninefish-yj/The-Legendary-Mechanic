@@ -225,7 +225,7 @@ namespace SuperMech.Code
                 case "sm_divinity_736":
                     stats["damage"] = (stats["damage"]) + 80f * layers;
                     stats["warfare"] = (stats["warfare"]) + 30f * layers;
-                    stats["attack_speed"] = (stats["attack_speed"]) + 0.05f * layers;
+                    stats["multiplier_attack_speed"] += 0.05f * layers;
                     break;
                 default:
                     stats["intelligence"] = (stats["intelligence"]) + 40f * layers;
@@ -256,7 +256,7 @@ namespace SuperMech.Code
                         stats["health"] = (stats["health"]) + 100f * layers;
                         break;
                     case "elf":  // 精灵：敏捷+神秘
-                        stats["attack_speed"] = (stats["attack_speed"]) + 0.03f * layers;
+                        stats["multiplier_attack_speed"] += 0.03f * layers;
                         stats["mana"] = (stats["mana"]) + 50f * layers;
                         break;
                     case "dwarf":  // 矮人：耐力+护甲

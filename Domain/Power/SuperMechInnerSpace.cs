@@ -242,7 +242,7 @@ namespace SuperMech.Code
                 try
                 {
                     actor.stats["speed"] *= SuperMechFormulas.InnerSpaceEnemySpeedMul;
-                    actor.stats["attack_speed"] *= SuperMechFormulas.InnerSpaceEnemyAttackSpeedMul;
+                    actor.stats["multiplier_attack_speed"] -= 1f - SuperMechFormulas.InnerSpaceEnemyAttackSpeedMul;
                 } catch (System.Exception e) { if (!_warnedEffects) { _warnedEffects = true; Debug.LogWarning($"[超神机械师] 内空间负面效果异常(仅首次): {e.Message}"); } }
             }
         }
