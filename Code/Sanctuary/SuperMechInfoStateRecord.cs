@@ -7,7 +7,7 @@ namespace SuperMech.Code
     /// 信息态记录系统：单位死亡时记录信息态烙印，可用于圣所复活
     /// 用Tick扫描方式对比存活快照，不新增Harmony补丁
     /// </summary>
-    public static class SuperMechInformationState
+    public static class SuperMechInfoStateRecord
     {
         /// <summary>信息态记录（原著：以信息态形式完整记录文明数据，超A级可通过信息态复苏）
         /// 复活时通过完整快照恢复，确保新单位尽可能接近原单位

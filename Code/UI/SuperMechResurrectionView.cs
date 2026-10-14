@@ -59,7 +59,7 @@ namespace SuperMech.Code
             if (_listContent == null) return;
             foreach (Transform child in _listContent) Destroy(child.gameObject);
 
-            var deadStates = SuperMechInformationState.GetDeadStates();
+            var deadStates = SuperMechInfoStateRecord.GetDeadStates();
             int resurrectable = 0;
 
             // 更新信息栏（原著设定：圣所能量媒介，信息完整度决定复苏质量）
@@ -165,7 +165,7 @@ namespace SuperMech.Code
             }
         }
 
-        private string GetCannotReason(SuperMechInformationState.InformationStateRecord state)
+        private string GetCannotReason(SuperMechInfoStateRecord.InformationStateRecord state)
         {
             if (state.rankIndex < SuperMechResurrection.MinRankForResurrect)
                 return LocalizedTextManager.getText("sm_ui_resurrect_rank_low");

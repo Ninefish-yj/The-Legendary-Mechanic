@@ -107,7 +107,7 @@ namespace SuperMech.Code
                 SafeRun("神化任务", () => SuperMechTranscendence.TickAdvancementTask());
                 SafeRun("自动神化尝试", () => SuperMechTranscendence.TickAutoAttempt());
                 SafeRun("信息状态", () => SuperMechInfoState.TickInfoState());
-                SafeRun("信息态记录", () => SuperMechInformationState.Tick(1.25f));
+                SafeRun("信息态记录", () => SuperMechInfoStateRecord.Tick(1.25f));
                 SafeRun("圣所能量恢复", () => SuperMechSanctuary.RegenerateEnergy(1.25f));
                 SafeRun("星际航行", () => SuperMechStarSystem.TickVoyages(1.25f));
                 SafeRun("殖民地资源", () => SuperMechStarSystem.TickColonies(1.25f));

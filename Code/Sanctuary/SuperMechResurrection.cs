@@ -32,7 +32,7 @@ namespace SuperMech.Code
         /// 生前越强（阶位越高）基础完整度越高，复苏次数越多完整度越低。
         /// 原著：生前越强复苏越完整，复苏次数过多信息丢失越严重。
         /// </summary>
-        public static float CalculateInformationIntegrity(SuperMechInformationState.InformationStateRecord state)
+        public static float CalculateInformationIntegrity(SuperMechInfoStateRecord.InformationStateRecord state)
         {
             if (state == null) return 0f;
             // 基础完整度：阶位越高越完整（S阶=0.7, X阶=1.0）
@@ -45,7 +45,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>检查是否可以复活该信息态（原著限制）</summary>
-        public static bool CanResurrect(SuperMechInformationState.InformationStateRecord state)
+        public static bool CanResurrect(SuperMechInfoStateRecord.InformationStateRecord state)
         {
             if (state == null) return false;
             // 1. 必须超A级（S阶）及以上，但X阶（超神级）除外——超神级靠概念不朽，不走圣所通道
@@ -66,7 +66,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>检查原ID单位是否仍存活（唯一存在性：宇宙里只能同时存在一个你）</summary>
-        private static bool IsAlreadyAlive(SuperMechInformationState.InformationStateRecord state)
+        private static bool IsAlreadyAlive(SuperMechInfoStateRecord.InformationStateRecord state)
         {
             if (state == null || World.world == null || World.world.units == null) return false;
             var units = World.world.units.units_only_alive;
@@ -81,7 +81,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>计算复活消耗的圣所能量（媒介消耗）</summary>
-        public static float GetResurrectCost(SuperMechInformationState.InformationStateRecord state)
+        public static float GetResurrectCost(SuperMechInfoStateRecord.InformationStateRecord state)
         {
             if (state == null) return BaseResurrectEnergyCost;
             // 阶位越高消耗越大，复苏次数越多消耗越大
@@ -94,7 +94,7 @@ namespace SuperMech.Code
         /// 原著：信息态重塑肉身与灵魂，复活的是同一个体（随机失去部分能力）
         /// v0.38.2：完整恢复信息态快照中的所有数据（神性/遗力/技能/阶段/层次/分支）
         /// </summary>
-        public static Actor Resurrect(SuperMechInformationState.InformationStateRecord state)
+        public static Actor Resurrect(SuperMechInfoStateRecord.InformationStateRecord state)
         {
             if (!CanResurrect(state)) return null;
 
@@ -254,7 +254,7 @@ namespace SuperMech.Code
             // 因此 restoredRank 最大为12，无需在此追加不朽特质。
 
             // 从信息态列表中移除（已复活）
-            SuperMechInformationState.RemoveDeadState(state.actorId);
+            SuperMechInfoStateRecord.RemoveDeadState(state.actorId);
 
             Debug.Log($"[超神机械师] 复活成功: {state.name} (完整度{integrity:F0%}, 原阶位{state.rankIndex}→{restoredRank}, 神性{state.divinityLevel}, 遗力{state.legacyPower}, 技能{state.skills?.Count ?? 0}, 消耗能量{cost:F0})");
 
@@ -352,10 +352,10 @@ namespace SuperMech.Code
         }
 
         /// <summary>获取可复活的信息态列表</summary>
-        public static List<SuperMechInformationState.InformationStateRecord> GetResurrectableStates()
+        public static List<SuperMechInfoStateRecord.InformationStateRecord> GetResurrectableStates()
         {
-            var result = new List<SuperMechInformationState.InformationStateRecord>();
-            foreach (var state in SuperMechInformationState.GetDeadStates())
+            var result = new List<SuperMechInfoStateRecord.InformationStateRecord>();
+            foreach (var state in SuperMechInfoStateRecord.GetDeadStates())
             {
                 if (CanResurrect(state)) result.Add(state);
             }

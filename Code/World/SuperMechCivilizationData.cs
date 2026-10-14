@@ -102,7 +102,7 @@ namespace SuperMech.Code
             _current.maxRankReached = maxRank;
             _current.totalKnowledgeUnlocked = knowledge;
             _current.totalRelicsFound = SuperMechSanctuary.Data.total_visits; // 用访问次数近似
-            _current.totalInformationStates = SuperMechInformationState.GetDeadStates().Count;
+            _current.totalInformationStates = SuperMechInfoStateRecord.GetDeadStates().Count;
             _current.totalResurrections = SuperMechSanctuary.Data.total_resurrections;
             _current.totalDivinityAscensions = SuperMechSanctuary.Data.total_divinity_ascensions;
             _current.notableUnits = notable;
