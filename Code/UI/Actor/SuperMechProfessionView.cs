@@ -168,7 +168,7 @@ namespace SuperMech.Code
                     hasSub = true;
                     int lv = SuperMechSubClass.GetSubLevel(_selected, subId);
                     float xp = 0f;
-                    if (SuperMechSubClass._subXp.TryGetValue(_selected.id.value, out var xpDict) && xpDict.TryGetValue(subId, out var x)) xp = x;
+                    if (SuperMechSubClass._subXp.TryGetValue(_selected.id, out var xpDict) && xpDict.TryGetValue(subId, out var x)) xp = x;
                     var def = SuperMechSubClass.GetDef(subId);
                     string name = def != null ? LocalizedTextManager.getText(def.nameKey) : subId;
                     sb.Append($"  • {name} Lv{lv} (XP:{xp:F0})\n");

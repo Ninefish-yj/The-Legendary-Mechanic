@@ -697,6 +697,7 @@ namespace SuperMech.Code
                     Destroy(child.gameObject);
             }
             _planetNodes.Clear();
+            RefreshVoyageShips();
 
             var planets = SuperMechStarSystem.GetPlanetsInRange(0, 0, VIEW_RANGE);
 
@@ -1049,136 +1050,57 @@ namespace SuperMech.Code
             _planetNodes[p.id] = nodeGo;
         }
 
-        // === 家园式：航行中的飞船显示在星图上 ===
-        foreach (Transform child in _mapContent)
+        private void RefreshVoyageShips()
         {
-            if (child.name == "VoyageShip") Destroy(child.gameObject);
-        }
-        var voyages = SuperMechStarSystem.GetVoyages();
-        if (voyages != null)
-        {
-            foreach (var v in voyages)
+            if (_mapContent == null) return;
+            foreach (Transform child in _mapContent)
             {
-                if (v == null) continue;
-                var fromP = SuperMechStarSystem.GetPlanet(v.fromPlanet);
-                var toP = SuperMechStarSystem.GetPlanet(v.toPlanet);
-                if (fromP == null || toP == null) continue;
-
-                // 计算飞船当前位置（线性插值）
-                float shipX = fromP.x + (toP.x - fromP.x) * v.progress;
-                float shipY = fromP.y + (toP.y - fromP.y) * v.progress;
-                Vector2 shipPos = PlanetToMapPosition(shipX, shipY);
-
-                var shipGo = new GameObject("VoyageShip");
-                shipGo.transform.SetParent(_mapContent, false);
-                var shipRect = shipGo.AddComponent<RectTransform>();
-                shipRect.anchorMin = new Vector2(0.5f, 0.5f);
-                shipRect.anchorMax = new Vector2(0.5f, 0.5f);
-                shipRect.pivot = new Vector2(0.5f, 0.5f);
-                shipRect.sizeDelta = new Vector2(16, 16);
-                shipRect.anchoredPosition = shipPos;
-                var shipImg = shipGo.AddComponent<Image>();
-                bool bodyFlight = v.snapshot != null && v.snapshot.rank >= 10;
-                shipImg.color = bodyFlight ? new Color(1f, 0.8f, 0.3f, 0.9f) : new Color(0.5f, 0.8f, 1f, 0.9f);
-                shipImg.raycastTarget = false;
-
-                // 飞船标签（单位名）
-                if (v.snapshot != null)
+                if (child.name == "VoyageShip") Destroy(child.gameObject);
+            }
+            var voyages = SuperMechStarSystem.GetVoyages();
+            if (voyages != null)
+            {
+                foreach (var v in voyages)
                 {
-                    var shipLabelGo = new GameObject("ShipLabel");
-                    shipLabelGo.transform.SetParent(shipGo.transform, false);
-                    var shipLabelRect = shipLabelGo.AddComponent<RectTransform>();
-                    shipLabelRect.anchorMin = new Vector2(0.5f, 0);
-                    shipLabelRect.anchorMax = new Vector2(0.5f, 0);
-                    shipLabelRect.pivot = new Vector2(0.5f, 1);
-                    shipLabelRect.sizeDelta = new Vector2(100, 14);
-                    shipLabelRect.anchoredPosition = new Vector2(0, -2);
-                    var shipLabelText = shipLabelGo.AddComponent<Text>();
-                    shipLabelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                    shipLabelText.fontSize = 9;
-                    shipLabelText.color = bodyFlight ? new Color(1f, 0.8f, 0.3f) : new Color(0.7f, 0.85f, 1f);
-                    shipLabelText.alignment = TextAnchor.UpperCenter;
-                    shipLabelText.text = v.snapshot.name + (bodyFlight ? "[肉身]" : "");
-                    shipLabelText.raycastTarget = false;
+                    if (v == null) continue;
+                    var fromP = SuperMechStarSystem.GetPlanet(v.fromPlanet);
+                    var toP = SuperMechStarSystem.GetPlanet(v.toPlanet);
+                    if (fromP == null || toP == null) continue;
+                    float shipX = fromP.x + (toP.x - fromP.x) * v.progress;
+                    float shipY = fromP.y + (toP.y - fromP.y) * v.progress;
+                    Vector2 shipPos = PlanetToMapPosition(shipX, shipY);
+                    var shipGo = new GameObject("VoyageShip");
+                    shipGo.transform.SetParent(_mapContent, false);
+                    var shipRect = shipGo.AddComponent<RectTransform>();
+                    shipRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    shipRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    shipRect.pivot = new Vector2(0.5f, 0.5f);
+                    shipRect.sizeDelta = new Vector2(16, 16);
+                    shipRect.anchoredPosition = shipPos;
+                    var shipImg = shipGo.AddComponent<Image>();
+                    bool bodyFlight = v.snapshot != null && v.snapshot.rank >= 10;
+                    shipImg.color = bodyFlight ? new Color(1f, 0.8f, 0.3f, 0.9f) : new Color(0.5f, 0.8f, 1f, 0.9f);
+                    shipImg.raycastTarget = false;
+                    if (v.snapshot != null)
+                    {
+                        var shipLabelGo = new GameObject("ShipLabel");
+                        shipLabelGo.transform.SetParent(shipGo.transform, false);
+                        var shipLabelRect = shipLabelGo.AddComponent<RectTransform>();
+                        shipLabelRect.anchorMin = new Vector2(0.5f, 0);
+                        shipLabelRect.anchorMax = new Vector2(0.5f, 0);
+                        shipLabelRect.pivot = new Vector2(0.5f, 1);
+                        shipLabelRect.sizeDelta = new Vector2(100, 14);
+                        shipLabelRect.anchoredPosition = new Vector2(0, -2);
+                        var shipLabelText = shipLabelGo.AddComponent<Text>();
+                        shipLabelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                        shipLabelText.fontSize = 9;
+                        shipLabelText.color = bodyFlight ? new Color(1f, 0.8f, 0.3f) : new Color(0.7f, 0.85f, 1f);
+                        shipLabelText.alignment = TextAnchor.UpperCenter;
+                        shipLabelText.text = v.snapshot.name + (bodyFlight ? "[肉身]" : "");
+                        shipLabelText.raycastTarget = false;
+                    }
                 }
             }
-        }
-
-        foreach (var p in planets)
-        {
-            if (p == null) continue;
-            bool isUnknown = !p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET && p.type != PlanetType.Star;
-            bool isStar = p.type == PlanetType.Star;
-            bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
-
-            // 星球名称标签（恒星和已发现的显示）
-            if (!isUnknown)
-            {
-                var labelGo = new GameObject("Label");
-                labelGo.transform.SetParent(nodeGo.transform, false);
-                var labelRect = labelGo.AddComponent<RectTransform>();
-                labelRect.anchorMin = new Vector2(0.5f, 0);
-                labelRect.anchorMax = new Vector2(0.5f, 0);
-                labelRect.pivot = new Vector2(0.5f, 1);
-                labelRect.sizeDelta = new Vector2(120, 16);
-                labelRect.anchoredPosition = new Vector2(0, -4);
-                var labelText = labelGo.AddComponent<Text>();
-                labelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                labelText.fontSize = isStar ? 13 : (isMain ? 14 : 10);
-                labelText.color = isStar ? new Color(1f, 0.9f, 0.6f) : (isMain ? new Color(1f, 0.9f, 0.5f) : new Color(0.7f, 0.75f, 0.85f));
-                labelText.alignment = TextAnchor.UpperCenter;
-                labelText.text = p.name;
-                labelText.raycastTarget = false;
-            }
-
-            // 无人深空式：星球类型资源指示环（不同类型不同颜色）
-            if (!isStar && !isUnknown)
-            {
-                var ringGo = new GameObject("ResourceRing");
-                ringGo.transform.SetParent(nodeGo.transform, false);
-                var ringRect = ringGo.AddComponent<RectTransform>();
-                ringRect.anchorMin = new Vector2(0.5f, 0.5f);
-                ringRect.anchorMax = new Vector2(0.5f, 0.5f);
-                ringRect.pivot = new Vector2(0.5f, 0.5f);
-                float ringSize = isMain ? 42f : 30f;
-                ringRect.sizeDelta = new Vector2(ringSize, ringSize);
-                ringRect.anchoredPosition = Vector2.zero;
-                var ringImg = ringGo.AddComponent<Image>();
-                Color ringColor = p.type switch
-                {
-                    PlanetType.Lava => new Color(1f, 0.4f, 0.2f, 0.6f),    // 熔岩：橙红（矿产丰富）
-                    PlanetType.Ice => new Color(0.6f, 0.8f, 1f, 0.6f),      // 冰：淡蓝（水资源）
-                    PlanetType.Forest => new Color(0.4f, 0.9f, 0.4f, 0.6f), // 森林：绿色（宜居+生物）
-                    PlanetType.Ocean => new Color(0.3f, 0.6f, 1f, 0.6f),    // 海洋：蓝色（水+生物）
-                    PlanetType.Desert => new Color(0.9f, 0.8f, 0.4f, 0.6f), // 沙漠：黄色（矿产）
-                    PlanetType.Gas => new Color(0.8f, 0.6f, 0.9f, 0.6f),    // 气态：紫色（气体资源）
-                    PlanetType.Rocky => new Color(0.7f, 0.7f, 0.7f, 0.6f),  // 岩石：灰色（矿产）
-                    _ => new Color(0.5f, 0.5f, 0.5f, 0.4f)
-                };
-                ringImg.color = ringColor;
-                ringImg.raycastTarget = false;
-                // 把ring放到星球sprite后面
-                ringGo.transform.SetAsFirstSibling();
-            }
-
-            // 按钮（放在最上层接收点击）
-            var btn = nodeGo.AddComponent<Button>();
-            // 用透明Image作为点击区域
-            var hitImg = nodeGo.AddComponent<Image>();
-            hitImg.color = new Color(0f, 0f, 0f, 0f);
-
-            string pid = p.id;
-            btn.onClick.AddListener(() => SelectPlanet(pid));
-
-            // 悬停提示：显示星球名称+类型+温度
-            var trigger = nodeGo.AddComponent<UnityEngine.EventSystems.EventTrigger>();
-            string tooltipText = BuildPlanetTooltip(p);
-            var enterEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
-            enterEntry.callback.AddListener((data) => ShowTooltip(tooltipText));
-            trigger.triggers.Add(enterEntry);
-            var exitEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
-            exitEntry.callback.AddListener((data) => HideTooltip());
-            trigger.triggers.Add(exitEntry);
         }
 
         /// <summary>隐藏事件弹窗</summary>

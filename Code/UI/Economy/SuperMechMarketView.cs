@@ -138,8 +138,8 @@ namespace SuperMech.Code
 
             // 货币供应
             long totalM2 = 0; float avgRate = 0f;
-            var companies = SuperMechCompany.GetAllCompanies();
-            if (companies != null) { foreach (var c in companies) { if (c != null) { totalM2 += c.totalIssued; avgRate += c.baseInterestRate; } } if (companies.Count > 0) avgRate /= companies.Count; }
+            var allCompanies = SuperMechCompany.GetAllCompanies();
+            if (allCompanies != null) { foreach (var c in allCompanies) { if (c != null) { totalM2 += c.totalIssued; avgRate += c.baseInterestRate; } } if (allCompanies.Count > 0) avgRate /= allCompanies.Count; }
             float inflation = SuperMechCompany.CalculateInflationRate();
             sb.Append($"<color=#ffd700>{LocalizedTextManager.getText("sm_ui_money_supply")}:</color> {totalM2:F0} ₡\n");
             sb.Append($"<color=#ff9966>{LocalizedTextManager.getText("sm_ui_inflation")}:</color> {inflation * 100:F1}%\n");
@@ -153,8 +153,8 @@ namespace SuperMech.Code
                 foreach (var c in companies)
                 {
                     if (c == null) continue;
+                    string godMark = c.isGodCompany ? " [GOD]" : "";
                     sb.Append($"  • {c.GetDisplayName()}{godMark}\n");
-                    sb.Append($"    金库:{c.treasury:F0}₡ | 已发行:{c.totalIssued:F0} | 利率:{c.baseInterestRate * 100:F0}%\n");
                     sb.Append($"    金库:{c.treasury:F0}₡ | 已发行:{c.totalIssued:F0} | 利率:{c.baseInterestRate * 100:F0}%\n");
                 }
             }
