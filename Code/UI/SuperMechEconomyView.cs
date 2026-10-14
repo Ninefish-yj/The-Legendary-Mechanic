@@ -186,7 +186,7 @@ namespace SuperMech.Code
                     string tag = c.isGodCompany ? "[" + LocalizedTextManager.getText("sm_ui_economy_god_tag") + "]" : "";
                     string sym = string.IsNullOrEmpty(c.currencySymbol) ? "₡" : c.currencySymbol;
                     string cname = string.IsNullOrEmpty(c.currencyName) ? "伊纳尔" : c.currencyName;
-                    sb.Append("<color=").Append(color).Append(">").Append(LocalizedTextManager.getText(c.nameKey)).Append(" ").Append(tag).Append("</color>\n");
+                    sb.Append("<color=").Append(color).Append(">").Append(c.GetDisplayName()).Append(" ").Append(tag).Append("</color>\n");
                     sb.Append("  <color=#93A4BC>").Append(cname).Append("(").Append(sym).Append(")</color>\n");
                     sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_treasury")).Append(" ").Append(sym).Append(c.treasury.ToString("N0")).Append("\n");
                     sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_issued")).Append(" ").Append(sym).Append(c.totalIssued.ToString("N0")).Append("\n");

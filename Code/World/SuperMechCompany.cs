@@ -17,7 +17,8 @@ namespace SuperMech.Code
         public class CompanyDef
         {
             public string id;
-            public string nameKey;       // 本地化key
+            public string nameKey;       // 本地化key（预设公司用）
+            public string customName;    // 自定义名称（上帝公司用，优先于nameKey）
             public string founderId;     // 创立者特质ID
             public bool isGodCompany = false;  // 是否为上帝创建的公司
             public string currencyName = "伊纳尔";  // 发行货币名称
@@ -32,6 +33,13 @@ namespace SuperMech.Code
             public long expenses = 0;    // 累计支出
             public int reputation = 0;   // 声望
             public int tickCounter = 0;
+
+            /// <summary>获取显示名称：优先customName，其次nameKey本地化</summary>
+            public string GetDisplayName()
+            {
+                if (!string.IsNullOrEmpty(customName)) return customName;
+                return LocalizedTextManager.getText(nameKey);
+            }
         }
 
         private static readonly Dictionary<string, CompanyDef> _companies = new Dictionary<string, CompanyDef>();
@@ -136,14 +144,15 @@ namespace SuperMech.Code
         // 上帝创建公司（玩家作为央行发行货币）
         // ══════════════════════════════════════════════
 
-        /// <summary>上帝创建公司，作为货币发行机构（可自定义货币名称和符号）</summary>
-        public static CompanyDef CreateGodCompany(string nameKey, long initialReserve, string currencyName = "伊纳尔", string currencySymbol = "₡")
+        /// <summary>上帝创建公司，作为货币发行机构（可自定义公司名、货币名称和符号）</summary>
+        public static CompanyDef CreateGodCompany(string companyName, long initialReserve, string currencyName = "伊纳尔", string currencySymbol = "₡")
         {
             string id = "god_company_" + System.Guid.NewGuid().ToString("N").Substring(0, 8);
             var c = new CompanyDef
             {
                 id = id,
-                nameKey = nameKey,
+                nameKey = "sm_company_god_default",
+                customName = companyName,
                 founderId = "god",
                 isGodCompany = true,
                 currencyName = currencyName,
@@ -154,8 +163,17 @@ namespace SuperMech.Code
                 baseInterestRate = 0.05f
             };
             _companies[id] = c;
-            Debug.Log($"[超神机械师] 上帝创建公司: {id}, 货币: {currencyName}({currencySymbol}), 初始储备金: {initialReserve}");
+            Debug.Log($"[超神机械师] 上帝创建公司: {companyName}({id}), 货币: {currencyName}({currencySymbol}), 初始储备金: {initialReserve}");
             return c;
+        }
+
+        /// <summary>重命名公司</summary>
+        public static void RenameCompany(CompanyDef c, string newName)
+        {
+            if (c == null || string.IsNullOrEmpty(newName)) return;
+            string oldName = c.GetDisplayName();
+            c.customName = newName;
+            Debug.Log($"[超神机械师] 公司重命名: {oldName} → {newName}");
         }
 
         /// <summary>修改公司发行货币的名称和符号</summary>
@@ -287,6 +305,7 @@ namespace SuperMech.Code
                 {
                     id = c.id,
                     nameKey = c.nameKey,
+                    customName = c.customName,
                     isGodCompany = c.isGodCompany,
                     currencyName = c.currencyName,
                     currencySymbol = c.currencySymbol,
@@ -323,6 +342,7 @@ namespace SuperMech.Code
                     c.reputation = s.reputation;
                     if (!string.IsNullOrEmpty(s.currencyName)) c.currencyName = s.currencyName;
                     if (!string.IsNullOrEmpty(s.currencySymbol)) c.currencySymbol = s.currencySymbol;
+                    if (!string.IsNullOrEmpty(s.customName)) c.customName = s.customName;
                 }
                 else if (s.isGodCompany)
                 {
@@ -331,6 +351,7 @@ namespace SuperMech.Code
                     {
                         id = s.id,
                         nameKey = s.nameKey ?? "sm_company_god_default",
+                        customName = s.customName,
                         founderId = "god",
                         isGodCompany = true,
                         currencyName = string.IsNullOrEmpty(s.currencyName) ? "伊纳尔" : s.currencyName,
@@ -355,6 +376,7 @@ namespace SuperMech.Code
         {
             public string id;
             public string nameKey;
+            public string customName;
             public bool isGodCompany;
             public string currencyName;
             public string currencySymbol;
