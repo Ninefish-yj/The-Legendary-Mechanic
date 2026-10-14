@@ -392,7 +392,7 @@ namespace SuperMech.Code
                 {
                     _currentTab = tabIdx;
                     RefreshTabBar();
-                    if (_selectedPlanet != null) RefreshPlanetInfo(_selectedPlanet);
+                    if (_selectedPlanet != null) { var p = SuperMechStarSystem.GetPlanet(_selectedPlanet); if (p != null) RefreshPlanetInfo(p); }
                 });
                 var tabTextGo = new GameObject("Text");
                 tabTextGo.transform.SetParent(tabGo.transform, false);
