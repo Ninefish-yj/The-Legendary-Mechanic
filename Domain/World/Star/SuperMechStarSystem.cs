@@ -726,14 +726,52 @@ namespace SuperMech.Code
         }
 
         private static float _colonyTechTimer;
+        private static float _eventTimer;
+        private static System.Random _eventRng = new System.Random();
 
         public static void TickColonies(float dt)
         {
+            // 确保事件和殖民地系统初始化
+            StarEvents.Init();
+            ColonyManager.Init();
+
             foreach (var p in _planets.Values)
             {
                 if (p.colonyLevel > 0 && p.id != MAIN_PLANET)
                 {
-                    p.resource = Mathf.Min(p.maxResource, p.resource + p.colonyLevel * 0.1f * dt);
+                    // 推进建设进度
+                    ColonyManager.TickConstruction(p, dt);
+
+                    // 殖民地资源产出（使用建筑系统计算）
+                    float output = ColonyManager.CalculateResourceOutput(p) * dt;
+                    p.resource = Mathf.Min(p.maxResource, p.resource + output);
+
+                    // 事件触发（冷却后随机）
+                    _eventTimer += dt;
+                    if (_eventTimer >= p.eventCooldown && p.units.Count > 0)
+                    {
+                        _eventTimer = 0f;
+                        if (_eventRng.NextDouble() < 0.3f) // 30%概率触发事件
+                        {
+                            var evt = StarEvents.RollEvent(_eventRng, p.type, p.colonyLevel);
+                            if (evt != null)
+                            {
+                                // 应用防御减伤
+                                float defense = ColonyManager.CalculateDefenseReduction(p);
+                                var result = StarEvents.ResolveEvent(evt, p, _eventRng);
+                                if (result.resultType == EventResultType.DamageUnit || result.resultType == EventResultType.LoseUnit)
+                                {
+                                    if (_eventRng.NextDouble() < defense)
+                                    {
+                                        result.resultMessage = LocalizedTextManager.getText("sm_star_evt_defended") + result.resultMessage;
+                                        result.unitsLost = 0;
+                                    }
+                                }
+                                p.pendingEvent = result;
+                                Debug.Log($"[超神机械师] 星际事件: {result.eventName} - {result.resultMessage}");
+                            }
+                        }
+                    }
                 }
             }
 
@@ -749,6 +787,13 @@ namespace SuperMech.Code
                         var kingdom = FindKingdomByName(p.ownerKingdom);
                         if (kingdom != null)
                         {
+                            // 科技点产出（研究站建筑）
+                            float techOutput = ColonyManager.CalculateTechOutput(p);
+                            if (techOutput > 0.01f)
+                            {
+                                SuperMechCivilization.AddTechPoints(kingdom, techOutput);
+                            }
+
                             float techGain = p.resource * 0.05f; // 每次转化5%资源
                             if (techGain > 0.1f)
                             {
@@ -757,14 +802,13 @@ namespace SuperMech.Code
                             }
 
                             // v0.175.1 星际→经济联动：殖民地产出伊纳尔给王国超能者
-                            // 对照原著：殖民地资源开采带来经济收益
                             int inalGain = p.colonyLevel * 5;
                             if (inalGain > 0 && World.world?.units != null)
                             {
                                 foreach (var a in World.world.units)
                                 {
                                     if (a != null && a.isAlive() && a.kingdom == kingdom
-                                        && SuperMechAdvancement.GetExactRankIndex(a) >= 4) // C阶以上
+                                        && SuperMechAdvancement.GetExactRankIndex(a) >= 4)
                                     {
                                         int cur = SuperMechInal.GetInal(a);
                                         SuperMechInal.SetInal(a, cur + inalGain);

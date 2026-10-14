@@ -74,6 +74,12 @@ namespace SuperMech.Code
         public float starRadius; // 恒星半径（太阳半径=1，仅恒星有）
         public float starLuminosity; // 恒星光度（太阳=1，仅恒星有）
         public float starAge; // 恒星年龄（亿年，仅恒星有）
+
+        // ========== 殖民地与事件（v0.178.0玩法深化） ==========
+        public List<ColonyBuilding> buildings = new List<ColonyBuilding>(); // 殖民地建筑
+        public float lastEventTime; // 上次事件时间（冷却用）
+        public StarEventResult pendingEvent; // 待处理的事件结果
+        public float eventCooldown = 60f; // 事件冷却时间（秒）
     }
 
     /// <summary>航行数据（单位在星际航行中的状态）</summary>
