@@ -3669,5 +3669,9 @@
   "sm_ui_super_count": "超能者",
   "sm_ui_colony_count": "星际殖民地",
   "sm_ui_culture_power": "文化力",
-  "sm_ui_civ_strategy": "文明战略"
+  "sm_ui_civ_strategy": "文明战略",
+  "sm_ui_need_unit": "需要单位",
+  "sm_ui_unit_assign": "分配任务",
+  "sm_ui_select_unit": "选择派遣单位",
+  "sm_ui_no_player_unit": "没有可用的玩家单位"
 }

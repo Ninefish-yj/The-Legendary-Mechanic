@@ -31,6 +31,8 @@ namespace SuperMech.Code
         public string name;
         public string kingdomName;
         public int age;
+        public int rank = -1; // 阶位索引（0=F~13=X），超A(>=10)可肉身横渡
+        public string assignment = "idle"; // 任务分配：idle/mining/research/defense
     }
 
     /// <summary>星球数据（行星/恒星）</summary>

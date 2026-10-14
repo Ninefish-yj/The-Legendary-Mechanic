@@ -1260,43 +1260,35 @@ namespace SuperMech.Code
                 }, ref btnY, btnHeight, btnGap);
             }
 
-            // 未发现：派遣探险队（单位航行到达后才发现）
+            // 未发现：派遣探险队（打开单位选择面板）
             if (!p.discovered && !isMain)
             {
                 CreateActionButton(LocalizedTextManager.getText("sm_ui_send_explorer"), new Color(0.2f, 0.5f, 0.8f, 0.9f), () =>
                 {
-                    // 只选玩家的存活单位
-                    var allUnits = World.world.units.getSimpleList();
-                    var playerUnits = new System.Collections.Generic.List<Actor>();
-                    foreach (var u in allUnits)
-                    {
-                        if (u != null && u.isAlive() && u.kingdom != null && u.kingdom.name == "player")
-                        {
-                            playerUnits.Add(u);
-                        }
-                    }
-                    if (playerUnits.Count > 0)
-                    {
-                        var unit = playerUnits[UnityEngine.Random.Range(0, playerUnits.Count)];
-                        bool success = SuperMechStarSystem.SendUnit(unit.id, SuperMechStarSystem.MAIN_PLANET, p.id);
-                        if (success)
-                        {
-                            Debug.Log($"[超神机械师] 派遣探险队 {unit.data.name} 前往 {p.name}");
-                            SelectPlanet(p.id);
-                        }
-                    }
+                    _pendingSendPlanet = p;
+                    ShowUnitSelectPanel();
                 }, ref btnY, btnHeight, btnGap);
             }
 
-            // 已发现但未殖民：建立殖民地
+            // 已发现但未殖民：建立殖民地（消耗500资源+需要至少1个驻留单位）
             if (p.discovered && p.colonyLevel == 0 && !isMain)
             {
-                CreateActionButton(LocalizedTextManager.getText("sm_ui_colonize"), new Color(0.2f, 0.7f, 0.3f, 0.9f), () =>
+                int colonizeCost = 500;
+                bool canColonize = p.resource >= colonizeCost && p.units.Count > 0;
+                string colonizeLabel = canColonize
+                    ? LocalizedTextManager.getText("sm_ui_colonize") + $" ({colonizeCost})"
+                    : LocalizedTextManager.getText("sm_ui_colonize") + " (" + LocalizedTextManager.getText("sm_ui_need_unit") + ")";
+                CreateActionButton(colonizeLabel, new Color(0.2f, 0.7f, 0.3f, 0.9f), () =>
                 {
-                    p.colonyLevel = 1;
-                    p.ownerKingdom = "player";
-                    SelectPlanet(p.id);
-                    RefreshMap();
+                    if (p.resource >= colonizeCost && p.units.Count > 0)
+                    {
+                        p.resource -= colonizeCost;
+                        p.colonyLevel = 1;
+                        p.ownerKingdom = p.units[0].kingdomName ?? "player";
+                        p.maxResource = 1000; // 殖民后解锁资源上限
+                        SelectPlanet(p.id);
+                        RefreshMap();
+                    }
                 }, ref btnY, btnHeight, btnGap);
             }
 
@@ -1320,22 +1312,8 @@ namespace SuperMech.Code
 
                 CreateActionButton(LocalizedTextManager.getText("sm_ui_send_unit"), new Color(0.5f, 0.3f, 0.8f, 0.9f), () =>
                 {
-                    // 只选玩家的存活单位
-                    var allUnits = World.world.units.getSimpleList();
-                    var playerUnits = new System.Collections.Generic.List<Actor>();
-                    foreach (var u in allUnits)
-                    {
-                        if (u != null && u.isAlive() && u.kingdom != null && u.kingdom.name == "player")
-                        {
-                            playerUnits.Add(u);
-                        }
-                    }
-                    if (playerUnits.Count > 0)
-                    {
-                        var unit = playerUnits[UnityEngine.Random.Range(0, playerUnits.Count)];
-                        SuperMechStarSystem.SendUnit(unit.id, SuperMechStarSystem.MAIN_PLANET, p.id);
-                        SelectPlanet(p.id);
-                    }
+                    _pendingSendPlanet = p;
+                    ShowUnitSelectPanel();
                 }, ref btnY, btnHeight, btnGap);
 
                 // 有驻留单位时显示召回按钮
@@ -1353,6 +1331,48 @@ namespace SuperMech.Code
                             SelectPlanet(p.id);
                             RefreshMap();
                         }
+                    }, ref btnY, btnHeight, btnGap);
+
+                    // 单位任务分配：循环切换 idle->mining->research->defense->idle
+                    int miningCnt = 0, researchCnt = 0, defenseCnt = 0;
+                    foreach (var u in p.units)
+                    {
+                        if (u == null) continue;
+                        if (u.assignment == "mining") miningCnt++;
+                        else if (u.assignment == "research") researchCnt++;
+                        else if (u.assignment == "defense") defenseCnt++;
+                    }
+                    string assignLabel = LocalizedTextManager.getText("sm_ui_unit_assign") +
+                        $" (矿:{miningCnt} 研:{researchCnt} 防:{defenseCnt})";
+                    CreateActionButton(assignLabel, new Color(0.6f, 0.4f, 0.2f, 0.9f), () =>
+                    {
+                        // 将第一个空闲单位分配到下一个任务
+                        foreach (var u in p.units)
+                        {
+                            if (u == null) continue;
+                            if (u.assignment == "idle" || string.IsNullOrEmpty(u.assignment))
+                            {
+                                u.assignment = "mining";
+                                break;
+                            }
+                        }
+                        // 如果没有空闲单位，全部切换到下一个任务
+                        bool allAssigned = p.units.All(u => u.assignment != "idle" && !string.IsNullOrEmpty(u.assignment));
+                        if (allAssigned)
+                        {
+                            foreach (var u in p.units)
+                            {
+                                if (u == null) continue;
+                                u.assignment = u.assignment switch
+                                {
+                                    "mining" => "research",
+                                    "research" => "defense",
+                                    "defense" => "idle",
+                                    _ => "mining"
+                                };
+                            }
+                        }
+                        SelectPlanet(p.id);
                     }, ref btnY, btnHeight, btnGap);
                 }
 
@@ -1460,6 +1480,164 @@ namespace SuperMech.Code
         }
 
         /// <summary>显示事件结果弹窗</summary>
+        /// <summary>显示单位选择面板（派遣单位时用）</summary>
+        private void ShowUnitSelectPanel()
+        {
+            HideUnitSelectPanel();
+            if (_pendingSendPlanet == null) return;
+
+            // 创建半透明遮罩
+            var overlayGo = new GameObject("UnitSelectOverlay");
+            overlayGo.transform.SetParent(transform, false);
+            overlayGo.transform.SetAsLastSibling();
+            var overlayRect = overlayGo.AddComponent<RectTransform>();
+            overlayRect.anchorMin = Vector2.zero;
+            overlayRect.anchorMax = Vector2.one;
+            overlayRect.offsetMin = Vector2.zero;
+            overlayRect.offsetMax = Vector2.zero;
+            var overlayImg = overlayGo.AddComponent<Image>();
+            overlayImg.color = new Color(0, 0, 0, 0.7f);
+            var overlayBtn = overlayGo.AddComponent<Button>();
+            overlayBtn.onClick.AddListener(HideUnitSelectPanel);
+            _unitSelectPanel = overlayGo;
+
+            // 选择面板
+            var panelGo = new GameObject("UnitSelectPanel");
+            panelGo.transform.SetParent(overlayGo.transform, false);
+            var panelRect = panelGo.AddComponent<RectTransform>();
+            panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+            panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            panelRect.pivot = new Vector2(0.5f, 0.5f);
+            panelRect.sizeDelta = new Vector2(400, 350);
+            var panelImg = panelGo.AddComponent<Image>();
+            panelImg.color = new Color(0.05f, 0.08f, 0.15f, 0.98f);
+
+            // 标题
+            var titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(panelGo.transform, false);
+            var titleRect = titleGo.AddComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0, 1);
+            titleRect.anchorMax = new Vector2(1, 1);
+            titleRect.pivot = new Vector2(0.5f, 1);
+            titleRect.sizeDelta = new Vector2(0, 35);
+            titleRect.anchoredPosition = new Vector2(0, -5);
+            var titleText = titleGo.AddComponent<Text>();
+            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.fontSize = 14;
+            titleText.color = new Color(1f, 0.85f, 0.4f);
+            titleText.alignment = TextAnchor.MiddleCenter;
+            titleText.text = LocalizedTextManager.getText("sm_ui_select_unit") + " -> " + _pendingSendPlanet.name;
+
+            // 单位列表（滚动区域）
+            var scrollGo = new GameObject("UnitScroll");
+            scrollGo.transform.SetParent(panelGo.transform, false);
+            var scrollRect = scrollGo.AddComponent<RectTransform>();
+            scrollRect.anchorMin = new Vector2(0, 0);
+            scrollRect.anchorMax = new Vector2(1, 1);
+            scrollRect.offsetMin = new Vector2(10, 10);
+            scrollRect.offsetMax = new Vector2(-10, -45);
+
+            var contentGo = new GameObject("Content");
+            contentGo.transform.SetParent(scrollGo.transform, false);
+            var contentRect = contentGo.AddComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0, 1);
+            contentRect.anchorMax = new Vector2(1, 1);
+            contentRect.pivot = new Vector2(0.5f, 1);
+            contentRect.sizeDelta = new Vector2(0, 300);
+
+            // 收集玩家单位
+            var allUnits = World.world.units.getSimpleList();
+            var playerUnits = new System.Collections.Generic.List<Actor>();
+            foreach (var u in allUnits)
+            {
+                if (u != null && u.isAlive() && u.kingdom != null && u.kingdom.name == "player")
+                    playerUnits.Add(u);
+            }
+
+            float itemY = 0f;
+            foreach (var unit in playerUnits)
+            {
+                if (unit == null) continue;
+                int rank = SuperMechAdvancement.GetExactRankIndex(unit);
+                string rankName = rank >= 0 && rank < SuperMechRanks.All.Count
+                    ? LocalizedTextManager.getText(SuperMechRanks.All[rank].name) : "?";
+                bool canBodyFlight = rank >= 10;
+
+                var itemGo = new GameObject("UnitItem");
+                itemGo.transform.SetParent(contentGo.transform, false);
+                var itemRect = itemGo.AddComponent<RectTransform>();
+                itemRect.anchorMin = new Vector2(0, 1);
+                itemRect.anchorMax = new Vector2(1, 1);
+                itemRect.pivot = new Vector2(0.5f, 1);
+                itemRect.sizeDelta = new Vector2(0, 32);
+                itemRect.anchoredPosition = new Vector2(0, -itemY);
+                var itemImg = itemGo.AddComponent<Image>();
+                itemImg.color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
+                var itemBtn = itemGo.AddComponent<Button>();
+                long unitId = unit.data.id;
+                itemBtn.onClick.AddListener(() =>
+                {
+                    bool success = SuperMechStarSystem.SendUnit(unitId, SuperMechStarSystem.MAIN_PLANET, _pendingSendPlanet.id);
+                    if (success)
+                    {
+                        Debug.Log($"[超神机械师] 派遣 {unit.data.name}({rankName}) 前往 {_pendingSendPlanet.name}");
+                        HideUnitSelectPanel();
+                        SelectPlanet(_pendingSendPlanet.id);
+                        RefreshMap();
+                    }
+                });
+
+                var itemTextGo = new GameObject("Text");
+                itemTextGo.transform.SetParent(itemGo.transform, false);
+                var itemTextRect = itemTextGo.AddComponent<RectTransform>();
+                itemTextRect.anchorMin = Vector2.zero;
+                itemTextRect.anchorMax = Vector2.one;
+                itemTextRect.offsetMin = new Vector2(8, 0);
+                itemTextRect.offsetMax = new Vector2(-8, 0);
+                var itemText = itemTextGo.AddComponent<Text>();
+                itemText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                itemText.fontSize = 12;
+                itemText.color = canBodyFlight ? new Color(1f, 0.8f, 0.3f) : Color.white;
+                itemText.alignment = TextAnchor.MiddleLeft;
+                string flightTag = canBodyFlight ? " [肉身横渡]" : "";
+                itemText.text = $"{unit.data.name} ({rankName}){flightTag}";
+                itemText.raycastTarget = false;
+
+                itemY += 34f;
+            }
+
+            // 无单位提示
+            if (playerUnits.Count == 0)
+            {
+                var emptyGo = new GameObject("Empty");
+                emptyGo.transform.SetParent(contentGo.transform, false);
+                var emptyRect = emptyGo.AddComponent<RectTransform>();
+                emptyRect.anchorMin = new Vector2(0.5f, 0.5f);
+                emptyRect.anchorMax = new Vector2(0.5f, 0.5f);
+                emptyRect.sizeDelta = new Vector2(300, 30);
+                var emptyText = emptyGo.AddComponent<Text>();
+                emptyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                emptyText.fontSize = 12;
+                emptyText.color = new Color(0.6f, 0.6f, 0.6f);
+                emptyText.alignment = TextAnchor.MiddleCenter;
+                emptyText.text = LocalizedTextManager.getText("sm_ui_no_player_unit");
+            }
+
+            // 调整content高度
+            contentRect.sizeDelta = new Vector2(0, Mathf.Max(300, itemY));
+        }
+
+        /// <summary>隐藏单位选择面板</summary>
+        private void HideUnitSelectPanel()
+        {
+            if (_unitSelectPanel != null)
+            {
+                Destroy(_unitSelectPanel);
+                _unitSelectPanel = null;
+            }
+            _pendingSendPlanet = null;
+        }
+
         private void ShowEventPopup(StarEventResult result)
         {
             if (result == null) return;

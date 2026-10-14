@@ -216,10 +216,26 @@ namespace SuperMech.Code
             // 殖民地等级加成
             multiplier *= 1f + planet.colonyLevel * 0.1f;
 
-            // 驻留单位加成：每个单位+5%产出（最多+50%）
+            // 驻留单位加成：根据任务分配计算
             int unitCount = planet.units != null ? planet.units.Count : 0;
-            float unitBonus = System.Math.Min(0.5f, unitCount * 0.05f);
-            multiplier *= 1f + unitBonus;
+            int miningCount = 0, researchCount = 0, defenseCount = 0;
+            if (planet.units != null)
+            {
+                foreach (var u in planet.units)
+                {
+                    if (u == null) continue;
+                    switch (u.assignment)
+                    {
+                        case "mining": miningCount++; break;
+                        case "research": researchCount++; break;
+                        case "defense": defenseCount++; break;
+                        default: break; // idle单位不提供加成
+                    }
+                }
+            }
+            // 采矿单位：每个+10%资源产出（最多+100%）
+            float miningBonus = System.Math.Min(1.0f, miningCount * 0.10f);
+            multiplier *= 1f + miningBonus;
 
             return baseOutput * multiplier;
         }

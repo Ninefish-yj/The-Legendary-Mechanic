@@ -604,29 +604,43 @@ namespace SuperMech.Code
             var to = GetPlanet(toPlanet);
             if (from == null || to == null) return false;
 
-            // 科技检查：星际航行需要space_t3（亚光速飞船）
-            // 从主星球出发到其他星球需要科技，星球之间航行也需要
-            if (fromPlanet != toPlanet && toPlanet != MAIN_PLANET)
+            // 航行方式判定：肉身横渡（超A以上）or 飞船（需要航天科技）
+            bool canBodyFlight = false;
+            int unitRank = -1;
+            long kingdomId = 0;
+
+            if (fromPlanet == MAIN_PLANET)
             {
-                // 获取单位所属王国ID
-                long kingdomId = 0;
-                if (fromPlanet == MAIN_PLANET)
+                Actor actor = FindActorById(unitId);
+                if (actor != null)
                 {
-                    Actor actor = FindActorById(unitId);
-                    if (actor != null && actor.kingdom != null) kingdomId = actor.kingdom.data.id;
+                    unitRank = SuperMechAdvancement.GetExactRankIndex(actor);
+                    if (actor.kingdom != null) kingdomId = actor.kingdom.data.id;
                 }
-                else if (from.units.Count > 0)
+            }
+            else if (from.units.Count > 0)
+            {
+                var unitSnapshot = from.units.Find(u => u.id == unitId);
+                if (unitSnapshot != null)
                 {
-                    var unitSnapshot = from.units.Find(u => u.id == unitId);
-                    if (unitSnapshot != null && !string.IsNullOrEmpty(unitSnapshot.kingdomName))
+                    unitRank = unitSnapshot.rank;
+                    if (!string.IsNullOrEmpty(unitSnapshot.kingdomName))
                     {
                         var k = FindKingdomByName(unitSnapshot.kingdomName);
                         if (k != null) kingdomId = k.data.id;
                     }
                 }
+            }
+
+            // 超A级（rank>=10）可肉身横渡宇宙，不需要飞船和科技
+            canBodyFlight = unitRank >= 10;
+
+            // 非肉身横渡需要航天科技space_t3（亚光速飞船）
+            if (!canBodyFlight && fromPlanet != toPlanet && toPlanet != MAIN_PLANET)
+            {
                 if (kingdomId > 0 && !SuperMechTech.IsFeatureUnlocked(kingdomId, SuperMechTech.TechFeature.StarTravel))
                 {
-                    Debug.Log($"[超神机械师] 航行被阻止：需研究{SuperMechTech.GetFeatureRequirementName(SuperMechTech.TechFeature.StarTravel)}");
+                    Debug.Log($"[超神机械师] 航行被阻止：单位阶位不足（需超A肉身横渡）或需研究{SuperMechTech.GetFeatureRequirementName(SuperMechTech.TechFeature.StarTravel)}");
                     return false;
                 }
             }
@@ -644,7 +658,8 @@ namespace SuperMech.Code
                     assetId = actor.asset.id,
                     name = actor.data.name,
                     kingdomName = actor.kingdom?.data?.name,
-                    age = actor.age
+                    age = actor.age,
+                    rank = SuperMechAdvancement.GetExactRankIndex(actor)
                 };
                 // 从WorldBox地图移除
                 actor.dieSimpleNone();
@@ -752,6 +767,7 @@ namespace SuperMech.Code
         }
 
         private static float _colonyTechTimer;
+        private static float _autoTransportTimer;
         private static float _eventTimer;
         private static System.Random _eventRng = new System.Random();
 
@@ -782,8 +798,9 @@ namespace SuperMech.Code
                             var evt = StarEvents.RollEvent(_eventRng, p.type, p.colonyLevel);
                             if (evt != null)
                             {
-                                // 应用防御减伤
-                                float defense = ColonyManager.CalculateDefenseReduction(p);
+                                // 应用防御减伤：建筑防御+防御单位
+                                float defense = ColonyManager.CalculateDefenseReduction(p) + ColonyManager.CalculateDefenseFromUnits(p);
+                                defense = System.Math.Min(0.9f, defense); // 最多90%减伤
                                 var result = StarEvents.ResolveEvent(evt, p, _eventRng);
                                 if (result.resultType == EventResultType.DamageUnit || result.resultType == EventResultType.LoseUnit)
                                 {
@@ -797,6 +814,25 @@ namespace SuperMech.Code
                                 Debug.Log($"[超神机械师] 星际事件: {result.eventName} - {result.resultMessage}");
                             }
                         }
+                    }
+                }
+            }
+
+            // 资源自动运输（每15秒：殖民地资源超过80%时，运回50%到主星球）
+            _autoTransportTimer += dt;
+            if (_autoTransportTimer >= 15f)
+            {
+                _autoTransportTimer = 0;
+                var main = GetPlanet(MAIN_PLANET);
+                foreach (var p in _planets.Values)
+                {
+                    if (p.colonyLevel > 0 && p.id != MAIN_PLANET && p.maxResource > 0
+                        && p.resource >= p.maxResource * 0.8f && main != null)
+                    {
+                        float transport = p.resource * 0.5f;
+                        p.resource -= transport;
+                        main.resource = Mathf.Min(main.maxResource, main.resource + transport);
+                        Debug.Log($"[超神机械师] 自动运输: {p.name} -> 主世界 {transport:F0}资源");
                     }
                 }
             }
