@@ -3665,5 +3665,9 @@
   "sm_ui_combat_stats": "战斗统计",
   "sm_ui_diplomacy": "外交",
   "sm_ui_planet_unit_list": "驻留单位",
-  "sm_ui_more": "更多"
+  "sm_ui_more": "更多",
+  "sm_ui_super_count": "超能者",
+  "sm_ui_colony_count": "星际殖民地",
+  "sm_ui_culture_power": "文化力",
+  "sm_ui_civ_strategy": "文明战略"
 }
