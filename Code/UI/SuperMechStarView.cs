@@ -18,12 +18,12 @@ namespace SuperMech.Code
         private GameObject _tooltip; // 悬停提示
         private Text _tooltipText;
         private float _zoomLevel = 1f; // 当前缩放级别
-        private const float MinZoom = 0.5f;
-        private const float MaxZoom = 2f;
+        private const float MinZoom = 0.3f;
+        private const float MaxZoom = 5f;
         private readonly Dictionary<string, GameObject> _planetNodes = new Dictionary<string, GameObject>();
         private const float MAP_SIZE = 2400f;
         private const float VIEW_RANGE = 1200f;
-        private const int STAR_COUNT = 800; // 星空背景星星数量
+        private const int STAR_COUNT = 1500; // 星空背景星星数量（提升宇宙密度感）
         private const int TopBarHeight = 50;
         private static readonly Dictionary<string, Sprite> _planetSpriteCache = new Dictionary<string, Sprite>();
         private static Sprite _glowSprite;
