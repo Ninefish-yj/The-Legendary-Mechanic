@@ -30,7 +30,15 @@ namespace SuperMech.Code
         private float _twinkleTimer;
         private float _twinkleUpdateTimer;
 
-
+        // v0.189+ 分页标签栏
+        private GameObject _tabBar;
+        private int _currentTab = 0;
+        // v0.188+ 事件弹窗
+        private GameObject _eventPopup;
+        // v0.188+ 派遣单位
+        private PlanetData _pendingSendPlanet;
+        private GameObject _unitSelectPanel;
+        private PlanetData _managePlanet;
 
         /// <summary>切换星图显示（全屏模式）</summary>
         public static void Toggle()
@@ -508,7 +516,7 @@ namespace SuperMech.Code
                         {
                             if (p != null && p.colonyLevel > 0) p.autoTransport = !p.autoTransport;
                         }
-                        if (_selectedPlanet != null) SelectPlanet(_selectedPlanet.id);
+                        if (_selectedPlanet != null) SelectPlanet(_selectedPlanet);
                     }
                 });
                 var actTextGo = new GameObject("Text");
@@ -1101,6 +1109,49 @@ namespace SuperMech.Code
                     }
                 }
             }
+        }
+
+
+        /// <summary>星球世界坐标→地图UI坐标</summary>
+        private Vector2 PlanetToMapPosition(float worldX, float worldY)
+        {
+            float mapHalf = MAP_SIZE / 2f;
+            float uiX = (worldX / VIEW_RANGE) * (mapHalf * _zoomLevel);
+            float uiY = -(worldY / VIEW_RANGE) * (mapHalf * _zoomLevel);
+            return new Vector2(uiX, uiY);
+        }
+
+
+        /// <summary>刷新分页标签栏选中状态</summary>
+        private void RefreshTabBar()
+        {
+            if (_tabBar == null) return;
+            for (int i = 0; i < _tabBar.transform.childCount; i++)
+            {
+                var btn = _tabBar.transform.GetChild(i).GetComponent<Button>();
+                if (btn != null)
+                {
+                    var img = btn.GetComponent<Image>();
+                    if (img != null) img.color = (i == _currentTab) ? new Color(0.3f, 0.5f, 0.8f, 0.8f) : new Color(0.2f, 0.2f, 0.25f, 0.6f);
+                }
+            }
+        }
+
+        /// <summary>刷新星球信息面板</summary>
+        private void RefreshPlanetInfo(PlanetData p)
+        {
+            if (p == null || _infoText == null) return;
+            var sb = new System.Text.StringBuilder();
+            sb.Append($"<b><size=16>{p.name}</size></b>\n");
+            sb.Append($"类型: {p.type}\n");
+            sb.Append($"坐标: ({p.x:F0}, {p.y:F0})\n");
+            if (p.colonyLevel > 0)
+            {
+                sb.Append($"殖民地等级: Lv{p.colonyLevel}\n");
+                sb.Append($"资源: {p.resource:F0}\n");
+                sb.Append($"驻留单位: {p.units?.Count ?? 0}\n");
+            }
+            _infoText.text = sb.ToString();
         }
 
         /// <summary>隐藏事件弹窗</summary>
@@ -1891,7 +1942,6 @@ namespace SuperMech.Code
         }
 
         private GameObject _unitManagePanel;
-        private PlanetData _managePlanet;
 
         /// <summary>Stellaris式单位管理面板：每个单位单独分配任务</summary>
         private void ShowUnitManagePanel(PlanetData planet)
