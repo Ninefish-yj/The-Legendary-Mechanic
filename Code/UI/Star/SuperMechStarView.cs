@@ -992,7 +992,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>创建星团标记（疏散星团=蓝色，球状星团=橙色）</summary>
-        private void CreateClusterMarker(StarCluster c)
+        private void CreateClusterMarker(SuperMechStarSystem.StarCluster c)
         {
             var clusterGo = new GameObject($"Cluster_{c.id}");
             clusterGo.transform.SetParent(_mapContent, false);
@@ -1007,7 +1007,7 @@ namespace SuperMech.Code
             var circleImg = clusterGo.AddComponent<Image>();
             circleImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
             circleImg.raycastTarget = false;
-            if (c.type == ClusterType.Globular)
+            if (c.type == SuperMechStarSystem.ClusterType.Globular)
             {
                 circleImg.color = new Color(1f, 0.6f, 0.3f, 0.08f); // 球状星团：橙色
             }
@@ -1030,7 +1030,7 @@ namespace SuperMech.Code
             labelText.fontSize = 11;
             labelText.alignment = TextAnchor.MiddleCenter;
             labelText.raycastTarget = false;
-            if (c.type == ClusterType.Globular)
+            if (c.type == SuperMechStarSystem.ClusterType.Globular)
             {
                 labelText.color = new Color(1f, 0.7f, 0.4f, 0.7f);
                 labelText.text = $"◉ {c.name}";
@@ -1063,10 +1063,10 @@ namespace SuperMech.Code
             if (c == null || _infoText == null) return;
             _selectedPlanet = null;
 
-            string typeName = c.type == ClusterType.Globular ?
+            string typeName = c.type == SuperMechStarSystem.ClusterType.Globular ?
                 LocalizedTextManager.getText("sm_ui_cluster_globular") :
                 LocalizedTextManager.getText("sm_ui_cluster_open");
-            string typeColor = c.type == ClusterType.Globular ? "#ffaa66" : "#66aaff";
+            string typeColor = c.type == SuperMechStarSystem.ClusterType.Globular ? "#ffaa66" : "#66aaff";
 
             // 统计星团内星球
             var allPlanets = SuperMechStarSystem.GetAllPlanets();

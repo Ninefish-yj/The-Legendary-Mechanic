@@ -7,7 +7,7 @@ namespace SuperMech.Code
         [Serializable]
         public class SaveData
         {
-            public int version = CurrentSaveVersion;
+            public int version = 3; // 存档版本号
             public Dictionary<string, ActorSaveData> actors = new Dictionary<string, ActorSaveData>();
             public SanctuarySaveData sanctuary = new SanctuarySaveData();
             public SuperMechFaction.FactionSaveData faction = new SuperMechFaction.FactionSaveData();

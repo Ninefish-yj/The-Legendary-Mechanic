@@ -617,10 +617,10 @@ namespace SuperMech.Code
                 }
                 else if (from.units.Count > 0)
                 {
-                    var snapshot = from.units.Find(u => u.id == unitId);
-                    if (snapshot != null && !string.IsNullOrEmpty(snapshot.kingdomName))
+                    var unitSnapshot = from.units.Find(u => u.id == unitId);
+                    if (unitSnapshot != null && !string.IsNullOrEmpty(unitSnapshot.kingdomName))
                     {
-                        var k = FindKingdomByName(snapshot.kingdomName);
+                        var k = FindKingdomByName(unitSnapshot.kingdomName);
                         if (k != null) kingdomId = k.data.id;
                     }
                 }

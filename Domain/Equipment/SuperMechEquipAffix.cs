@@ -57,6 +57,13 @@ namespace SuperMech.Code
             return _enhanceLevels.TryGetValue(a.id, out int lv) ? lv : 0;
         }
 
+        /// <summary>设置强化等级（存档恢复用）</summary>
+        public static void SetEnhanceLevel(Actor a, int level)
+        {
+            if (a == null || level <= 0) return;
+            _enhanceLevels[a.id] = level;
+        }
+
         /// <summary>获取强化消耗（每级×1.5递增）</summary>
         public static int GetEnhanceCost(Actor a)
         {

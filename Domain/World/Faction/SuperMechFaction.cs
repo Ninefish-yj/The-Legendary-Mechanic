@@ -28,6 +28,7 @@ namespace SuperMech.Code
             public Dictionary<string, FactionRelation> relations = new Dictionary<string, FactionRelation>();
             public FactionGovernment government = FactionGovernment.Autocracy; // v0.61.0 政体
             public List<long> elders = new List<long>(); // v0.61.0 议会制元老/宗教制长老
+            public float warWeariness = 0f; // v0.182 战争疲劳度
         }
 
         private static readonly Dictionary<string, FactionData> _factions = new Dictionary<string, FactionData>();

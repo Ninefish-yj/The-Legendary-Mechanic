@@ -195,5 +195,33 @@ namespace SuperMech.Code
             }
             return $"{have}/{recipe.requiredKnowledges.Count}";
         }
+
+        #region 兼容方法（旧版API残留，新版基于知识等级融合不需要这些）
+
+        /// <summary>注册系统（兼容旧调用，实际调用Init）</summary>
+        public static void Register() { Init(); }
+
+        /// <summary>清理死亡单位数据（新版无状态，空操作）</summary>
+        public static int CleanupDead(List<Actor> alive) { return 0; }
+
+        /// <summary>清空所有数据（新版无状态，空操作）</summary>
+        public static void Clear() { }
+
+        /// <summary>恢复已学配方（新版无已学配方概念，空操作）</summary>
+        public static void RestoreLearnedRecipe(Actor a, string rid) { }
+
+        /// <summary>获取已学配方列表（新版无已学配方概念，返回空列表）</summary>
+        public static List<string> GetLearnedRecipes(Actor a) { return new List<string>(); }
+
+        /// <summary>获取融合加成（新版融合直接解锁知识，无额外加成）</summary>
+        public static float GetFusionBonus(Actor a) { return 0f; }
+
+        /// <summary>检查制作冷却（新版无制作装备功能，返回false）</summary>
+        public static bool IsCraftOnCooldown(Actor a) { return false; }
+
+        /// <summary>制作装备（新版无制作装备功能，返回false）</summary>
+        public static bool CraftEquip(Actor a, string recipeId) { return false; }
+
+        #endregion
     }
 }

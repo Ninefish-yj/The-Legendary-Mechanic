@@ -195,7 +195,7 @@ namespace SuperMech.Code
                 // 保存文明科技点+科技等级（v0.152.8）
                 data.civilizationTechData = SuperMechCivilization.SerializeForSave();
                 // 保存任务/成就/声望数据（v0.185）
-                data.questData = SuperMechQuestSystem.SerializeForSave();
+                data.questData = SuperMechQuestSystem.Save();
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -807,8 +807,7 @@ namespace SuperMech.Code
                 // v0.185 恢复装备强化等级
                 if (ad.enhanceLevel > 0)
                 {
-                    var dict = SuperMechEquipAffix._enhanceLevels;
-                    if (dict != null) dict[a.id] = ad.enhanceLevel;
+                    SuperMechEquipAffix.SetEnhanceLevel(a, ad.enhanceLevel);
                 }
             }
             catch (Exception e)

@@ -176,9 +176,9 @@ namespace SuperMech.Code
                 case "meteor":
                     // 陨石带：飞行时间+2秒，小概率损失单位
                     CurrentFlight.totalTime += 2f;
-                    if (CurrentFlight.passengerIds != null && CurrentFlight.passengerIds.Count > 0 && Random.value < 0.2f)
+                    if (CurrentFlight.passengerIds != null && CurrentFlight.passengerIds.Count > 0 && UnityEngine.Random.value < 0.2f)
                     {
-                        int idx = Random.Range(0, CurrentFlight.passengerIds.Count);
+                        int idx = UnityEngine.Random.Range(0, CurrentFlight.passengerIds.Count);
                         Debug.Log($"[超神机械师] 陨石带：单位{CurrentFlight.passengerIds[idx]}受伤");
                     }
                     break;
@@ -187,13 +187,13 @@ namespace SuperMech.Code
                     // 战斗力足够：击败海盗获得伊纳尔；不足：损失伊纳尔或单位
                     CurrentFlight.totalTime += 3f;
                     int combatPower = CurrentFlight.passengerIds != null ? CurrentFlight.passengerIds.Count * 10 : 0;
-                    if (combatPower >= 30 && Random.value < 0.6f)
+                    if (combatPower >= 30 && UnityEngine.Random.value < 0.6f)
                     {
                         // 胜利：获得500-2000伊纳尔
-                        int loot = Random.Range(500, 2000);
+                        int loot = UnityEngine.Random.Range(500, 2000);
                         Debug.Log($"[超神机械师] 击退太空海盗，缴获{loot}₡");
                     }
-                    else if (Random.value < 0.5f)
+                    else if (UnityEngine.Random.value < 0.5f)
                     {
                         // 逃跑成功：额外消耗时间
                         CurrentFlight.totalTime += 2f;
@@ -207,7 +207,7 @@ namespace SuperMech.Code
                     break;
                 case "signal":
                     // 异常信号：发现新星球（30%概率）
-                    if (Random.value < 0.3f)
+                    if (UnityEngine.Random.value < 0.3f)
                     {
                         Debug.Log("[超神机械师] 异常信号：发现新星球！");
                     }
@@ -218,12 +218,12 @@ namespace SuperMech.Code
                     break;
                 case "derelict":
                     // 废弃飞船：探索获得资源（50%概率获得伊纳尔，20%概率获得装备）
-                    if (Random.value < 0.5f)
+                    if (UnityEngine.Random.value < 0.5f)
                     {
-                        int scrap = Random.Range(200, 1000);
+                        int scrap = UnityEngine.Random.Range(200, 1000);
                         Debug.Log($"[超神机械师] 废弃飞船：回收{scrap}₡物资");
                     }
-                    else if (Random.value < 0.2f)
+                    else if (UnityEngine.Random.value < 0.2f)
                     {
                         Debug.Log("[超神机械师] 废弃飞船：发现装备！");
                     }

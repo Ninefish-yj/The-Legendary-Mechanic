@@ -36,12 +36,12 @@ namespace SuperMech.Code
         /// <summary>获取服务价格（可随次数递增，v0.185应用声望折扣）</summary>
         public static int GetCost(ServiceType type, Actor a = null)
         {
-            int base = _baseCost[type];
+            int baseCost = _baseCost[type];
             // 阶位越高，服务越贵（高阶单位复活成本更高）
             if (a != null && (type == ServiceType.Resurrect || type == ServiceType.ResetRank))
             {
                 int rankIdx = SuperMechActorContextRegistry.GetRank(a);
-                base = base * (1 + rankIdx / 2);
+                baseCost = baseCost * (1 + rankIdx / 2);
             }
             // v0.185 声望折扣：取所有势力中最高声望对应的折扣
             if (a != null)
@@ -53,9 +53,9 @@ namespace SuperMech.Code
                     float mult = SuperMechQuestSystem.GetReputationPriceMultiplier(a, f.id);
                     if (mult < bestMultiplier) bestMultiplier = mult;
                 }
-                base = Mathf.RoundToInt(base * bestMultiplier);
+                baseCost = Mathf.RoundToInt(baseCost * bestMultiplier);
             }
-            return base;
+            return baseCost;
         }
 
         /// <summary>获取服务名称（本地化key）</summary>
@@ -130,7 +130,7 @@ namespace SuperMech.Code
                 // 死亡单位：尝试通过圣所系统复活
                 try
                 {
-                    var record = SuperMechInfoState.GetRecord(a);
+                    var record = SuperMechInfoStateRecord.GetDeadState(a.id);
                     if (record != null && SuperMechResurrection.CanResurrect(record))
                     {
                         SuperMechResurrection.Resurrect(record);
@@ -156,15 +156,9 @@ namespace SuperMech.Code
             {
                 tile = targetCity.buildings[0].current_tile;
             }
-            if (tile == null && World.world != null)
-            {
-                // 回退：随机选一个已探索地块
-                tile = World.world.tiles?[UnityEngine.Random.Range(0, World.world.tiles.Length)];
-            }
             if (tile != null)
             {
                 a.current_tile = tile;
-                a.position = tile.realPosition;
                 Debug.Log($"[超神机械师] {a.data.name} 传送到 {targetCity.data.name}");
                 return true;
             }
@@ -237,9 +231,12 @@ namespace SuperMech.Code
             // 移除所有负面特质
             bool removed = false;
             var negativeTraits = new List<string>();
-            foreach (var t in a.data.traits)
+            if (a.data.saved_traits != null)
             {
-                if (IsNegativeTrait(t)) negativeTraits.Add(t);
+                foreach (var t in a.data.saved_traits)
+                {
+                    if (IsNegativeTrait(t)) negativeTraits.Add(t);
+                }
             }
             foreach (var t in negativeTraits)
             {
