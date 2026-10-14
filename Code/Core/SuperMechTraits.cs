@@ -142,6 +142,7 @@ namespace SuperMech.Code
             var t = new ActorTrait
             {
                 id = id, path_icon = "ui/Icons/actor_traits/iconGenius", group_id = "sm_classes",
+                rarity = Rarity.R0_Normal, // 职业特质是普通特质，不是稀有特质
                 needs_to_be_explored = false,
                 rate_inherit = 20,
                 rate_birth = 3,
