@@ -19,8 +19,15 @@ namespace SuperMech.Code
             public string id;
             public string nameKey;       // 本地化key
             public string founderId;     // 创立者特质ID
+            public bool isGodCompany = false;  // 是否为上帝创建的公司
             public int level = 1;
-            public long treasury = 0;    // 公司金库（伊纳尔）
+            public long treasury = 0;    // 公司金库（储备金，伊纳尔）
+            public long totalIssued = 0; // 已发行货币总量（M2）
+            public float reserveRatio = 0.2f;  // 准备金率（默认20%，部分准备金制度）
+            public float baseInterestRate = 0.05f;  // 基准利率（5%）
+            public long totalLoans = 0;  // 贷款总额
+            public long revenue = 0;     // 累计营收
+            public long expenses = 0;    // 累计支出
             public int reputation = 0;   // 声望
             public int tickCounter = 0;
         }
@@ -123,6 +130,134 @@ namespace SuperMech.Code
             _companies.Clear();
         }
 
+        // ══════════════════════════════════════════════
+        // 上帝创建公司（玩家作为央行发行货币）
+        // ══════════════════════════════════════════════
+
+        /// <summary>上帝创建公司，作为货币发行机构</summary>
+        public static CompanyDef CreateGodCompany(string nameKey, long initialReserve)
+        {
+            string id = "god_company_" + System.Guid.NewGuid().ToString("N").Substring(0, 8);
+            var c = new CompanyDef
+            {
+                id = id,
+                nameKey = nameKey,
+                founderId = "god",
+                isGodCompany = true,
+                level = 1,
+                treasury = initialReserve,
+                reserveRatio = 0.2f,
+                baseInterestRate = 0.05f
+            };
+            _companies[id] = c;
+            Debug.Log($"[超神机械师] 上帝创建公司: {id}, 初始储备金: {initialReserve}");
+            return c;
+        }
+
+        /// <summary>获取上帝创建的公司列表</summary>
+        public static List<CompanyDef> GetGodCompanies()
+        {
+            var list = new List<CompanyDef>();
+            foreach (var c in _companies.Values)
+                if (c.isGodCompany) list.Add(c);
+            return list;
+        }
+
+        // ══════════════════════════════════════════════
+        // 部分准备金货币发行制度
+        // ══════════════════════════════════════════════
+
+        /// <summary>计算最大可发行货币量 = 储备金 / 准备金率</summary>
+        public static long GetMaxIssueable(CompanyDef c)
+        {
+            if (c == null || c.reserveRatio <= 0) return 0;
+            return (long)(c.treasury / c.reserveRatio);
+        }
+
+        /// <summary>计算剩余可发行量</summary>
+        public static long GetRemainingIssueable(CompanyDef c)
+        {
+            if (c == null) return 0;
+            return System.Math.Max(0, GetMaxIssueable(c) - c.totalIssued);
+        }
+
+        /// <summary>发行货币：从公司金库发行到市场流通，受准备金率约束</summary>
+        public static bool IssueCurrency(CompanyDef c, long amount)
+        {
+            if (c == null || amount <= 0) return false;
+            long remaining = GetRemainingIssueable(c);
+            if (amount > remaining)
+            {
+                Debug.LogWarning($"[超神机械师] 货币发行超限: 尝试{amount}, 剩余可发行{remaining}");
+                return false;
+            }
+            c.totalIssued += amount;
+            c.revenue += amount;  // 发行收入计入营收
+            return true;
+        }
+
+        /// <summary>回笼货币：从市场回收，减少流通量</summary>
+        public static bool RetireCurrency(CompanyDef c, long amount)
+        {
+            if (c == null || amount <= 0) return false;
+            if (amount > c.totalIssued) return false;
+            c.totalIssued -= amount;
+            c.expenses += amount;
+            return true;
+        }
+
+        // ══════════════════════════════════════════════
+        // 利率与通胀
+        // ══════════════════════════════════════════════
+
+        /// <summary>设定基准利率（影响存贷款和经济活动）</summary>
+        public static void SetInterestRate(CompanyDef c, float rate)
+        {
+            if (c == null) return;
+            c.baseInterestRate = Mathf.Clamp(rate, 0f, 0.5f);
+        }
+
+        /// <summary>计算全市场通胀率 = (货币供应量增长 - 经济增长) / 基期</summary>
+        public static float CalculateInflationRate()
+        {
+            long totalMoney = 0;
+            long totalReserve = 0;
+            foreach (var c in _companies.Values)
+            {
+                totalMoney += c.totalIssued;
+                totalReserve += c.treasury;
+            }
+            if (totalReserve <= 0) return 0f;
+            // 简化模型：通胀率 = (M2 - 储备金) / 储备金 × 利率系数
+            float inflation = (float)(totalMoney - totalReserve) / totalReserve * 0.1f;
+            return Mathf.Clamp(inflation, -0.1f, 1.0f);
+        }
+
+        /// <summary>获取全市场货币供应量（M2）</summary>
+        public static long GetTotalMoneySupply()
+        {
+            long total = 0;
+            foreach (var c in _companies.Values)
+                total += c.totalIssued;
+            return total;
+        }
+
+        /// <summary>获取全市场储备金总量</summary>
+        public static long GetTotalReserves()
+        {
+            long total = 0;
+            foreach (var c in _companies.Values)
+                total += c.treasury;
+            return total;
+        }
+
+        /// <summary>计算公司净利润 = 营收 - 支出</summary>
+        public static long GetNetProfit(CompanyDef c)
+        {
+            if (c == null) return 0;
+            return c.revenue - c.expenses;
+        }
+
         /// <summary>序列化所有公司数据用于存档</summary>
         public static List<CompanySaveData> GetAllForSave()
         {
@@ -132,8 +267,16 @@ namespace SuperMech.Code
                 list.Add(new CompanySaveData
                 {
                     id = c.id,
+                    nameKey = c.nameKey,
+                    isGodCompany = c.isGodCompany,
                     level = c.level,
                     treasury = c.treasury,
+                    totalIssued = c.totalIssued,
+                    reserveRatio = c.reserveRatio,
+                    baseInterestRate = c.baseInterestRate,
+                    totalLoans = c.totalLoans,
+                    revenue = c.revenue,
+                    expenses = c.expenses,
                     reputation = c.reputation
                 });
             }
@@ -150,7 +293,34 @@ namespace SuperMech.Code
                 {
                     c.level = s.level;
                     c.treasury = s.treasury;
+                    c.totalIssued = s.totalIssued;
+                    c.reserveRatio = s.reserveRatio > 0 ? s.reserveRatio : 0.2f;
+                    c.baseInterestRate = s.baseInterestRate;
+                    c.totalLoans = s.totalLoans;
+                    c.revenue = s.revenue;
+                    c.expenses = s.expenses;
                     c.reputation = s.reputation;
+                }
+                else if (s.isGodCompany)
+                {
+                    // 恢复上帝创建的公司
+                    var gc = new CompanyDef
+                    {
+                        id = s.id,
+                        nameKey = s.nameKey ?? "sm_company_god_default",
+                        founderId = "god",
+                        isGodCompany = true,
+                        level = s.level,
+                        treasury = s.treasury,
+                        totalIssued = s.totalIssued,
+                        reserveRatio = s.reserveRatio > 0 ? s.reserveRatio : 0.2f,
+                        baseInterestRate = s.baseInterestRate,
+                        totalLoans = s.totalLoans,
+                        revenue = s.revenue,
+                        expenses = s.expenses,
+                        reputation = s.reputation
+                    };
+                    _companies[s.id] = gc;
                 }
             }
         }
@@ -159,8 +329,16 @@ namespace SuperMech.Code
         public class CompanySaveData
         {
             public string id;
+            public string nameKey;
+            public bool isGodCompany;
             public int level;
             public long treasury;
+            public long totalIssued;
+            public float reserveRatio;
+            public float baseInterestRate;
+            public long totalLoans;
+            public long revenue;
+            public long expenses;
             public int reputation;
         }
     }

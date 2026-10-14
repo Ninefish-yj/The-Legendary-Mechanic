@@ -31,17 +31,7 @@ namespace SuperMech.Code
         public enum SkillEffectType { None, Damage, Buff, Debuff, Summon, Heal, Teleport }
 
         public static readonly List<SkillDef> AllSkills = new List<SkillDef>
-        {
-            new SkillDef {
-                id = "sm_skill_qimod", name = "sm_skills_986",
-                desc = "sm_skills_987",
-                icon = "ui/Icons/actor_traits/iconBattleReflexes",
-                requiredClass = "sm_skills_1365", requiredStage = 3, requiredKnowledge = "sm_know_mech_1_0_0",
-                intelligence = 5, dmgMul = 1.1f, hpMul = 1f, speedMul = 1f,
-                type = SkillType.Active, cooldown = 15f, qiCost = 50f,
-                effectType = SkillEffectType.Damage, effectValue = 2f, effectDuration = 0f
-            },
-            new SkillDef {
+        {            new SkillDef {
                 id = "sm_skill_virtual_purify", name = "sm_skills_988",
                 desc = "sm_skills_989",
                 icon = "ui/Icons/actor_traits/iconChosenOne",
@@ -94,17 +84,7 @@ namespace SuperMech.Code
                 intelligence = 5, dmgMul = 1.35f, hpMul = 1f, speedMul = 1.1f,
                 type = SkillType.Active, cooldown = 16f, qiCost = 75f,
                 effectType = SkillEffectType.Debuff, effectValue = 0.4f, effectDuration = 4f
-            },
-            new SkillDef {
-                id = "sm_skill_apostle_summon", name = "sm_skills_1100",
-                desc = "sm_skills_1101",
-                icon = "ui/Icons/actor_traits/iconStrong",
-                requiredClass = "sm_skills_1365", requiredStage = 9, requiredKnowledge = "sm_know_mech_3_0_0",
-                intelligence = 10, dmgMul = 1.4f, hpMul = 1.2f, speedMul = 1.1f,
-                type = SkillType.Active, cooldown = 30f, qiCost = 150f,
-                effectType = SkillEffectType.Summon, effectValue = 3f, effectDuration = 15f
-            },
-            new SkillDef {
+            },            new SkillDef {
                 id = "sm_skill_emperor_dominion", name = "sm_skills_1102",
                 desc = "sm_skills_1103",
                 icon = "ui/Icons/actor_traits/iconLeader",
@@ -112,17 +92,7 @@ namespace SuperMech.Code
                 intelligence = 15, dmgMul = 1.5f, hpMul = 1.3f, speedMul = 1.2f,
                 type = SkillType.Active, cooldown = 35f, qiCost = 200f,
                 effectType = SkillEffectType.Buff, effectValue = 2f, effectDuration = 10f
-            },
-            new SkillDef {
-                id = "sm_skill_vajra_body", name = "sm_skills_1104",
-                desc = "sm_skills_1105",
-                icon = "ui/Icons/actor_traits/iconTough",
-                requiredClass = "sm_skills_1366", requiredStage = 6, requiredKnowledge = "sm_know_martial_2_0_0",
-                intelligence = 0, dmgMul = 1.1f, hpMul = 1.4f, speedMul = 1f,
-                type = SkillType.Active, cooldown = 22f, qiCost = 90f,
-                effectType = SkillEffectType.Buff, effectValue = 2f, effectDuration = 6f
-            },
-            new SkillDef {
+            },            new SkillDef {
                 id = "sm_skill_war_god", name = "sm_skills_1106",
                 desc = "sm_skills_1107",
                 icon = "ui/Icons/actor_traits/iconRage",
@@ -139,17 +109,7 @@ namespace SuperMech.Code
                 intelligence = 5, dmgMul = 1.4f, hpMul = 1f, speedMul = 1.1f,
                 type = SkillType.Active, cooldown = 18f, qiCost = 85f,
                 effectType = SkillEffectType.Damage, effectValue = 2.5f, effectDuration = 0f
-            },
-            new SkillDef {
-                id = "sm_skill_space_fold", name = "sm_skills_1110",
-                desc = "sm_skills_1111",
-                icon = "ui/Icons/actor_traits/iconFast",
-                requiredClass = "sm_skills_1367", requiredStage = 8, requiredKnowledge = "sm_know_psi_3_0_0",
-                intelligence = 8, dmgMul = 1.3f, hpMul = 1f, speedMul = 1.5f,
-                type = SkillType.Active, cooldown = 25f, qiCost = 110f,
-                effectType = SkillEffectType.Teleport, effectValue = 1f, effectDuration = 2f
-            },
-            new SkillDef {
+            },            new SkillDef {
                 id = "sm_skill_magic_shield", name = "sm_skills_1112",
                 desc = "sm_skills_1113",
                 icon = "ui/Icons/actor_traits/iconBlessing",
