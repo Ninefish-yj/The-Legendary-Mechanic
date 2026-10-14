@@ -157,6 +157,13 @@ namespace SuperMech.Code
         private static readonly Dictionary<string, KnowledgeDef> _allKnowledge = new Dictionary<string, KnowledgeDef>();
         private static readonly Dictionary<long, HashSet<string>> _unlocked = new Dictionary<long, HashSet<string>>();
 
+        // ========== v0.184 知识等级系统（原著还原：Lv1-Lv5，潜能点升级） ==========
+        /// <summary>知识等级：actorId -> knowledgeId -> level(1-5)</summary>
+        private static readonly Dictionary<long, Dictionary<string, int>> _knowledgeLevels = new Dictionary<long, Dictionary<string, int>>();
+        public const int MaxKnowledgeLevel = 5;
+        /// <summary>每级升级消耗的潜能点（原著：知识升一级消耗1点潜能点）</summary>
+        public const int PotentialCostPerLevel = 1;
+
         public static void Register()
         {
             int count = 0;
@@ -289,6 +296,13 @@ namespace SuperMech.Code
                 _unlocked[a.id] = set;
             }
             bool added = set.Add(knowledgeId);
+            // v0.184 解锁时默认Lv1
+            if (added)
+            {
+                if (!_knowledgeLevels.ContainsKey(a.id))
+                    _knowledgeLevels[a.id] = new Dictionary<string, int>();
+                _knowledgeLevels[a.id][knowledgeId] = 1;
+            }
             // 学习机械系知识后自动更新专精（只有机械师分支有专精）
             if (added && knowledgeId.StartsWith("sm_know_mech_") && SuperMechBranch.HasBranch(a, SuperMechBranch.BranchMech))
             {
@@ -304,6 +318,79 @@ namespace SuperMech.Code
                 });
             }
             return added;
+        }
+
+        // ========== 知识等级系统（v0.184原著还原） ==========
+
+        /// <summary>获取知识等级（1-5，未解锁返回0）</summary>
+        public static int GetKnowledgeLevel(Actor a, string knowledgeId)
+        {
+            if (a == null || !IsUnlocked(a, knowledgeId)) return 0;
+            if (_knowledgeLevels.TryGetValue(a.id, out var levels) &&
+                levels.TryGetValue(knowledgeId, out int lv))
+                return lv;
+            return 1; // 已解锁但未记录等级，默认Lv1
+        }
+
+        /// <summary>升级知识（消耗潜能点，原著：知识升一级消耗1点潜能点）</summary>
+        public static bool UpgradeKnowledge(Actor a, string knowledgeId)
+        {
+            if (a == null || !IsUnlocked(a, knowledgeId)) return false;
+            int currentLv = GetKnowledgeLevel(a, knowledgeId);
+            if (currentLv >= MaxKnowledgeLevel) return false;
+            if (!SuperMechPotential.SpendPotential(a, PotentialCostPerLevel)) return false;
+
+            if (!_knowledgeLevels.ContainsKey(a.id))
+                _knowledgeLevels[a.id] = new Dictionary<string, int>();
+            _knowledgeLevels[a.id][knowledgeId] = currentLv + 1;
+
+            int newLv = currentLv + 1;
+            string kname = _allKnowledge.TryGetValue(knowledgeId, out var def) ? def.name : knowledgeId;
+            Debug.Log($"[超神机械师] {a.data.name} 的知识【{kname}】升级到 Lv{newLv}");
+
+            // 满级奖励（原著：知识满级带来的新专长）
+            if (newLv == MaxKnowledgeLevel)
+            {
+                ApplyMaxLevelBonus(a, knowledgeId);
+            }
+            return true;
+        }
+
+        /// <summary>满级奖励：每级知识提供2%全属性加成，满级额外+10%</summary>
+        public static float GetKnowledgeLevelBonus(Actor a)
+        {
+            if (a == null) return 0f;
+            if (!_knowledgeLevels.TryGetValue(a.id, out var levels)) return 0f;
+            float bonus = 0f;
+            foreach (var kv in levels)
+            {
+                bonus += kv.Value * 0.02f; // 每级+2%
+                if (kv.Value >= MaxKnowledgeLevel) bonus += 0.10f; // 满级额外+10%
+            }
+            return bonus;
+        }
+
+        /// <summary>应用满级奖励（发布事件，由属性系统监听）</summary>
+        private static void ApplyMaxLevelBonus(Actor a, string knowledgeId)
+        {
+            string kname = _allKnowledge.TryGetValue(knowledgeId, out var def) ? def.name : knowledgeId;
+            SuperMechEventBus.Publish("KnowledgeMaxLevel", new KnowledgeUnlockedEvent
+            {
+                actor = a, knowledgeId = knowledgeId, knowledgeName = kname
+            });
+            Debug.Log($"[超神机械师] {a.data.name} 的知识【{kname}】达到满级，获得专长奖励");
+        }
+
+        /// <summary>获取满级知识数量</summary>
+        public static int GetMaxLevelCount(Actor a, string prefix)
+        {
+            if (a == null) return 0;
+            if (!_knowledgeLevels.TryGetValue(a.id, out var levels)) return 0;
+            int count = 0;
+            string key = "sm_know_" + prefix + "_";
+            foreach (var kv in levels)
+                if (kv.Key.StartsWith(key) && kv.Value >= MaxKnowledgeLevel) count++;
+            return count;
         }
 
         public static int GetUnlockedCount(Actor a, string prefix)

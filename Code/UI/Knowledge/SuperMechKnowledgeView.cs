@@ -356,22 +356,43 @@ namespace SuperMech.Code
             if (kn == null) return;
             bool unlocked = SelectedActor != null && SuperMechKnowledge.IsUnlocked(SelectedActor, id);
             bool canUnlock = SelectedActor != null && SuperMechKnowledge.CanUnlock(SelectedActor, id);
+            int level = unlocked ? SuperMechKnowledge.GetKnowledgeLevel(SelectedActor, id) : 0;
+            bool isMax = level >= SuperMechKnowledge.MaxKnowledgeLevel;
+
+            // v0.184 知识等级显示
+            string levelText = unlocked ? $"Lv{level}/{SuperMechKnowledge.MaxKnowledgeLevel}" : "-";
+            string levelColor = isMax ? "#FFD700" : (level >= 3 ? "#66ff99" : "#93A4BC");
+
             _detailText.text = $"<b><size=16><color=#E8C36A>{kn.name}</color></size></b>\n\n" +
                 $"{kn.desc}\n\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {kn.tier}\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {kn.cost}\n" +
+                $"<color=#93A4BC>等级:</color> <color={levelColor}>{levelText}</color>\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
                 $"<color={(unlocked ? "#66ff99" : "#ff9966")}>{(unlocked ? LocalizedTextManager.getText("sm_ui_unlocked") : LocalizedTextManager.getText("sm_ui_locked"))}</color>";
 
-            // 更新学习按钮
+            // 更新学习/升级按钮
             if (_learnBtn != null && _learnBtn.gameObject != null)
             {
-                if (unlocked)
+                if (unlocked && !isMax)
                 {
+                    // 已解锁未满级：显示升级按钮
+                    _learnBtn.gameObject.SetActive(true);
+                    int potential = SuperMechPotential.GetPotential(SelectedActor);
+                    bool canUpgrade = potential >= SuperMechKnowledge.PotentialCostPerLevel;
+                    _learnBtn.interactable = canUpgrade;
+                    _learnBtnText.text = canUpgrade ? $"升级({SuperMechKnowledge.PotentialCostPerLevel}潜能)" : "潜能不足";
+                    var img = _learnBtn.GetComponent<Image>();
+                    if (img != null) img.color = canUpgrade ? new Color(0.3f, 0.6f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.9f);
+                }
+                else if (unlocked && isMax)
+                {
+                    // 满级：隐藏按钮
                     _learnBtn.gameObject.SetActive(false);
                 }
                 else
                 {
+                    // 未解锁：显示学习按钮
                     _learnBtn.gameObject.SetActive(true);
                     _learnBtn.interactable = canUnlock;
                     _learnBtnText.text = canUnlock ? LocalizedTextManager.getText("sm_ui_learn") : LocalizedTextManager.getText("sm_ui_locked");
@@ -385,10 +406,24 @@ namespace SuperMech.Code
         private void OnLearnClicked()
         {
             if (SelectedActor == null || string.IsNullOrEmpty(_selectedId)) return;
-            if (SuperMechKnowledge.Unlock(SelectedActor, _selectedId))
+            bool unlocked = SuperMechKnowledge.IsUnlocked(SelectedActor, _selectedId);
+            if (!unlocked)
             {
-                Debug.Log($"[超神机械师] {SelectedActor.getName()} 学习知识: {_selectedId}");
-                SelectKnowledge(_selectedId);
+                // 未解锁：学习知识
+                if (SuperMechKnowledge.Unlock(SelectedActor, _selectedId))
+                {
+                    Debug.Log($"[超神机械师] {SelectedActor.getName()} 学习知识: {_selectedId}");
+                    SelectKnowledge(_selectedId);
+                }
+            }
+            else
+            {
+                // 已解锁：升级知识（v0.184原著还原）
+                if (SuperMechKnowledge.UpgradeKnowledge(SelectedActor, _selectedId))
+                {
+                    Debug.Log($"[超神机械师] {SelectedActor.getName()} 升级知识: {_selectedId}");
+                    SelectKnowledge(_selectedId);
+                }
             }
         }
     }

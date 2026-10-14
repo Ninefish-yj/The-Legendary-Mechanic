@@ -129,6 +129,17 @@ namespace SuperMech.Code
                         stats[StatMystery] += mys;
                 }
             }
+
+            // v0.184 知识等级加成（原著：知识满级带来新专长，每级知识+2%全属性，满级额外+10%）
+            float knowledgeBonus = SuperMechKnowledge.GetKnowledgeLevelBonus(a);
+            if (knowledgeBonus > 0f)
+            {
+                stats[StatStrength] *= (1f + knowledgeBonus);
+                stats[StatAgility] *= (1f + knowledgeBonus);
+                stats[StatEndurance] *= (1f + knowledgeBonus);
+                stats[StatIntelligence] *= (1f + knowledgeBonus);
+                stats[StatMystery] *= (1f + knowledgeBonus);
+            }
         }
 
         public static float GetStat(Actor a, string statId)
