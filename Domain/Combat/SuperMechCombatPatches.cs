@@ -454,6 +454,9 @@ namespace SuperMech.Code
 
                 SuperMechLegend.OnKill(killer, target);
 
+                // v0.182 战斗统计：记录击杀
+                SuperMechCombatStats.RecordKill(killer, target);
+
                 // 降临者击杀计入讨伐任务贡献
                 if (killer.hasTrait(SuperMechPlayer.PlayerTrait))
                 {

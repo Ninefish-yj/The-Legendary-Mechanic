@@ -192,6 +192,56 @@ namespace SuperMech.Code
             return _researched.TryGetValue(kingdomId, out var set) && set.Contains(techId);
         }
 
+        /// <summary>科技解锁的功能（v0.182功能化）</summary>
+        public enum TechFeature
+        {
+            StarTravel,         // 星际航行（space_t3亚光速飞船）
+            DimensionJump,      // 维度跳跃（info_t5虚拟世界）
+            ShieldBuilding,     // 能量护盾建筑（mil_t5能量护盾）
+            MechUnitProduction, // 机械单位生产（mech_t3械兵与械兽）
+            GeneModification,   // 基因改造（bio_t3基因药剂）
+            AdvancedEnergy,     // 高级能源建筑（energy_t3核聚变）
+            SpaceColony,        // 星际殖民（space_t4曲速引擎）
+            OrbitalStrike,      // 轨道轰炸（mil_t7轨道轰炸）
+            NanoRepair,         // 纳米修复（mech_t5纳米机械）
+            ConsciousnessUpload // 意识上传（info_t7意识数字化）
+        }
+
+        /// <summary>功能→所需科技ID映射</summary>
+        private static readonly Dictionary<TechFeature, string> _featureRequirements = new Dictionary<TechFeature, string>
+        {
+            { TechFeature.StarTravel, "space_t3" },
+            { TechFeature.DimensionJump, "info_t5" },
+            { TechFeature.ShieldBuilding, "mil_t5" },
+            { TechFeature.MechUnitProduction, "mech_t3" },
+            { TechFeature.GeneModification, "bio_t3" },
+            { TechFeature.AdvancedEnergy, "energy_t3" },
+            { TechFeature.SpaceColony, "space_t4" },
+            { TechFeature.OrbitalStrike, "mil_t7" },
+            { TechFeature.NanoRepair, "mech_t5" },
+            { TechFeature.ConsciousnessUpload, "info_t7" }
+        };
+
+        /// <summary>检查王国是否解锁了某功能</summary>
+        public static bool IsFeatureUnlocked(long kingdomId, TechFeature feature)
+        {
+            if (_featureRequirements.TryGetValue(feature, out var techId))
+            {
+                return IsResearched(kingdomId, techId);
+            }
+            return false;
+        }
+
+        /// <summary>获取功能解锁所需的科技名称（用于UI提示）</summary>
+        public static string GetFeatureRequirementName(TechFeature feature)
+        {
+            if (_featureRequirements.TryGetValue(feature, out var techId) && _defs.TryGetValue(techId, out var def))
+            {
+                return def.name;
+            }
+            return "?";
+        }
+
         public static bool CanResearch(long kingdomId, string techId)
         {
             if (!_defs.TryGetValue(techId, out var def)) return false;

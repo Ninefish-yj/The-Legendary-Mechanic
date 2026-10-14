@@ -197,6 +197,11 @@ namespace SuperMech.Code
             if (_activeDimension.ContainsKey(a.id)) return false;
             if (dim.classTrait != null && !a.hasTrait(dim.classTrait)) return false;
             if (SuperMechActorContextRegistry.GetRank(a) < dim.minRankIndex) return false;
+            // 科技检查：维度跳跃需要info_t5（虚拟世界）
+            if (a.kingdom != null && !SuperMechTech.IsFeatureUnlocked(a.kingdom.data.id, SuperMechTech.TechFeature.DimensionJump))
+            {
+                return false;
+            }
             long now = System.DateTime.Now.Ticks;
             if (_cooldown.TryGetValue(a.id, out long cdEnd))
             {

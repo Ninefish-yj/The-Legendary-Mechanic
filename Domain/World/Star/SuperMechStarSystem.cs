@@ -603,7 +603,33 @@ namespace SuperMech.Code
             var from = GetPlanet(fromPlanet);
             var to = GetPlanet(toPlanet);
             if (from == null || to == null) return false;
-            // 注意：允许派遣到未发现的星球（探险任务）
+
+            // 科技检查：星际航行需要space_t3（亚光速飞船）
+            // 从主星球出发到其他星球需要科技，星球之间航行也需要
+            if (fromPlanet != toPlanet && toPlanet != MAIN_PLANET)
+            {
+                // 获取单位所属王国ID
+                long kingdomId = 0;
+                if (fromPlanet == MAIN_PLANET)
+                {
+                    Actor actor = FindActorById(unitId);
+                    if (actor != null && actor.kingdom != null) kingdomId = actor.kingdom.data.id;
+                }
+                else if (from.units.Count > 0)
+                {
+                    var snapshot = from.units.Find(u => u.id == unitId);
+                    if (snapshot != null && !string.IsNullOrEmpty(snapshot.kingdomName))
+                    {
+                        var k = FindKingdomByName(snapshot.kingdomName);
+                        if (k != null) kingdomId = k.data.id;
+                    }
+                }
+                if (kingdomId > 0 && !SuperMechTech.IsFeatureUnlocked(kingdomId, SuperMechTech.TechFeature.StarTravel))
+                {
+                    Debug.Log($"[超神机械师] 航行被阻止：需研究{SuperMechTech.GetFeatureRequirementName(SuperMechTech.TechFeature.StarTravel)}");
+                    return false;
+                }
+            }
 
             ActorSnapshot snapshot = null;
 

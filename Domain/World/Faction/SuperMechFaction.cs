@@ -468,6 +468,81 @@ namespace SuperMech.Code
             _factions[factionB].relations[factionA] = relation;
         }
 
+        /// <summary>宣战（v0.182玩家外交）</summary>
+        public static bool DeclareWar(string factionA, string factionB)
+        {
+            if (factionA == factionB) return false;
+            if (GetRelation(factionA, factionB) == FactionRelation.Hostile) return false;
+            SetRelation(factionA, factionB, FactionRelation.Hostile);
+            var fa = _factions[factionA];
+            var fb = _factions[factionB];
+            fa.warWeariness = 0;
+            fb.warWeariness = 0;
+            SuperMechEventBus.Publish("FactionWarDeclared", new FactionWarEvent { factionA = fa.name, factionB = fb.name });
+            SuperMechEventLogger.LogFactionWar(fa.name, fb.name);
+            Debug.Log($"[超神机械师] {fa.name} 向 {fb.name} 宣战");
+            return true;
+        }
+
+        /// <summary>停战（v0.182玩家外交）</summary>
+        public static bool MakePeace(string factionA, string factionB)
+        {
+            if (GetRelation(factionA, factionB) != FactionRelation.Hostile) return false;
+            SetRelation(factionA, factionB, FactionRelation.Neutral);
+            Debug.Log($"[超神机械师] {_factions[factionA].name} 与 {_factions[factionB].name} 停战");
+            return true;
+        }
+
+        /// <summary>结盟（v0.182玩家外交）</summary>
+        public static bool FormAlliance(string factionA, string factionB)
+        {
+            if (factionA == factionB) return false;
+            if (GetRelation(factionA, factionB) == FactionRelation.Allied) return false;
+            if (GetRelation(factionA, factionB) == FactionRelation.Hostile) return false; // 需先停战
+            SetRelation(factionA, factionB, FactionRelation.Allied);
+            Debug.Log($"[超神机械师] {_factions[factionA].name} 与 {_factions[factionB].name} 结盟");
+            return true;
+        }
+
+        /// <summary>断盟（v0.182玩家外交）</summary>
+        public static bool BreakAlliance(string factionA, string factionB)
+        {
+            if (GetRelation(factionA, factionB) != FactionRelation.Allied) return false;
+            SetRelation(factionA, factionB, FactionRelation.Neutral);
+            Debug.Log($"[超神机械师] {_factions[factionA].name} 与 {_factions[factionB].name} 断盟");
+            return true;
+        }
+
+        /// <summary>进贡/送礼（改善关系，v0.182玩家外交）</summary>
+        public static bool SendGift(string fromFaction, string toFaction, int inalAmount)
+        {
+            if (fromFaction == toFaction) return false;
+            if (!_factions.ContainsKey(fromFaction) || !_factions.ContainsKey(toFaction)) return false;
+            // 进贡后关系改善：敌对→中立，中立→友好（用同盟表示）
+            var current = GetRelation(fromFaction, toFaction);
+            if (current == FactionRelation.Hostile)
+            {
+                SetRelation(fromFaction, toFaction, FactionRelation.Neutral);
+            }
+            else if (current == FactionRelation.Neutral)
+            {
+                SetRelation(fromFaction, toFaction, FactionRelation.Allied);
+            }
+            Debug.Log($"[超神机械师] {_factions[fromFaction].name} 向 {_factions[toFaction].name} 进贡 {inalAmount}₡");
+            return true;
+        }
+
+        /// <summary>获取关系描述（本地化）</summary>
+        public static string GetRelationDescription(FactionRelation r)
+        {
+            return r switch
+            {
+                FactionRelation.Allied => LocalizedTextManager.getText("sm_faction_allied"),
+                FactionRelation.Hostile => LocalizedTextManager.getText("sm_faction_hostile"),
+                _ => LocalizedTextManager.getText("sm_faction_neutral")
+            };
+        }
+
         /// <summary>两单位所属势力是否敌对</summary>
         public static bool IsHostile(Actor a, Actor b)
         {

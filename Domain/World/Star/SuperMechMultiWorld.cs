@@ -26,7 +26,7 @@ namespace SuperMech.Code
         /// <summary>后台模拟数据（星球ID -> 模拟状态）</summary>
         private static readonly Dictionary<string, PlanetSimState> _simStates = new Dictionary<string, PlanetSimState>();
 
-        /// <summary>星球模拟状态</summary>
+        /// <summary>星球模拟状态（v0.182深化：军事/经济/事件）</summary>
         public class PlanetSimState
         {
             public string planetId;
@@ -34,8 +34,13 @@ namespace SuperMech.Code
             public int kingdoms;        // 王国数
             public int cities;          // 城市数
             public float techLevel;     // 科技水平
+            public float militaryPower; // 军事力量
+            public float economyLevel;  // 经济水平
+            public float stability;     // 稳定度（0-1）
             public float lastSimTime;   // 上次模拟时间
             public bool isInitialized;  // 是否已初始化
+            public int majorEvents;     // 发生过的重大事件数
+            public float warWeariness;  // 战争厌战度
         }
 
         /// <summary>初始化多世界系统</summary>
@@ -327,20 +332,91 @@ namespace SuperMech.Code
                     if (pid == CurrentPlanetId) continue;
                     if (!state.isInitialized) continue;
 
-                    // 简化模拟：人口缓慢增长，科技缓慢提升
-                    float simRate = 0.1f; // 模拟速率（相对于真实时间）
-                    state.population += (int)(state.population * 0.001f * simRate * dt);
-                    state.techLevel += 0.001f * simRate * dt;
+                    // 模拟速率（相对于真实时间，后台慢于前台）
+                    float simRate = 0.1f;
+                    float simDt = dt * simRate;
 
-                    // 限制上限
+                    // 人口增长（受经济和稳定度影响）
+                    float popGrowth = state.population * 0.001f * state.economyLevel * state.stability;
+                    state.population += (int)(popGrowth * simDt);
                     state.population = Mathf.Min(state.population, 100000);
+
+                    // 科技提升（受人口和经济影响）
+                    float techGrowth = 0.001f * (1f + state.population / 10000f) * state.economyLevel;
+                    state.techLevel += techGrowth * simDt;
                     state.techLevel = Mathf.Min(state.techLevel, 10f);
+
+                    // 经济增长（受人口和科技影响）
+                    float econGrowth = 0.0005f * state.population * state.techLevel * state.stability;
+                    state.economyLevel += econGrowth * simDt;
+                    state.economyLevel = Mathf.Min(state.economyLevel, 100f);
+
+                    // 军事增长（受经济和科技影响）
+                    float milGrowth = 0.0003f * state.economyLevel * state.techLevel;
+                    state.militaryPower += milGrowth * simDt;
+                    state.militaryPower = Mathf.Min(state.militaryPower, 1000f);
+
+                    // 稳定度自然恢复
+                    if (state.stability < 1f)
+                    {
+                        state.stability += 0.001f * simDt;
+                        state.stability = Mathf.Min(state.stability, 1f);
+                    }
+
+                    // 随机事件（低概率）
+                    if (UnityEngine.Random.value < 0.001f * simDt * 60f)
+                    {
+                        SimulateRandomEvent(state);
+                    }
+
+                    // 战争厌战度衰减
+                    if (state.warWeariness > 0)
+                    {
+                        state.warWeariness -= 0.01f * simDt;
+                        state.warWeariness = Mathf.Max(0, state.warWeariness);
+                    }
                 }
             }
             catch (Exception e)
             {
                 Debug.LogError("[超神机械师]【多世界】后台模拟失败: " + e.Message);
             }
+        }
+
+        /// <summary>模拟随机事件</summary>
+        private static void SimulateRandomEvent(PlanetSimState state)
+        {
+            int evt = UnityEngine.Random.Range(0, 5);
+            switch (evt)
+            {
+                case 0: // 经济繁荣
+                    state.economyLevel += 1f;
+                    state.stability += 0.05f;
+                    state.majorEvents++;
+                    break;
+                case 1: // 科技突破
+                    state.techLevel += 0.5f;
+                    state.majorEvents++;
+                    break;
+                case 2: // 战争爆发
+                    state.warWeariness += 0.3f;
+                    state.stability -= 0.1f;
+                    state.militaryPower += 0.5f;
+                    state.majorEvents++;
+                    break;
+                case 3: // 瘟疫/灾难
+                    state.population = (int)(state.population * 0.9f);
+                    state.stability -= 0.15f;
+                    state.majorEvents++;
+                    break;
+                case 4: // 黄金时代
+                    state.economyLevel += 2f;
+                    state.techLevel += 0.3f;
+                    state.stability = 1f;
+                    state.majorEvents++;
+                    break;
+            }
+            state.stability = Mathf.Clamp01(state.stability);
         }
 
         /// <summary>获取星球模拟状态</summary>
