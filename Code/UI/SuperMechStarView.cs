@@ -1505,10 +1505,17 @@ namespace SuperMech.Code
                 labelText.text = $"◎ {c.name}";
             }
 
-            // 星团点击：显示星团信息
-            var clusterBtn = clusterGo.AddComponent<Button>();
-            var clusterHit = clusterGo.AddComponent<Image>();
+            // 星团点击：显示星团信息（点击区域用子GameObject，避免同一对象两个Image）
+            var hitGo = new GameObject("HitArea");
+            hitGo.transform.SetParent(clusterGo.transform, false);
+            var hitRect = hitGo.AddComponent<RectTransform>();
+            hitRect.anchorMin = Vector2.zero;
+            hitRect.anchorMax = Vector2.one;
+            hitRect.offsetMin = Vector2.zero;
+            hitRect.offsetMax = Vector2.zero;
+            var clusterHit = hitGo.AddComponent<Image>();
             clusterHit.color = new Color(0f, 0f, 0f, 0f);
+            var clusterBtn = hitGo.AddComponent<Button>();
             string cid = c.id;
             clusterBtn.onClick.AddListener(() => SelectCluster(cid));
         }
