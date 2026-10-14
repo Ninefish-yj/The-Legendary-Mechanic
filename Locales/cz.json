@@ -3578,5 +3578,11 @@
   "sm_colony_refinery_name": "精炼厂",
   "sm_colony_refinery_desc": "提升资源转化效率",
   "sm_colony_shield_name": "护盾发生器",
-  "sm_colony_shield_desc": "大幅降低灾害事件伤害"
+  "sm_colony_shield_desc": "大幅降低灾害事件伤害",
+  "sm_ui_explore_planet": "探索星球",
+  "sm_ui_colony_building": "殖民地建设",
+  "sm_ui_view_event": "查看事件",
+  "sm_ui_close": "关闭",
+  "sm_ui_building_upgrade": "升级",
+  "sm_ui_building_locked": "未解锁"
 }

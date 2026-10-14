@@ -1336,11 +1336,50 @@ namespace SuperMech.Code
                 {
                     float collected = Mathf.Min(p.resource, 100f * p.colonyLevel);
                     p.resource -= collected;
-                    // 资源运回主世界（加到主世界资源）
                     var main = SuperMechStarSystem.GetPlanet(SuperMechStarSystem.MAIN_PLANET);
                     if (main != null) main.resource += collected;
                     SelectPlanet(p.id);
                 }, ref btnY, btnHeight, btnGap);
+
+                // 探索按钮：有驻留单位时可触发事件
+                if (p.units.Count > 0)
+                {
+                    CreateActionButton(LocalizedTextManager.getText("sm_ui_explore_planet"), new Color(0.6f, 0.3f, 0.8f, 0.9f), () =>
+                    {
+                        StarEvents.Init();
+                        var rng = new System.Random();
+                        var evt = StarEvents.RollEvent(rng, p.type, p.colonyLevel);
+                        if (evt != null)
+                        {
+                            float defense = ColonyManager.CalculateDefenseReduction(p);
+                            var result = StarEvents.ResolveEvent(evt, p, rng);
+                            if ((result.resultType == EventResultType.DamageUnit || result.resultType == EventResultType.LoseUnit)
+                                && rng.NextDouble() < defense)
+                            {
+                                result.resultMessage = LocalizedTextManager.getText("sm_star_evt_defended") + result.resultMessage;
+                                result.unitsLost = 0;
+                            }
+                            p.pendingEvent = result;
+                            ShowEventPopup(result);
+                            SelectPlanet(p.id);
+                        }
+                    }, ref btnY, btnHeight, btnGap);
+                }
+
+                // 殖民地建设按钮
+                CreateActionButton(LocalizedTextManager.getText("sm_ui_colony_building"), new Color(0.3f, 0.6f, 0.5f, 0.9f), () =>
+                {
+                    ShowColonyPanel(p);
+                }, ref btnY, btnHeight, btnGap);
+
+                // 有待处理事件时显示事件按钮
+                if (p.pendingEvent != null)
+                {
+                    CreateActionButton(LocalizedTextManager.getText("sm_ui_view_event"), new Color(0.9f, 0.5f, 0.2f, 0.9f), () =>
+                    {
+                        ShowEventPopup(p.pendingEvent);
+                    }, ref btnY, btnHeight, btnGap);
+                }
             }
 
             // 主世界：显示驻留单位数量和资源
@@ -1394,6 +1433,286 @@ namespace SuperMech.Code
             btnText.raycastTarget = false;
 
             y += height + gap;
+        }
+
+        /// <summary>显示事件结果弹窗</summary>
+        private void ShowEventPopup(StarEventResult result)
+        {
+            if (result == null) return;
+
+            var popupGo = new GameObject("EventPopup");
+            popupGo.transform.SetParent(transform, false);
+            var popupRect = popupGo.AddComponent<RectTransform>();
+            popupRect.anchorMin = new Vector2(0.5f, 0.5f);
+            popupRect.anchorMax = new Vector2(0.5f, 0.5f);
+            popupRect.pivot = new Vector2(0.5f, 0.5f);
+            popupRect.sizeDelta = new Vector2(360, 220);
+            popupRect.anchoredPosition = Vector2.zero;
+
+            var bgImg = popupGo.AddComponent<Image>();
+            bgImg.color = new Color(0.1f, 0.12f, 0.18f, 0.95f);
+
+            // 标题
+            var titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(popupGo.transform, false);
+            var titleRect = titleGo.AddComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0, 1);
+            titleRect.anchorMax = new Vector2(1, 1);
+            titleRect.pivot = new Vector2(0.5f, 1);
+            titleRect.sizeDelta = new Vector2(0, 40);
+            titleRect.anchoredPosition = new Vector2(0, -8);
+            var titleText = titleGo.AddComponent<Text>();
+            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.fontSize = 16;
+            titleText.color = result.success ? new Color(0.6f, 1f, 0.6f) : new Color(1f, 0.6f, 0.6f);
+            titleText.alignment = TextAnchor.MiddleCenter;
+            titleText.fontStyle = FontStyle.Bold;
+            titleText.text = result.eventName;
+            titleText.raycastTarget = false;
+
+            // 描述
+            var descGo = new GameObject("Desc");
+            descGo.transform.SetParent(popupGo.transform, false);
+            var descRect = descGo.AddComponent<RectTransform>();
+            descRect.anchorMin = new Vector2(0.05f, 0);
+            descRect.anchorMax = new Vector2(0.95f, 1);
+            descRect.pivot = new Vector2(0.5f, 1);
+            descRect.sizeDelta = new Vector2(0, 0);
+            descRect.anchoredPosition = new Vector2(0, -55);
+            var descText = descGo.AddComponent<Text>();
+            descText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            descText.fontSize = 12;
+            descText.color = new Color(0.8f, 0.85f, 0.9f);
+            descText.alignment = TextAnchor.UpperCenter;
+            descText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            descText.verticalOverflow = VerticalWrapMode.Overflow;
+            descText.text = result.eventDesc + "\n\n" + result.resultMessage;
+            descText.raycastTarget = false;
+
+            // 关闭按钮
+            var closeGo = new GameObject("CloseBtn");
+            closeGo.transform.SetParent(popupGo.transform, false);
+            var closeRect = closeGo.AddComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(0.5f, 0);
+            closeRect.anchorMax = new Vector2(0.5f, 0);
+            closeRect.pivot = new Vector2(0.5f, 0);
+            closeRect.sizeDelta = new Vector2(120, 32);
+            closeRect.anchoredPosition = new Vector2(0, 12);
+            var closeImg = closeGo.AddComponent<Image>();
+            closeImg.color = new Color(0.3f, 0.4f, 0.6f, 0.9f);
+            var closeBtn = closeGo.AddComponent<Button>();
+            closeBtn.onClick.AddListener(() => Destroy(popupGo));
+            var closeTextGo = new GameObject("Text");
+            closeTextGo.transform.SetParent(closeGo.transform, false);
+            var closeTextRect = closeTextGo.AddComponent<RectTransform>();
+            closeTextRect.anchorMin = Vector2.zero;
+            closeTextRect.anchorMax = Vector2.one;
+            closeTextRect.offsetMin = Vector2.zero;
+            closeTextRect.offsetMax = Vector2.zero;
+            var closeText = closeTextGo.AddComponent<Text>();
+            closeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            closeText.fontSize = 12;
+            closeText.color = Color.white;
+            closeText.alignment = TextAnchor.MiddleCenter;
+            closeText.text = LocalizedTextManager.getText("sm_ui_close");
+            closeText.raycastTarget = false;
+        }
+
+        /// <summary>显示殖民地建设面板</summary>
+        private void ShowColonyPanel(PlanetData planet)
+        {
+            ColonyManager.Init();
+
+            var panelGo = new GameObject("ColonyPanel");
+            panelGo.transform.SetParent(transform, false);
+            var panelRect = panelGo.AddComponent<RectTransform>();
+            panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+            panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+            panelRect.pivot = new Vector2(0.5f, 0.5f);
+            panelRect.sizeDelta = new Vector2(420, 400);
+            panelRect.anchoredPosition = Vector2.zero;
+
+            var bgImg = panelGo.AddComponent<Image>();
+            bgImg.color = new Color(0.08f, 0.1f, 0.15f, 0.97f);
+
+            // 标题
+            var titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(panelGo.transform, false);
+            var titleRect = titleGo.AddComponent<RectTransform>();
+            titleRect.anchorMin = new Vector2(0, 1);
+            titleRect.anchorMax = new Vector2(1, 1);
+            titleRect.pivot = new Vector2(0.5f, 1);
+            titleRect.sizeDelta = new Vector2(0, 36);
+            titleRect.anchoredPosition = new Vector2(0, -6);
+            var titleText = titleGo.AddComponent<Text>();
+            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.fontSize = 14;
+            titleText.color = new Color(0.9f, 0.8f, 0.5f);
+            titleText.alignment = TextAnchor.MiddleCenter;
+            titleText.fontStyle = FontStyle.Bold;
+            titleText.text = planet.name + " - " + LocalizedTextManager.getText("sm_ui_colony_building");
+            titleText.raycastTarget = false;
+
+            // 建筑列表滚动区域
+            var scrollGo = new GameObject("Scroll");
+            scrollGo.transform.SetParent(panelGo.transform, false);
+            var scrollRect = scrollGo.AddComponent<RectTransform>();
+            scrollRect.anchorMin = new Vector2(0.05f, 0.1f);
+            scrollRect.anchorMax = new Vector2(0.95f, 0.9f);
+            scrollRect.offsetMin = Vector2.zero;
+            scrollRect.offsetMax = Vector2.zero;
+
+            var contentGo = new GameObject("Content");
+            contentGo.transform.SetParent(scrollGo.transform, false);
+            var contentRect = contentGo.AddComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0, 1);
+            contentRect.anchorMax = new Vector2(1, 1);
+            contentRect.pivot = new Vector2(0.5f, 1);
+            contentRect.sizeDelta = new Vector2(0, 360);
+
+            float itemY = 0f;
+            foreach (var def in ColonyManager.GetAllDefs())
+            {
+                // 查找当前建筑等级
+                int level = 0;
+                bool isBuilding = false;
+                float buildProgress = 0f;
+                if (planet.buildings != null)
+                {
+                    foreach (var b in planet.buildings)
+                    {
+                        if (b.type == def.type)
+                        {
+                            level = b.level;
+                            isBuilding = b.isBuilding;
+                            buildProgress = b.buildProgress;
+                            break;
+                        }
+                    }
+                }
+
+                bool locked = planet.colonyLevel < def.requiredColonyLevel;
+                bool maxed = level >= def.maxLevel;
+                float cost = ColonyManager.GetUpgradeCost(def, level);
+
+                // 建筑条目背景
+                var itemGo = new GameObject("BuildingItem");
+                itemGo.transform.SetParent(contentGo.transform, false);
+                var itemRect = itemGo.AddComponent<RectTransform>();
+                itemRect.anchorMin = new Vector2(0, 1);
+                itemRect.anchorMax = new Vector2(1, 1);
+                itemRect.pivot = new Vector2(0.5f, 1);
+                itemRect.sizeDelta = new Vector2(0, 42);
+                itemRect.anchoredPosition = new Vector2(0, -itemY);
+
+                var itemBg = itemGo.AddComponent<Image>();
+                itemBg.color = locked ? new Color(0.15f, 0.15f, 0.15f, 0.8f) : new Color(0.15f, 0.18f, 0.22f, 0.8f);
+
+                // 建筑名称和等级
+                var nameGo = new GameObject("Name");
+                nameGo.transform.SetParent(itemGo.transform, false);
+                var nameRect = nameGo.AddComponent<RectTransform>();
+                nameRect.anchorMin = new Vector2(0.02f, 0);
+                nameRect.anchorMax = new Vector2(0.6f, 1);
+                nameRect.offsetMin = Vector2.zero;
+                nameRect.offsetMax = Vector2.zero;
+                var nameText = nameGo.AddComponent<Text>();
+                nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                nameText.fontSize = 11;
+                nameText.color = locked ? new Color(0.5f, 0.5f, 0.5f) : Color.white;
+                nameText.alignment = TextAnchor.MiddleLeft;
+                string statusText = isBuilding ? $" ({Mathf.RoundToInt(buildProgress * 100)}%)" : (maxed ? " (MAX)" : $" Lv.{level}");
+                nameText.text = LocalizedTextManager.getText(def.nameKey) + statusText;
+                nameText.raycastTarget = false;
+
+                // 升级按钮
+                if (!locked && !maxed && !isBuilding)
+                {
+                    var btnGo = new GameObject("UpgradeBtn");
+                    btnGo.transform.SetParent(itemGo.transform, false);
+                    var btnRect = btnGo.AddComponent<RectTransform>();
+                    btnRect.anchorMin = new Vector2(0.7f, 0.15f);
+                    btnRect.anchorMax = new Vector2(0.98f, 0.85f);
+                    btnRect.offsetMin = Vector2.zero;
+                    btnRect.offsetMax = Vector2.zero;
+                    var btnImg = btnGo.AddComponent<Image>();
+                    btnImg.color = new Color(0.2f, 0.5f, 0.3f, 0.9f);
+                    var btn = btnGo.AddComponent<Button>();
+                    btn.onClick.AddListener(() =>
+                    {
+                        // 检查伊纳尔余额（用玩家第一个单位的余额）
+                        float inalBalance = 99999f; // 上帝模式无限货币
+                        bool success = ColonyManager.UpgradeBuilding(planet, def.type, inalBalance);
+                        if (success)
+                        {
+                            Destroy(panelGo);
+                            ShowColonyPanel(planet);
+                            SelectPlanet(planet.id);
+                        }
+                    });
+                    var btnTextGo = new GameObject("Text");
+                    btnTextGo.transform.SetParent(btnGo.transform, false);
+                    var btnTextRect = btnTextGo.AddComponent<RectTransform>();
+                    btnTextRect.anchorMin = Vector2.zero;
+                    btnTextRect.anchorMax = Vector2.one;
+                    btnTextRect.offsetMin = Vector2.zero;
+                    btnTextRect.offsetMax = Vector2.zero;
+                    var btnText = btnTextGo.AddComponent<Text>();
+                    btnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    btnText.fontSize = 10;
+                    btnText.color = Color.white;
+                    btnText.alignment = TextAnchor.MiddleCenter;
+                    btnText.text = $"{Mathf.RoundToInt(cost)}₡";
+                    btnText.raycastTarget = false;
+                }
+                else if (locked)
+                {
+                    var lockGo = new GameObject("LockText");
+                    lockGo.transform.SetParent(itemGo.transform, false);
+                    var lockRect = lockGo.AddComponent<RectTransform>();
+                    lockRect.anchorMin = new Vector2(0.7f, 0);
+                    lockRect.anchorMax = new Vector2(0.98f, 1);
+                    lockRect.offsetMin = Vector2.zero;
+                    lockRect.offsetMax = Vector2.zero;
+                    var lockText = lockGo.AddComponent<Text>();
+                    lockText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                    lockText.fontSize = 10;
+                    lockText.color = new Color(0.5f, 0.5f, 0.5f);
+                    lockText.alignment = TextAnchor.MiddleCenter;
+                    lockText.text = $"需殖民地Lv.{def.requiredColonyLevel}";
+                    lockText.raycastTarget = false;
+                }
+
+                itemY += 46f;
+            }
+
+            // 关闭按钮
+            var closeGo = new GameObject("CloseBtn");
+            closeGo.transform.SetParent(panelGo.transform, false);
+            var closeRect = closeGo.AddComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(0.5f, 0);
+            closeRect.anchorMax = new Vector2(0.5f, 0);
+            closeRect.pivot = new Vector2(0.5f, 0);
+            closeRect.sizeDelta = new Vector2(100, 30);
+            closeRect.anchoredPosition = new Vector2(0, 8);
+            var closeImg = closeGo.AddComponent<Image>();
+            closeImg.color = new Color(0.4f, 0.3f, 0.3f, 0.9f);
+            var closeBtn = closeGo.AddComponent<Button>();
+            closeBtn.onClick.AddListener(() => Destroy(panelGo));
+            var closeTextGo = new GameObject("Text");
+            closeTextGo.transform.SetParent(closeGo.transform, false);
+            var closeTextRect = closeTextGo.AddComponent<RectTransform>();
+            closeTextRect.anchorMin = Vector2.zero;
+            closeTextRect.anchorMax = Vector2.one;
+            closeTextRect.offsetMin = Vector2.zero;
+            closeTextRect.offsetMax = Vector2.zero;
+            var closeText = closeTextGo.AddComponent<Text>();
+            closeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            closeText.fontSize = 12;
+            closeText.color = Color.white;
+            closeText.alignment = TextAnchor.MiddleCenter;
+            closeText.text = LocalizedTextManager.getText("sm_ui_close");
+            closeText.raycastTarget = false;
         }
     }
 }
