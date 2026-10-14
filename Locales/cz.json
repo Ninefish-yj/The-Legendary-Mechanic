@@ -3601,7 +3601,7 @@
   "sm_econ_tech_boost_desc": "消耗伊纳尔立即完成科技研究",
   "sm_econ_gene_repair": "基因修复",
   "sm_econ_gene_repair_desc": "消耗伊纳尔去除所有负面特质",
-  "sm_econ_service_panel": "伊纳尔服务",
+  "sm_econ_service_panel": "付费服务",
   "sm_econ_insufficient_inal": "伊纳尔不足",
   "sm_faction_allied": "同盟",
   "sm_faction_hostile": "敌对",

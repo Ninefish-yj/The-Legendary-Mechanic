@@ -122,7 +122,7 @@ namespace SuperMech.Code
                     if (record != null && SuperMechResurrection.CanResurrect(record))
                     {
                         SuperMechResurrection.Resurrect(record);
-                        Debug.Log($"[超神机械师] {a.data.name} 通过伊纳尔服务复活");
+                        Debug.Log($"[超神机械师] {a.data.name} 通过付费服务复活");
                         return true;
                     }
                 }

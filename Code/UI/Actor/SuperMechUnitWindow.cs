@@ -297,7 +297,7 @@ namespace SuperMech.Code
                     new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
             }
 
-            // v0.183 伊纳尔服务：付费复活/传送/洗点等
+            // v0.183 付费服务：付费复活/传送/洗点等
             ShowEntryButton(window, LocalizedTextManager.getText("sm_econ_service_panel"), "iconBox",
                 new Color(0.4f, 0.8f, 0.6f), () => SuperMechEconomyServiceView.Toggle(a));
 

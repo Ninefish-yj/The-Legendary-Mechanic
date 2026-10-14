@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
-    /// <summary>伊纳尔服务UI面板（v0.183经济闭环UI）
+    /// <summary>付费服务UI面板（v0.183经济闭环UI）
     /// 玩家可购买复活/传送/洗点/加速等服务</summary>
     public class SuperMechEconomyServiceView : MonoBehaviour
     {
