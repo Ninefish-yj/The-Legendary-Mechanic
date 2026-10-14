@@ -20,6 +20,8 @@ namespace SuperMech.Code
             public string nameKey;       // 本地化key
             public string founderId;     // 创立者特质ID
             public bool isGodCompany = false;  // 是否为上帝创建的公司
+            public string currencyName = "伊纳尔";  // 发行货币名称
+            public string currencySymbol = "₡";    // 发行货币符号
             public int level = 1;
             public long treasury = 0;    // 公司金库（储备金，伊纳尔）
             public long totalIssued = 0; // 已发行货币总量（M2）
@@ -134,8 +136,8 @@ namespace SuperMech.Code
         // 上帝创建公司（玩家作为央行发行货币）
         // ══════════════════════════════════════════════
 
-        /// <summary>上帝创建公司，作为货币发行机构</summary>
-        public static CompanyDef CreateGodCompany(string nameKey, long initialReserve)
+        /// <summary>上帝创建公司，作为货币发行机构（可自定义货币名称和符号）</summary>
+        public static CompanyDef CreateGodCompany(string nameKey, long initialReserve, string currencyName = "伊纳尔", string currencySymbol = "₡")
         {
             string id = "god_company_" + System.Guid.NewGuid().ToString("N").Substring(0, 8);
             var c = new CompanyDef
@@ -144,14 +146,25 @@ namespace SuperMech.Code
                 nameKey = nameKey,
                 founderId = "god",
                 isGodCompany = true,
+                currencyName = currencyName,
+                currencySymbol = currencySymbol,
                 level = 1,
                 treasury = initialReserve,
                 reserveRatio = 0.2f,
                 baseInterestRate = 0.05f
             };
             _companies[id] = c;
-            Debug.Log($"[超神机械师] 上帝创建公司: {id}, 初始储备金: {initialReserve}");
+            Debug.Log($"[超神机械师] 上帝创建公司: {id}, 货币: {currencyName}({currencySymbol}), 初始储备金: {initialReserve}");
             return c;
+        }
+
+        /// <summary>修改公司发行货币的名称和符号</summary>
+        public static void SetCurrency(CompanyDef c, string currencyName, string currencySymbol)
+        {
+            if (c == null) return;
+            if (!string.IsNullOrEmpty(currencyName)) c.currencyName = currencyName;
+            if (!string.IsNullOrEmpty(currencySymbol)) c.currencySymbol = currencySymbol;
+            Debug.Log($"[超神机械师] 公司{c.id}货币改为: {currencyName}({currencySymbol})");
         }
 
         /// <summary>获取上帝创建的公司列表</summary>
@@ -275,6 +288,8 @@ namespace SuperMech.Code
                     id = c.id,
                     nameKey = c.nameKey,
                     isGodCompany = c.isGodCompany,
+                    currencyName = c.currencyName,
+                    currencySymbol = c.currencySymbol,
                     level = c.level,
                     treasury = c.treasury,
                     totalIssued = c.totalIssued,
@@ -306,6 +321,8 @@ namespace SuperMech.Code
                     c.revenue = s.revenue;
                     c.expenses = s.expenses;
                     c.reputation = s.reputation;
+                    if (!string.IsNullOrEmpty(s.currencyName)) c.currencyName = s.currencyName;
+                    if (!string.IsNullOrEmpty(s.currencySymbol)) c.currencySymbol = s.currencySymbol;
                 }
                 else if (s.isGodCompany)
                 {
@@ -316,6 +333,8 @@ namespace SuperMech.Code
                         nameKey = s.nameKey ?? "sm_company_god_default",
                         founderId = "god",
                         isGodCompany = true,
+                        currencyName = string.IsNullOrEmpty(s.currencyName) ? "伊纳尔" : s.currencyName,
+                        currencySymbol = string.IsNullOrEmpty(s.currencySymbol) ? "₡" : s.currencySymbol,
                         level = s.level,
                         treasury = s.treasury,
                         totalIssued = s.totalIssued,
@@ -337,6 +356,8 @@ namespace SuperMech.Code
             public string id;
             public string nameKey;
             public bool isGodCompany;
+            public string currencyName;
+            public string currencySymbol;
             public int level;
             public long treasury;
             public long totalIssued;

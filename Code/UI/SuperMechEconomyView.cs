@@ -184,14 +184,17 @@ namespace SuperMech.Code
                     if (c == null) continue;
                     string color = c.isGodCompany ? "#ffd700" : (c.id == SuperMechCompany.BlackStarCorp ? "#4fc3f7" : "#81c784");
                     string tag = c.isGodCompany ? "[" + LocalizedTextManager.getText("sm_ui_economy_god_tag") + "]" : "";
+                    string sym = string.IsNullOrEmpty(c.currencySymbol) ? "₡" : c.currencySymbol;
+                    string cname = string.IsNullOrEmpty(c.currencyName) ? "伊纳尔" : c.currencyName;
                     sb.Append("<color=").Append(color).Append(">").Append(LocalizedTextManager.getText(c.nameKey)).Append(" ").Append(tag).Append("</color>\n");
-                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_treasury")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(c.treasury.ToString("N0")).Append("\n");
-                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_issued")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(c.totalIssued.ToString("N0")).Append("\n");
+                    sb.Append("  <color=#93A4BC>").Append(cname).Append("(").Append(sym).Append(")</color>\n");
+                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_treasury")).Append(" ").Append(sym).Append(c.treasury.ToString("N0")).Append("\n");
+                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_issued")).Append(" ").Append(sym).Append(c.totalIssued.ToString("N0")).Append("\n");
                     sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_reserve_ratio")).Append(" ")
                       .Append(c.isGodCompany ? LocalizedTextManager.getText("sm_ui_economy_unlimited") : c.reserveRatio.ToString("P0")).Append("\n");
                     sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_max_issue")).Append(" ")
-                      .Append(c.isGodCompany ? LocalizedTextManager.getText("sm_ui_economy_unlimited") : SuperMechCompany.GetMaxIssueable(c).ToString("N0")).Append("\n");
-                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_profit")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(SuperMechCompany.GetNetProfit(c).ToString("N0")).Append("\n");
+                      .Append(c.isGodCompany ? LocalizedTextManager.getText("sm_ui_economy_unlimited") : sym + SuperMechCompany.GetMaxIssueable(c).ToString("N0")).Append("\n");
+                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_profit")).Append(" ").Append(sym).Append(SuperMechCompany.GetNetProfit(c).ToString("N0")).Append("\n");
                     sb.Append("  Lv.").Append(c.level).Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_reputation")).Append(" ").Append(c.reputation).Append("\n\n");
                 }
             }
