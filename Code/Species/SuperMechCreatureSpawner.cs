@@ -6,7 +6,7 @@ namespace SuperMech.Code
     /// <summary>
     /// 自定义生物生成事件系统
     /// 对照原著：星际生物稀有出现、异化灾害爆发、世界树入侵
-    /// 美术预留：当前用原版类型+特质实现，后续美术完成后切换到自定义ActorAsset
+    /// v0.175.0: 已切换到自定义ActorAsset（sm_void_dragon/sm_star_beast/sm_infected/sm_worldtree_soldier）
     /// </summary>
     public static class SuperMechCreatureSpawner
     {
@@ -74,11 +74,11 @@ namespace SuperMech.Code
             WorldTile tile = SMWorldUtils.FindEdgeTile();
             if (tile == null) return null;
 
-            // 当前用dragon原版类型+特质，后续切换到sm_void_dragon自定义ActorAsset
-            Actor dragon = World.world.units.createNewUnit("dragon", tile, pMiracleSpawn: true, pAdultAge: true);
+            // v0.175.0: 切换到自定义ActorAsset sm_void_dragon（克隆dragon+强化属性）
+            Actor dragon = World.world.units.createNewUnit("sm_void_dragon", tile, pMiracleSpawn: true, pAdultAge: true);
             if (dragon == null) return null;
 
-            dragon.addTrait("sm_void_dragon_marker");
+            dragon.addTrait("sm_void_dragon_marker"); // 保留marker用于统计和AI识别
             dragon.data.name = LocalizedTextManager.getText("sm_creature_void_dragon");
             _activeCreatures.Add(dragon.id);
 
@@ -92,11 +92,11 @@ namespace SuperMech.Code
             WorldTile tile = SMWorldUtils.FindEdgeTile();
             if (tile == null) return null;
 
-            // 当前用orc原版类型+特质，后续切换到sm_star_beast自定义ActorAsset
-            Actor beast = World.world.units.createNewUnit("orc", tile, pMiracleSpawn: true, pAdultAge: true);
+            // v0.175.0: 切换到自定义ActorAsset sm_star_beast（克隆orc+强化属性）
+            Actor beast = World.world.units.createNewUnit("sm_star_beast", tile, pMiracleSpawn: true, pAdultAge: true);
             if (beast == null) return null;
 
-            beast.addTrait("sm_star_beast_marker");
+            beast.addTrait("sm_star_beast_marker"); // 保留marker用于统计和AI识别
             beast.data.name = LocalizedTextManager.getText("sm_creature_star_beast");
             _activeCreatures.Add(beast.id);
 
@@ -113,11 +113,11 @@ namespace SuperMech.Code
                 WorldTile tile = SMWorldUtils.FindEdgeTile();
                 if (tile == null) continue;
 
-                // 当前用zombie原版类型+特质，后续切换到sm_infected自定义ActorAsset
-                Actor infected = World.world.units.createNewUnit("zombie", tile, pMiracleSpawn: true, pAdultAge: true);
+                // v0.175.0: 切换到自定义ActorAsset sm_infected（克隆zombie+强化属性）
+                Actor infected = World.world.units.createNewUnit("sm_infected", tile, pMiracleSpawn: true, pAdultAge: true);
                 if (infected == null) continue;
 
-                infected.addTrait("sm_disaster_infected");
+                infected.addTrait("sm_disaster_infected"); // ActorAsset已包含，保留确保兼容
                 infected.data.name = LocalizedTextManager.getText("sm_creature_infected");
                 _activeCreatures.Add(infected.id);
                 result.Add(infected);
@@ -134,11 +134,11 @@ namespace SuperMech.Code
             if (tile == null) tile = SMWorldUtils.FindEdgeTile();
             if (tile == null) return null;
 
-            // 当前用human原版类型+特质，后续切换到sm_worldtree_soldier自定义ActorAsset
-            Actor soldier = World.world.units.createNewUnit("human", tile, pMiracleSpawn: true, pAdultAge: true);
+            // v0.175.0: 切换到自定义ActorAsset sm_worldtree_soldier（克隆human+强化属性）
+            Actor soldier = World.world.units.createNewUnit("sm_worldtree_soldier", tile, pMiracleSpawn: true, pAdultAge: true);
             if (soldier == null) return null;
 
-            soldier.addTrait("sm_world_tree");
+            soldier.addTrait("sm_world_tree"); // ActorAsset已包含，保留确保兼容
             soldier.data.name = LocalizedTextManager.getText("sm_creature_worldtree_soldier");
             _activeCreatures.Add(soldier.id);
             return soldier;

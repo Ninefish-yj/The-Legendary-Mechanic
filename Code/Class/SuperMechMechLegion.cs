@@ -247,7 +247,9 @@ namespace SuperMech.Code
             if (tile == null) tile = creator.current_tile;
             if (tile == null) tile = GetRandomLandTile();
 
-            Actor mech = World.world.units.createNewUnit("human", tile, pMiracleSpawn: false, pAdultAge: true);
+            // v0.175.0: 切换到自定义ActorAsset（sm_mech_ranger/soldier/elite等），不再用human
+            string assetId = "sm_" + def.id; // mech_ranger → sm_mech_ranger
+            Actor mech = World.world.units.createNewUnit(assetId, tile, pMiracleSpawn: false, pAdultAge: true);
             if (mech == null) return null;
 
             // 设置机械系特质
