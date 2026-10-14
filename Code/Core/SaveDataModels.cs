@@ -32,6 +32,8 @@ namespace SuperMech.Code
             public string techData = "";        // 科技系统数据（JSON序列化）
             // === v0.152.8 文明科技点存档 ===
             public string civilizationTechData = "";  // 文明科技点+科技等级（JSON序列化）
+            // === v0.185 任务/成就/声望存档 ===
+            public string questData = "";  // 任务进度+成就+声望（JSON序列化）
         }
 
         [Serializable]
@@ -109,6 +111,9 @@ namespace SuperMech.Code
             public float energyPeak;         // 能级峰值记录
             public List<string> fusionHistory; // 知识融合历史
             public string informationState;  // 信息态记录（预留）
+            // === v0.185 知识等级+装备强化存档 ===
+            public string knowledgeLevels = "";  // 知识等级（JSON序列化：kid->level）
+            public int enhanceLevel = 0;  // 装备强化等级
         }
 
         [Serializable]

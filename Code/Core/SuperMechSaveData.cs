@@ -145,7 +145,10 @@ namespace SuperMech.Code
                             subXpData = SerializeSubXp(a),
                             subLevelData = SerializeSubLevels(a),
                             craftCount = SuperMechStageTask.GetCraftCount(a),
-                            inal = SuperMechInal.GetInal(a)
+                            inal = SuperMechInal.GetInal(a),
+                            // v0.185 知识等级+装备强化
+                            knowledgeLevels = SerializeKnowledgeLevels(a),
+                            enhanceLevel = SuperMechEquipAffix.GetEnhanceLevel(a)
                         };
                         data.actors[a.data.id.ToString()] = ad;
                     }
@@ -191,6 +194,8 @@ namespace SuperMech.Code
                 data.techData = SuperMechTech.SerializeForSave();
                 // 保存文明科技点+科技等级（v0.152.8）
                 data.civilizationTechData = SuperMechCivilization.SerializeForSave();
+                // 保存任务/成就/声望数据（v0.185）
+                data.questData = SuperMechQuestSystem.SerializeForSave();
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -269,6 +274,16 @@ namespace SuperMech.Code
                 {
                     try { SuperMechCivilization.LoadFromSave(data.civilizationTechData); }
                     catch (Exception e) { Debug.LogWarning($"[超神机械师] 文明科技数据加载失败: {e.Message}"); }
+                }
+                // 加载任务/成就/声望数据（v0.185）
+                if (!string.IsNullOrEmpty(data.questData))
+                {
+                    try
+                    {
+                        var questSave = JsonConvert.DeserializeObject<SuperMechQuestSystem.QuestSaveData>(data.questData);
+                        if (questSave != null) SuperMechQuestSystem.Load(questSave);
+                    }
+                    catch (Exception e) { Debug.LogWarning($"[超神机械师] 任务数据加载失败: {e.Message}"); }
                 }
                 _pendingLoad = data;
                 _loadPending = true;
@@ -617,6 +632,14 @@ namespace SuperMech.Code
             return JsonConvert.SerializeObject(list);
         }
 
+        /// <summary>v0.185 序列化知识等级（kid->level）</summary>
+        private static string SerializeKnowledgeLevels(Actor a)
+        {
+            var levels = SuperMechKnowledge.GetAllKnowledgeLevels(a);
+            if (levels == null || levels.Count == 0) return null;
+            return JsonConvert.SerializeObject(levels);
+        }
+
         private static void RestoreNewFields(Actor a, ActorSaveData ad)
         {
             try
@@ -768,6 +791,24 @@ namespace SuperMech.Code
                 {
                     var dict = SuperMechStageTask._craftCount;
                     if (dict != null) dict[a.id] = ad.craftCount;
+                }
+
+                // v0.185 恢复知识等级
+                if (!string.IsNullOrEmpty(ad.knowledgeLevels))
+                {
+                    try
+                    {
+                        var levels = JsonConvert.DeserializeObject<Dictionary<string, int>>(ad.knowledgeLevels);
+                        if (levels != null) SuperMechKnowledge.RestoreKnowledgeLevels(a, levels);
+                    }
+                    catch { /* 旧存档无此字段 */ }
+                }
+
+                // v0.185 恢复装备强化等级
+                if (ad.enhanceLevel > 0)
+                {
+                    var dict = SuperMechEquipAffix._enhanceLevels;
+                    if (dict != null) dict[a.id] = ad.enhanceLevel;
                 }
             }
             catch (Exception e)

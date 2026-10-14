@@ -34,6 +34,13 @@ namespace SuperMech.Code
 
         public static readonly Dictionary<long, List<EquipAffixInstance>> _equippedAffixes = new Dictionary<long, List<EquipAffixInstance>>();
 
+        // ========== v0.185 装备强化系统 ==========
+        /// <summary>装备强化等级：actorId -> 强化等级(0-10)</summary>
+        private static readonly Dictionary<long, int> _enhanceLevels = new Dictionary<long, int>();
+        public const int MaxEnhanceLevel = 10;
+        /// <summary>强化基础消耗（每级递增）</summary>
+        public const int EnhanceBaseCost = 200;
+
         public class EquipAffixInstance
         {
             public string affixId;
@@ -41,6 +48,64 @@ namespace SuperMech.Code
             public float value;
             public string statKey;
             public bool isMultiplier;
+        }
+
+        /// <summary>获取装备强化等级</summary>
+        public static int GetEnhanceLevel(Actor a)
+        {
+            if (a == null) return 0;
+            return _enhanceLevels.TryGetValue(a.id, out int lv) ? lv : 0;
+        }
+
+        /// <summary>获取强化消耗（每级×1.5递增）</summary>
+        public static int GetEnhanceCost(Actor a)
+        {
+            int lv = GetEnhanceLevel(a);
+            return Mathf.RoundToInt(EnhanceBaseCost * Mathf.Pow(1.5f, lv));
+        }
+
+        /// <summary>获取强化成功率（+1=90%, +10=10%，线性递减）</summary>
+        public static float GetEnhanceSuccessRate(Actor a)
+        {
+            int lv = GetEnhanceLevel(a);
+            return Mathf.Max(0.1f, 1.0f - lv * 0.08f);
+        }
+
+        /// <summary>强化装备（消耗伊纳尔，成功率递减，失败降级）</summary>
+        public static bool EnhanceEquip(Actor a)
+        {
+            if (a == null) return false;
+            int lv = GetEnhanceLevel(a);
+            if (lv >= MaxEnhanceLevel) return false;
+            int cost = GetEnhanceCost(a);
+            if (!SuperMechInal.SpendInal(a, cost)) return false;
+
+            float rate = GetEnhanceSuccessRate(a);
+            if (Random.value > rate)
+            {
+                // 失败：50%概率降级（+5以上才会降级）
+                if (lv >= 5 && Random.value < 0.5f)
+                {
+                    _enhanceLevels[a.id] = lv - 1;
+                    Debug.Log($"[超神机械师] 装备强化失败，降级到+{lv - 1}");
+                }
+                else
+                {
+                    Debug.Log($"[超神机械师] 装备强化失败（成功率{rate:F0%}）");
+                }
+                return false;
+            }
+
+            _enhanceLevels[a.id] = lv + 1;
+            Debug.Log($"[超神机械师] 装备强化成功：+{lv + 1}");
+            ApplyAffixes(a);
+            return true;
+        }
+
+        /// <summary>获取强化属性加成（每级+5%全词缀数值）</summary>
+        public static float GetEnhanceMultiplier(Actor a)
+        {
+            return 1f + GetEnhanceLevel(a) * 0.05f;
         }
 
         public static List<EquipAffixInstance> RollAffixes(int qualityLevel)
@@ -112,10 +177,11 @@ namespace SuperMech.Code
             if (!_equippedAffixes.TryGetValue(a.id, out var affixes)) return;
 
             float modifyMult = SuperMechEquipModify.GetAffixMultiplier(a);
+            float enhanceMult = GetEnhanceMultiplier(a); // v0.185 强化加成
 
             foreach (var affix in affixes)
             {
-                float value = affix.value * modifyMult;
+                float value = affix.value * modifyMult * enhanceMult;
                 if (affix.isMultiplier)
                 {
                     float cur = stats[affix.statKey];

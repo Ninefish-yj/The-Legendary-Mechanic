@@ -126,6 +126,8 @@ namespace SuperMech.Code
             _equipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_equip"), 11, OnEquipClick);
             _unequipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_unequip"), 11, OnUnequipClick);
             _modifyBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_modify"), 11, OnModifyClick);
+            // v0.185 装备强化按钮
+            var enhanceBtn = SuperMechUiSkin.MakeButton(btnGo.transform, "强化", 11, OnEnhanceClick);
             UpdateButtonStates();
         }
 
@@ -240,6 +242,29 @@ namespace SuperMech.Code
             else
             {
                 _detailText.text = LocalizedTextManager.getText("sm_ui_modify_fail");
+            }
+            UpdateButtonStates();
+        }
+
+        /// <summary>v0.185 装备强化</summary>
+        private void OnEnhanceClick()
+        {
+            if (SelectedActor == null) return;
+            int lv = SuperMechEquipAffix.GetEnhanceLevel(SelectedActor);
+            if (lv >= SuperMechEquipAffix.MaxEnhanceLevel)
+            {
+                _detailText.text = "已达最高强化等级";
+                return;
+            }
+            int cost = SuperMechEquipAffix.GetEnhanceCost(SelectedActor);
+            float rate = SuperMechEquipAffix.GetEnhanceSuccessRate(SelectedActor);
+            if (SuperMechEquipAffix.EnhanceEquip(SelectedActor))
+            {
+                _detailText.text = $"强化成功！当前+{SuperMechEquipAffix.GetEnhanceLevel(SelectedActor)}";
+            }
+            else
+            {
+                _detailText.text = $"强化失败（成功率{rate:F0%}，消耗{cost}₡）";
             }
             UpdateButtonStates();
         }

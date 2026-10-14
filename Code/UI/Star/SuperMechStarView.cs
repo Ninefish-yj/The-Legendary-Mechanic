@@ -1577,12 +1577,32 @@ namespace SuperMech.Code
             titleText.text = planet.name + " - " + LocalizedTextManager.getText("sm_ui_colony_building");
             titleText.raycastTarget = false;
 
+            // v0.185 殖民地总览信息
+            var overviewGo = new GameObject("Overview");
+            overviewGo.transform.SetParent(panelGo.transform, false);
+            var overviewRect = overviewGo.AddComponent<RectTransform>();
+            overviewRect.anchorMin = new Vector2(0, 1);
+            overviewRect.anchorMax = new Vector2(1, 1);
+            overviewRect.pivot = new Vector2(0.5f, 1);
+            overviewRect.sizeDelta = new Vector2(0, 50);
+            overviewRect.anchoredPosition = new Vector2(0, -42);
+            var overviewText = overviewGo.AddComponent<Text>();
+            overviewText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            overviewText.fontSize = 11;
+            overviewText.color = new Color(0.7f, 0.8f, 0.9f);
+            overviewText.alignment = TextAnchor.UpperLeft;
+            overviewText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            int buildingCount = planet.buildings != null ? planet.buildings.Count : 0;
+            int unitCount = planet.units != null ? planet.units.Count : 0;
+            overviewText.text = $"等级: {planet.colonyLevel}  资源: {Mathf.RoundToInt(planet.resource)}  建筑: {buildingCount}  驻留单位: {unitCount}";
+            overviewText.raycastTarget = false;
+
             // 建筑列表滚动区域
             var scrollGo = new GameObject("Scroll");
             scrollGo.transform.SetParent(panelGo.transform, false);
             var scrollRect = scrollGo.AddComponent<RectTransform>();
             scrollRect.anchorMin = new Vector2(0.05f, 0.1f);
-            scrollRect.anchorMax = new Vector2(0.95f, 0.9f);
+            scrollRect.anchorMax = new Vector2(0.95f, 0.82f);
             scrollRect.offsetMin = Vector2.zero;
             scrollRect.offsetMax = Vector2.zero;
 

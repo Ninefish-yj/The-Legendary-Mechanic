@@ -370,6 +370,21 @@ namespace SuperMech.Code
             return bonus;
         }
 
+        /// <summary>v0.185 获取所有知识等级（用于存档）</summary>
+        public static Dictionary<string, int> GetAllKnowledgeLevels(Actor a)
+        {
+            if (a == null) return null;
+            if (!_knowledgeLevels.TryGetValue(a.id, out var levels)) return null;
+            return new Dictionary<string, int>(levels);
+        }
+
+        /// <summary>v0.185 从存档恢复知识等级</summary>
+        public static void RestoreKnowledgeLevels(Actor a, Dictionary<string, int> levels)
+        {
+            if (a == null || levels == null) return;
+            _knowledgeLevels[a.id] = new Dictionary<string, int>(levels);
+        }
+
         /// <summary>应用满级奖励（发布事件，由属性系统监听）</summary>
         private static void ApplyMaxLevelBonus(Actor a, string knowledgeId)
         {
