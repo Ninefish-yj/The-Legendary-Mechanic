@@ -458,6 +458,30 @@ namespace SuperMech.Code
             };
         }
 
+        /// <summary>v0.185 声望折扣（实际影响：商店价格随声望变化）
+        /// 仇恨+50%、敌对+20%、中立原价、友好-10%、尊敬-20%、崇敬-30%、崇拜-50%</summary>
+        public static float GetReputationPriceMultiplier(Actor a, string factionId)
+        {
+            var level = GetReputationLevel(a, factionId);
+            return level switch
+            {
+                ReputationLevel.Hated => 1.5f,
+                ReputationLevel.Hostile => 1.2f,
+                ReputationLevel.Neutral => 1.0f,
+                ReputationLevel.Friendly => 0.9f,
+                ReputationLevel.Honored => 0.8f,
+                ReputationLevel.Revered => 0.7f,
+                ReputationLevel.Exalted => 0.5f,
+                _ => 1.0f
+            };
+        }
+
+        /// <summary>v0.185 声望是否允许特殊服务（尊敬以上可使用高级服务）</summary>
+        public static bool CanUsePremiumService(Actor a, string factionId)
+        {
+            return GetReputationLevel(a, factionId) >= ReputationLevel.Honored;
+        }
+
         // ========== 持久化 ==========
 
         /// <summary>存档数据结构</summary>

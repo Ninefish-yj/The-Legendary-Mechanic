@@ -33,7 +33,7 @@ namespace SuperMech.Code
             { ServiceType.GeneRepair, 800 }
         };
 
-        /// <summary>获取服务价格（可随次数递增）</summary>
+        /// <summary>获取服务价格（可随次数递增，v0.185应用声望折扣）</summary>
         public static int GetCost(ServiceType type, Actor a = null)
         {
             int base = _baseCost[type];
@@ -42,6 +42,18 @@ namespace SuperMech.Code
             {
                 int rankIdx = SuperMechActorContextRegistry.GetRank(a);
                 base = base * (1 + rankIdx / 2);
+            }
+            // v0.185 声望折扣：取所有势力中最高声望对应的折扣
+            if (a != null)
+            {
+                float bestMultiplier = 1.0f;
+                var factions = SuperMechFaction.GetAllFactions();
+                foreach (var f in factions)
+                {
+                    float mult = SuperMechQuestSystem.GetReputationPriceMultiplier(a, f.id);
+                    if (mult < bestMultiplier) bestMultiplier = mult;
+                }
+                base = Mathf.RoundToInt(base * bestMultiplier);
             }
             return base;
         }

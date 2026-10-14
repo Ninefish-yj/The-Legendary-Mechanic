@@ -140,6 +140,15 @@ namespace SuperMech.Code
                 stats[StatIntelligence] *= (1f + knowledgeBonus);
                 stats[StatMystery] *= (1f + knowledgeBonus);
             }
+
+            // v0.184 知识满级专属专长（每系满级≥2解锁专属被动）
+            var special = SuperMechKnowledge.GetMaxLevelSpecialBonus(a);
+            if (special.atkSpeed > 0f) stats["multiplier_attack_speed"] += special.atkSpeed;
+            if (special.critDamage > 0f) stats["multiplier_crit_damage"] += special.critDamage;
+            if (special.moveSpeed > 0f) stats["multiplier_move_speed"] += special.moveSpeed;
+            if (special.mana > 0f) stats["multiplier_mana"] += special.mana;
+            if (special.allResist > 0f) stats["multiplier_all_resist"] += special.allResist;
+            if (special.expGain > 0f) stats["experience"] += special.expGain;
         }
 
         public static float GetStat(Actor a, string statId)

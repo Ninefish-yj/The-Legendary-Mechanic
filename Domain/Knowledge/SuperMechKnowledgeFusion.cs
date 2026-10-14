@@ -4,9 +4,9 @@ using UnityEngine;
 
 namespace SuperMech.Code
 {
-    /// <summary>知识融合系统（v0.183修复版，适配无等级的知识系统）
-    /// 知识系统只有"解锁/未解锁"，融合设计为：多低阶知识→解锁高阶/终极知识
-    /// 原著依据：机械师通过融合多种知识掌握终极技能</summary>
+    /// <summary>知识融合系统（v0.184重写：基于知识等级，原著还原）
+    /// 原著：知识融合（基础电磁原理lv4、基础能源理论lv3...）
+    /// 融合需要材料知识达到特定等级，消耗伊纳尔，有成功率</summary>
     public static class SuperMechKnowledgeFusion
     {
         /// <summary>融合配方定义</summary>
@@ -15,6 +15,7 @@ namespace SuperMech.Code
             public string id;
             public string resultKnowledge;   // 融合结果知识ID
             public List<string> requiredKnowledges = new List<string>(); // 需要的知识ID
+            public List<int> requiredLevels = new List<int>(); // 对应知识的最低等级
             public int inalCost;
             public int minAwakenedLevel;    // 最低觉醒等级
             public float successRate;
@@ -23,61 +24,70 @@ namespace SuperMech.Code
         private static readonly Dictionary<string, FusionRecipe> _recipes = new Dictionary<string, FusionRecipe>();
         private static bool _initialized;
 
-        /// <summary>初始化融合配方</summary>
+        /// <summary>初始化融合配方（v0.184：基于知识等级，原著还原）</summary>
         public static void Init()
         {
             if (_initialized) return;
             _initialized = true;
 
-            // 机械系融合：3个入门→解锁进阶
+            // 机械系融合：3个入门知识lv3+ → 解锁进阶
             AddRecipe("mech_fusion_1", "sm_know_mech_advanced",
                 new List<string> { "sm_know_mech_theory", "sm_know_mech_design", "sm_know_mech_maintenance" },
+                new List<int> { 3, 3, 3 },
                 500, 3, 0.8f);
 
-            // 机械系融合：进阶+战斗+召唤→解锁大师
+            // 机械系融合：进阶lv2+战斗lv3+召唤lv2 → 解锁大师
             AddRecipe("mech_fusion_2", "sm_know_mech_master",
                 new List<string> { "sm_know_mech_advanced", "sm_know_mech_combat", "sm_know_mech_summon" },
+                new List<int> { 2, 3, 2 },
                 2000, 5, 0.6f);
 
             // 异能系融合
             AddRecipe("psi_fusion_1", "sm_know_psi_advanced",
                 new List<string> { "sm_know_psi_theory", "sm_know_psi_control", "sm_know_psi_meditation" },
+                new List<int> { 3, 3, 3 },
                 500, 3, 0.8f);
 
             AddRecipe("psi_fusion_2", "sm_know_psi_master",
                 new List<string> { "sm_know_psi_advanced", "sm_know_psi_combat", "sm_know_psi_domain" },
+                new List<int> { 2, 3, 2 },
                 2000, 5, 0.6f);
 
             // 魔法系融合
             AddRecipe("magic_fusion_1", "sm_know_magic_advanced",
                 new List<string> { "sm_know_magic_theory", "sm_know_magic_circle", "sm_know_magic_mana" },
+                new List<int> { 3, 3, 3 },
                 500, 3, 0.8f);
 
             // 武道系融合
             AddRecipe("martial_fusion_1", "sm_know_martial_advanced",
                 new List<string> { "sm_know_martial_basic", "sm_know_martial_qi", "sm_know_martial_combat" },
+                new List<int> { 3, 3, 3 },
                 500, 3, 0.8f);
 
-            // 跨系融合（稀有）：机械+异能→混合知识
+            // 跨系融合（稀有）：机械进阶lv3+异能进阶lv3 → 混合知识
             AddRecipe("mech_psi_hybrid", "sm_know_hybrid_mech_psi",
                 new List<string> { "sm_know_mech_advanced", "sm_know_psi_advanced" },
+                new List<int> { 3, 3 },
                 5000, 7, 0.4f);
 
-            // 终极融合：四系大师→宇宙级理解
+            // 终极融合：四系大师lv2+ → 宇宙级理解
             AddRecipe("cosmic_understanding", "sm_know_cosmic_ultimate",
                 new List<string> { "sm_know_mech_master", "sm_know_psi_master", "sm_know_magic_advanced", "sm_know_martial_advanced" },
+                new List<int> { 2, 2, 3, 3 },
                 20000, 10, 0.2f);
 
-            Debug.Log("[超神机械师] 知识融合系统初始化完成（适配无等级知识系统）");
+            Debug.Log("[超神机械师] 知识融合系统初始化完成（基于知识等级，原著还原）");
         }
 
-        private static void AddRecipe(string id, string result, List<string> required, int cost, int minLvl, float rate)
+        private static void AddRecipe(string id, string result, List<string> required, List<int> levels, int cost, int minLvl, float rate)
         {
             _recipes[id] = new FusionRecipe
             {
                 id = id,
                 resultKnowledge = result,
                 requiredKnowledges = required,
+                requiredLevels = levels,
                 inalCost = cost,
                 minAwakenedLevel = minLvl,
                 successRate = rate
@@ -99,20 +109,45 @@ namespace SuperMech.Code
             return result;
         }
 
-        /// <summary>检查是否可以融合</summary>
+        /// <summary>检查是否可以融合（v0.184：检查材料知识等级）</summary>
         public static bool CanFuse(Actor a, string recipeId)
         {
             Init();
             if (a == null || !_recipes.TryGetValue(recipeId, out var recipe)) return false;
             if (SuperMechAwakened.GetLevel(a) < recipe.minAwakenedLevel) return false;
             if (SuperMechInal.GetInal(a) < recipe.inalCost) return false;
-            foreach (var kid in recipe.requiredKnowledges)
+            // 检查材料知识是否解锁且等级达标
+            for (int i = 0; i < recipe.requiredKnowledges.Count; i++)
             {
+                string kid = recipe.requiredKnowledges[i];
+                int requiredLv = i < recipe.requiredLevels.Count ? recipe.requiredLevels[i] : 1;
                 if (!SuperMechKnowledge.IsUnlocked(a, kid)) return false;
+                if (SuperMechKnowledge.GetKnowledgeLevel(a, kid) < requiredLv) return false;
             }
             if (SuperMechKnowledge.IsUnlocked(a, recipe.resultKnowledge)) return false;
             if (SuperMechKnowledge.GetDef(recipe.resultKnowledge) == null) return false;
             return true;
+        }
+
+        /// <summary>获取融合需求文本（显示材料知识和等级要求）</summary>
+        public static string GetRequirementText(Actor a, string recipeId)
+        {
+            Init();
+            if (!_recipes.TryGetValue(recipeId, out var recipe)) return "";
+            var sb = new System.Text.StringBuilder();
+            for (int i = 0; i < recipe.requiredKnowledges.Count; i++)
+            {
+                string kid = recipe.requiredKnowledges[i];
+                int requiredLv = i < recipe.requiredLevels.Count ? recipe.requiredLevels[i] : 1;
+                int currentLv = SuperMechKnowledge.GetKnowledgeLevel(a, kid);
+                bool unlocked = SuperMechKnowledge.IsUnlocked(a, kid);
+                bool met = unlocked && currentLv >= requiredLv;
+                var def = SuperMechKnowledge.GetDef(kid);
+                string kname = def != null ? def.name : kid;
+                string color = met ? "#66ff99" : "#ff6666";
+                sb.AppendLine($"<color={color}>{kname} Lv{currentLv}/{requiredLv}</color>");
+            }
+            return sb.ToString();
         }
 
         /// <summary>执行融合</summary>

@@ -393,6 +393,33 @@ namespace SuperMech.Code
             return count;
         }
 
+        /// <summary>v0.184 知识满级专属专长（原著：知识满级带来的新专长）
+        /// 每系满级知识达到一定数量后解锁专属被动加成</summary>
+        public static (float atkSpeed, float critDamage, float moveSpeed, float mana, float allResist, float expGain) GetMaxLevelSpecialBonus(Actor a)
+        {
+            if (a == null) return (0, 0, 0, 0, 0, 0);
+            float atkSpeed = 0, critDamage = 0, moveSpeed = 0, mana = 0, allResist = 0, expGain = 0;
+
+            // 机械系满级≥2：+15%攻速（原著：机械师满级知识带来制造与战斗效率提升）
+            if (GetMaxLevelCount(a, "mech") >= 2) atkSpeed += 0.15f;
+            // 武道系满级≥2：+20%暴击伤害+10%移速
+            if (GetMaxLevelCount(a, "martial") >= 2) { critDamage += 0.20f; moveSpeed += 0.10f; }
+            // 魔法系满级≥2：+25%法力上限
+            if (GetMaxLevelCount(a, "mage") >= 2) mana += 0.25f;
+            // 念力系满级≥2：+15%全抗性
+            if (GetMaxLevelCount(a, "mind") >= 2) allResist += 0.15f;
+            // 异能系满级≥2：+10%经验获取
+            if (GetMaxLevelCount(a, "psi") >= 2) expGain += 0.10f;
+            // 全系统各1个满级：+5%全属性（终极专长）
+            if (GetMaxLevelCount(a, "mech") >= 1 && GetMaxLevelCount(a, "martial") >= 1 &&
+                GetMaxLevelCount(a, "mage") >= 1 && GetMaxLevelCount(a, "mind") >= 1 &&
+                GetMaxLevelCount(a, "psi") >= 1)
+            {
+                atkSpeed += 0.05f; critDamage += 0.05f; moveSpeed += 0.05f;
+            }
+            return (atkSpeed, critDamage, moveSpeed, mana, allResist, expGain);
+        }
+
         public static int GetUnlockedCount(Actor a, string prefix)
         {
             if (a == null) return 0;
