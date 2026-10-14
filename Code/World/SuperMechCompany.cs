@@ -167,29 +167,35 @@ namespace SuperMech.Code
         // 部分准备金货币发行制度
         // ══════════════════════════════════════════════
 
-        /// <summary>计算最大可发行货币量 = 储备金 / 准备金率</summary>
+        /// <summary>计算最大可发行货币量 = 储备金 / 准备金率（上帝公司拥有无限发行权）</summary>
         public static long GetMaxIssueable(CompanyDef c)
         {
-            if (c == null || c.reserveRatio <= 0) return 0;
+            if (c == null) return 0;
+            if (c.isGodCompany) return long.MaxValue;  // 上帝公司：无限发行权
+            if (c.reserveRatio <= 0) return 0;
             return (long)(c.treasury / c.reserveRatio);
         }
 
-        /// <summary>计算剩余可发行量</summary>
+        /// <summary>计算剩余可发行量（上帝公司无限）</summary>
         public static long GetRemainingIssueable(CompanyDef c)
         {
             if (c == null) return 0;
+            if (c.isGodCompany) return long.MaxValue;  // 上帝公司：无限发行权
             return System.Math.Max(0, GetMaxIssueable(c) - c.totalIssued);
         }
 
-        /// <summary>发行货币：从公司金库发行到市场流通，受准备金率约束</summary>
+        /// <summary>发行货币：从公司金库发行到市场流通（上帝公司不受准备金约束）</summary>
         public static bool IssueCurrency(CompanyDef c, long amount)
         {
             if (c == null || amount <= 0) return false;
-            long remaining = GetRemainingIssueable(c);
-            if (amount > remaining)
+            if (!c.isGodCompany)
             {
-                Debug.LogWarning($"[超神机械师] 货币发行超限: 尝试{amount}, 剩余可发行{remaining}");
-                return false;
+                long remaining = GetRemainingIssueable(c);
+                if (amount > remaining)
+                {
+                    Debug.LogWarning($"[超神机械师] 货币发行超限: 尝试{amount}, 剩余可发行{remaining}");
+                    return false;
+                }
             }
             c.totalIssued += amount;
             c.revenue += amount;  // 发行收入计入营收
