@@ -3661,5 +3661,7 @@
   "sm_ui_achievements": "成就",
   "sm_ui_reputation": "声望",
   "sm_ui_equipment": "装备",
-  "sm_ui_knowledge_fusion": "知识融合"
+  "sm_ui_knowledge_fusion": "知识融合",
+  "sm_ui_combat_stats": "战斗统计",
+  "sm_ui_diplomacy": "外交"
 }

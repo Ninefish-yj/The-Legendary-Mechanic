@@ -297,6 +297,14 @@ namespace SuperMech.Code
                     new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
             }
 
+            // v0.183 伊纳尔服务：付费复活/传送/洗点等
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_econ_service_panel"), "iconBox",
+                new Color(0.4f, 0.8f, 0.6f), () => SuperMechEconomyServiceView.Toggle(a));
+
+            // v0.183 战斗统计：击杀/伤害/评级
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_combat_stats"), "iconWeapon",
+                new Color(0.9f, 0.5f, 0.4f), () => SuperMechCombatStatsView.Toggle(a));
+
         }
 
         private static void ShowEntryButton(UnitWindow window, string label, string iconPath, Color color, System.Action onClick)

@@ -97,6 +97,8 @@ namespace SuperMech.Code
                 SafeRun("情报AI", () => SuperMechIntelligenceAI.Tick());
                 SafeRun("多世界后台模拟", () => SuperMechMultiWorld.BackgroundSimTick(Time.deltaTime));
                 SafeRun("专属专长", () => SuperMechExclusiveTrait.TickGrant());
+                // v0.183 成就系统：定时检查玩家成就
+                SafeRun("成就检查", () => TickAchievements());
                 SafeRun("种族分配", () => SuperMechSpeciesEvolution.TickAssignSpecies());
             }
             else if (group == 2)
@@ -266,6 +268,18 @@ namespace SuperMech.Code
             try { SuperMechTech.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTech"); }
             try { SuperMechStarSystem.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarSystem"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
+        }
+
+        /// <summary>v0.183 成就定时检查（每4tick≈5秒检查一次玩家单位）</summary>
+        private static void TickAchievements()
+        {
+            if (World.world?.units == null) return;
+            foreach (var a in World.world.units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                if (!a.hasTrait(SuperMechPlayer.PlayerTrait)) continue;
+                SuperMechQuestSystem.CheckAchievements(a);
+            }
         }
     }
 }

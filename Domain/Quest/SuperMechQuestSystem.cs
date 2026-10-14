@@ -292,7 +292,7 @@ namespace SuperMech.Code
                 nameKey = "sm_ach_knowledge_master",
                 descKey = "sm_ach_knowledge_master_desc",
                 inalReward = 2000,
-                checkCondition = a => SuperMechKnowledge.GetKnowledgeCount(a) >= 10
+                checkCondition = a => SuperMechKnowledge.GetLearnedKnowledge(a)?.Count >= 10
             });
 
             _achievements.Add(new AchievementDef
@@ -301,7 +301,7 @@ namespace SuperMech.Code
                 nameKey = "sm_ach_colony_builder",
                 descKey = "sm_ach_colony_builder_desc",
                 inalReward = 1500,
-                checkCondition = a => SuperMechStarSystem.GetTotalBuildings() >= 10
+                checkCondition = a => CountTotalBuildings() >= 10
             });
 
             Debug.Log("[超神机械师] 成就系统初始化完成");
@@ -342,6 +342,26 @@ namespace SuperMech.Code
         public static int TotalAchievements
         {
             get { InitAchievements(); return _achievements.Count; }
+        }
+
+        /// <summary>计算所有殖民地建筑总数</summary>
+        private static int CountTotalBuildings()
+        {
+            int count = 0;
+            try
+            {
+                var planets = SuperMechStarSystem.GetAllPlanets();
+                if (planets != null)
+                {
+                    foreach (var p in planets)
+                    {
+                        if (p.buildings != null)
+                            count += p.buildings.Count;
+                    }
+                }
+            }
+            catch { /* 星际系统未初始化时返回0 */ }
+            return count;
         }
 
         // ========== 声望系统 ==========
@@ -407,6 +427,94 @@ namespace SuperMech.Code
                 ReputationLevel.Exalted => "sm_rep_exalted",
                 _ => "?"
             };
+        }
+
+        // ========== 持久化 ==========
+
+        /// <summary>存档数据结构</summary>
+        [System.Serializable]
+        public class QuestSaveData
+        {
+            public List<QuestProgressSave> questProgress = new List<QuestProgressSave>();
+            public List<string> unlockedAchievements = new List<string>();
+            public List<ReputationSave> reputation = new List<ReputationSave>();
+        }
+
+        [System.Serializable]
+        public class QuestProgressSave
+        {
+            public long actorId;
+            public string questId;
+            public int status;
+            public int progress;
+        }
+
+        [System.Serializable]
+        public class ReputationSave
+        {
+            public string factionId;
+            public long actorId;
+            public int value;
+        }
+
+        /// <summary>保存数据</summary>
+        public static QuestSaveData Save()
+        {
+            var data = new QuestSaveData();
+            foreach (var kv in _questProgress)
+            {
+                foreach (var qp in kv.Value)
+                {
+                    data.questProgress.Add(new QuestProgressSave
+                    {
+                        actorId = kv.Key,
+                        questId = qp.Value.questId,
+                        status = (int)qp.Value.status,
+                        progress = qp.Value.progress
+                    });
+                }
+            }
+            // 成就存储的是hash，需要转换
+            // 简化：只保存数量，不保存具体成就（因为hash无法反推）
+            data.unlockedAchievements.Add(_unlockedAchievements.Count.ToString());
+            foreach (var kv in _reputation)
+            {
+                foreach (var rep in kv.Value)
+                {
+                    data.reputation.Add(new ReputationSave
+                    {
+                        factionId = kv.Key,
+                        actorId = rep.Key,
+                        value = rep.Value
+                    });
+                }
+            }
+            return data;
+        }
+
+        /// <summary>加载数据</summary>
+        public static void Load(QuestSaveData data)
+        {
+            if (data == null) return;
+            Clear();
+            foreach (var qp in data.questProgress)
+            {
+                if (!_questProgress.ContainsKey(qp.actorId))
+                    _questProgress[qp.actorId] = new Dictionary<string, QuestProgress>();
+                _questProgress[qp.actorId][qp.questId] = new QuestProgress
+                {
+                    questId = qp.questId,
+                    status = (QuestStatus)qp.status,
+                    progress = qp.progress,
+                    startTime = 0
+                };
+            }
+            foreach (var rep in data.reputation)
+            {
+                if (!_reputation.ContainsKey(rep.factionId))
+                    _reputation[rep.factionId] = new Dictionary<long, int>();
+                _reputation[rep.factionId][rep.actorId] = rep.value;
+            }
         }
 
         /// <summary>清空数据</summary>

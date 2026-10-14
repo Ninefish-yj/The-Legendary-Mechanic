@@ -457,6 +457,10 @@ namespace SuperMech.Code
                 // v0.182 战斗统计：记录击杀
                 SuperMechCombatStats.RecordKill(killer, target);
 
+                // v0.183 任务系统：击杀进度
+                SuperMechQuestSystem.UpdateQuestProgress(killer, SuperMechQuestSystem.QuestObjectiveType.Kill, target.data.id, 1);
+                SuperMechQuestSystem.UpdateQuestProgress(killer, SuperMechQuestSystem.QuestObjectiveType.Kill, "any", 1);
+
                 // 降临者击杀计入讨伐任务贡献
                 if (killer.hasTrait(SuperMechPlayer.PlayerTrait))
                 {

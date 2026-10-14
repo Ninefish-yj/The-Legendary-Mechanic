@@ -513,11 +513,32 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>进贡/送礼（改善关系，v0.182玩家外交）</summary>
+        /// <summary>进贡/送礼（改善关系，v0.183修复：实际扣除伊纳尔）</summary>
         public static bool SendGift(string fromFaction, string toFaction, int inalAmount)
         {
             if (fromFaction == toFaction) return false;
             if (!_factions.ContainsKey(fromFaction) || !_factions.ContainsKey(toFaction)) return false;
+
+            // 找到势力领袖并扣除伊纳尔
+            if (!_factions.TryGetValue(fromFaction, out var fromData)) return false;
+            Actor leader = null;
+            if (World.world?.units != null)
+            {
+                foreach (var a in World.world.units)
+                {
+                    if (a != null && a.isAlive() && a.id == fromData.leaderId)
+                    {
+                        leader = a;
+                        break;
+                    }
+                }
+            }
+            if (leader == null || !SuperMechInal.SpendInal(leader, inalAmount))
+            {
+                Debug.Log($"[超神机械师] 进贡失败：伊纳尔不足（需要{inalAmount}₡）");
+                return false;
+            }
+
             // 进贡后关系改善：敌对→中立，中立→友好（用同盟表示）
             var current = GetRelation(fromFaction, toFaction);
             if (current == FactionRelation.Hostile)

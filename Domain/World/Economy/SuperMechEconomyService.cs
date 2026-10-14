@@ -110,59 +110,75 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>复活服务（在圣所复活基础上提供伊纳尔付费通道）</summary>
+        /// <summary>复活服务（回满血量，死亡单位尝试复活）</summary>
         private static bool DoResurrect(Actor a)
         {
-            // 如果单位已死亡，尝试复活
             if (!a.isAlive())
             {
-                // 调用圣所复活系统
-                var state = SuperMechInfoStateRecord.GetRecord(a);
-                if (SuperMechResurrection.CanResurrect(state))
+                // 死亡单位：尝试通过圣所系统复活
+                try
                 {
-                    SuperMechResurrection.Resurrect(a);
-                    Debug.Log($"[超神机械师] {a.data.name} 通过伊纳尔服务复活");
-                    return true;
+                    var record = SuperMechInfoState.GetRecord(a);
+                    if (record != null && SuperMechResurrection.CanResurrect(record))
+                    {
+                        SuperMechResurrection.Resurrect(record);
+                        Debug.Log($"[超神机械师] {a.data.name} 通过伊纳尔服务复活");
+                        return true;
+                    }
                 }
+                catch { /* 复活系统不可用时回退 */ }
                 return false;
             }
-            // 存活单位使用复活服务=回满血量
+            // 存活单位：回满血量
             a.data.health = a.getMaxHealth();
             return true;
         }
 
-        /// <summary>传送服务（传送到指定城市）</summary>
+        /// <summary>传送服务（传送到指定世界坐标）</summary>
         private static bool DoTeleport(Actor a, City targetCity)
         {
             if (targetCity == null || !a.isAlive()) return false;
-            // 找到城市中心地块并传送
-            if (targetCity.center != null)
+            // City没有center字段，用城市第一个建筑的位置
+            WorldTile tile = null;
+            if (targetCity.buildings != null && targetCity.buildings.Count > 0)
             {
-                a.currentTile = targetCity.center;
-                a.position = targetCity.center.realPosition;
+                tile = targetCity.buildings[0].current_tile;
+            }
+            if (tile == null && World.world != null)
+            {
+                // 回退：随机选一个已探索地块
+                tile = World.world.tiles?[UnityEngine.Random.Range(0, World.world.tiles.Length)];
+            }
+            if (tile != null)
+            {
+                a.current_tile = tile;
+                a.position = tile.realPosition;
                 Debug.Log($"[超神机械师] {a.data.name} 传送到 {targetCity.data.name}");
                 return true;
             }
             return false;
         }
 
-        /// <summary>重置阶位选择（回退到上一阶位，重新选择分支）</summary>
+        /// <summary>重置阶位选择（回退到上一阶位）</summary>
         private static bool DoResetRank(Actor a)
         {
-            // 阶位重置：降低一阶，返还选择
-            int currentRank = SuperMechActorContextRegistry.GetRank(a);
+            int currentRank = SuperMechAdvancement.GetExactRankIndex(a);
             if (currentRank <= 0) return false;
-            SuperMechAdvancement.SetRankIndex(a, currentRank - 1);
+            SuperMechAdvancement.SetExactRank(a, currentRank - 1);
             Debug.Log($"[超神机械师] {a.data.name} 重置阶位到 {currentRank - 1}");
             return true;
         }
 
-        /// <summary>重置职业选择</summary>
+        /// <summary>重置职业选择（清除职业和子类）</summary>
         private static bool DoResetProfession(Actor a)
         {
-            // 清除职业和专精，重新选择
-            SuperMechProfession.Clear(a);
-            SuperMechSpecialty.Clear(a);
+            SuperMechProfession.SetProfession(a, SuperMechProfession.ProfessionType.None);
+            // 清除所有子类专精
+            foreach (var subId in SuperMechSubClass.AllSubClasses)
+            {
+                if (SuperMechSubClass.HasSubClass(a, subId))
+                    SuperMechSubClass.RemoveSubClass(a, subId);
+            }
             Debug.Log($"[超神机械师] {a.data.name} 重置职业");
             return true;
         }

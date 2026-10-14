@@ -138,14 +138,15 @@ namespace SuperMech.Code
 
         private string GetPlayerFactionId()
         {
-            // 找到玩家单位所属的势力
+            // 找到玩家单位所属的势力（用public的GetFaction方法）
             if (World.world?.units != null)
             {
                 foreach (var a in World.world.units)
                 {
                     if (a != null && a.isAlive() && a.hasTrait(SuperMechPlayer.PlayerTrait))
                     {
-                        return SuperMechFaction.GetActorFactionId(a);
+                        var faction = SuperMechFaction.GetFaction(a);
+                        return faction?.id;
                     }
                 }
             }
