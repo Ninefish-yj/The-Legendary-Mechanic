@@ -50,6 +50,7 @@ namespace SuperMech.Code
         public List<ActorSnapshot> units = new List<ActorSnapshot>(); // 驻留单位快照
         public int colonyLevel;
         public bool discovered;
+        public bool autoTransport = true; // 戴森球式：自动运输开关（资源超阈值自动运回主星球）
         public string parentStar; // 所属恒星ID（行星才有）
         public float orbitRadius; // 公转轨道半长轴
         public float orbitAngle; // 初始轨道角度

@@ -3678,5 +3678,20 @@
   "sm_ui_no_unit": "无驻留单位",
   "sm_ui_evt_fight": "战斗",
   "sm_ui_evt_flee": "逃跑",
-  "sm_ui_evt_negotiate": "谈判"
+  "sm_ui_evt_negotiate": "谈判",
+  "sm_ui_tab_overview": "概览",
+  "sm_ui_tab_units": "单位",
+  "sm_ui_tab_buildings": "建筑",
+  "sm_ui_tab_events": "事件",
+  "sm_ui_no_building": "无建筑",
+  "sm_ui_no_event": "无待处理事件",
+  "sm_ui_event_cooldown": "事件冷却",
+  "sm_ui_colony_resource": "殖民地资源",
+  "sm_ui_colony_output": "资源产出",
+  "sm_ui_auto_transport_on": "自动运输:开",
+  "sm_ui_auto_transport_off": "自动运输:关",
+  "sm_ui_action_main": "返回主世界",
+  "sm_ui_action_colony": "殖民地总览",
+  "sm_ui_action_auto_all": "全局自动运输",
+  "sm_ui_colony_overview": "殖民地总览"
 }

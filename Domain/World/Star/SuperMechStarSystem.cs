@@ -827,7 +827,7 @@ namespace SuperMech.Code
                 foreach (var p in _planets.Values)
                 {
                     if (p.colonyLevel > 0 && p.id != MAIN_PLANET && p.maxResource > 0
-                        && p.resource >= p.maxResource * 0.8f && main != null)
+                        && p.autoTransport && p.resource >= p.maxResource * 0.8f && main != null)
                     {
                         float transport = p.resource * 0.5f;
                         p.resource -= transport;

@@ -216,21 +216,36 @@ namespace SuperMech.Code
             // 殖民地等级加成
             multiplier *= 1f + planet.colonyLevel * 0.1f;
 
+            // 异星工厂式：建筑联动效果
+            bool hasMining = false, hasRefinery = false, hasCommand = false;
+            int totalBuildingLevel = 0;
+            if (planet.buildings != null)
+            {
+                foreach (var b in planet.buildings)
+                {
+                    if (b == null || b.level <= 0 || b.isBuilding) continue;
+                    totalBuildingLevel += b.level;
+                    if (b.type == ColonyBuildingType.MiningStation) hasMining = true;
+                    if (b.type == ColonyBuildingType.Refinery) hasRefinery = true;
+                    if (b.type == ColonyBuildingType.CommandCenter) hasCommand = true;
+                }
+            }
+            // 采矿站+精炼厂联动：额外+20%产出（异星工厂式生产链条）
+            if (hasMining && hasRefinery) multiplier *= 1.2f;
+            // 指挥中心+采矿+精炼：完整产业链+30%
+            if (hasMining && hasRefinery && hasCommand) multiplier *= 1.3f;
+            // 自动化等级：建筑总等级每级+2%效率（最多+50%）
+            float automationBonus = System.Math.Min(0.5f, totalBuildingLevel * 0.02f);
+            multiplier *= 1f + automationBonus;
+
             // 驻留单位加成：根据任务分配计算
-            int unitCount = planet.units != null ? planet.units.Count : 0;
-            int miningCount = 0, researchCount = 0, defenseCount = 0;
+            int miningCount = 0;
             if (planet.units != null)
             {
                 foreach (var u in planet.units)
                 {
                     if (u == null) continue;
-                    switch (u.assignment)
-                    {
-                        case "mining": miningCount++; break;
-                        case "research": researchCount++; break;
-                        case "defense": defenseCount++; break;
-                        default: break; // idle单位不提供加成
-                    }
+                    if (u.assignment == "mining") miningCount++;
                 }
             }
             // 采矿单位：每个+10%资源产出（最多+100%）
