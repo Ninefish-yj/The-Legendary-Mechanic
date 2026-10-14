@@ -3509,5 +3509,7 @@
   "sm_ui_economy_inflation_high": "⚠ 通胀过高，货币购买力下降",
   "sm_ui_economy_deflation": "通缩中，经济活动放缓",
   "sm_company_god_default": "上帝央行",
-  "sm_ui_economy_unlimited": "∞ 无限"
+  "sm_ui_economy_unlimited": "∞",
+  "sm_inal_symbol": "₡",
+  "sm_inal_currency": "₡伊纳尔"
 }

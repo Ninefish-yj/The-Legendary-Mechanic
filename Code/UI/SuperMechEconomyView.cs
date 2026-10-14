@@ -115,7 +115,7 @@ namespace SuperMech.Code
 
             // 顶部统计
             var sb = new StringBuilder();
-            sb.Append(LocalizedTextManager.getText("sm_ui_economy_m2")).Append(" ").Append(m2.ToString("N0"))
+            sb.Append(LocalizedTextManager.getText("sm_ui_economy_m2")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(m2.ToString("N0"))
               .Append("  |  ").Append(LocalizedTextManager.getText("sm_ui_economy_inflation")).Append(" ").Append(inflation.ToString("P1"))
               .Append("  |  ").Append(LocalizedTextManager.getText("sm_ui_economy_rate")).Append(" ").Append(avgRate.ToString("P1"));
             _statsText.text = sb.ToString();
@@ -141,7 +141,7 @@ namespace SuperMech.Code
                       .Append(item.actor.name != null ? item.actor.name : "?")
                       .Append("  <color=#93A4BC>").Append(kingdomName).Append("</color>")
                       .Append("\n  ").Append(LocalizedTextManager.getText("sm_ui_economy_balance")).Append(" ").Append(item.balance)
-                      .Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_salary")).Append(" ").Append(item.salary)
+                      .Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_salary")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(item.salary)
                       .Append("/32tick\n");
                 }
                 if (superAList.Count > 15)
@@ -154,12 +154,12 @@ namespace SuperMech.Code
             // 宏观经济指标面板
             sb.Clear();
             sb.Append("<b>").Append(LocalizedTextManager.getText("sm_ui_economy_macro")).Append("</b>\n");
-            sb.Append(LocalizedTextManager.getText("sm_ui_economy_m2")).Append(": <color=#ffd700>").Append(m2.ToString("N0")).Append("</color>\n");
-            sb.Append(LocalizedTextManager.getText("sm_ui_economy_reserves")).Append(": <color=#4fc3f7>").Append(reserves.ToString("N0")).Append("</color>\n");
+            sb.Append(LocalizedTextManager.getText("sm_ui_economy_m2")).Append(": <color=#ffd700>").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(m2.ToString("N0")).Append("</color>\n");
+            sb.Append(LocalizedTextManager.getText("sm_ui_economy_reserves")).Append(": <color=#4fc3f7>").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(reserves.ToString("N0")).Append("</color>\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_economy_inflation")).Append(": <color=").Append(inflation > 0.05f ? "#ff6b6b" : "#81c784").Append(">")
               .Append(inflation.ToString("P1")).Append("</color>\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_economy_rate")).Append(": <color=#ba68c8>").Append(avgRate.ToString("P1")).Append("</color>\n");
-            sb.Append(LocalizedTextManager.getText("sm_ui_economy_supera_total")).Append(": ").Append(totalInal.ToString("N0")).Append("\n");
+            sb.Append(LocalizedTextManager.getText("sm_ui_economy_supera_total")).Append(": ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(totalInal.ToString("N0")).Append("\n");
             sb.Append(LocalizedTextManager.getText("sm_ui_economy_god_companies")).Append(": ").Append(godCompanies.Count).Append("\n");
 
             // 通胀说明
@@ -185,13 +185,13 @@ namespace SuperMech.Code
                     string color = c.isGodCompany ? "#ffd700" : (c.id == SuperMechCompany.BlackStarCorp ? "#4fc3f7" : "#81c784");
                     string tag = c.isGodCompany ? "[" + LocalizedTextManager.getText("sm_ui_economy_god_tag") + "]" : "";
                     sb.Append("<color=").Append(color).Append(">").Append(LocalizedTextManager.getText(c.nameKey)).Append(" ").Append(tag).Append("</color>\n");
-                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_treasury")).Append(" ").Append(c.treasury.ToString("N0")).Append("\n");
-                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_issued")).Append(" ").Append(c.totalIssued.ToString("N0")).Append("\n");
+                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_treasury")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(c.treasury.ToString("N0")).Append("\n");
+                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_issued")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(c.totalIssued.ToString("N0")).Append("\n");
                     sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_reserve_ratio")).Append(" ")
                       .Append(c.isGodCompany ? LocalizedTextManager.getText("sm_ui_economy_unlimited") : c.reserveRatio.ToString("P0")).Append("\n");
                     sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_max_issue")).Append(" ")
                       .Append(c.isGodCompany ? LocalizedTextManager.getText("sm_ui_economy_unlimited") : SuperMechCompany.GetMaxIssueable(c).ToString("N0")).Append("\n");
-                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_profit")).Append(" ").Append(SuperMechCompany.GetNetProfit(c).ToString("N0")).Append("\n");
+                    sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_profit")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(SuperMechCompany.GetNetProfit(c).ToString("N0")).Append("\n");
                     sb.Append("  Lv.").Append(c.level).Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_reputation")).Append(" ").Append(c.reputation).Append("\n\n");
                 }
             }
