@@ -123,6 +123,86 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星际星图按钮失败: {e.Message}"); }
             }
 
+            // 2.5 超能者突破（阶位系统交互）
+            if (PowerButton.get("sm_awakening_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconStar")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_awakening_open", () =>
+                    {
+                        SuperMechAwakeningView.Toggle();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_awakening_open", "sm_awakening_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 突破按钮失败: {e.Message}"); }
+            }
+
+            // 2.6 职业管理（职业系统交互）
+            if (PowerButton.get("sm_profession_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconSword")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_profession_open", () =>
+                    {
+                        SuperMechProfessionView.Toggle();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_profession_open", "sm_profession_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 职业按钮失败: {e.Message}"); }
+            }
+
+            // 2.7 锻造工坊（装备系统交互）
+            if (PowerButton.get("sm_forge_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconHammer")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_forge_open", () =>
+                    {
+                        SuperMechForgeView.Toggle();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_forge_open", "sm_forge_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 锻造按钮失败: {e.Message}"); }
+            }
+
+            // 2.8 交易市场（经济系统交互）
+            if (PowerButton.get("sm_market_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconCoin")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_market_open", () =>
+                    {
+                        SuperMechMarketView.Toggle();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_market_open", "sm_market_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 市场按钮失败: {e.Message}"); }
+            }
+
             // 3. 进入圣所（核心功能：六大圣所修炼）
             if (PowerButton.get("sm_sanctuary_open") == null)
             {

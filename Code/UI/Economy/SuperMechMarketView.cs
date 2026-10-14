@@ -15,11 +15,27 @@ namespace SuperMech.Code
         private Button _refreshBtn;
 
         void Awake() { _instance = this; }
+        void OnDestroy() { if (_instance == this) _instance = null; }
 
-        public void Toggle()
+        public static void Toggle()
         {
-            if (_panel != null && _panel.activeSelf) { Close(); return; }
-            Open();
+            if (_instance != null && _instance._panel != null && _instance._panel.activeSelf)
+            {
+                _instance.Close();
+                return;
+            }
+            if (_instance == null)
+            {
+                var go = new GameObject(typeof(SuperMechMarketView).Name);
+                go.transform.SetParent(SuperMechWindowManager.GetRoot(), false);
+                var rect = go.AddComponent<RectTransform>();
+                rect.anchorMin = Vector2.zero;
+                rect.anchorMax = Vector2.one;
+                rect.offsetMin = Vector2.zero;
+                rect.offsetMax = Vector2.zero;
+                _instance = go.AddComponent<SuperMechMarketView>();
+            }
+            _instance.Open();
         }
 
         private void Open()

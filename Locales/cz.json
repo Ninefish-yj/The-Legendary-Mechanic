@@ -3724,5 +3724,13 @@
   "sm_ui_no_company": "暂无公司",
   "sm_ui_price_index": "物价指数",
   "sm_ui_refresh": "刷新",
-  "sm_ui_empty": "空"
+  "sm_ui_empty": "空",
+  "sm_awakening_open": "超能突破",
+  "sm_awakening_open_desc": "打开超能者阶位突破界面",
+  "sm_profession_open": "职业管理",
+  "sm_profession_open_desc": "打开职业与子职业管理界面",
+  "sm_forge_open": "锻造工坊",
+  "sm_forge_open_desc": "打开装备锻造强化分解界面",
+  "sm_market_open": "交易市场",
+  "sm_market_open_desc": "打开星际交易市场界面"
 }
