@@ -296,7 +296,8 @@ namespace SuperMech.Code
             {
                 float maxHp = building.asset?.base_stats != null ? building.asset.base_stats["health"] : 100f;
                 if (maxHp <= 0) maxHp = 100f;
-                float curHp = building.data != null ? building.data.get("health", maxHp) : maxHp;
+                if (building.data == null) return 1f;
+                building.data.get("health", out float curHp, maxHp);
                 return Mathf.Clamp01(curHp / maxHp);
             }
             catch { return 1f; }
@@ -321,7 +322,7 @@ namespace SuperMech.Code
                 // 每1024帧恢复5%生命值
                 float maxHp = building.asset.base_stats["health"];
                 float healAmount = maxHp * 0.05f;
-                float curHp = building.data.get("health", maxHp);
+                building.data.get("health", out float curHp, maxHp);
                 building.data.set("health", Mathf.Min(curHp + healAmount, maxHp));
             }
         }
