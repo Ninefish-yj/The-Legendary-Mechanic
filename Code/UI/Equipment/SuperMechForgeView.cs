@@ -55,8 +55,10 @@ namespace SuperMech.Code
 
         private void BuildPanel()
         {
+            var canvas = SuperMechUguiWindow.GetCanvas();
+            if (canvas == null) { Debug.LogError("[超神机械师] ForgeView: canvas is null"); return; }
             var overlayGo = new GameObject("ForgeOverlay");
-            overlayGo.transform.SetParent(SuperMechUguiWindow.GetCanvas().transform, false);
+            overlayGo.transform.SetParent(canvas.transform, false);
             overlayGo.transform.SetAsLastSibling();
             var overlayRect = overlayGo.AddComponent<RectTransform>();
             overlayRect.anchorMin = Vector2.zero;
@@ -89,7 +91,8 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 35);
             titleRect.anchoredPosition = new Vector2(0, -5);
             var titleText = titleGo.AddComponent<Text>();
-            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font != null) titleText.font = font;
             titleText.fontSize = 16;
             titleText.color = new Color(1f, 0.85f, 0.4f);
             titleText.alignment = TextAnchor.MiddleCenter;
@@ -105,7 +108,9 @@ namespace SuperMech.Code
             ddRect.sizeDelta = new Vector2(0, 30);
             ddRect.anchoredPosition = new Vector2(0, -45);
             _unitDropdown = ddGo.AddComponent<Dropdown>();
-            ddGo.AddComponent<Image>().color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
+            var ddImg = ddGo.GetComponent<Image>();
+            if (ddImg == null) ddImg = ddGo.AddComponent<Image>();
+            ddImg.color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
             _unitDropdown.onValueChanged.AddListener(OnSelect);
 
             // 左侧：背包
@@ -119,7 +124,7 @@ namespace SuperMech.Code
             var bagImg = bagGo.AddComponent<Image>();
             bagImg.color = new Color(0.08f, 0.12f, 0.2f, 0.6f);
             _bagText = bagGo.AddComponent<Text>();
-            _bagText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font != null) _bagText.font = font;
             _bagText.fontSize = 11;
             _bagText.color = new Color(0.8f, 0.9f, 1f);
             _bagText.alignment = TextAnchor.UpperLeft;
@@ -142,7 +147,7 @@ namespace SuperMech.Code
             var forgeImg = forgeGo.AddComponent<Image>();
             forgeImg.color = new Color(0.08f, 0.12f, 0.2f, 0.6f);
             _forgeText = forgeGo.AddComponent<Text>();
-            _forgeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (font != null) _forgeText.font = font;
             _forgeText.fontSize = 11;
             _forgeText.color = new Color(0.8f, 0.9f, 1f);
             _forgeText.alignment = TextAnchor.UpperLeft;
@@ -184,7 +189,7 @@ namespace SuperMech.Code
                 btnTextRect.offsetMin = Vector2.zero;
                 btnTextRect.offsetMax = Vector2.zero;
                 var btnText = btnTextGo.AddComponent<Text>();
-                btnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                if (font != null) btnText.font = font;
                 btnText.fontSize = 12;
                 btnText.color = Color.white;
                 btnText.alignment = TextAnchor.MiddleCenter;
@@ -197,6 +202,7 @@ namespace SuperMech.Code
         {
             _candidates.Clear();
             var options = new List<string>();
+            if (World.world == null || World.world.units == null) return;
             var list = World.world.units.units_only_alive;
             if (list != null)
             {

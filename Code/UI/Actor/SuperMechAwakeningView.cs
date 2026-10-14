@@ -109,7 +109,7 @@ namespace SuperMech.Code
             ddRect.sizeDelta = new Vector2(0, 30);
             ddRect.anchoredPosition = new Vector2(0, -45);
             _unitDropdown = dropdownGo.AddComponent<Dropdown>();
-            var ddImg = dropdownGo.AddComponent<Image>();
+            var ddImg = dropdownGo.GetComponent<Image>(); if (ddImg == null) ddImg = dropdownGo.AddComponent<Image>();
             ddImg.color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
             _unitDropdown.onValueChanged.AddListener(OnUnitSelected);
 
@@ -174,7 +174,7 @@ namespace SuperMech.Code
         {
             _candidateUnits.Clear();
             var options = new List<string>();
-            var list = World.world.units.units_only_alive;
+            if (World.world == null || World.world.units == null) return; var list = World.world.units.units_only_alive;
             if (list != null)
             {
                 foreach (Actor a in list)
