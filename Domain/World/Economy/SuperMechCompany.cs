@@ -52,14 +52,16 @@ namespace SuperMech.Code
                 id = BlackStarCorp,
                 nameKey = "sm_company_blackstar",
                 founderId = "sm_player_hanxiao",
-                treasury = 10000  // 初始启动资金
+                treasury = 10000,  // 初始启动资金
+                isGodCompany = true  // 上帝/玩家创建的公司
             };
             _companies[EarthChamber] = new CompanyDef
             {
                 id = EarthChamber,
                 nameKey = "sm_company_earth",
                 founderId = SuperMechTraits.Descendant,
-                treasury = 5000
+                treasury = 5000,
+                isGodCompany = true  // 上帝/玩家创建的公司
             };
         }
 
@@ -101,6 +103,7 @@ namespace SuperMech.Code
                 if (c.tickCounter % IssueInterval != 0) continue;
                 int issue = GetIssueAmount(c);
                 c.treasury += issue;
+                c.totalIssued += issue;  // M2货币供应量：发行即计入流通
                 c.reputation += c.level;
             }
         }
@@ -285,6 +288,23 @@ namespace SuperMech.Code
             long total = 0;
             foreach (var c in _companies.Values)
                 total += c.treasury;
+            return total;
+        }
+
+        /// <summary>获取超A单位持有伊纳尔总量（遍历所有存活单位）</summary>
+        public static long GetSuperAHoldings()
+        {
+            long total = 0;
+            if (World.world == null || World.world.units == null) return 0;
+            foreach (var a in World.world.units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                int rankIdx = SuperMechActorContextRegistry.GetRank(a);
+                if (rankIdx >= 10)  // A阶及以上（索引10=A阶）
+                {
+                    total += SuperMechInal.GetInal(a);
+                }
+            }
             return total;
         }
 
