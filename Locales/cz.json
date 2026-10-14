@@ -3673,5 +3673,10 @@
   "sm_ui_need_unit": "需要单位",
   "sm_ui_unit_assign": "分配任务",
   "sm_ui_select_unit": "选择派遣单位",
-  "sm_ui_no_player_unit": "没有可用的玩家单位"
+  "sm_ui_no_player_unit": "没有可用的玩家单位",
+  "sm_ui_unit_manage": "单位管理",
+  "sm_ui_no_unit": "无驻留单位",
+  "sm_ui_evt_fight": "战斗",
+  "sm_ui_evt_flee": "逃跑",
+  "sm_ui_evt_negotiate": "谈判"
 }
