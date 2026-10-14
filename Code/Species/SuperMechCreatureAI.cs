@@ -355,6 +355,8 @@ namespace SuperMech.Code
             }
         }
 
+        private static bool _moveWarned = false;
+
         private static void MoveTowards(Actor a, Actor target)
         {
             if (a == null || target == null) return;
@@ -363,7 +365,7 @@ namespace SuperMech.Code
                 WorldTile tile = World.world.GetTile((int)target.current_position.x, (int)target.current_position.y);
                 if (tile != null) a.goTo(tile, false, false);
             }
-            catch { }
+            catch (System.Exception e) { if (!_moveWarned) { _moveWarned = true; Debug.LogWarning("[超神机械师] 生物移动异常(仅首次): " + e.Message); } }
         }
 
         private static void MoveAwayFrom(Actor a, Actor threat)
@@ -377,7 +379,7 @@ namespace SuperMech.Code
                 WorldTile tile = World.world.GetTile((int)(pos.x + dir.x * 10f), (int)(pos.y + dir.y * 10f));
                 if (tile != null) a.goTo(tile, false, false);
             }
-            catch { }
+            catch (System.Exception e) { if (!_moveWarned) { _moveWarned = true; Debug.LogWarning("[超神机械师] 生物躲避异常(仅首次): " + e.Message); } }
         }
 
         private static void MoveRandom(Actor a)
@@ -391,7 +393,7 @@ namespace SuperMech.Code
                 WorldTile tile = World.world.GetTile((int)(pos.x + Mathf.Cos(angle) * dist), (int)(pos.y + Mathf.Sin(angle) * dist));
                 if (tile != null) a.goTo(tile, false, false);
             }
-            catch { }
+            catch (System.Exception e) { if (!_moveWarned) { _moveWarned = true; Debug.LogWarning("[超神机械师] 生物随机移动异常(仅首次): " + e.Message); } }
         }
 
         private static Vector2 GetPos(Actor a)

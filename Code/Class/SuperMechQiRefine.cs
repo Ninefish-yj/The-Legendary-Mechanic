@@ -75,6 +75,7 @@ namespace SuperMech.Code
         /// <summary>修行tick：非战斗单位按层数持续提升气力上限（原著"长久锻炼慢慢提升"）</summary>
         public static void TickCultivation()
         {
+            if (World.world == null || World.world.units == null) return;
             float tickInterval = 1.25f; // 与同组修炼tick一致（每4tick执行一次）
             foreach (Actor a in World.world.units.units_only_alive)
             {
@@ -199,6 +200,7 @@ namespace SuperMech.Code
         /// <summary>自动提炼tick：持有气力修炼法的未觉醒单位概率自动提炼（10%通用/5%机械师）</summary>
         public static void TickRefine()
         {
+            if (World.world == null || World.world.units == null) return;
             var units = World.world.units.units_only_alive;
             if (units == null) return;
             foreach (Actor a in units)
