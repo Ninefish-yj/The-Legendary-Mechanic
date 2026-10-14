@@ -75,19 +75,19 @@ namespace SuperMech.Code
 
             AddClassTrait(ClassPsi,    "sm_trait_class_psi", 3, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
-                    {"damage", 5f}, {"multiplier_damage", 1.05f}, {"mana", 30f} });
+                    {"damage", 5f}, {"multiplier_damage", 0.05f}, {"mana", 30f} });
             AddClassTrait(ClassMartial, "sm_trait_class_martial", 0, 3, 2,
                 new System.Collections.Generic.Dictionary<string, float> {
-                    {"damage", 10f}, {"attack_speed", 1.10f}, {"armor", 5f} });
+                    {"damage", 10f}, {"multiplier_attack_speed", 0.10f}, {"armor", 5f} });
             AddClassTrait(ClassMech,   "sm_trait_class_mech", 2, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
-                    {"experience", 1.10f}, {"attack_speed", 1.05f} });
+                    {"experience", 1.10f}, {"multiplier_attack_speed", 0.05f} });
             AddClassTrait(ClassMage,   "sm_trait_class_mage", 4, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
-                    {"mana", 50f}, {"multiplier_damage", 1.05f}, {"intelligence", 1f} });
+                    {"mana", 50f}, {"multiplier_damage", 0.05f}, {"intelligence", 1f} });
             AddClassTrait(ClassMind,   "sm_trait_class_mind", 3, 0, 0,
                 new System.Collections.Generic.Dictionary<string, float> {
-                    {"mana", 40f}, {"multiplier_speed", 1.05f}, {"attack_speed", 1.03f} });
+                    {"mana", 40f}, {"multiplier_speed", 0.05f}, {"multiplier_attack_speed", 0.03f} });
 
             // 降临者（玩家）特质：经验值加成+重生（原著：玩家靠经验值升级）
             var descendant = new ActorTrait
