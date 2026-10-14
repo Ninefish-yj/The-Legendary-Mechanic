@@ -359,7 +359,7 @@ namespace SuperMech.Code
             var infoTextGo = new GameObject("InfoText");
             infoTextGo.transform.SetParent(infoGo.transform, false);
             var itRect = infoTextGo.AddComponent<RectTransform>();
-            itRect.anchorMin = new Vector2(0, 0.3f); itRect.anchorMax = Vector2.one;
+            itRect.anchorMin = new Vector2(0, 0.45f); itRect.anchorMax = Vector2.one;
             itRect.offsetMin = new Vector2(8, 0); itRect.offsetMax = new Vector2(-8, -8);
             _infoText = infoTextGo.AddComponent<Text>();
             _infoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -375,9 +375,9 @@ namespace SuperMech.Code
             btnAreaGo.transform.SetParent(infoGo.transform, false);
             _buttonArea = btnAreaGo.AddComponent<RectTransform>();
             _buttonArea.anchorMin = Vector2.zero;
-            _buttonArea.anchorMax = new Vector2(1, 0.3f);
+            _buttonArea.anchorMax = new Vector2(1, 0.45f);
             _buttonArea.offsetMin = new Vector2(8, 8);
-            _buttonArea.offsetMax = new Vector2(-8, 0);
+            _buttonArea.offsetMax = new Vector2(-8, 8);
 
             RefreshMap();
 
