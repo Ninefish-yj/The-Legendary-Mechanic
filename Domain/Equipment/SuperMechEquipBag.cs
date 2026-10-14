@@ -46,6 +46,8 @@ namespace SuperMech.Code
             {
                 string currentId = SuperMechRelic.Equipments[currentIdx].id;
                 AddToBag(a, currentId);
+                // v0.184 卸下旧装备时移除词缀
+                SuperMechEquipAffix.OnUnequip(a);
             }
 
             int newIdx = SuperMechRelic.GetEquipIndex(equipId);
@@ -53,6 +55,8 @@ namespace SuperMech.Code
             {
                 SuperMechRelic.EquipItem(a, newIdx);
                 SuperMechEquipModify.OnEquip(a);
+                // v0.184 装备新装备时生成并应用词缀（品质等级=数组索引）
+                SuperMechEquipAffix.OnEquip(a, newIdx);
                 return true;
             }
             return false;

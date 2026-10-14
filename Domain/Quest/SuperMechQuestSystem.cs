@@ -344,6 +344,35 @@ namespace SuperMech.Code
             get { InitAchievements(); return _achievements.Count; }
         }
 
+        /// <summary>获取所有成就定义</summary>
+        public static List<AchievementDef> GetAllAchievements()
+        {
+            InitAchievements();
+            return _achievements;
+        }
+
+        /// <summary>检查成就是否已解锁</summary>
+        public static bool IsAchievementUnlocked(Actor a, string achievementId)
+        {
+            if (a == null) return false;
+            InitAchievements();
+            long key = a.id ^ achievementId.GetHashCode();
+            return _unlockedAchievements.Contains(key);
+        }
+
+        /// <summary>获取任务定义</summary>
+        public static QuestDef GetQuestDef(string questId)
+        {
+            InitQuests();
+            return _questDefs.TryGetValue(questId, out var def) ? def : null;
+        }
+
+        /// <summary>获取任务进度字典（public包装）</summary>
+        public static Dictionary<string, QuestProgress> GetProgress(Actor a)
+        {
+            return GetProgressDict(a);
+        }
+
         /// <summary>计算所有殖民地建筑总数</summary>
         private static int CountTotalBuildings()
         {
