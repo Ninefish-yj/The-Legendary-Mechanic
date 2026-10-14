@@ -523,7 +523,7 @@ namespace SuperMech.Code
             // 绘制轨道线（行星围绕恒星的轨道）
             foreach (var p in planets)
             {
-                if (p.parentStar == null || p.type == SuperMechStarSystem.PlanetType.Star) continue;
+                if (p.parentStar == null || p.type == PlanetType.Star) continue;
                 var star = SuperMechStarSystem.GetPlanet(p.parentStar);
                 if (star == null) continue;
                 CreateOrbitLine(star.x, -star.y, p.orbitRadius);
@@ -571,7 +571,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>创建航行中的单位节点（飞船图标）</summary>
-        private void CreateVoyageNode(SuperMechStarSystem.VoyageData v, float x, float y)
+        private void CreateVoyageNode(VoyageData v, float x, float y)
         {
             var nodeGo = new GameObject($"Voyage_{v.snapshot.id}");
             nodeGo.transform.SetParent(_mapContent, false);
@@ -659,7 +659,7 @@ namespace SuperMech.Code
             }
         }
 
-        private void CreatePlanetNode(SuperMechStarSystem.PlanetData p, float x, float y)
+        private void CreatePlanetNode(PlanetData p, float x, float y)
         {
             var nodeGo = new GameObject($"Planet_{p.id}");
             nodeGo.transform.SetParent(_mapContent, false);
@@ -668,7 +668,7 @@ namespace SuperMech.Code
             nodeRect.anchorMax = new Vector2(0.5f, 0.5f);
             nodeRect.pivot = new Vector2(0.5f, 0.5f);
             bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
-            bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
+            bool isStar = p.type == PlanetType.Star;
 
             // 尺寸：2D分级制（用颜色和光晕区分天体，大小只做简单分级）
             float size;
@@ -677,13 +677,13 @@ namespace SuperMech.Code
                 // 恒星按类型分4级：矮星/巨星/超巨星/残骸
                 size = p.starType switch
                 {
-                    SuperMechStarSystem.StarType.RedDwarf => 28,        // 红矮星：小
-                    SuperMechStarSystem.StarType.YellowDwarf => 36,     // 黄矮星：中
-                    SuperMechStarSystem.StarType.WhiteDwarf => 24,      // 白矮星：小（残骸）
-                    SuperMechStarSystem.StarType.NeutronStar => 22,     // 中子星：极小（残骸）
-                    SuperMechStarSystem.StarType.BlackHole => 32,       // 黑洞：中（视觉放大）
-                    SuperMechStarSystem.StarType.RedGiant => 56,        // 红巨星：大
-                    SuperMechStarSystem.StarType.BlueGiant => 48,       // 蓝巨星：大
+                    StarType.RedDwarf => 28,        // 红矮星：小
+                    StarType.YellowDwarf => 36,     // 黄矮星：中
+                    StarType.WhiteDwarf => 24,      // 白矮星：小（残骸）
+                    StarType.NeutronStar => 22,     // 中子星：极小（残骸）
+                    StarType.BlackHole => 32,       // 黑洞：中（视觉放大）
+                    StarType.RedGiant => 56,        // 红巨星：大
+                    StarType.BlueGiant => 48,       // 蓝巨星：大
                     _ => 36
                 };
             }
@@ -691,7 +691,7 @@ namespace SuperMech.Code
             else if (p.discovered)
             {
                 // 行星按类型分2级：类地行星小，气态巨行星大
-                size = p.type == SuperMechStarSystem.PlanetType.Gas ? 32 : 24;
+                size = p.type == PlanetType.Gas ? 32 : 24;
             }
             else size = 20;
             nodeRect.sizeDelta = new Vector2(size, size);
@@ -708,13 +708,13 @@ namespace SuperMech.Code
                 // 恒星光晕按类型分级（巨星光晕大，矮星光晕小）
                 glowExpand = p.starType switch
                 {
-                    SuperMechStarSystem.StarType.RedDwarf => 12,
-                    SuperMechStarSystem.StarType.YellowDwarf => 20,
-                    SuperMechStarSystem.StarType.BlueGiant => 40,
-                    SuperMechStarSystem.StarType.RedGiant => 50,
-                    SuperMechStarSystem.StarType.WhiteDwarf => 10,
-                    SuperMechStarSystem.StarType.NeutronStar => 8,
-                    SuperMechStarSystem.StarType.BlackHole => 35, // 吸积盘
+                    StarType.RedDwarf => 12,
+                    StarType.YellowDwarf => 20,
+                    StarType.BlueGiant => 40,
+                    StarType.RedGiant => 50,
+                    StarType.WhiteDwarf => 10,
+                    StarType.NeutronStar => 8,
+                    StarType.BlackHole => 35, // 吸积盘
                     _ => 20
                 };
             }
@@ -744,17 +744,17 @@ namespace SuperMech.Code
                 // 恒星根据光谱类型显示不同颜色
                 planetColor = p.starType switch
                 {
-                    SuperMechStarSystem.StarType.RedDwarf => new Color(1f, 0.45f, 0.25f),    // 红矮星：橙红
-                    SuperMechStarSystem.StarType.YellowDwarf => new Color(1f, 0.9f, 0.6f),   // 黄矮星：金黄（太阳色）
-                    SuperMechStarSystem.StarType.BlueGiant => new Color(0.5f, 0.75f, 1f),    // 蓝巨星：蓝白
-                    SuperMechStarSystem.StarType.RedGiant => new Color(1f, 0.35f, 0.2f),     // 红巨星：深红
-                    SuperMechStarSystem.StarType.WhiteDwarf => new Color(0.9f, 0.95f, 1f),   // 白矮星：纯白
-                    SuperMechStarSystem.StarType.NeutronStar => new Color(0.7f, 0.85f, 1f),  // 中子星：淡蓝
-                    SuperMechStarSystem.StarType.BlackHole => new Color(0.08f, 0.08f, 0.12f), // 黑洞：深黑
+                    StarType.RedDwarf => new Color(1f, 0.45f, 0.25f),    // 红矮星：橙红
+                    StarType.YellowDwarf => new Color(1f, 0.9f, 0.6f),   // 黄矮星：金黄（太阳色）
+                    StarType.BlueGiant => new Color(0.5f, 0.75f, 1f),    // 蓝巨星：蓝白
+                    StarType.RedGiant => new Color(1f, 0.35f, 0.2f),     // 红巨星：深红
+                    StarType.WhiteDwarf => new Color(0.9f, 0.95f, 1f),   // 白矮星：纯白
+                    StarType.NeutronStar => new Color(0.7f, 0.85f, 1f),  // 中子星：淡蓝
+                    StarType.BlackHole => new Color(0.08f, 0.08f, 0.12f), // 黑洞：深黑
                     _ => new Color(1f, 0.9f, 0.6f)
                 };
                 // 黑洞有吸积盘（特殊光晕）
-                if (p.starType == SuperMechStarSystem.StarType.BlackHole)
+                if (p.starType == StarType.BlackHole)
                 {
                     glowImg.color = new Color(0.8f, 0.6f, 0.2f, 0.5f); // 吸积盘橙黄色
                 }
@@ -774,13 +774,13 @@ namespace SuperMech.Code
             {
                 planetColor = p.type switch
                 {
-                    SuperMechStarSystem.PlanetType.Rocky => new Color(0.75f, 0.65f, 0.5f),
-                    SuperMechStarSystem.PlanetType.Gas => new Color(0.95f, 0.85f, 0.5f),
-                    SuperMechStarSystem.PlanetType.Ice => new Color(0.7f, 0.9f, 1f),
-                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.5f, 0.3f),
-                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.4f, 0.6f, 1f),
-                    SuperMechStarSystem.PlanetType.Desert => new Color(0.95f, 0.85f, 0.55f),
-                    SuperMechStarSystem.PlanetType.Forest => new Color(0.4f, 0.8f, 0.5f),
+                    PlanetType.Rocky => new Color(0.75f, 0.65f, 0.5f),
+                    PlanetType.Gas => new Color(0.95f, 0.85f, 0.5f),
+                    PlanetType.Ice => new Color(0.7f, 0.9f, 1f),
+                    PlanetType.Lava => new Color(1f, 0.5f, 0.3f),
+                    PlanetType.Ocean => new Color(0.4f, 0.6f, 1f),
+                    PlanetType.Desert => new Color(0.95f, 0.85f, 0.55f),
+                    PlanetType.Forest => new Color(0.4f, 0.8f, 0.5f),
                     _ => Color.gray
                 };
                 if (p.colonyLevel > 0)
@@ -832,18 +832,18 @@ namespace SuperMech.Code
                 // 大气层颜色：根据行星类型，蓝色为主
                 Color atmoColor = p.type switch
                 {
-                    SuperMechStarSystem.PlanetType.Ocean => new Color(0.4f, 0.6f, 1f, 0.35f),
-                    SuperMechStarSystem.PlanetType.Forest => new Color(0.5f, 0.8f, 0.6f, 0.3f),
-                    SuperMechStarSystem.PlanetType.Ice => new Color(0.7f, 0.9f, 1f, 0.35f),
-                    SuperMechStarSystem.PlanetType.Gas => new Color(0.9f, 0.8f, 0.6f, 0.3f),
-                    SuperMechStarSystem.PlanetType.Lava => new Color(1f, 0.5f, 0.3f, 0.25f),
+                    PlanetType.Ocean => new Color(0.4f, 0.6f, 1f, 0.35f),
+                    PlanetType.Forest => new Color(0.5f, 0.8f, 0.6f, 0.3f),
+                    PlanetType.Ice => new Color(0.7f, 0.9f, 1f, 0.35f),
+                    PlanetType.Gas => new Color(0.9f, 0.8f, 0.6f, 0.3f),
+                    PlanetType.Lava => new Color(1f, 0.5f, 0.3f, 0.25f),
                     _ => new Color(0.6f, 0.75f, 1f, 0.25f)
                 };
                 atmoImg.color = atmoColor;
             }
 
             // 恒星日冕（外层大气光晕，脉动效果）
-            if (isStar && p.starType != SuperMechStarSystem.StarType.BlackHole)
+            if (isStar && p.starType != StarType.BlackHole)
             {
                 var coronaGo = new GameObject("Corona");
                 coronaGo.transform.SetParent(nodeGo.transform, false);
@@ -902,11 +902,11 @@ namespace SuperMech.Code
         }
 
         /// <summary>构建星球悬停提示文本</summary>
-        private string BuildPlanetTooltip(SuperMechStarSystem.PlanetData p)
+        private string BuildPlanetTooltip(PlanetData p)
         {
             var sb = new System.Text.StringBuilder();
             sb.Append("<b>").Append(p.name).Append("</b>\n");
-            if (p.type == SuperMechStarSystem.PlanetType.Star)
+            if (p.type == PlanetType.Star)
             {
                 sb.Append("<color=#ffcc66>").Append(p.starType.ToString()).Append("</color>\n");
                 sb.Append(LocalizedTextManager.getText("sm_star_temperature")).Append(": ").Append(p.temperature.ToString("F0")).Append("K\n");
@@ -992,7 +992,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>创建星团标记（疏散星团=蓝色，球状星团=橙色）</summary>
-        private void CreateClusterMarker(SuperMechStarSystem.StarCluster c)
+        private void CreateClusterMarker(StarCluster c)
         {
             var clusterGo = new GameObject($"Cluster_{c.id}");
             clusterGo.transform.SetParent(_mapContent, false);
@@ -1007,7 +1007,7 @@ namespace SuperMech.Code
             var circleImg = clusterGo.AddComponent<Image>();
             circleImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
             circleImg.raycastTarget = false;
-            if (c.type == SuperMechStarSystem.ClusterType.Globular)
+            if (c.type == ClusterType.Globular)
             {
                 circleImg.color = new Color(1f, 0.6f, 0.3f, 0.08f); // 球状星团：橙色
             }
@@ -1030,7 +1030,7 @@ namespace SuperMech.Code
             labelText.fontSize = 11;
             labelText.alignment = TextAnchor.MiddleCenter;
             labelText.raycastTarget = false;
-            if (c.type == SuperMechStarSystem.ClusterType.Globular)
+            if (c.type == ClusterType.Globular)
             {
                 labelText.color = new Color(1f, 0.7f, 0.4f, 0.7f);
                 labelText.text = $"◉ {c.name}";
@@ -1063,10 +1063,10 @@ namespace SuperMech.Code
             if (c == null || _infoText == null) return;
             _selectedPlanet = null;
 
-            string typeName = c.type == SuperMechStarSystem.ClusterType.Globular ?
+            string typeName = c.type == ClusterType.Globular ?
                 LocalizedTextManager.getText("sm_ui_cluster_globular") :
                 LocalizedTextManager.getText("sm_ui_cluster_open");
-            string typeColor = c.type == SuperMechStarSystem.ClusterType.Globular ? "#ffaa66" : "#66aaff";
+            string typeColor = c.type == ClusterType.Globular ? "#ffaa66" : "#66aaff";
 
             // 统计星团内星球
             var allPlanets = SuperMechStarSystem.GetAllPlanets();
@@ -1076,7 +1076,7 @@ namespace SuperMech.Code
                 float dx = p.x - c.x, dy = p.y - c.y;
                 if (dx * dx + dy * dy <= c.radius * c.radius)
                 {
-                    if (p.type == SuperMechStarSystem.PlanetType.Star) starCount++;
+                    if (p.type == PlanetType.Star) starCount++;
                     else planetCount++;
                     if (p.discovered) discovered++;
                 }
@@ -1134,31 +1134,31 @@ namespace SuperMech.Code
 
             string typeName = p.type switch
             {
-                SuperMechStarSystem.PlanetType.Rocky => LocalizedTextManager.getText("sm_ui_planet_rocky"),
-                SuperMechStarSystem.PlanetType.Gas => LocalizedTextManager.getText("sm_ui_planet_gas"),
-                SuperMechStarSystem.PlanetType.Ice => LocalizedTextManager.getText("sm_ui_planet_ice"),
-                SuperMechStarSystem.PlanetType.Lava => LocalizedTextManager.getText("sm_ui_planet_lava"),
-                SuperMechStarSystem.PlanetType.Ocean => LocalizedTextManager.getText("sm_ui_planet_ocean"),
-                SuperMechStarSystem.PlanetType.Desert => LocalizedTextManager.getText("sm_ui_planet_desert"),
-                SuperMechStarSystem.PlanetType.Forest => LocalizedTextManager.getText("sm_ui_planet_forest"),
-                SuperMechStarSystem.PlanetType.Star => LocalizedTextManager.getText("sm_ui_star_type"),
+                PlanetType.Rocky => LocalizedTextManager.getText("sm_ui_planet_rocky"),
+                PlanetType.Gas => LocalizedTextManager.getText("sm_ui_planet_gas"),
+                PlanetType.Ice => LocalizedTextManager.getText("sm_ui_planet_ice"),
+                PlanetType.Lava => LocalizedTextManager.getText("sm_ui_planet_lava"),
+                PlanetType.Ocean => LocalizedTextManager.getText("sm_ui_planet_ocean"),
+                PlanetType.Desert => LocalizedTextManager.getText("sm_ui_planet_desert"),
+                PlanetType.Forest => LocalizedTextManager.getText("sm_ui_planet_forest"),
+                PlanetType.Star => LocalizedTextManager.getText("sm_ui_star_type"),
                 _ => "?"
             };
 
             // 恒星类型名称
             string starTypeName = p.starType switch
             {
-                SuperMechStarSystem.StarType.RedDwarf => LocalizedTextManager.getText("sm_ui_star_red_dwarf"),
-                SuperMechStarSystem.StarType.YellowDwarf => LocalizedTextManager.getText("sm_ui_star_yellow_dwarf"),
-                SuperMechStarSystem.StarType.BlueGiant => LocalizedTextManager.getText("sm_ui_star_blue_giant"),
-                SuperMechStarSystem.StarType.RedGiant => LocalizedTextManager.getText("sm_ui_star_red_giant"),
-                SuperMechStarSystem.StarType.WhiteDwarf => LocalizedTextManager.getText("sm_ui_star_white_dwarf"),
-                SuperMechStarSystem.StarType.NeutronStar => LocalizedTextManager.getText("sm_ui_star_neutron"),
-                SuperMechStarSystem.StarType.BlackHole => LocalizedTextManager.getText("sm_ui_star_black_hole"),
+                StarType.RedDwarf => LocalizedTextManager.getText("sm_ui_star_red_dwarf"),
+                StarType.YellowDwarf => LocalizedTextManager.getText("sm_ui_star_yellow_dwarf"),
+                StarType.BlueGiant => LocalizedTextManager.getText("sm_ui_star_blue_giant"),
+                StarType.RedGiant => LocalizedTextManager.getText("sm_ui_star_red_giant"),
+                StarType.WhiteDwarf => LocalizedTextManager.getText("sm_ui_star_white_dwarf"),
+                StarType.NeutronStar => LocalizedTextManager.getText("sm_ui_star_neutron"),
+                StarType.BlackHole => LocalizedTextManager.getText("sm_ui_star_black_hole"),
                 _ => "?"
             };
 
-            bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
+            bool isStar = p.type == PlanetType.Star;
             _infoText.text =
                 $"<color=#ffd700><size=14><b>{p.name}</b></size></color>\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_planet_type")}:</color> {typeName}\n";
@@ -1213,14 +1213,14 @@ namespace SuperMech.Code
         }
 
         /// <summary>根据星球状态刷新交互按钮</summary>
-        private void RefreshButtons(SuperMechStarSystem.PlanetData p)
+        private void RefreshButtons(PlanetData p)
         {
             if (_buttonArea == null) return;
             // 清空旧按钮
             foreach (Transform child in _buttonArea) Destroy(child.gameObject);
 
             bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
-            bool isStar = p.type == SuperMechStarSystem.PlanetType.Star;
+            bool isStar = p.type == PlanetType.Star;
             float btnY = 0f;
             const float btnHeight = 30f;
             const float btnGap = 5f;

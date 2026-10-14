@@ -268,7 +268,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>初始化星球模拟状态</summary>
-        private static void InitSimState(string planetId, SuperMechStarSystem.PlanetData planet)
+        private static void InitSimState(string planetId, PlanetData planet)
         {
             if (!_simStates.ContainsKey(planetId))
             {

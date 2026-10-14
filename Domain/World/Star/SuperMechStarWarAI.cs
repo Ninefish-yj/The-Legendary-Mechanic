@@ -81,7 +81,7 @@ namespace SuperMech.Code
 
             // 获取已发现但无主的星球
             var discovered = SuperMechStarSystem.GetDiscoveredPlanets();
-            var unowned = new List<SuperMechStarSystem.PlanetData>();
+            var unowned = new List<PlanetData>();
             foreach (var p in discovered)
             {
                 if (p == null) continue;
@@ -93,7 +93,7 @@ namespace SuperMech.Code
             if (unowned.Count == 0) return false;
 
             // 选择最近的宜居星球
-            SuperMechStarSystem.PlanetData target = null;
+            PlanetData target = null;
             float bestScore = float.MaxValue;
             foreach (var p in unowned)
             {
@@ -128,7 +128,7 @@ namespace SuperMech.Code
 
             // 寻找敌方殖民地
             var allPlanets = SuperMechStarSystem.GetAllPlanets();
-            var enemyColonies = new List<SuperMechStarSystem.PlanetData>();
+            var enemyColonies = new List<PlanetData>();
             foreach (var p in allPlanets)
             {
                 if (p == null || p.colonyLevel == 0) continue;
@@ -140,7 +140,7 @@ namespace SuperMech.Code
             if (enemyColonies.Count == 0) return false;
 
             // 选择最弱的敌方殖民地
-            SuperMechStarSystem.PlanetData target = null;
+            PlanetData target = null;
             int weakestLevel = int.MaxValue;
             foreach (var p in enemyColonies)
             {

@@ -58,7 +58,7 @@ namespace SuperMech.Code
                 if (colonies.Count > 0)
                 {
                     // 投资最弱的殖民地
-                    SuperMechStarSystem.PlanetData weakest = null;
+                    PlanetData weakest = null;
                     int minLevel = int.MaxValue;
                     foreach (var c in colonies)
                     {
@@ -95,9 +95,9 @@ namespace SuperMech.Code
         }
 
         /// <summary>获取公司所属的殖民地（简化：公司所在文明的殖民地）</summary>
-        private static List<SuperMechStarSystem.PlanetData> GetOwnedColonies(SuperMechCompany.CompanyDef company)
+        private static List<PlanetData> GetOwnedColonies(SuperMechCompany.CompanyDef company)
         {
-            var result = new List<SuperMechStarSystem.PlanetData>();
+            var result = new List<PlanetData>();
             if (company == null || World.world == null || World.world.kingdoms == null) return result;
 
             // 找到公司所在的文明（通过创立者特质）

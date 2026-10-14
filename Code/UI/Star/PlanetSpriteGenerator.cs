@@ -57,7 +57,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>生成圆形星球纹理（带光照渐变+表面噪声，纯代码实现）</summary>
-        public static Sprite GetPlanetSprite(Color baseColor, int seed, bool isUnknown = false, SuperMechStarSystem.PlanetType planetType = SuperMechStarSystem.PlanetType.Rocky)
+        public static Sprite GetPlanetSprite(Color baseColor, int seed, bool isUnknown = false, PlanetType planetType = PlanetType.Rocky)
         {
             string key = $"{baseColor.r:F2}_{baseColor.g:F2}_{baseColor.b:F2}_{seed}_{isUnknown}_{planetType}";
             if (_planetSpriteCache.TryGetValue(key, out var cached)) return cached;
@@ -147,27 +147,27 @@ namespace SuperMech.Code
 
                     switch (planetType)
                     {
-                        case SuperMechStarSystem.PlanetType.Ocean:
+                        case PlanetType.Ocean:
                             if (cn > 0.6f) c = Color.Lerp(c, new Color(0.3f, 0.5f, 0.35f), 0.7f);
                             else c = Color.Lerp(c, new Color(0.1f, 0.25f, 0.6f), 0.5f);
                             break;
-                        case SuperMechStarSystem.PlanetType.Forest:
+                        case PlanetType.Forest:
                             if (cn > 0.4f) c = Color.Lerp(c, new Color(0.2f, 0.55f, 0.25f), 0.6f);
                             else c = Color.Lerp(c, new Color(0.15f, 0.3f, 0.55f), 0.4f);
                             break;
-                        case SuperMechStarSystem.PlanetType.Desert:
+                        case PlanetType.Desert:
                             c = Color.Lerp(c, new Color(0.85f, 0.7f, 0.4f), 0.5f);
                             if (cn > 0.5f) c = Color.Lerp(c, new Color(0.9f, 0.8f, 0.55f), 0.4f);
                             break;
-                        case SuperMechStarSystem.PlanetType.Ice:
+                        case PlanetType.Ice:
                             c = Color.Lerp(c, new Color(0.85f, 0.95f, 1f), 0.6f);
                             if (cn > 0.5f) c = Color.Lerp(c, new Color(0.6f, 0.8f, 0.95f), 0.5f);
                             break;
-                        case SuperMechStarSystem.PlanetType.Lava:
+                        case PlanetType.Lava:
                             c = Color.Lerp(c, new Color(0.15f, 0.1f, 0.1f), 0.5f);
                             if (cn > 0.45f) c = Color.Lerp(c, new Color(1f, 0.4f, 0.15f), 0.8f);
                             break;
-                        case SuperMechStarSystem.PlanetType.Gas:
+                        case PlanetType.Gas:
                             float band = Mathf.Sin(ny * 8 + cn * 2) * 0.5f + 0.5f;
                             c = Color.Lerp(baseColor * 0.7f, baseColor * 1.2f, band);
                             if (cn > 0.7f) c = Color.Lerp(c, new Color(0.9f, 0.5f, 0.3f), 0.5f);
@@ -178,13 +178,13 @@ namespace SuperMech.Code
                     }
 
                     // 极冠（高纬度地区变白）
-                    if (lat > 0.75f && planetType != SuperMechStarSystem.PlanetType.Lava && planetType != SuperMechStarSystem.PlanetType.Gas)
+                    if (lat > 0.75f && planetType != PlanetType.Lava && planetType != PlanetType.Gas)
                     {
                         c = Color.Lerp(c, new Color(0.95f, 0.97f, 1f), (lat - 0.75f) * 3f);
                     }
 
                     // 云层覆盖
-                    if (cl > 0.5f && planetType != SuperMechStarSystem.PlanetType.Lava)
+                    if (cl > 0.5f && planetType != PlanetType.Lava)
                     {
                         c = Color.Lerp(c, new Color(1f, 1f, 1f), (cl - 0.5f) * 0.6f);
                     }
