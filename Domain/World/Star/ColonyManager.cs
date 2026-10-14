@@ -216,6 +216,11 @@ namespace SuperMech.Code
             // 殖民地等级加成
             multiplier *= 1f + planet.colonyLevel * 0.1f;
 
+            // 驻留单位加成：每个单位+5%产出（最多+50%）
+            int unitCount = planet.units != null ? planet.units.Count : 0;
+            float unitBonus = System.Math.Min(0.5f, unitCount * 0.05f);
+            multiplier *= 1f + unitBonus;
+
             return baseOutput * multiplier;
         }
 

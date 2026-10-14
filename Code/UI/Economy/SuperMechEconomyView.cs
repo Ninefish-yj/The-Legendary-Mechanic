@@ -13,10 +13,17 @@ namespace SuperMech.Code
         private Text _rankText;
         private Text _companyText;
         private Text _macroText;
+        private float _nextRefreshTime;  // 节流：0.5秒刷新一次，避免每帧扫世界
 
         void Awake() { try { BuildLayout(); } catch (System.Exception e) { Debug.LogError("[超神机械师] EconomyView初始化失败: " + e); } }
         void OnEnable() { try { RefreshAll(); } catch (System.Exception e) { Debug.LogError("[超神机械师] EconomyView刷新失败: " + e); } }
-        void Update() { try { RefreshAll(); } catch (System.Exception e) { Debug.LogError("[超神机械师] EconomyView更新失败: " + e); } }
+        void Update()
+        {
+            // 性能优化：0.5秒节流刷新，避免每帧遍历World.world.units导致卡顿
+            if (Time.unscaledTime < _nextRefreshTime) return;
+            _nextRefreshTime = Time.unscaledTime + 0.5f;
+            try { RefreshAll(); } catch (System.Exception e) { Debug.LogError("[超神机械师] EconomyView更新失败: " + e); }
+        }
 
         private void BuildLayout()
         {

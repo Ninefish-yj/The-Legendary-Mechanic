@@ -183,33 +183,46 @@ namespace SuperMech.Code
                     }
                     break;
                 case "pirate":
-                    // 太空海盗：战斗/逃跑/谈判（v0.185 简化为自动判定）
-                    // 战斗力足够：击败海盗获得伊纳尔；不足：损失伊纳尔或单位
+                    // 太空海盗：战斗/逃跑/谈判
                     CurrentFlight.totalTime += 3f;
                     int combatPower = CurrentFlight.passengerIds != null ? CurrentFlight.passengerIds.Count * 10 : 0;
+                    var blackStar = SuperMechCompany.GetCompany(SuperMechCompany.BlackStarCorp);
                     if (combatPower >= 30 && UnityEngine.Random.value < 0.6f)
                     {
-                        // 胜利：获得500-2000伊纳尔
+                        // 胜利：获得500-2000伊纳尔，加到黑星公司金库
                         int loot = UnityEngine.Random.Range(500, 2000);
-                        Debug.Log($"[超神机械师] 击退太空海盗，缴获{loot}₡");
+                        if (blackStar != null) blackStar.treasury += loot;
+                        Debug.Log($"[超神机械师] 击退太空海盗，缴获{loot}₡（已入黑星公司金库）");
                     }
                     else if (UnityEngine.Random.value < 0.5f)
                     {
-                        // 逃跑成功：额外消耗时间
                         CurrentFlight.totalTime += 2f;
                         Debug.Log("[超神机械师] 成功逃脱太空海盗追击");
                     }
                     else
                     {
-                        // 失败：损失伊纳尔
-                        Debug.Log("[超神机械师] 被太空海盗勒索，损失伊纳尔");
+                        // 失败：损失伊纳尔（从黑星公司金库扣除）
+                        int loss = UnityEngine.Random.Range(200, 800);
+                        if (blackStar != null) blackStar.treasury = System.Math.Max(0, blackStar.treasury - loss);
+                        Debug.Log($"[超神机械师] 被太空海盗勒索，损失{loss}₡");
                     }
                     break;
                 case "signal":
-                    // 异常信号：发现新星球（30%概率）
+                    // 异常信号：发现附近一颗未发现的星球（30%概率）
                     if (UnityEngine.Random.value < 0.3f)
                     {
-                        Debug.Log("[超神机械师] 异常信号：发现新星球！");
+                        var undiscovered = new System.Collections.Generic.List<SuperMechStarSystem.PlanetData>();
+                        foreach (var p in SuperMechStarSystem.GetAllPlanets())
+                        {
+                            if (p != null && !p.discovered && p.id != SuperMechStarSystem.MAIN_PLANET)
+                                undiscovered.Add(p);
+                        }
+                        if (undiscovered.Count > 0)
+                        {
+                            var found = undiscovered[UnityEngine.Random.Range(0, undiscovered.Count)];
+                            found.discovered = true;
+                            Debug.Log($"[超神机械师] 异常信号：发现新星球 {found.name}！");
+                        }
                     }
                     break;
                 case "solar_flare":
@@ -218,10 +231,12 @@ namespace SuperMech.Code
                     break;
                 case "derelict":
                     // 废弃飞船：探索获得资源（50%概率获得伊纳尔，20%概率获得装备）
+                    var bsCorp = SuperMechCompany.GetCompany(SuperMechCompany.BlackStarCorp);
                     if (UnityEngine.Random.value < 0.5f)
                     {
                         int scrap = UnityEngine.Random.Range(200, 1000);
-                        Debug.Log($"[超神机械师] 废弃飞船：回收{scrap}₡物资");
+                        if (bsCorp != null) bsCorp.treasury += scrap;
+                        Debug.Log($"[超神机械师] 废弃飞船：回收{scrap}₡物资（已入黑星公司金库）");
                     }
                     else if (UnityEngine.Random.value < 0.2f)
                     {

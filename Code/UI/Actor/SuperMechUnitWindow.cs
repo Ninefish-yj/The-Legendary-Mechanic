@@ -17,12 +17,27 @@ namespace SuperMech.Code
                 Actor actor = __instance.actor;
                 if (actor == null || actor.isRekt() || actor.data == null) return;
 
-                ShowRow(__instance, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
-                ShowMainInfo(__instance, actor);
+                // 延迟一帧执行：避免同帧添加的子物体被原生布局覆盖（手机版折叠功能修复）
+                __instance.StartCoroutine(InjectNextFrame(__instance, actor));
             }
             catch (System.Exception e)
             {
                 Debug.LogError("[超神机械师] 单位面板信息注入异常: " + e);
+            }
+        }
+
+        private static System.Collections.IEnumerator InjectNextFrame(UnitWindow window, Actor actor)
+        {
+            yield return null;  // 等待一帧，让原生布局先完成
+            if (window == null || actor == null || !actor.isAlive()) yield break;
+            try
+            {
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
+                ShowMainInfo(window, actor);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError("[超神机械师] 单位面板延迟注入异常: " + e);
             }
         }
 
