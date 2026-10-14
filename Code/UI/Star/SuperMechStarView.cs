@@ -1326,31 +1326,6 @@ namespace SuperMech.Code
             var hitImg = nodeGo.AddComponent<Image>();
             hitImg.color = new Color(0f, 0f, 0f, 0f);
 
-            // 星球名称（未发现显示?）
-            var nameGo = new GameObject("Name");
-            nameGo.transform.SetParent(nodeGo.transform, false);
-            var nameRect = nameGo.AddComponent<RectTransform>();
-            nameRect.anchorMin = new Vector2(0.5f, 0);
-            nameRect.anchorMax = new Vector2(0.5f, 0);
-            nameRect.pivot = new Vector2(0.5f, 1);
-            nameRect.sizeDelta = new Vector2(100, 16);
-            nameRect.anchoredPosition = new Vector2(0, -4);
-            var nameText = nameGo.AddComponent<Text>();
-            nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            nameText.fontSize = 10;
-            if (isUnknown)
-            {
-                nameText.color = new Color(0.45f, 0.45f, 0.5f);
-                nameText.text = "?";
-            }
-            else
-            {
-                nameText.color = p.id == SuperMechStarSystem.MAIN_PLANET ?
-                    new Color(1f, 0.9f, 0.5f) : new Color(0.75f, 0.85f, 0.95f);
-                nameText.text = p.name;
-            }
-            nameText.alignment = TextAnchor.UpperCenter;
-
             string pid = p.id;
             btn.onClick.AddListener(() => SelectPlanet(pid));
 
