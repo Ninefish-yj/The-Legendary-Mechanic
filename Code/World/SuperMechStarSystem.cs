@@ -939,6 +939,22 @@ namespace SuperMech.Code
                                 p.resource -= techGain;
                                 SuperMechCivilization.AddTechPoints(kingdom, techGain);
                             }
+
+                            // v0.175.1 星际→经济联动：殖民地产出伊纳尔给王国超能者
+                            // 对照原著：殖民地资源开采带来经济收益
+                            int inalGain = p.colonyLevel * 5;
+                            if (inalGain > 0 && World.world?.units != null)
+                            {
+                                foreach (var a in World.world.units)
+                                {
+                                    if (a != null && a.isAlive() && a.kingdom == kingdom
+                                        && SuperMechAdvancement.GetExactRankIndex(a) >= 4) // C阶以上
+                                    {
+                                        int cur = SuperMechInal.GetInal(a);
+                                        SuperMechInal.SetInal(a, cur + inalGain);
+                                    }
+                                }
+                            }
                         }
                     }
                 }

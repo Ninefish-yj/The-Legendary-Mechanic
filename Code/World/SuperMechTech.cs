@@ -6,10 +6,18 @@ namespace SuperMech.Code
 {
     /// <summary>文明科技树系统（v0.99.6重构：6系×8级=48科技，对照原著完整科技路线）
     /// 能源/航天/信息/机械/生物/军事，每系8级
+    /// v0.175.1: 添加时代系统（工业/信息/星际/宇宙），研究进度决定文明时代
     /// 原著依据：械国865次、次级维度808次、力场330次、母舰227次、使徒兵器222次、暗能量89次等</summary>
     public static class SuperMechTech
     {
         public enum TechBranch { Energy, Space, Info, Mech, Bio, Military }
+
+        /// <summary>文明时代（v0.175.1）
+        /// 工业时代(T1-2): 化石能源/基础机械/火药/火箭
+        /// 信息时代(T3-4): 核能/AI/机甲/激光电磁炮
+        /// 星际时代(T5-6): 核聚变/跃迁/纳米机械/能量护盾
+        /// 宇宙时代(T7-8): 暗能量/戴森球/使徒兵器/歼星武器</summary>
+        public enum Era { PreIndustrial = 0, Industrial = 1, Information = 2, Interstellar = 3, Cosmic = 4 }
 
         public class TechDef
         {
@@ -124,6 +132,49 @@ namespace SuperMech.Code
                 if (def != null && def.tier > maxTier) maxTier = def.tier;
             }
             return maxTier;
+        }
+
+        /// <summary>获取文明当前时代（v0.175.1）
+        /// T0=前工业, T1-2=工业, T3-4=信息, T5-6=星际, T7-8=宇宙</summary>
+        public static Era GetEra(long kingdomId)
+        {
+            int tier = GetMaxTier(kingdomId);
+            return tier switch
+            {
+                0 => Era.PreIndustrial,
+                <= 2 => Era.Industrial,
+                <= 4 => Era.Information,
+                <= 6 => Era.Interstellar,
+                _ => Era.Cosmic
+            };
+        }
+
+        /// <summary>获取时代本地化名称</summary>
+        public static string GetEraName(Era era)
+        {
+            return era switch
+            {
+                Era.PreIndustrial => LocalizedTextManager.getText("sm_era_pre_industrial"),
+                Era.Industrial => LocalizedTextManager.getText("sm_era_industrial"),
+                Era.Information => LocalizedTextManager.getText("sm_era_information"),
+                Era.Interstellar => LocalizedTextManager.getText("sm_era_interstellar"),
+                Era.Cosmic => LocalizedTextManager.getText("sm_era_cosmic"),
+                _ => "?"
+            };
+        }
+
+        /// <summary>获取时代描述</summary>
+        public static string GetEraDesc(Era era)
+        {
+            return era switch
+            {
+                Era.PreIndustrial => LocalizedTextManager.getText("sm_era_pre_industrial_desc"),
+                Era.Industrial => LocalizedTextManager.getText("sm_era_industrial_desc"),
+                Era.Information => LocalizedTextManager.getText("sm_era_information_desc"),
+                Era.Interstellar => LocalizedTextManager.getText("sm_era_interstellar_desc"),
+                Era.Cosmic => LocalizedTextManager.getText("sm_era_cosmic_desc"),
+                _ => ""
+            };
         }
 
 

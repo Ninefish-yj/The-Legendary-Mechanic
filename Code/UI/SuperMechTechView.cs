@@ -274,10 +274,23 @@ namespace SuperMech.Code
         {
             var k = SelectedKingdom;
             string kName = k != null ? k.data.name : LocalizedTextManager.getText("sm_ui_none");
+            // v0.175.1: 显示文明当前时代
+            SuperMechTech.Era era = SuperMechTech.Era.PreIndustrial;
+            if (k != null) era = SuperMechTech.GetEra(k.id);
+            string eraName = SuperMechTech.GetEraName(era);
+            string eraColor = era switch
+            {
+                SuperMechTech.Era.PreIndustrial => "#888888",
+                SuperMechTech.Era.Industrial => "#cd853f",
+                SuperMechTech.Era.Information => "#4fc3f7",
+                SuperMechTech.Era.Interstellar => "#ba68c8",
+                SuperMechTech.Era.Cosmic => "#ffd700",
+                _ => "#ffffff"
+            };
             if (_kingdomNameText != null)
-                _kingdomNameText.text = $"{LocalizedTextManager.getText("sm_ui_civ_tech_tree")} - {kName}";
+                _kingdomNameText.text = $"{LocalizedTextManager.getText("sm_ui_civ_tech_tree")} - {kName}  <color={eraColor}>[{eraName}]</color>";
             if (_kingdomLabelText != null)
-                _kingdomLabelText.text = kName;
+                _kingdomLabelText.text = $"{kName}·{eraName}";
         }
 
         /// <summary>切换王国（direction: -1上一个, 1下一个）</summary>

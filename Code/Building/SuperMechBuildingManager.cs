@@ -260,34 +260,79 @@ namespace SuperMech.Code
             {
                 if (building == null || building.asset == null || building.isRuin()) continue;
 
+                // v0.175.1: 建筑效果随生命值衰减（损坏建筑效果降低）
+                float healthRatio = GetBuildingHealthRatio(building);
+                if (healthRatio <= 0f) continue;
+
                 switch (building.asset.id)
                 {
                     case SuperMechBuilding.MechFactory:
-                        RunMechFactory(building);
+                        RunMechFactory(building, healthRatio);
                         break;
                     case SuperMechBuilding.MercGuild:
-                        RunMercGuild(building);
+                        RunMercGuild(building, healthRatio);
                         break;
                     case SuperMechBuilding.StarBank:
-                        RunStarBank(building);
+                        RunStarBank(building, healthRatio);
                         break;
                     case SuperMechBuilding.BlackStarPalace:
-                        RunBlackStarPalace(building);
+                        RunBlackStarPalace(building, healthRatio);
                         break;
                     case SuperMechBuilding.CompanyHQ:
-                        RunCompanyHQ(building);
+                        RunCompanyHQ(building, healthRatio);
                         break;
                 }
+            }
+
+            // v0.175.1: AI自动修复损坏建筑
+            if (Time.frameCount % 1024 == 0)
+                AutoRepairBuildings();
+        }
+
+        /// <summary>获取建筑生命值比例（0-1）</summary>
+        private static float GetBuildingHealthRatio(Building building)
+        {
+            try
+            {
+                float maxHp = building.asset?.base_stats != null ? building.asset.base_stats["health"] : 100f;
+                if (maxHp <= 0) maxHp = 100f;
+                float curHp = building.data != null ? building.data.get("health", maxHp) : maxHp;
+                return Mathf.Clamp01(curHp / maxHp);
+            }
+            catch { return 1f; }
+        }
+
+        /// <summary>AI自动修复损坏建筑（城市有资源时缓慢修复）</summary>
+        private static void AutoRepairBuildings()
+        {
+            if (World.world?.buildings == null || World.world?.cities == null) return;
+            foreach (var building in World.world.buildings)
+            {
+                if (building == null || building.asset == null || building.isRuin()) continue;
+                if (!SuperMechBuilding.IsCustomBuilding(building.asset.id)) continue;
+
+                float ratio = GetBuildingHealthRatio(building);
+                if (ratio >= 1f) continue; // 满血不需要修复
+
+                // 检查建筑所在城市是否有足够资源
+                City city = building.city;
+                if (city == null) continue;
+
+                // 每1024帧恢复5%生命值
+                float maxHp = building.asset.base_stats["health"];
+                float healAmount = maxHp * 0.05f;
+                float curHp = building.data.get("health", maxHp);
+                building.data.set("health", Mathf.Min(curHp + healAmount, maxHp));
             }
         }
 
         /// <summary>机械工厂运行：周围有机械系超能者时，定期产出机械军团单位</summary>
-        private static void RunMechFactory(Building building)
+        private static void RunMechFactory(Building building, float healthRatio)
         {
             if (Time.frameCount % 256 != 0) return;
 
             float range = SuperMechBuildingUpgrade.GetRange(building);
-            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building) * healthRatio;
 
             int mechCount = 0;
             foreach (var a in World.world.units)
@@ -311,12 +356,12 @@ namespace SuperMech.Code
         }
 
         /// <summary>佣兵公会运行：定期发布任务，给觉醒者加经验</summary>
-        private static void RunMercGuild(Building building)
+        private static void RunMercGuild(Building building, float healthRatio)
         {
             if (Time.frameCount % 256 != 0) return;
 
             float range = SuperMechBuildingUpgrade.GetRange(building);
-            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building) * healthRatio;
 
             foreach (var a in World.world.units)
             {
@@ -328,12 +373,12 @@ namespace SuperMech.Code
         }
 
         /// <summary>星际银行运行：周围超能者定期获得少量伊纳尔</summary>
-        private static void RunStarBank(Building building)
+        private static void RunStarBank(Building building, float healthRatio)
         {
             if (Time.frameCount % 512 != 0) return;
 
             float range = SuperMechBuildingUpgrade.GetRange(building);
-            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building) * healthRatio;
 
             foreach (var a in World.world.units)
             {
@@ -348,12 +393,12 @@ namespace SuperMech.Code
         }
 
         /// <summary>黑星行宫运行：周围机械系单位大幅加经验，韩萧复活点</summary>
-        private static void RunBlackStarPalace(Building building)
+        private static void RunBlackStarPalace(Building building, float healthRatio)
         {
             if (Time.frameCount % 128 != 0) return;
 
             float range = SuperMechBuildingUpgrade.GetRange(building);
-            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building) * healthRatio;
 
             foreach (var a in World.world.units)
             {
@@ -365,12 +410,12 @@ namespace SuperMech.Code
         }
 
         /// <summary>降临者公司总部运行：定期发行伊纳尔，周围降临者加经验</summary>
-        private static void RunCompanyHQ(Building building)
+        private static void RunCompanyHQ(Building building, float healthRatio)
         {
             if (Time.frameCount % 256 != 0) return;
 
             float range = SuperMechBuildingUpgrade.GetRange(building);
-            float mult = SuperMechBuildingUpgrade.GetMultiplier(building);
+            float mult = SuperMechBuildingUpgrade.GetMultiplier(building) * healthRatio;
 
             int playerCount = 0;
             foreach (var a in World.world.units)

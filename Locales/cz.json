@@ -3511,5 +3511,15 @@
   "sm_company_god_default": "上帝央行",
   "sm_ui_economy_unlimited": "∞",
   "sm_inal_symbol": "₡",
-  "sm_inal_currency": "₡伊纳尔"
+  "sm_inal_currency": "₡伊纳尔",
+  "sm_era_pre_industrial": "前工业时代",
+  "sm_era_pre_industrial_desc": "尚未开启科技树，文明处于原始状态",
+  "sm_era_industrial": "工业时代",
+  "sm_era_industrial_desc": "化石能源与基础机械，火药武器与火箭卫星",
+  "sm_era_information": "信息时代",
+  "sm_era_information_desc": "核能与人工智能，机甲机器人与激光电磁炮",
+  "sm_era_interstellar": "星际时代",
+  "sm_era_interstellar_desc": "核聚变与跃迁引擎，纳米机械与能量护盾",
+  "sm_era_cosmic": "宇宙时代",
+  "sm_era_cosmic_desc": "暗能量与戴森球，使徒兵器与歼星武器"
 }

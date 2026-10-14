@@ -48,6 +48,9 @@ namespace SuperMech.Code
             // 9. 文明科技树加成（v0.99.1 对照原著：三大文明科技路线给全文明属性加成）
             ApplyTechBonus(actor, stats);
 
+            // 9.5 文明时代加成（v0.175.1 系统联动：时代越高全文明属性越强）
+            ApplyEraBonus(actor, stats);
+
             // 10. 机械科技→械兵额外加成（v0.99.9 系统互动：械兵享受机械科技额外加成）
             ApplyMechTechBonus(actor, stats);
         }
@@ -61,6 +64,30 @@ namespace SuperMech.Code
             if (dmg > 0) stats["damage"] *= (1f + dmg);
             if (hp > 0) stats["health"] *= (1f + hp);
             if (spd > 0) stats["speed"] *= (1f + spd);
+        }
+
+        /// <summary>v0.175.1 文明时代加成：时代越高全文明属性越强
+        /// 工业+5%/信息+10%/星际+15%/宇宙+25%</summary>
+        private static void ApplyEraBonus(Actor actor, BaseStats stats)
+        {
+            if (actor == null || actor.kingdom == null) return;
+            long kid = actor.kingdom.getID();
+            var era = SuperMechTech.GetEra(kid);
+            float bonus = era switch
+            {
+                SuperMechTech.Era.Industrial => 0.05f,
+                SuperMechTech.Era.Information => 0.10f,
+                SuperMechTech.Era.Interstellar => 0.15f,
+                SuperMechTech.Era.Cosmic => 0.25f,
+                _ => 0f
+            };
+            if (bonus > 0)
+            {
+                stats["damage"] *= (1f + bonus);
+                stats["health"] *= (1f + bonus);
+                if (era >= SuperMechTech.Era.Information)
+                    stats["speed"] *= (1f + bonus * 0.5f);
+            }
         }
 
         /// <summary>v0.99.9 机械科技→械兵额外加成：械兵单位享受机械科技额外50%加成
