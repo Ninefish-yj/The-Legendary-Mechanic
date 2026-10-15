@@ -310,7 +310,7 @@ namespace SuperMech.Code
             {
                 st = new SubspeciesTrait
                 {
-                    id = id, group_id = "sm_race",
+                    id = id, group_id = "sm_race_talents",
                     path_icon = "ui/Icons/actor_traits/iconGiant",
                     needs_to_be_explored = false, base_stats_meta = new BaseStats()
                 };
@@ -318,7 +318,7 @@ namespace SuperMech.Code
             }
             else
             {
-                st.group_id = "sm_race";
+                st.group_id = "sm_race_talents";
                 st.path_icon = "ui/Icons/actor_traits/iconGiant";
                 st.needs_to_be_explored = false;
                 if (st.base_stats_meta == null) st.base_stats_meta = new BaseStats();

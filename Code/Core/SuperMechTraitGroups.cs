@@ -40,18 +40,6 @@ namespace SuperMech.Code
                     if (string.IsNullOrEmpty(groupName)) groupName = g.id;
                     LocalizedTextManager.add("trait_group_" + g.id, groupName, pReplace: true);
 
-                    // 种族专长分组同时注册到亚种特质分组（SubspeciesTrait使用subspecies_trait_groups）
-                    if (g.id == "sm_race")
-                    {
-                        var subGroup = new SubspeciesTraitGroupAsset
-                        {
-                            id = g.id,
-                            name = "trait_group_" + g.id,
-                            color = g.color
-                        };
-                        AssetManager.subspecies_trait_groups.add(subGroup);
-                    }
-
                     registered++;
                 }
                 catch (System.Exception e)
