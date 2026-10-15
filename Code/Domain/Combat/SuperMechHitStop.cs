@@ -24,7 +24,7 @@ namespace SuperMech.Code
             if (attacker == null || target == null) return;
             if (damage < 5f) return; // 小伤害不触发
 
-            Vector3 pos = target.transform != null ? target.cur_transform_position : Vector3.zero;
+            Vector3 pos = target.avatar != null ? target.cur_transform_position : Vector3.zero;
 
             // 1. 命中停顿（大伤害或超A战斗时触发）
             bool bigHit = damage > 30f || SuperMechSupermA.IsSuperA(attacker) || SuperMechSupermA.IsSuperA(target);
