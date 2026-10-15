@@ -1663,7 +1663,7 @@
   "sm_legend_881": "传奇",
   "sm_legend_882": "传奇",
   "sm_log_awaken": "日志",
-  "sm_log_awaken_text": "【超能觉醒】{0}觉醒了{1}体系，天赋评级{2}",
+  "sm_log_awaken_text": "【超能觉醒】{0}觉醒{1}，天赋评级{2}",
   "sm_log_competition": "日志",
   "sm_log_competition_text": "{0}参与超A竞技",
   "sm_log_concept_reshape": "日志",
