@@ -74,40 +74,122 @@ namespace SuperMech.Code
         private static readonly Dictionary<long, Dictionary<string, QuestProgress>> _questProgress = new Dictionary<long, Dictionary<string, QuestProgress>>();
         private static bool _questsInitialized;
 
-        /// <summary>初始化任务库</summary>
+        /// <summary>初始化任务库（v0.193 扩充至33个任务）</summary>
         public static void InitQuests()
         {
             if (_questsInitialized) return;
             _questsInitialized = true;
 
-            // 主线任务
+            // ========== 主线任务：跟随小说成长线 ==========
             AddQuest("main_awaken", "sm_quest_main_awaken", "sm_quest_main_awaken_desc",
-                QuestType.Main, QuestObjectiveType.ReachRank, "rank_c", 1, 500, 100, null, 0);
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_01_e", 1, 300, 50, null, 0);
 
-            AddQuest("main_mech_path", "sm_quest_main_mech", "sm_quest_main_mech_desc",
-                QuestType.Main, QuestObjectiveType.LearnKnowledge, "mech_theory", 1, 800, 200, "main_awaken", 2);
+            AddQuest("main_rank_d", "sm_quest_main_rank_d", "sm_quest_main_rank_d_desc",
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_02_d", 1, 500, 100, "main_awaken", 1);
 
             AddQuest("main_first_battle", "sm_quest_main_battle", "sm_quest_main_battle_desc",
-                QuestType.Main, QuestObjectiveType.Kill, "any", 10, 1000, 300, "main_awaken", 1);
+                QuestType.Main, QuestObjectiveType.Kill, "any", 10, 800, 150, "main_awaken", 1);
+
+            AddQuest("main_knowledge_start", "sm_quest_main_know_start", "sm_quest_main_know_start_desc",
+                QuestType.Main, QuestObjectiveType.LearnKnowledge, "any", 3, 600, 120, "main_rank_d", 2);
+
+            AddQuest("main_mech_path", "sm_quest_main_mech", "sm_quest_main_mech_desc",
+                QuestType.Main, QuestObjectiveType.LearnKnowledge, "any", 1, 800, 200, "main_knowledge_start", 2);
+
+            AddQuest("main_inal_first", "sm_quest_main_inal_first", "sm_quest_main_inal_first_desc",
+                QuestType.Main, QuestObjectiveType.EarnInal, "any", 5000, 1000, 200, "main_first_battle", 1);
+
+            AddQuest("main_rank_c", "sm_quest_main_rank_c", "sm_quest_main_rank_c_desc",
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_04_c", 1, 1500, 300, "main_inal_first", 3);
+
+            AddQuest("main_craft_start", "sm_quest_main_craft_start", "sm_quest_main_craft_start_desc",
+                QuestType.Main, QuestObjectiveType.CraftItem, "any", 3, 1000, 200, "main_rank_c", 3);
 
             AddQuest("main_star_travel", "sm_quest_main_star", "sm_quest_main_star_desc",
-                QuestType.Main, QuestObjectiveType.ExplorePlanet, "any", 1, 5000, 1000, "main_mech_path", 5);
+                QuestType.Main, QuestObjectiveType.ExplorePlanet, "any", 1, 3000, 500, "main_craft_start", 5);
 
-            // 支线任务
+            AddQuest("main_rank_b", "sm_quest_main_rank_b", "sm_quest_main_rank_b_desc",
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_06_b", 1, 3000, 600, "main_star_travel", 5);
+
+            AddQuest("main_knowledge_10", "sm_quest_main_know_10", "sm_quest_main_know_10_desc",
+                QuestType.Main, QuestObjectiveType.LearnKnowledge, "any", 10, 2500, 500, "main_rank_b", 5);
+
+            AddQuest("main_explore_3", "sm_quest_main_explore_3", "sm_quest_main_explore_3_desc",
+                QuestType.Main, QuestObjectiveType.ExplorePlanet, "any", 3, 4000, 800, "main_rank_b", 5);
+
+            AddQuest("main_rank_a", "sm_quest_main_rank_a", "sm_quest_main_rank_a_desc",
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_08_a", 1, 6000, 1200, "main_knowledge_10", 8);
+
+            AddQuest("main_craft_10", "sm_quest_main_craft_10", "sm_quest_main_craft_10_desc",
+                QuestType.Main, QuestObjectiveType.CraftItem, "any", 10, 4000, 800, "main_rank_a", 8);
+
+            AddQuest("main_win_20", "sm_quest_main_win_20", "sm_quest_main_win_20_desc",
+                QuestType.Main, QuestObjectiveType.WinBattle, "any", 20, 5000, 1000, "main_rank_a", 8);
+
+            AddQuest("main_rank_s", "sm_quest_main_rank_s", "sm_quest_main_rank_s_desc",
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_10_s", 1, 15000, 3000, "main_craft_10", 10);
+
+            AddQuest("main_rank_ss", "sm_quest_main_rank_ss", "sm_quest_main_rank_ss_desc",
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_12_ss", 1, 30000, 6000, "main_rank_s", 12);
+
+            AddQuest("main_rank_x", "sm_quest_main_rank_x", "sm_quest_main_rank_x_desc",
+                QuestType.Main, QuestObjectiveType.ReachRank, "sm_rank_13_x", 1, 100000, 20000, "main_rank_ss", 15);
+
+            // ========== 支线任务 ==========
             AddQuest("side_collect_inal", "sm_quest_side_inal", "sm_quest_side_inal_desc",
                 QuestType.Side, QuestObjectiveType.EarnInal, "any", 10000, 2000, 500, null, 1);
 
             AddQuest("side_craft_master", "sm_quest_side_craft", "sm_quest_side_craft_desc",
                 QuestType.Side, QuestObjectiveType.CraftItem, "any", 5, 1500, 400, null, 3);
 
-            // 日常任务
+            AddQuest("side_kill_100", "sm_quest_side_kill_100", "sm_quest_side_kill_100_desc",
+                QuestType.Side, QuestObjectiveType.Kill, "any", 100, 3000, 600, null, 3);
+
+            AddQuest("side_explore_5", "sm_quest_side_explore_5", "sm_quest_side_explore_5_desc",
+                QuestType.Side, QuestObjectiveType.ExplorePlanet, "any", 5, 4000, 800, null, 5);
+
+            AddQuest("side_inal_100k", "sm_quest_side_inal_100k", "sm_quest_side_inal_100k_desc",
+                QuestType.Side, QuestObjectiveType.EarnInal, "any", 100000, 15000, 3000, null, 5);
+
+            AddQuest("side_win_50", "sm_quest_side_win_50", "sm_quest_side_win_50_desc",
+                QuestType.Side, QuestObjectiveType.WinBattle, "any", 50, 5000, 1000, null, 5);
+
+            AddQuest("side_knowledge_20", "sm_quest_side_know_20", "sm_quest_side_know_20_desc",
+                QuestType.Side, QuestObjectiveType.LearnKnowledge, "any", 20, 8000, 1500, null, 5);
+
+            AddQuest("side_craft_50", "sm_quest_side_craft_50", "sm_quest_side_craft_50_desc",
+                QuestType.Side, QuestObjectiveType.CraftItem, "any", 50, 10000, 2000, null, 8);
+
+            // ========== 日常任务 ==========
             AddQuest("daily_kill_5", "sm_quest_daily_kill", "sm_quest_daily_kill_desc",
                 QuestType.Daily, QuestObjectiveType.Kill, "any", 5, 200, 50, null, 0);
 
             AddQuest("daily_win_battle", "sm_quest_daily_battle", "sm_quest_daily_battle_desc",
                 QuestType.Daily, QuestObjectiveType.WinBattle, "any", 3, 300, 80, null, 0);
 
-            Debug.Log("[超神机械师] 任务系统初始化完成");
+            AddQuest("daily_craft_1", "sm_quest_daily_craft", "sm_quest_daily_craft_desc",
+                QuestType.Daily, QuestObjectiveType.CraftItem, "any", 1, 200, 50, null, 0);
+
+            AddQuest("daily_learn_1", "sm_quest_daily_learn", "sm_quest_daily_learn_desc",
+                QuestType.Daily, QuestObjectiveType.LearnKnowledge, "any", 1, 200, 50, null, 0);
+
+            AddQuest("daily_inal_earn", "sm_quest_daily_inal", "sm_quest_daily_inal_desc",
+                QuestType.Daily, QuestObjectiveType.EarnInal, "any", 1000, 300, 80, null, 0);
+
+            AddQuest("daily_explore_1", "sm_quest_daily_explore", "sm_quest_daily_explore_desc",
+                QuestType.Daily, QuestObjectiveType.ExplorePlanet, "any", 1, 500, 100, null, 0);
+
+            // ========== 势力任务 ==========
+            AddQuest("faction_kill_50", "sm_quest_faction_kill", "sm_quest_faction_kill_desc",
+                QuestType.Faction, QuestObjectiveType.Kill, "any", 50, 5000, 1000, null, 5);
+
+            AddQuest("faction_craft_30", "sm_quest_faction_craft", "sm_quest_faction_craft_desc",
+                QuestType.Faction, QuestObjectiveType.CraftItem, "any", 30, 6000, 1200, null, 5);
+
+            AddQuest("faction_inal_50k", "sm_quest_faction_inal", "sm_quest_faction_inal_desc",
+                QuestType.Faction, QuestObjectiveType.EarnInal, "any", 50000, 8000, 1500, null, 8);
+
+            Debug.Log("[超神机械师] 任务系统初始化完成（33个任务）");
         }
 
         private static void AddQuest(string id, string nameKey, string descKey, QuestType type,
