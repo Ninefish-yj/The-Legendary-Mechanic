@@ -55,7 +55,9 @@ namespace SuperMech.Code
                 tabRt.offsetMin = new Vector2(2, 2);
                 tabRt.offsetMax = new Vector2(-2, -2);
                 var tabImg = tabGo.GetComponent<Image>();
-                tabImg.color = idx == 0 ? new Color(0.15f, 0.25f, 0.4f, 0.95f) : new Color(0.08f, 0.12f, 0.18f, 0.8f);
+                tabImg.sprite = idx == 0 ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                tabImg.type = Image.Type.Sliced;
+                tabImg.color = Color.white;
                 var tabBtn = tabGo.GetComponent<Button>();
                 SuperMechUiBuilder.AddText(tabGo, tabLabels[i], 12, TextAnchor.MiddleCenter,
                     idx == 0 ? new Color(0.95f, 0.85f, 0.5f, 1f) : new Color(0.7f, 0.75f, 0.85f, 1f));
@@ -181,8 +183,13 @@ namespace SuperMech.Code
                 var img = t.GetComponent<Image>();
                 var txt = t.GetComponentInChildren<Text>();
                 bool active = t.GetSiblingIndex() == idx;
-                if (img != null) img.color = active ? new Color(0.15f, 0.25f, 0.4f, 0.95f) : new Color(0.08f, 0.12f, 0.18f, 0.8f);
-                if (txt != null) txt.color = active ? new Color(0.95f, 0.85f, 0.5f, 1f) : new Color(0.7f, 0.75f, 0.85f, 1f);
+                if (img != null)
+                {
+                    img.sprite = active ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                    img.type = Image.Type.Sliced;
+                    img.color = Color.white;
+                }
+                if (txt != null) txt.color = active ? SuperMechUiSkin.AccentColor : SuperMechUiSkin.TextDim;
             }
             if (idx == 1) RefreshMarket();
         }

@@ -61,7 +61,11 @@ namespace SuperMech.Code
             panelRect.sizeDelta = new Vector2(600, 500);
             panelRect.anchoredPosition = Vector2.zero;
             var panelImg = _panel.AddComponent<Image>();
-            panelImg.color = new Color(0.15f, 0.15f, 0.2f, 0.95f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
+            // v0.202 装饰角标
+            SuperMechUiSkin.AddCornerDecorations(panelRect, 16f, 2f);
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -75,7 +79,7 @@ namespace SuperMech.Code
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 18;
             titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.color = new Color(0.9f, 0.8f, 0.4f);
+            titleText.color = SuperMechUiSkin.AccentColor;
             titleText.text = "任务 / 成就 / 声望";
 
             // 关闭按钮
@@ -128,7 +132,7 @@ namespace SuperMech.Code
             _contentText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _contentText.fontSize = 13;
             _contentText.alignment = TextAnchor.UpperLeft;
-            _contentText.color = new Color(0.85f, 0.85f, 0.9f);
+            _contentText.color = SuperMechUiSkin.TextColor;
             _contentText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _contentText.verticalOverflow = VerticalWrapMode.Truncate;
             var textRt = _contentText.GetComponent<RectTransform>();

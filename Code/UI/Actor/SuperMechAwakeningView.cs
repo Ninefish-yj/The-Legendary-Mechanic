@@ -81,7 +81,9 @@ namespace SuperMech.Code
             panelRect.pivot = new Vector2(0.5f, 0.5f);
             panelRect.sizeDelta = new Vector2(600, 500);
             var panelImg = panelGo.AddComponent<Image>();
-            panelImg.color = new Color(0.05f, 0.08f, 0.15f, 0.98f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -95,7 +97,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
-            titleText.color = new Color(1f, 0.85f, 0.4f);
+            titleText.color = SuperMechUiSkin.AccentColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.text = LocalizedTextManager.getText("sm_ui_awakening_title");
 
@@ -110,7 +112,7 @@ namespace SuperMech.Code
             ddRect.anchoredPosition = new Vector2(0, -45);
             _unitDropdown = dropdownGo.AddComponent<Dropdown>();
             var ddImg = dropdownGo.GetComponent<Image>(); if (ddImg == null) ddImg = dropdownGo.AddComponent<Image>();
-            ddImg.color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
+            ddImg.color = SuperMechUiSkin.ButtonNormal;
             _unitDropdown.onValueChanged.AddListener(OnUnitSelected);
 
             // 阶位成长线
@@ -136,7 +138,7 @@ namespace SuperMech.Code
             _unitInfoText = infoGo.AddComponent<Text>();
             _unitInfoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _unitInfoText.fontSize = 12;
-            _unitInfoText.color = new Color(0.8f, 0.9f, 1f);
+            _unitInfoText.color = SuperMechUiSkin.TextColor;
             _unitInfoText.alignment = TextAnchor.UpperLeft;
             _unitInfoText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _unitInfoText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -151,8 +153,16 @@ namespace SuperMech.Code
             btnRect.sizeDelta = new Vector2(200, 44);
             btnRect.anchoredPosition = new Vector2(0, 8);
             var btnImg = btnGo.AddComponent<Image>();
-            btnImg.color = new Color(0.8f, 0.5f, 0.2f, 0.9f);
+            btnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            btnImg.type = Image.Type.Sliced;
+            btnImg.color = Color.white;
             _breakthroughBtn = btnGo.AddComponent<Button>();
+            _breakthroughBtn.targetGraphic = btnImg;
+            _breakthroughBtn.transition = Selectable.Transition.SpriteSwap;
+            var bss = _breakthroughBtn.spriteState;
+            bss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            bss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            _breakthroughBtn.spriteState = bss;
             _breakthroughBtn.onClick.AddListener(DoBreakthrough);
             var btnTextGo = new GameObject("Text");
             btnTextGo.transform.SetParent(btnGo.transform, false);
