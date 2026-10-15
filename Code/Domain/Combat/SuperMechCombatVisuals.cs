@@ -421,7 +421,7 @@ namespace SuperMech.Code
             void Update()
             {
                 _life += Time.deltaTime;
-                if (_life >= _duration || _actor?.transform == null) { Destroy(this); return; }
+                if (_life >= _duration || _actor?.avatar == null) { Destroy(this); return; }
                 float t = _life / _duration;
                 // 先冲刺后回弹
                 float dash = t < 0.5f ? t * 2f : (1f - t) * 2f;
@@ -447,7 +447,7 @@ namespace SuperMech.Code
             void Update()
             {
                 _life += Time.deltaTime;
-                if (_life >= _duration || _actor?.transform == null) { Destroy(this); return; }
+                if (_life >= _duration || _actor?.avatar == null) { Destroy(this); return; }
                 float t = _life / _duration;
                 // 击退然后缓慢回位
                 float knock = t < 0.3f ? t / 0.3f : 1f - (t - 0.3f) / 0.7f * 0.5f;
