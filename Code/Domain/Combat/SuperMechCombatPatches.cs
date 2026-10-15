@@ -60,6 +60,22 @@ namespace SuperMech.Code
                     SuperMechCombatEffects.OnAttackHit(attacker, target);
                 }
 
+                // v0.200 战斗AI增强：职业差异化战斗行为（连击/暴击/闪避/低血量爆发）
+                if (attacker != null && attacker.isAlive())
+                {
+                    float aiDamage = SuperMechCombatAI.ProcessAttack(attacker, target, pDamage);
+                    if (aiDamage <= 0f)
+                    {
+                        return false; // 完全闪避
+                    }
+                    // AI额外伤害（暴击/连击/职业加成超出基础伤害的部分）
+                    float bonusDamage = aiDamage - pDamage;
+                    if (bonusDamage > 0f && target.data != null)
+                    {
+                        target.data.health -= (int)bonusDamage;
+                    }
+                }
+
                 // v0.112.0 法术自动释放：学会法术的单位在战斗中自动施法（有冷却控制）
                 if (attacker != null && attacker.isAlive())
                 {

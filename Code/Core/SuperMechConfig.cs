@@ -39,6 +39,8 @@ namespace SuperMech.Code
         public static bool SanctuaryKeyDropEnabled = true;
         /// <summary>v0.197 战斗视觉特效开关（伤害飘字/职业颜色/屏幕震动）</summary>
         public static bool CombatEffectsEnabled = true;
+        /// <summary>v0.200 战斗AI增强开关（职业差异化战斗行为/连击/闪避/暴击）</summary>
+        public static bool CombatAIEnabled = true;
         /// <summary>掉落钥匙材料的最低阶位（0=F~13=X），默认10=S阶</summary>
         public static int KeyDropMinRank = 10;
         /// <summary>多少块钥匙材料合成1把圣所钥匙（默认3）</summary>
