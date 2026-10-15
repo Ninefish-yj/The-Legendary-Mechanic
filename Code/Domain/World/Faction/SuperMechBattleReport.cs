@@ -38,7 +38,7 @@ namespace SuperMech.Code
             if (_inWar) EndCurrentWar("僵持");
             _currentWar = new BattleReportData(
                 System.Guid.NewGuid().ToString("N").Substring(0, 8),
-                factionA, factionB, World.world == null ? 1 : World.world.year);
+                factionA, factionB, World.world == null ? 1 : Date.getCurrentYear());
             _inWar = true;
             Debug.Log($"[超神机械师] 战报：{factionA} vs {factionB} 战争开始");
         }
