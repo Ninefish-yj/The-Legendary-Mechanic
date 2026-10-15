@@ -37,18 +37,18 @@ namespace SuperMech.Code
             // 注册历史分类（让模组事件在历史窗口有独立分类按钮）
             RegisterHistoryGroup();
 
-            RegisterLogAsset("sm_log_awaken", "sm_log_awaken_text", new Color(0.3f, 0.8f, 1f));
-            RegisterLogAsset("sm_log_promotion", "sm_log_promotion_text", new Color(1f, 0.8f, 0.2f));
-            RegisterLogAsset("sm_log_fusion", "sm_log_fusion_text", new Color(0.5f, 1f, 0.5f));
-            RegisterLogAsset("sm_log_sanctuary", "sm_log_sanctuary_text", new Color(0.8f, 0.5f, 1f));
-            RegisterLogAsset("sm_log_iteration", "sm_log_iteration_text", new Color(1f, 0.5f, 0.5f));
-            RegisterLogAsset("sm_log_resurrection", "sm_log_resurrection_text", new Color(1f, 0.3f, 0.8f));
-            RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f));
-            RegisterLogAsset("sm_log_skill", "sm_log_skill_text", new Color(0.4f, 0.8f, 0.6f));
-            RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f));
-            RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f));
-            RegisterLogAsset("sm_log_key", "sm_log_key_text", new Color(0.4f, 0.7f, 1f));
-            RegisterLogAsset("sm_log_faction_war", "sm_log_faction_war_text", new Color(1f, 0.4f, 0.4f));
+            RegisterLogAsset("sm_log_awaken", "sm_log_awaken_text", new Color(0.3f, 0.8f, 1f), "ui/Icons/iconStar");
+            RegisterLogAsset("sm_log_promotion", "sm_log_promotion_text", new Color(1f, 0.8f, 0.2f), "ui/Icons/iconDivineLight");
+            RegisterLogAsset("sm_log_fusion", "sm_log_fusion_text", new Color(0.5f, 1f, 0.5f), "ui/Icons/iconBooks");
+            RegisterLogAsset("sm_log_sanctuary", "sm_log_sanctuary_text", new Color(0.8f, 0.5f, 1f), "ui/Icons/iconPurpleBook");
+            RegisterLogAsset("sm_log_iteration", "sm_log_iteration_text", new Color(1f, 0.5f, 0.5f), "ui/Icons/iconPlanet");
+            RegisterLogAsset("sm_log_resurrection", "sm_log_resurrection_text", new Color(1f, 0.3f, 0.8f), "ui/Icons/iconQi");
+            RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f), "ui/Icons/iconMagicAffinity");
+            RegisterLogAsset("sm_log_skill", "sm_log_skill_text", new Color(0.4f, 0.8f, 0.6f), "ui/Icons/iconHammer");
+            RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f), "ui/Icons/iconMystery");
+            RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f), "ui/Icons/iconSword");
+            RegisterLogAsset("sm_log_key", "sm_log_key_text", new Color(0.4f, 0.7f, 1f), "ui/Icons/iconCoin");
+            RegisterLogAsset("sm_log_faction_war", "sm_log_faction_war_text", new Color(1f, 0.4f, 0.4f), "ui/Icons/iconShield");
 
             Debug.Log("[超神机械师] 事件日志系统初始化完成，注册10类日志资产+1历史分类");
         }
@@ -80,7 +80,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>注册自定义WorldLogAsset</summary>
-        private static void RegisterLogAsset(string assetId, string localeId, Color color)
+        private static void RegisterLogAsset(string assetId, string localeId, Color color, string iconPath)
         {
             if (AssetManager.world_log_library == null)
             {
@@ -88,7 +88,7 @@ namespace SuperMech.Code
                 return;
             }
 
-            // 必须设置path_icon为空字符串而非null，否则setMessage中null != ""会进入sprite加载分支
+            // path_icon设置图标路径，空字符串会显示白色方块
             // 必须设置text_replacer，否则{0}{1}{2}占位符不会被替换
             var asset = new WorldLogAsset
             {
@@ -96,7 +96,7 @@ namespace SuperMech.Code
                 locale_id = localeId,
                 color = color,
                 group = "super_mech",
-                path_icon = "",
+                path_icon = iconPath,
                 random_ids = 0,
                 text_replacer = delegate(WorldLogMessage msg, ref string text)
                 {
