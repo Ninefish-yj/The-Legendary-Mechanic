@@ -21,14 +21,21 @@ namespace SuperMech.Code
 
             try
             {
+                Vector3 attackerPos = GetActorPosition(attacker);
                 Vector3 targetPos = GetActorPosition(target);
                 Color attackColor = GetAttackColor(attacker);
+
+                // 0. 战斗动作：攻击冲刺+受击击退
+                TriggerAttackMotion(attacker, target, attackerPos, targetPos);
 
                 // 1. 伤害飘字
                 ShowDamageText(targetPos, (int)damage, attackColor);
 
                 // 2. 命中特效（职业差异化颜色）
                 SpawnHitEffect(targetPos, attackColor);
+
+                // 3. 职业差异化攻击动作
+                TriggerClassAttackMotion(attacker, target, attackerPos, targetPos, attackColor);
 
                 // 3. 超A级别：屏幕震动+大范围特效
                 if (SuperMechSupermA.IsSuperA(attacker) || SuperMechSupermA.IsSuperA(target))
@@ -53,6 +60,115 @@ namespace SuperMech.Code
             {
                 // 特效失败不影响战斗
             }
+        }
+
+        /// <summary>v0.199 战斗动作：攻击冲刺+受击击退</summary>
+        private static void TriggerAttackMotion(Actor attacker, Actor target, Vector3 attackerPos, Vector3 targetPos)
+        {
+            EnsureEffectRoot();
+            Vector3 dir = (targetPos - attackerPos).normalized;
+            float dist = Vector3.Distance(attackerPos, targetPos);
+
+            // 近战攻击冲刺（距离<2格时）
+            if (dist < 2.5f && attacker.transform != null)
+            {
+                var dash = _effectRoot.AddComponent<AttackDash>();
+                dash.Init(attacker, dir * 0.4f, 0.12f);
+            }
+
+            // 受击击退（所有攻击都有，强度随伤害）
+            if (target.transform != null)
+            {
+                var knock = _effectRoot.AddComponent<HitKnockback>();
+                knock.Init(target, -dir * 0.25f, 0.15f);
+            }
+        }
+
+        /// <summary>v0.199 职业差异化攻击动作</summary>
+        private static void TriggerClassAttackMotion(Actor attacker, Actor target, Vector3 attackerPos, Vector3 targetPos, Color color)
+        {
+            EnsureEffectRoot();
+
+            // 机械师：射击弹道（能量弹从攻击者飞向目标）
+            if (attacker.hasTrait(SuperMechTraits.ClassMechanic))
+            {
+                SpawnProjectile(attackerPos, targetPos, color, 0.15f);
+            }
+            // 武道：近战挥砍弧线
+            else if (attacker.hasTrait(SuperMechTraits.ClassMartial))
+            {
+                SpawnSlashArc(attackerPos, targetPos, color);
+            }
+            // 法师：施法光球
+            else if (attacker.hasTrait(SuperMechTraits.ClassMage))
+            {
+                SpawnProjectile(attackerPos + Vector3.up * 0.3f, targetPos, GetSpellColor(attacker), 0.2f);
+            }
+            // 念力/异能：精神波（环形扩散）
+            else if (attacker.hasTrait(SuperMechTraits.ClassPsi) || attacker.hasTrait(SuperMechTraits.ClassPower))
+            {
+                SpawnPsiWave(attackerPos, color);
+            }
+        }
+
+        /// <summary>弹道特效（能量弹飞行）</summary>
+        private static void SpawnProjectile(Vector3 from, Vector3 to, Color color, float duration)
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            go.name = "Projectile";
+            go.transform.position = from;
+            go.transform.localScale = Vector3.one * 0.12f;
+            var renderer = go.GetComponent<Renderer>();
+            renderer.material = new Material(Shader.Find("Sprites/Default"));
+            renderer.material.color = new Color(color.r, color.g, color.b, 0.9f);
+            Object.Destroy(go.GetComponent<Collider>());
+
+            var mover = go.AddComponent<ProjectileMover>();
+            mover.Init(go, from, to, duration);
+        }
+
+        /// <summary>挥砍弧线特效</summary>
+        private static void SpawnSlashArc(Vector3 attackerPos, Vector3 targetPos, Color color)
+        {
+            var go = new GameObject("SlashArc", typeof(LineRenderer));
+            go.transform.position = attackerPos;
+            var lr = go.GetComponent<LineRenderer>();
+            lr.material = new Material(Shader.Find("Sprites/Default"));
+            lr.startColor = new Color(color.r, color.g, color.b, 0.8f);
+            lr.endColor = new Color(color.r, color.g, color.b, 0f);
+            lr.startWidth = 0.15f;
+            lr.endWidth = 0.05f;
+            lr.positionCount = 8;
+
+            Vector3 dir = (targetPos - attackerPos).normalized;
+            Vector3 perp = new Vector3(-dir.y, dir.x, 0);
+            for (int i = 0; i < 8; i++)
+            {
+                float t = i / 7f;
+                float angle = Mathf.Lerp(-60f, 60f, t) * Mathf.Deg2Rad;
+                Vector3 offset = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg) * dir * 0.6f;
+                lr.SetPosition(i, attackerPos + offset + perp * 0.1f);
+            }
+
+            var anim = go.AddComponent<EffectAnimator>();
+            anim.Init(go, 0.2f, Vector3.one, true);
+        }
+
+        /// <summary>精神波特效（环形扩散）</summary>
+        private static void SpawnPsiWave(Vector3 position, Color color)
+        {
+            var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
+            go.name = "PsiWave";
+            go.transform.position = position + new Vector3(0, 0, 0.3f);
+            go.transform.rotation = Quaternion.Euler(90, 0, 0);
+            go.transform.localScale = Vector3.one * 0.2f;
+            var renderer = go.GetComponent<Renderer>();
+            renderer.material = new Material(Shader.Find("Sprites/Default"));
+            renderer.material.color = new Color(color.r, color.g, color.b, 0.4f);
+            Object.Destroy(go.GetComponent<Collider>());
+
+            var anim = go.AddComponent<EffectAnimator>();
+            anim.Init(go, 0.35f, Vector3.one * 2f, true);
         }
 
         /// <summary>获取职业攻击颜色（原著风格）</summary>
@@ -279,6 +395,83 @@ namespace SuperMech.Code
                 float t = Mathf.Clamp01(_duration / 0.3f);
                 _cam.transform.position = _origin + Random.insideUnitSphere * _intensity * t;
                 if (_duration <= 0) _cam.transform.position = _origin;
+            }
+        }
+
+        /// <summary>攻击冲刺驱动（攻击者向目标方向突进）</summary>
+        private class AttackDash : MonoBehaviour
+        {
+            private Actor _actor;
+            private Vector3 _offset;
+            private float _duration;
+            private float _life;
+            private Vector3 _origin;
+
+            public void Init(Actor actor, Vector3 offset, float duration)
+            {
+                _actor = actor; _offset = offset; _duration = duration;
+                if (actor?.transform != null) _origin = actor.transform.position;
+            }
+
+            void Update()
+            {
+                _life += Time.deltaTime;
+                if (_life >= _duration || _actor?.transform == null) { Destroy(this); return; }
+                float t = _life / _duration;
+                // 先冲刺后回弹
+                float dash = t < 0.5f ? t * 2f : (1f - t) * 2f;
+                _actor.transform.position = _origin + _offset * dash;
+            }
+        }
+
+        /// <summary>受击击退驱动（目标被向后击退）</summary>
+        private class HitKnockback : MonoBehaviour
+        {
+            private Actor _actor;
+            private Vector3 _offset;
+            private float _duration;
+            private float _life;
+            private Vector3 _origin;
+
+            public void Init(Actor actor, Vector3 offset, float duration)
+            {
+                _actor = actor; _offset = offset; _duration = duration;
+                if (actor?.transform != null) _origin = actor.transform.position;
+            }
+
+            void Update()
+            {
+                _life += Time.deltaTime;
+                if (_life >= _duration || _actor?.transform == null) { Destroy(this); return; }
+                float t = _life / _duration;
+                // 击退然后缓慢回位
+                float knock = t < 0.3f ? t / 0.3f : 1f - (t - 0.3f) / 0.7f * 0.5f;
+                _actor.transform.position = _origin + _offset * knock;
+            }
+        }
+
+        /// <summary>弹道移动驱动（能量弹从攻击者飞向目标）</summary>
+        private class ProjectileMover : MonoBehaviour
+        {
+            private GameObject _go;
+            private Vector3 _from;
+            private Vector3 _to;
+            private float _duration;
+            private float _life;
+
+            public void Init(GameObject go, Vector3 from, Vector3 to, float duration)
+            {
+                _go = go; _from = from; _to = to; _duration = duration;
+            }
+
+            void Update()
+            {
+                _life += Time.deltaTime;
+                if (_life >= _duration) { Destroy(_go); Destroy(this); return; }
+                float t = _life / _duration;
+                transform.position = Vector3.Lerp(_from, _to, t);
+                // 尾迹缩放
+                transform.localScale = Vector3.one * (0.12f + Mathf.Sin(t * Mathf.PI) * 0.05f);
             }
         }
     }
