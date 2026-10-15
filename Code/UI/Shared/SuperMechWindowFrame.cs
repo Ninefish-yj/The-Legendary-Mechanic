@@ -32,9 +32,13 @@ namespace SuperMech.Code
             frame.RootRt.sizeDelta = new Vector2(width, height);
             frame.RootRt.anchoredPosition = new Vector2(UnityEngine.Random.Range(-200f, 200f), UnityEngine.Random.Range(-100f, 100f));
 
+            // v0.194 科幻风格：带边框面板背景
             Image bg = root.GetComponent<Image>();
-            bg.color = new Color(0.04f, 0.06f, 0.10f, 0.96f);
+            bg.sprite = SuperMechUiSkin.Panel;
+            bg.type = Image.Type.Sliced;
+            bg.color = Color.white;
 
+            // 标题栏
             var titleBar = new GameObject("TitleBar", typeof(RectTransform), typeof(Image));
             titleBar.transform.SetParent(frame.RootRt, false);
             RectTransform tbRt = titleBar.GetComponent<RectTransform>();
@@ -43,17 +47,32 @@ namespace SuperMech.Code
             tbRt.pivot = new Vector2(0.5f, 1f);
             tbRt.offsetMin = new Vector2(0f, -44f);
             tbRt.offsetMax = Vector2.zero;
-            titleBar.GetComponent<Image>().color = new Color(0.02f, 0.04f, 0.07f, 1f);
+            Image tbImg = titleBar.GetComponent<Image>();
+            tbImg.sprite = SuperMechUiSkin.TitleBar;
+            tbImg.type = Image.Type.Sliced;
+            tbImg.color = Color.white;
+
+            // 标题栏底部金色分隔线
+            var dividerGo = new GameObject("Divider", typeof(RectTransform), typeof(Image));
+            dividerGo.transform.SetParent(tbRt, false);
+            RectTransform divRt = dividerGo.GetComponent<RectTransform>();
+            divRt.anchorMin = new Vector2(0, 0);
+            divRt.anchorMax = new Vector2(1, 0);
+            divRt.pivot = new Vector2(0.5f, 0);
+            divRt.sizeDelta = new Vector2(0, 1);
+            divRt.anchoredPosition = Vector2.zero;
+            dividerGo.GetComponent<Image>().color = SuperMechUiSkin.BorderGold;
 
             var drag = titleBar.AddComponent<SuperMechWindowDrag>();
             drag.WindowRect = frame.RootRt;
 
+            // 标题文字（金色）
             var titleGo = new GameObject("Title", typeof(RectTransform), typeof(Text));
             titleGo.transform.SetParent(tbRt, false);
             RectTransform titleRt = titleGo.GetComponent<RectTransform>();
             titleRt.anchorMin = Vector2.zero;
             titleRt.anchorMax = Vector2.one;
-            titleRt.offsetMin = new Vector2(12f, 0f);
+            titleRt.offsetMin = new Vector2(16f, 0f);
             titleRt.offsetMax = new Vector2(-50f, 0f);
             Text tt = titleGo.GetComponent<Text>();
             frame.TitleText = tt;
@@ -61,21 +80,32 @@ namespace SuperMech.Code
             tt.fontSize = 20;
             tt.fontStyle = FontStyle.Bold;
             tt.alignment = TextAnchor.MiddleLeft;
-            tt.color = new Color(0.9f, 0.85f, 0.6f, 1f);
+            tt.color = SuperMechUiSkin.AccentColor;
             tt.text = title;
+            tt.horizontalOverflow = HorizontalWrapMode.Wrap;
+            tt.verticalOverflow = VerticalWrapMode.Truncate;
 
+            // 关闭按钮（红色+悬停效果）
             var closeGo = new GameObject("Close", typeof(RectTransform), typeof(Image), typeof(Button));
             closeGo.transform.SetParent(tbRt, false);
             RectTransform closeRt = closeGo.GetComponent<RectTransform>();
             closeRt.anchorMin = new Vector2(1f, 0.5f);
             closeRt.anchorMax = new Vector2(1f, 0.5f);
             closeRt.pivot = new Vector2(1f, 0.5f);
-            closeRt.anchoredPosition = new Vector2(-6f, 0f);
-            closeRt.sizeDelta = new Vector2(32f, 32f);
+            closeRt.anchoredPosition = new Vector2(-8f, 0f);
+            closeRt.sizeDelta = new Vector2(30f, 30f);
             Image closeImg = closeGo.GetComponent<Image>();
-            closeImg.color = new Color(0.5f, 0.15f, 0.12f, 0.95f);
+            closeImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            closeImg.type = Image.Type.Sliced;
+            closeImg.color = SuperMechUiSkin.CloseRed;
             Button closeBtn = closeGo.GetComponent<Button>();
             closeBtn.targetGraphic = closeImg;
+            closeBtn.transition = Selectable.Transition.ColorTint;
+            var closeColors = closeBtn.colors;
+            closeColors.normalColor = Color.white;
+            closeColors.highlightedColor = new Color(1.2f, 0.8f, 0.8f, 1f);
+            closeColors.pressedColor = new Color(0.7f, 0.5f, 0.5f, 1f);
+            closeBtn.colors = closeColors;
             var closeLabel = new GameObject("X", typeof(RectTransform), typeof(Text));
             closeLabel.transform.SetParent(closeRt, false);
             RectTransform clr = closeLabel.GetComponent<RectTransform>();
@@ -86,6 +116,7 @@ namespace SuperMech.Code
             Text cl = closeLabel.GetComponent<Text>();
             cl.font = SafeFont();
             cl.fontSize = 18;
+            cl.fontStyle = FontStyle.Bold;
             cl.alignment = TextAnchor.MiddleCenter;
             cl.color = Color.white;
             cl.text = "×";
@@ -130,7 +161,7 @@ namespace SuperMech.Code
             t.font = SafeFont();
             t.fontSize = fontSize;
             t.alignment = align;
-            t.color = color ?? new Color(0.85f, 0.85f, 0.85f, 1f);
+            t.color = color ?? SuperMechUiSkin.TextColor;
             t.text = text;
             t.horizontalOverflow = HorizontalWrapMode.Wrap;
             t.verticalOverflow = VerticalWrapMode.Truncate;
@@ -148,9 +179,16 @@ namespace SuperMech.Code
             rt.anchoredPosition = new Vector2(x, y);
             rt.sizeDelta = new Vector2(w, h);
             Image img = go.GetComponent<Image>();
-            img.color = bgColor ?? new Color(0.12f, 0.18f, 0.30f, 0.9f);
+            img.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            img.type = Image.Type.Sliced;
+            img.color = bgColor ?? Color.white;
             Button btn = go.GetComponent<Button>();
             btn.targetGraphic = img;
+            btn.transition = Selectable.Transition.SpriteSwap;
+            var ss = btn.spriteState;
+            ss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            ss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            btn.spriteState = ss;
             var labelGo = new GameObject("Label", typeof(RectTransform), typeof(Text));
             labelGo.transform.SetParent(rt, false);
             RectTransform lr = labelGo.GetComponent<RectTransform>();
@@ -162,7 +200,7 @@ namespace SuperMech.Code
             lt.font = SafeFont();
             lt.fontSize = 13;
             lt.alignment = TextAnchor.MiddleCenter;
-            lt.color = Color.white;
+            lt.color = SuperMechUiSkin.TextColor;
             lt.text = text;
             lt.horizontalOverflow = HorizontalWrapMode.Wrap;
             lt.verticalOverflow = VerticalWrapMode.Truncate;

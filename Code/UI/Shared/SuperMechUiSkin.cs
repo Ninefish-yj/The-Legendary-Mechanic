@@ -4,8 +4,8 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// 程序化UI皮肤——WorldBox原生融合风格（深棕暖色调）
-    /// 配色：深灰棕半透明底 + 金色强调 + 米白文字 + 石质描边
+    /// 程序化UI皮肤——v0.194 统一科幻星际风格（参考星际争霸+星穹铁道）
+    /// 配色：深蓝黑底 + 金色标题 + 青色高亮 + 细边框 + 卡片分层
     /// 9-slice pixelsPerUnit=100（关键：NML环境下必须用100，否则边框塌缩）
     /// </summary>
     public static class SuperMechUiSkin
@@ -21,39 +21,48 @@ namespace SuperMech.Code
         private static Sprite _rowOdd;
         private static Sprite _cardSprite;
         private static Sprite _sectionSprite;
+        private static Sprite _dividerSprite;
+        private static Sprite _glowSprite;
 
-        // ═════════════════════════ 原生融合色板（深棕暖色调）═════════════════════════
-        public static readonly Color BgColor = new Color(0.16f, 0.13f, 0.10f, 0.94f);
-        public static readonly Color BgLight = new Color(0.22f, 0.18f, 0.14f, 0.95f);
-        public static readonly Color BorderColor = new Color(0.55f, 0.42f, 0.25f, 0.9f);
-        public static readonly Color BorderDim = new Color(0.38f, 0.30f, 0.20f, 0.7f);
-        public static readonly Color TextColor = new Color(0.92f, 0.86f, 0.74f, 1f);
-        public static readonly Color TextDim = new Color(0.65f, 0.58f, 0.48f, 1f);
-        public static readonly Color AccentColor = new Color(0.83f, 0.66f, 0.30f, 1f);
-        public static readonly Color AccentDim = new Color(0.55f, 0.42f, 0.20f, 0.8f);
-        public static readonly Color ButtonNormal = new Color(0.24f, 0.19f, 0.14f, 0.92f);
-        public static readonly Color ButtonHover = new Color(0.35f, 0.28f, 0.20f, 0.96f);
-        public static readonly Color ButtonActive = new Color(0.18f, 0.14f, 0.10f, 0.98f);
-        public static readonly Color EdgeLight = new Color(0.65f, 0.52f, 0.32f, 0.4f);
-        public static readonly Color EdgeDark = new Color(0.08f, 0.06f, 0.04f, 0.6f);
-        public static readonly Color RowEven = new Color(0.20f, 0.16f, 0.12f, 0.5f);
-        public static readonly Color RowOdd = new Color(0.16f, 0.13f, 0.10f, 0.3f);
-        public static readonly Color CardBg = new Color(0.22f, 0.18f, 0.14f, 0.9f);
-        public static readonly Color SectionBg = new Color(0.30f, 0.24f, 0.17f, 0.95f);
-        public static readonly Color CloseRed = new Color(0.65f, 0.25f, 0.20f, 0.95f);
+        // ═════════════════════════ v0.194 统一科幻星际色板 ═════════════════════════
+        // 面板层级：背景最深 → 面板 → 卡片 → 交互元素逐层提亮
+        public static readonly Color BgColor = new Color(0.05f, 0.07f, 0.12f, 0.96f);       // 面板底 #0D1220
+        public static readonly Color BgLight = new Color(0.08f, 0.11f, 0.18f, 0.95f);       // 次级面板 #141C2E
+        public static readonly Color BorderColor = new Color(0.25f, 0.35f, 0.50f, 0.9f);    // 边框 #405980
+        public static readonly Color BorderDim = new Color(0.15f, 0.22f, 0.32f, 0.7f);      // 暗边框 #263852
+        public static readonly Color BorderGold = new Color(0.75f, 0.60f, 0.30f, 0.9f);     // 金色边框 #C0994D
+        public static readonly Color TextColor = new Color(0.90f, 0.92f, 0.96f, 1f);        // 正文 #E6EBF5
+        public static readonly Color TextDim = new Color(0.55f, 0.62f, 0.72f, 1f);          // 次要文字 #8C9EB8
+        public static readonly Color AccentColor = new Color(0.91f, 0.76f, 0.42f, 1f);      // 金色强调 #E8C36A（标题/重要数值）
+        public static readonly Color AccentDim = new Color(0.60f, 0.48f, 0.25f, 0.8f);      // 暗金
+        public static readonly Color CyanColor = new Color(0.30f, 0.78f, 0.85f, 1f);        // 青色高亮 #4DC7D9（数值/进度/选中）
+        public static readonly Color CyanDim = new Color(0.18f, 0.45f, 0.55f, 0.8f);        // 暗青
+        public static readonly Color ButtonNormal = new Color(0.10f, 0.15f, 0.24f, 0.92f);  // 按钮常态 #1A263D
+        public static readonly Color ButtonHover = new Color(0.16f, 0.24f, 0.38f, 0.96f);   // 按钮悬停 #293D61
+        public static readonly Color ButtonActive = new Color(0.07f, 0.10f, 0.16f, 0.98f);  // 按钮按下 #121A29
+        public static readonly Color EdgeLight = new Color(0.35f, 0.50f, 0.70f, 0.4f);      // 顶高光
+        public static readonly Color EdgeDark = new Color(0.03f, 0.05f, 0.08f, 0.6f);       // 底阴影
+        public static readonly Color RowEven = new Color(0.08f, 0.12f, 0.20f, 0.5f);        // 偶数行
+        public static readonly Color RowOdd = new Color(0.06f, 0.09f, 0.15f, 0.3f);         // 奇数行
+        public static readonly Color CardBg = new Color(0.09f, 0.13f, 0.21f, 0.92f);        // 卡片底 #172136
+        public static readonly Color SectionBg = new Color(0.12f, 0.17f, 0.27f, 0.95f);     // 分区底 #1F2B45
+        public static readonly Color CloseRed = new Color(0.70f, 0.25f, 0.22f, 0.95f);      // 关闭按钮红
+        public static readonly Color SuccessGreen = new Color(0.35f, 0.72f, 0.45f, 1f);     // 成功绿
+        public static readonly Color DangerRed = new Color(0.85f, 0.35f, 0.40f, 1f);        // 危险红
+        public static readonly Color WarningOrange = new Color(0.90f, 0.65f, 0.30f, 1f);    // 警告橙
 
-        // ═════════════════════ 星海总览大面板：冷色科幻色板（参考诸天神座 palette）═════════════════════
-        public static readonly Color SciBg = new Color(0.067f, 0.094f, 0.153f, 0.96f);      // #111827 面板底
-        public static readonly Color SciCard = new Color(0.094f, 0.133f, 0.208f, 0.92f);    // #182235 卡片
-        public static readonly Color SciCardHover = new Color(0.13f, 0.20f, 0.30f, 0.96f);  // 悬浮（青调提亮）
-        public static readonly Color SciCardActive = new Color(0.06f, 0.10f, 0.16f, 0.98f); // 按下
-        public static readonly Color SciBorder = new Color(0.196f, 0.263f, 0.353f, 0.9f);   // #32435A 边框
-        public static readonly Color SciGold = new Color(0.91f, 0.765f, 0.416f, 1f);        // #E8C36A 金色标题
-        public static readonly Color SciCyan = new Color(0.286f, 0.843f, 0.89f, 1f);        // #49D7E3 青色高亮
-        public static readonly Color SciPurple = new Color(0.608f, 0.482f, 1f, 1f);         // #9B7BFF 紫色
-        public static readonly Color SciDanger = new Color(0.89f, 0.365f, 0.416f, 1f);      // #E35D6A 战斗红
-        public static readonly Color SciText = new Color(0.91f, 0.93f, 0.96f, 1f);          // #E8EDF5 正文
-        public static readonly Color SciMuted = new Color(0.576f, 0.643f, 0.737f, 1f);      // #93A4BC 次要
+        // 兼容旧代码的别名（星海总览等已用Sci前缀的地方继续可用）
+        public static readonly Color SciBg = BgColor;
+        public static readonly Color SciCard = CardBg;
+        public static readonly Color SciCardHover = ButtonHover;
+        public static readonly Color SciCardActive = ButtonActive;
+        public static readonly Color SciBorder = BorderColor;
+        public static readonly Color SciGold = AccentColor;
+        public static readonly Color SciCyan = CyanColor;
+        public static readonly Color SciPurple = new Color(0.55f, 0.45f, 0.85f, 1f);
+        public static readonly Color SciDanger = DangerRed;
+        public static readonly Color SciText = TextColor;
+        public static readonly Color SciMuted = TextDim;
 
         // ═════════════════════════ Sprite属性 ═════════════════════════
         public static Sprite Panel => EnsureInit() ? _panelSprite : null;
@@ -66,6 +75,8 @@ namespace SuperMech.Code
         public static Sprite RowOddSprite => EnsureInit() ? _rowOdd : null;
         public static Sprite Card => EnsureInit() ? _cardSprite : null;
         public static Sprite Section => EnsureInit() ? _sectionSprite : null;
+        public static Sprite Divider => EnsureInit() ? _dividerSprite : null;
+        public static Sprite Glow => EnsureInit() ? _glowSprite : null;
 
         public static Font DefaultFont
         {
@@ -83,16 +94,18 @@ namespace SuperMech.Code
             if (_initialized) return true;
             try
             {
-                _panelSprite = MakeSlicedSprite(BgColor, BorderColor, 64, 8, "SM_Panel");
-                _buttonNormal = MakeSlicedSprite(ButtonNormal, BorderDim, 16, 3, "SM_BtnNormal");
-                _buttonHover = MakeSlicedSprite(ButtonHover, BorderColor, 16, 3, "SM_BtnHover");
-                _buttonActive = MakeSlicedSprite(ButtonActive, AccentColor, 16, 3, "SM_BtnActive");
-                _titleBarSprite = MakeSlicedSprite(new Color(0.04f, 0.06f, 0.10f, 0.98f), BorderDim, 16, 2, "SM_TitleBar");
-                _scrollbarSprite = MakeSolidSprite(new Color(0.30f, 0.50f, 0.75f, 0.6f), "SM_Scrollbar");
+                _panelSprite = MakeSlicedSprite(BgColor, BorderColor, 64, 4, "SM_Panel");
+                _buttonNormal = MakeSlicedSprite(ButtonNormal, BorderDim, 16, 2, "SM_BtnNormal");
+                _buttonHover = MakeSlicedSprite(ButtonHover, BorderColor, 16, 2, "SM_BtnHover");
+                _buttonActive = MakeSlicedSprite(ButtonActive, CyanDim, 16, 2, "SM_BtnActive");
+                _titleBarSprite = MakeSlicedSprite(new Color(0.03f, 0.05f, 0.09f, 0.98f), BorderGold, 16, 2, "SM_TitleBar");
+                _scrollbarSprite = MakeSolidSprite(new Color(0.30f, 0.60f, 0.75f, 0.6f), "SM_Scrollbar");
                 _rowEven = MakeSolidSprite(RowEven, "SM_RowEven");
                 _rowOdd = MakeSolidSprite(RowOdd, "SM_RowOdd");
                 _cardSprite = MakeSlicedSprite(CardBg, BorderDim, 16, 2, "SM_Card");
                 _sectionSprite = MakeSlicedSprite(SectionBg, BorderColor, 16, 2, "SM_Section");
+                _dividerSprite = MakeSolidSprite(new Color(0.25f, 0.35f, 0.50f, 0.5f), "SM_Divider");
+                _glowSprite = MakeGlowSprite(CyanColor, "SM_Glow");
                 _initialized = true;
                 return true;
             }
@@ -146,6 +159,30 @@ namespace SuperMech.Code
             tex.filterMode = FilterMode.Point;
             var pixels = new Color[size * size];
             for (int i = 0; i < pixels.Length; i++) pixels[i] = color;
+            tex.SetPixels(pixels);
+            tex.Apply();
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+            sprite.name = name;
+            return sprite;
+        }
+
+        /// <summary>生成径向发光Sprite（用于标题装饰/选中高亮）</summary>
+        private static Sprite MakeGlowSprite(Color color, string name)
+        {
+            int size = 32;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var pixels = new Color[size * size];
+            float center = size / 2f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dist = Mathf.Sqrt((x - center) * (x - center) + (y - center) * (y - center)) / center;
+                    float alpha = Mathf.Clamp01(1f - dist) * 0.6f;
+                    pixels[y * size + x] = new Color(color.r, color.g, color.b, alpha);
+                }
+            }
             tex.SetPixels(pixels);
             tex.Apply();
             var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);

@@ -6,7 +6,7 @@ namespace SuperMech.Code
     /// <summary>UI工厂：封装常见UGUI组件创建，消除重复代码</summary>
     internal static class UiFactory
     {
-        /// <summary>创建Text组件</summary>
+        /// <summary>创建Text组件（v0.194 科幻风格默认色）</summary>
         public static Text CreateText(Transform parent, string text = "", int fontSize = 12,
             TextAnchor alignment = TextAnchor.MiddleCenter, Color? color = null)
         {
@@ -18,11 +18,15 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             var txt = go.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            var f = LocalizedTextManager.current_font;
+            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            txt.font = f;
             txt.fontSize = fontSize;
             txt.alignment = alignment;
-            txt.color = color ?? Color.white;
+            txt.color = color ?? SuperMechUiSkin.TextColor;
             txt.text = text;
+            txt.horizontalOverflow = HorizontalWrapMode.Wrap;
+            txt.verticalOverflow = VerticalWrapMode.Truncate;
             txt.raycastTarget = false;
             return txt;
         }
@@ -66,7 +70,7 @@ namespace SuperMech.Code
             return rect;
         }
 
-        /// <summary>创建按钮</summary>
+        /// <summary>创建按钮（v0.194 科幻风格三态切换）</summary>
         public static Button CreateButton(Transform parent, string text,
             UnityEngine.Events.UnityAction onClick, int fontSize = 12, Color? bgColor = null)
         {
@@ -78,10 +82,18 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             var img = go.AddComponent<Image>();
-            img.color = bgColor ?? new Color(0.2f, 0.25f, 0.35f, 0.9f);
+            img.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            img.type = Image.Type.Sliced;
+            img.color = bgColor ?? Color.white;
             var btn = go.AddComponent<Button>();
+            btn.targetGraphic = img;
+            btn.transition = Selectable.Transition.SpriteSwap;
+            var ss = btn.spriteState;
+            ss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            ss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            btn.spriteState = ss;
             btn.onClick.AddListener(onClick);
-            var txt = CreateText(go.transform, text, fontSize, TextAnchor.MiddleCenter, Color.white);
+            var txt = CreateText(go.transform, text, fontSize, TextAnchor.MiddleCenter, SuperMechUiSkin.TextColor);
             return btn;
         }
     }
