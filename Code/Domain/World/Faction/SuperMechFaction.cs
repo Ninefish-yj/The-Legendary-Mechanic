@@ -293,6 +293,7 @@ namespace SuperMech.Code
                     SetRelation(fa.id, fb.id, FactionRelation.Hostile);
                     SuperMechEventBus.Publish("FactionWarDeclared", new FactionWarEvent { factionA = fa.name, factionB = fb.name });
                     SuperMechEventLogger.LogFactionWar(fa.name, fb.name);
+                    SuperMechBattleReport.OnWarDeclared(fa.name, fb.name);
                     Debug.Log($"[超神机械师] 势力战争：{fa.name} ↔ {fb.name}");
                 }
             }
@@ -481,6 +482,7 @@ namespace SuperMech.Code
             fb.warWeariness = 0;
             SuperMechEventBus.Publish("FactionWarDeclared", new FactionWarEvent { factionA = fa.name, factionB = fb.name });
             SuperMechEventLogger.LogFactionWar(fa.name, fb.name);
+            SuperMechBattleReport.OnWarDeclared(fa.name, fb.name);
             Debug.Log($"[超神机械师] {fa.name} 向 {fb.name} 宣战");
             return true;
         }

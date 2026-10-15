@@ -22,6 +22,26 @@ namespace SuperMech.Code
         private static readonly List<Message> _messageHistory = new List<Message>(); // 已触发的历史消息
         private const int MaxVisibleMessages = 5; // 最多显示5条
 
+        // v0.196 玩家回复系统
+        private static readonly HashSet<string> _repliedMessages = new HashSet<string>(); // 已回复的消息ID
+        private static readonly Dictionary<string, int> _npcFavorability = new Dictionary<string, int>(); // NPC好感度
+        private static readonly List<PlayerReplyRecord> _playerReplyHistory = new List<PlayerReplyRecord>(); // 玩家回复历史
+
+        private struct PlayerReplyRecord
+        {
+            public string speaker;
+            public string playerReply;
+            public int favorChange;
+            public PlayerReplyRecord(string s, string r, int f) { speaker = s; playerReply = r; favorChange = f; }
+        }
+
+        private struct ReplyOption
+        {
+            public string text;
+            public int favorChange; // 好感度变化
+            public ReplyOption(string t, int f) { text = t; favorChange = f; }
+        }
+
         // ═══ 超脱者消息流：按世界状态动态切换 ═══
 
         public enum WorldState
@@ -41,7 +61,27 @@ namespace SuperMech.Code
             public string speaker;
             public string content;
             public WorldState state;
-            public Message(string s, string c, WorldState st) { speaker = s; content = c; state = st; }
+            public string id; // v0.196 唯一ID用于回复记录
+            public Message(string s, string c, WorldState st, string i = null) { speaker = s; content = c; state = st; id = i ?? (s + "_" + (int)st); }
+        }
+
+        /// <summary>v0.196 根据说话人获取回复选项</summary>
+        private static ReplyOption[] GetReplyOptions(string speaker)
+        {
+            // 通用回复选项
+            var generic = new[]
+            {
+                new ReplyOption(LocalizedTextManager.getText("sm_wb_reply_agree"), 5),
+                new ReplyOption(LocalizedTextManager.getText("sm_wb_reply_question"), 2),
+                new ReplyOption(LocalizedTextManager.getText("sm_wb_reply_silent"), 0),
+            };
+            return generic;
+        }
+
+        /// <summary>v0.196 获取NPC好感度</summary>
+        public static int GetFavorability(string speaker)
+        {
+            return _npcFavorability.TryGetValue(speaker, out int v) ? v : 0;
         }
 
         private static List<Message> _messages;
@@ -336,6 +376,74 @@ namespace SuperMech.Code
                     mkR.sizeDelta = new Vector2(40, 12);
                     var markTxt = SuperMechUiSkin.MakeText(markGo.transform, LocalizedTextManager.getText("sm_wb_current"), 9, TextAnchor.MiddleRight);
                     markTxt.color = new Color(1f, 0.85f, 0.4f);
+
+                    // v0.196 玩家回复区域
+                    bool replied = _repliedMessages.Contains(msg.id);
+                    float replyY = -44f; // 从bubble下方开始
+                    if (replied)
+                    {
+                        // 显示玩家已回复的气泡
+                        var playerBubbleGo = new GameObject("PlayerReply", typeof(RectTransform), typeof(Image));
+                        playerBubbleGo.transform.SetParent(msgGo.transform, false);
+                        var pbr = playerBubbleGo.GetComponent<RectTransform>();
+                        pbr.anchorMin = new Vector2(1, 0); pbr.anchorMax = new Vector2(1, 0);
+                        pbr.pivot = new Vector2(1, 0);
+                        pbr.anchoredPosition = new Vector2(-48, replyY);
+                        pbr.sizeDelta = new Vector2(area.rect.width - 100, 28);
+                        var pbImg = playerBubbleGo.GetComponent<Image>();
+                        pbImg.color = new Color(0.2f, 0.4f, 0.3f, 0.9f);
+                        // 找到玩家回复内容
+                        string replyText = LocalizedTextManager.getText("sm_wb_reply_done");
+                        foreach (var rec in _playerReplyHistory)
+                        {
+                            if (rec.speaker == msg.speaker) { replyText = rec.playerReply; break; }
+                        }
+                        var pbTxt = SuperMechUiSkin.MakeText(playerBubbleGo.transform, replyText, 11, TextAnchor.MiddleRight);
+                        pbTxt.color = new Color(0.8f, 1f, 0.85f);
+                        pbTxt.horizontalOverflow = HorizontalWrapMode.Wrap;
+                        var pbRect = pbTxt.GetComponent<RectTransform>();
+                        pbRect.anchorMin = Vector2.zero; pbRect.anchorMax = Vector2.one;
+                        pbRect.offsetMin = new Vector2(-8, 2); pbRect.offsetMax = new Vector2(-8, -2);
+                        msgHeight = 80f;
+                    }
+                    else
+                    {
+                        // 显示回复选项按钮
+                        var options = GetReplyOptions(msg.speaker);
+                        float btnW = (area.rect.width - 100) / options.Length - 4;
+                        for (int oi = 0; oi < options.Length; oi++)
+                        {
+                            int optIdx = oi;
+                            var opt = options[optIdx];
+                            var btnGo = new GameObject("ReplyBtn" + optIdx, typeof(RectTransform), typeof(Image), typeof(Button));
+                            btnGo.transform.SetParent(msgGo.transform, false);
+                            var btnR = btnGo.GetComponent<RectTransform>();
+                            btnR.anchorMin = new Vector2(0, 0); btnR.anchorMax = new Vector2(0, 0);
+                            btnR.pivot = new Vector2(0, 0);
+                            btnR.anchoredPosition = new Vector2(48 + optIdx * (btnW + 4), replyY);
+                            btnR.sizeDelta = new Vector2(btnW, 26);
+                            var btnImg = btnGo.GetComponent<Image>();
+                            btnImg.color = new Color(0.15f, 0.25f, 0.35f, 0.9f);
+                            var btn = btnGo.GetComponent<Button>();
+                            string replyText = opt.text;
+                            int favor = opt.favorChange;
+                            btn.onClick.AddListener(() =>
+                            {
+                                _repliedMessages.Add(msg.id);
+                                if (!_npcFavorability.ContainsKey(msg.speaker)) _npcFavorability[msg.speaker] = 0;
+                                _npcFavorability[msg.speaker] += favor;
+                                _playerReplyHistory.Add(new PlayerReplyRecord(msg.speaker, replyText, favor));
+                                Debug.Log($"[超神机械师] 玩家回复{msg.speaker}：{replyText}（好感+{favor}）");
+                                if (_root != null) Draw(_root);
+                            });
+                            var btnTxt = SuperMechUiSkin.MakeText(btnGo.transform, opt.text, 10, TextAnchor.MiddleCenter);
+                            btnTxt.color = new Color(0.7f, 0.85f, 1f);
+                            var btnTxtR = btnTxt.GetComponent<RectTransform>();
+                            btnTxtR.anchorMin = Vector2.zero; btnTxtR.anchorMax = Vector2.one;
+                            btnTxtR.offsetMin = Vector2.zero; btnTxtR.offsetMax = Vector2.zero;
+                        }
+                        msgHeight = 80f;
+                    }
                 }
 
                 lastSpeaker = msg.speaker;

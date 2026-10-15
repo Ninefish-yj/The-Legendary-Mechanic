@@ -486,6 +486,9 @@ namespace SuperMech.Code
 
                 SuperMechEquipDrop.TryDrop(killer, target);
 
+                // v0.196 战报系统：记录战争伤亡
+                SuperMechBattleReport.OnUnitKilled(killer, target);
+
                 // v0.76.48 圣所钥匙材料掉落接线（原著：击杀S阶及以上超能者掉钥匙材料，异能/念力系高阶死亡额外掉落）
                 if (SuperMechConfig.SanctuaryKeyDropEnabled)
                 {

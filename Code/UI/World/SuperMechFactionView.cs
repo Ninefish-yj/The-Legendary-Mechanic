@@ -33,12 +33,20 @@ namespace SuperMech.Code
             countRect.offsetMax = new Vector2(-80, 0);
 
             // v0.185 外交按钮：打开势力外交面板
-            var diplBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_diplomacy"), 12, () => SuperMechDiplomacyView.Toggle());
+            var diplBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_diplomacy"), 11, () => SuperMechDiplomacyView.Toggle());
             var diplRect = diplBtn.GetComponent<RectTransform>();
             diplRect.anchorMin = new Vector2(1, 0.5f);
             diplRect.anchorMax = new Vector2(1, 0.5f);
-            diplRect.sizeDelta = new Vector2(70, 24);
-            diplRect.anchoredPosition = new Vector2(-40, 0);
+            diplRect.sizeDelta = new Vector2(56, 22);
+            diplRect.anchoredPosition = new Vector2(-124, 0);
+
+            // v0.196 战报按钮
+            var reportBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_battle_report"), 11, () => SuperMechBattleReportView.Toggle());
+            var reportRect = reportBtn.GetComponent<RectTransform>();
+            reportRect.anchorMin = new Vector2(1, 0.5f);
+            reportRect.anchorMax = new Vector2(1, 0.5f);
+            reportRect.sizeDelta = new Vector2(56, 22);
+            reportRect.anchoredPosition = new Vector2(-64, 0);
 
             // 滚动列表
             var scrollGo = new GameObject("FactionScroll");
