@@ -424,6 +424,17 @@ namespace SuperMech.Code
                 }
             }
 
+            // v0.197 战斗视觉特效：伤害飘字+职业颜色+屏幕震动
+            try
+            {
+                Actor atk = pAttacker as Actor;
+                if (atk != null && target != null && pDamage > 0)
+                {
+                    SuperMechCombatVisuals.OnAttack(atk, target, pDamage, pAttackType);
+                }
+            }
+            catch (System.Exception) { }
+
             return true;
         }
 
