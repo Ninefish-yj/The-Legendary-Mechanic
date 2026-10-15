@@ -28,7 +28,11 @@ namespace SuperMech.Code
 
         private static System.Collections.IEnumerator InjectNextFrame(UnitWindow window, Actor actor)
         {
-            yield return null;  // 等待一帧，让原生布局先完成
+            // 等待多帧：原版StatsRowsContainer.showRows是协程，可能持续多帧遍历
+            // 必须等它完全完成后再添加行，否则触发Collection was modified错误
+            yield return null;
+            yield return null;
+            yield return null;
             if (window == null || actor == null || !actor.isAlive()) yield break;
             try
             {
