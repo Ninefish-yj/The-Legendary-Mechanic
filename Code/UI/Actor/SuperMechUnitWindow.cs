@@ -371,11 +371,13 @@ namespace SuperMech.Code
             string cls = SuperMechProfession.GetClass(a);
             switch (cls)
             {
-                case "sm_unitwindow_1150":
+                case "sm_unitwindow_1150": // 机械师
                     int stage = SuperMechStage.GetStage(a);
                     return stage >= 3 ? LocalizedTextManager.getText("sm_qi_mech") : LocalizedTextManager.getText("sm_qi_qi");
-                case "sm_unitwindow_1148": return LocalizedTextManager.getText("sm_qi_mage");
-                case "sm_unitwindow_1147": return LocalizedTextManager.getText("sm_qi_mind");
+                case "sm_unitwindow_1148": return LocalizedTextManager.getText("sm_qi_mage"); // 法师→魔力
+                case "sm_unitwindow_1147": return LocalizedTextManager.getText("sm_qi_mind"); // 异能→精神力
+                case "sm_unitwindow_1149": return LocalizedTextManager.getText("sm_qi_psi");  // 念力师→念力
+                case "sm_unitwindow_1146": return LocalizedTextManager.getText("sm_qi_qi");   // 武道家→气力
                 default: return LocalizedTextManager.getText("sm_qi_qi");
             }
         }
