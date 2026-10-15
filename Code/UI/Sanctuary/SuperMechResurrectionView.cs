@@ -30,7 +30,9 @@ namespace SuperMech.Code
             topRect.sizeDelta = new Vector2(0, 50);
             topRect.anchoredPosition = Vector2.zero;
             var topImg = topGo.AddComponent<Image>();
-            topImg.color = new Color(0.1f, 0.15f, 0.22f, 0.9f);
+            topImg.sprite = SuperMechUiSkin.Section;
+            topImg.type = Image.Type.Sliced;
+            topImg.color = Color.white;
 
             _infoText = SuperMechUiSkin.MakeText(topGo.transform, "", 12, TextAnchor.UpperLeft);
             var infoRect = _infoText.GetComponent<RectTransform>();
@@ -141,7 +143,9 @@ namespace SuperMech.Code
                 btnRect.sizeDelta = new Vector2(80, 44);
                 btnRect.anchoredPosition = new Vector2(-10, 0);
                 var btnImg = btnGo.AddComponent<Image>();
-                btnImg.color = canRes ? new Color(0.2f, 0.5f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                btnImg.sprite = canRes ? SuperMechUiSkin.ButtonNormalSprite : SuperMechUiSkin.ButtonDisabledSprite;
+                btnImg.type = Image.Type.Sliced;
+                btnImg.color = Color.white;
                 var btn = btnGo.AddComponent<Button>();
                 btn.interactable = canRes;
                 var btnText = SuperMechUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_resurrect"), 12, TextAnchor.MiddleCenter);

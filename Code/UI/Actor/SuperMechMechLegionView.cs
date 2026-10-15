@@ -95,7 +95,9 @@ namespace SuperMech.Code
 
                 var btn = btnGo.AddComponent<Button>();
                 var img = btnGo.AddComponent<Image>();
-                img.color = canAfford ? new Color(0.3f, 0.5f, 0.3f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.6f);
+                img.sprite = canAfford ? SuperMechUiSkin.ButtonNormalSprite : SuperMechUiSkin.ButtonDisabledSprite;
+                img.type = Image.Type.Sliced;
+                img.color = Color.white;
 
                 var label = SuperMechUiSkin.MakeText(btnGo.transform,
                     $"{name}  [{costText}]\n{desc}", 12, TextAnchor.UpperLeft);
