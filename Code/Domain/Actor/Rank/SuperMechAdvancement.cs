@@ -121,13 +121,13 @@ namespace SuperMech.Code
                     Debug.Log($"[超神机械师] {a.name}（{a.age}岁）激发潜能，天赋：{talentText.Trim()}");
 
                 // v0.28.0 UI重构：推送觉醒事件到原生事件日志
-                string className = SuperMechProfession.GetClass(a);
+                string systemName = SuperMechProfession.GetSystemName(a);
                 string talentRank = talents.Count > 0 ? SuperMechTalent.RatingNames[talents[0].rating] : "?";
-                SuperMechEventLogger.LogAwakening(a, className, talentRank);
+                SuperMechEventLogger.LogAwakening(a, systemName, talentRank);
                 // 发布觉醒事件
                 SuperMechEventBus.Publish("ActorAwakened", new ActorAwakenedEvent
                 {
-                    actor = a, className = className, talentRank = talentRank
+                    actor = a, className = systemName, talentRank = talentRank
                 });
             }
         }

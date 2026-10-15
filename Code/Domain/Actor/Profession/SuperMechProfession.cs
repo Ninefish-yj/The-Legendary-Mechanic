@@ -48,6 +48,27 @@ namespace SuperMech.Code
             return GetProfessionName(p);
         }
 
+        /// <summary>获取超能体系名（机械系/武道系/异能系/魔法系/念力系），用于觉醒事件等场景</summary>
+        public static string GetSystemName(ProfessionType type)
+        {
+            switch (type)
+            {
+                case ProfessionType.Mechanical: return LocalizedTextManager.getText("sm_talent_1011");
+                case ProfessionType.Martial: return LocalizedTextManager.getText("sm_talent_1012");
+                case ProfessionType.Psi: return LocalizedTextManager.getText("sm_talent_1013");
+                case ProfessionType.Mage: return LocalizedTextManager.getText("sm_talent_1014");
+                case ProfessionType.Mind: return LocalizedTextManager.getText("sm_talent_1015");
+                default: return LocalizedTextManager.getText("sm_profession_936");
+            }
+        }
+
+        public static string GetSystemName(Actor a)
+        {
+            var p = GetProfession(a);
+            if (p == ProfessionType.None) return null;
+            return GetSystemName(p);
+        }
+
         public static bool HasProfession(Actor a)
         {
             return GetProfession(a) != ProfessionType.None;
