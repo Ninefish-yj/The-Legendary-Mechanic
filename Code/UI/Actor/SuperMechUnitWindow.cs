@@ -334,6 +334,8 @@ namespace SuperMech.Code
                 string valueText = "▸ " + LocalizedTextManager.getText("sm_ui_open");
                 var row = window.showStatRow(label, valueText,
                     colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
+                // v0.194 修复：延迟添加的行需手动激活
+                if (row != null) row.gameObject.SetActive(true);
                 if (row != null)
                 {
                     row.on_click_value = () => onClick?.Invoke();
@@ -426,7 +428,10 @@ namespace SuperMech.Code
             {
                 Color c = color ?? Color.white;
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(c);
-                return window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
+                var row = window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
+                // v0.194 修复：延迟一帧添加的行错过了showRows()协程的激活，需手动激活
+                if (row != null) row.gameObject.SetActive(true);
+                return row;
             }
             catch (Exception e)
             {
