@@ -138,7 +138,7 @@ namespace SuperMech.Code
                 btnRect.anchorMin = new Vector2(1, 0.5f);
                 btnRect.anchorMax = new Vector2(1, 0.5f);
                 btnRect.pivot = new Vector2(1, 0.5f);
-                btnRect.sizeDelta = new Vector2(80, 30);
+                btnRect.sizeDelta = new Vector2(80, 44);
                 btnRect.anchoredPosition = new Vector2(-10, 0);
                 var btnImg = btnGo.AddComponent<Image>();
                 btnImg.color = canRes ? new Color(0.2f, 0.5f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);

@@ -110,7 +110,7 @@ namespace SuperMech.Code
             var sr = scrollGo.AddComponent<ScrollRect>();
             var mask = scrollGo.AddComponent<Mask>();
             mask.showMaskGraphic = false;
-            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+            var scrollImg = scrollGo.AddComponent<Image>(); scrollImg.color = new Color(0, 0, 0, 0); scrollImg.raycastTarget = false;
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);

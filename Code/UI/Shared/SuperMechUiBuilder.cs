@@ -140,7 +140,9 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
             var viewportGo = CreateObject("Viewport", go.transform, typeof(RectTransform), typeof(Image), typeof(Mask));
             var viewportRt = AddRectTransform(viewportGo);
             SetStretch(viewportRt);
-            viewportGo.GetComponent<Image>().color = new Color(0, 0, 0, 0);
+            var viewportImg = viewportGo.GetComponent<Image>();
+            viewportImg.color = new Color(0, 0, 0, 0);
+            viewportImg.raycastTarget = false; // v0.194 修复：透明Image不拦截点击
             var mask = viewportGo.GetComponent<Mask>();
             mask.showMaskGraphic = false;
 

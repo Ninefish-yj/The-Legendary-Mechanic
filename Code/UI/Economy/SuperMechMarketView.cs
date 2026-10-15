@@ -99,7 +99,7 @@ namespace SuperMech.Code
             var sr = scrollGo.AddComponent<ScrollRect>();
             var mask = scrollGo.AddComponent<Mask>();
             mask.showMaskGraphic = false;
-            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+            var scrollImg = scrollGo.AddComponent<Image>(); scrollImg.color = new Color(0, 0, 0, 0); scrollImg.raycastTarget = false;
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);
@@ -134,7 +134,7 @@ namespace SuperMech.Code
             refreshBtnRect.anchorMin = new Vector2(0.5f, 0);
             refreshBtnRect.anchorMax = new Vector2(0.5f, 0);
             refreshBtnRect.pivot = new Vector2(0.5f, 0);
-            refreshBtnRect.sizeDelta = new Vector2(150, 35);
+            refreshBtnRect.sizeDelta = new Vector2(150, 44);
             refreshBtnRect.anchoredPosition = new Vector2(0, 10);
             var refreshBtnImg = refreshBtnGo.AddComponent<Image>();
             refreshBtnImg.color = new Color(0.3f, 0.6f, 0.4f, 0.9f);

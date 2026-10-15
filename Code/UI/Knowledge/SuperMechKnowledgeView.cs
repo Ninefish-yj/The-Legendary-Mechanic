@@ -222,7 +222,7 @@ namespace SuperMech.Code
             var learnBtnGo = new GameObject("LearnBtn");
             learnBtnGo.transform.SetParent(detailContentGo.transform, false);
             var learnBtnRect = learnBtnGo.AddComponent<RectTransform>();
-            learnBtnRect.sizeDelta = new Vector2(0, 30);
+            learnBtnRect.sizeDelta = new Vector2(0, 44);
             _learnBtn = learnBtnGo.AddComponent<Button>();
             var learnBtnImg = learnBtnGo.AddComponent<Image>();
             learnBtnImg.color = new Color(0.2f, 0.4f, 0.7f, 0.9f);

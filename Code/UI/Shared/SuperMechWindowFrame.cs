@@ -170,6 +170,8 @@ namespace SuperMech.Code
 
         public Button AddButton(string text, float x, float y, float w, float h, Action onClick, Color? bgColor = null)
         {
+            // v0.194 按钮最小高度44px（手机触屏标准）
+            float btnH = Mathf.Max(h, 44f);
             var go = new GameObject("Btn_" + text, typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(ContentParent, false);
             RectTransform rt = go.GetComponent<RectTransform>();
@@ -177,7 +179,7 @@ namespace SuperMech.Code
             rt.anchorMax = new Vector2(0f, 1f);
             rt.pivot = new Vector2(0f, 1f);
             rt.anchoredPosition = new Vector2(x, y);
-            rt.sizeDelta = new Vector2(w, h);
+            rt.sizeDelta = new Vector2(w, btnH);
             Image img = go.GetComponent<Image>();
             img.sprite = SuperMechUiSkin.ButtonNormalSprite;
             img.type = Image.Type.Sliced;
@@ -194,16 +196,18 @@ namespace SuperMech.Code
             RectTransform lr = labelGo.GetComponent<RectTransform>();
             lr.anchorMin = Vector2.zero;
             lr.anchorMax = Vector2.one;
-            lr.offsetMin = Vector2.zero;
-            lr.offsetMax = Vector2.zero;
+            lr.offsetMin = new Vector2(8, 4);
+            lr.offsetMax = new Vector2(-8, -4);
             Text lt = labelGo.GetComponent<Text>();
             lt.font = SafeFont();
-            lt.fontSize = 13;
+            lt.fontSize = 14;
+            lt.fontStyle = FontStyle.Bold;
             lt.alignment = TextAnchor.MiddleCenter;
             lt.color = SuperMechUiSkin.TextColor;
             lt.text = text;
             lt.horizontalOverflow = HorizontalWrapMode.Wrap;
             lt.verticalOverflow = VerticalWrapMode.Truncate;
+            lt.raycastTarget = false;
             btn.onClick.AddListener(() => { try { onClick?.Invoke(); } catch (Exception e) { Debug.LogError("[超神机械师] 按钮异常: " + e.Message); } });
             return btn;
         }

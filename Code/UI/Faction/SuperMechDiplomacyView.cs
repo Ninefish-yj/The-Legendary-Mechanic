@@ -93,6 +93,7 @@ namespace SuperMech.Code
             mask.showMaskGraphic = false;
             var scrollImg = scrollGo.AddComponent<Image>();
             scrollImg.color = new Color(0, 0, 0, 0);
+            scrollImg.raycastTarget = false; // v0.194 修复：透明Image不拦截点击
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);

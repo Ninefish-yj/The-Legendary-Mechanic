@@ -161,7 +161,7 @@ namespace SuperMech.Code
             clearBtnRect.anchorMin = new Vector2(0, 0.5f);
             clearBtnRect.anchorMax = new Vector2(0, 0.5f);
             clearBtnRect.pivot = new Vector2(0, 0.5f);
-            clearBtnRect.sizeDelta = new Vector2(60, 20);
+            clearBtnRect.sizeDelta = new Vector2(60, 40);
             clearBtnRect.anchoredPosition = new Vector2(162, 0);
             var clearBtnImg = clearBtn.GetComponent<Image>();
             if (clearBtnImg != null) clearBtnImg.color = new Color(0.5f, 0.2f, 0.2f, 0.8f);
@@ -244,11 +244,11 @@ namespace SuperMech.Code
 
             var topBtn = SuperMechUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_top"), 9, ToTop);
             var topBtnRect = topBtn.GetComponent<RectTransform>();
-            topBtnRect.sizeDelta = new Vector2(70, 20);
+            topBtnRect.sizeDelta = new Vector2(70, 40);
 
             var bottomBtn = SuperMechUiSkin.MakeButton(bottomBar.transform, LocalizedTextManager.getText("sm_ui_rank_to_bottom"), 9, ToBottom);
             var bottomBtnRect = bottomBtn.GetComponent<RectTransform>();
-            bottomBtnRect.sizeDelta = new Vector2(70, 20);
+            bottomBtnRect.sizeDelta = new Vector2(70, 40);
 
             _emptyText = SuperMechUiSkin.MakeText(transform, LocalizedTextManager.getText("sm_ui_no_data"), 14, TextAnchor.MiddleCenter);
             var emptyRect = _emptyText.GetComponent<RectTransform>();

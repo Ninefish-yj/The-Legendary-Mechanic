@@ -70,9 +70,9 @@ namespace SuperMech.Code
             return rect;
         }
 
-        /// <summary>创建按钮（v0.194 科幻风格三态切换）</summary>
+        /// <summary>创建按钮（v0.194 科幻风格三态切换+触屏友好）</summary>
         public static Button CreateButton(Transform parent, string text,
-            UnityEngine.Events.UnityAction onClick, int fontSize = 12, Color? bgColor = null)
+            UnityEngine.Events.UnityAction onClick, int fontSize = 14, Color? bgColor = null)
         {
             var go = new GameObject("Button");
             go.transform.SetParent(parent, false);
@@ -94,6 +94,10 @@ namespace SuperMech.Code
             btn.spriteState = ss;
             btn.onClick.AddListener(onClick);
             var txt = CreateText(go.transform, text, fontSize, TextAnchor.MiddleCenter, SuperMechUiSkin.TextColor);
+            txt.fontStyle = FontStyle.Bold;
+            var txtRect = txt.GetComponent<RectTransform>();
+            txtRect.offsetMin = new Vector2(8, 4);
+            txtRect.offsetMax = new Vector2(-8, -4);
             return btn;
         }
     }
