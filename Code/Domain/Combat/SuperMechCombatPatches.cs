@@ -74,6 +74,9 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)bonusDamage;
                     }
+
+                    // v0.201 打击感增强：命中停顿+冲击闪光+冲击波（大伤害触发）
+                    SuperMechHitStop.OnHit(attacker, target, aiDamage);
                 }
 
                 // v0.112.0 法术自动释放：学会法术的单位在战斗中自动施法（有冷却控制）

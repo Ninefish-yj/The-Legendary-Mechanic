@@ -74,6 +74,11 @@ namespace SuperMech.Code
             {
                 var dash = _effectRoot.AddComponent<AttackDash>();
                 dash.Init(attacker, dir * 0.4f, 0.12f);
+                // v0.201 拖影残像（快速冲刺时）
+                if (SuperMechConfig.CombatFeelEnabled)
+                {
+                    SuperMechHitStop.SpawnAfterimage(attacker);
+                }
             }
 
             // 受击击退（所有攻击都有，强度随伤害）
