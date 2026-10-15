@@ -111,7 +111,7 @@ namespace SuperMech.Code
 
                 if (row != null)
                 {
-                    System.Action toggleAction = () =>
+                    UnityEngine.Events.UnityAction toggleAction = () =>
                     {
                         Toggle(actorId, sectionId);
                         RebuildPanel(window);
