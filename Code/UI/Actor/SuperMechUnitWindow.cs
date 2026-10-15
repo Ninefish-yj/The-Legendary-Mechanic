@@ -36,7 +36,7 @@ namespace SuperMech.Code
             if (window == null || actor == null || !actor.isAlive()) yield break;
             try
             {
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, new Color(1f, 0.85f, 0.4f));
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, SuperMechUiSkin.AccentColor);
                 ShowMainInfo(window, actor);
             }
             catch (System.Exception e)
@@ -45,7 +45,7 @@ namespace SuperMech.Code
             }
         }
 
-        private static readonly Color InfoColor = new Color(1f, 0.9f, 0.6f);
+        private static readonly Color InfoColor = SuperMechUiSkin.AccentColor;
 
         private static void ShowMainInfo(UnitWindow window, Actor a)
         {
@@ -78,24 +78,24 @@ namespace SuperMech.Code
         private static void ShowQuickButtons(UnitWindow window, Actor a)
         {
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
-                new Color(0.5f, 0.35f, 0.7f), () => SuperMechWindowManager.OpenKnowledge(a));
+                SuperMechUiSkin.SciPurple, () => SuperMechWindowManager.OpenKnowledge(a));
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
-                new Color(0.9f, 0.7f, 0.3f), () => SuperMechWindowManager.OpenBag(a));
+                SuperMechUiSkin.AccentColor, () => SuperMechWindowManager.OpenBag(a));
 
             if (a.hasTrait(SuperMechTraits.ClassMage))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_spell_entry"), "iconPurpleBook",
-                    new Color(0.6f, 0.4f, 1f), () => SuperMechWindowManager.OpenSpell(a));
+                    SuperMechUiSkin.SciPurple, () => SuperMechWindowManager.OpenSpell(a));
             }
             if (a.hasTrait(SuperMechTraits.ClassMech))
             {
                 ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
-                    new Color(0.6f, 0.8f, 0.4f), () => SuperMechWindowManager.OpenCraft(a));
+                    SuperMechUiSkin.SuccessGreen, () => SuperMechWindowManager.OpenCraft(a));
             }
 
             // v0.195 超能详情入口：其他详细信息和功能按钮都在详情面板中
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_actor_detail"), "iconChosenOne",
-                new Color(0.3f, 0.78f, 0.85f), () => SuperMechActorDetailView.Toggle(a));
+                SuperMechUiSkin.CyanColor, () => SuperMechActorDetailView.Toggle(a));
         }
 
         /// <summary>

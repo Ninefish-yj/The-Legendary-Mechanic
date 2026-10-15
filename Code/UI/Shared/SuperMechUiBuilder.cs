@@ -173,7 +173,10 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
             var go = CreateObject(name, parent, typeof(RectTransform), typeof(Image));
             var rt = AddRectTransform(go);
             SetStretch(rt, left, right, top, bottom);
-            AddImage(go, bgColor);
+            // v0.202 美化：使用圆角卡片皮肤
+            var img = AddImage(go, Color.white);
+            img.sprite = SuperMechUiSkin.Card;
+            img.type = Image.Type.Sliced;
             return go;
         }
 
@@ -182,12 +185,21 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
             var go = CreateObject(name, parent, typeof(RectTransform), typeof(Image), typeof(Button));
             var rt = AddRectTransform(go);
             rt.sizeDelta = new Vector2(width, height);
-            AddImage(go, new Color(0.82f, 0.86f, 0.92f, 0.9f));
-            AddButton(go, onClick);
+            // v0.202 美化：使用新皮肤按钮三态
+            var img = AddImage(go, Color.white);
+            img.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            img.type = Image.Type.Sliced;
+            var btn = go.GetComponent<Button>();
+            btn.transition = Selectable.Transition.SpriteSwap;
+            var ss = btn.spriteState;
+            ss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            ss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            btn.spriteState = ss;
+            if (onClick != null) btn.onClick.AddListener(() => onClick());
             var txtGo = CreateObject("Text", go.transform, typeof(RectTransform));
             var txtRt = AddRectTransform(txtGo);
             SetStretch(txtRt);
-            AddText(txtGo, text, fontSize, TextAnchor.MiddleCenter);
+            AddText(txtGo, text, fontSize, TextAnchor.MiddleCenter, SuperMechUiSkin.TextColor);
             return go;
         }
 

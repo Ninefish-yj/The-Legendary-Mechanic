@@ -54,7 +54,9 @@ namespace SuperMech.Code
             barRect.sizeDelta = new Vector2(0, 34);
             barRect.anchoredPosition = Vector2.zero;
             var barImg = barGo.AddComponent<Image>();
-            barImg.color = new Color(0.08f, 0.1f, 0.16f, 0.9f);
+            barImg.sprite = SuperMechUiSkin.Section;
+            barImg.type = Image.Type.Sliced;
+            barImg.color = Color.white;
 
             _tabKnowledge = CreateTabButton(barGo.transform, "sm_ui_knowledge", 0);
             _tabFusion = CreateTabButton(barGo.transform, "sm_ui_fusion", 1);
@@ -71,7 +73,9 @@ namespace SuperMech.Code
             btnRect.sizeDelta = new Vector2(100, 0);
             btnRect.anchoredPosition = new Vector2(8 + index * 108, 0);
             var btnImg = btnGo.AddComponent<Image>();
-            btnImg.color = new Color(0.15f, 0.2f, 0.3f, 0.8f);
+            btnImg.sprite = SuperMechUiSkin.TabNormal;
+            btnImg.type = Image.Type.Sliced;
+            btnImg.color = Color.white;
             var btn = btnGo.AddComponent<Button>();
             int tabIdx = index;
             btn.onClick.AddListener(() => SwitchTab(tabIdx));
@@ -101,13 +105,17 @@ namespace SuperMech.Code
             {
                 _tabKnowledgeText.color = isKnowledge ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                 var img = _tabKnowledge.GetComponent<Image>();
-                img.color = isKnowledge ? new Color(0.2f, 0.35f, 0.55f, 0.9f) : new Color(0.15f, 0.2f, 0.3f, 0.8f);
+                img.sprite = isKnowledge ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                img.type = Image.Type.Sliced;
+                img.color = Color.white;
             }
             if (_tabFusionText != null)
             {
                 _tabFusionText.color = !isKnowledge ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                 var img = _tabFusion.GetComponent<Image>();
-                img.color = !isKnowledge ? new Color(0.2f, 0.35f, 0.55f, 0.9f) : new Color(0.15f, 0.2f, 0.3f, 0.8f);
+                img.sprite = !isKnowledge ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                img.type = Image.Type.Sliced;
+                img.color = Color.white;
             }
         }
 
@@ -225,7 +233,14 @@ namespace SuperMech.Code
             learnBtnRect.sizeDelta = new Vector2(0, 44);
             _learnBtn = learnBtnGo.AddComponent<Button>();
             var learnBtnImg = learnBtnGo.AddComponent<Image>();
-            learnBtnImg.color = new Color(0.2f, 0.4f, 0.7f, 0.9f);
+            learnBtnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            learnBtnImg.type = Image.Type.Sliced;
+            learnBtnImg.color = Color.white;
+            _learnBtn.transition = Selectable.Transition.SpriteSwap;
+            var lss = _learnBtn.spriteState;
+            lss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            lss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            _learnBtn.spriteState = lss;
             _learnBtnText = learnBtnGo.AddComponent<Text>();
             _learnBtnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _learnBtnText.fontSize = 14;
@@ -383,7 +398,12 @@ namespace SuperMech.Code
                     _learnBtn.interactable = canUpgrade;
                     _learnBtnText.text = canUpgrade ? $"升级({SuperMechKnowledge.PotentialCostPerLevel}潜能)" : "潜能不足";
                     var img = _learnBtn.GetComponent<Image>();
-                    if (img != null) img.color = canUpgrade ? new Color(0.3f, 0.6f, 0.3f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.9f);
+                    if (img != null)
+                    {
+                        img.sprite = canUpgrade ? SuperMechUiSkin.ButtonNormalSprite : SuperMechUiSkin.ButtonDisabledSprite;
+                        img.type = Image.Type.Sliced;
+                        img.color = Color.white;
+                    }
                 }
                 else if (unlocked && isMax)
                 {
@@ -397,7 +417,12 @@ namespace SuperMech.Code
                     _learnBtn.interactable = canUnlock;
                     _learnBtnText.text = canUnlock ? LocalizedTextManager.getText("sm_ui_learn") : LocalizedTextManager.getText("sm_ui_locked");
                     var img = _learnBtn.GetComponent<Image>();
-                    if (img != null) img.color = canUnlock ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.3f, 0.3f, 0.3f, 0.9f);
+                    if (img != null)
+                    {
+                        img.sprite = canUnlock ? SuperMechUiSkin.ButtonNormalSprite : SuperMechUiSkin.ButtonDisabledSprite;
+                        img.type = Image.Type.Sliced;
+                        img.color = Color.white;
+                    }
                 }
             }
             RefreshList();

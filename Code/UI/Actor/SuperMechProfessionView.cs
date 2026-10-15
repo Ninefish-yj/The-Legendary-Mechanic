@@ -73,7 +73,11 @@ namespace SuperMech.Code
             panelRect.pivot = new Vector2(0.5f, 0.5f);
             panelRect.sizeDelta = new Vector2(550, 450);
             var panelImg = panelGo.AddComponent<Image>();
-            panelImg.color = new Color(0.05f, 0.08f, 0.15f, 0.98f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
+            // v0.202 装饰角标
+            SuperMechUiSkin.AddCornerDecorations(panelRect, 16f, 2f);
 
             var titleGo = new GameObject("Title");
             titleGo.transform.SetParent(panelGo.transform, false);
@@ -86,7 +90,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
-            titleText.color = new Color(1f, 0.85f, 0.4f);
+            titleText.color = SuperMechUiSkin.AccentColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.text = LocalizedTextManager.getText("sm_ui_profession_title");
 
@@ -99,7 +103,7 @@ namespace SuperMech.Code
             ddRect.sizeDelta = new Vector2(0, 30);
             ddRect.anchoredPosition = new Vector2(0, -45);
             _unitDropdown = ddGo.AddComponent<Dropdown>();
-            var ddImg2 = ddGo.GetComponent<Image>(); if (ddImg2 == null) ddImg2 = ddGo.AddComponent<Image>(); ddImg2.color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
+            var ddImg2 = ddGo.GetComponent<Image>(); if (ddImg2 == null) ddImg2 = ddGo.AddComponent<Image>(); ddImg2.color = SuperMechUiSkin.ButtonNormal;
             _unitDropdown.onValueChanged.AddListener(OnSelect);
 
             var infoGo = new GameObject("Info");
@@ -112,7 +116,7 @@ namespace SuperMech.Code
             _infoText = infoGo.AddComponent<Text>();
             _infoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _infoText.fontSize = 12;
-            _infoText.color = new Color(0.8f, 0.9f, 1f);
+            _infoText.color = SuperMechUiSkin.TextColor;
             _infoText.alignment = TextAnchor.UpperLeft;
             _infoText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _infoText.verticalOverflow = VerticalWrapMode.Truncate;
