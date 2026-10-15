@@ -3358,6 +3358,8 @@
   "sm_powers_929_description": "打开世界树入侵监测面板，查看入侵进度和联合军状态。",
   "sm_ui_section_entry": "操作入口",
   "sm_ui_section_social": "社会关系",
+  "sm_ui_section_functions": "功能入口",
+  "sm_ui_actor_detail": "超能详情",
   "sm_config_tech": "科技系统",
   "sm_config_tech_desc": "文明级科技树研究，AI文明自动研究科技",
   "sm_config_star_system": "星际系统",

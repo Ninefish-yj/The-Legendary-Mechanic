@@ -55,40 +55,43 @@ namespace SuperMech.Code
 
             long actorId = a.data.id;
 
-            // === 核心档案（默认展开）：身份+核心属性，玩家第一眼看到 ===
+            // === 核心档案（默认展开）：身份+核心属性 ===
             SuperMechCollapsibleSection.BuildHeader(window, actorId, "core", "sm_ui_section_core");
             if (SuperMechCollapsibleSection.IsExpanded(actorId, "core"))
             {
                 ShowCoreInfo(window, a);
             }
 
-            // === 操作入口（默认展开）：知识/背包/制造等功能按钮 ===
+            // === 快捷操作（默认展开）：最常用的3个功能+详情入口 ===
             SuperMechCollapsibleSection.BuildHeader(window, actorId, "entry", "sm_ui_section_entry");
             if (SuperMechCollapsibleSection.IsExpanded(actorId, "entry"))
             {
-                ShowEntryButtons(window, a);
+                ShowQuickButtons(window, a);
+            }
+        }
+
+        /// <summary>v0.195 精简：只保留最常用的3个功能按钮+超能详情入口</summary>
+        private static void ShowQuickButtons(UnitWindow window, Actor a)
+        {
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
+                new Color(0.5f, 0.35f, 0.7f), () => SuperMechWindowManager.OpenKnowledge(a));
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
+                new Color(0.9f, 0.7f, 0.3f), () => SuperMechWindowManager.OpenBag(a));
+
+            if (a.hasTrait(SuperMechTraits.ClassMage))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_spell_entry"), "iconPurpleBook",
+                    new Color(0.6f, 0.4f, 1f), () => SuperMechWindowManager.OpenSpell(a));
+            }
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
+                    new Color(0.6f, 0.8f, 0.4f), () => SuperMechWindowManager.OpenCraft(a));
             }
 
-            // === 战斗数值（默认折叠）：气力层次/潜力等详细数据 ===
-            SuperMechCollapsibleSection.BuildHeader(window, actorId, "combat", "sm_ui_section_combat");
-            if (SuperMechCollapsibleSection.IsExpanded(actorId, "combat"))
-            {
-                ShowCombatInfo(window, a);
-            }
-
-            // === 社会关系（默认折叠）：势力/身份/经济 ===
-            SuperMechCollapsibleSection.BuildHeader(window, actorId, "social", "sm_ui_section_social");
-            if (SuperMechCollapsibleSection.IsExpanded(actorId, "social"))
-            {
-                ShowSocialInfo(window, a);
-            }
-
-            // === 特殊信息（默认折叠）：神性/圣所/种族/机械/专属特质 ===
-            SuperMechCollapsibleSection.BuildHeader(window, actorId, "special", "sm_ui_section_special");
-            if (SuperMechCollapsibleSection.IsExpanded(actorId, "special"))
-            {
-                ShowSpecialInfo(window, a);
-            }
+            // v0.195 超能详情入口：其他详细信息和功能按钮都在详情面板中
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_actor_detail"), "iconChosenOne",
+                new Color(0.3f, 0.78f, 0.85f), () => SuperMechActorDetailView.Toggle(a));
         }
 
         /// <summary>
@@ -163,167 +166,6 @@ namespace SuperMech.Code
             string talentText = GetTalentText(a);
             if (!string.IsNullOrEmpty(talentText))
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_talent_tendency"), talentText, null, InfoColor);
-        }
-
-        /// <summary>
-        /// 战斗数值：气力层次/潜力等详细战斗数据
-        /// </summary>
-        private static void ShowCombatInfo(UnitWindow window, Actor a)
-        {
-            int qiLayer = SuperMechQiLayer.GetLayer(a);
-            if (qiLayer > 0)
-            {
-                string layerText = SuperMechQiLayer.GetLayerText(a);
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_qi_layer"), layerText, null, InfoColor);
-            }
-
-            int pot = SuperMechPotential.GetPotential(a);
-            if (pot > 0)
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), null, InfoColor);
-        }
-
-        /// <summary>
-        /// 社会关系：势力/身份/经济
-        /// </summary>
-        private static void ShowSocialInfo(UnitWindow window, Actor a)
-        {
-            // 势力
-            if (SuperMechConfig.FactionEnabled)
-            {
-                var faction = SuperMechFaction.GetFaction(a);
-                if (faction != null)
-                {
-                    bool isLeader = faction.leaderId == a.id;
-                    string factionText = isLeader
-                        ? string.Format(LocalizedTextManager.getText("sm_ui_faction_leader"), faction.name, faction.level)
-                        : string.Format(LocalizedTextManager.getText("sm_ui_faction_member"), faction.name, faction.level);
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_faction_label"), factionText, null, InfoColor);
-                }
-            }
-
-            // 身份（觉醒者/降临者）
-            if (SuperMechAwakened.IsAwakened(a))
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), null, InfoColor);
-
-            // 伊纳尔余额
-            int inal = SuperMechInal.GetInal(a);
-            if (inal > 0 || SuperMechSupermA.IsSuperA(a))
-                ShowRow(window, LocalizedTextManager.getText("sm_inal_balance"), inal.ToString("N0"), null, InfoColor);
-
-            // 降临者公司
-            var company = SuperMechCompany.GetCompanyByActor(a);
-            if (company != null)
-                ShowRow(window, LocalizedTextManager.getText("sm_company_title"), SuperMechCompany.GetDisplayText(company), null, InfoColor);
-        }
-
-        /// <summary>
-        /// 特殊信息：神性/圣所/种族/机械军团/专属特质
-        /// </summary>
-        private static void ShowSpecialInfo(UnitWindow window, Actor a)
-        {
-            int divLayers = SuperMechDivinity.GetTotalLayers(a);
-            string sanctuaryInfo = GetSanctuaryInfo(a);
-
-            if (divLayers > 0)
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}", null, InfoColor);
-            if (!string.IsNullOrEmpty(sanctuaryInfo))
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, null, InfoColor);
-
-            // 种族
-            string speciesId = SuperMechSpeciesEvolution.GetSpeciesId(a.data.id);
-            if (speciesId != "human")
-            {
-                string speciesName = SuperMechSpeciesEvolution.GetSpeciesName(a.data.id);
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_species"), speciesName, null, InfoColor);
-                string talent = SuperMechSpeciesEvolution.GetSpeciesTalent(a.data.id);
-                if (!string.IsNullOrEmpty(talent))
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_species_talent"), talent, null, InfoColor);
-            }
-
-            // 机械军团单位
-            string mechType = SuperMechMechLegion.GetUnitType(a);
-            if (!string.IsNullOrEmpty(mechType))
-            {
-                string mechName = SuperMechMechLegion.GetUnitName(mechType);
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_mech_type"), mechName, null, InfoColor);
-                string summoner = SuperMechMechLegion.GetSummonerName(a);
-                if (!string.IsNullOrEmpty(summoner))
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_mech_summoner"), summoner, null, InfoColor);
-                int lifeLeft = SuperMechMechLegion.GetLifeLeft(a);
-                if (lifeLeft > 0)
-                    ShowRow(window, LocalizedTextManager.getText("sm_ui_mech_life"), $"{lifeLeft}", null, InfoColor);
-            }
-
-            // 专属特质/模板
-            string specText = SuperMechExclusiveTrait.GetDisplay(a);
-            if (!string.IsNullOrEmpty(specText))
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_specialties"), specText, null, InfoColor);
-            string tplText = SuperMechExclusiveTrait.GetTemplateDisplay(a);
-            if (tplText != null)
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_templates"), tplText, null, InfoColor);
-        }
-
-        private static void ShowEntryButtons(UnitWindow window, Actor a)
-        {
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
-                new Color(0.5f, 0.35f, 0.7f), () => SuperMechWindowManager.OpenKnowledge(a));
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
-                new Color(0.9f, 0.7f, 0.3f), () => SuperMechWindowManager.OpenBag(a));
-
-            if (a.hasTrait(SuperMechTraits.ClassMage))
-            {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_spell_entry"), "iconPurpleBook",
-                    new Color(0.6f, 0.4f, 1f), () => SuperMechWindowManager.OpenSpell(a));
-            }
-
-            if (a.hasTrait(SuperMechTraits.ClassMech))
-            {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
-                    new Color(0.6f, 0.8f, 0.4f), () => SuperMechWindowManager.OpenCraft(a));
-            }
-
-            // v0.76.48 宇宙宝物：选中单位装备/切换宇宙宝物（创世神赐予 trait）
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_cr_entry"), "iconChosenOne",
-                new Color(0.95f, 0.75f, 0.3f), () => SuperMechWindowManager.OpenCosmicRelic(a));
-
-            // v0.76.48 次级维度：高阶超能者进入维度获得增益（原著：次级维度修炼）
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_dim_entry"), "iconDivineLight",
-                new Color(0.75f, 0.55f, 0.95f), () => SuperMechWindowManager.OpenDimension(a));
-
-            // v0.86.1 虚拟创世：机械师虚拟分支转职超神机械师时领悟（原著：虚实转化）
-            if (SuperMechVirtualGenesis.HasGenesis(a))
-            {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_virtual_genesis"), "iconChosenOne",
-                    new Color(0.5f, 0.9f, 0.8f), () => SuperMechWindowManager.OpenVirtualGenesis(a));
-            }
-
-            // v0.95.0 机械军团：机械师分支可制造机械单位（原著：机械师核心特色）
-            if (SuperMechBranch.HasBranch(a, SuperMechBranch.BranchMech))
-            {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_mech_legion"), "iconWeapon",
-                    new Color(0.7f, 0.8f, 1.0f), () => SuperMechWindowManager.OpenMechLegion(a));
-            }
-
-            // v0.89.1 种族进化：非人类种族且有可进化目标时显示
-            var evolvable = SuperMechSpeciesEvolution.GetEvolvableSpecies(a.data.id);
-            if (evolvable.Count > 0)
-            {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_species_evolve"), "iconDivineLight",
-                    new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
-            }
-
-            // v0.183 付费服务：付费复活/传送/洗点等
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_econ_service_panel"), "iconBox",
-                new Color(0.4f, 0.8f, 0.6f), () => SuperMechEconomyServiceView.Toggle(a));
-
-            // v0.183 战斗统计：击杀/伤害/评级
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_combat_stats"), "iconWeapon",
-                new Color(0.9f, 0.5f, 0.4f), () => SuperMechCombatStatsView.Toggle(a));
-
-            // v0.184 任务/成就/声望
-            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_quests"), "iconBooks",
-                new Color(0.7f, 0.6f, 0.3f), () => SuperMechQuestView.Toggle(a));
-
         }
 
         private static void ShowEntryButton(UnitWindow window, string label, string iconPath, Color color, System.Action onClick)
