@@ -288,7 +288,9 @@ namespace SuperMech.Code
             go.transform.SetParent(_content.transform, false);
             var rect = go.AddComponent<RectTransform>();
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.15f, 0.2f, 0.3f, 0.8f);
+            img.sprite = SuperMechUiSkin.Section;
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
             img.raycastTarget = false;
             var txt = go.AddComponent<Text>();
             txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
@@ -309,7 +311,9 @@ namespace SuperMech.Code
             go.transform.SetParent(_content.transform, false);
             var rect = go.AddComponent<RectTransform>();
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.08f, 0.1f, 0.16f, 0.6f);
+            img.sprite = SuperMechUiSkin.Card;
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
             img.raycastTarget = false;
             var hLayout = go.AddComponent<HorizontalLayoutGroup>();
             hLayout.padding = new RectOffset(10, 10, 4, 4);
@@ -325,7 +329,7 @@ namespace SuperMech.Code
             var labelTxt = labelGo.AddComponent<Text>();
             labelTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             labelTxt.fontSize = 12;
-            labelTxt.color = new Color(0.7f, 0.75f, 0.85f);
+            labelTxt.color = SuperMechUiSkin.TextDim;
             labelTxt.alignment = TextAnchor.MiddleLeft;
             labelTxt.text = label;
             labelTxt.raycastTarget = false;
@@ -357,8 +361,9 @@ namespace SuperMech.Code
                 try { onClick?.Invoke(); }
                 catch (Exception e) { Debug.LogError("[超神机械师] 详情面板按钮异常: " + e.Message); }
             });
-            var btnImg = btn.GetComponent<Image>();
-            if (btnImg != null) btnImg.color = color;
+            // v0.202 功能按钮使用皮肤按钮三态，语义色应用到文字
+            var btnText = btn.GetComponentInChildren<Text>();
+            if (btnText != null) btnText.color = color;
             var layoutElem = btn.AddComponent<LayoutElement>();
             layoutElem.minHeight = 40;
             layoutElem.preferredHeight = 40;
