@@ -15,14 +15,24 @@ namespace SuperMech.Code
         private static Sprite _buttonNormal;
         private static Sprite _buttonHover;
         private static Sprite _buttonActive;
+        private static Sprite _buttonSelected;
+        private static Sprite _buttonDisabled;
         private static Sprite _titleBarSprite;
         private static Sprite _scrollbarSprite;
         private static Sprite _rowEven;
         private static Sprite _rowOdd;
         private static Sprite _cardSprite;
+        private static Sprite _cardHover;
         private static Sprite _sectionSprite;
         private static Sprite _dividerSprite;
         private static Sprite _glowSprite;
+        private static Sprite _iconCircle;
+        private static Sprite _iconHex;
+        private static Sprite _progressBg;
+        private static Sprite _progressFill;
+        private static Sprite _cornerDecor;
+        private static Sprite _tabNormal;
+        private static Sprite _tabActive;
 
         // ═════════════════════════ v0.194 统一科幻星际色板 ═════════════════════════
         // 面板层级：背景最深 → 面板 → 卡片 → 交互元素逐层提亮
@@ -69,14 +79,24 @@ namespace SuperMech.Code
         public static Sprite ButtonNormalSprite => EnsureInit() ? _buttonNormal : null;
         public static Sprite ButtonHoverSprite => EnsureInit() ? _buttonHover : null;
         public static Sprite ButtonActiveSprite => EnsureInit() ? _buttonActive : null;
+        public static Sprite ButtonSelectedSprite => EnsureInit() ? _buttonSelected : null;
+        public static Sprite ButtonDisabledSprite => EnsureInit() ? _buttonDisabled : null;
         public static Sprite TitleBar => EnsureInit() ? _titleBarSprite : null;
         public static Sprite Scrollbar => EnsureInit() ? _scrollbarSprite : null;
         public static Sprite RowEvenSprite => EnsureInit() ? _rowEven : null;
         public static Sprite RowOddSprite => EnsureInit() ? _rowOdd : null;
         public static Sprite Card => EnsureInit() ? _cardSprite : null;
+        public static Sprite CardHover => EnsureInit() ? _cardHover : null;
         public static Sprite Section => EnsureInit() ? _sectionSprite : null;
         public static Sprite Divider => EnsureInit() ? _dividerSprite : null;
         public static Sprite Glow => EnsureInit() ? _glowSprite : null;
+        public static Sprite IconCircle => EnsureInit() ? _iconCircle : null;
+        public static Sprite IconHex => EnsureInit() ? _iconHex : null;
+        public static Sprite ProgressBg => EnsureInit() ? _progressBg : null;
+        public static Sprite ProgressFill => EnsureInit() ? _progressFill : null;
+        public static Sprite CornerDecor => EnsureInit() ? _cornerDecor : null;
+        public static Sprite TabNormal => EnsureInit() ? _tabNormal : null;
+        public static Sprite TabActive => EnsureInit() ? _tabActive : null;
 
         public static Font DefaultFont
         {
@@ -94,37 +114,69 @@ namespace SuperMech.Code
             if (_initialized) return true;
             try
             {
-                _panelSprite = MakeSlicedSprite(BgColor, BorderColor, 64, 4, "SM_Panel");
-                // v0.194 按钮：渐变+高光+阴影+粗边框
+                // v0.202 全面美化：圆角+内发光+装饰角标（参考星穹铁道+暗黑破坏神+魔兽世界）
+                _panelSprite = MakeRoundedGlowSprite(BgColor, BorderColor, CyanDim, 64, 6, 2, "SM_Panel");
+                // 按钮：渐变+内发光+金色边框+顶部高光
                 _buttonNormal = MakeButtonSprite(
-                    new Color(0.16f, 0.24f, 0.38f, 1f),   // 上：亮蓝
-                    new Color(0.08f, 0.13f, 0.22f, 1f),   // 下：暗蓝
-                    new Color(0.65f, 0.52f, 0.28f, 1f),   // 边框：金色
-                    new Color(0.35f, 0.50f, 0.70f, 0.8f), // 顶部高光
-                    new Color(0.04f, 0.07f, 0.12f, 0.9f), // 底部阴影
+                    new Color(0.18f, 0.26f, 0.42f, 1f),
+                    new Color(0.09f, 0.14f, 0.24f, 1f),
+                    new Color(0.70f, 0.56f, 0.30f, 1f),
+                    new Color(0.40f, 0.58f, 0.80f, 0.9f),
+                    new Color(0.04f, 0.07f, 0.12f, 0.9f),
                     32, 3, "SM_BtnNormal");
                 _buttonHover = MakeButtonSprite(
-                    new Color(0.22f, 0.34f, 0.52f, 1f),   // 上：更亮
-                    new Color(0.12f, 0.20f, 0.32f, 1f),   // 下：更亮
-                    new Color(0.85f, 0.70f, 0.38f, 1f),   // 边框：亮金
-                    new Color(0.45f, 0.62f, 0.82f, 0.9f), // 更强高光
+                    new Color(0.26f, 0.38f, 0.58f, 1f),
+                    new Color(0.14f, 0.22f, 0.36f, 1f),
+                    new Color(0.90f, 0.74f, 0.40f, 1f),
+                    new Color(0.50f, 0.70f, 0.92f, 0.95f),
                     new Color(0.06f, 0.10f, 0.18f, 0.9f),
                     32, 3, "SM_BtnHover");
                 _buttonActive = MakeButtonSprite(
-                    new Color(0.06f, 0.10f, 0.18f, 1f),   // 上：暗（凹陷）
-                    new Color(0.04f, 0.07f, 0.12f, 1f),   // 下：更暗
-                    new Color(0.25f, 0.60f, 0.70f, 1f),   // 边框：青色（按下反馈）
-                    null,                                   // 无高光（凹陷效果）
+                    new Color(0.07f, 0.12f, 0.20f, 1f),
+                    new Color(0.04f, 0.07f, 0.12f, 1f),
+                    new Color(0.30f, 0.65f, 0.75f, 1f),
+                    null,
                     new Color(0.02f, 0.04f, 0.08f, 0.9f),
                     32, 3, "SM_BtnActive");
-                _titleBarSprite = MakeSlicedSprite(new Color(0.03f, 0.05f, 0.09f, 0.98f), BorderGold, 16, 2, "SM_TitleBar");
-                _scrollbarSprite = MakeSolidSprite(new Color(0.30f, 0.60f, 0.75f, 0.6f), "SM_Scrollbar");
+                _buttonSelected = MakeButtonSprite(
+                    new Color(0.22f, 0.40f, 0.55f, 1f),
+                    new Color(0.12f, 0.24f, 0.36f, 1f),
+                    new Color(0.40f, 0.80f, 0.90f, 1f),
+                    new Color(0.55f, 0.85f, 0.95f, 0.9f),
+                    new Color(0.05f, 0.09f, 0.15f, 0.9f),
+                    32, 3, "SM_BtnSelected");
+                _buttonDisabled = MakeButtonSprite(
+                    new Color(0.12f, 0.14f, 0.18f, 1f),
+                    new Color(0.08f, 0.09f, 0.12f, 1f),
+                    new Color(0.30f, 0.32f, 0.36f, 1f),
+                    null,
+                    null,
+                    32, 3, "SM_BtnDisabled");
+                _titleBarSprite = MakeRoundedGlowSprite(new Color(0.04f, 0.06f, 0.10f, 0.98f), BorderGold, AccentDim, 32, 4, 1, "SM_TitleBar");
+                _scrollbarSprite = MakeSolidSprite(new Color(0.35f, 0.65f, 0.80f, 0.7f), "SM_Scrollbar");
                 _rowEven = MakeSolidSprite(RowEven, "SM_RowEven");
                 _rowOdd = MakeSolidSprite(RowOdd, "SM_RowOdd");
-                _cardSprite = MakeSlicedSprite(CardBg, BorderDim, 16, 2, "SM_Card");
-                _sectionSprite = MakeSlicedSprite(SectionBg, BorderColor, 16, 2, "SM_Section");
-                _dividerSprite = MakeSolidSprite(new Color(0.25f, 0.35f, 0.50f, 0.5f), "SM_Divider");
+                _cardSprite = MakeRoundedGlowSprite(CardBg, BorderDim, CyanDim, 32, 4, 1, "SM_Card");
+                _cardHover = MakeRoundedGlowSprite(new Color(0.12f, 0.18f, 0.28f, 0.95f), BorderColor, CyanColor, 32, 4, 1, "SM_CardHover");
+                _sectionSprite = MakeRoundedGlowSprite(SectionBg, BorderColor, AccentDim, 32, 4, 1, "SM_Section");
+                _dividerSprite = MakeSolidSprite(new Color(0.30f, 0.42f, 0.60f, 0.5f), "SM_Divider");
                 _glowSprite = MakeGlowSprite(CyanColor, "SM_Glow");
+                _iconCircle = MakeCircleSprite(new Color(0.10f, 0.16f, 0.26f, 0.95f), BorderColor, 32, 2, "SM_IconCircle");
+                _iconHex = MakeHexSprite(new Color(0.10f, 0.16f, 0.26f, 0.95f), AccentColor, 32, 2, "SM_IconHex");
+                _progressBg = MakeRoundedGlowSprite(new Color(0.06f, 0.09f, 0.14f, 0.9f), BorderDim, null, 16, 3, 0, "SM_ProgressBg");
+                _progressFill = MakeRoundedGlowSprite(new Color(0.25f, 0.65f, 0.75f, 1f), CyanColor, null, 16, 3, 0, "SM_ProgressFill");
+                _cornerDecor = MakeCornerDecorSprite(BorderGold, "SM_Corner");
+                _tabNormal = MakeButtonSprite(
+                    new Color(0.10f, 0.15f, 0.24f, 0.9f),
+                    new Color(0.06f, 0.09f, 0.15f, 0.9f),
+                    BorderDim,
+                    null, null, 24, 2, "SM_TabNormal");
+                _tabActive = MakeButtonSprite(
+                    new Color(0.18f, 0.28f, 0.44f, 1f),
+                    new Color(0.10f, 0.18f, 0.30f, 1f),
+                    AccentColor,
+                    new Color(0.45f, 0.62f, 0.82f, 0.8f),
+                    null, 24, 2, "SM_TabActive");
                 _initialized = true;
                 return true;
             }
@@ -259,6 +311,205 @@ namespace SuperMech.Code
             return sprite;
         }
 
+        /// <summary>v0.202 圆角+内发光边框Sprite（参考星穹铁道卡片风格）</summary>
+        private static Sprite MakeRoundedGlowSprite(Color bg, Color border, Color? innerGlow, int size, int borderRadius, int borderWidth, string name)
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            var pixels = new Color[size * size];
+            float radius = borderRadius;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    // 圆角判断：四个角用圆形裁剪
+                    bool inCorner = false;
+                    float cornerDist = 0f;
+                    if (x < borderRadius && y < borderRadius)
+                    {
+                        cornerDist = Mathf.Sqrt((borderRadius - x) * (borderRadius - x) + (borderRadius - y) * (borderRadius - y));
+                        inCorner = cornerDist > radius;
+                    }
+                    else if (x >= size - borderRadius && y < borderRadius)
+                    {
+                        cornerDist = Mathf.Sqrt((x - (size - borderRadius - 1)) * (x - (size - borderRadius - 1)) + (borderRadius - y) * (borderRadius - y));
+                        inCorner = cornerDist > radius;
+                    }
+                    else if (x < borderRadius && y >= size - borderRadius)
+                    {
+                        cornerDist = Mathf.Sqrt((borderRadius - x) * (borderRadius - x) + (y - (size - borderRadius - 1)) * (y - (size - borderRadius - 1)));
+                        inCorner = cornerDist > radius;
+                    }
+                    else if (x >= size - borderRadius && y >= size - borderRadius)
+                    {
+                        cornerDist = Mathf.Sqrt((x - (size - borderRadius - 1)) * (x - (size - borderRadius - 1)) + (y - (size - borderRadius - 1)) * (y - (size - borderRadius - 1)));
+                        inCorner = cornerDist > radius;
+                    }
+
+                    if (inCorner)
+                    {
+                        pixels[y * size + x] = new Color(0, 0, 0, 0);
+                        continue;
+                    }
+
+                    // 边框判断
+                    bool isBorder = (x < borderWidth || x >= size - borderWidth ||
+                                    y < borderWidth || y >= size - borderWidth);
+                    // 圆角处的边框也要跟着圆
+                    if (!isBorder && borderRadius > 0)
+                    {
+                        if ((x < borderRadius + borderWidth && y < borderRadius + borderWidth) ||
+                            (x >= size - borderRadius - borderWidth && y < borderRadius + borderWidth) ||
+                            (x < borderRadius + borderWidth && y >= size - borderRadius - borderWidth) ||
+                            (x >= size - borderRadius - borderWidth && y >= size - borderRadius - borderWidth))
+                        {
+                            // 圆角区域内，距离边缘近的算边框
+                            float edgeDist = Mathf.Min(x, y, size - 1 - x, size - 1 - y);
+                            if (edgeDist < borderWidth) isBorder = true;
+                        }
+                    }
+
+                    Color c = bg;
+                    if (isBorder)
+                    {
+                        c = border;
+                    }
+                    else if (innerGlow.HasValue)
+                    {
+                        // 内发光：靠近边框的1-2像素混入发光色
+                        float edgeDist = Mathf.Min(x - borderWidth, y - borderWidth, size - 1 - x - borderWidth, size - 1 - y - borderWidth);
+                        if (edgeDist < 2f)
+                        {
+                            float glowAmount = (2f - edgeDist) / 2f * 0.35f;
+                            c = Color.Lerp(c, innerGlow.Value, glowAmount);
+                        }
+                    }
+                    pixels[y * size + x] = c;
+                }
+            }
+            tex.SetPixels(pixels);
+            tex.Apply();
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size),
+                new Vector2(0.5f, 0.5f), 100f, 0u, SpriteMeshType.FullRect,
+                new Vector4(borderRadius, borderRadius, borderRadius, borderRadius));
+            sprite.name = name;
+            return sprite;
+        }
+
+        /// <summary>v0.202 圆形图标背景Sprite（参考原神/星穹铁道角色图标）</summary>
+        private static Sprite MakeCircleSprite(Color bg, Color border, int size, int borderWidth, string name)
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var pixels = new Color[size * size];
+            float center = size / 2f;
+            float radius = size / 2f - 1f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dist = Mathf.Sqrt((x - center + 0.5f) * (x - center + 0.5f) + (y - center + 0.5f) * (y - center + 0.5f));
+                    if (dist > radius)
+                    {
+                        pixels[y * size + x] = new Color(0, 0, 0, 0);
+                    }
+                    else if (dist > radius - borderWidth)
+                    {
+                        pixels[y * size + x] = border;
+                    }
+                    else
+                    {
+                        // 径向渐变：中心亮边缘暗
+                        float t = dist / radius;
+                        Color c = Color.Lerp(new Color(bg.r * 1.3f, bg.g * 1.3f, bg.b * 1.3f, bg.a), bg, t);
+                        pixels[y * size + x] = c;
+                    }
+                }
+            }
+            tex.SetPixels(pixels);
+            tex.Apply();
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+            sprite.name = name;
+            return sprite;
+        }
+
+        /// <summary>v0.202 六边形图标背景Sprite（参考魔兽世界职业图标/科技感）</summary>
+        private static Sprite MakeHexSprite(Color bg, Color border, int size, int borderWidth, string name)
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var pixels = new Color[size * size];
+            float cx = size / 2f, cy = size / 2f;
+            float r = size / 2f - 1f;
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = x - cx + 0.5f, dy = y - cy + 0.5f;
+                    // 六边形距离函数（pointy-top）
+                    float q = (Mathf.Sqrt(3f) / 3f * dx - 1f / 3f * dy) / r;
+                    float rcoord = (2f / 3f * dy) / r;
+                    float hexDist = Mathf.Max(Mathf.Abs(q), Mathf.Abs(rcoord), Mathf.Abs(q + rcoord));
+                    if (hexDist > 1f)
+                    {
+                        pixels[y * size + x] = new Color(0, 0, 0, 0);
+                    }
+                    else if (hexDist > 1f - (float)borderWidth / r)
+                    {
+                        pixels[y * size + x] = border;
+                    }
+                    else
+                    {
+                        float t = hexDist;
+                        Color c = Color.Lerp(new Color(bg.r * 1.25f, bg.g * 1.25f, bg.b * 1.25f, bg.a), bg, t);
+                        pixels[y * size + x] = c;
+                    }
+                }
+            }
+            tex.SetPixels(pixels);
+            tex.Apply();
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+            sprite.name = name;
+            return sprite;
+        }
+
+        /// <summary>v0.202 装饰角标Sprite（L形金色角标，参考暗黑破坏神UI）</summary>
+        private static Sprite MakeCornerDecorSprite(Color color, string name)
+        {
+            int size = 16;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            var pixels = new Color[size * size];
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    // L形：底部3像素+左侧3像素，右下角为原点
+                    bool isL = (y < 3 && x < size) || (x < 3 && y < size);
+                    // 末端渐细
+                    if (y < 3 && x > size - 4) isL = false;
+                    if (x < 3 && y > size - 4) isL = false;
+                    if (isL)
+                    {
+                        // 末端淡出
+                        float alpha = 1f;
+                        if (y < 3 && x > size - 8) alpha = (float)(size - x) / 8f;
+                        if (x < 3 && y > size - 8) alpha = Mathf.Min(alpha, (float)(size - y) / 8f);
+                        pixels[y * size + x] = new Color(color.r, color.g, color.b, color.a * alpha);
+                    }
+                    else
+                    {
+                        pixels[y * size + x] = new Color(0, 0, 0, 0);
+                    }
+                }
+            }
+            tex.SetPixels(pixels);
+            tex.Apply();
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0f, 0f), 100f);
+            sprite.name = name;
+            return sprite;
+        }
+
         // ═════════════════════════ UI工具方法 ═════════════════════════
 
         /// <summary>创建Text组件</summary>
@@ -386,6 +637,205 @@ namespace SuperMech.Code
             scrollRect.scrollSensitivity = 25f;
 
             return (scrollRect, contentRect);
+        }
+
+        // ═════════════════════════ v0.202 美化新增工具方法 ═════════════════════════
+
+        /// <summary>创建圆角卡片（参考星穹铁道卡片风格）</summary>
+        public static (GameObject go, RectTransform rt, Image img) MakeCard(Transform parent, string name, bool hoverable = false)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            var img = go.AddComponent<Image>();
+            img.sprite = hoverable ? CardHover : Card;
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
+            return (go, rt, img);
+        }
+
+        /// <summary>创建带圆形/六边形背景的图标（参考原神角色图标）</summary>
+        public static (GameObject go, Image bgImg, Image iconImg) MakeIconWithBg(Transform parent, string name, Sprite icon, bool hex = false, float size = 40f)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(size, size);
+            var bgImg = go.AddComponent<Image>();
+            bgImg.sprite = hex ? IconHex : IconCircle;
+            bgImg.color = Color.white;
+
+            var iconGo = new GameObject("Icon");
+            iconGo.transform.SetParent(go.transform, false);
+            var iconRt = iconGo.AddComponent<RectTransform>();
+            iconRt.anchorMin = Vector2.zero;
+            iconRt.anchorMax = Vector2.one;
+            iconRt.offsetMin = new Vector2(size * 0.15f, size * 0.15f);
+            iconRt.offsetMax = new Vector2(-size * 0.15f, -size * 0.15f);
+            var iconImg = iconGo.AddComponent<Image>();
+            if (icon != null) iconImg.sprite = icon;
+            iconImg.preserveAspect = true;
+            return (go, bgImg, iconImg);
+        }
+
+        /// <summary>创建进度条（参考魔兽世界/暗黑破坏神血条风格）</summary>
+        public static (GameObject go, Image bgImg, Image fillImg, Text labelText) MakeProgressBar(Transform parent, string name, float width, float height = 16f)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(width, height);
+
+            var bgImg = go.AddComponent<Image>();
+            bgImg.sprite = ProgressBg;
+            bgImg.type = Image.Type.Sliced;
+            bgImg.color = Color.white;
+
+            var fillGo = new GameObject("Fill");
+            fillGo.transform.SetParent(go.transform, false);
+            var fillRt = fillGo.AddComponent<RectTransform>();
+            fillRt.anchorMin = new Vector2(0, 0);
+            fillRt.anchorMax = new Vector2(1, 1);
+            fillRt.pivot = new Vector2(0, 0.5f);
+            fillRt.offsetMin = new Vector2(2, 2);
+            fillRt.offsetMax = new Vector2(-2, -2);
+            var fillImg = fillGo.AddComponent<Image>();
+            fillImg.sprite = ProgressFill;
+            fillImg.type = Image.Type.Sliced;
+            fillImg.color = CyanColor;
+
+            var labelGo = new GameObject("Label");
+            labelGo.transform.SetParent(go.transform, false);
+            var labelRt = labelGo.AddComponent<RectTransform>();
+            labelRt.anchorMin = Vector2.zero;
+            labelRt.anchorMax = Vector2.one;
+            labelRt.offsetMin = Vector2.zero;
+            labelRt.offsetMax = Vector2.zero;
+            var labelText = labelGo.AddComponent<Text>();
+            var df = DefaultFont; if (df != null) labelText.font = df;
+            labelText.fontSize = Mathf.Max(10, (int)(height * 0.7f));
+            labelText.color = TextColor;
+            labelText.alignment = TextAnchor.MiddleCenter;
+            labelText.text = "";
+            return (go, bgImg, fillImg, labelText);
+        }
+
+        /// <summary>创建分区标题（金色文字+左侧装饰条+底部分隔线）</summary>
+        public static (GameObject go, Text titleText) MakeSectionHeader(Transform parent, string title, int fontSize = 16)
+        {
+            var go = new GameObject("SectionHeader");
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 28f);
+
+            // 左侧金色装饰条
+            var barGo = new GameObject("Bar");
+            barGo.transform.SetParent(go.transform, false);
+            var barRt = barGo.AddComponent<RectTransform>();
+            barRt.anchorMin = new Vector2(0, 0.5f);
+            barRt.anchorMax = new Vector2(0, 0.5f);
+            barRt.pivot = new Vector2(0, 0.5f);
+            barRt.sizeDelta = new Vector2(3f, 18f);
+            barRt.anchoredPosition = new Vector2(0, 0);
+            barGo.AddComponent<Image>().color = AccentColor;
+
+            // 标题文字
+            var titleGo = new GameObject("Title");
+            titleGo.transform.SetParent(go.transform, false);
+            var titleRt = titleGo.AddComponent<RectTransform>();
+            titleRt.anchorMin = Vector2.zero;
+            titleRt.anchorMax = Vector2.one;
+            titleRt.offsetMin = new Vector2(10f, 0);
+            titleRt.offsetMax = Vector2.zero;
+            var titleText = titleGo.AddComponent<Text>();
+            var df = DefaultFont; if (df != null) titleText.font = df;
+            titleText.fontSize = fontSize;
+            titleText.color = AccentColor;
+            titleText.fontStyle = FontStyle.Bold;
+            titleText.alignment = TextAnchor.MiddleLeft;
+            titleText.text = title;
+
+            // 底部分隔线
+            var divGo = new GameObject("Divider");
+            divGo.transform.SetParent(go.transform, false);
+            var divRt = divGo.AddComponent<RectTransform>();
+            divRt.anchorMin = new Vector2(0, 0);
+            divRt.anchorMax = new Vector2(1, 0);
+            divRt.pivot = new Vector2(0.5f, 0);
+            divRt.sizeDelta = new Vector2(0, 1);
+            divGo.AddComponent<Image>().color = BorderDim;
+
+            return (go, titleText);
+        }
+
+        /// <summary>给面板添加四个金色装饰角标（参考暗黑破坏神UI）</summary>
+        public static void AddCornerDecorations(RectTransform target, float size = 16f, float offset = 2f)
+        {
+            if (CornerDecor == null) return;
+            // 四个角：左上、右上、左下、右下
+            var corners = new (Vector2 anchor, Vector2 pivot, float rot)[]
+            {
+                (new Vector2(0, 1), new Vector2(0, 1), 0f),      // 左上
+                (new Vector2(1, 1), new Vector2(1, 1), -90f),    // 右上
+                (new Vector2(0, 0), new Vector2(0, 0), 90f),     // 左下
+                (new Vector2(1, 0), new Vector2(1, 0), 180f),    // 右下
+            };
+            foreach (var (anchor, pivot, rot) in corners)
+            {
+                var go = new GameObject("CornerDecor");
+                go.transform.SetParent(target, false);
+                var rt = go.AddComponent<RectTransform>();
+                rt.anchorMin = anchor;
+                rt.anchorMax = anchor;
+                rt.pivot = pivot;
+                rt.sizeDelta = new Vector2(size, size);
+                rt.anchoredPosition = new Vector2(
+                    anchor.x == 0 ? offset : -offset,
+                    anchor.y == 0 ? offset : -offset);
+                rt.localRotation = Quaternion.Euler(0, 0, rot);
+                var img = go.AddComponent<Image>();
+                img.sprite = CornerDecor;
+                img.color = BorderGold;
+                img.raycastTarget = false;
+            }
+        }
+
+        /// <summary>创建数值标签（图标+数值，参考魔兽世界属性面板）</summary>
+        public static (GameObject go, Text valueText) MakeStatLabel(Transform parent, string name, Sprite icon, string value, int fontSize = 13)
+        {
+            var go = new GameObject(name);
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, 20f);
+
+            if (icon != null)
+            {
+                var iconGo = new GameObject("Icon");
+                iconGo.transform.SetParent(go.transform, false);
+                var iconRt = iconGo.AddComponent<RectTransform>();
+                iconRt.anchorMin = new Vector2(0, 0.5f);
+                iconRt.anchorMax = new Vector2(0, 0.5f);
+                iconRt.pivot = new Vector2(0, 0.5f);
+                iconRt.sizeDelta = new Vector2(16f, 16f);
+                var iconImg = iconGo.AddComponent<Image>();
+                iconImg.sprite = icon;
+                iconImg.preserveAspect = true;
+            }
+
+            var valGo = new GameObject("Value");
+            valGo.transform.SetParent(go.transform, false);
+            var valRt = valGo.AddComponent<RectTransform>();
+            valRt.anchorMin = Vector2.zero;
+            valRt.anchorMax = Vector2.one;
+            valRt.offsetMin = new Vector2(icon != null ? 22f : 4f, 0);
+            valRt.offsetMax = Vector2.zero;
+            var valText = valGo.AddComponent<Text>();
+            var df = DefaultFont; if (df != null) valText.font = df;
+            valText.fontSize = fontSize;
+            valText.color = TextColor;
+            valText.alignment = TextAnchor.MiddleLeft;
+            valText.text = value;
+            return (go, valText);
         }
     }
 }

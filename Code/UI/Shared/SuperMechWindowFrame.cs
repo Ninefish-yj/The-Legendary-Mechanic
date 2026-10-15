@@ -127,8 +127,11 @@ namespace SuperMech.Code
             frame.ContentParent = contentGo.GetComponent<RectTransform>();
             frame.ContentParent.anchorMin = Vector2.zero;
             frame.ContentParent.anchorMax = Vector2.one;
-            frame.ContentParent.offsetMin = new Vector2(8f, 8f);
-            frame.ContentParent.offsetMax = new Vector2(-8f, -52f);
+            frame.ContentParent.offsetMin = new Vector2(10f, 10f);
+            frame.ContentParent.offsetMax = new Vector2(-10f, -54f);
+
+            // v0.202 四个金色装饰角标（参考暗黑破坏神UI）
+            SuperMechUiSkin.AddCornerDecorations(frame.RootRt, 18f, 3f);
 
             root.SetActive(false);
             return frame;
