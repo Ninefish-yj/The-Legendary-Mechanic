@@ -98,7 +98,13 @@ namespace SuperMech.Code
             klRect.offsetMin = new Vector2(28, 0); klRect.offsetMax = new Vector2(-28, 0);
             var klImg = kingdomLabelGo.AddComponent<Image>();
             klImg.color = new Color(0.08f, 0.1f, 0.15f, 0.9f);
-            _kingdomLabelText = kingdomLabelGo.AddComponent<Text>();
+            // v0.194 修复：Text必须放在子物体上，同一物体不能同时有Image和Text
+            var klTextGo = new GameObject("Label");
+            klTextGo.transform.SetParent(kingdomLabelGo.transform, false);
+            var klTextRect = klTextGo.AddComponent<RectTransform>();
+            klTextRect.anchorMin = Vector2.zero; klTextRect.anchorMax = Vector2.one;
+            klTextRect.offsetMin = Vector2.zero; klTextRect.offsetMax = Vector2.zero;
+            _kingdomLabelText = klTextGo.AddComponent<Text>();
             _kingdomLabelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _kingdomLabelText.fontSize = 11;
             _kingdomLabelText.color = new Color(0.8f, 0.9f, 1f);
