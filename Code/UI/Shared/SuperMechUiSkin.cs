@@ -95,9 +95,28 @@ namespace SuperMech.Code
             try
             {
                 _panelSprite = MakeSlicedSprite(BgColor, BorderColor, 64, 4, "SM_Panel");
-                _buttonNormal = MakeSlicedSprite(ButtonNormal, BorderDim, 16, 2, "SM_BtnNormal");
-                _buttonHover = MakeSlicedSprite(ButtonHover, BorderColor, 16, 2, "SM_BtnHover");
-                _buttonActive = MakeSlicedSprite(ButtonActive, CyanDim, 16, 2, "SM_BtnActive");
+                // v0.194 按钮：渐变+高光+阴影+粗边框
+                _buttonNormal = MakeButtonSprite(
+                    new Color(0.16f, 0.24f, 0.38f, 1f),   // 上：亮蓝
+                    new Color(0.08f, 0.13f, 0.22f, 1f),   // 下：暗蓝
+                    new Color(0.65f, 0.52f, 0.28f, 1f),   // 边框：金色
+                    new Color(0.35f, 0.50f, 0.70f, 0.8f), // 顶部高光
+                    new Color(0.04f, 0.07f, 0.12f, 0.9f), // 底部阴影
+                    32, 3, "SM_BtnNormal");
+                _buttonHover = MakeButtonSprite(
+                    new Color(0.22f, 0.34f, 0.52f, 1f),   // 上：更亮
+                    new Color(0.12f, 0.20f, 0.32f, 1f),   // 下：更亮
+                    new Color(0.85f, 0.70f, 0.38f, 1f),   // 边框：亮金
+                    new Color(0.45f, 0.62f, 0.82f, 0.9f), // 更强高光
+                    new Color(0.06f, 0.10f, 0.18f, 0.9f),
+                    32, 3, "SM_BtnHover");
+                _buttonActive = MakeButtonSprite(
+                    new Color(0.06f, 0.10f, 0.18f, 1f),   // 上：暗（凹陷）
+                    new Color(0.04f, 0.07f, 0.12f, 1f),   // 下：更暗
+                    new Color(0.25f, 0.60f, 0.70f, 1f),   // 边框：青色（按下反馈）
+                    null,                                   // 无高光（凹陷效果）
+                    new Color(0.02f, 0.04f, 0.08f, 0.9f),
+                    32, 3, "SM_BtnActive");
                 _titleBarSprite = MakeSlicedSprite(new Color(0.03f, 0.05f, 0.09f, 0.98f), BorderGold, 16, 2, "SM_TitleBar");
                 _scrollbarSprite = MakeSolidSprite(new Color(0.30f, 0.60f, 0.75f, 0.6f), "SM_Scrollbar");
                 _rowEven = MakeSolidSprite(RowEven, "SM_RowEven");
@@ -130,7 +149,6 @@ namespace SuperMech.Code
                                     y < borderWidth || y >= size - borderWidth);
                     bool isCorner = ((x < borderWidth || x >= size - borderWidth) &&
                                      (y < borderWidth || y >= size - borderWidth));
-                    // 切角：四角最外层像素透明
                     bool isCutCorner = (x == 0 && y == 0) || (x == size - 1 && y == 0) ||
                                        (x == 0 && y == size - 1) || (x == size - 1 && y == size - 1);
                     if (isCutCorner)
@@ -143,7 +161,58 @@ namespace SuperMech.Code
             }
             tex.SetPixels(pixels);
             tex.Apply();
-            // 关键：pixelsPerUnit=100，否则NML环境下边框塌缩
+            var sprite = Sprite.Create(tex, new Rect(0, 0, size, size),
+                new Vector2(0.5f, 0.5f), 100f, 0u, SpriteMeshType.FullRect,
+                new Vector4(borderWidth, borderWidth, borderWidth, borderWidth));
+            sprite.name = name;
+            return sprite;
+        }
+
+        /// <summary>v0.194 生成带垂直渐变+顶部高光+底部阴影的按钮Sprite</summary>
+        private static Sprite MakeButtonSprite(Color bgTop, Color bgBottom, Color border,
+            Color? highlight = null, Color? shadow = null, int size = 32, int borderWidth = 3, string name = "Btn")
+        {
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Point;
+            var pixels = new Color[size * size];
+            int contentTop = borderWidth + 1;       // 高光行
+            int contentBottom = size - borderWidth - 2; // 阴影行
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    bool isBorder = (x < borderWidth || x >= size - borderWidth ||
+                                    y < borderWidth || y >= size - borderWidth);
+                    bool isCutCorner = (x <= 1 && y <= 1) || (x >= size - 2 && y <= 1) ||
+                                       (x <= 1 && y >= size - 2) || (x >= size - 2 && y >= size - 2);
+                    if (isCutCorner)
+                    {
+                        pixels[y * size + x] = new Color(0, 0, 0, 0);
+                    }
+                    else if (isBorder)
+                    {
+                        pixels[y * size + x] = border;
+                    }
+                    else
+                    {
+                        // 垂直渐变
+                        float t = (float)(y - borderWidth) / (size - 2 * borderWidth);
+                        Color c = Color.Lerp(bgTop, bgBottom, t);
+                        // 顶部高光（第borderWidth行）
+                        if (y == borderWidth && highlight.HasValue)
+                            c = Color.Lerp(c, highlight.Value, 0.7f);
+                        // 次高光
+                        else if (y == borderWidth + 1 && highlight.HasValue)
+                            c = Color.Lerp(c, highlight.Value, 0.3f);
+                        // 底部阴影（倒数第borderWidth行）
+                        if (y == size - borderWidth - 1 && shadow.HasValue)
+                            c = Color.Lerp(c, shadow.Value, 0.6f);
+                        pixels[y * size + x] = c;
+                    }
+                }
+            }
+            tex.SetPixels(pixels);
+            tex.Apply();
             var sprite = Sprite.Create(tex, new Rect(0, 0, size, size),
                 new Vector2(0.5f, 0.5f), 100f, 0u, SpriteMeshType.FullRect,
                 new Vector4(borderWidth, borderWidth, borderWidth, borderWidth));

@@ -93,7 +93,7 @@ namespace SuperMech.Code
             ss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
             btn.spriteState = ss;
             btn.onClick.AddListener(onClick);
-            var txt = CreateText(go.transform, text, fontSize, TextAnchor.MiddleCenter, SuperMechUiSkin.TextColor);
+            var txt = CreateText(go.transform, text, fontSize, TextAnchor.MiddleCenter, new Color(0.95f, 0.96f, 0.98f, 1f));
             txt.fontStyle = FontStyle.Bold;
             var txtRect = txt.GetComponent<RectTransform>();
             txtRect.offsetMin = new Vector2(8, 4);

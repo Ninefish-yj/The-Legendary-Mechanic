@@ -203,7 +203,7 @@ namespace SuperMech.Code
             lt.fontSize = 14;
             lt.fontStyle = FontStyle.Bold;
             lt.alignment = TextAnchor.MiddleCenter;
-            lt.color = SuperMechUiSkin.TextColor;
+            lt.color = new Color(0.95f, 0.96f, 0.98f, 1f); // 近白色，深色按钮上更醒目
             lt.text = text;
             lt.horizontalOverflow = HorizontalWrapMode.Wrap;
             lt.verticalOverflow = VerticalWrapMode.Truncate;
