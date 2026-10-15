@@ -503,6 +503,9 @@ namespace SuperMech.Code
                 if (killer.hasTrait(SuperMechPlayer.PlayerTrait))
                 {
                     SuperMechPlayer.OnPlayerKill(killer, target);
+                    // v0.199 超A协会声望：击杀高阶敌人获得声望
+                    int rep = SuperMechSuperMAReputation.GetKillReputation(target);
+                    if (rep > 0) SuperMechSuperMAReputation.AddReputation(killer, rep);
                 }
 
                 // 世界树入侵：击杀世界树单位计入击退进度
