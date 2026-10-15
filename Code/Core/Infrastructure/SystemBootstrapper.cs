@@ -30,7 +30,6 @@ namespace SuperMech.Code
             // === 修炼体系 ===
             SystemRegistry.RegisterAction("Qi", () => SuperMechQi.Register());
             SystemRegistry.RegisterAction("CorePower", () => SuperMechCorePower.Register());
-            SystemRegistry.RegisterAction("Meditation", () => SuperMechMeditation.Register());
             SystemRegistry.RegisterAction("QiRefine", () => SuperMechQiRefine.Register());
 
             // === 职业体系 ===

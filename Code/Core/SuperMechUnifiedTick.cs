@@ -56,7 +56,6 @@ namespace SuperMech.Code
                 SafeRun("核心神力", () => SuperMechCorePower.TickCorePowers());
                 SafeRun("属性自动分配", () => SuperMechQiAttribute.TickAutoAssign());
                 SafeRun("气力提炼", () => SuperMechQiRefine.TickRefine());
-                SafeRun("冥想修炼", () => SuperMechMeditation.TickCultivation());
                 SafeRun("气力锻炼", () => SuperMechQiRefine.TickCultivation());
                 SafeRun("自定义属性同步", () => SuperMechCustomStats.TickSync());
             }
