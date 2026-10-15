@@ -3811,5 +3811,7 @@
   "sm_forge_open": "锻造工坊",
   "sm_forge_open_desc": "打开装备锻造强化分解界面",
   "sm_market_open": "交易市场",
-  "sm_market_open_desc": "打开星际交易市场界面"
+  "sm_market_open_desc": "打开星际交易市场界面",
+  "sm_ui_supera_ranking": "超A战力榜",
+  "sm_ui_supera_empty": "暂无超A级个体"
 }

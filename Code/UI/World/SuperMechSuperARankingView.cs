@@ -53,7 +53,7 @@ namespace SuperMech.Code
             titleRect.pivot = new Vector2(0.5f, 1);
             titleRect.anchoredPosition = Vector2.zero;
 
-            var titleText = SuperMechUiFactory.CreateText(titleBar.transform,
+            var titleText = SuperMechUtils.CreateText(titleBar.transform,
                 LocalizedTextManager.getText("sm_ui_supera_ranking"), 16, TextAnchor.MiddleCenter);
             titleText.rectTransform.anchorMin = Vector2.zero;
             titleText.rectTransform.anchorMax = Vector2.one;
@@ -124,7 +124,7 @@ namespace SuperMech.Code
 
             if (superAList.Count == 0)
             {
-                var emptyText = SuperMechUiFactory.CreateText(_content,
+                var emptyText = SuperMechUtils.CreateText(_content,
                     LocalizedTextManager.getText("sm_ui_supera_empty"), 14, TextAnchor.MiddleCenter);
                 emptyText.rectTransform.anchorMin = new Vector2(0, 1);
                 emptyText.rectTransform.anchorMax = new Vector2(1, 1);
@@ -163,7 +163,7 @@ namespace SuperMech.Code
 
             // 排名数字
             string rankStr = rank == 1 ? "①" : rank == 2 ? "②" : rank == 3 ? "③" : rank.ToString();
-            var rankText = SuperMechUiFactory.CreateText(rowGo.transform, rankStr, 18, TextAnchor.MiddleCenter);
+            var rankText = SuperMechUtils.CreateText(rowGo.transform, rankStr, 18, TextAnchor.MiddleCenter);
             rankText.rectTransform.anchorMin = new Vector2(0, 0);
             rankText.rectTransform.anchorMax = new Vector2(0, 1);
             rankText.rectTransform.sizeDelta = new Vector2(44, 0);
@@ -172,8 +172,8 @@ namespace SuperMech.Code
             // 单位名
             string name = actor.getName();
             string className = GetClassName(actor);
-            string rankName = SuperMechAdvancement.GetRankName(actor);
-            var nameText = SuperMechUiFactory.CreateText(rowGo.transform,
+            string rankName = SuperMechRanks.GetRankName(actor);
+            var nameText = SuperMechUtils.CreateText(rowGo.transform,
                 $"{name}\n<size=11>{className} · {rankName}</size>", 13, TextAnchor.MiddleLeft);
             nameText.rectTransform.anchorMin = new Vector2(0, 0);
             nameText.rectTransform.anchorMax = new Vector2(1, 1);
@@ -182,7 +182,7 @@ namespace SuperMech.Code
             nameText.color = new Color(0.9f, 0.9f, 0.9f, 1f);
 
             // 战力指数
-            var powerText = SuperMechUiFactory.CreateText(rowGo.transform,
+            var powerText = SuperMechUtils.CreateText(rowGo.transform,
                 power.ToString("F0"), 14, TextAnchor.MiddleRight);
             powerText.rectTransform.anchorMin = new Vector2(1, 0);
             powerText.rectTransform.anchorMax = new Vector2(1, 1);
@@ -194,11 +194,11 @@ namespace SuperMech.Code
 
         private string GetClassName(Actor a)
         {
-            if (a.hasTrait(SuperMechTraits.ClassMechanic)) return LocalizedTextManager.getText("sm_class_mechanic");
-            if (a.hasTrait(SuperMechTraits.ClassMartial)) return LocalizedTextManager.getText("sm_class_martial");
-            if (a.hasTrait(SuperMechTraits.ClassMage)) return LocalizedTextManager.getText("sm_class_mage");
-            if (a.hasTrait(SuperMechTraits.ClassPsi)) return LocalizedTextManager.getText("sm_class_psi");
-            if (a.hasTrait(SuperMechTraits.ClassPower)) return LocalizedTextManager.getText("sm_class_power");
+            if (a.hasTrait(SuperMechTraits.ClassMechanic)) return LocalizedTextManager.getText("trait_sm_class_mech");
+            if (a.hasTrait(SuperMechTraits.ClassMartial)) return LocalizedTextManager.getText("trait_sm_class_martial");
+            if (a.hasTrait(SuperMechTraits.ClassMage)) return LocalizedTextManager.getText("trait_sm_class_mage");
+            if (a.hasTrait(SuperMechTraits.ClassPsi)) return LocalizedTextManager.getText("trait_sm_class_psi");
+            if (a.hasTrait(SuperMechTraits.ClassPower)) return LocalizedTextManager.getText("trait_sm_class_power");
             return "?";
         }
 
