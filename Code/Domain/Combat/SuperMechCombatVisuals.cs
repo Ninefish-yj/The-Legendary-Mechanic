@@ -45,7 +45,7 @@ namespace SuperMech.Code
                 }
 
                 // 4. 机械师：机械召唤特效
-                if (attacker.hasTrait(SuperMechTraits.ClassMechanic))
+                if (attacker.hasTrait(SuperMechTraits.ClassMech))
                 {
                     if (Random.value < 0.15f) SpawnMechSummonEffect(GetActorPosition(attacker));
                 }
@@ -70,7 +70,7 @@ namespace SuperMech.Code
             float dist = Vector3.Distance(attackerPos, targetPos);
 
             // 近战攻击冲刺（距离<2格时）
-            if (dist < 2.5f && attacker.transform != null)
+            if (dist < 2.5f && attacker.avatar != null)
             {
                 var dash = _effectRoot.AddComponent<AttackDash>();
                 dash.Init(attacker, dir * 0.4f, 0.12f);
@@ -82,7 +82,7 @@ namespace SuperMech.Code
             }
 
             // 受击击退（所有攻击都有，强度随伤害）
-            if (target.transform != null)
+            if (target.avatar != null)
             {
                 var knock = _effectRoot.AddComponent<HitKnockback>();
                 knock.Init(target, -dir * 0.25f, 0.15f);
@@ -95,7 +95,7 @@ namespace SuperMech.Code
             EnsureEffectRoot();
 
             // 机械师：射击弹道（能量弹从攻击者飞向目标）
-            if (attacker.hasTrait(SuperMechTraits.ClassMechanic))
+            if (attacker.hasTrait(SuperMechTraits.ClassMech))
             {
                 SpawnProjectile(attackerPos, targetPos, color, 0.15f);
             }
@@ -110,7 +110,7 @@ namespace SuperMech.Code
                 SpawnProjectile(attackerPos + Vector3.up * 0.3f, targetPos, GetSpellColor(attacker), 0.2f);
             }
             // 念力/异能：精神波（环形扩散）
-            else if (attacker.hasTrait(SuperMechTraits.ClassPsi) || attacker.hasTrait(SuperMechTraits.ClassPower))
+            else if (attacker.hasTrait(SuperMechTraits.ClassPsi) || attacker.hasTrait(SuperMechTraits.ClassMind))
             {
                 SpawnPsiWave(attackerPos, color);
             }
@@ -179,11 +179,11 @@ namespace SuperMech.Code
         /// <summary>获取职业攻击颜色（原著风格）</summary>
         private static Color GetAttackColor(Actor attacker)
         {
-            if (attacker.hasTrait(SuperMechTraits.ClassMechanic)) return new Color(0.4f, 0.8f, 1f, 1f);    // 机械师：青蓝（械力）
+            if (attacker.hasTrait(SuperMechTraits.ClassMech)) return new Color(0.4f, 0.8f, 1f, 1f);    // 机械师：青蓝（械力）
             if (attacker.hasTrait(SuperMechTraits.ClassMartial)) return new Color(1f, 0.6f, 0.3f, 1f);    // 武道：橙红（气力）
             if (attacker.hasTrait(SuperMechTraits.ClassMage)) return new Color(0.7f, 0.4f, 1f, 1f);       // 法师：紫色（魔力）
             if (attacker.hasTrait(SuperMechTraits.ClassPsi)) return new Color(0.4f, 1f, 0.7f, 1f);        // 念力：青绿（念力）
-            if (attacker.hasTrait(SuperMechTraits.ClassPower)) return new Color(1f, 0.4f, 0.5f, 1f);      // 异能：粉红（精神力）
+            if (attacker.hasTrait(SuperMechTraits.ClassMind)) return new Color(1f, 0.4f, 0.5f, 1f);      // 异能：粉红（精神力）
             return new Color(1f, 1f, 1f, 0.8f); // 普通：白色
         }
 
@@ -204,8 +204,8 @@ namespace SuperMech.Code
         /// <summary>获取单位世界位置</summary>
         private static Vector3 GetActorPosition(Actor actor)
         {
-            if (actor?.transform != null)
-                return actor.transform.position;
+            if (actor?.avatar != null)
+                return actor.cur_transform_position;
             return Vector3.zero;
         }
 
@@ -415,7 +415,7 @@ namespace SuperMech.Code
             public void Init(Actor actor, Vector3 offset, float duration)
             {
                 _actor = actor; _offset = offset; _duration = duration;
-                if (actor?.transform != null) _origin = actor.transform.position;
+                if (actor?.avatar != null) _origin = actor.cur_transform_position;
             }
 
             void Update()
@@ -425,7 +425,7 @@ namespace SuperMech.Code
                 float t = _life / _duration;
                 // 先冲刺后回弹
                 float dash = t < 0.5f ? t * 2f : (1f - t) * 2f;
-                _actor.transform.position = _origin + _offset * dash;
+                _actor.cur_transform_position = _origin + _offset * dash;
             }
         }
 
@@ -441,7 +441,7 @@ namespace SuperMech.Code
             public void Init(Actor actor, Vector3 offset, float duration)
             {
                 _actor = actor; _offset = offset; _duration = duration;
-                if (actor?.transform != null) _origin = actor.transform.position;
+                if (actor?.avatar != null) _origin = actor.cur_transform_position;
             }
 
             void Update()
@@ -451,7 +451,7 @@ namespace SuperMech.Code
                 float t = _life / _duration;
                 // 击退然后缓慢回位
                 float knock = t < 0.3f ? t / 0.3f : 1f - (t - 0.3f) / 0.7f * 0.5f;
-                _actor.transform.position = _origin + _offset * knock;
+                _actor.cur_transform_position = _origin + _offset * knock;
             }
         }
 

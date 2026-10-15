@@ -24,7 +24,7 @@ namespace SuperMech.Code
                 }
 
                 // 2. 职业差异化战斗行为
-                if (attacker.hasTrait(SuperMechTraits.ClassMechanic))
+                if (attacker.hasTrait(SuperMechTraits.ClassMech))
                 {
                     damage = ProcessMechanicAttack(attacker, target, damage);
                 }
@@ -40,7 +40,7 @@ namespace SuperMech.Code
                 {
                     damage = ProcessPsiAttack(attacker, target, damage);
                 }
-                else if (attacker.hasTrait(SuperMechTraits.ClassPower))
+                else if (attacker.hasTrait(SuperMechTraits.ClassMind))
                 {
                     damage = ProcessPowerAttack(attacker, target, damage);
                 }
@@ -75,7 +75,7 @@ namespace SuperMech.Code
             }
 
             // 远程优势：距离远时伤害+10%（模拟放风筝）
-            float dist = Vector3.Distance(attacker.transform.position, target.transform.position);
+            float dist = Vector3.Distance(attacker.cur_transform_position, target.cur_transform_position);
             if (dist > 1.5f) damage *= 1.1f;
 
             return damage;
@@ -97,7 +97,7 @@ namespace SuperMech.Code
                 damage *= 1.2f;
 
             // 近身优势：距离近时伤害+15%
-            float dist = Vector3.Distance(attacker.transform.position, target.transform.position);
+            float dist = Vector3.Distance(attacker.cur_transform_position, target.cur_transform_position);
             if (dist < 1.2f) damage *= 1.15f;
 
             return damage;
@@ -192,11 +192,11 @@ namespace SuperMech.Code
         public static string GetCombatStyle(Actor a)
         {
             if (a == null) return "";
-            if (a.hasTrait(SuperMechTraits.ClassMechanic)) return "远程精准·机械召唤";
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return "远程精准·机械召唤";
             if (a.hasTrait(SuperMechTraits.ClassMartial)) return "近身连击·气力爆发";
             if (a.hasTrait(SuperMechTraits.ClassMage)) return "施法高伤·元素克制";
             if (a.hasTrait(SuperMechTraits.ClassPsi)) return "精神穿透·控场减速";
-            if (a.hasTrait(SuperMechTraits.ClassPower)) return "元素爆发·高暴击";
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return "元素爆发·高暴击";
             return "普通战斗";
         }
     }

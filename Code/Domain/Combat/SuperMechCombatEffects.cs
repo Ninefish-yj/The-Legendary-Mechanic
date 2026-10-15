@@ -47,7 +47,7 @@ namespace SuperMech.Code
 
             try
             {
-                var tile = target.currentTile;
+                var tile = target.current_tile;
                 if (tile == null) return;
 
                 string groundFx = classId >= 0 && classId < _castGroundByClass.Length
@@ -87,7 +87,7 @@ namespace SuperMech.Code
 
             try
             {
-                var tile = target.currentTile;
+                var tile = target.current_tile;
                 if (tile == null) return;
 
                 // 击杀S阶及以上目标触发大爆炸

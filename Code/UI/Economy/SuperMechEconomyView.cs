@@ -162,7 +162,7 @@ namespace SuperMech.Code
             svRect.offsetMin = new Vector2(4, 4); svRect.offsetMax = new Vector2(-4, -36);
             _servicePanel.SetActive(false);
 
-            var svHint = SuperMechUiBuilder.AddText(_servicePanel.transform,
+            var svHint = SuperMechUiBuilder.AddText(_servicePanel,
                 LocalizedTextManager.getText("sm_ui_service_hint"), 12, TextAnchor.MiddleCenter, new Color(0.7f, 0.75f, 0.85f));
             var svHintRt = svHint.GetComponent<RectTransform>();
             svHintRt.anchorMin = Vector2.zero; svHintRt.anchorMax = Vector2.one;

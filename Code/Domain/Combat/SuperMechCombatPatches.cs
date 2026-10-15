@@ -215,13 +215,6 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (councilBonus - 1f));
                     }
-
-                    // v0.198 装备套装伤害加成
-                    var setBonus = SuperMechEquipSet.GetSetBonuses(attacker);
-                    if (setBonus.dmgBonus > 0)
-                    {
-                        target.data.health -= (int)(pDamage * setBonus.dmgBonus / 100f);
-                    }
                 }
 
                 // v0.76.0 集体伟力清算：清算期超A级个体受文明联合压制（受击伤害×1.3，原著巅峰之殇式清算）

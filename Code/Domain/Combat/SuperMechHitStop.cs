@@ -24,7 +24,7 @@ namespace SuperMech.Code
             if (attacker == null || target == null) return;
             if (damage < 5f) return; // 小伤害不触发
 
-            Vector3 pos = target.transform != null ? target.transform.position : Vector3.zero;
+            Vector3 pos = target.transform != null ? target.cur_transform_position : Vector3.zero;
 
             // 1. 命中停顿（大伤害或超A战斗时触发）
             bool bigHit = damage > 30f || SuperMechSupermA.IsSuperA(attacker) || SuperMechSupermA.IsSuperA(target);
@@ -114,16 +114,16 @@ namespace SuperMech.Code
         /// <summary>拖影残像（快速移动时生成）</summary>
         public static void SpawnAfterimage(Actor actor)
         {
-            if (!SuperMechConfig.CombatFeelEnabled || actor?.transform == null) return;
+            if (!SuperMechConfig.CombatFeelEnabled || actor?.avatar == null) return;
             EnsureRoot();
 
             var go = new GameObject("Afterimage", typeof(SpriteRenderer));
-            go.transform.position = actor.transform.position;
-            go.transform.localScale = actor.transform.localScale;
+            go.transform.position = actor.cur_transform_position;
+            go.transform.localScale = actor.avatar.transform.localScale;
             var sr = go.GetComponent<SpriteRenderer>();
             sr.color = new Color(0.6f, 0.8f, 1f, 0.4f);
             // 尝试复制单位的Sprite
-            var originalSr = actor.GetComponent<SpriteRenderer>();
+            var originalSr = actor.avatar.GetComponent<SpriteRenderer>();
             if (originalSr != null && originalSr.sprite != null)
             {
                 sr.sprite = originalSr.sprite;

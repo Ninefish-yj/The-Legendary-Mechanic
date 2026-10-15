@@ -164,9 +164,8 @@ namespace SuperMech.Code
         {
             // 收集所有超A并按战力排名
             var superAList = new List<(Actor actor, float power)>();
-            foreach (var kv in World.world.units)
+            foreach (var a in World.world.units)
             {
-                Actor a = kv.Value;
                 if (a != null && a.isAlive() && SuperMechSupermA.IsSuperA(a))
                 {
                     superAList.Add((a, SuperMechSupermA.GetPowerIndex(a)));
@@ -240,10 +239,10 @@ namespace SuperMech.Code
                 $"{item.cost} {LocalizedTextManager.getText("sm_ui_reputation_short")}", 10, () =>
                 {
                     Actor player = null;
-                    foreach (var kv in World.world.units)
+                    foreach (var a in World.world.units)
                     {
-                        if (kv.Value != null && kv.Value.isAlive() && SuperMechPlayer.IsPlayer(kv.Value))
-                        { player = kv.Value; break; }
+                        if (a != null && a.isAlive() && SuperMechPlayer.IsPlayer(a))
+                        { player = a; break; }
                     }
                     if (player != null && SuperMechSuperMAReputation.BuyItem(player, item.id))
                     {
@@ -309,11 +308,11 @@ namespace SuperMech.Code
 
         private string GetClassName(Actor a)
         {
-            if (a.hasTrait(SuperMechTraits.ClassMechanic)) return LocalizedTextManager.getText("trait_sm_class_mech");
+            if (a.hasTrait(SuperMechTraits.ClassMech)) return LocalizedTextManager.getText("trait_sm_class_mech");
             if (a.hasTrait(SuperMechTraits.ClassMartial)) return LocalizedTextManager.getText("trait_sm_class_martial");
             if (a.hasTrait(SuperMechTraits.ClassMage)) return LocalizedTextManager.getText("trait_sm_class_mage");
             if (a.hasTrait(SuperMechTraits.ClassPsi)) return LocalizedTextManager.getText("trait_sm_class_psi");
-            if (a.hasTrait(SuperMechTraits.ClassPower)) return LocalizedTextManager.getText("trait_sm_class_power");
+            if (a.hasTrait(SuperMechTraits.ClassMind)) return LocalizedTextManager.getText("trait_sm_class_power");
             return "?";
         }
 
