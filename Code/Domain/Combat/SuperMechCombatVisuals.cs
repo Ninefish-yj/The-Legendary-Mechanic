@@ -116,20 +116,32 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>弹道特效（能量弹飞行）</summary>
+        /// <summary>弹道特效（能量弹飞行 - 发光+拖尾+旋转）</summary>
         private static void SpawnProjectile(Vector3 from, Vector3 to, Color color, float duration)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.name = "Projectile";
+            go.name = "EnergyBolt";
             go.transform.position = from;
-            go.transform.localScale = Vector3.one * 0.12f;
+            go.transform.localScale = new Vector3(0.08f, 0.08f, 0.2f); // 拉长为子弹形
             var renderer = go.GetComponent<Renderer>();
-            renderer.material = new Material(Shader.Find("Sprites/Default"));
-            renderer.material.color = new Color(color.r, color.g, color.b, 0.9f);
+            // 发光材质（Unlit不受光照影响，更亮）
+            var mat = new Material(Shader.Find("Unlit/Color"));
+            mat.color = new Color(color.r, color.g, color.b, 1f);
+            renderer.material = mat;
             Object.Destroy(go.GetComponent<Collider>());
 
+            // 拖尾LineRenderer
+            var trail = go.AddComponent<LineRenderer>();
+            trail.material = new Material(Shader.Find("Unlit/Color"));
+            trail.material.color = new Color(color.r, color.g, color.b, 0.6f);
+            trail.startWidth = 0.06f;
+            trail.endWidth = 0f;
+            trail.positionCount = 2;
+            trail.SetPosition(0, from);
+            trail.SetPosition(1, from);
+
             var mover = go.AddComponent<ProjectileMover>();
-            mover.Init(go, from, to, duration);
+            mover.Init(go, from, to, duration, trail);
         }
 
         /// <summary>挥砍弧线特效</summary>
@@ -455,7 +467,7 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>弹道移动驱动（能量弹从攻击者飞向目标）</summary>
+        /// <summary>弹道移动驱动（能量弹从攻击者飞向目标 - 带拖尾+旋转）</summary>
         private class ProjectileMover : MonoBehaviour
         {
             private GameObject _go;
@@ -463,10 +475,13 @@ namespace SuperMech.Code
             private Vector3 _to;
             private float _duration;
             private float _life;
+            private LineRenderer _trail;
+            private Vector3 _lastPos;
 
-            public void Init(GameObject go, Vector3 from, Vector3 to, float duration)
+            public void Init(GameObject go, Vector3 from, Vector3 to, float duration, LineRenderer trail)
             {
                 _go = go; _from = from; _to = to; _duration = duration;
+                _trail = trail; _lastPos = from;
             }
 
             void Update()
@@ -474,9 +489,27 @@ namespace SuperMech.Code
                 _life += Time.deltaTime;
                 if (_life >= _duration) { Destroy(_go); Destroy(this); return; }
                 float t = _life / _duration;
-                transform.position = Vector3.Lerp(_from, _to, t);
-                // 尾迹缩放
-                transform.localScale = Vector3.one * (0.12f + Mathf.Sin(t * Mathf.PI) * 0.05f);
+                Vector3 newPos = Vector3.Lerp(_from, _to, t);
+                transform.position = newPos;
+
+                // 朝向运动方向
+                Vector3 dir = (newPos - _lastPos).normalized;
+                if (dir.sqrMagnitude > 0.001f)
+                {
+                    transform.rotation = Quaternion.LookRotation(dir, Vector3.up);
+                }
+
+                // 更新拖尾
+                if (_trail != null)
+                {
+                    _trail.SetPosition(0, newPos);
+                    _trail.SetPosition(1, _lastPos);
+                }
+                _lastPos = newPos;
+
+                // 脉动缩放
+                float pulse = 0.08f + Mathf.Sin(t * Mathf.PI * 4f) * 0.02f;
+                transform.localScale = new Vector3(pulse, pulse, 0.2f);
             }
         }
     }
