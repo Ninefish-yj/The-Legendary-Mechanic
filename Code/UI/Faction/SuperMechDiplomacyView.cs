@@ -87,6 +87,12 @@ namespace SuperMech.Code
             scrollRect.anchorMax = new Vector2(0.95f, 0.88f);
             scrollRect.offsetMin = Vector2.zero;
             scrollRect.offsetMax = Vector2.zero;
+            // v0.193 真正的滚动：添加ScrollRect + Mask
+            var sr = scrollGo.AddComponent<ScrollRect>();
+            var mask = scrollGo.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            var scrollImg = scrollGo.AddComponent<Image>();
+            scrollImg.color = new Color(0, 0, 0, 0);
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);
@@ -94,11 +100,18 @@ namespace SuperMech.Code
             contentRect.anchorMin = new Vector2(0, 1);
             contentRect.anchorMax = new Vector2(1, 1);
             contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.sizeDelta = new Vector2(0, 600);
+            sr.content = contentRect;
+            sr.horizontal = false;
+            sr.vertical = true;
+            sr.movementType = ScrollRect.MovementType.Clamped;
 
             // 获取玩家势力
             _playerFactionId = GetPlayerFactionId();
             var allFactions = SuperMechFaction.GetAllFactions();
+            int factionCount = 0;
+            foreach (var f in allFactions) if (f.id != _playerFactionId) factionCount++;
+            // v0.193 内容高度自适应：每行80 + 上下padding
+            contentRect.sizeDelta = new Vector2(0, Mathf.Max(400, factionCount * 85 + 20));
 
             float y = 0f;
             foreach (var faction in allFactions)

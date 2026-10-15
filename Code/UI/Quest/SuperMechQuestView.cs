@@ -99,21 +99,46 @@ namespace SuperMech.Code
                 tabRect.anchoredPosition = new Vector2(50 + i * 90, -55);
             }
 
-            // 内容区域（滚动文本）
+            // 内容区域（v0.193 真正的滚动文本：ScrollRect + Mask + 自适应高度Text）
+            var scrollGo = new GameObject("Scroll");
+            scrollGo.transform.SetParent(_panel.transform, false);
+            var scrollRectRt = scrollGo.AddComponent<RectTransform>();
+            scrollRectRt.anchorMin = new Vector2(0, 0);
+            scrollRectRt.anchorMax = new Vector2(1, 1);
+            scrollRectRt.offsetMin = new Vector2(15, 55);
+            scrollRectRt.offsetMax = new Vector2(-15, -75);
+            var sr = scrollGo.AddComponent<ScrollRect>();
+            var mask = scrollGo.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+
             var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(_panel.transform, false);
+            contentGo.transform.SetParent(scrollGo.transform, false);
             var contentRect = contentGo.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 0);
+            contentRect.anchorMin = new Vector2(0, 1);
             contentRect.anchorMax = new Vector2(1, 1);
-            contentRect.offsetMin = new Vector2(15, 55);
-            contentRect.offsetMax = new Vector2(-15, -75);
+            contentRect.pivot = new Vector2(0.5f, 1);
+            contentRect.sizeDelta = new Vector2(0, 400);
+            sr.content = contentRect;
+            sr.horizontal = false;
+            sr.vertical = true;
+            sr.movementType = ScrollRect.MovementType.Clamped;
+
             _contentText = contentGo.AddComponent<Text>();
             _contentText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _contentText.fontSize = 13;
             _contentText.alignment = TextAnchor.UpperLeft;
             _contentText.color = new Color(0.85f, 0.85f, 0.9f);
             _contentText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            _contentText.verticalOverflow = VerticalWrapMode.Overflow;
+            _contentText.verticalOverflow = VerticalWrapMode.Truncate;
+            var textRt = _contentText.GetComponent<RectTransform>();
+            textRt.anchorMin = Vector2.zero;
+            textRt.anchorMax = Vector2.one;
+            textRt.offsetMin = Vector2.zero;
+            textRt.offsetMax = Vector2.zero;
+            // v0.193 内容高度自适应
+            var fitter = contentGo.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // v0.185 底部操作按钮：一键接取/交付
             var acceptBtn = SuperMechUiSkin.MakeButton(_panel.transform, "一键接取", 12, () => AcceptAllQuests());

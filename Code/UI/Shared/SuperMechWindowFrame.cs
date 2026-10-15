@@ -132,8 +132,8 @@ namespace SuperMech.Code
             t.alignment = align;
             t.color = color ?? new Color(0.85f, 0.85f, 0.85f, 1f);
             t.text = text;
-            t.horizontalOverflow = HorizontalWrapMode.Overflow;
-            t.verticalOverflow = VerticalWrapMode.Overflow;
+            t.horizontalOverflow = HorizontalWrapMode.Wrap;
+            t.verticalOverflow = VerticalWrapMode.Truncate;
             return t;
         }
 
@@ -164,7 +164,8 @@ namespace SuperMech.Code
             lt.alignment = TextAnchor.MiddleCenter;
             lt.color = Color.white;
             lt.text = text;
-            lt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            lt.horizontalOverflow = HorizontalWrapMode.Wrap;
+            lt.verticalOverflow = VerticalWrapMode.Truncate;
             btn.onClick.AddListener(() => { try { onClick?.Invoke(); } catch (Exception e) { Debug.LogError("[超神机械师] 按钮异常: " + e.Message); } });
             return btn;
         }

@@ -88,13 +88,31 @@ namespace SuperMech.Code
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.text = LocalizedTextManager.getText("sm_ui_market_title");
 
+            // v0.193 滚动文本区域
+            var scrollGo = new GameObject("Scroll");
+            scrollGo.transform.SetParent(panelGo.transform, false);
+            var scrollRt = scrollGo.AddComponent<RectTransform>();
+            scrollRt.anchorMin = new Vector2(0, 0);
+            scrollRt.anchorMax = new Vector2(1, 1);
+            scrollRt.offsetMin = new Vector2(10, 55);
+            scrollRt.offsetMax = new Vector2(-10, -55);
+            var sr = scrollGo.AddComponent<ScrollRect>();
+            var mask = scrollGo.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
+
             var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(panelGo.transform, false);
+            contentGo.transform.SetParent(scrollGo.transform, false);
             var contentRect = contentGo.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 0);
+            contentRect.anchorMin = new Vector2(0, 1);
             contentRect.anchorMax = new Vector2(1, 1);
-            contentRect.offsetMin = new Vector2(10, 55);
-            contentRect.offsetMax = new Vector2(-10, -55);
+            contentRect.pivot = new Vector2(0.5f, 1);
+            contentRect.sizeDelta = new Vector2(0, 400);
+            sr.content = contentRect;
+            sr.horizontal = false;
+            sr.vertical = true;
+            sr.movementType = ScrollRect.MovementType.Clamped;
+
             _marketText = contentGo.AddComponent<Text>();
             _marketText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _marketText.fontSize = 12;
@@ -102,6 +120,13 @@ namespace SuperMech.Code
             _marketText.alignment = TextAnchor.UpperLeft;
             _marketText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _marketText.verticalOverflow = VerticalWrapMode.Truncate;
+            var marketTextRt = _marketText.GetComponent<RectTransform>();
+            marketTextRt.anchorMin = Vector2.zero;
+            marketTextRt.anchorMax = Vector2.one;
+            marketTextRt.offsetMin = Vector2.zero;
+            marketTextRt.offsetMax = Vector2.zero;
+            var fitter = contentGo.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             var refreshBtnGo = new GameObject("RefreshBtn");
             refreshBtnGo.transform.SetParent(panelGo.transform, false);

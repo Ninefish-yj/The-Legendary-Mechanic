@@ -109,6 +109,11 @@ namespace SuperMech.Code
             scrollRect.anchorMax = new Vector2(0.95f, 0.85f);
             scrollRect.offsetMin = Vector2.zero;
             scrollRect.offsetMax = Vector2.zero;
+            // v0.193 真正的滚动
+            var sr = scrollGo.AddComponent<ScrollRect>();
+            var mask = scrollGo.AddComponent<Mask>();
+            mask.showMaskGraphic = false;
+            scrollGo.AddComponent<Image>().color = new Color(0, 0, 0, 0);
 
             var contentGo = new GameObject("Content");
             contentGo.transform.SetParent(scrollGo.transform, false);
@@ -116,7 +121,10 @@ namespace SuperMech.Code
             contentRect.anchorMin = new Vector2(0, 1);
             contentRect.anchorMax = new Vector2(1, 1);
             contentRect.pivot = new Vector2(0.5f, 1);
-            contentRect.sizeDelta = new Vector2(0, 400);
+            sr.content = contentRect;
+            sr.horizontal = false;
+            sr.vertical = true;
+            sr.movementType = ScrollRect.MovementType.Clamped;
 
             float y = 0f;
             var services = SuperMechEconomyService.GetAvailableServices(_selectedActor);
@@ -124,6 +132,8 @@ namespace SuperMech.Code
             {
                 CreateServiceButton(contentGo.transform, service, ref y);
             }
+            // v0.193 内容高度自适应
+            contentRect.sizeDelta = new Vector2(0, Mathf.Max(300, y + 20));
 
             // 关闭按钮
             var closeGo = new GameObject("CloseBtn");
