@@ -174,9 +174,8 @@ namespace SuperMech.Code
             {
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(color);
                 string valueText = "▸ " + LocalizedTextManager.getText("sm_ui_open");
-                // 不传iconPath，避免使用原版游戏图标（如保龄球图）
                 var row = window.showStatRow(label, valueText,
-                    colorHex, MetaType.None, -1L, pColorText: false, null, null, null, pLocalize: false);
+                    colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
                 // v0.194 修复：延迟添加的行需手动激活
                 if (row != null) row.gameObject.SetActive(true);
                 if (row != null)
