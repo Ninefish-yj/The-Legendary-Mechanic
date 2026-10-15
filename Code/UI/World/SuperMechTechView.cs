@@ -27,7 +27,7 @@ namespace SuperMech.Code
 
         void Awake()
         {
-            try { BuildUI(); SuperMechTech.Init(); }
+            try { SuperMechTech.Init(); BuildUI(); }
             catch (System.Exception e) { Debug.LogError("[超神机械师] TechView初始化失败: " + e.Message + "\n" + e.StackTrace); }
         }
 
@@ -273,7 +273,7 @@ namespace SuperMech.Code
         private void UpdateKingdomName()
         {
             var k = SelectedKingdom;
-            string kName = k != null ? k.data.name : LocalizedTextManager.getText("sm_ui_none");
+            string kName = (k != null && k.data != null) ? k.data.name : LocalizedTextManager.getText("sm_ui_none");
             // v0.175.1: 显示文明当前时代
             SuperMechTech.Era era = SuperMechTech.Era.PreIndustrial;
             if (k != null) era = SuperMechTech.GetEra(k.id);
