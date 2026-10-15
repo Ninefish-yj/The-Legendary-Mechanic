@@ -231,13 +231,13 @@ namespace SuperMech.Code
             return 1f + (layer - BreakthroughLayer) * 0.05f;
         }
 
-        /// <summary>获取层次名称（v0.194修复：不用动态key，避免显示未翻译的key）</summary>
+        /// <summary>获取层次名称（v0.194修复：不用动态key，直接返回LvX格式）</summary>
         public static string GetLayerName(int layer)
         {
             if (layer <= 0) return LocalizedTextManager.getText("sm_qi_layer_0");
             if (layer >= BreakthroughLayer)
-                return $"{LocalizedTextManager.getText("sm_qi_layer_breakthrough")}·第{layer}层";
-            return $"第{layer}层";
+                return $"Lv{layer}（{LocalizedTextManager.getText("sm_qi_layer_breakthrough")}）";
+            return $"Lv{layer}";
         }
 
         /// <summary>获取层次描述文本</summary>
