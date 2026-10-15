@@ -160,6 +160,8 @@ namespace SuperMech.Code
             cdTime /= SuperMechVirtualGenesis.GetCraftSpeedMultiplier(maker);
             if (SuperMechVirtualGenesis.CanInstantCraft(maker)) cdTime = 0f;
             _cooldown[maker.id] = now + cdTime;
+            // v0.193 任务系统：制作物品进度追踪
+            SuperMechQuestSystem.UpdateQuestProgress(maker, SuperMechQuestSystem.QuestObjectiveType.CraftItem, recipeId, 1);
             return true;
         }
 

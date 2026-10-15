@@ -232,6 +232,9 @@ namespace SuperMech.Code
                         FirstBreakthroughManager.ApplyBonus(a, targetIdx);
                         Debug.Log($"[超神机械师]【首位突破】{a.name} 是全图第一个突破到{rankName}的单位！");
                     }
+
+                    // v0.193 任务系统：阶位提升进度追踪
+                    SuperMechQuestSystem.UpdateQuestProgress(a, SuperMechQuestSystem.QuestObjectiveType.ReachRank, rankName, 1);
                 }
 
                 ApplyRankStats(a, targetIdx);

@@ -571,13 +571,17 @@ namespace SuperMech.Code
             return list;
         }
 
-        public static void DiscoverPlanet(string planetId, string discoverer)
+        public static void DiscoverPlanet(string planetId, string discoverer, Actor explorer = null)
         {
             if (_planets.TryGetValue(planetId, out var p))
             {
+                bool wasNew = !p.discovered;
                 p.discovered = true;
                 if (string.IsNullOrEmpty(p.ownerKingdom))
                     p.ownerKingdom = discoverer;
+                // v0.193 任务系统：星球探索进度追踪
+                if (wasNew && explorer != null)
+                    SuperMechQuestSystem.UpdateQuestProgress(explorer, SuperMechQuestSystem.QuestObjectiveType.ExplorePlanet, planetId, 1);
             }
         }
 

@@ -25,6 +25,8 @@ namespace SuperMech.Code
         {
             if (a == null || amount <= 0) return;
             _balance[a.id] = Mathf.Clamp(GetInal(a) + amount, 0, 99999999);
+            // v0.193 任务系统：获得伊纳尔进度追踪
+            SuperMechQuestSystem.UpdateQuestProgress(a, SuperMechQuestSystem.QuestObjectiveType.EarnInal, "any", amount);
         }
 
         public static bool SpendInal(Actor a, int amount)

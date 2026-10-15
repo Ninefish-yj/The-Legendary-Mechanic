@@ -316,6 +316,8 @@ namespace SuperMech.Code
                 {
                     actor = a, knowledgeId = knowledgeId, knowledgeName = kname
                 });
+                // v0.193 任务系统：知识学习进度追踪
+                SuperMechQuestSystem.UpdateQuestProgress(a, SuperMechQuestSystem.QuestObjectiveType.LearnKnowledge, knowledgeId, 1);
             }
             return added;
         }
