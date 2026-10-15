@@ -466,6 +466,14 @@ namespace SuperMech.Code
             }
             catch (System.Exception) { }
 
+            // v0.201.10 血量下限保护：避免直接扣血导致负数显示和不死bug
+            // 原版getHit在扣血前检查!hasHealth()，若血量已<=0会直接return，不触发死亡
+            // 所以下限设为1，让原版changeHealth正常扣血后hasHealth()返回false，加入死亡队列
+            if (target.data != null && target.data.health < 1)
+            {
+                target.data.health = 1;
+            }
+
             return true;
         }
 
