@@ -97,7 +97,9 @@ namespace SuperMech.Code
             titleBarRect.sizeDelta = new Vector2(0, TitleBarHeight);
             titleBarRect.anchoredPosition = new Vector2(0, -BorderWidth);
             var titleBarImg = titleBarGo.AddComponent<Image>();
-            titleBarImg.color = new Color(0.04f, 0.06f, 0.10f, 0.98f);
+            titleBarImg.sprite = SuperMechUiSkin.Section;
+            titleBarImg.type = Image.Type.Sliced;
+            titleBarImg.color = Color.white;
             var titleDrag = titleBarGo.AddComponent<SuperMechDragHandler>();
             titleDrag.Target = this;
 
@@ -158,7 +160,7 @@ namespace SuperMech.Code
             resizeHandler.Target = this;
             // 伸缩手柄上的斜线纹理（用三条线表示）
             var resizeText = SuperMechUiSkin.MakeText(resizeGo.transform, "⤡", 12, TextAnchor.MiddleCenter);
-            resizeText.color = new Color(1, 1, 1, 0.6f);
+            resizeText.color = SuperMechUiSkin.TextDim;
             var resizeTextRect = resizeText.GetComponent<RectTransform>();
             resizeTextRect.anchorMin = Vector2.zero;
             resizeTextRect.anchorMax = Vector2.one;

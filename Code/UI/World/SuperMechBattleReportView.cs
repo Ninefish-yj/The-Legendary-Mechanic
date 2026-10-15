@@ -55,7 +55,9 @@ namespace SuperMech.Code
             panelRect.pivot = new Vector2(0.5f, 0.5f);
             panelRect.sizeDelta = new Vector2(560, 480);
             var panelImg = panelGo.AddComponent<Image>();
-            panelImg.color = new Color(0.05f, 0.08f, 0.15f, 0.98f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -68,7 +70,7 @@ namespace SuperMech.Code
             var titleTxt = titleGo.AddComponent<Text>();
             titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleTxt.fontSize = 18;
-            titleTxt.color = new Color(1f, 0.85f, 0.4f);
+            titleTxt.color = SuperMechUiSkin.AccentColor;
             titleTxt.alignment = TextAnchor.MiddleCenter;
             titleTxt.text = LocalizedTextManager.getText("sm_ui_battle_report_title");
 
@@ -126,7 +128,7 @@ namespace SuperMech.Code
                 er.sizeDelta = new Vector2(0, 60);
                 var emptyTxt = SuperMechUiSkin.MakeText(emptyGo.transform,
                     LocalizedTextManager.getText("sm_ui_battle_report_empty"), 14, TextAnchor.MiddleCenter);
-                emptyTxt.color = new Color(0.5f, 0.55f, 0.65f);
+                emptyTxt.color = SuperMechUiSkin.TextDim;
                 y -= 70f;
             }
             else
@@ -143,7 +145,7 @@ namespace SuperMech.Code
                     hr.sizeDelta = new Vector2(0, 24);
                     var histTxt = SuperMechUiSkin.MakeText(histGo.transform,
                         LocalizedTextManager.getText("sm_ui_battle_report_history"), 12, TextAnchor.MiddleLeft);
-                    histTxt.color = new Color(0.7f, 0.75f, 0.85f);
+                    histTxt.color = SuperMechUiSkin.TextColor;
                     y -= 30f;
                 }
 
@@ -182,7 +184,7 @@ namespace SuperMech.Code
             string title = $"<b>{r.factionA}</b>  <color=#93A4BC>VS</color>  <b>{r.factionB}</b>  <color={resultColor}>[{r.result}]</color>";
             if (isCurrent) title += "  <color=#ffd700>(" + LocalizedTextManager.getText("sm_ui_battle_report_ongoing") + ")</color>";
             var titleTxt = SuperMechUiSkin.MakeText(titleGo.transform, title, 13, TextAnchor.MiddleLeft);
-            titleTxt.color = new Color(0.9f, 0.92f, 0.96f);
+            titleTxt.color = SuperMechUiSkin.TextColor;
             titleTxt.horizontalOverflow = HorizontalWrapMode.Wrap;
 
             // 伤亡行
@@ -199,7 +201,7 @@ namespace SuperMech.Code
             if (r.superACasualtiesB > 0) casualty += $" (<color=#ffd700>超A{r.superACasualtiesB}</color>)";
             casualty += $"\n<color=#93A4BC>第{r.year}年</color>";
             var casualtyTxt = SuperMechUiSkin.MakeText(casualtyGo.transform, casualty, 11, TextAnchor.UpperLeft);
-            casualtyTxt.color = new Color(0.75f, 0.8f, 0.9f);
+            casualtyTxt.color = SuperMechUiSkin.TextDim;
             casualtyTxt.horizontalOverflow = HorizontalWrapMode.Wrap;
             var cRect = casualtyTxt.GetComponent<RectTransform>();
             cRect.anchorMin = Vector2.zero; cRect.anchorMax = Vector2.one;
