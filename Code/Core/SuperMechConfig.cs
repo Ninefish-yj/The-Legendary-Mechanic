@@ -37,6 +37,8 @@ namespace SuperMech.Code
         // === 圣所钥匙机制（v0.46.0，原著向）===
         /// <summary>高阶单位死亡掉落圣所钥匙材料开关</summary>
         public static bool SanctuaryKeyDropEnabled = true;
+        /// <summary>v0.197 战斗视觉特效开关（伤害飘字/职业颜色/屏幕震动）</summary>
+        public static bool CombatEffectsEnabled = true;
         /// <summary>掉落钥匙材料的最低阶位（0=F~13=X），默认10=S阶</summary>
         public static int KeyDropMinRank = 10;
         /// <summary>多少块钥匙材料合成1把圣所钥匙（默认3）</summary>

@@ -54,6 +54,12 @@ namespace SuperMech.Code
                     try { SuperMechSkillRuntime.TryCastSkill(attacker, target); } catch (System.Exception e) { if (!_warnedSkill) { _warnedSkill = true; Debug.LogWarning($"[超神机械师] 技能释放异常(仅首次): {e.Message}"); } }
                 }
 
+                // v0.197 战斗特效：攻击命中时显示职业施法特效
+                if (attacker != null && attacker.isAlive())
+                {
+                    SuperMechCombatEffects.OnAttackHit(attacker, target);
+                }
+
                 // v0.112.0 法术自动释放：学会法术的单位在战斗中自动施法（有冷却控制）
                 if (attacker != null && attacker.isAlive())
                 {
@@ -488,6 +494,9 @@ namespace SuperMech.Code
 
                 // v0.196 战报系统：记录战争伤亡
                 SuperMechBattleReport.OnUnitKilled(killer, target);
+
+                // v0.197 战斗特效：击杀时显示爆炸/经验特效
+                SuperMechCombatEffects.OnKill(killer, target);
 
                 // v0.76.48 圣所钥匙材料掉落接线（原著：击杀S阶及以上超能者掉钥匙材料，异能/念力系高阶死亡额外掉落）
                 if (SuperMechConfig.SanctuaryKeyDropEnabled)
