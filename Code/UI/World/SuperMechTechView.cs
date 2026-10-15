@@ -43,7 +43,9 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 28);
             titleRect.anchoredPosition = Vector2.zero;
             var titleImg = titleGo.AddComponent<Image>();
-            titleImg.color = new Color(0.08f, 0.1f, 0.16f, 0.95f);
+            titleImg.sprite = SuperMechUiSkin.Section;
+            titleImg.type = Image.Type.Sliced;
+            titleImg.color = Color.white;
 
             var titleTextGo = new GameObject("Title");
             titleTextGo.transform.SetParent(titleGo.transform, false);
@@ -53,7 +55,7 @@ namespace SuperMech.Code
             var titleText = titleTextGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 14;
-            titleText.color = new Color(0.8f, 0.9f, 1f);
+            titleText.color = SuperMechUiSkin.TextColor;
             titleText.alignment = TextAnchor.MiddleLeft;
             titleText.fontStyle = FontStyle.Bold;
             titleText.text = LocalizedTextManager.getText("sm_ui_civ_tech_tree");
@@ -78,7 +80,7 @@ namespace SuperMech.Code
             prevRect.sizeDelta = new Vector2(24, 0);
             var prevBtn = prevBtnGo.AddComponent<Button>();
             var prevImg = prevBtnGo.AddComponent<Image>();
-            prevImg.color = new Color(0.15f, 0.2f, 0.3f, 0.9f);
+            prevImg.color = SuperMechUiSkin.ButtonNormal;
             var prevTxtGo = new GameObject("Label");
             prevTxtGo.transform.SetParent(prevBtnGo.transform, false);
             var prevTxtRect = prevTxtGo.AddComponent<RectTransform>();
@@ -97,7 +99,9 @@ namespace SuperMech.Code
             klRect.anchorMin = new Vector2(0, 0); klRect.anchorMax = new Vector2(1, 1);
             klRect.offsetMin = new Vector2(28, 0); klRect.offsetMax = new Vector2(-28, 0);
             var klImg = kingdomLabelGo.AddComponent<Image>();
-            klImg.color = new Color(0.08f, 0.1f, 0.15f, 0.9f);
+            klImg.sprite = SuperMechUiSkin.Card;
+            klImg.type = Image.Type.Sliced;
+            klImg.color = Color.white;
             // v0.194 修复：Text必须放在子物体上，同一物体不能同时有Image和Text
             var klTextGo = new GameObject("Label");
             klTextGo.transform.SetParent(kingdomLabelGo.transform, false);
@@ -107,7 +111,7 @@ namespace SuperMech.Code
             _kingdomLabelText = klTextGo.AddComponent<Text>();
             _kingdomLabelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _kingdomLabelText.fontSize = 11;
-            _kingdomLabelText.color = new Color(0.8f, 0.9f, 1f);
+            _kingdomLabelText.color = SuperMechUiSkin.TextColor;
             _kingdomLabelText.alignment = TextAnchor.MiddleCenter;
 
             // 右箭头
@@ -118,7 +122,7 @@ namespace SuperMech.Code
             nextRect.sizeDelta = new Vector2(24, 0);
             var nextBtn = nextBtnGo.AddComponent<Button>();
             var nextImg = nextBtnGo.AddComponent<Image>();
-            nextImg.color = new Color(0.15f, 0.2f, 0.3f, 0.9f);
+            nextImg.color = SuperMechUiSkin.ButtonNormal;
             var nextTxtGo = new GameObject("Label");
             nextTxtGo.transform.SetParent(nextBtnGo.transform, false);
             var nextTxtRect = nextTxtGo.AddComponent<RectTransform>();
@@ -140,7 +144,9 @@ namespace SuperMech.Code
             barRect.sizeDelta = new Vector2(0, 30);
             barRect.anchoredPosition = new Vector2(0, -28);
             var barImg = barGo.AddComponent<Image>();
-            barImg.color = new Color(0.06f, 0.08f, 0.12f, 0.9f);
+            barImg.sprite = SuperMechUiSkin.ProgressBg;
+            barImg.type = Image.Type.Sliced;
+            barImg.color = Color.white;
 
             string[] branches = { "sm_ui_tech_energy", "sm_ui_tech_space", "sm_ui_tech_info", "sm_ui_tech_mech", "sm_ui_tech_bio", "sm_ui_tech_military" };
             for (int i = 0; i < branches.Length; i++)
@@ -154,7 +160,9 @@ namespace SuperMech.Code
                 btnRect.offsetMax = Vector2.zero;
                 var btn = btnGo.AddComponent<Button>();
                 var btnImg = btnGo.AddComponent<Image>();
-                btnImg.color = i == 0 ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.12f, 0.15f, 0.2f, 0.9f);
+                btnImg.sprite = i == 0 ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                btnImg.type = Image.Type.Sliced;
+                btnImg.color = Color.white;
                 // Text必须放在子对象上：Image和Text都是Graphic，同一GameObject只能有一个Graphic
                 var txtGo = new GameObject("Label");
                 txtGo.transform.SetParent(btnGo.transform, false);
@@ -256,7 +264,9 @@ namespace SuperMech.Code
             rbRect.anchoredPosition = new Vector2(0, 6);
             _researchBtn = researchBtnGo.AddComponent<Button>();
             var rbImg = researchBtnGo.AddComponent<Image>();
-            rbImg.color = new Color(0.2f, 0.5f, 0.3f, 0.9f);
+            rbImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            rbImg.type = Image.Type.Sliced;
+            rbImg.color = Color.white;
             // Text必须放在子对象上：Image和Text都是Graphic，同一GameObject只能有一个Graphic
             var rbTxtGo = new GameObject("Label");
             rbTxtGo.transform.SetParent(researchBtnGo.transform, false);
@@ -330,7 +340,12 @@ namespace SuperMech.Code
                 {
                     var child = barGo.GetChild(i);
                     var img = child.GetComponent<Image>();
-                    if (img != null) img.color = i == idx ? new Color(0.2f, 0.4f, 0.7f, 0.9f) : new Color(0.12f, 0.15f, 0.2f, 0.9f);
+                    if (img != null)
+                    {
+                        img.sprite = i == idx ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                        img.type = Image.Type.Sliced;
+                        img.color = Color.white;
+                    }
                 }
             }
             RefreshTree();

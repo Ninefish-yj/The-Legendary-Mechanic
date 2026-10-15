@@ -155,14 +155,16 @@ namespace SuperMech.Code
             btnRect.sizeDelta = new Vector2(0, 44);
             btnRect.anchoredPosition = new Vector2(0, 6);
             var btnImg = btnGo.AddComponent<Image>();
-            btnImg.color = new Color(0.15f, 0.25f, 0.45f, 0.95f);
+            btnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            btnImg.type = Image.Type.Sliced;
+            btnImg.color = Color.white;
             _fuseBtn = btnGo.AddComponent<Button>();
-            var btnColors = _fuseBtn.colors;
-            btnColors.normalColor = Color.white;
-            btnColors.highlightedColor = new Color(0.8f, 0.9f, 1f, 1f);
-            btnColors.pressedColor = new Color(0.5f, 0.6f, 0.8f, 1f);
-            btnColors.disabledColor = new Color(0.3f, 0.3f, 0.3f, 0.5f);
-            _fuseBtn.colors = btnColors;
+            _fuseBtn.targetGraphic = btnImg;
+            _fuseBtn.transition = Selectable.Transition.SpriteSwap;
+            var fss = _fuseBtn.spriteState;
+            fss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            fss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            _fuseBtn.spriteState = fss;
             _fuseBtn.onClick.AddListener(OnFuseClick);
             _fuseBtn.interactable = false;
 

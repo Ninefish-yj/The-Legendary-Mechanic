@@ -36,7 +36,11 @@ namespace SuperMech.Code
             _panel = new GameObject("RankingPanel");
             _panel.transform.SetParent(transform, false);
             var panelImg = _panel.AddComponent<Image>();
-            panelImg.color = new Color(0.12f, 0.14f, 0.18f, 0.95f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
+            // v0.202 装饰角标
+            SuperMechUiSkin.AddCornerDecorations(panelRect, 16f, 2f);
             var panelRect = _panel.GetComponent<RectTransform>();
             panelRect.anchorMin = new Vector2(0.5f, 0.5f);
             panelRect.anchorMax = new Vector2(0.5f, 0.5f);
@@ -47,7 +51,9 @@ namespace SuperMech.Code
             var titleBar = new GameObject("TitleBar");
             titleBar.transform.SetParent(_panel.transform, false);
             var titleImg = titleBar.AddComponent<Image>();
-            titleImg.color = new Color(0.18f, 0.22f, 0.28f, 1f);
+            titleImg.sprite = SuperMechUiSkin.Section;
+            titleImg.type = Image.Type.Sliced;
+            titleImg.color = Color.white;
             var titleRect = titleBar.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0, 1);
             titleRect.anchorMax = new Vector2(1, 1);
@@ -61,7 +67,7 @@ namespace SuperMech.Code
             titleText.rectTransform.anchorMax = Vector2.one;
             titleText.rectTransform.offsetMin = new Vector2(40, 0);
             titleText.rectTransform.offsetMax = new Vector2(-40, 0);
-            titleText.color = new Color(1f, 0.85f, 0.4f, 1f);
+            titleText.color = SuperMechUiSkin.AccentColor;
 
             // 关闭按钮
             var closeBtn = SuperMechUiSkin.MakeButton(_panel.transform, "X", 14, Close);
@@ -221,7 +227,9 @@ namespace SuperMech.Code
             rowRect.pivot = new Vector2(0.5f, 1);
 
             var rowImg = rowGo.AddComponent<Image>();
-            rowImg.color = new Color(0.2f, 0.25f, 0.3f, 0.6f);
+            rowImg.sprite = SuperMechUiSkin.Card;
+            rowImg.type = Image.Type.Sliced;
+            rowImg.color = Color.white;
 
             // 物品名称和描述
             string name = LocalizedTextManager.getText(item.nameKey);
