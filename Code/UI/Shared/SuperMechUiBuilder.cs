@@ -213,5 +213,71 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
 
             return go;
         }
+
+        /// <summary>v0.195 创建带页签的面板，返回内容区RectTransform（页签切换时自动重绘）</summary>
+        public static RectTransform CreateTabbedPanel(RectTransform parent, string[] tabLabels, int defaultTab, Action<int, RectTransform> onDrawTab)
+        {
+            // 页签栏
+            var tabBarGo = CreateObject("TabBar", parent, typeof(RectTransform), typeof(Image));
+            var tabBarRt = AddRectTransform(tabBarGo);
+            tabBarRt.anchorMin = new Vector2(0, 1);
+            tabBarRt.anchorMax = new Vector2(1, 1);
+            tabBarRt.pivot = new Vector2(0.5f, 1);
+            tabBarRt.sizeDelta = new Vector2(0, 34);
+            tabBarRt.anchoredPosition = Vector2.zero;
+            var tabBarImg = tabBarGo.GetComponent<Image>();
+            tabBarImg.color = new Color(0.04f, 0.06f, 0.10f, 0.9f);
+            tabBarImg.raycastTarget = true;
+
+            // 内容区
+            var contentGo = CreateObject("TabContent", parent, typeof(RectTransform));
+            var contentRt = AddRectTransform(contentGo);
+            contentRt.anchorMin = Vector2.zero;
+            contentRt.anchorMax = Vector2.one;
+            contentRt.offsetMin = new Vector2(4, 4);
+            contentRt.offsetMax = new Vector2(-4, -38);
+
+            int currentTab = defaultTab;
+            var tabButtons = new System.Collections.Generic.List<Button>();
+
+            // 创建页签按钮
+            float tabW = 1f / tabLabels.Length;
+            for (int i = 0; i < tabLabels.Length; i++)
+            {
+                int idx = i;
+                var tabGo = CreateObject("Tab" + i, tabBarGo.transform, typeof(RectTransform), typeof(Image), typeof(Button));
+                var tabRt = AddRectTransform(tabGo);
+                tabRt.anchorMin = new Vector2(idx * tabW, 0);
+                tabRt.anchorMax = new Vector2((idx + 1) * tabW, 1);
+                tabRt.offsetMin = new Vector2(2, 2);
+                tabRt.offsetMax = new Vector2(-2, -2);
+                var tabImg = tabGo.GetComponent<Image>();
+                tabImg.color = idx == currentTab ? new Color(0.15f, 0.25f, 0.4f, 0.95f) : new Color(0.08f, 0.12f, 0.18f, 0.8f);
+                var tabBtn = tabGo.GetComponent<Button>();
+                tabButtons.Add(tabBtn);
+                AddText(tabGo, tabLabels[i], 12, TextAnchor.MiddleCenter,
+                    idx == currentTab ? new Color(0.95f, 0.85f, 0.5f, 1f) : new Color(0.7f, 0.75f, 0.85f, 1f));
+
+                tabBtn.onClick.AddListener(() =>
+                {
+                    currentTab = idx;
+                    // 更新按钮样式
+                    for (int j = 0; j < tabButtons.Count; j++)
+                    {
+                        var img = tabButtons[j].GetComponent<Image>();
+                        img.color = j == idx ? new Color(0.15f, 0.25f, 0.4f, 0.95f) : new Color(0.08f, 0.12f, 0.18f, 0.8f);
+                        var txt = tabButtons[j].GetComponentInChildren<Text>();
+                        if (txt != null) txt.color = j == idx ? new Color(0.95f, 0.85f, 0.5f, 1f) : new Color(0.7f, 0.75f, 0.85f, 1f);
+                    }
+                    // 清除内容并重绘
+                    foreach (Transform c in contentRt) UnityEngine.Object.Destroy(c.gameObject);
+                    onDrawTab?.Invoke(idx, contentRt);
+                });
+            }
+
+            // 初始绘制
+            onDrawTab?.Invoke(currentTab, contentRt);
+            return contentRt;
+        }
     }
 }

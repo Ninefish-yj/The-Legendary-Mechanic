@@ -127,7 +127,11 @@ namespace SuperMech.Code
             _unequipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_unequip"), 11, OnUnequipClick);
             _modifyBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_modify"), 11, OnModifyClick);
             // v0.185 装备强化按钮
-            var enhanceBtn = SuperMechUiSkin.MakeButton(btnGo.transform, "强化", 11, OnEnhanceClick);
+            var enhanceBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_enhance"), 11, OnEnhanceClick);
+            // v0.195 宇宙宝物入口
+            var relicBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_cr_entry"), 11, () => {
+                if (SelectedActor != null) SuperMechWindowManager.OpenCosmicRelic(SelectedActor);
+            });
             UpdateButtonStates();
         }
 
