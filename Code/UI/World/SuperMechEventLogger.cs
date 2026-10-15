@@ -62,7 +62,7 @@ namespace SuperMech.Code
             var group = new HistoryGroupAsset
             {
                 id = "super_mech",
-                icon_path = "ui/Icons/iconPurpleBook"
+                icon_path = "ui/Icons/iconBooks"
             };
             AssetManager.history_groups.add(group);
             LocalizedTextManager.add("history_group_super_mech", LocalizedTextManager.getText("sm_ui_event_awakened"), pReplace: true);
