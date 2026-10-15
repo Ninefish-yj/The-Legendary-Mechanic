@@ -79,7 +79,9 @@ namespace SuperMech.Code
             panelRect.pivot = new Vector2(0.5f, 0.5f);
             panelRect.sizeDelta = new Vector2(650, 500);
             var panelImg = panelGo.AddComponent<Image>();
-            panelImg.color = new Color(0.05f, 0.08f, 0.15f, 0.98f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -94,7 +96,7 @@ namespace SuperMech.Code
             var font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             if (font != null) titleText.font = font;
             titleText.fontSize = 16;
-            titleText.color = new Color(1f, 0.85f, 0.4f);
+            titleText.color = SuperMechUiSkin.AccentColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.text = LocalizedTextManager.getText("sm_ui_forge_title");
 
@@ -110,7 +112,7 @@ namespace SuperMech.Code
             _unitDropdown = ddGo.AddComponent<Dropdown>();
             var ddImg = ddGo.GetComponent<Image>();
             if (ddImg == null) ddImg = ddGo.AddComponent<Image>();
-            ddImg.color = new Color(0.1f, 0.15f, 0.25f, 0.9f);
+            ddImg.color = SuperMechUiSkin.ButtonNormal;
             _unitDropdown.onValueChanged.AddListener(OnSelect);
 
             // 左侧：背包
@@ -122,11 +124,13 @@ namespace SuperMech.Code
             bagRect.offsetMin = new Vector2(10, 55);
             bagRect.offsetMax = new Vector2(-5, -85);
             var bagImg = bagGo.AddComponent<Image>();
-            bagImg.color = new Color(0.08f, 0.12f, 0.2f, 0.6f);
+            bagImg.sprite = SuperMechUiSkin.Card;
+            bagImg.type = Image.Type.Sliced;
+            bagImg.color = Color.white;
             _bagText = bagGo.AddComponent<Text>();
             if (font != null) _bagText.font = font;
             _bagText.fontSize = 11;
-            _bagText.color = new Color(0.8f, 0.9f, 1f);
+            _bagText.color = SuperMechUiSkin.TextColor;
             _bagText.alignment = TextAnchor.UpperLeft;
             _bagText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _bagText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -145,11 +149,13 @@ namespace SuperMech.Code
             forgeRect.offsetMin = new Vector2(5, 55);
             forgeRect.offsetMax = new Vector2(-10, -85);
             var forgeImg = forgeGo.AddComponent<Image>();
-            forgeImg.color = new Color(0.08f, 0.12f, 0.2f, 0.6f);
+            forgeImg.sprite = SuperMechUiSkin.Card;
+            forgeImg.type = Image.Type.Sliced;
+            forgeImg.color = Color.white;
             _forgeText = forgeGo.AddComponent<Text>();
             if (font != null) _forgeText.font = font;
             _forgeText.fontSize = 11;
-            _forgeText.color = new Color(0.8f, 0.9f, 1f);
+            _forgeText.color = SuperMechUiSkin.TextColor;
             _forgeText.alignment = TextAnchor.UpperLeft;
             _forgeText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _forgeText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -161,11 +167,6 @@ namespace SuperMech.Code
 
             // 底部按钮：锻造/强化/分解
             string[] btnNames = { "sm_ui_forge_craft", "sm_ui_forge_enhance", "sm_ui_forge_salvage" };
-            Color[] btnColors = {
-                new Color(0.8f, 0.5f, 0.2f, 0.9f),
-                new Color(0.3f, 0.6f, 0.8f, 0.9f),
-                new Color(0.8f, 0.3f, 0.3f, 0.9f)
-            };
             for (int i = 0; i < 3; i++)
             {
                 var btnGo = new GameObject($"ActionBtn_{i}");
@@ -177,8 +178,16 @@ namespace SuperMech.Code
                 btnRect.sizeDelta = new Vector2(0, 44);
                 btnRect.anchoredPosition = new Vector2(0, 10);
                 var btnImg = btnGo.AddComponent<Image>();
-                btnImg.color = btnColors[i];
+                btnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+                btnImg.type = Image.Type.Sliced;
+                btnImg.color = Color.white;
                 var btn = btnGo.AddComponent<Button>();
+                btn.targetGraphic = btnImg;
+                btn.transition = Selectable.Transition.SpriteSwap;
+                var bss = btn.spriteState;
+                bss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+                bss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+                btn.spriteState = bss;
                 int idx = i;
                 btn.onClick.AddListener(() => OnAction(idx));
                 var btnTextGo = new GameObject("Text");

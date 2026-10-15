@@ -165,7 +165,10 @@ namespace SuperMech.Code
             var bgRect = bg.GetComponent<RectTransform>();
             bgRect.anchorMin = Vector2.zero; bgRect.anchorMax = Vector2.one;
             bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
-            bg.GetComponent<Image>().color = new Color(0.02f, 0.03f, 0.08f, 0.95f);
+            var bgImg = bg.GetComponent<Image>();
+            bgImg.sprite = SuperMechUiSkin.Panel;
+            bgImg.type = Image.Type.Sliced;
+            bgImg.color = Color.white;
 
             // 顶部标题
             var title = SuperMechUiSkin.MakeText(content, LocalizedTextManager.getText("sm_ui_worldbeyond_title"), 18, TextAnchor.MiddleCenter);
@@ -174,7 +177,7 @@ namespace SuperMech.Code
             titleRect.pivot = new Vector2(0.5f, 1);
             titleRect.anchoredPosition = new Vector2(0, -8);
             titleRect.sizeDelta = new Vector2(0, 28);
-            title.color = new Color(0.6f, 0.8f, 1f);
+            title.color = SuperMechUiSkin.CyanColor;
 
             var quote = SuperMechUiSkin.MakeText(content,
                 LocalizedTextManager.getText("sm_wb_quote"),
@@ -184,7 +187,7 @@ namespace SuperMech.Code
             quoteRect.pivot = new Vector2(0.5f, 1);
             quoteRect.anchoredPosition = new Vector2(0, -38);
             quoteRect.sizeDelta = new Vector2(0, 20);
-            quote.color = new Color(0.5f, 0.5f, 0.6f);
+            quote.color = SuperMechUiSkin.TextDim;
 
             string[] subTabs = { LocalizedTextManager.getText("sm_wb_tab_messages"), LocalizedTextManager.getText("sm_wb_tab_monitor") };
             float subX = 10f;
@@ -248,7 +251,10 @@ namespace SuperMech.Code
             var sr = scrollGo.GetComponent<RectTransform>();
             sr.anchorMin = Vector2.zero; sr.anchorMax = Vector2.one;
             sr.offsetMin = new Vector2(0, 36); sr.offsetMax = Vector2.zero; // 底部留清除按钮空间
-            scrollGo.GetComponent<Image>().color = new Color(0.03f, 0.04f, 0.08f, 0.8f);
+            var scrollImg = scrollGo.GetComponent<Image>();
+            scrollImg.sprite = SuperMechUiSkin.Section;
+            scrollImg.type = Image.Type.Sliced;
+            scrollImg.color = Color.white;
 
             var contentGo = new GameObject("MsgContent", typeof(RectTransform));
             contentGo.transform.SetParent(scrollGo.transform, false);

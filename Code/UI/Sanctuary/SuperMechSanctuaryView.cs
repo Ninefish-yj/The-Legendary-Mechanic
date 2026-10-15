@@ -114,7 +114,9 @@ namespace SuperMech.Code
             topRect.sizeDelta = new Vector2(0, 50);
             topRect.anchoredPosition = Vector2.zero;
             var topImg = topGo.AddComponent<Image>();
-            topImg.color = new Color(0.05f, 0.08f, 0.15f, 0.9f);
+            topImg.sprite = SuperMechUiSkin.Section;
+            topImg.type = Image.Type.Sliced;
+            topImg.color = Color.white;
 
             var backGo = new GameObject("BackBtn");
             backGo.transform.SetParent(topGo.transform, false);
@@ -125,7 +127,9 @@ namespace SuperMech.Code
             backRect.sizeDelta = new Vector2(120, 34);
             backRect.anchoredPosition = new Vector2(12, 0);
             var backImg = backGo.AddComponent<Image>();
-            backImg.color = new Color(0.2f, 0.3f, 0.5f, 0.9f);
+            backImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            backImg.type = Image.Type.Sliced;
+            backImg.color = Color.white;
             var backBtn = backGo.AddComponent<Button>();
             var backText = SuperMechUiSkin.MakeText(backGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_back_world"), 13, TextAnchor.MiddleCenter);
@@ -140,7 +144,7 @@ namespace SuperMech.Code
 
             var titleText = SuperMechUiSkin.MakeText(topGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_space_title"), 18, TextAnchor.MiddleCenter);
-            titleText.color = new Color(0.4f, 0.7f, 1.0f);
+            titleText.color = SuperMechUiSkin.CyanColor;
             titleText.fontStyle = FontStyle.Bold;
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = Vector2.zero;
@@ -158,7 +162,9 @@ namespace SuperMech.Code
             infoRect.sizeDelta = new Vector2(120, 34);
             infoRect.anchoredPosition = new Vector2(-12, 0);
             var infoImg = infoGo.AddComponent<Image>();
-            infoImg.color = new Color(0.3f, 0.2f, 0.4f, 0.9f);
+            infoImg.sprite = SuperMechUiSkin.Card;
+            infoImg.type = Image.Type.Sliced;
+            infoImg.color = Color.white;
             var infoBtn = infoGo.AddComponent<Button>();
             var infoText = SuperMechUiSkin.MakeText(infoGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_info_library"), 13, TextAnchor.MiddleCenter);
@@ -183,7 +189,7 @@ namespace SuperMech.Code
 
             var hintText = SuperMechUiSkin.MakeText(_selectLayer.transform,
                 LocalizedTextManager.getText("sm_ui_san_select_hint"), 14, TextAnchor.UpperCenter);
-            hintText.color = new Color(0.6f, 0.8f, 1.0f);
+            hintText.color = SuperMechUiSkin.TextDim;
             var hintRect = hintText.GetComponent<RectTransform>();
             hintRect.anchorMin = new Vector2(0, 1);
             hintRect.anchorMax = new Vector2(1, 1);
@@ -215,7 +221,9 @@ namespace SuperMech.Code
                 entryRect.anchoredPosition = new Vector2(x, y);
 
                 var entryBg = entryGo.AddComponent<Image>();
-                entryBg.color = new Color(0.08f, 0.1f, 0.18f, 0.9f);
+                entryBg.sprite = SuperMechUiSkin.Card;
+            entryBg.type = Image.Type.Sliced;
+            entryBg.color = Color.white;
                 entryBg.raycastTarget = true;
 
                 // 边框（用稍大的背景模拟）
@@ -249,7 +257,7 @@ namespace SuperMech.Code
                 nameRect.anchoredPosition = new Vector2(0, -10);
 
                 var classText = SuperMechUiSkin.MakeText(entryGo.transform, cls, 11, TextAnchor.UpperCenter);
-                classText.color = new Color(0.8f, 0.8f, 0.8f);
+                classText.color = SuperMechUiSkin.TextColor;
                 var classRect = classText.GetComponent<RectTransform>();
                 classRect.anchorMin = new Vector2(0, 1);
                 classRect.anchorMax = new Vector2(1, 1);
@@ -258,7 +266,7 @@ namespace SuperMech.Code
                 classRect.anchoredPosition = new Vector2(0, -38);
 
                 var typeText = SuperMechUiSkin.MakeText(entryGo.transform, typeName, 10, TextAnchor.UpperCenter);
-                typeText.color = new Color(0.6f, 0.6f, 0.6f);
+                typeText.color = SuperMechUiSkin.TextDim;
                 var typeRect = typeText.GetComponent<RectTransform>();
                 typeRect.anchorMin = new Vector2(0, 1);
                 typeRect.anchorMax = new Vector2(1, 1);
