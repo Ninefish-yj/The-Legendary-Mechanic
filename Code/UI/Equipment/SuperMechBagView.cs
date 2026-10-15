@@ -147,6 +147,13 @@ namespace SuperMech.Code
                 return;
             }
 
+            // v0.198 显示当前套装进度
+            string setInfo = SuperMechEquipSet.GetSetInfo(SelectedActor);
+            if (!string.IsNullOrEmpty(setInfo))
+            {
+                _detailText.text = $"<b>{LocalizedTextManager.getText("sm_ui_set_bonus")}</b>\n{setInfo}";
+            }
+
             var bag = SuperMechEquipBag.GetBag(SelectedActor);
             if (bag == null) return;
 

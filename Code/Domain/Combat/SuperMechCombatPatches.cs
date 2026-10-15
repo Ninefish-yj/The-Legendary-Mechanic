@@ -160,6 +160,18 @@ namespace SuperMech.Code
                         target.data.health -= (int)(pDamage * specBonus);
                     }
                     SuperMechExclusiveTrait.TryInstantKill(attacker, target);
+                    // v0.198 装备套装效果：2件/4件激活伤害加成
+                    var setBonus = SuperMechEquipSet.GetSetBonuses(attacker);
+                    if (setBonus.dmgBonus > 0)
+                    {
+                        target.data.health -= (int)(pDamage * setBonus.dmgBonus * 0.01f);
+                    }
+                    // 防御方套装生命加成（通过减伤实现）
+                    var defSetBonus = SuperMechEquipSet.GetSetBonuses(target);
+                    if (defSetBonus.hpBonus > 0)
+                    {
+                        target.data.health += (int)(pDamage * defSetBonus.hpBonus * 0.005f);
+                    }
                     // v0.76.86 专精实际战斗机制
                     CombatEffects.ApplySpecialtyEffects(attacker, target, pDamage);
                     // 世界树入侵：星际联合军加成 / 世界树单位凶性
@@ -183,6 +195,13 @@ namespace SuperMech.Code
                     if (councilBonus != 1f)
                     {
                         target.data.health -= (int)(pDamage * (councilBonus - 1f));
+                    }
+
+                    // v0.198 装备套装伤害加成
+                    var setBonus = SuperMechEquipSet.GetSetBonuses(attacker);
+                    if (setBonus.dmgBonus > 0)
+                    {
+                        target.data.health -= (int)(pDamage * setBonus.dmgBonus / 100f);
                     }
                 }
 
