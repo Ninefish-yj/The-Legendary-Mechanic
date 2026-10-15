@@ -80,8 +80,15 @@ namespace SuperMech.Code
             _learnBtnText = SuperMechUiSkin.MakeText(btnGo.transform, LocalizedTextManager.getText("sm_ui_spell_entry"), 14, TextAnchor.MiddleCenter);
             _learnBtnText.color = Color.white;
             var btnImg = btnGo.AddComponent<Image>();
-            btnImg.color = new Color(0.3f, 0.5f, 0.8f);
+            btnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            btnImg.type = Image.Type.Sliced;
+            btnImg.color = Color.white;
             _learnBtn.targetGraphic = btnImg;
+            _learnBtn.transition = Selectable.Transition.SpriteSwap;
+            var lss = _learnBtn.spriteState;
+            lss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            lss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            _learnBtn.spriteState = lss;
             _learnBtn.onClick.AddListener(OnLearnClick);
             _learnBtn.interactable = false;
         }
@@ -112,7 +119,10 @@ namespace SuperMech.Code
                     _folded[branchName] = !_folded[branchName];
                     RefreshList();
                 });
-                header.GetComponent<Image>().color = new Color(0.2f, 0.3f, 0.5f);
+                var headerImg = header.GetComponent<Image>();
+                headerImg.sprite = SuperMechUiSkin.Section;
+                headerImg.type = Image.Type.Sliced;
+                headerImg.color = Color.white;
 
                 if (!_folded[branchName])
                 {
@@ -128,7 +138,12 @@ namespace SuperMech.Code
                             RefreshDetail();
                         });
                         if (_selectedId == spell.id)
-                            btn.GetComponent<Image>().color = new Color(0.3f, 0.4f, 0.6f);
+                        {
+                            var btnImg = btn.GetComponent<Image>();
+                            btnImg.sprite = SuperMechUiSkin.ButtonSelectedSprite;
+                            btnImg.type = Image.Type.Sliced;
+                            btnImg.color = Color.white;
+                        }
                     }
                 }
             }

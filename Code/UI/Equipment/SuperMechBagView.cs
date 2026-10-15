@@ -94,7 +94,10 @@ namespace SuperMech.Code
             detailRect.anchorMax = new Vector2(1, 0.18f);
             detailRect.offsetMin = new Vector2(8, 4);
             detailRect.offsetMax = new Vector2(-8, -4);
-            detailGo.AddComponent<Image>().color = new Color(0, 0, 0, 0.12f);
+            var detailImg = detailGo.AddComponent<Image>();
+            detailImg.sprite = SuperMechUiSkin.Section;
+            detailImg.type = Image.Type.Sliced;
+            detailImg.color = Color.white;
 
             // 详情文本（左侧70%）
             var textGo = new GameObject("DetailText");
@@ -165,7 +168,9 @@ namespace SuperMech.Code
                 var slotGo = new GameObject($"Slot_{equipId}");
                 slotGo.transform.SetParent(content, false);
                 var slotImg = slotGo.AddComponent<Image>();
-                slotImg.color = new Color(0.3f, 0.4f, 0.55f, 0.4f);
+                slotImg.sprite = SuperMechUiSkin.Card;
+                slotImg.type = Image.Type.Sliced;
+                slotImg.color = Color.white;
                 var slotBtn = slotGo.AddComponent<Button>();
 
                 var iconGo = new GameObject("Icon");
@@ -287,14 +292,24 @@ namespace SuperMech.Code
                 bool canEquip = !string.IsNullOrEmpty(_selectedItemId) && SelectedActor != null;
                 _equipBtn.interactable = canEquip;
                 var img = _equipBtn.GetComponent<Image>();
-                if (img != null) img.color = canEquip ? new Color(0.2f, 0.5f, 0.3f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                if (img != null)
+                {
+                    img.sprite = canEquip ? SuperMechUiSkin.ButtonNormalSprite : SuperMechUiSkin.ButtonDisabledSprite;
+                    img.type = Image.Type.Sliced;
+                    img.color = Color.white;
+                }
             }
             if (_unequipBtn != null)
             {
                 bool canUnequip = SelectedActor != null && SuperMechRelic.GetCurrentEquipIndex(SelectedActor) >= 0;
                 _unequipBtn.interactable = canUnequip;
                 var img = _unequipBtn.GetComponent<Image>();
-                if (img != null) img.color = canUnequip ? new Color(0.5f, 0.3f, 0.2f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                if (img != null)
+                {
+                    img.sprite = canUnequip ? SuperMechUiSkin.ButtonNormalSprite : SuperMechUiSkin.ButtonDisabledSprite;
+                    img.type = Image.Type.Sliced;
+                    img.color = Color.white;
+                }
             }
             if (_modifyBtn != null)
             {
@@ -307,7 +322,12 @@ namespace SuperMech.Code
                     LocalizedTextManager.getText("sm_ui_modify"), level);
                 _modifyBtn.interactable = canModify;
                 var img = _modifyBtn.GetComponent<Image>();
-                if (img != null) img.color = canModify ? new Color(0.3f, 0.5f, 0.6f, 0.8f) : new Color(0.3f, 0.3f, 0.3f, 0.5f);
+                if (img != null)
+                {
+                    img.sprite = canModify ? SuperMechUiSkin.ButtonNormalSprite : SuperMechUiSkin.ButtonDisabledSprite;
+                    img.type = Image.Type.Sliced;
+                    img.color = Color.white;
+                }
             }
         }
     }

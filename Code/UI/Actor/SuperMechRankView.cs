@@ -123,7 +123,11 @@ namespace SuperMech.Code
                 });
                 var btnImg = btn.GetComponent<Image>();
                 if (btnImg != null)
-                    btnImg.color = _currentSystemFilter == idx ? new Color(0.3f, 0.5f, 0.8f, 0.8f) : new Color(0.2f, 0.2f, 0.2f, 0.8f);
+                {
+                    btnImg.sprite = _currentSystemFilter == idx ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                    btnImg.type = Image.Type.Sliced;
+                    btnImg.color = Color.white;
+                }
                 _systemButtons.Add(btn.gameObject);
             }
 
@@ -164,7 +168,7 @@ namespace SuperMech.Code
             clearBtnRect.sizeDelta = new Vector2(60, 40);
             clearBtnRect.anchoredPosition = new Vector2(162, 0);
             var clearBtnImg = clearBtn.GetComponent<Image>();
-            if (clearBtnImg != null) clearBtnImg.color = new Color(0.5f, 0.2f, 0.2f, 0.8f);
+            // v0.202 清除按钮使用皮肤按钮三态，无需手动设色
 
             // 统计文字（右）
             _countText = SuperMechUiSkin.MakeText(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_legion_count_zero"), 10, TextAnchor.MiddleRight);
@@ -263,7 +267,9 @@ namespace SuperMech.Code
             var go = new GameObject("Dropdown");
             go.transform.SetParent(parent, false);
             var img = go.AddComponent<Image>();
-            img.color = new Color(0.2f, 0.2f, 0.2f, 0.9f);
+            img.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
             var dropdown = go.AddComponent<Dropdown>();
             dropdown.options = new List<Dropdown.OptionData>();
             foreach (var opt in options)
@@ -295,9 +301,9 @@ namespace SuperMech.Code
                 var img = btn.GetComponent<Image>();
                 if (img == null) continue;
                 int idx = i - 1;
-                img.color = _currentSystemFilter == idx
-                    ? new Color(0.3f, 0.5f, 0.8f, 0.8f)
-                    : new Color(0.2f, 0.2f, 0.2f, 0.8f);
+                img.sprite = _currentSystemFilter == idx ? SuperMechUiSkin.TabActive : SuperMechUiSkin.TabNormal;
+                img.type = Image.Type.Sliced;
+                img.color = Color.white;
             }
         }
 
