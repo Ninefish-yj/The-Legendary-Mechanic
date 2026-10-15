@@ -229,6 +229,10 @@ namespace SuperMech.Code
                         continue;
                     }
 
+                    // 空值防护：克隆human时traits/base_stats可能为null
+                    if (asset.traits == null) asset.traits = new List<string>();
+                    if (asset.base_stats == null) asset.base_stats = new BaseStats();
+
                     // 设置属性
                     asset.id = creature.Id;
                     asset.name_locale = $"species_{creature.Id}";
