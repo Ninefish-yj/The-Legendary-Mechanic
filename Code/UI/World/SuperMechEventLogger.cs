@@ -37,18 +37,18 @@ namespace SuperMech.Code
             // 注册历史分类（让模组事件在历史窗口有独立分类按钮）
             RegisterHistoryGroup();
 
-            RegisterLogAsset("sm_log_awaken", "sm_log_awaken_text", new Color(0.3f, 0.8f, 1f), "ui/Icons/iconStar");
-            RegisterLogAsset("sm_log_promotion", "sm_log_promotion_text", new Color(1f, 0.8f, 0.2f), "ui/Icons/iconDivineLight");
-            RegisterLogAsset("sm_log_fusion", "sm_log_fusion_text", new Color(0.5f, 1f, 0.5f), "ui/Icons/iconBooks");
-            RegisterLogAsset("sm_log_sanctuary", "sm_log_sanctuary_text", new Color(0.8f, 0.5f, 1f), "ui/Icons/iconPurpleBook");
-            RegisterLogAsset("sm_log_iteration", "sm_log_iteration_text", new Color(1f, 0.5f, 0.5f), "ui/Icons/iconPlanet");
-            RegisterLogAsset("sm_log_resurrection", "sm_log_resurrection_text", new Color(1f, 0.3f, 0.8f), "ui/Icons/iconQi");
-            RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f), "ui/Icons/iconMagicAffinity");
-            RegisterLogAsset("sm_log_skill", "sm_log_skill_text", new Color(0.4f, 0.8f, 0.6f), "ui/Icons/iconHammer");
-            RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f), "ui/Icons/iconMystery");
-            RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f), "ui/Icons/iconSword");
-            RegisterLogAsset("sm_log_key", "sm_log_key_text", new Color(0.4f, 0.7f, 1f), "ui/Icons/iconCoin");
-            RegisterLogAsset("sm_log_faction_war", "sm_log_faction_war_text", new Color(1f, 0.4f, 0.4f), "ui/Icons/iconShield");
+            RegisterLogAsset("sm_log_awaken", "sm_log_awaken_text", new Color(0.3f, 0.8f, 1f), "ui/Icons/actor_traits/iconMiracleBorn");
+            RegisterLogAsset("sm_log_promotion", "sm_log_promotion_text", new Color(1f, 0.8f, 0.2f), "ui/Icons/actor_traits/iconChosenOne");
+            RegisterLogAsset("sm_log_fusion", "sm_log_fusion_text", new Color(0.5f, 1f, 0.5f), "ui/Icons/iconReforge");
+            RegisterLogAsset("sm_log_sanctuary", "sm_log_sanctuary_text", new Color(0.8f, 0.5f, 1f), "ui/Icons/actor_traits/iconBlessing");
+            RegisterLogAsset("sm_log_iteration", "sm_log_iteration_text", new Color(1f, 0.5f, 0.5f), "ui/Icons/worldrules/icon_rebellion");
+            RegisterLogAsset("sm_log_resurrection", "sm_log_resurrection_text", new Color(1f, 0.3f, 0.8f), "ui/Icons/actor_traits/iconDeathMark");
+            RegisterLogAsset("sm_log_spell", "sm_log_spell_text", new Color(0.6f, 0.4f, 1f), "ui/Icons/actor_traits/iconPyromaniac");
+            RegisterLogAsset("sm_log_skill", "sm_log_skill_text", new Color(0.4f, 0.8f, 0.6f), "ui/Icons/actor_traits/iconBattleReflexes");
+            RegisterLogAsset("sm_log_concept_reshape", "sm_log_concept_reshape_text", new Color(0.2f, 1f, 0.8f), "ui/Icons/actor_traits/iconArcaneReflexes");
+            RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f), "ui/Icons/actor_traits/iconBloodlust");
+            RegisterLogAsset("sm_log_key", "sm_log_key_text", new Color(0.4f, 0.7f, 1f), "ui/Icons/actor_traits/iconAmbitious");
+            RegisterLogAsset("sm_log_faction_war", "sm_log_faction_war_text", new Color(1f, 0.4f, 0.4f), "ui/Icons/iconCityConquered");
 
             Debug.Log("[超神机械师] 事件日志系统初始化完成，注册10类日志资产+1历史分类");
         }
