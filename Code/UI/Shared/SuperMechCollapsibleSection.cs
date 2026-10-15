@@ -90,10 +90,11 @@ namespace SuperMech.Code
         }
 
         /// <summary>构建折叠标题行
-        /// 只用原生on_click_value（WorldBox原生支持，最可靠）。
-        /// 注意：绝不能同时设置btn.onClick，否则KeyValueField.Awake中的原生监听会调用on_click_value，
-        /// 加上btn.onClick的监听，一次点击触发两次Toggle=没切换。
-        /// on_click_value在OnDisable时被清空，但BuildHeader在每次showStatsRows后都会重新设置，所以有效。
+        /// 手机端点击修复：
+        /// 1. value必须非空——KeyValueField的Button绑定在value文本上，空字符串=零宽度=点不到
+        /// 2. 手机端原生行为：第一次点击触发on_hover_value（选中），第二次点击触发on_click_value
+        ///    所以同时给on_hover_value绑定Toggle（仅手机端生效），实现一次点击即切换
+        /// 3. PC端on_hover_value是鼠标悬停，不触发Toggle（通过InputHelpers.mouseSupported判断）
         /// </summary>
         public static void BuildHeader(StatsWindow window, long actorId, string sectionId, string titleKey)
         {
@@ -102,16 +103,26 @@ namespace SuperMech.Code
                 bool expanded = IsExpanded(actorId, sectionId);
                 string arrow = expanded ? "▼" : "▶";
                 string title = $"{arrow} {LocalizedTextManager.getText(titleKey)}";
+                // value非空确保点击区域有宽度（手机端关键）
+                string valueText = expanded ? LocalizedTextManager.getText("sm_ui_collapse") : LocalizedTextManager.getText("sm_ui_expand");
 
-                var row = window.showStatRow(title, "", "#ffd700", MetaType.None, -1L,
+                var row = window.showStatRow(title, valueText, "#ffd700", MetaType.None, -1L,
                     pColorText: false, pIconPath: null, pTooltipId: null, pTooltipData: null, pLocalize: false);
 
                 if (row != null)
                 {
-                    row.on_click_value = () =>
+                    System.Action toggleAction = () =>
                     {
                         Toggle(actorId, sectionId);
                         RebuildPanel(window);
+                    };
+                    // PC端点击 / 手机端第二次点击
+                    row.on_click_value = toggleAction;
+                    // 手机端第一次点击触发hover——仅在非鼠标平台执行toggle，PC端悬停不触发
+                    row.on_hover_value = () =>
+                    {
+                        if (!InputHelpers.mouseSupported)
+                            toggleAction();
                     };
                 }
                 else
