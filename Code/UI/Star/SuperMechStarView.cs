@@ -165,7 +165,9 @@ namespace SuperMech.Code
             topRect.sizeDelta = new Vector2(0, TopBarHeight);
             topRect.anchoredPosition = Vector2.zero;
             var topImg = topGo.AddComponent<Image>();
-            topImg.color = new Color(0.02f, 0.04f, 0.08f, 0.95f);
+            topImg.sprite = SuperMechUiSkin.Section;
+            topImg.type = Image.Type.Sliced;
+            topImg.color = Color.white;
             topImg.raycastTarget = true;
 
             // 返回按钮
@@ -178,7 +180,9 @@ namespace SuperMech.Code
             backRect.sizeDelta = new Vector2(120, 34);
             backRect.anchoredPosition = new Vector2(12, 0);
             var backImg = backGo.AddComponent<Image>();
-            backImg.color = new Color(0.15f, 0.25f, 0.4f, 0.9f);
+            backImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            backImg.type = Image.Type.Sliced;
+            backImg.color = Color.white;
             var backBtn = backGo.AddComponent<Button>();
             backBtn.onClick.AddListener(Close);
 
@@ -203,7 +207,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 18;
-            titleText.color = new Color(0.5f, 0.8f, 1f);
+            titleText.color = SuperMechUiSkin.CyanColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.fontStyle = FontStyle.Bold;
             titleText.text = LocalizedTextManager.getText("sm_ui_star_map");
@@ -292,7 +296,7 @@ namespace SuperMech.Code
             _coordText = coordGo.AddComponent<Text>();
             _coordText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _coordText.fontSize = 10;
-            _coordText.color = new Color(0.4f, 0.5f, 0.6f);
+            _coordText.color = SuperMechUiSkin.TextDim;
             _coordText.alignment = TextAnchor.LowerCenter;
             _coordText.text = LocalizedTextManager.getText("sm_ui_star_empty");
 
@@ -314,7 +318,9 @@ namespace SuperMech.Code
             ziRect.anchorMax = new Vector2(0.5f, 1);
             ziRect.offsetMin = Vector2.zero; ziRect.offsetMax = Vector2.zero;
             var ziImg = zoomInGo.AddComponent<Image>();
-            ziImg.color = new Color(0.15f, 0.25f, 0.4f, 0.8f);
+            ziImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            ziImg.type = Image.Type.Sliced;
+            ziImg.color = Color.white;
             var ziBtn = zoomInGo.AddComponent<Button>();
             ziBtn.onClick.AddListener(() => {
                 _zoomLevel = Mathf.Clamp(_zoomLevel + 0.2f, MinZoom, MaxZoom);
@@ -337,7 +343,9 @@ namespace SuperMech.Code
             zoRect.anchorMax = new Vector2(1, 1);
             zoRect.offsetMin = Vector2.zero; zoRect.offsetMax = Vector2.zero;
             var zoImg = zoomOutGo.AddComponent<Image>();
-            zoImg.color = new Color(0.15f, 0.25f, 0.4f, 0.8f);
+            zoImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            zoImg.type = Image.Type.Sliced;
+            zoImg.color = Color.white;
             var zoBtn = zoomOutGo.AddComponent<Button>();
             zoBtn.onClick.AddListener(() => {
                 _zoomLevel = Mathf.Clamp(_zoomLevel - 0.2f, MinZoom, MaxZoom);
@@ -361,7 +369,9 @@ namespace SuperMech.Code
             infoRect.offsetMin = Vector2.zero;
             infoRect.offsetMax = new Vector2(0, -TopBarHeight);
             var infoImg = infoGo.AddComponent<Image>();
-            infoImg.color = new Color(0.02f, 0.03f, 0.06f, 0.95f);
+            infoImg.sprite = SuperMechUiSkin.Card;
+            infoImg.type = Image.Type.Sliced;
+            infoImg.color = Color.white;
             infoImg.raycastTarget = true; // 拦截鼠标，防止穿透到游戏
 
             // === Stellaris式分页标签栏 ===
@@ -418,7 +428,7 @@ namespace SuperMech.Code
             _infoText = infoTextGo.AddComponent<Text>();
             _infoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _infoText.fontSize = 12;
-            _infoText.color = new Color(0.8f, 0.9f, 1f);
+            _infoText.color = SuperMechUiSkin.TextColor;
             _infoText.alignment = TextAnchor.UpperLeft;
             _infoText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _infoText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -448,7 +458,9 @@ namespace SuperMech.Code
             ttRect.pivot = new Vector2(0, 1);
             ttRect.sizeDelta = new Vector2(200, 60);
             var ttImg = _tooltip.AddComponent<Image>();
-            ttImg.color = new Color(0.05f, 0.08f, 0.15f, 0.95f);
+            ttImg.sprite = SuperMechUiSkin.Section;
+            ttImg.type = Image.Type.Sliced;
+            ttImg.color = Color.white;
             ttImg.raycastTarget = false;
             var ttTextGo = new GameObject("Text");
             ttTextGo.transform.SetParent(_tooltip.transform, false);

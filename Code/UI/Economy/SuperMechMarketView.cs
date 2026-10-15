@@ -71,7 +71,9 @@ namespace SuperMech.Code
             panelRect.pivot = new Vector2(0.5f, 0.5f);
             panelRect.sizeDelta = new Vector2(600, 500);
             var panelImg = panelGo.AddComponent<Image>();
-            panelImg.color = new Color(0.05f, 0.08f, 0.15f, 0.98f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
 
             var titleGo = new GameObject("Title");
             titleGo.transform.SetParent(panelGo.transform, false);
@@ -84,7 +86,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
-            titleText.color = new Color(1f, 0.85f, 0.4f);
+            titleText.color = SuperMechUiSkin.AccentColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.text = LocalizedTextManager.getText("sm_ui_market_title");
 
@@ -116,7 +118,7 @@ namespace SuperMech.Code
             _marketText = contentGo.AddComponent<Text>();
             _marketText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _marketText.fontSize = 12;
-            _marketText.color = new Color(0.8f, 0.9f, 1f);
+            _marketText.color = SuperMechUiSkin.TextColor;
             _marketText.alignment = TextAnchor.UpperLeft;
             _marketText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _marketText.verticalOverflow = VerticalWrapMode.Truncate;
@@ -137,7 +139,9 @@ namespace SuperMech.Code
             refreshBtnRect.sizeDelta = new Vector2(150, 44);
             refreshBtnRect.anchoredPosition = new Vector2(0, 10);
             var refreshBtnImg = refreshBtnGo.AddComponent<Image>();
-            refreshBtnImg.color = new Color(0.3f, 0.6f, 0.4f, 0.9f);
+            refreshBtnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            refreshBtnImg.type = Image.Type.Sliced;
+            refreshBtnImg.color = Color.white;
             _refreshBtn = refreshBtnGo.AddComponent<Button>();
             _refreshBtn.onClick.AddListener(RefreshMarket);
             var refreshTextGo = new GameObject("Text");

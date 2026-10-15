@@ -63,7 +63,9 @@ namespace SuperMech.Code
             panelRect.sizeDelta = new Vector2(350, 400);
             panelRect.anchoredPosition = Vector2.zero;
             var panelImg = _panel.AddComponent<Image>();
-            panelImg.color = new Color(0.08f, 0.1f, 0.15f, 0.97f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -77,7 +79,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
-            titleText.color = new Color(0.9f, 0.5f, 0.4f);
+            titleText.color = SuperMechUiSkin.AccentColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.fontStyle = FontStyle.Bold;
             titleText.text = _actor.data.name + " - 战斗统计";
@@ -132,7 +134,7 @@ namespace SuperMech.Code
                 var killsTitleText = killsTitleGo.AddComponent<Text>();
                 killsTitleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 killsTitleText.fontSize = 11;
-                killsTitleText.color = new Color(0.7f, 0.7f, 0.7f);
+                killsTitleText.color = SuperMechUiSkin.TextDim;
                 killsTitleText.alignment = TextAnchor.UpperLeft;
                 killsTitleText.text = "最近击杀:";
                 killsTitleText.raycastTarget = false;

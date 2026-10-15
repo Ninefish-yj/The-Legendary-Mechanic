@@ -61,7 +61,9 @@ namespace SuperMech.Code
             panelRect.sizeDelta = new Vector2(400, 500);
             panelRect.anchoredPosition = Vector2.zero;
             var panelImg = _panel.AddComponent<Image>();
-            panelImg.color = new Color(0.08f, 0.1f, 0.15f, 0.97f);
+            panelImg.sprite = SuperMechUiSkin.Panel;
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -75,7 +77,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
-            titleText.color = new Color(0.9f, 0.8f, 0.5f);
+            titleText.color = SuperMechUiSkin.AccentColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.fontStyle = FontStyle.Bold;
             titleText.text = LocalizedTextManager.getText("sm_econ_service_panel");
@@ -95,7 +97,7 @@ namespace SuperMech.Code
                 var balanceText = balanceGo.AddComponent<Text>();
                 balanceText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
                 balanceText.fontSize = 13;
-                balanceText.color = new Color(0.6f, 0.9f, 0.6f);
+                balanceText.color = SuperMechUiSkin.SuccessGreen;
                 balanceText.alignment = TextAnchor.MiddleCenter;
                 balanceText.text = $"{_selectedActor.data.name}: {SuperMechInal.GetInal(_selectedActor)}₡";
                 balanceText.raycastTarget = false;
@@ -222,7 +224,7 @@ namespace SuperMech.Code
             var descText = descGo.AddComponent<Text>();
             descText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             descText.fontSize = 10;
-            descText.color = new Color(0.7f, 0.7f, 0.7f);
+            descText.color = SuperMechUiSkin.TextDim;
             descText.alignment = TextAnchor.UpperLeft;
             descText.horizontalOverflow = HorizontalWrapMode.Wrap;
             descText.text = desc;
