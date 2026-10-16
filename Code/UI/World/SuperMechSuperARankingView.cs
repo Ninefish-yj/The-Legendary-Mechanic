@@ -39,13 +39,13 @@ namespace SuperMech.Code
             panelImg.sprite = SuperMechUiSkin.Panel;
             panelImg.type = Image.Type.Sliced;
             panelImg.color = Color.white;
-            // v0.202 装饰角标
-            SuperMechUiSkin.AddCornerDecorations(panelRect, 16f, 2f);
             var panelRect = _panel.GetComponent<RectTransform>();
             panelRect.anchorMin = new Vector2(0.5f, 0.5f);
             panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.sizeDelta = new Vector2(420, 500);
             panelRect.anchoredPosition = Vector2.zero;
+            // v0.202 装饰角标
+            SuperMechUiSkin.AddCornerDecorations(panelRect, 16f, 2f);
 
             // 标题栏
             var titleBar = new GameObject("TitleBar");
