@@ -3846,5 +3846,6 @@
   "sm_cfg_combat_ai": "战斗AI",
   "sm_cfg_combat_ai_desc": "启用智能战斗AI",
   "sm_ui_on": "开",
-  "sm_ui_off": "关"
+  "sm_ui_off": "关",
+  "sm_ui_kingdom_open_overview": "超神机械师面板"
 }

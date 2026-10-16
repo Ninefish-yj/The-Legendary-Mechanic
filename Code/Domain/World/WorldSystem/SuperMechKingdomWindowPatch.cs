@@ -113,6 +113,30 @@ namespace SuperMech.Code
                         strategy, MetaType.None, -1L, "iconEye"
                     });
                 }
+
+                // === v0.205.1 按钮入口：打开星海总览 ===
+                var btnRow = _showStatRow.Invoke(__instance, new object[] {
+                    LocalizedTextManager.getText("sm_ui_kingdom_open_overview"),
+                    "▸ " + LocalizedTextManager.getText("sm_ui_open"),
+                    MetaType.None, -1L, "iconPlanet"
+                });
+                if (btnRow != null)
+                {
+                    // 用反射设置点击事件（StatRow类型未公开，避免编译错误）
+                    var rowType = btnRow.GetType();
+                    var goProp = rowType.GetProperty("gameObject");
+                    if (goProp != null)
+                    {
+                        var go = goProp.GetValue(btnRow) as GameObject;
+                        if (go != null) go.SetActive(true);
+                    }
+                    var clickProp = rowType.GetProperty("on_click_value");
+                    if (clickProp != null)
+                        clickProp.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview()));
+                    var hoverProp = rowType.GetProperty("on_hover_value");
+                    if (hoverProp != null)
+                        hoverProp.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview()));
+                }
             }
             catch (System.Exception e)
             {
