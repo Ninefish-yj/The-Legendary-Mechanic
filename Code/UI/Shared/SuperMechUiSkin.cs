@@ -33,6 +33,7 @@ namespace SuperMech.Code
         private static Sprite _cornerDecor;
         private static Sprite _tabNormal;
         private static Sprite _tabActive;
+        private static Sprite _qiIcon;
 
         // ═════════════════════════ v0.194 统一科幻星际色板 ═════════════════════════
         // 面板层级：背景最深 → 面板 → 卡片 → 交互元素逐层提亮
@@ -97,6 +98,7 @@ namespace SuperMech.Code
         public static Sprite CornerDecor => EnsureInit() ? _cornerDecor : null;
         public static Sprite TabNormal => EnsureInit() ? _tabNormal : null;
         public static Sprite TabActive => EnsureInit() ? _tabActive : null;
+        public static Sprite QiIcon => EnsureInit() ? _qiIcon : null;
 
         public static Font DefaultFont
         {
@@ -177,6 +179,8 @@ namespace SuperMech.Code
                     AccentColor,
                     new Color(0.45f, 0.62f, 0.82f, 0.8f),
                     null, 24, 2, "SM_TabActive");
+                // v0.203 气力图标：蓝色能量球+青色电光边框（原著机械系气力设定）
+                _qiIcon = MakeQiIconSprite();
                 _initialized = true;
                 return true;
             }
@@ -431,6 +435,75 @@ namespace SuperMech.Code
             var sprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
             sprite.name = name;
             return sprite;
+        }
+
+        /// <summary>v0.203 气力图标：蓝色能量球+青色闪电符号（原著机械系气力设定）</summary>
+        private static Sprite MakeQiIconSprite()
+        {
+            int size = 32;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var pixels = new Color[size * size];
+            float center = size / 2f;
+            float radius = size / 2f - 1f;
+            Color bgCore = new Color(0.15f, 0.35f, 0.65f, 1f);
+            Color bgEdge = new Color(0.05f, 0.12f, 0.25f, 1f);
+            Color borderColor = new Color(0.3f, 0.75f, 0.95f, 1f);
+            Color lightning = new Color(0.7f, 0.95f, 1f, 1f);
+
+            for (int y = 0; y < size; y++)
+            {
+                for (int x = 0; x < size; x++)
+                {
+                    float dist = Mathf.Sqrt((x - center + 0.5f) * (x - center + 0.5f) + (y - center + 0.5f) * (y - center + 0.5f));
+                    if (dist > radius)
+                    {
+                        pixels[y * size + x] = new Color(0, 0, 0, 0);
+                    }
+                    else if (dist > radius - 2f)
+                    {
+                        pixels[y * size + x] = borderColor;
+                    }
+                    else
+                    {
+                        float t = dist / radius;
+                        pixels[y * size + x] = Color.Lerp(bgCore, bgEdge, t);
+                    }
+                }
+            }
+
+            // 闪电符号（Z字形像素艺术）
+            int[,] bolt = {
+                {15, 6}, {16, 6}, {17, 7},
+                {14, 8}, {15, 8}, {16, 8}, {17, 9},
+                {13, 10}, {14, 10}, {15, 10}, {16, 10}, {17, 11},
+                {14, 12}, {15, 12}, {16, 12}, {17, 13},
+                {15, 14}, {16, 14}, {17, 15},
+                {14, 16}, {15, 16}, {16, 16}, {17, 17},
+                {15, 18}, {16, 18}, {17, 19},
+                {16, 20}, {17, 21},
+                {15, 22}, {16, 22}, {17, 23},
+                {16, 24}, {17, 25}
+            };
+            for (int i = 0; i < bolt.GetLength(0); i++)
+            {
+                int px = bolt[i, 0];
+                int py = bolt[i, 1];
+                if (px >= 0 && px < size && py >= 0 && py < size)
+                {
+                    float dist = Mathf.Sqrt((px - center + 0.5f) * (px - center + 0.5f) + (py - center + 0.5f) * (py - center + 0.5f));
+                    if (dist <= radius - 2f)
+                    {
+                        pixels[py * size + px] = lightning;
+                    }
+                }
+            }
+
+            tex.SetPixels(pixels);
+            tex.Apply();
+            var qiSprite = Sprite.Create(tex, new Rect(0, 0, size, size), new Vector2(0.5f, 0.5f), 100f);
+            qiSprite.name = "SM_QiIcon";
+            return qiSprite;
         }
 
         /// <summary>v0.202 六边形图标背景Sprite（参考魔兽世界职业图标/科技感）</summary>

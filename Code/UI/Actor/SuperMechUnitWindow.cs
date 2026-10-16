@@ -165,10 +165,18 @@ namespace SuperMech.Code
             string qiFmt = "F" + SuperMechConfig.QiDisplayDecimals;
             string qiBar = qiMax > 0 ? qi.ToString(qiFmt) + "/" + qiMax.ToString(qiFmt) : qi.ToString(qiFmt);
             var qiRow = ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
-            // v0.203 气力可视化进度条：在文本行下方叠加Image进度条
-            if (qiRow != null && qiMax > 0)
+            // v0.203 气力可视化进度条+自定义气力图标（蓝色能量球+闪电，原著机械系设定）
+            if (qiRow != null)
             {
-                AddQiProgressBar(qiRow.gameObject, qi, qiMax);
+                if (qiRow.icon != null && SuperMechUiSkin.QiIcon != null)
+                {
+                    qiRow.icon.sprite = SuperMechUiSkin.QiIcon;
+                    qiRow.icon.gameObject.SetActive(true);
+                }
+                if (qiMax > 0)
+                {
+                    AddQiProgressBar(qiRow.gameObject, qi, qiMax);
+                }
             }
 
             // 5. 天赋倾向
