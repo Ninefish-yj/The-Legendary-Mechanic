@@ -156,7 +156,7 @@ namespace SuperMech.Code
             // 3. 能级（欧纳）—— 战力指标，核心属性
             ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), SuperMechEnergyLevel.GetShortText(a), null, InfoColor);
 
-            // 4. 气力 —— 核心资源
+            // 4. 气力 —— 核心资源（带可视化进度条）
             float qi = SuperMechQi.GetQi(a);
             float qiMax = SuperMechQi.GetQiMax(a);
             int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
@@ -164,7 +164,12 @@ namespace SuperMech.Code
             string qiName = GetQiDisplayName(a);
             string qiFmt = "F" + SuperMechConfig.QiDisplayDecimals;
             string qiBar = qiMax > 0 ? qi.ToString(qiFmt) + "/" + qiMax.ToString(qiFmt) : qi.ToString(qiFmt);
-            ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
+            var qiRow = ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
+            // v0.203 气力可视化进度条：在文本行下方叠加Image进度条
+            if (qiRow != null && qiMax > 0)
+            {
+                AddQiProgressBar(qiRow.gameObject, qi, qiMax);
+            }
 
             // 5. 天赋倾向
             string talentText = GetTalentText(a);
@@ -288,6 +293,53 @@ namespace SuperMech.Code
             {
                 Debug.LogWarning("[超神机械师] showStatRow调用失败: " + e.Message);
                 return null;
+            }
+        }
+
+        /// <summary>
+        /// v0.203 在KeyValueField行上叠加气力可视化进度条
+        /// 参考诡秘之主模组的自定义条实现：在行物体底部添加背景+填充两个Image
+        /// </summary>
+        private static void AddQiProgressBar(GameObject rowGo, float current, float max)
+        {
+            try
+            {
+                if (rowGo == null || max <= 0) return;
+                float ratio = Mathf.Clamp01(current / max);
+
+                // 进度条背景
+                var bgGo = new GameObject("QiBarBg");
+                bgGo.transform.SetParent(rowGo.transform, false);
+                var bgRect = bgGo.AddComponent<RectTransform>();
+                bgRect.anchorMin = new Vector2(0, 0);
+                bgRect.anchorMax = new Vector2(1, 0);
+                bgRect.pivot = new Vector2(0.5f, 0);
+                bgRect.sizeDelta = new Vector2(-16, 4);
+                bgRect.anchoredPosition = new Vector2(0, 2);
+                var bgImg = bgGo.AddComponent<Image>();
+                bgImg.sprite = SuperMechUiSkin.ProgressBg;
+                bgImg.type = Image.Type.Sliced;
+                bgImg.color = Color.white;
+                bgImg.raycastTarget = false;
+
+                // 进度条填充
+                var fillGo = new GameObject("QiBarFill");
+                fillGo.transform.SetParent(bgGo.transform, false);
+                var fillRect = fillGo.AddComponent<RectTransform>();
+                fillRect.anchorMin = new Vector2(0, 0);
+                fillRect.anchorMax = new Vector2(ratio, 1);
+                fillRect.pivot = new Vector2(0, 0.5f);
+                fillRect.sizeDelta = Vector2.zero;
+                fillRect.anchoredPosition = Vector2.zero;
+                var fillImg = fillGo.AddComponent<Image>();
+                fillImg.sprite = SuperMechUiSkin.ProgressFill;
+                fillImg.type = Image.Type.Sliced;
+                fillImg.color = SuperMechUiSkin.CyanColor;
+                fillImg.raycastTarget = false;
+            }
+            catch (Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 气力进度条创建失败: " + e.Message);
             }
         }
     }
