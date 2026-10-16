@@ -29,6 +29,24 @@ namespace SuperMech.Code
         private readonly System.Collections.Generic.List<float> _twinklePhases = new System.Collections.Generic.List<float>();
         private float _twinkleTimer;
         private float _twinkleUpdateTimer;
+        // v0.204 2.5D视差滚动：星空背景各层引用
+        private StarfieldBackground.Result _starfieldResult;
+        // v0.204 2.5D星球立体结构：轨道卫星数据（行星ID -> 卫星列表）
+        private readonly Dictionary<string, List<MoonData>> _planetMoons = new Dictionary<string, List<MoonData>>();
+        // v0.204 恒星脉动：恒星ID -> 光晕Image
+        private readonly Dictionary<string, Image> _starCoronas = new Dictionary<string, Image>();
+        private float _stellarPulseTimer;
+        // v0.204 黑洞吸积盘：黑洞ID -> 吸积盘容器
+        private readonly Dictionary<string, RectTransform> _blackHoleDisks = new Dictionary<string, RectTransform>();
+        private float _blackHoleRotationTimer;
+
+        private class MoonData
+        {
+            public RectTransform rect;
+            public float orbitRadius;
+            public float orbitSpeed;
+            public float orbitAngle;
+        }
 
         // v0.189+ 分页标签栏
         private GameObject _tabBar;
@@ -83,6 +101,12 @@ namespace SuperMech.Code
         /// <summary>每帧更新：处理滚轮缩放、航行单位位置刷新、星星闪烁</summary>
         private void Update()
         {
+            // v0.204 2.5D视差滚动：根据地图内容偏移量移动各层星空
+            if (_starfieldResult != null && _mapContent != null)
+            {
+                StarfieldBackground.ApplyParallax(_starfieldResult, -_mapContent.anchoredPosition);
+            }
+
             // 悬停提示跟随鼠标
             if (_tooltip != null && _tooltip.activeSelf)
             {
@@ -135,6 +159,46 @@ namespace SuperMech.Code
                     var c = _twinkleStars[i].color;
                     c.a = Mathf.Clamp01(baseAlpha * twinkle);
                     _twinkleStars[i].color = c;
+                }
+            }
+
+            // v0.204 轨道卫星旋转（每帧更新，流畅动画）
+            foreach (var kv in _planetMoons)
+            {
+                if (kv.Value == null) continue;
+                foreach (var moon in kv.Value)
+                {
+                    if (moon.rect == null) continue;
+                    moon.orbitAngle += moon.orbitSpeed * Time.deltaTime;
+                    float mx = Mathf.Cos(moon.orbitAngle) * moon.orbitRadius;
+                    float my = Mathf.Sin(moon.orbitAngle) * moon.orbitRadius * 0.4f; // 椭圆轨道，模拟2.5D透视
+                    moon.rect.anchoredPosition = new Vector2(mx, my);
+                }
+            }
+
+            // v0.204 恒星脉动（呼吸般的亮度变化）
+            _stellarPulseTimer += Time.deltaTime;
+            foreach (var kv in _starCoronas)
+            {
+                if (kv.Value == null) continue;
+                float pulse = Mathf.Sin(_stellarPulseTimer * 1.5f + kv.Key.GetHashCode() % 10) * 0.15f + 0.85f;
+                var c = kv.Value.color;
+                c.a = 0.25f * pulse;
+                kv.Value.color = c;
+            }
+
+            // v0.204 黑洞吸积盘旋转
+            _blackHoleRotationTimer += Time.deltaTime;
+            foreach (var kv in _blackHoleDisks)
+            {
+                if (kv.Value == null) continue;
+                // 内层快、外层慢，差速旋转模拟真实吸积盘
+                for (int i = 0; i < kv.Value.childCount; i++)
+                {
+                    var child = kv.Value.GetChild(i);
+                    if (child == null) continue;
+                    float speed = 60f - i * 15f; // 内层60度/秒，外层30度/秒
+                    child.Rotate(0, 0, speed * Time.deltaTime);
                 }
             }
 
@@ -281,6 +345,7 @@ namespace SuperMech.Code
 
             // 生成程序化星空背景
             var starfieldResult = StarfieldBackground.Generate(_mapContent, MAP_SIZE);
+            _starfieldResult = starfieldResult;
             _twinkleStars.AddRange(starfieldResult.TwinkleStars);
             _twinklePhases.AddRange(starfieldResult.TwinklePhases);
 
@@ -965,6 +1030,35 @@ namespace SuperMech.Code
                 if (p.starType == StarType.BlackHole)
                 {
                     glowImg.color = new Color(0.8f, 0.6f, 0.2f, 0.5f); // 吸积盘橙黄色
+                    // v0.204 旋转吸积盘：多层同心环，倾斜椭圆模拟2.5D透视
+                    var diskGo = new GameObject("AccretionDisk");
+                    diskGo.transform.SetParent(nodeGo.transform, false);
+                    diskGo.transform.SetSiblingIndex(1);
+                    var diskRect = diskGo.AddComponent<RectTransform>();
+                    diskRect.anchorMin = Vector2.zero; diskRect.anchorMax = Vector2.one;
+                    diskRect.offsetMin = Vector2.zero; diskRect.offsetMax = Vector2.zero;
+                    // 三层吸积盘：内蓝、中橙、外红
+                    Color[] diskColors = {
+                        new Color(0.4f, 0.7f, 1f, 0.6f),
+                        new Color(1f, 0.7f, 0.3f, 0.5f),
+                        new Color(1f, 0.4f, 0.2f, 0.4f)
+                    };
+                    float[] diskSizes = { 1.3f, 1.7f, 2.1f };
+                    for (int d = 0; d < 3; d++)
+                    {
+                        var ringGo = new GameObject($"DiskRing_{d}");
+                        ringGo.transform.SetParent(diskRect, false);
+                        var ringRect = ringGo.AddComponent<RectTransform>();
+                        ringRect.anchorMin = new Vector2(0.5f, 0.5f);
+                        ringRect.anchorMax = new Vector2(0.5f, 0.5f);
+                        ringRect.pivot = new Vector2(0.5f, 0.5f);
+                        ringRect.sizeDelta = new Vector2(size * diskSizes[d], size * diskSizes[d] * 0.35f); // 椭圆环
+                        var ringImg = ringGo.AddComponent<Image>();
+                        ringImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
+                        ringImg.color = diskColors[d];
+                        ringImg.raycastTarget = false;
+                    }
+                    _blackHoleDisks[p.id] = diskRect;
                 }
                 else
                 {
@@ -1051,6 +1145,7 @@ namespace SuperMech.Code
             }
 
             // 恒星日冕（外层大气光晕，脉动效果）
+            Image coronaImg = null;
             if (isStar && p.starType != StarType.BlackHole)
             {
                 var coronaGo = new GameObject("Corona");
@@ -1061,10 +1156,44 @@ namespace SuperMech.Code
                 float coronaExpand = size * 0.8f;
                 coronaRect.offsetMin = new Vector2(-coronaExpand, -coronaExpand);
                 coronaRect.offsetMax = new Vector2(coronaExpand, coronaExpand);
-                var coronaImg = coronaGo.AddComponent<Image>();
+                coronaImg = coronaGo.AddComponent<Image>();
                 coronaImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
                 coronaImg.raycastTarget = false;
                 coronaImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.25f);
+                // v0.204 保存恒星日冕引用，用于脉动效果
+                _starCoronas[p.id] = coronaImg;
+            }
+
+            // v0.204 轨道卫星（类地行星和气态巨行星有1-3个卫星）
+            if (!isStar && !isUnknown && p.type != PlanetType.Lava)
+            {
+                int moonCount = p.type == PlanetType.Gas ? 2 + (planetSeed % 2) : 1 + (planetSeed % 2);
+                var moons = new List<MoonData>();
+                for (int m = 0; m < moonCount; m++)
+                {
+                    var moonGo = new GameObject($"Moon_{m}");
+                    moonGo.transform.SetParent(nodeGo.transform, false);
+                    var moonRect = moonGo.AddComponent<RectTransform>();
+                    moonRect.anchorMin = new Vector2(0.5f, 0.5f);
+                    moonRect.anchorMax = new Vector2(0.5f, 0.5f);
+                    moonRect.pivot = new Vector2(0.5f, 0.5f);
+                    float moonSize = 3f + (planetSeed + m) % 3;
+                    moonRect.sizeDelta = new Vector2(moonSize, moonSize);
+                    var moonImg = moonGo.AddComponent<Image>();
+                    moonImg.raycastTarget = false;
+                    moonImg.color = new Color(0.7f + (m * 0.1f) % 0.2f, 0.7f, 0.65f, 0.9f);
+                    moonImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
+
+                    var moonData = new MoonData
+                    {
+                        rect = moonRect,
+                        orbitRadius = size * 0.8f + m * 6f,
+                        orbitSpeed = 0.5f + (m * 0.3f) + (planetSeed % 10) * 0.05f,
+                        orbitAngle = (planetSeed + m * 137) % 360 * Mathf.Deg2Rad
+                    };
+                    moons.Add(moonData);
+                }
+                _planetMoons[p.id] = moons;
             }
 
             _planetNodes[p.id] = nodeGo;
@@ -1086,8 +1215,19 @@ namespace SuperMech.Code
                     var fromP = SuperMechStarSystem.GetPlanet(v.fromPlanet);
                     var toP = SuperMechStarSystem.GetPlanet(v.toPlanet);
                     if (fromP == null || toP == null) continue;
-                    float shipX = fromP.x + (toP.x - fromP.x) * v.progress;
-                    float shipY = fromP.y + (toP.y - fromP.y) * v.progress;
+                    // v0.204 3D贝塞尔曲线航线：中间拱起模拟太空轨道
+                    float t = v.progress;
+                    Vector2 p0 = new Vector2(fromP.x, fromP.y);
+                    Vector2 p2 = new Vector2(toP.x, toP.y);
+                    // 控制点：中点垂直方向偏移，模拟轨道拱起
+                    Vector2 mid = (p0 + p2) * 0.5f;
+                    Vector2 dir = (p2 - p0).normalized;
+                    Vector2 normal = new Vector2(-dir.y, dir.x);
+                    float arcHeight = Vector2.Distance(p0, p2) * 0.25f; // 拱起高度为距离的25%
+                    Vector2 p1 = mid + normal * arcHeight;
+                    // 二次贝塞尔曲线公式
+                    float shipX = (1 - t) * (1 - t) * p0.x + 2 * (1 - t) * t * p1.x + t * t * p2.x;
+                    float shipY = (1 - t) * (1 - t) * p0.y + 2 * (1 - t) * t * p1.y + t * t * p2.y;
                     Vector2 shipPos = PlanetToMapPosition(shipX, shipY);
                     var shipGo = new GameObject("VoyageShip");
                     shipGo.transform.SetParent(_mapContent, false);
@@ -1095,7 +1235,9 @@ namespace SuperMech.Code
                     shipRect.anchorMin = new Vector2(0.5f, 0.5f);
                     shipRect.anchorMax = new Vector2(0.5f, 0.5f);
                     shipRect.pivot = new Vector2(0.5f, 0.5f);
-                    shipRect.sizeDelta = new Vector2(16, 16);
+                    // v0.204 近大远小：航线中间（最高点）飞船最大，两端最小
+                    float depthScale = 0.7f + 0.6f * Mathf.Sin(t * Mathf.PI);
+                    shipRect.sizeDelta = new Vector2(16 * depthScale, 16 * depthScale);
                     shipRect.anchoredPosition = shipPos;
                     var shipImg = shipGo.AddComponent<Image>();
                     bool bodyFlight = v.snapshot != null && v.snapshot.rank >= 10;
