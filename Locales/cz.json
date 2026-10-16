@@ -3853,5 +3853,8 @@
   "sm_ui_kingdom_total": "文明王国",
   "sm_ui_kingdom_none": "暂无文明王国",
   "sm_ui_kingdom_click": "点击上方王国查看详情\n\n选中王国后，切换到「经济」「科技」「建筑」标签页可查看该王国的详细数据",
-  "sm_ui_economy_all_kingdoms": "全部王国"
+  "sm_ui_economy_all_kingdoms": "全部王国",
+  "sm_ui_settings_other": "其他功能",
+  "sm_ui_quest_desc": "任务成就与声望",
+  "sm_ui_battle_report_desc": "战斗统计与战报"
 }

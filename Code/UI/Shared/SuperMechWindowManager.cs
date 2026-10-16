@@ -55,27 +55,25 @@ namespace SuperMech.Code
         }
 
         /// <summary>v0.206 UI重设计：星海总览12标签页分3组
-        /// A组·世界管理(5): 王国+外交 / 经济+市场 / 科技 / 建筑 / 世界树
-        /// B组·强者体系(4): 阶位排行+超A / 玩家 / 任务成就 / 战报统计
-        /// C组·高级功能(3): 圣所 / 世界超越 / 设置(大重启+配置)
-        /// draw==null 表示点击标签页时打开独立窗口（圣所/任务/战报等）</summary>
+        /// A组·文明管理(4): 王国 / 经济 / 科技 / 建筑
+        /// B组·强者势力(3): 阶位排行 / 圣所 / 势力
+        /// C组·世界系统(3): 世界树 / 世界超越 / 设置
+        /// 玩家/任务/战报收进设置面板，外交在原版王国面板</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
-            // === A组·世界管理 ===
-            ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（含外交入口）
-            ("sm_ui_economy_title", DrawEconomyContent),             // 经济（含市场入口）
+            // === A组·文明管理 ===
+            ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（列表+快速跳转）
+            ("sm_ui_economy_title", DrawEconomyContent),             // 经济
             ("sm_ui_tech", DrawTechContent),                         // 科技
             ("sm_ui_building_title", DrawBuildingContent),           // 建筑
-            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树
-            // === B组·强者体系 ===
-            ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行（含超A）
-            ("sm_ui_player_title", DrawPlayerContent),               // 玩家
-            ("sm_ui_quest_title", null),                             // 任务成就（独立窗口）
-            ("sm_ui_battle_report_title", null),                     // 战报统计（独立窗口）
-            // === C组·高级功能 ===
+            // === B组·强者势力 ===
+            ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行
             ("sm_ui_sanctuary_title", null),                         // 圣所（独立窗口）
+            ("sm_ui_faction_window_title", DrawFactionContent),      // 势力
+            // === C组·世界系统 ===
+            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树
             ("sm_ui_world_beyond_title", DrawWorldBeyondContent),    // 世界超越
-            ("sm_ui_settings_title", DrawSettingsContent),           // 设置（大重启+配置）
+            ("sm_ui_settings_title", DrawSettingsContent),           // 设置（含玩家/任务/战报入口）
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)

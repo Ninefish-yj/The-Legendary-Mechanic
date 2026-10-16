@@ -112,15 +112,29 @@ namespace SuperMech.Code
                         strategy, "iconEye");
                 }
 
-                // === 按钮入口：打开星海总览（自动选中当前王国）===
-                var btnRow = AddRow(__instance, LocalizedTextManager.getText("sm_ui_kingdom_open_overview"),
-                    "▸ " + LocalizedTextManager.getText("sm_ui_open"), "iconPlanet");
-                if (btnRow != null)
-                {
-                    Kingdom captured = kingdom;
-                    _onClickField?.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview(captured)));
-                    _onHoverField?.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview(captured)));
-                }
+                // === 模组功能按钮区（和单位面板操作逻辑一致：点按钮开对应窗口）===
+                Kingdom captured = kingdom;
+                long kid = kingdom.data.id;
+
+                // 科技树
+                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_civ_tech_tree"),
+                    () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenTech(); });
+
+                // 经济管理
+                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_economy_title"),
+                    () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenEconomy(); });
+
+                // 建筑管理
+                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_building_title"),
+                    () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenBuilding(); });
+
+                // 势力外交
+                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_faction_window_title"),
+                    () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenFaction(); });
+
+                // 星海总览（全局）
+                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_kingdom_open_overview"),
+                    () => SuperMechWindowManager.OpenOverview(captured));
             }
             catch (System.Exception e)
             {
@@ -141,6 +155,19 @@ namespace SuperMech.Code
                 row.gameObject.SetActive(true);
             }
             return row;
+        }
+
+        /// <summary>
+        /// 添加功能按钮行（标签=功能名，值=▸，点击执行action）
+        /// </summary>
+        private static void AddFuncButton(KingdomWindow window, string label, System.Action action)
+        {
+            var row = AddRow(window, label, "▸", "iconPlanet");
+            if (row != null)
+            {
+                _onClickField?.SetValue(row, action);
+                _onHoverField?.SetValue(row, action);
+            }
         }
     }
 }

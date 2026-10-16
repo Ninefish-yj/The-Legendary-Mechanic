@@ -32,13 +32,55 @@ namespace SuperMech.Code
                 bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
                 bg.GetComponent<Image>().color = SuperMechUiSkin.SciBg;
 
-                // ═══ 顶部页签栏（三排布局，每排4个，12个页签）═══
+                // ═══ 顶部王国状态栏（v0.207：全局显示当前选中王国+快速切换）═══
+                var statusBarGo = new GameObject("KingdomStatusBar", typeof(RectTransform), typeof(Image));
+                statusBarGo.transform.SetParent(content, false);
+                var sbr = statusBarGo.GetComponent<RectTransform>();
+                sbr.anchorMin = new Vector2(0, 1); sbr.anchorMax = new Vector2(1, 1);
+                sbr.pivot = new Vector2(0.5f, 1);
+                sbr.anchoredPosition = Vector2.zero;
+                sbr.sizeDelta = new Vector2(0, 26);
+                var sbImg = statusBarGo.GetComponent<Image>();
+                sbImg.color = new Color(0.08f, 0.12f, 0.20f, 0.95f);
+
+                // 上一个王国按钮
+                var prevBtn = MakeSmallButton(statusBarGo.transform, "<", () => SwitchKingdom(-1));
+                var prevRect = prevBtn.GetComponent<RectTransform>();
+                prevRect.anchorMin = new Vector2(0, 0.5f); prevRect.anchorMax = new Vector2(0, 0.5f);
+                prevRect.pivot = new Vector2(0, 0.5f);
+                prevRect.sizeDelta = new Vector2(28, 20);
+                prevRect.anchoredPosition = new Vector2(4, 0);
+
+                // 王国名称显示（点击打开原版面板）
+                var kingdomNameGo = new GameObject("KingdomName", typeof(RectTransform), typeof(Text));
+                kingdomNameGo.transform.SetParent(statusBarGo.transform, false);
+                var knr = kingdomNameGo.GetComponent<RectTransform>();
+                knr.anchorMin = new Vector2(0, 0); knr.anchorMax = new Vector2(1, 1);
+                knr.offsetMin = new Vector2(36, 0); knr.offsetMax = new Vector2(-36, 0);
+                var knText = kingdomNameGo.GetComponent<Text>();
+                knText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                knText.fontSize = 12;
+                knText.color = new Color(1f, 0.85f, 0.4f);
+                knText.alignment = TextAnchor.MiddleCenter;
+                knText.text = GetKingdomStatusText();
+                var knBtn = kingdomNameGo.AddComponent<Button>();
+                knBtn.onClick.AddListener(() => OpenCurrentKingdomWindow());
+
+                // 下一个王国按钮
+                var nextBtn = MakeSmallButton(statusBarGo.transform, ">", () => SwitchKingdom(1));
+                var nextRect = nextBtn.GetComponent<RectTransform>();
+                nextRect.anchorMin = new Vector2(1, 0.5f); nextRect.anchorMax = new Vector2(1, 0.5f);
+                nextRect.pivot = new Vector2(1, 0.5f);
+                nextRect.sizeDelta = new Vector2(28, 20);
+                nextRect.anchoredPosition = new Vector2(-4, 0);
+
+                // ═══ 顶部页签栏（三排布局，每排4个）═══
                 var tabBarGo = new GameObject("TabBar", typeof(RectTransform), typeof(Image));
                 tabBarGo.transform.SetParent(content, false);
                 var tbr = tabBarGo.GetComponent<RectTransform>();
                 tbr.anchorMin = new Vector2(0, 1); tbr.anchorMax = new Vector2(1, 1);
                 tbr.pivot = new Vector2(0.5f, 1);
-                tbr.anchoredPosition = Vector2.zero;
+                tbr.anchoredPosition = new Vector2(0, -26);  // 状态栏下方
                 tbr.sizeDelta = new Vector2(0, 130);  // 三排，每排40+边距
                 var tImg = tabBarGo.GetComponent<Image>();
                 tImg.color = new Color(0.04f, 0.06f, 0.10f, 0.9f);
@@ -79,7 +121,7 @@ namespace SuperMech.Code
                 acr.anchorMin = Vector2.zero; acr.anchorMax = Vector2.one;
                 acr.pivot = new Vector2(0.5f, 0.5f);
                 acr.offsetMin = new Vector2(6, 6);
-                acr.offsetMax = new Vector2(-6, -136);  // 顶部留136给三排标签栏(130+6边距)
+                acr.offsetMax = new Vector2(-6, -162);  // 顶部留162给状态栏(26)+标签栏(130)+边距(6)
 
                 DrawCurrent(acr);
             }
@@ -167,6 +209,75 @@ namespace SuperMech.Code
                 barRect.sizeDelta = new Vector2(0, 3);
             }
             return go;
+        }
+
+        /// <summary>v0.207 小按钮（状态栏用）</summary>
+        private static GameObject MakeSmallButton(Transform parent, string text, Action onClick)
+        {
+            var go = new GameObject("SmallBtn", typeof(RectTransform), typeof(Image), typeof(Button));
+            go.transform.SetParent(parent, false);
+            var img = go.GetComponent<Image>();
+            img.color = new Color(0.15f, 0.25f, 0.4f, 0.9f);
+            var btn = go.GetComponent<Button>();
+            btn.onClick.AddListener(() => onClick());
+            var label = SuperMechUiSkin.MakeText(go.transform, text, 12, TextAnchor.MiddleCenter);
+            label.color = Color.white;
+            var lr = label.GetComponent<RectTransform>();
+            lr.offsetMin = Vector2.zero;
+            lr.offsetMax = Vector2.zero;
+            return go;
+        }
+
+        /// <summary>v0.207 获取当前王国状态文本</summary>
+        private static string GetKingdomStatusText()
+        {
+            if (World.world == null || World.world.kingdoms == null)
+                return LocalizedTextManager.getText("sm_ui_kingdom_none");
+            long id = SuperMechWindowManager.SelectedKingdomId;
+            if (id < 0)
+                return LocalizedTextManager.getText("sm_ui_economy_all_kingdoms");
+            foreach (var k in World.world.kingdoms.list)
+                if (k != null && k.getID() == id)
+                    return k.data.name;
+            return LocalizedTextManager.getText("sm_ui_economy_all_kingdoms");
+        }
+
+        /// <summary>v0.207 切换王国（direction: -1上一个, 1下一个）</summary>
+        private static void SwitchKingdom(int direction)
+        {
+            if (World.world == null || World.world.kingdoms == null) return;
+            var kingdoms = World.world.kingdoms.list;
+            if (kingdoms.Count == 0) return;
+
+            long curId = SuperMechWindowManager.SelectedKingdomId;
+            int idx = 0;
+            for (int i = 0; i < kingdoms.Count; i++)
+                if (kingdoms[i] != null && kingdoms[i].getID() == curId) { idx = i; break; }
+            idx = (idx + direction + kingdoms.Count) % kingdoms.Count;
+            SuperMechWindowManager.SelectedKingdomId = kingdoms[idx].getID();
+
+            // 重建工作台刷新显示
+            if (_rootContent != null)
+            {
+                var children = new System.Collections.Generic.List<GameObject>();
+                foreach (Transform c in _rootContent) children.Add(c.gameObject);
+                foreach (var go in children) UnityEngine.Object.DestroyImmediate(go);
+                DrawOverviewContent(_rootContent);
+            }
+        }
+
+        /// <summary>v0.207 打开当前王国的原版信息面板</summary>
+        private static void OpenCurrentKingdomWindow()
+        {
+            if (World.world == null || World.world.kingdoms == null) return;
+            long id = SuperMechWindowManager.SelectedKingdomId;
+            foreach (var k in World.world.kingdoms.list)
+                if (k != null && k.getID() == id)
+                {
+                    SelectedMetas.selected_kingdom = k;
+                    ScrollWindow.showWindow("kingdom");
+                    return;
+                }
         }
     }
 }

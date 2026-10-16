@@ -72,6 +72,25 @@ namespace SuperMech.Code
 
             _curY -= 12f;
 
+            // === 其他功能入口（v0.207 从标签页收进设置）===
+            AddSection(LocalizedTextManager.getText("sm_ui_settings_other"));
+            _curY -= 8f;
+            AddButton(LocalizedTextManager.getText("sm_ui_player_title"),
+                LocalizedTextManager.getText("sm_ui_player_desc"),
+                () => SuperMechWindowManager.OpenPlayer(),
+                new Color(0.2f, 0.35f, 0.55f, 0.9f));
+            _curY -= 48f;
+            AddButton(LocalizedTextManager.getText("sm_ui_quest_title"),
+                LocalizedTextManager.getText("sm_ui_quest_desc"),
+                () => SuperMechQuestView.Toggle(),
+                new Color(0.2f, 0.35f, 0.55f, 0.9f));
+            _curY -= 48f;
+            AddButton(LocalizedTextManager.getText("sm_ui_battle_report_title"),
+                LocalizedTextManager.getText("sm_ui_battle_report_desc"),
+                () => SuperMechBattleReportView.Toggle(),
+                new Color(0.2f, 0.35f, 0.55f, 0.9f));
+            _curY -= 52f;
+
             // === 帮助 ===
             AddSection(LocalizedTextManager.getText("sm_ui_settings_help"));
             _curY -= 8f;
