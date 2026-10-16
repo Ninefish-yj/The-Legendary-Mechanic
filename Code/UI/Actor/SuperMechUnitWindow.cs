@@ -2,6 +2,7 @@ using System;
 using HarmonyLib;
 using NeoModLoader.services;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
