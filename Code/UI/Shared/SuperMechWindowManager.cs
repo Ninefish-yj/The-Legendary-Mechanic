@@ -44,24 +44,46 @@ namespace SuperMech.Code
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
         public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent); }
 
-        /// <summary>星海总览工作台页签映射：key=本地化键，draw=内嵌内容绘制；draw==null 表示点击开独立窗口（圣所）</summary>
+        /// <summary>v0.205 UI重设计：星海总览12标签页分3组
+        /// A组·世界管理(5): 势力+外交 / 经济+市场 / 科技 / 建筑 / 世界树
+        /// B组·强者体系(4): 阶位排行+超A / 玩家 / 任务成就 / 战报统计
+        /// C组·高级功能(3): 圣所 / 世界超越 / 设置(大重启+配置)
+        /// draw==null 表示点击标签页时打开独立窗口（圣所/任务/战报等）</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
-            // v0.75.30: 成长5页签(知识/背包/技能/锻造/阶位)移除——它们显示"当前选中单位"的个体信息，
-            // 属单位面板职责（单位面板特殊组已有入口按钮）；星海总览只保留系统级功能。
-            ("sm_ui_faction_window_title", DrawFactionContent),
-            ("sm_ui_player_title", DrawPlayerContent),
-            ("sm_ui_tree_title", DrawWorldTreeContent),
-            ("sm_ui_world_beyond_title", DrawWorldBeyondContent),
-            ("sm_ui_rank_window_title", DrawRankContent),
-            ("sm_ui_building_title", DrawBuildingContent),
-            ("sm_ui_economy_title", DrawEconomyContent),
-            ("sm_ui_tech", DrawTechContent),
+            // === A组·世界管理 ===
+            ("sm_ui_faction_window_title", DrawFactionContent),      // 势力（含外交入口）
+            ("sm_ui_economy_title", DrawEconomyContent),             // 经济（含市场入口）
+            ("sm_ui_tech", DrawTechContent),                         // 科技
+            ("sm_ui_building_title", DrawBuildingContent),           // 建筑
+            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树
+            // === B组·强者体系 ===
+            ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行（含超A）
+            ("sm_ui_player_title", DrawPlayerContent),               // 玩家
+            ("sm_ui_quest_title", null),                             // 任务成就（独立窗口）
+            ("sm_ui_battle_report_title", null),                     // 战报统计（独立窗口）
+            // === C组·高级功能 ===
+            ("sm_ui_sanctuary_title", null),                         // 圣所（独立窗口）
+            ("sm_ui_world_beyond_title", DrawWorldBeyondContent),    // 世界超越
+            ("sm_ui_settings_title", DrawSettingsContent),           // 设置（大重启+配置）
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)
         {
             SuperMechWorldBeyondView.Draw(content);
+        }
+
+        /// <summary>v0.205 设置标签页：大重启+配置+帮助</summary>
+        internal static void DrawSettingsContent(RectTransform content)
+        {
+            var go = new GameObject("SettingsView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechSettingsView>();
         }
 
         private static void ToggleWindow(string id, string titleKey, float w, float h, System.Action<RectTransform> drawContent)

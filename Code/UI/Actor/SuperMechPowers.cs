@@ -83,7 +83,8 @@ namespace SuperMech.Code
 
             int created = 0;
 
-            // 1. 星海总览（最常用：所有系统入口）
+            // v0.205 UI重设计：神权栏只留4个核心入口
+            // 1. 星海总览（所有系统级功能入口）
             if (PowerButton.get("sm_overview_open") == null)
             {
                 try
@@ -103,7 +104,7 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星海总览按钮失败: {e.Message}"); }
             }
 
-            // 2. 星际星图（核心功能：多星球+航行+殖民，用户要求放神权栏）
+            // 2. 星际星图（2.5D星图，高频独立功能）
             if (PowerButton.get("sm_star_open") == null)
             {
                 try
@@ -123,106 +124,6 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星际星图按钮失败: {e.Message}"); }
             }
 
-            // 2.5 超能者突破（阶位系统交互）
-            if (PowerButton.get("sm_awakening_open") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconStar")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_awakening_open", () =>
-                    {
-                        SuperMechAwakeningView.Toggle();
-                    }, icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_awakening_open", "sm_awakening_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 突破按钮失败: {e.Message}"); }
-            }
-
-            // 2.6 职业管理（职业系统交互）
-            if (PowerButton.get("sm_profession_open") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconSword")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_profession_open", () =>
-                    {
-                        SuperMechProfessionView.Toggle();
-                    }, icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_profession_open", "sm_profession_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 职业按钮失败: {e.Message}"); }
-            }
-
-            // 2.7 锻造工坊（装备系统交互）
-            if (PowerButton.get("sm_forge_open") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconHammer")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_forge_open", () =>
-                    {
-                        SuperMechForgeView.Toggle();
-                    }, icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_forge_open", "sm_forge_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 锻造按钮失败: {e.Message}"); }
-            }
-
-            // 2.8 交易市场（经济系统交互）
-            if (PowerButton.get("sm_market_open") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconCoin")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_market_open", () =>
-                    {
-                        SuperMechMarketView.Toggle();
-                    }, icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_market_open", "sm_market_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 市场按钮失败: {e.Message}"); }
-            }
-
-            // 3. 进入圣所（核心功能：六大圣所修炼）
-            if (PowerButton.get("sm_sanctuary_open") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_sanctuary_open", () =>
-                    {
-                        SuperMechWindowManager.OpenSanctuary();
-                    }, icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_sanctuary_open", "sm_sanctuary_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 圣所按钮失败: {e.Message}"); }
-            }
-
             // 3. 召唤降临者（玩家化身，需要点击地图）
             if (PowerButton.get(SummonDescendant) == null && AssetManager.powers.get(SummonDescendant) != null)
             {
@@ -236,7 +137,7 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
             }
 
-            // 4. 异化之灾（灾害玩法，需要点击地图）
+            // 4. 异化灾害（灾害玩法，需要点击地图）
             if (PowerButton.get(DisasterAlien) == null && AssetManager.powers.get(DisasterAlien) != null)
             {
                 try
@@ -249,25 +150,8 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异化按钮失败: {e.Message}"); }
             }
 
-            // 5. 大重启（宇宙迭代，高级功能放最后）
-            if (PowerButton.get("sm_great_restart") == null)
-            {
-                try
-                {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
-                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
-                    var pb = PowerButtonCreator.CreateSimpleButton("sm_great_restart", () =>
-                    {
-                        SuperMechCosmicIteration.TriggerGreatRestart();
-                    }, icon);
-                    if (pb != null)
-                    {
-                        SetupTooltip(pb, "sm_great_restart_title", "sm_great_restart_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
-                    }
-                }
-                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 宇宙迭代按钮失败: {e.Message}"); }
-            }
+            // v0.205 已移除：超能者突破/职业/锻造/市场/圣所/宇宙迭代
+            // 这些功能收进星海总览标签页，避免神权栏重复
 
             if (created > 0)
             {

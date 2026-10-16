@@ -48,8 +48,8 @@ namespace SuperMech.Code
             reportRect.sizeDelta = new Vector2(48, 22);
             reportRect.anchoredPosition = new Vector2(-124, 0);
 
-            // v0.198 超A战力榜按钮
-            var rankBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_supera_ranking"), 10, () => SuperMechSuperARankingView.Toggle());
+            // v0.205 超A战力榜合并到阶位排行
+            var rankBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_supera_ranking"), 10, () => SuperMechWindowManager.OpenRank());
             var rankRect = rankBtn.GetComponent<RectTransform>();
             rankRect.anchorMin = new Vector2(1, 0.5f);
             rankRect.anchorMax = new Vector2(1, 0.5f);

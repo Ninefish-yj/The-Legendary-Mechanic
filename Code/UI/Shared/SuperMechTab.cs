@@ -32,20 +32,20 @@ namespace SuperMech.Code
                 bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
                 bg.GetComponent<Image>().color = SuperMechUiSkin.SciBg;
 
-                // ═══ 顶部页签栏（两排布局，每排4个，8个页签刚好放下）═══
+                // ═══ 顶部页签栏（三排布局，每排4个，12个页签）═══
                 var tabBarGo = new GameObject("TabBar", typeof(RectTransform), typeof(Image));
                 tabBarGo.transform.SetParent(content, false);
                 var tbr = tabBarGo.GetComponent<RectTransform>();
                 tbr.anchorMin = new Vector2(0, 1); tbr.anchorMax = new Vector2(1, 1);
                 tbr.pivot = new Vector2(0.5f, 1);
                 tbr.anchoredPosition = Vector2.zero;
-                tbr.sizeDelta = new Vector2(0, 88);  // 两排，每排40+边距
+                tbr.sizeDelta = new Vector2(0, 130);  // 三排，每排40+边距
                 var tImg = tabBarGo.GetComponent<Image>();
                 tImg.color = new Color(0.04f, 0.06f, 0.10f, 0.9f);
                 tImg.raycastTarget = true;
 
                 var tabs = SuperMechWindowManager.OverviewTabs;
-                int perRow = 4;  // 每排4个，8个页签两排放下
+                int perRow = 4;  // 每排4个，12个页签三排放下
                 float tabW = 168f;  // 每个标签宽度
                 float tabH = 36f;
                 float gapX = 6f;    // 横向间距
@@ -79,7 +79,7 @@ namespace SuperMech.Code
                 acr.anchorMin = Vector2.zero; acr.anchorMax = Vector2.one;
                 acr.pivot = new Vector2(0.5f, 0.5f);
                 acr.offsetMin = new Vector2(6, 6);
-                acr.offsetMax = new Vector2(-6, -94);  // 顶部留94给两排标签栏(88+6边距)
+                acr.offsetMax = new Vector2(-6, -136);  // 顶部留136给三排标签栏(130+6边距)
 
                 DrawCurrent(acr);
             }
@@ -89,7 +89,7 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>页签切换：圣所开独立空间，其余内嵌对应系统面板</summary>
+        /// <summary>v0.205 页签切换：draw==null的标签页打开对应独立窗口（任务/战报/圣所），其余内嵌</summary>
         private static void SelectTab(int idx)
         {
             if (_rootContent == null) return;
@@ -97,8 +97,14 @@ namespace SuperMech.Code
             if (idx < 0 || idx >= tabs.Length) return;
             if (tabs[idx].draw == null)
             {
-                // 圣所：打开独立圣所空间视图
-                SuperMechWindowManager.OpenSanctuary();
+                // 根据标签页key打开对应独立窗口
+                string key = tabs[idx].key;
+                if (key == "sm_ui_sanctuary_title")
+                    SuperMechWindowManager.OpenSanctuary();
+                else if (key == "sm_ui_quest_title")
+                    SuperMechQuestView.Toggle();
+                else if (key == "sm_ui_battle_report_title")
+                    SuperMechBattleReportView.Toggle();
                 return;
             }
             _tabIndex = idx;

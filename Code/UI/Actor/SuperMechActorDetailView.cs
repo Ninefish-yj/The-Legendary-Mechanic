@@ -277,7 +277,7 @@ namespace SuperMech.Code
             var evolvable = SuperMechSpeciesEvolution.GetEvolvableSpecies(a.data.id);
             if (evolvable.Count > 0)
                 AddFunctionButton(LocalizedTextManager.getText("sm_ui_species_evolve"), new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
-            AddFunctionButton(LocalizedTextManager.getText("sm_econ_service_panel"), new Color(0.4f, 0.8f, 0.6f), () => SuperMechEconomyServiceView.Toggle(a));
+            AddFunctionButton(LocalizedTextManager.getText("sm_econ_service_panel"), new Color(0.4f, 0.8f, 0.6f), () => SuperMechWindowManager.OpenEconomy());
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_combat_stats"), new Color(0.9f, 0.5f, 0.4f), () => SuperMechCombatStatsView.Toggle(a));
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_quests"), new Color(0.7f, 0.6f, 0.3f), () => SuperMechQuestView.Toggle(a));
         }

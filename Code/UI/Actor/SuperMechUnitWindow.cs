@@ -75,28 +75,34 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.195 精简：只保留最常用的3个功能按钮+超能详情入口</summary>
+        /// <summary>v0.205 UI重设计：单位面板6按钮（知识/背包/超能详情/装备改装/机械军团/维度创世）</summary>
         private static void ShowQuickButtons(UnitWindow window, Actor a)
         {
+            // 1. 知识（固定）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_knowledge"), "iconBooks",
                 SuperMechUiSkin.SciPurple, () => SuperMechWindowManager.OpenKnowledge(a));
+            // 2. 背包（固定）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
                 SuperMechUiSkin.AccentColor, () => SuperMechWindowManager.OpenBag(a));
-
-            if (a.hasTrait(SuperMechTraits.ClassMage))
-            {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_spell_entry"), "iconPurpleBook",
-                    SuperMechUiSkin.SciPurple, () => SuperMechWindowManager.OpenSpell(a));
-            }
-            if (a.hasTrait(SuperMechTraits.ClassMech))
-            {
-                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
-                    SuperMechUiSkin.SuccessGreen, () => SuperMechWindowManager.OpenCraft(a));
-            }
-
-            // v0.195 超能详情入口：其他详细信息和功能按钮都在详情面板中
+            // 3. 超能详情（固定：合并职业/法术/气力/天赋/专精）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_actor_detail"), "iconChosenOne",
                 SuperMechUiSkin.CyanColor, () => SuperMechActorDetailView.Toggle(a));
+            // 4. 装备改装（固定：合并锻造）
+            ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
+                SuperMechUiSkin.SuccessGreen, () => SuperMechWindowManager.OpenCraft(a));
+            // 5. 机械军团（机械系显示）
+            if (a.hasTrait(SuperMechTraits.ClassMech))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_mech_legion"), "iconSword",
+                    new Color(0.7f, 0.8f, 1.0f), () => SuperMechWindowManager.OpenMechLegion(a));
+            }
+            // 6. 维度/虚拟创世（高阶位或有维度特质显示）
+            int rank = SuperMechAdvancement.GetExactRankIndex(a);
+            if (rank >= 8 || a.hasTrait("sm_dimension_traveler"))
+            {
+                ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_dim_title"), "iconEye",
+                    new Color(0.8f, 0.6f, 0.9f), () => SuperMechWindowManager.OpenDimension(a));
+            }
         }
 
         /// <summary>
