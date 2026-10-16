@@ -112,13 +112,14 @@ namespace SuperMech.Code
                         strategy, "iconEye");
                 }
 
-                // === 按钮入口：打开星海总览 ===
+                // === 按钮入口：打开星海总览（自动选中当前王国）===
                 var btnRow = AddRow(__instance, LocalizedTextManager.getText("sm_ui_kingdom_open_overview"),
                     "▸ " + LocalizedTextManager.getText("sm_ui_open"), "iconPlanet");
                 if (btnRow != null)
                 {
-                    _onClickField?.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview()));
-                    _onHoverField?.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview()));
+                    Kingdom captured = kingdom;
+                    _onClickField?.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview(captured)));
+                    _onHoverField?.SetValue(btnRow, (System.Action)(() => SuperMechWindowManager.OpenOverview(captured)));
                 }
             }
             catch (System.Exception e)

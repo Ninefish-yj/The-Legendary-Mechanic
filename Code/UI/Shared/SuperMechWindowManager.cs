@@ -7,10 +7,14 @@ namespace SuperMech.Code
     {
         private static readonly Dictionary<string, SuperMechUguiWindow> _windows = new Dictionary<string, SuperMechUguiWindow>();
 
+        /// <summary>v0.206 星海总览当前选中的原版王国ID（-1表示未选中）</summary>
+        public static long SelectedKingdomId = -1;
+
         /// <summary>v0.75.35: 换存档时清空窗口引用缓存（防悬垂引用）</summary>
         public static void Clear()
         {
             _windows.Clear();
+            SelectedKingdomId = -1;
         }
         private static bool _initialized;
 
@@ -43,16 +47,22 @@ namespace SuperMech.Code
         public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
         public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent); }
+        /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
+        public static void OpenOverview(Kingdom kingdom)
+        {
+            if (kingdom != null) SelectedKingdomId = kingdom.getID();
+            ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent);
+        }
 
-        /// <summary>v0.205 UI重设计：星海总览12标签页分3组
-        /// A组·世界管理(5): 势力+外交 / 经济+市场 / 科技 / 建筑 / 世界树
+        /// <summary>v0.206 UI重设计：星海总览12标签页分3组
+        /// A组·世界管理(5): 王国+外交 / 经济+市场 / 科技 / 建筑 / 世界树
         /// B组·强者体系(4): 阶位排行+超A / 玩家 / 任务成就 / 战报统计
         /// C组·高级功能(3): 圣所 / 世界超越 / 设置(大重启+配置)
         /// draw==null 表示点击标签页时打开独立窗口（圣所/任务/战报等）</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
             // === A组·世界管理 ===
-            ("sm_ui_faction_window_title", DrawFactionContent),      // 势力（含外交入口）
+            ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（含外交入口）
             ("sm_ui_economy_title", DrawEconomyContent),             // 经济（含市场入口）
             ("sm_ui_tech", DrawTechContent),                         // 科技
             ("sm_ui_building_title", DrawBuildingContent),           // 建筑
@@ -220,16 +230,16 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechRankView>();
         }
 
-        internal static void DrawFactionContent(RectTransform content)
+        internal static void DrawKingdomContent(RectTransform content)
         {
-            var go = new GameObject("FactionView");
+            var go = new GameObject("KingdomView");
             go.transform.SetParent(content, false);
             var rect = go.AddComponent<RectTransform>();
             rect.anchorMin = Vector2.zero;
             rect.anchorMax = Vector2.one;
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
-            go.AddComponent<SuperMechFactionView>();
+            go.AddComponent<SuperMechKingdomView>();
         }
 
 

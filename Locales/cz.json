@@ -3847,5 +3847,10 @@
   "sm_cfg_combat_ai_desc": "启用智能战斗AI",
   "sm_ui_on": "开",
   "sm_ui_off": "关",
-  "sm_ui_kingdom_open_overview": "超神机械师面板"
+  "sm_ui_kingdom_open_overview": "超神机械师面板",
+  "sm_ui_kingdom_window_title": "王国",
+  "sm_ui_kingdom_count_zero": "文明王国: 0",
+  "sm_ui_kingdom_total": "文明王国",
+  "sm_ui_kingdom_none": "暂无文明王国",
+  "sm_ui_kingdom_click": "点击上方王国查看详情\n\n选中王国后，切换到「经济」「科技」「建筑」标签页可查看该王国的详细数据"
 }
