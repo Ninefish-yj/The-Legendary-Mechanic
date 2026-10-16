@@ -188,8 +188,34 @@ namespace SuperMech.Code
             labelRect.anchorMin = Vector2.zero;
             labelRect.anchorMax = Vector2.one;
             labelRect.offsetMin = new Vector2(8, 0);
-            labelRect.offsetMax = new Vector2(-8, 0);
+            labelRect.offsetMax = new Vector2(-60, 0);
             label.horizontalOverflow = HorizontalWrapMode.Wrap;
+
+            // 原版面板按钮（右侧）
+            var origBtnGo = new GameObject("OrigPanelBtn");
+            origBtnGo.transform.SetParent(row.transform, false);
+            var origRect = origBtnGo.AddComponent<RectTransform>();
+            origRect.anchorMin = new Vector2(1, 0.5f);
+            origRect.anchorMax = new Vector2(1, 0.5f);
+            origRect.pivot = new Vector2(1, 0.5f);
+            origRect.sizeDelta = new Vector2(52, 26);
+            origRect.anchoredPosition = new Vector2(-4, 0);
+            var origImg = origBtnGo.AddComponent<Image>();
+            origImg.color = new Color(0.2f, 0.4f, 0.7f, 0.8f);
+            var origBtn = origBtnGo.AddComponent<Button>();
+            var origTxt = SuperMechUiBuilder.AddText(origBtnGo, "原版", 10, TextAnchor.MiddleCenter, Color.white);
+            var origTxtRect = origTxt.GetComponent<RectTransform>();
+            origTxtRect.anchorMin = Vector2.zero;
+            origTxtRect.anchorMax = Vector2.one;
+            origTxtRect.offsetMin = Vector2.zero;
+            origTxtRect.offsetMax = Vector2.zero;
+            Kingdom captured = k;
+            origBtn.onClick.AddListener(() =>
+            {
+                // 选中并打开原版王国信息面板
+                SelectedMetas.selected_kingdom = captured;
+                ScrollWindow.showWindow("kingdom");
+            });
 
             // 点击选中
             var btn = row.AddComponent<Button>();
