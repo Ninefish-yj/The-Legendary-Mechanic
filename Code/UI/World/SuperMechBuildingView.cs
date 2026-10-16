@@ -16,6 +16,7 @@ namespace SuperMech.Code
             try { BuildLayout(); }
             catch (System.Exception e) { Debug.LogError("[超神机械师] BuildingView初始化失败: " + e); }
         }
+        void OnEnable() { try { RefreshAll(); } catch (System.Exception e) { Debug.LogError("[超神机械师] BuildingView刷新失败: " + e); } }
 
         private void BuildLayout()
         {
@@ -46,13 +47,28 @@ namespace SuperMech.Code
 
             if (World.world == null || World.world.buildings == null) return;
 
-            // 统计自定义建筑
+            // v0.206 获取当前选中的王国（跨标签页联动）
+            Kingdom selectedKingdom = null;
+            long selId = SuperMechWindowManager.SelectedKingdomId;
+            if (selId >= 0 && World.world.kingdoms != null)
+            {
+                foreach (var k in World.world.kingdoms.list)
+                    if (k != null && k.getID() == selId) { selectedKingdom = k; break; }
+            }
+            string kingdomLabel = selectedKingdom != null
+                ? selectedKingdom.data.name
+                : LocalizedTextManager.getText("sm_ui_economy_all_kingdoms");
+            _headText.text = LocalizedTextManager.getText("sm_ui_building_title") + "  [" + kingdomLabel + "]";
+
+            // 统计自定义建筑（按选中王国过滤）
             var buildingStats = new Dictionary<string, int>();
             var buildingLevels = new Dictionary<string, Dictionary<int, int>>();
 
             foreach (var b in World.world.buildings)
             {
                 if (b == null || b.asset == null || b.isRuin()) continue;
+                // 王国过滤
+                if (selectedKingdom != null && (b.city == null || b.city.kingdom != selectedKingdom)) continue;
                 string id = b.asset.id;
                 if (!SuperMechBuilding.IsCustomBuilding(id)) continue;
 

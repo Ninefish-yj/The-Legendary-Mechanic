@@ -16,13 +16,26 @@ namespace SuperMech.Code
         private Text _kingdomLabelText;
         private string _selectedId;
         private SuperMechTech.TechBranch _currentBranch = SuperMechTech.TechBranch.Energy;
-        private static Kingdom _selectedKingdom;
         private readonly Dictionary<string, Image> _nodeImages = new Dictionary<string, Image>();
 
+        /// <summary>v0.206 统一使用WindowManager.SelectedKingdomId，跨标签页联动</summary>
         public static Kingdom SelectedKingdom
         {
-            get => _selectedKingdom != null ? _selectedKingdom : (World.world != null && World.world.kingdoms != null && World.world.kingdoms.list.Count > 0 ? World.world.kingdoms.list[0] : null);
-            set => _selectedKingdom = value;
+            get
+            {
+                if (World.world == null || World.world.kingdoms == null) return null;
+                long id = SuperMechWindowManager.SelectedKingdomId;
+                if (id >= 0)
+                {
+                    foreach (var k in World.world.kingdoms.list)
+                        if (k != null && k.getID() == id) return k;
+                }
+                return World.world.kingdoms.list.Count > 0 ? World.world.kingdoms.list[0] : null;
+            }
+            set
+            {
+                SuperMechWindowManager.SelectedKingdomId = value != null ? value.getID() : -1;
+            }
         }
 
         void Awake()

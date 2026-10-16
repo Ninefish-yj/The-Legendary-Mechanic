@@ -199,7 +199,19 @@ namespace SuperMech.Code
             if (_statsText == null || _rankText == null || _companyText == null || _macroText == null) return;
             if (World.world == null || World.world.units == null) return;
 
-            // 收集超A经济数据
+            // v0.206 获取当前选中的王国（跨标签页联动）
+            Kingdom selectedKingdom = null;
+            long selId = SuperMechWindowManager.SelectedKingdomId;
+            if (selId >= 0 && World.world.kingdoms != null)
+            {
+                foreach (var k in World.world.kingdoms.list)
+                    if (k != null && k.getID() == selId) { selectedKingdom = k; break; }
+            }
+            string kingdomLabel = selectedKingdom != null
+                ? selectedKingdom.data.name
+                : LocalizedTextManager.getText("sm_ui_economy_all_kingdoms");
+
+            // 收集超A经济数据（按选中王国过滤）
             var superAList = new List<(Actor actor, int balance, int salary)>();
             long totalInal = 0;
             int superACount = 0;
@@ -207,6 +219,8 @@ namespace SuperMech.Code
             foreach (Actor a in World.world.units.units_only_alive)
             {
                 if (a == null || !SuperMechSupermA.IsSuperA(a)) continue;
+                // 王国过滤：选中王国时只显示该国超A
+                if (selectedKingdom != null && a.kingdom != selectedKingdom) continue;
                 int balance = SuperMechInal.GetInal(a);
                 int salary = a.kingdom != null ? SuperMechInal.CalcSalary(a, a.kingdom) : 0;
                 superAList.Add((a, balance, salary));
@@ -215,7 +229,7 @@ namespace SuperMech.Code
             }
             superAList.Sort((x, y) => y.balance.CompareTo(x.balance));
 
-            // 宏观经济指标
+            // 宏观经济指标（全局，不过滤）
             long m2 = SuperMechCompany.GetTotalMoneySupply();
             long reserves = SuperMechCompany.GetTotalReserves();
             float inflation = SuperMechCompany.CalculateInflationRate();
@@ -227,9 +241,10 @@ namespace SuperMech.Code
                 avgRate /= godCompanies.Count;
             }
 
-            // 顶部统计
+            // 顶部统计（显示当前王国）
             var sb = new StringBuilder();
-            sb.Append(LocalizedTextManager.getText("sm_ui_economy_m2")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(m2.ToString("N0"))
+            sb.Append("<color=#ffd700>[").Append(kingdomLabel).Append("]</color>  ")
+              .Append(LocalizedTextManager.getText("sm_ui_economy_m2")).Append(" ").Append(LocalizedTextManager.getText("sm_inal_symbol")).Append(m2.ToString("N0"))
               .Append("  |  ").Append(LocalizedTextManager.getText("sm_ui_economy_inflation")).Append(" ").Append(inflation.ToString("P1"))
               .Append("  |  ").Append(LocalizedTextManager.getText("sm_ui_economy_rate")).Append(" ").Append(avgRate.ToString("P1"));
             _statsText.text = sb.ToString();
