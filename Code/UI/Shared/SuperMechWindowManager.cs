@@ -65,13 +65,16 @@ namespace SuperMech.Code
         /// <summary>v0.210 星海总览=纯全局概览，只留3个标签
         /// 王国(全球对比表) / 阶位排行(全球强者) / 势力(全球组织格局)
         /// 世界树/世界超越从总览移出，收进设置面板"其他功能"区
-        /// 经济/科技/建筑从总览移出，改为原版王国面板底部按钮
-        /// 设置/圣所从总览移出，改为神权栏独立入口</summary>
+        /// v0.222 神权栏精简：星海总览+圣所+星图（大窗口），其他入口收回星海总览页签
+        /// v0.222 星海总览标签改为竖向左侧栏</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
             ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（全球对比表）
             ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行（全球强者）
             ("sm_ui_faction_window_title", DrawFactionContent),      // 势力（全球组织格局）
+            ("sm_ui_worldbeyond_title", DrawWorldBeyondContent),     // 世界之外（暗面宇宙）
+            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树（入侵事件）
+            ("sm_ui_settings_title", DrawSettingsContent),           // 设置
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)

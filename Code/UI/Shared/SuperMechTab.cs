@@ -74,23 +74,22 @@ namespace SuperMech.Code
                 nextRect.sizeDelta = new Vector2(28, 20);
                 nextRect.anchoredPosition = new Vector2(-4, 0);
 
-                // ═══ 顶部页签栏（等宽铺满一排）═══
+                // ═══ 左侧竖向标签栏（v0.222：从顶部横向改为左侧竖向）═══
                 var tabBarGo = new GameObject("TabBar", typeof(RectTransform), typeof(Image));
                 tabBarGo.transform.SetParent(content, false);
                 var tbr = tabBarGo.GetComponent<RectTransform>();
-                tbr.anchorMin = new Vector2(0, 1); tbr.anchorMax = new Vector2(1, 1);
-                tbr.pivot = new Vector2(0.5f, 1);
+                tbr.anchorMin = new Vector2(0, 0); tbr.anchorMax = new Vector2(0, 1);
+                tbr.pivot = new Vector2(0, 1);
                 tbr.anchoredPosition = new Vector2(0, -26);  // 状态栏下方
-                tbr.sizeDelta = new Vector2(0, 40);  // 单排，紧凑
+                tbr.sizeDelta = new Vector2(110, -26);  // 宽度110，高度=父高度-状态栏
                 var tImg = tabBarGo.GetComponent<Image>();
                 tImg.color = new Color(0.04f, 0.06f, 0.10f, 0.9f);
                 tImg.raycastTarget = true;
 
                 var tabs = SuperMechWindowManager.OverviewTabs;
-                int tabCount = tabs.Length;
-                float tabH = 32f;
-                float gapX = 4f;    // 横向间距
-                float startY = -4f; // 顶部边距
+                float tabH = 38f;
+                float gapY = 4f;
+                float startX = 6f;
 
                 for (int i = 0; i < tabs.Length; i++)
                 {
@@ -100,25 +99,25 @@ namespace SuperMech.Code
                     var b = MakeTabButton(tabBarGo.transform, label, active);
                     var br = b.GetComponent<RectTransform>();
 
-                    // 等宽铺满：每个标签宽度=1/tabCount
-                    br.anchorMin = new Vector2((float)i / tabCount, 1f);
-                    br.anchorMax = new Vector2((float)(i + 1) / tabCount, 1f);
+                    // 竖向排列：每个标签固定高度，从顶部往下排
+                    br.anchorMin = new Vector2(0, 1);
+                    br.anchorMax = new Vector2(1, 1);
                     br.pivot = new Vector2(0.5f, 1f);
-                    br.offsetMin = new Vector2(gapX, -startY - tabH);
-                    br.offsetMax = new Vector2(-gapX, -startY);
+                    br.offsetMin = new Vector2(startX, -(startX + (i + 1) * (tabH + gapY)));
+                    br.offsetMax = new Vector2(-startX, -(startX + i * (tabH + gapY)));
 
                     var btn = b.GetComponent<Button>();
                     btn.onClick.AddListener(() => SelectTab(idx));
                 }
 
-                // ═══ 内容区（全拉伸，各页签自己创建滚动视图）═══
+                // ═══ 内容区（右侧，左侧留110给标签栏）═══
                 var areaContentGo = new GameObject("ContentArea", typeof(RectTransform));
                 areaContentGo.transform.SetParent(content, false);
                 var acr = areaContentGo.GetComponent<RectTransform>();
                 acr.anchorMin = Vector2.zero; acr.anchorMax = Vector2.one;
                 acr.pivot = new Vector2(0.5f, 0.5f);
-                acr.offsetMin = new Vector2(6, 6);
-                acr.offsetMax = new Vector2(-6, -72);  // 顶部留72给状态栏(26)+标签栏(40)+边距(6)
+                acr.offsetMin = new Vector2(116, 6);   // 左侧留116给标签栏(110+6)
+                acr.offsetMax = new Vector2(-6, -32);  // 顶部留32给状态栏(26+6)
 
                 DrawCurrent(acr);
             }
@@ -158,7 +157,7 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>页签按钮：暗底+次要文字；选中=提亮底+金色文字+顶部青色条</summary>
+        /// <summary>v0.222 竖向标签按钮：暗底+次要文字；选中=提亮底+青色文字+左侧青色条</summary>
         private static GameObject MakeTabButton(Transform parent, string text, bool active)
         {
             var go = new GameObject("TabBtn", typeof(RectTransform), typeof(Image), typeof(Button));
@@ -178,20 +177,21 @@ namespace SuperMech.Code
             var label = SuperMechUiSkin.MakeText(go.transform, text, 13, TextAnchor.MiddleCenter);
             label.color = active ? SuperMechUiSkin.CyanColor : SuperMechUiSkin.SciMuted;
             var lr = label.GetComponent<RectTransform>();
-            lr.offsetMin = new Vector2(4, 0);
+            lr.offsetMin = new Vector2(8, 0);
             lr.offsetMax = new Vector2(-4, 0);
 
             if (active)
             {
+                // v0.222 竖向标签：左侧青色指示条
                 var barGo = new GameObject("ActiveBar", typeof(RectTransform), typeof(Image));
                 barGo.transform.SetParent(go.transform, false);
                 var bar = barGo.GetComponent<Image>();
                 bar.color = SuperMechUiSkin.SciCyan;
                 var barRect = barGo.GetComponent<RectTransform>();
-                barRect.anchorMin = new Vector2(0, 1); barRect.anchorMax = new Vector2(1, 1);
-                barRect.pivot = new Vector2(0.5f, 1);
+                barRect.anchorMin = new Vector2(0, 0); barRect.anchorMax = new Vector2(0, 1);
+                barRect.pivot = new Vector2(0, 0.5f);
                 barRect.anchoredPosition = Vector2.zero;
-                barRect.sizeDelta = new Vector2(0, 3);
+                barRect.sizeDelta = new Vector2(3, 0);
             }
             return go;
         }
