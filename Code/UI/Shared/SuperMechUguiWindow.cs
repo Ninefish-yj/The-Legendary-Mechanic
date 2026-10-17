@@ -116,6 +116,10 @@ namespace SuperMech.Code
 
             _windowCache[id] = wrapper;
 
+            // v0.237.7 PC端加右下角拖拽缩放手柄（手机端屏幕小、已有92%适配，不启用）
+            if (!Application.isMobilePlatform)
+                SuperMechResizeHandle.Add(bgRect);
+
             // 标准化：新创建的窗口默认active，先关闭再用showWindow走原版开启动画
             if (swGo.activeSelf) swGo.SetActive(false);
             ScrollWindow.showWindow(id);
