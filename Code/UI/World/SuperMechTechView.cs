@@ -14,9 +14,16 @@ namespace SuperMech.Code
         private Text _researchBtnText;
         private Text _kingdomNameText;
         private Text _kingdomLabelText;
+        private Text _statusText;
         private string _selectedId;
         private SuperMechTech.TechBranch _currentBranch = SuperMechTech.TechBranch.Energy;
         private readonly Dictionary<string, Image> _nodeImages = new Dictionary<string, Image>();
+        private static readonly Color BranchEnergy = new Color(0.96f, 0.65f, 0.14f);
+        private static readonly Color BranchSpace = new Color(0.31f, 0.76f, 0.97f);
+        private static readonly Color BranchInfo = new Color(0.73f, 0.41f, 0.78f);
+        private static readonly Color BranchMech = new Color(0.91f, 0.76f, 0.41f);
+        private static readonly Color BranchBio = new Color(0.40f, 0.73f, 0.42f);
+        private static readonly Color BranchMilitary = new Color(0.94f, 0.33f, 0.31f);
 
         /// <summary>v0.206 统一使用WindowManager.SelectedKingdomId，跨标签页联动</summary>
         public static Kingdom SelectedKingdom
@@ -74,6 +81,26 @@ namespace SuperMech.Code
             titleText.text = LocalizedTextManager.getText("sm_ui_civ_tech_tree");
 
             _kingdomNameText = titleText; // 复用，后面更新
+
+            // 总览信息条（v0.238.3 对齐帝国盒子：时代 · 科技点 · 已研究）
+            var statusGo = new GameObject("StatusBar");
+            statusGo.transform.SetParent(transform, false);
+            var statusRect = statusGo.AddComponent<RectTransform>();
+            statusRect.anchorMin = new Vector2(0, 1);
+            statusRect.anchorMax = new Vector2(1, 1);
+            statusRect.pivot = new Vector2(0.5f, 1);
+            statusRect.sizeDelta = new Vector2(0, 24);
+            statusRect.anchoredPosition = new Vector2(0, -28);
+            var statusTextGo = new GameObject("StatusText");
+            statusTextGo.transform.SetParent(statusGo.transform, false);
+            var stRect = statusTextGo.AddComponent<RectTransform>();
+            stRect.anchorMin = Vector2.zero; stRect.anchorMax = Vector2.one;
+            stRect.offsetMin = new Vector2(10, 0); stRect.offsetMax = new Vector2(-10, 0);
+            _statusText = statusTextGo.AddComponent<Text>();
+            _statusText.font = SuperMechUiSkin.DefaultFont;
+            _statusText.fontSize = 11;
+            _statusText.color = SuperMechUiSkin.TextDim;
+            _statusText.alignment = TextAnchor.MiddleLeft;
 
             // 王国切换器（标题栏右侧）
             var kingdomSwitchGo = new GameObject("KingdomSwitch");
@@ -155,7 +182,7 @@ namespace SuperMech.Code
             barRect.anchorMax = new Vector2(1, 1);
             barRect.pivot = new Vector2(0.5f, 1);
             barRect.sizeDelta = new Vector2(0, 30);
-            barRect.anchoredPosition = new Vector2(0, -28);
+            barRect.anchoredPosition = new Vector2(0, -52);
             var barImg = barGo.AddComponent<Image>();
             barImg.sprite = SuperMechUiSkin.ProgressBg;
             barImg.type = Image.Type.Sliced;
@@ -199,7 +226,7 @@ namespace SuperMech.Code
             treeRect.anchorMin = Vector2.zero;
             treeRect.anchorMax = new Vector2(0.55f, 1);
             treeRect.offsetMin = Vector2.zero;
-            treeRect.offsetMax = new Vector2(0, -58);
+            treeRect.offsetMax = new Vector2(0, -90);
 
             var treeScrollGo = new GameObject("Scroll");
             treeScrollGo.transform.SetParent(treeGo.transform, false);
@@ -242,7 +269,7 @@ namespace SuperMech.Code
             detailRect.anchorMin = new Vector2(0.55f, 0);
             detailRect.anchorMax = Vector2.one;
             detailRect.offsetMin = Vector2.zero;
-            detailRect.offsetMax = new Vector2(0, -58);
+            detailRect.offsetMax = new Vector2(0, -90);
 
             var cardGo = new GameObject("Card");
             cardGo.transform.SetParent(detailGo.transform, false);
@@ -250,7 +277,8 @@ namespace SuperMech.Code
             cardRect.anchorMin = Vector2.zero; cardRect.anchorMax = Vector2.one;
             cardRect.offsetMin = new Vector2(4, 4); cardRect.offsetMax = new Vector2(-4, -4);
             var cardImg = cardGo.AddComponent<Image>();
-            cardImg.color = SuperMechUiSkin.CardBg;
+            // v0.238.3 对齐暖棕规范：CardBg(深蓝) → PanelVanilla(暖棕)
+            cardImg.color = SuperMechUiSkin.PanelVanilla;
 
             var detailTextGo = new GameObject("DetailText");
             detailTextGo.transform.SetParent(cardGo.transform, false);
@@ -299,15 +327,9 @@ namespace SuperMech.Code
             UpdateKingdomName();
         }
 
-        private void UpdateKingdomName()
+        private static string GetEraColor(SuperMechTech.Era era)
         {
-            var k = SelectedKingdom;
-            string kName = (k != null && k.data != null) ? k.data.name : LocalizedTextManager.getText("sm_ui_none");
-            // v0.175.1: 显示文明当前时代
-            SuperMechTech.Era era = SuperMechTech.Era.PreIndustrial;
-            if (k != null) era = SuperMechTech.GetEra(k.id);
-            string eraName = SuperMechTech.GetEraName(era);
-            string eraColor = era switch
+            return era switch
             {
                 SuperMechTech.Era.PreIndustrial => "#888888",
                 SuperMechTech.Era.Industrial => "#cd853f",
@@ -316,10 +338,46 @@ namespace SuperMech.Code
                 SuperMechTech.Era.Cosmic => "#ffd700",
                 _ => "#ffffff"
             };
+        }
+
+        private void UpdateKingdomName()
+        {
+            var k = SelectedKingdom;
+            string kName = (k != null && k.data != null) ? k.data.name : LocalizedTextManager.getText("sm_ui_none");
+            // v0.175.1: 显示文明当前时代
+            SuperMechTech.Era era = SuperMechTech.Era.PreIndustrial;
+            if (k != null) era = SuperMechTech.GetEra(k.id);
+            string eraName = SuperMechTech.GetEraName(era);
+            string eraColor = GetEraColor(era);
             if (_kingdomNameText != null)
                 _kingdomNameText.text = $"{LocalizedTextManager.getText("sm_ui_civ_tech_tree")} - {kName}  <color={eraColor}>[{eraName}]</color>";
             if (_kingdomLabelText != null)
                 _kingdomLabelText.text = $"{kName}·{eraName}";
+            RefreshStatus();
+        }
+
+        /// <summary>v0.238.3 总览信息条：时代 · 科技点 · 已研究（对齐帝国盒子顶部信息行）</summary>
+        private void RefreshStatus()
+        {
+            if (_statusText == null) return;
+            var k = SelectedKingdom;
+            string eraName = "?", eraColor = "#ffffff";
+            float pts = 0;
+            int r = 0, n = 0;
+            if (k != null)
+            {
+                var era = SuperMechTech.GetEra(k.id);
+                eraName = SuperMechTech.GetEraName(era);
+                eraColor = GetEraColor(era);
+                pts = SuperMechCivilization.GetTechPointsFromKingdomById(k.id);
+                var techs = SuperMechTech.GetByBranch(_currentBranch);
+                n = techs.Count;
+                foreach (var t in techs)
+                    if (SuperMechTech.IsResearched(k.id, t.id)) r++;
+            }
+            _statusText.text = $"<color={eraColor}>[{eraName}]</color>   " +
+                $"{LocalizedTextManager.getText("sm_ui_tech_points")} {pts:F0}   " +
+                $"{LocalizedTextManager.getText("sm_ui_researched")} {r}/{n}";
         }
 
         /// <summary>切换王国（direction: -1上一个, 1下一个）</summary>
@@ -366,7 +424,7 @@ namespace SuperMech.Code
             if (_researchBtn != null) _researchBtn.gameObject.SetActive(false);
         }
 
-        /// <summary>构建垂直线性树状图</summary>
+        /// <summary>构建网格状科技树（v0.238.3：单列垂直线性 → 2列网格，对齐帝国盒子横向排布）</summary>
         private void RefreshTree()
         {
             if (_treeContent == null) return;
@@ -377,25 +435,61 @@ namespace SuperMech.Code
             long kid = kingdom != null ? kingdom.getID() : 0;
             var techs = SuperMechTech.GetByBranch(_currentBranch);
 
-            float nodeWidth = 260f;
-            float nodeHeight = 56f;
-            float spacing = 14f;
-            float startX = 20f;
-            float startY = -20f;
+            float nodeW = 140f;
+            float nodeH = 48f;
+            float spacing = 16f;
+            float colGap = 20f;
+            int cols = 2;
+            int rows = (techs.Count + cols - 1) / cols;
+            float startX = 12f;
+            float startY = -90f;
 
-            _treeContent.sizeDelta = new Vector2(300, techs.Count * (nodeHeight + spacing) + 40);
+            float contentW = cols * nodeW + (cols - 1) * colGap + 32;
+            float contentH = rows * nodeH + (rows - 1) * spacing + 110;
+            _treeContent.sizeDelta = new Vector2(contentW, contentH);
+
+            // 顶部水平脊线：连接所有列的顶部
+            if (cols > 1)
+            {
+                float ridgeX1 = startX + nodeW * 0.5f;
+                float ridgeX2 = startX + nodeW * 0.5f + (cols - 1) * (nodeW + colGap);
+                CreateHLine(ridgeX1, ridgeX2, startY - nodeH * 0.5f);
+            }
+            // 每列垂直主线：从脊线向下延伸到该列末节点中心
+            for (int c = 0; c < cols; c++)
+            {
+                int countInCol = Mathf.Min(rows, techs.Count - c * rows);
+                if (countInCol <= 0) continue;
+                float colX = startX + nodeW * 0.5f + c * (nodeW + colGap);
+                float topY = startY - nodeH * 0.5f;
+                float bottomY = startY - (countInCol - 1) * (nodeH + spacing) - nodeH * 0.5f;
+                CreateVerticalLine(colX, topY, bottomY);
+            }
 
             for (int i = 0; i < techs.Count; i++)
             {
                 var tech = techs[i];
-                float y = startY - i * (nodeHeight + spacing);
-                CreateNode(tech, startX, y, nodeWidth, nodeHeight, kid);
-                // 连线
-                if (i < techs.Count - 1)
-                {
-                    CreateVerticalLine(startX + nodeWidth / 2, y - nodeHeight / 2, y - nodeHeight / 2 - spacing);
-                }
+                int col = i / rows;   // 列主序：先填满左列
+                int row = i % rows;
+                float x = startX + col * (nodeW + colGap);
+                float y = startY - row * (nodeH + spacing);
+                CreateNode(tech, x, y, nodeW, nodeH, kid);
             }
+
+            RefreshStatus();
+        }
+
+        private Color BranchColor()
+        {
+            return _currentBranch switch
+            {
+                SuperMechTech.TechBranch.Space => BranchSpace,
+                SuperMechTech.TechBranch.Info => BranchInfo,
+                SuperMechTech.TechBranch.Mech => BranchMech,
+                SuperMechTech.TechBranch.Bio => BranchBio,
+                SuperMechTech.TechBranch.Military => BranchMilitary,
+                _ => BranchEnergy
+            };
         }
 
         private void CreateNode(SuperMechTech.TechDef tech, float x, float y, float w, float h, long kid)
@@ -413,9 +507,9 @@ namespace SuperMech.Code
             nodeRect.anchoredPosition = new Vector2(x, y);
             var nodeBtn = nodeGo.AddComponent<Button>();
             var nodeImg = nodeGo.AddComponent<Image>();
-            nodeImg.color = researched ? new Color(0.12f, 0.3f, 0.18f, 0.95f) :
-                            canResearch ? new Color(0.25f, 0.2f, 0.08f, 0.95f) :
-                            new Color(0.15f, 0.15f, 0.18f, 0.95f);
+            nodeImg.color = researched ? new Color(0.12f, 0.32f, 0.18f, 0.95f) :
+                            canResearch ? new Color(0.28f, 0.22f, 0.09f, 0.95f) :
+                            new Color(0.16f, 0.16f, 0.19f, 0.95f);
             _nodeImages[tech.id] = nodeImg;
 
             // 状态圆点
@@ -433,12 +527,24 @@ namespace SuperMech.Code
                           new Color(0.5f, 0.5f, 0.5f);
             // 不设置sprite：Image无sprite时显示纯色方块，跨平台兼容（Android无内置Background资源）
 
-            // 科技名称+层级
+            // v0.238.3 系别图标块（右侧留文字，左对齐）
+            var iconGo = new GameObject("Icon");
+            iconGo.transform.SetParent(nodeGo.transform, false);
+            var iconRect = iconGo.AddComponent<RectTransform>();
+            iconRect.anchorMin = new Vector2(0, 0.5f);
+            iconRect.anchorMax = new Vector2(0, 0.5f);
+            iconRect.pivot = new Vector2(0, 0.5f);
+            iconRect.sizeDelta = new Vector2(24, 24);
+            iconRect.anchoredPosition = new Vector2(30, 0);
+            var iconImg = iconGo.AddComponent<Image>();
+            iconImg.color = new Color(BranchColor().r, BranchColor().g, BranchColor().b, researched ? 0.9f : 0.45f);
+
+            // 科技名称（图标右侧）
             var txtGo = new GameObject("Text");
             txtGo.transform.SetParent(nodeGo.transform, false);
             var txtRect = txtGo.AddComponent<RectTransform>();
             txtRect.anchorMin = Vector2.zero; txtRect.anchorMax = Vector2.one;
-            txtRect.offsetMin = new Vector2(30, 0); txtRect.offsetMax = new Vector2(-8, 0);
+            txtRect.offsetMin = new Vector2(58, 0); txtRect.offsetMax = new Vector2(-26, 0);
             var txt = txtGo.AddComponent<Text>();
             txt.font = SuperMechUiSkin.DefaultFont;
             txt.fontSize = 12;
@@ -446,7 +552,24 @@ namespace SuperMech.Code
                         canResearch ? SuperMechUiSkin.TextColor :
                         SuperMechUiSkin.TextDim;
             txt.alignment = TextAnchor.MiddleLeft;
-            txt.text = $"T{tech.tier} {tech.name}";
+            txt.horizontalOverflow = HorizontalWrapMode.Overflow;
+            txt.text = tech.name;
+
+            // 层级角标（右上）
+            var tierGo = new GameObject("Tier");
+            tierGo.transform.SetParent(nodeGo.transform, false);
+            var tierRect = tierGo.AddComponent<RectTransform>();
+            tierRect.anchorMin = new Vector2(1, 1);
+            tierRect.anchorMax = new Vector2(1, 1);
+            tierRect.pivot = new Vector2(1, 1);
+            tierRect.sizeDelta = new Vector2(26, 14);
+            tierRect.anchoredPosition = new Vector2(-4, -3);
+            var tierTxt = tierGo.AddComponent<Text>();
+            tierTxt.font = SuperMechUiSkin.DefaultFont;
+            tierTxt.fontSize = 9;
+            tierTxt.color = new Color(0.85f, 0.80f, 0.70f, 0.85f);
+            tierTxt.alignment = TextAnchor.MiddleRight;
+            tierTxt.text = $"T{tech.tier}";
 
             string tid = tech.id;
             nodeBtn.onClick.AddListener(() => SelectTech(tid));
@@ -462,6 +585,21 @@ namespace SuperMech.Code
             lineRect.pivot = new Vector2(0.5f, 1);
             lineRect.sizeDelta = new Vector2(2, yTop - yBottom);
             lineRect.anchoredPosition = new Vector2(x, yTop);
+            var lineImg = lineGo.AddComponent<Image>();
+            lineImg.color = new Color(0.4f, 0.4f, 0.5f, 0.4f);
+        }
+
+        /// <summary>v0.238.3 水平连线（顶部脊线，连接各列）</summary>
+        private void CreateHLine(float x1, float x2, float y)
+        {
+            var lineGo = new GameObject("HLine");
+            lineGo.transform.SetParent(_treeContent, false);
+            var lineRect = lineGo.AddComponent<RectTransform>();
+            lineRect.anchorMin = Vector2.zero;
+            lineRect.anchorMax = Vector2.zero;
+            lineRect.pivot = new Vector2(0, 0.5f);
+            lineRect.sizeDelta = new Vector2(x2 - x1, 2);
+            lineRect.anchoredPosition = new Vector2(x1, y);
             var lineImg = lineGo.AddComponent<Image>();
             lineImg.color = new Color(0.4f, 0.4f, 0.5f, 0.4f);
         }
