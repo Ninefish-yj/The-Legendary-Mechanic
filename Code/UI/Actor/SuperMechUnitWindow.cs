@@ -79,10 +79,6 @@ namespace SuperMech.Code
 
             try
             {
-                // v0.227 调试：打印UnitWindow的transform层级，找到生命条容器位置
-                Debug.Log("[超神机械师] === UnitWindow Transform层级 ===");
-                DumpTransform(window.transform, 0, 4);
-
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, SuperMechUiSkin.CyanColor);
                 ShowMainInfo(window, actor);
             }
@@ -102,8 +98,12 @@ namespace SuperMech.Code
         {
             bool hasTalent = SuperMechTalent.HasTalent(a);
 
-            // v0.218 所有单位都显示气力条（模仿原版消耗条），没天赋的显示"未觉醒"
-            ShowQiBar(window, a);
+            // v0.228 气力条优先插入到原版UnitBarsElement区域（和饥饿/体力/魔力条排在一起）
+            // 如果插入成功，就不在统计行重复显示
+            if (!TryInjectQiBarToBarsArea(window, a))
+            {
+                ShowQiBar(window, a);
+            }
 
             if (!hasTalent)
             {
@@ -126,6 +126,71 @@ namespace SuperMech.Code
             if (SuperMechCollapsibleSection.IsExpanded(actorId, "entry"))
             {
                 ShowQuickButtons(window, a);
+            }
+        }
+
+        /// <summary>v0.228 尝试把气力条插入到原版UnitBarsElement区域（和饥饿/体力/魔力条排在一起）</summary>
+        private static bool TryInjectQiBarToBarsArea(UnitWindow window, Actor a)
+        {
+            try
+            {
+                // 找到原版进度条容器（包含饥饿/快乐/体力/魔力条）
+                var barsElement = window.GetComponentInChildren<UnitBarsElement>();
+                if (barsElement == null) return false;
+
+                // 找到一个现有的StatBar作为模板（魔力条最相似，都是蓝色系）
+                var existingBars = barsElement.GetComponentsInChildren<StatBar>(true);
+                if (existingBars == null || existingBars.Length == 0) return false;
+
+                // 检查是否已经插入过气力条（防止重复）
+                var existingQi = barsElement.transform.Find("SM_QiBar");
+                if (existingQi != null)
+                {
+                    UpdateQiBar(existingQi.GetComponent<StatBar>(), a);
+                    return true;
+                }
+
+                // 复制模板StatBar
+                var template = existingBars[0];
+                var qiBarGo = UnityEngine.Object.Instantiate(template.gameObject, barsElement.transform);
+                qiBarGo.name = "SM_QiBar";
+
+                // 修改颜色为青色（模组主题色）
+                var barImg = qiBarGo.transform.Find("bar")?.GetComponent<Image>();
+                if (barImg != null)
+                {
+                    barImg.color = new Color(0.35f, 0.75f, 0.85f, 1f);
+                }
+
+                // 设置气力值
+                var statBar = qiBarGo.GetComponent<StatBar>();
+                UpdateQiBar(statBar, a);
+
+                return true;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 气力条插入Bars区域失败: " + e.Message);
+                return false;
+            }
+        }
+
+        /// <summary>v0.228 更新气力条数值</summary>
+        private static void UpdateQiBar(StatBar bar, Actor a)
+        {
+            if (bar == null) return;
+            float qi = SuperMechQi.GetQi(a);
+            float qiMax = SuperMechQi.GetQiMax(a);
+            int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
+            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
+
+            if (qiMax > 0)
+            {
+                bar.setBar(qi, qiMax, $"/{qiMax:F0} {qiLvText}");
+            }
+            else
+            {
+                bar.setBar(0, 1, qiLvText);
             }
         }
 
@@ -422,25 +487,6 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning("[超神机械师] 气力进度条创建失败: " + e.Message);
-            }
-        }
-
-        /// <summary>v0.227 调试：递归打印Transform层级，找到生命条容器位置</summary>
-        private static void DumpTransform(Transform t, int depth, int maxDepth)
-        {
-            if (depth > maxDepth || t == null) return;
-            string indent = new string(' ', depth * 2);
-            string info = $"{indent}{t.name}";
-            var img = t.GetComponent<Image>();
-            if (img != null) info += $" [Image color={img.color.r:F2},{img.color.g:F2},{img.color.b:F2} a={img.color.a:F2}]";
-            var txt = t.GetComponent<Text>();
-            if (txt != null) info += $" [Text='{txt.text}']";
-            var rt = t.GetComponent<RectTransform>();
-            if (rt != null) info += $" [size={rt.sizeDelta.x:F0}x{rt.sizeDelta.y:F0}]";
-            Debug.Log(info);
-            for (int i = 0; i < t.childCount; i++)
-            {
-                DumpTransform(t.GetChild(i), depth + 1, maxDepth);
             }
         }
     }
