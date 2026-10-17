@@ -148,7 +148,8 @@ namespace SuperMech.Code
 
             dropdown.template = templateObj.GetComponent<RectTransform>();
             dropdown.itemText = itemText;
-            dropdown.itemBackground = itemBg;
+            // 注意：旧版 Unity（WorldBox 0.51.4）的 Dropdown 无 itemBackground 属性，
+            // 选中高亮由 itemToggle.targetGraphic + ColorBlock 负责，无需赋值。
 
             dropdown.onValueChanged.AddListener(idx => { if (onChange != null) onChange(idx); });
             dropdown.value = 0;
