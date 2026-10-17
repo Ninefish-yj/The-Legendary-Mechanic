@@ -111,22 +111,29 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.239.1 滚动内容高度：按当前页签内容估算（窗口统一480×380，装不下滚动查看）</summary>
+        /// <summary>v0.239.2 滚动内容高度：按当前页签内容估算（窗口统一480×380，装不下滚动查看）</summary>
         private static float TabContentHeight()
         {
             var tabs = SuperMechWindowManager.OverviewTabs;
             if (_tabIndex < 0 || _tabIndex >= tabs.Length) return 460f;
             var draw = tabs[_tabIndex].draw;
             if (draw == SuperMechWindowManager.DrawUniverseContent) return 1000f; // 世界之外520+世界树480
-            if (draw == SuperMechWindowManager.DrawRankContent) return 560f;      // 排行榜三栏
             return 460f; // 文明/组织/设置
         }
 
         /// <summary>v0.208 页签切换：所有标签均为内嵌概览面板，直接重建工作台</summary>
-        private static void SelectTab(int idx)        {
+        private static void SelectTab(int idx)
+        {
             if (_rootContent == null) return;
             var tabs = SuperMechWindowManager.OverviewTabs;
             if (idx < 0 || idx >= tabs.Length) return;
+            // v0.239.2 排行榜对齐天人武道=独立宽窗口(610×420，三栏145/320/145)，
+            // 塞进480×380页签会挤压中栏列表——点页签改为直接打开独立窗口，不再内嵌
+            if (tabs[idx].draw == SuperMechWindowManager.DrawRankContent)
+            {
+                SuperMechWindowManager.OpenRank();
+                return;
+            }
             _tabIndex = idx;
             try
             {

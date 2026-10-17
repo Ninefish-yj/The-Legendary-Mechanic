@@ -87,11 +87,11 @@ namespace SuperMech.Code
             var leftGo = new GameObject("LeftPanel");
             leftGo.transform.SetParent(transform, false);
             var leftRect = leftGo.AddComponent<RectTransform>();
-            // v0.239.1 三栏比例分栏适配480×380窗口（原写死-548基于720宽）
-            leftRect.anchorMin = new Vector2(0, 0);
-            leftRect.anchorMax = new Vector2(0.24f, 1);
+            // v0.239.2 对齐天人武道排行榜：左栏固定145px(窗口610×420)，不再比例分栏
+            leftRect.anchorMin = Vector2.zero;
+            leftRect.anchorMax = Vector2.one;
             leftRect.offsetMin = new Vector2(8, botY);
-            leftRect.offsetMax = new Vector2(-4, -topY);
+            leftRect.offsetMax = new Vector2(-457, -topY);
             var leftBg = leftGo.AddComponent<Image>();
             leftBg.color = SuperMechUiSkin.PanelVanilla; // v0.238.5 三栏背景统一暖棕常量（此前硬编码旧色，改常量不同步）
 
@@ -236,7 +236,7 @@ namespace SuperMech.Code
             clearRect.anchorMin = new Vector2(0.5f, 0);
             clearRect.anchorMax = new Vector2(0.5f, 0);
             clearRect.pivot = new Vector2(0.5f, 0);
-            clearRect.sizeDelta = new Vector2(72, 20); // v0.239.1 窄窗左栏(≈74px)适配
+            clearRect.sizeDelta = new Vector2(88, 20);
             clearRect.anchoredPosition = new Vector2(0, 6);
         }
 
@@ -256,19 +256,19 @@ namespace SuperMech.Code
             var topBar = new GameObject("TopBar");
             topBar.transform.SetParent(transform, false);
             var topRect = topBar.AddComponent<RectTransform>();
-            // v0.239.1 比例分栏（中栏24%~70%）
-            topRect.anchorMin = new Vector2(0.24f, 1);
-            topRect.anchorMax = new Vector2(0.70f, 1);
+            // v0.239.2 对齐天人武道：中栏(145~465px)
+            topRect.anchorMin = new Vector2(0, 1);
+            topRect.anchorMax = new Vector2(1, 1);
             topRect.pivot = new Vector2(0.5f, 1);
-            topRect.offsetMin = new Vector2(4, -(topY + 26));
-            topRect.offsetMax = new Vector2(-4, -topY);
+            topRect.offsetMin = new Vector2(149, -(topY + 26));
+            topRect.offsetMax = new Vector2(-149, -topY);
 
             _realmDropdown = SuperMechUiDropdown.Create("RealmDropdown", topBar.transform, new[] { LocalizedTextManager.getText("sm_ui_filter_all"), "F", "E", "D", "C", "B", "A", "S", "X" }, OnRealmChanged);
             var realmRect = _realmDropdown.GetComponent<RectTransform>();
             realmRect.anchorMin = new Vector2(0, 0.5f);
             realmRect.anchorMax = new Vector2(0, 0.5f);
             realmRect.pivot = new Vector2(0, 0.5f);
-            realmRect.sizeDelta = new Vector2(62, 24);
+            realmRect.sizeDelta = new Vector2(100, 24);
             realmRect.anchoredPosition = Vector2.zero;
 
             _sortDropdown = SuperMechUiDropdown.Create("SortDropdown", topBar.transform, RankSorter.SortNames, OnSortChanged);
@@ -276,15 +276,15 @@ namespace SuperMech.Code
             sortRect.anchorMin = new Vector2(0, 0.5f);
             sortRect.anchorMax = new Vector2(0, 0.5f);
             sortRect.pivot = new Vector2(0, 0.5f);
-            sortRect.anchoredPosition = new Vector2(68, 0);
-            sortRect.sizeDelta = new Vector2(62, 24);
+            sortRect.anchoredPosition = new Vector2(106, 0);
+            sortRect.sizeDelta = new Vector2(100, 24);
 
-            // 计数（顶栏右侧，窄窗下压缩显示）
-            _countText = SuperMechUiSkin.MakeText(topBar.transform, "", 9, TextAnchor.MiddleRight);
+            // 计数（顶栏右侧）
+            _countText = SuperMechUiSkin.MakeText(topBar.transform, "", 10, TextAnchor.MiddleRight);
             var countRect = _countText.GetComponent<RectTransform>();
             countRect.anchorMin = Vector2.zero;
             countRect.anchorMax = Vector2.one;
-            countRect.offsetMin = new Vector2(136, 0);
+            countRect.offsetMin = new Vector2(212, 0);
             countRect.offsetMax = Vector2.zero;
             _countText.color = new Color(0.75f, 0.70f, 0.60f, 1f);
 
@@ -292,11 +292,11 @@ namespace SuperMech.Code
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(transform, false);
             _scrollViewRect = scrollGo.AddComponent<RectTransform>();
-            // v0.239.1 比例分栏（中栏24%~70%）
-            _scrollViewRect.anchorMin = new Vector2(0.24f, 0);
-            _scrollViewRect.anchorMax = new Vector2(0.70f, 1);
-            _scrollViewRect.offsetMin = new Vector2(4, botY + 30);
-            _scrollViewRect.offsetMax = new Vector2(-4, -(topY + 30));
+            // v0.239.2 对齐天人武道：中栏(145~465px)
+            _scrollViewRect.anchorMin = Vector2.zero;
+            _scrollViewRect.anchorMax = Vector2.one;
+            _scrollViewRect.offsetMin = new Vector2(149, botY + 30);
+            _scrollViewRect.offsetMax = new Vector2(-149, -(topY + 30));
             var scrollImg = scrollGo.AddComponent<Image>();
             scrollImg.color = new Color(0, 0, 0, 0.15f);
             scrollGo.AddComponent<Mask>().showMaskGraphic = true;
@@ -328,12 +328,12 @@ namespace SuperMech.Code
             var bottomBar = new GameObject("BottomBar");
             bottomBar.transform.SetParent(transform, false);
             var bottomRect = bottomBar.AddComponent<RectTransform>();
-            // v0.239.1 比例分栏（中栏24%~70%）
-            bottomRect.anchorMin = new Vector2(0.24f, 0);
-            bottomRect.anchorMax = new Vector2(0.70f, 0);
+            // v0.239.2 对齐天人武道：中栏(145~465px)
+            bottomRect.anchorMin = new Vector2(0, 0);
+            bottomRect.anchorMax = new Vector2(1, 0);
             bottomRect.pivot = new Vector2(0.5f, 0);
-            bottomRect.offsetMin = new Vector2(4, botY);
-            bottomRect.offsetMax = new Vector2(-4, botY + 26);
+            bottomRect.offsetMin = new Vector2(149, botY);
+            bottomRect.offsetMax = new Vector2(-149, botY + 26);
 
             var bottomLayout = bottomBar.AddComponent<HorizontalLayoutGroup>();
             bottomLayout.padding = new RectOffset(8, 8, 2, 2);
@@ -367,11 +367,11 @@ namespace SuperMech.Code
             var rightGo = new GameObject("RightPanel");
             rightGo.transform.SetParent(transform, false);
             var rightRect = rightGo.AddComponent<RectTransform>();
-            // v0.239.1 比例分栏（右栏70%~100%）
-            rightRect.anchorMin = new Vector2(0.70f, 0);
+            // v0.239.2 对齐天人武道：右栏固定145px
+            rightRect.anchorMin = new Vector2(1, 0);
             rightRect.anchorMax = new Vector2(1, 1);
-            rightRect.pivot = new Vector2(0.5f, 0.5f);
-            rightRect.offsetMin = new Vector2(4, botY);
+            rightRect.pivot = new Vector2(1, 0.5f);
+            rightRect.offsetMin = new Vector2(-153, botY);
             rightRect.offsetMax = new Vector2(-8, -topY);
             var rightBg = rightGo.AddComponent<Image>();
             rightBg.color = SuperMechUiSkin.PanelVanilla; // v0.238.5 三栏背景统一暖棕常量
