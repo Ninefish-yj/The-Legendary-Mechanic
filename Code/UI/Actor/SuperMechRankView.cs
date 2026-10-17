@@ -92,7 +92,7 @@ namespace SuperMech.Code
             leftRect.offsetMin = new Vector2(8, botY);
             leftRect.offsetMax = new Vector2(-548, -topY);
             var leftBg = leftGo.AddComponent<Image>();
-            leftBg.color = new Color(0.15f, 0.11f, 0.065f, 0.35f);
+            leftBg.color = SuperMechUiSkin.PanelVanilla; // v0.238.5 三栏背景统一暖棕常量（此前硬编码旧色，改常量不同步）
 
             // 筛选标题
             var title = SuperMechUiSkin.MakeText(leftGo.transform, LocalizedTextManager.getText("sm_ui_rank_filter_title"), 11, TextAnchor.MiddleLeft);
@@ -370,7 +370,7 @@ namespace SuperMech.Code
             rightRect.offsetMin = new Vector2(-196, botY);
             rightRect.offsetMax = new Vector2(-8, -topY);
             var rightBg = rightGo.AddComponent<Image>();
-            rightBg.color = new Color(0.15f, 0.11f, 0.065f, 0.35f);
+            rightBg.color = SuperMechUiSkin.PanelVanilla; // v0.238.5 三栏背景统一暖棕常量
 
             var title = SuperMechUiSkin.MakeText(rightGo.transform, LocalizedTextManager.getText("sm_ui_rank_stats_title"), 11, TextAnchor.MiddleLeft);
             var titleRect = title.GetComponent<RectTransform>();
