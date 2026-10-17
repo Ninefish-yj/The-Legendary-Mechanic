@@ -165,9 +165,25 @@ namespace SuperMech.Code
                 var barsElement = window.GetComponentInChildren<UnitBarsElement>();
                 if (barsElement == null) return false;
 
-                // 找到一个现有的StatBar作为模板（魔力条最相似，都是蓝色系）
+                // 找到一个现有的StatBar作为模板：优先魔力条（消耗条样式，与单位面板气力条统一）
+                // v0.239.5 修复：原来取existingBars[0]（层级第一个条=幸福度/饥饿条，含HappinessBarIcon），
+                // 导致气力条错用幸福度条样式——改为按名称找mana，其次stamina，最后兜底[0]
                 var existingBars = barsElement.GetComponentsInChildren<StatBar>(true);
                 if (existingBars == null || existingBars.Length == 0) return false;
+
+                StatBar template = null;
+                foreach (var b in existingBars)
+                {
+                    if (b.name.IndexOf("mana", System.StringComparison.OrdinalIgnoreCase) >= 0) { template = b; break; }
+                }
+                if (template == null)
+                {
+                    foreach (var b in existingBars)
+                    {
+                        if (b.name.IndexOf("stamina", System.StringComparison.OrdinalIgnoreCase) >= 0) { template = b; break; }
+                    }
+                }
+                if (template == null) template = existingBars[0];
 
                 // 检查是否已经插入过气力条（防止重复）
                 var existingQi = barsElement.transform.Find("SM_QiBar");
@@ -178,9 +194,12 @@ namespace SuperMech.Code
                 }
 
                 // 复制模板StatBar
-                var template = existingBars[0];
                 var qiBarGo = UnityEngine.Object.Instantiate(template.gameObject, barsElement.transform);
                 qiBarGo.name = "SM_QiBar";
+
+                // v0.239.5 防御：若模板仍含幸福度图标组件（兜底[0]分支可能取到），移除，避免幸福度图标残留
+                var happinessIcon = qiBarGo.GetComponentInChildren<HappinessBarIcon>(true);
+                if (happinessIcon != null) UnityEngine.Object.DestroyImmediate(happinessIcon.gameObject);
 
                 // v0.237.4 与单位面板气力条统一：青色+自定义气力图标（模组主题色）
                 var barImg = qiBarGo.transform.Find("bar")?.GetComponent<Image>();
@@ -234,22 +253,20 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.228 更新气力条数值</summary>
+        /// <summary>v0.228 更新气力条数值；v0.239.5 文本统一为"/max"（与单位面板SuperMechUnitBars一致）</summary>
         private static void UpdateQiBar(StatBar bar, Actor a)
         {
             if (bar == null) return;
             float qi = SuperMechQi.GetQi(a);
             float qiMax = SuperMechQi.GetQiMax(a);
-            int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
 
             if (qiMax > 0)
             {
-                bar.setBar(qi, qiMax, $"/{qiMax:F0} {qiLvText}");
+                bar.setBar(qi, qiMax, "/" + ((int)qiMax).ToString(), pReset: false, pFloat: false, pUpdateText: true, 0.25f);
             }
             else
             {
-                bar.setBar(0, 1, qiLvText);
+                bar.setBar(0, 1, LocalizedTextManager.getText("sm_ui_qi_none"), pReset: false, pFloat: false, pUpdateText: true, 0.25f);
             }
         }
 

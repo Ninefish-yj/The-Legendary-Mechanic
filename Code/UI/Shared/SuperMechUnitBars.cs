@@ -52,19 +52,21 @@ namespace SuperMech.Code
         }
 
         /// <summary>
-        /// 创建气力条：复制health条，放在所有原版条的最后
+        /// 创建气力条：复制魔力条（消耗条样式），放在所有原版条的最后
+        /// v0.239.5 模板由health改为mana：与原版饥饿/体力/魔力条同属消耗条样式，
+        /// 且与超能面板气力条（SuperMechUnitWindow）统一模板，避免两处样式不一致
         /// 使用LayoutElement确保布局槽位，LayoutRebuilder重建布局
         /// </summary>
         private static void CreateQiBar(SelectedUnitTab tab)
         {
             try
             {
-                // 用反射获取health条（一定存在）
-                var healthField = typeof(SelectedUnitTab).GetField("_bar_health",
+                // 用反射获取魔力条（消耗条样式；health/饥饿/幸福度条结构与样式不同源）
+                var manaField = typeof(SelectedUnitTab).GetField("_bar_mana",
                     System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-                if (healthField == null) return;
+                if (manaField == null) return;
 
-                StatBar template = healthField.GetValue(tab) as StatBar;
+                StatBar template = manaField.GetValue(tab) as StatBar;
                 if (template == null) return;
 
                 Transform parent = template.transform.parent;
