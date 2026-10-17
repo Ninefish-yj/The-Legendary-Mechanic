@@ -44,9 +44,9 @@ namespace SuperMech.Code
                 tImg.raycastTarget = true;
 
                 var tabs = SuperMechWindowManager.OverviewTabs;
-                float tabH = 38f;
-                float gapY = 4f;
-                float startX = 6f;
+                float tabH = 36f;
+                float gapY = 2f;
+                float startX = 4f;
 
                 for (int i = 0; i < tabs.Length; i++)
                 {
@@ -114,38 +114,37 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.222 竖向标签按钮：暗底+次要文字；选中=提亮底+青色文字+左侧青色条</summary>
+        /// <summary>v0.230 竖向标签按钮：未选中=透明底+灰字；选中=青色半透明底+白字+左侧青色条</summary>
         private static GameObject MakeTabButton(Transform parent, string text, bool active)
         {
             var go = new GameObject("TabBtn", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
             var img = go.GetComponent<Image>();
-            img.color = active ? SuperMechUiSkin.SciCardHover : SuperMechUiSkin.SciCard;
+            img.color = active ? new Color(0.35f, 0.75f, 0.85f, 0.2f) : new Color(0, 0, 0, 0);
             var btn = go.GetComponent<Button>();
             btn.transition = Selectable.Transition.ColorTint;
             var colors = btn.colors;
-            colors.normalColor = active ? SuperMechUiSkin.SciCardHover : SuperMechUiSkin.SciCard;
-            colors.highlightedColor = SuperMechUiSkin.SciCardHover;
-            colors.pressedColor = SuperMechUiSkin.SciCardActive;
-            colors.selectedColor = SuperMechUiSkin.SciCard;
+            colors.normalColor = active ? new Color(0.35f, 0.75f, 0.85f, 0.2f) : new Color(0, 0, 0, 0);
+            colors.highlightedColor = new Color(0.35f, 0.75f, 0.85f, 0.1f);
+            colors.pressedColor = new Color(0.35f, 0.75f, 0.85f, 0.3f);
+            colors.selectedColor = new Color(0.35f, 0.75f, 0.85f, 0.2f);
             colors.fadeDuration = 0.08f;
             btn.colors = colors;
 
             var label = SuperMechUiSkin.MakeText(go.transform, text, 13, TextAnchor.MiddleCenter);
-            label.color = active ? SuperMechUiSkin.CyanColor : SuperMechUiSkin.SciMuted;
+            label.color = active ? new Color(0.95f, 0.98f, 1f) : new Color(0.55f, 0.62f, 0.75f);
             var lr = label.GetComponent<RectTransform>();
-            lr.offsetMin = new Vector2(8, 0);
-            lr.offsetMax = new Vector2(-4, 0);
+            lr.offsetMin = new Vector2(6, 0);
+            lr.offsetMax = new Vector2(-6, 0);
 
             if (active)
             {
-                // v0.222 竖向标签：左侧青色指示条
                 var barGo = new GameObject("ActiveBar", typeof(RectTransform), typeof(Image));
                 barGo.transform.SetParent(go.transform, false);
                 var bar = barGo.GetComponent<Image>();
                 bar.color = SuperMechUiSkin.SciCyan;
                 var barRect = barGo.GetComponent<RectTransform>();
-                barRect.anchorMin = new Vector2(0, 0); barRect.anchorMax = new Vector2(0, 1);
+                barRect.anchorMin = new Vector2(0, 0.2f); barRect.anchorMax = new Vector2(0, 0.8f);
                 barRect.pivot = new Vector2(0, 0.5f);
                 barRect.anchoredPosition = Vector2.zero;
                 barRect.sizeDelta = new Vector2(3, 0);

@@ -61,25 +61,40 @@ namespace SuperMech.Code
             ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent);
         }
 
-        /// <summary>v0.206 UI重设计：星海总览12标签页分3组
-        /// <summary>v0.210 星海总览=纯全局概览，只留3个标签
-        /// 王国(全球对比表) / 阶位排行(全球强者) / 势力(全球组织格局)
-        /// 世界树/世界超越从总览移出，收进设置面板"其他功能"区
-        /// v0.222 神权栏精简：星海总览+圣所+星图（大窗口），其他入口收回星海总览页签
-        /// v0.222 星海总览标签改为竖向左侧栏</summary>
+        /// <summary>v0.230 星海总览重构：标签重命名+合并冗余
+        /// 文明(全球对比) / 强者榜(全球超能者) / 组织(全球势力) / 宇宙(星际+高维) / 设置
+        /// 移除世界树独立标签，合并进宇宙标签</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
-            ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（全球对比表）
-            ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行（全球强者）
-            ("sm_ui_faction_window_title", DrawFactionContent),      // 势力（全球组织格局）
-            ("sm_ui_worldbeyond_title", DrawWorldBeyondContent),     // 世界之外（暗面宇宙）
-            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树（入侵事件）
+            ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 文明（全球对比表）
+            ("sm_ui_rank_window_title", DrawRankContent),            // 强者榜（全球超能者）
+            ("sm_ui_faction_window_title", DrawFactionContent),      // 组织（全球势力）
+            ("sm_ui_worldbeyond_title", DrawUniverseContent),        // 宇宙（星际+高维存在）
             ("sm_ui_settings_title", DrawSettingsContent),           // 设置
         };
 
-        internal static void DrawWorldBeyondContent(RectTransform content)
+        /// <summary>v0.230 宇宙标签：合并世界之外+世界树</summary>
+        internal static void DrawUniverseContent(RectTransform content)
         {
-            SuperMechWorldBeyondView.Draw(content);
+            // 上半部分：世界之外（高维存在）
+            var upperGo = new GameObject("WorldBeyond");
+            upperGo.transform.SetParent(content, false);
+            var upperRect = upperGo.AddComponent<RectTransform>();
+            upperRect.anchorMin = new Vector2(0, 0.5f);
+            upperRect.anchorMax = Vector2.one;
+            upperRect.offsetMin = Vector2.zero;
+            upperRect.offsetMax = new Vector2(0, -2);
+            SuperMechWorldBeyondView.Draw(upperRect);
+
+            // 下半部分：世界树（入侵事件）
+            var lowerGo = new GameObject("WorldTree");
+            lowerGo.transform.SetParent(content, false);
+            var lowerRect = lowerGo.AddComponent<RectTransform>();
+            lowerRect.anchorMin = Vector2.zero;
+            lowerRect.anchorMax = new Vector2(1, 0.5f);
+            lowerRect.offsetMin = Vector2.zero;
+            lowerRect.offsetMax = new Vector2(0, 2);
+            SuperMechWorldTreeView.Draw(lowerRect);
         }
 
         /// <summary>v0.205 设置标签页：大重启+配置+帮助</summary>

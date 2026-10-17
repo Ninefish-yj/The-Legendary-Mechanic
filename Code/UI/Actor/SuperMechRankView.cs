@@ -12,8 +12,6 @@ namespace SuperMech.Code
         private Text _countText;
         private Text _emptyText;
         private Text _statsText;
-        private Dropdown _sortDropdown;
-        private Dropdown _rankDropdown;
         private List<GameObject> _systemButtons = new List<GameObject>();
 
         private static List<Actor> _candidatePool = new List<Actor>(512);
@@ -48,18 +46,6 @@ namespace SuperMech.Code
             LocalizedTextManager.getText("sm_ui_filter_martial"),
             LocalizedTextManager.getText("sm_ui_filter_mind")
         };
-        private static string[] _rankNames;
-        private static string[] RankNames => _rankNames ??= new[] {
-            LocalizedTextManager.getText("sm_ui_filter_all"), "F", "E", "D", "C", "B", "A", "S", "X"
-        };
-        private static string[] _sortNames;
-        private static string[] SortNames => _sortNames ??= new[] {
-            LocalizedTextManager.getText("sm_ui_sort_energy"),
-            LocalizedTextManager.getText("sm_ui_sort_qi"),
-            LocalizedTextManager.getText("sm_ui_sort_rank"),
-            LocalizedTextManager.getText("sm_ui_sort_knowledge"),
-            LocalizedTextManager.getText("sm_ui_sort_class")
-        };
 
         void Awake()
         {
@@ -81,32 +67,31 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // === 顶部工具栏（高度56）===
+            // === v0.230 简化顶部工具栏：一行体系筛选 + 右侧统计 ===
             var topBar = new GameObject("TopBar");
             topBar.transform.SetParent(transform, false);
             var topRect = topBar.AddComponent<RectTransform>();
             topRect.anchorMin = new Vector2(0, 1);
             topRect.anchorMax = new Vector2(1, 1);
             topRect.pivot = new Vector2(0.5f, 1);
-            topRect.sizeDelta = new Vector2(0, 56);
+            topRect.sizeDelta = new Vector2(0, 36);
             topRect.offsetMin = new Vector2(4, 0);
             topRect.offsetMax = new Vector2(-4, 0);
             var topBg = topBar.AddComponent<Image>();
-            topBg.raycastTarget = true; // 拦截鼠标穿透
-            topBg.color = new Color(0, 0, 0, 0.2f);
+            topBg.raycastTarget = true;
+            topBg.color = new Color(0.08f, 0.10f, 0.16f, 0.6f);
 
-            // 第一行：体系筛选按钮（横向）
+            // 体系筛选按钮（横向，左侧70%）
             var sysRow = new GameObject("SysRow");
             sysRow.transform.SetParent(topBar.transform, false);
             var sysRowRect = sysRow.AddComponent<RectTransform>();
-            sysRowRect.anchorMin = new Vector2(0, 1);
-            sysRowRect.anchorMax = new Vector2(1, 1);
-            sysRowRect.pivot = new Vector2(0.5f, 1);
-            sysRowRect.sizeDelta = new Vector2(0, 24);
-            sysRowRect.anchoredPosition = new Vector2(0, -4);
+            sysRowRect.anchorMin = Vector2.zero;
+            sysRowRect.anchorMax = new Vector2(0.7f, 1);
+            sysRowRect.pivot = new Vector2(0, 0.5f);
+            sysRowRect.offsetMin = new Vector2(6, 4);
+            sysRowRect.offsetMax = new Vector2(-4, -4);
             var sysLayout = sysRow.AddComponent<HorizontalLayoutGroup>();
-            sysLayout.spacing = 3;
-            sysLayout.padding = new RectOffset(4, 4, 0, 0);
+            sysLayout.spacing = 4;
             sysLayout.childControlHeight = true;
             sysLayout.childControlWidth = true;
             sysLayout.childForceExpandWidth = true;
@@ -115,7 +100,7 @@ namespace SuperMech.Code
             for (int i = 0; i < SystemNames.Length; i++)
             {
                 int idx = i - 1;
-                var btn = SuperMechUiSkin.MakeButton(sysRow.transform, SystemNames[i], 9, () =>
+                var btn = SuperMechUiSkin.MakeButton(sysRow.transform, SystemNames[i], 10, () =>
                 {
                     _currentSystemFilter = idx;
                     UpdateSystemButtonColors();
@@ -131,62 +116,23 @@ namespace SuperMech.Code
                 _systemButtons.Add(btn.gameObject);
             }
 
-            // 第二行：排序下拉 + 阶位筛选 + 统计 + 清除筛选
-            var ctrlRow = new GameObject("CtrlRow");
-            ctrlRow.transform.SetParent(topBar.transform, false);
-            var ctrlRect = ctrlRow.AddComponent<RectTransform>();
-            ctrlRect.anchorMin = new Vector2(0, 1);
-            ctrlRect.anchorMax = new Vector2(1, 1);
-            ctrlRect.pivot = new Vector2(0.5f, 1);
-            ctrlRect.sizeDelta = new Vector2(0, 24);
-            ctrlRect.anchoredPosition = new Vector2(0, -30);
-
-            // 排序下拉（左）
-            _sortDropdown = CreateSimpleDropdown(ctrlRow.transform, SortNames, OnSortChanged);
-            var sortRect = _sortDropdown.GetComponent<RectTransform>();
-            sortRect.anchorMin = new Vector2(0, 0.5f);
-            sortRect.anchorMax = new Vector2(0, 0.5f);
-            sortRect.pivot = new Vector2(0, 0.5f);
-            sortRect.sizeDelta = new Vector2(90, 20);
-            sortRect.anchoredPosition = new Vector2(4, 0);
-
-            // 阶位筛选下拉（左，排序右侧）
-            _rankDropdown = CreateSimpleDropdown(ctrlRow.transform, RankNames, OnRankChanged);
-            var rankDropRect = _rankDropdown.GetComponent<RectTransform>();
-            rankDropRect.anchorMin = new Vector2(0, 0.5f);
-            rankDropRect.anchorMax = new Vector2(0, 0.5f);
-            rankDropRect.pivot = new Vector2(0, 0.5f);
-            rankDropRect.sizeDelta = new Vector2(60, 20);
-            rankDropRect.anchoredPosition = new Vector2(98, 0);
-
-            // 清除筛选按钮（左）
-            var clearBtn = SuperMechUiSkin.MakeButton(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 11, ClearAllFilters);
-            var clearBtnRect = clearBtn.GetComponent<RectTransform>();
-            clearBtnRect.anchorMin = new Vector2(0, 0.5f);
-            clearBtnRect.anchorMax = new Vector2(0, 0.5f);
-            clearBtnRect.pivot = new Vector2(0, 0.5f);
-            clearBtnRect.sizeDelta = new Vector2(70, 28);
-            clearBtnRect.anchoredPosition = new Vector2(162, 0);
-            var clearBtnImg = clearBtn.GetComponent<Image>();
-            // v0.202 清除按钮使用皮肤按钮三态，无需手动设色
-
-            // 统计文字（右）
-            _countText = SuperMechUiSkin.MakeText(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_legion_count_zero"), 10, TextAnchor.MiddleRight);
+            // 统计文字（右侧30%）
+            _countText = SuperMechUiSkin.MakeText(topBar.transform, LocalizedTextManager.getText("sm_ui_legion_count_zero"), 11, TextAnchor.MiddleRight);
             var countRect = _countText.GetComponent<RectTransform>();
-            countRect.anchorMin = new Vector2(1, 0.5f);
-            countRect.anchorMax = new Vector2(1, 0.5f);
+            countRect.anchorMin = new Vector2(0.7f, 0);
+            countRect.anchorMax = Vector2.one;
             countRect.pivot = new Vector2(1, 0.5f);
-            countRect.sizeDelta = new Vector2(100, 20);
-            countRect.anchoredPosition = new Vector2(-4, 0);
+            countRect.offsetMin = new Vector2(4, 0);
+            countRect.offsetMax = new Vector2(-8, 0);
 
-            // 阶位分布统计（右，统计文字左侧）
-            _statsText = SuperMechUiSkin.MakeText(ctrlRow.transform, "", 9, TextAnchor.MiddleRight);
+            // 阶位分布统计（统计文字下方小字）
+            _statsText = SuperMechUiSkin.MakeText(topBar.transform, "", 9, TextAnchor.LowerRight);
             var statsRect = _statsText.GetComponent<RectTransform>();
-            statsRect.anchorMin = new Vector2(1, 0.5f);
-            statsRect.anchorMax = new Vector2(1, 0.5f);
-            statsRect.pivot = new Vector2(1, 0.5f);
-            statsRect.sizeDelta = new Vector2(200, 20);
-            statsRect.anchoredPosition = new Vector2(-106, 0);
+            statsRect.anchorMin = new Vector2(0.7f, 0);
+            statsRect.anchorMax = Vector2.one;
+            statsRect.pivot = new Vector2(1, 0);
+            statsRect.offsetMin = new Vector2(4, 2);
+            statsRect.offsetMax = new Vector2(-8, 16);
             _statsText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _statsText.verticalOverflow = VerticalWrapMode.Truncate;
 
@@ -196,8 +142,8 @@ namespace SuperMech.Code
             _scrollViewRect = scrollGo.AddComponent<RectTransform>();
             _scrollViewRect.anchorMin = Vector2.zero;
             _scrollViewRect.anchorMax = Vector2.one;
-            _scrollViewRect.offsetMin = new Vector2(4, 36);
-            _scrollViewRect.offsetMax = new Vector2(-4, -60);
+            _scrollViewRect.offsetMin = new Vector2(4, 42);
+            _scrollViewRect.offsetMax = new Vector2(-4, -40);
 
             var scrollImg = scrollGo.AddComponent<Image>();
             scrollImg.color = new Color(0, 0, 0, 0.15f);
@@ -262,35 +208,6 @@ namespace SuperMech.Code
             _emptyText.gameObject.SetActive(false);
         }
 
-        private static Dropdown CreateSimpleDropdown(Transform parent, string[] options, System.Action<int> onChanged)
-        {
-            var go = new GameObject("Dropdown");
-            go.transform.SetParent(parent, false);
-            var img = go.AddComponent<Image>();
-            img.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            img.type = Image.Type.Sliced;
-            img.color = Color.white;
-            var dropdown = go.AddComponent<Dropdown>();
-            dropdown.options = new List<Dropdown.OptionData>();
-            foreach (var opt in options)
-                dropdown.options.Add(new Dropdown.OptionData(opt));
-            dropdown.value = 0;
-            dropdown.onValueChanged.AddListener(new UnityEngine.Events.UnityAction<int>(onChanged));
-            return dropdown;
-        }
-
-        private void OnSortChanged(int index)
-        {
-            _currentSortType = index;
-            RefreshList();
-        }
-
-        private void OnRankChanged(int index)
-        {
-            _currentRankFilter = index - 1; // -1=全部, 0-7=F~X
-            RefreshList();
-        }
-
         private void UpdateSystemButtonColors()
         {
             if (_systemButtons == null) return;
@@ -305,15 +222,6 @@ namespace SuperMech.Code
                 img.type = Image.Type.Sliced;
                 img.color = Color.white;
             }
-        }
-
-        private void ClearAllFilters()
-        {
-            _currentSystemFilter = -1;
-            _currentRankFilter = -1;
-            if (_rankDropdown != null) _rankDropdown.value = 0;
-            UpdateSystemButtonColors();
-            RefreshList();
         }
 
         private void RefreshList()

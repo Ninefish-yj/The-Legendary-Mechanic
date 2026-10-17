@@ -4,6 +4,9 @@ using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
+    /// <summary>
+    /// v0.230 组织总览重构：移除嵌套入口（超A榜/外交/战报），纯列表+详情
+    /// 定位：全球组织/势力速览，点击行展开成员详情
     /// </summary>
     public class SuperMechFactionView : MonoBehaviour
     {
@@ -18,54 +21,39 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // 顶部统计栏
-            var topBar = SuperMechUiBuilder.CreatePanel(transform, "TopBar", new Color(0, 0, 0, 0.2f), 4, 4, 0, 0);
-            var topRect = topBar.GetComponent<RectTransform>();
+            // 顶部统计栏（纯文字，无按钮）
+            var topBar = new GameObject("TopBar");
+            topBar.transform.SetParent(transform, false);
+            var topRect = topBar.AddComponent<RectTransform>();
             topRect.anchorMin = new Vector2(0, 1);
             topRect.anchorMax = new Vector2(1, 1);
             topRect.pivot = new Vector2(0.5f, 1);
-            topRect.sizeDelta = new Vector2(0, 28);
-            _countText = SuperMechUiBuilder.AddText(topBar, LocalizedTextManager.getText("sm_ui_faction_count_zero"), 13, TextAnchor.MiddleLeft);
+            topRect.sizeDelta = new Vector2(0, 32);
+            var topBg = topBar.AddComponent<Image>();
+            topBg.color = new Color(0.08f, 0.10f, 0.16f, 0.6f);
+
+            _countText = new GameObject("Count").AddComponent<Text>();
+            _countText.transform.SetParent(topBar.transform, false);
+            _countText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _countText.fontSize = 13;
+            _countText.color = new Color(0.85f, 0.9f, 1f);
+            _countText.alignment = TextAnchor.MiddleLeft;
             var countRect = _countText.GetComponent<RectTransform>();
             countRect.anchorMin = Vector2.zero;
             countRect.anchorMax = Vector2.one;
-            countRect.offsetMin = new Vector2(8, 0);
-            countRect.offsetMax = new Vector2(-80, 0);
+            countRect.offsetMin = new Vector2(12, 0);
+            countRect.offsetMax = new Vector2(-12, 0);
 
-            // v0.185 外交按钮：打开势力外交面板
-            var diplBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_diplomacy"), 11, () => SuperMechDiplomacyView.Toggle());
-            var diplRect = diplBtn.GetComponent<RectTransform>();
-            diplRect.anchorMin = new Vector2(1, 0.5f);
-            diplRect.anchorMax = new Vector2(1, 0.5f);
-            diplRect.sizeDelta = new Vector2(60, 24);
-            diplRect.anchoredPosition = new Vector2(-200, 0);
-
-            // v0.196 战报按钮
-            var reportBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_battle_report"), 11, () => SuperMechBattleReportView.Toggle());
-            var reportRect = reportBtn.GetComponent<RectTransform>();
-            reportRect.anchorMin = new Vector2(1, 0.5f);
-            reportRect.anchorMax = new Vector2(1, 0.5f);
-            reportRect.sizeDelta = new Vector2(60, 24);
-            reportRect.anchoredPosition = new Vector2(-136, 0);
-
-            // v0.205 超A战力榜合并到阶位排行
-            var rankBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_supera_ranking"), 11, () => SuperMechWindowManager.OpenRank());
-            var rankRect = rankBtn.GetComponent<RectTransform>();
-            rankRect.anchorMin = new Vector2(1, 0.5f);
-            rankRect.anchorMax = new Vector2(1, 0.5f);
-            rankRect.sizeDelta = new Vector2(72, 24);
-            rankRect.anchoredPosition = new Vector2(-60, 0);
-
-            // 滚动列表
+            // 滚动列表（上65%）
             var scrollGo = new GameObject("FactionScroll");
             scrollGo.transform.SetParent(transform, false);
             var scrollRect = scrollGo.AddComponent<RectTransform>();
-            scrollRect.anchorMin = new Vector2(0, 0.35f);
+            scrollRect.anchorMin = new Vector2(0, 0.38f);
             scrollRect.anchorMax = new Vector2(1, 1);
             scrollRect.pivot = new Vector2(0.5f, 1);
-            scrollRect.offsetMin = new Vector2(4, 4);
-            scrollRect.offsetMax = new Vector2(-4, -32);
-            var scroll = scrollGo.AddComponent<UnityEngine.UI.ScrollRect>();
+            scrollRect.offsetMin = new Vector2(6, 38);
+            scrollRect.offsetMax = new Vector2(-6, -6);
+            var scroll = scrollGo.AddComponent<ScrollRect>();
             var viewport = new GameObject("Viewport");
             viewport.transform.SetParent(scrollGo.transform, false);
             var vpRect = viewport.AddComponent<RectTransform>();
@@ -73,7 +61,9 @@ namespace SuperMech.Code
             vpRect.anchorMax = Vector2.one;
             vpRect.offsetMin = Vector2.zero;
             vpRect.offsetMax = Vector2.zero;
-            viewport.AddComponent<UnityEngine.UI.Mask>();
+            viewport.AddComponent<Mask>().showMaskGraphic = true;
+            var vpImg = viewport.AddComponent<Image>();
+            vpImg.color = new Color(0, 0, 0, 0.1f);
             var content = new GameObject("Content");
             content.transform.SetParent(viewport.transform, false);
             _listContent = content.AddComponent<RectTransform>();
@@ -86,38 +76,66 @@ namespace SuperMech.Code
             scroll.vertical = true;
             scroll.horizontal = false;
 
-            _emptyText = SuperMechUiBuilder.AddText(content, LocalizedTextManager.getText("sm_ui_faction_none"), 12, TextAnchor.MiddleCenter, new Color(0.7f, 0.7f, 0.7f));
+            _emptyText = new GameObject("Empty").AddComponent<Text>();
+            _emptyText.transform.SetParent(content.transform, false);
+            _emptyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _emptyText.fontSize = 12;
+            _emptyText.color = new Color(0.6f, 0.65f, 0.75f);
+            _emptyText.alignment = TextAnchor.MiddleCenter;
+            _emptyText.text = LocalizedTextManager.getText("sm_ui_faction_none");
             var emptyRect = _emptyText.GetComponent<RectTransform>();
             emptyRect.anchorMin = new Vector2(0, 0.5f);
             emptyRect.anchorMax = new Vector2(1, 0.5f);
             emptyRect.sizeDelta = new Vector2(0, 30);
 
-            // 底部成员详情
-            var detailPanel = SuperMechUiBuilder.CreatePanel(transform, "DetailPanel", new Color(0, 0, 0, 0.15f), 4, 4, 0, 0);
-            var dRect = detailPanel.GetComponent<RectTransform>();
+            // 底部成员详情（下38%）
+            var detailPanel = new GameObject("DetailPanel");
+            detailPanel.transform.SetParent(transform, false);
+            var dRect = detailPanel.AddComponent<RectTransform>();
             dRect.anchorMin = Vector2.zero;
-            dRect.anchorMax = new Vector2(1, 0.35f);
+            dRect.anchorMax = new Vector2(1, 0.38f);
             dRect.pivot = new Vector2(0.5f, 0);
-            dRect.offsetMin = new Vector2(4, 4);
-            dRect.offsetMax = new Vector2(-4, 0);
-            _detailText = SuperMechUiBuilder.AddText(detailPanel, LocalizedTextManager.getText("sm_ui_faction_click"), 11, TextAnchor.UpperLeft);
-            var dtRect = _detailText.GetComponent<RectTransform>();
-            dtRect.anchorMin = Vector2.zero;
-            dtRect.anchorMax = Vector2.one;
-            dtRect.offsetMin = new Vector2(8, 8);
-            dtRect.offsetMax = new Vector2(-8, -8);
+            dRect.offsetMin = new Vector2(6, 6);
+            dRect.offsetMax = new Vector2(-6, -6);
+            var dImg = detailPanel.AddComponent<Image>();
+            dImg.color = new Color(0.06f, 0.08f, 0.14f, 0.7f);
+
+            var detailTitle = new GameObject("DetailTitle").AddComponent<Text>();
+            detailTitle.transform.SetParent(detailPanel.transform, false);
+            detailTitle.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            detailTitle.fontSize = 12;
+            detailTitle.color = SuperMechUiSkin.CyanColor;
+            detailTitle.alignment = TextAnchor.UpperLeft;
+            detailTitle.text = LocalizedTextManager.getText("sm_ui_faction_click");
+            var dtRect = detailTitle.GetComponent<RectTransform>();
+            dtRect.anchorMin = new Vector2(0, 1);
+            dtRect.anchorMax = new Vector2(1, 1);
+            dtRect.pivot = new Vector2(0, 1);
+            dtRect.sizeDelta = new Vector2(0, 20);
+            dtRect.anchoredPosition = new Vector2(10, -6);
+
+            _detailText = new GameObject("DetailText").AddComponent<Text>();
+            _detailText.transform.SetParent(detailPanel.transform, false);
+            _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _detailText.fontSize = 11;
+            _detailText.color = new Color(0.8f, 0.85f, 0.95f);
+            _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
+            var dTextRect = _detailText.GetComponent<RectTransform>();
+            dTextRect.anchorMin = Vector2.zero;
+            dTextRect.anchorMax = Vector2.one;
+            dTextRect.offsetMin = new Vector2(10, 8);
+            dTextRect.offsetMax = new Vector2(-10, -28);
         }
 
         private void RefreshList()
         {
-            if (_listContent == null || _countText == null || _emptyText == null) return; // v0.75.11: 布局未构建时防御
-            // 清空旧条目
+            if (_listContent == null || _countText == null || _emptyText == null) return;
             for (int i = _listContent.childCount - 1; i >= 0; i--)
             {
                 var child = _listContent.GetChild(i);
-                if (child.name != "EmptyText") Destroy(child.gameObject);
+                if (child.name != "Empty") Destroy(child.gameObject);
             }
 
             var factions = SuperMechFaction.GetAllFactions();
@@ -127,13 +145,13 @@ namespace SuperMech.Code
             float y = 0f;
             foreach (var f in factions)
             {
-                var row = CreateFactionRow(f, ref y);
+                CreateFactionRow(f, ref y);
                 if (f.id == _selectedFactionId) ShowMembers(f);
             }
             _listContent.sizeDelta = new Vector2(0, Mathf.Max(y, 100f));
         }
 
-        private GameObject CreateFactionRow(SuperMechFaction.FactionData f, ref float y)
+        private void CreateFactionRow(SuperMechFaction.FactionData f, ref float y)
         {
             var row = new GameObject($"Faction_{f.id}");
             row.transform.SetParent(_listContent, false);
@@ -141,13 +159,31 @@ namespace SuperMech.Code
             rect.anchorMin = new Vector2(0, 1);
             rect.anchorMax = new Vector2(1, 1);
             rect.pivot = new Vector2(0.5f, 1);
-            rect.sizeDelta = new Vector2(0, 36);
+            rect.sizeDelta = new Vector2(0, 40);
             rect.anchoredPosition = new Vector2(0, -y);
-            y += 38f;
+            y += 44f;
 
-            var bg = row.AddComponent<UnityEngine.UI.Image>();
-            bg.color = f.id == _selectedFactionId ? new Color(0.3f, 0.5f, 0.8f, 0.3f) : new Color(1, 1, 1, 0.05f);
+            var bg = row.AddComponent<Image>();
+            bg.color = f.id == _selectedFactionId ?
+                new Color(0.25f, 0.45f, 0.7f, 0.35f) :
+                new Color(1, 1, 1, 0.04f);
 
+            // 等级标签
+            var levelText = new GameObject("Level").AddComponent<Text>();
+            levelText.transform.SetParent(row.transform, false);
+            levelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            levelText.fontSize = 14;
+            levelText.color = SuperMechUiSkin.CyanColor;
+            levelText.alignment = TextAnchor.MiddleCenter;
+            levelText.text = $"Lv{f.level}";
+            var lvRect = levelText.GetComponent<RectTransform>();
+            lvRect.anchorMin = new Vector2(0, 0);
+            lvRect.anchorMax = new Vector2(0, 1);
+            lvRect.pivot = new Vector2(0, 0.5f);
+            lvRect.sizeDelta = new Vector2(44, 0);
+            lvRect.anchoredPosition = new Vector2(8, 0);
+
+            // 名称+成员数+领袖+战力
             var leaderName = "?";
             var units = World.world.units?.units_only_alive;
             if (units != null)
@@ -155,28 +191,30 @@ namespace SuperMech.Code
                 foreach (var a in units) { if (a != null && a.id == f.leaderId) { leaderName = a.name; break; } }
             }
 
-            var label = SuperMechUiBuilder.AddText(row,
-                string.Format(LocalizedTextManager.getText("sm_ui_faction_info"),
-                    f.level, f.name, f.memberIds.Count, leaderName, f.totalPower.ToString("F0")),
-                11, TextAnchor.MiddleLeft);
-            var labelRect = label.GetComponent<RectTransform>();
-            labelRect.anchorMin = Vector2.zero;
-            labelRect.anchorMax = Vector2.one;
-            labelRect.offsetMin = new Vector2(8, 0);
-            labelRect.offsetMax = new Vector2(-8, 0);
+            var infoText = new GameObject("Info").AddComponent<Text>();
+            infoText.transform.SetParent(row.transform, false);
+            infoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            infoText.fontSize = 12;
+            infoText.color = new Color(0.9f, 0.92f, 0.98f);
+            infoText.alignment = TextAnchor.MiddleLeft;
+            infoText.text = $"<b>{f.name}</b>  {f.memberIds.Count}人  领袖:{leaderName}  战力:{f.totalPower:F0}";
+            var infoRect = infoText.GetComponent<RectTransform>();
+            infoRect.anchorMin = Vector2.zero;
+            infoRect.anchorMax = Vector2.one;
+            infoRect.offsetMin = new Vector2(56, 0);
+            infoRect.offsetMax = new Vector2(-10, 0);
 
-            var btn = row.AddComponent<UnityEngine.UI.Button>();
+            var btn = row.AddComponent<Button>();
             btn.onClick.AddListener(() => {
                 _selectedFactionId = (_selectedFactionId == f.id) ? null : f.id;
                 RefreshList();
             });
-            return row;
         }
 
         private void ShowMembers(SuperMechFaction.FactionData f)
         {
             var sb = new System.Text.StringBuilder();
-            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_member_list"), f.name));
+            sb.AppendLine($"<color=#59BFD9><b>{f.name}</b></color> 成员列表：");
             var units = World.world.units?.units_only_alive;
             int idx = 1;
             foreach (var mid in f.memberIds)
@@ -189,8 +227,10 @@ namespace SuperMech.Code
                     string rankName = (rank >= 0 && rank < SuperMechRanks.All.Count)
                         ? LocalizedTextManager.getText(SuperMechRanks.All[rank].name)
                         : "?";
-                    string role = (a.id == f.leaderId) ? LocalizedTextManager.getText("sm_ui_leader") : LocalizedTextManager.getText("sm_ui_member");
-                    sb.AppendLine($"{idx}. {a.name} [{rankName}] {role}");
+                    string role = (a.id == f.leaderId) ?
+                        LocalizedTextManager.getText("sm_ui_leader") :
+                        LocalizedTextManager.getText("sm_ui_member");
+                    sb.AppendLine($"{idx}. {a.name}  [{rankName}]  {role}");
                     idx++;
                     break;
                 }
@@ -199,6 +239,4 @@ namespace SuperMech.Code
             _detailText.text = sb.ToString();
         }
     }
-
-    /// <summary>宇宙宝物装备窗口（v0.76.48 接线：图鉴列表+装备按钮）</summary>
 }
