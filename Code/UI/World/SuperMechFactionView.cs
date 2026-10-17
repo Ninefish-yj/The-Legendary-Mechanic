@@ -33,28 +33,28 @@ namespace SuperMech.Code
             countRect.offsetMax = new Vector2(-80, 0);
 
             // v0.185 外交按钮：打开势力外交面板
-            var diplBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_diplomacy"), 10, () => SuperMechDiplomacyView.Toggle());
+            var diplBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_diplomacy"), 11, () => SuperMechDiplomacyView.Toggle());
             var diplRect = diplBtn.GetComponent<RectTransform>();
             diplRect.anchorMin = new Vector2(1, 0.5f);
             diplRect.anchorMax = new Vector2(1, 0.5f);
-            diplRect.sizeDelta = new Vector2(48, 22);
-            diplRect.anchoredPosition = new Vector2(-176, 0);
+            diplRect.sizeDelta = new Vector2(60, 24);
+            diplRect.anchoredPosition = new Vector2(-200, 0);
 
             // v0.196 战报按钮
-            var reportBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_battle_report"), 10, () => SuperMechBattleReportView.Toggle());
+            var reportBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_battle_report"), 11, () => SuperMechBattleReportView.Toggle());
             var reportRect = reportBtn.GetComponent<RectTransform>();
             reportRect.anchorMin = new Vector2(1, 0.5f);
             reportRect.anchorMax = new Vector2(1, 0.5f);
-            reportRect.sizeDelta = new Vector2(48, 22);
-            reportRect.anchoredPosition = new Vector2(-124, 0);
+            reportRect.sizeDelta = new Vector2(60, 24);
+            reportRect.anchoredPosition = new Vector2(-136, 0);
 
             // v0.205 超A战力榜合并到阶位排行
-            var rankBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_supera_ranking"), 10, () => SuperMechWindowManager.OpenRank());
+            var rankBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_supera_ranking"), 11, () => SuperMechWindowManager.OpenRank());
             var rankRect = rankBtn.GetComponent<RectTransform>();
             rankRect.anchorMin = new Vector2(1, 0.5f);
             rankRect.anchorMax = new Vector2(1, 0.5f);
-            rankRect.sizeDelta = new Vector2(56, 22);
-            rankRect.anchoredPosition = new Vector2(-64, 0);
+            rankRect.sizeDelta = new Vector2(72, 24);
+            rankRect.anchoredPosition = new Vector2(-60, 0);
 
             // 滚动列表
             var scrollGo = new GameObject("FactionScroll");

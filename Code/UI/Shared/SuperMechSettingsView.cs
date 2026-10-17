@@ -162,7 +162,9 @@ namespace SuperMech.Code
             var go = new GameObject("Section", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.color = SuperMechUiSkin.SciCard;
+            img.sprite = SuperMechUiSkin.Section;
+            img.type = Image.Type.Simple;
+            img.color = Color.white;
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);
@@ -188,7 +190,9 @@ namespace SuperMech.Code
             var go = new GameObject("Btn_" + name, typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.color = bgColor;
+            img.sprite = SuperMechUiSkin.Card;
+            img.type = Image.Type.Simple;
+            img.color = Color.white;
             var btn = go.GetComponent<Button>();
             btn.onClick.AddListener(() => onClick?.Invoke());
             var r = go.GetComponent<RectTransform>();
@@ -230,7 +234,9 @@ namespace SuperMech.Code
             var go = new GameObject("Toggle_" + name, typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.color = SuperMechUiSkin.SciCard;
+            img.sprite = SuperMechUiSkin.Card;
+            img.type = Image.Type.Simple;
+            img.color = Color.white;
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);
