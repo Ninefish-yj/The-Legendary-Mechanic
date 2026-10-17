@@ -197,7 +197,7 @@ namespace SuperMech.Code
             infoText.fontSize = 12;
             infoText.color = new Color(0.9f, 0.92f, 0.98f);
             infoText.alignment = TextAnchor.MiddleLeft;
-            infoText.text = $"<b>{f.name}</b>  {f.memberIds.Count}人  领袖:{leaderName}  战力:{f.totalPower:F0}";
+            infoText.text = string.Format(LocalizedTextManager.getText("sm_ui_faction_row"), f.name, f.memberIds.Count, leaderName, f.totalPower);
             var infoRect = infoText.GetComponent<RectTransform>();
             infoRect.anchorMin = Vector2.zero;
             infoRect.anchorMax = Vector2.one;
@@ -214,7 +214,7 @@ namespace SuperMech.Code
         private void ShowMembers(SuperMechFaction.FactionData f)
         {
             var sb = new System.Text.StringBuilder();
-            sb.AppendLine($"<color=#59BFD9><b>{f.name}</b></color> 成员列表：");
+            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_faction_member_title"), f.name));
             var units = World.world.units?.units_only_alive;
             int idx = 1;
             foreach (var mid in f.memberIds)

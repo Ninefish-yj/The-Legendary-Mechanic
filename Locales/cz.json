@@ -4067,5 +4067,7 @@
   "sm_ui_rank_stats_title": "统计",
   "sm_ui_rank_stats_rank": "阶位分布",
   "sm_ui_rank_stats_system": "体系分布",
-  "sm_ui_rank_stats_top": "前三强"
+  "sm_ui_rank_stats_top": "前三强",
+  "sm_ui_faction_row": "<b>{0}</b>  {1}人  领袖:{2}  战力:{3:F0}",
+  "sm_ui_faction_member_title": "<color=#59BFD9><b>{0}</b></color> 成员列表："
 }
