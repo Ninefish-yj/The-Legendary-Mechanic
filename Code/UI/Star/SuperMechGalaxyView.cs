@@ -457,7 +457,7 @@ namespace SuperMech.Code
                 $"<color=#93A4BC>状态:</color> {(sys.visited ? LocalizedTextManager.getText("sm_system_visited") : LocalizedTextManager.getText("sm_system_discovered"))}\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_system_owner")}:</color> {ownerText}\n" +
                 $"<color=#93A4BC>{LocalizedTextManager.getText("sm_system_threat")}:</color> {new string('!', sys.threatLevel)}\n" +
-                $"<color=#93A4BC>距离:</color> {string.Format(LocalizedTextManager.getText("sm_distance_ly"), distFromHome:F0)}\n" +
+                $"<color=#93A4BC>距离:</color> {string.Format(LocalizedTextManager.getText("sm_distance_ly"), distFromHome)}\n" +
                 $"<color=#93A4BC>星球数:</color> {sys.planetIds.Count}\n" +
                 $"<color=#93A4BC>资源加成:</color> x{sys.resourceBonus:F1}\n";
 

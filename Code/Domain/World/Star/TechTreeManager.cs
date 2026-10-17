@@ -55,7 +55,7 @@ namespace SuperMech.Code
                         field = (TechField)f,
                         tier = t + 1,
                         cost = 100 * (t + 1) * (t + 1),
-                        researchTime = 30f * (t + 1),
+                        researchTime = (int)(30f * (t + 1)),
                         isResearched = false
                     };
                     // 前置科技：同领域上一层

@@ -94,7 +94,14 @@ namespace SuperMech.Code
             lowerRect.anchorMax = new Vector2(1, 0.5f);
             lowerRect.offsetMin = Vector2.zero;
             lowerRect.offsetMax = new Vector2(0, 2);
-            SuperMechWorldTreeView.Draw(lowerRect);
+            var treeGo = new GameObject("WorldTreeView");
+            treeGo.transform.SetParent(lowerRect, false);
+            var treeRect = treeGo.AddComponent<RectTransform>();
+            treeRect.anchorMin = Vector2.zero;
+            treeRect.anchorMax = Vector2.one;
+            treeRect.offsetMin = Vector2.zero;
+            treeRect.offsetMax = Vector2.zero;
+            treeGo.AddComponent<SuperMechWorldTreeView>();
         }
 
         /// <summary>v0.205 设置标签页：大重启+配置+帮助</summary>
@@ -281,6 +288,11 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechPlayerView>();
         }
 
+
+        internal static void DrawWorldBeyondContent(RectTransform content)
+        {
+            SuperMechWorldBeyondView.Draw(content);
+        }
 
         internal static void DrawWorldTreeContent(RectTransform content)
         {

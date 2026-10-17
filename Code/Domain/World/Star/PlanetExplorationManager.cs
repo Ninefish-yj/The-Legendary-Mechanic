@@ -47,7 +47,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>生成星球扩展数据（基于星球ID确定性随机）</summary>
-        private static PlanetExpansionData GeneratePlanetData(SuperMechStarSystem.PlanetData p)
+        private static PlanetExpansionData GeneratePlanetData(PlanetData p)
         {
             var rng = new System.Random(p.id.GetHashCode());
             var data = new PlanetExpansionData

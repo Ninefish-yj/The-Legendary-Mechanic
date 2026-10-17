@@ -281,7 +281,7 @@ namespace SuperMech.Code
             AddHeader(LocalizedTextManager.getText("sm_ui_built_stations"), ref y);
             if (stations.Count == 0)
             {
-                AddInfoRow(""—"", "", ref y);
+                AddInfoRow("—", "", ref y);
             }
             else
             {
