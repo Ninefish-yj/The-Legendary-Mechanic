@@ -74,12 +74,12 @@ namespace SuperMech.Code
                 }
 
                 string superCount = $"A:{countA} S:{countS} SS:{countSS} X:{countX}";
-                AddRow(__instance, "sm_ui_super_count", superCount, "iconSword");
+                AddRow(__instance, "sm_ui_super_count", superCount, "iconCrystalSword");
 
                 if (guardian != null)
                 {
                     AddRow(__instance, "sm_ui_civ_guardian",
-                        guardian.data.name, "iconKings");
+                        guardian.data.name, "iconCrown");
                 }
 
                 // === 星际殖民地 ===
@@ -95,7 +95,7 @@ namespace SuperMech.Code
                 if (colonyCount > 0)
                 {
                     AddRow(__instance, "sm_ui_colony_count",
-                        colonyCount.ToString(), "iconCamp");
+                        colonyCount.ToString(), "iconCity");
                 }
 
                 // === 文化力与战略（AI文明）===
@@ -104,31 +104,31 @@ namespace SuperMech.Code
                 if (culturePower > 0)
                 {
                     AddRow(__instance, "sm_ui_culture_power",
-                        culturePower.ToString("F1"), "iconBook");
+                        culturePower.ToString("F1"), "iconKnowledge");
                 }
 
                 string strategy = SuperMechCivStrategyAI.GetStrategyName(kid);
                 if (!string.IsNullOrEmpty(strategy) && strategy != "None")
                 {
                     AddRow(__instance, "sm_ui_civ_strategy",
-                        strategy, "iconEye");
+                        strategy, "iconDiplomacy");
                 }
 
                 // === 模组功能按钮区（和单位面板操作逻辑一致：点按钮开对应窗口）===
                 // 科技树（v0.235 新科技树UI）
-                AddFuncButton(__instance, "sm_ui_civ_tech_tree",
+                AddFuncButton(__instance, "sm_ui_civ_tech_tree", "iconKnowledge",
                     () => { TechView.Open(kid); });
 
                 // 经济管理
-                AddFuncButton(__instance, "sm_ui_economy_title",
+                AddFuncButton(__instance, "sm_ui_economy_title", "iconMoney",
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenEconomy(); });
 
                 // 建筑管理
-                AddFuncButton(__instance, "sm_ui_building_title",
+                AddFuncButton(__instance, "sm_ui_building_title", "iconBuildings",
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenBuilding(); });
 
                 // 势力外交
-                AddFuncButton(__instance, "sm_ui_faction_window_title",
+                AddFuncButton(__instance, "sm_ui_faction_window_title", "iconAlliance",
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenFaction(); });
 
                 // 注：星海总览是全局面板，不在单个王国面板中提供入口（神权栏已有入口）
@@ -156,10 +156,11 @@ namespace SuperMech.Code
 
         /// <summary>
         /// 添加功能按钮行（标签=功能名，值=▸，点击执行action）
+        /// v0.240.2 新增icon参数：每个按钮用不同原版图标
         /// </summary>
-        private static void AddFuncButton(KingdomWindow window, string label, System.Action action)
+        private static void AddFuncButton(KingdomWindow window, string label, string icon, System.Action action)
         {
-            var row = AddRow(window, label, "▸", "iconPlanet");
+            var row = AddRow(window, label, "▸", icon);
             if (row != null)
             {
                 _onClickField?.SetValue(row, action);
