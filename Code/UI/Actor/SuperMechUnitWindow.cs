@@ -125,7 +125,7 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.218 气力条独立显示：所有单位都能看到，模仿原版消耗条样式</summary>
+        /// <summary>v0.226 气力条重做：模仿原版消耗条——纯进度条+等级标签，不显示数字</summary>
         private static void ShowQiBar(UnitWindow window, Actor a)
         {
             float qi = SuperMechQi.GetQi(a);
@@ -133,9 +133,9 @@ namespace SuperMech.Code
             int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
             string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
             string qiName = GetQiDisplayName(a);
-            string qiFmt = "F" + SuperMechConfig.QiDisplayDecimals;
-            string qiBar = qiMax > 0 ? qi.ToString(qiFmt) + "/" + qiMax.ToString(qiFmt) : qi.ToString(qiFmt);
-            var qiRow = ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
+
+            // v0.226 只显示名称+等级，数值由进度条表达（像原版生命条）
+            var qiRow = ShowRow(window, qiName, qiLvText, null, InfoColor);
             if (qiRow != null)
             {
                 if (qiRow.icon != null && SuperMechUiSkin.QiIcon != null)
@@ -285,8 +285,8 @@ namespace SuperMech.Code
 
         public static string GetRank(Actor a)
         {
-            // v0.221 显示带细分的阶位名，如"F级（初期）"
-            return SuperMechRanks.GetRankNameWithSub(a);
+            // v0.226 原著阶位纯靠欧纳判断，不显示初期/中期/巅峰细分（欧纳数值在能级行显示）
+            return SuperMechRanks.GetRankName(a);
         }
 
         public static string GetQiDisplayName(Actor a)
@@ -370,6 +370,7 @@ namespace SuperMech.Code
         /// v0.203 在KeyValueField行上叠加气力可视化进度条
         /// 参考诡秘之主模组的自定义条实现：在行物体底部添加背景+填充两个Image
         /// </summary>
+        /// <summary>v0.226 气力进度条：纯色Image实现，不依赖运行时Sprite，模仿原版消耗条样式</summary>
         private static void AddQiProgressBar(GameObject rowGo, float current, float max)
         {
             try
@@ -377,23 +378,20 @@ namespace SuperMech.Code
                 if (rowGo == null || max <= 0) return;
                 float ratio = Mathf.Clamp01(current / max);
 
-                // v0.218 气力条重做：模仿原版消耗条样式——更高的进度条+圆角背景+渐变填充
-                // 进度条背景（整行宽度，在文字下方）
+                // 进度条背景（整行宽度，在行底部）
                 var bgGo = new GameObject("QiBarBg");
                 bgGo.transform.SetParent(rowGo.transform, false);
                 var bgRect = bgGo.AddComponent<RectTransform>();
                 bgRect.anchorMin = new Vector2(0, 0);
                 bgRect.anchorMax = new Vector2(1, 0);
                 bgRect.pivot = new Vector2(0.5f, 0);
-                bgRect.sizeDelta = new Vector2(-20, 8);
-                bgRect.anchoredPosition = new Vector2(0, 3);
+                bgRect.sizeDelta = new Vector2(-16, 10);
+                bgRect.anchoredPosition = new Vector2(0, 2);
                 var bgImg = bgGo.AddComponent<Image>();
-                bgImg.sprite = SuperMechUiSkin.ProgressBg;
-                bgImg.type = Image.Type.Sliced;
-                bgImg.color = new Color(0.2f, 0.25f, 0.35f, 0.8f);
+                bgImg.color = new Color(0.15f, 0.18f, 0.25f, 0.9f);
                 bgImg.raycastTarget = false;
 
-                // 进度条填充（青色渐变，从左到右）
+                // 进度条填充（青色，从左到右）
                 var fillGo = new GameObject("QiBarFill");
                 fillGo.transform.SetParent(bgGo.transform, false);
                 var fillRect = fillGo.AddComponent<RectTransform>();
@@ -403,23 +401,21 @@ namespace SuperMech.Code
                 fillRect.sizeDelta = Vector2.zero;
                 fillRect.anchoredPosition = Vector2.zero;
                 var fillImg = fillGo.AddComponent<Image>();
-                fillImg.sprite = SuperMechUiSkin.ProgressFill;
-                fillImg.type = Image.Type.Sliced;
-                fillImg.color = SuperMechUiSkin.CyanColor;
+                fillImg.color = new Color(0.35f, 0.75f, 0.85f, 0.9f);
                 fillImg.raycastTarget = false;
 
-                // 进度条高光（顶部细条，增加质感）
-                var highlightGo = new GameObject("QiBarHighlight");
-                highlightGo.transform.SetParent(fillGo.transform, false);
-                var hlRect = highlightGo.AddComponent<RectTransform>();
+                // 顶部高光（增加质感）
+                var hlGo = new GameObject("QiBarHL");
+                hlGo.transform.SetParent(fillGo.transform, false);
+                var hlRect = hlGo.AddComponent<RectTransform>();
                 hlRect.anchorMin = new Vector2(0, 0.6f);
                 hlRect.anchorMax = new Vector2(1, 1);
                 hlRect.sizeDelta = Vector2.zero;
-                var hlImg = highlightGo.AddComponent<Image>();
-                hlImg.color = new Color(1, 1, 1, 0.25f);
+                var hlImg = hlGo.AddComponent<Image>();
+                hlImg.color = new Color(1, 1, 1, 0.2f);
                 hlImg.raycastTarget = false;
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Debug.LogWarning("[超神机械师] 气力进度条创建失败: " + e.Message);
             }
