@@ -65,7 +65,7 @@ namespace SuperMech.Code
             if (attacker == null || target == null) return false;
             if (_host == null) EnsureRoot();
 
-            string actorId = attacker.data?.id ?? "";
+            string actorId = attacker.data != null ? attacker.data.id.ToString() : "";
             if (string.IsNullOrEmpty(actorId)) return false;
             if (_activeActors.Contains(actorId)) return false;
 
@@ -77,7 +77,7 @@ namespace SuperMech.Code
                 return false;
 
             _activeActors.Add(actorId);
-            _cooldowns[cooldownKey] = Time.time + move.CooldownTime;
+            _cooldowns[cooldownKey] = Time.time + move.GetCooldownTime();
             _host.StartCoroutine(RunMove(move, attacker, target, actorId));
             return true;
         }

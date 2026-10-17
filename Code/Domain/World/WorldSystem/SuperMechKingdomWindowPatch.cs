@@ -114,7 +114,6 @@ namespace SuperMech.Code
 
                 // === 模组功能按钮区（和单位面板操作逻辑一致：点按钮开对应窗口）===
                 Kingdom captured = kingdom;
-                long kid = kingdom.data.id;
 
                 // 科技树
                 AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_civ_tech_tree"),

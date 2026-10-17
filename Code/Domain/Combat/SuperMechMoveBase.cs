@@ -28,6 +28,9 @@ namespace SuperMech.Code
         protected virtual float SlowMotionScale => 0.3f; // 电影化慢动作时间缩放
         protected virtual float SlowMotionDuration => 0.4f; // 慢动作持续时间
 
+        /// <summary>获取冷却时间（供Choreographer外部访问）</summary>
+        public float GetCooldownTime() => CooldownTime;
+
         /// <summary>检查招式是否可用（冷却、状态等）</summary>
         public virtual bool CanExecute(Actor attacker, Actor target)
         {
@@ -45,35 +48,26 @@ namespace SuperMech.Code
             Vector3 originalPos = attacker.cur_transform_position;
             Vector3 originalScale = attacker.avatar != null ? attacker.avatar.transform.localScale : Vector3.one;
 
-            try
+            // 电影化招式：前摇开始时触发镜头聚焦
+            if (Cinematic)
             {
-                // 电影化招式：前摇开始时触发镜头聚焦
-                if (Cinematic)
-                {
-                    TriggerCinematicStart(attacker, target);
-                }
-
-                // 阶段1：前摇（蓄力）
-                yield return WindupPhase(attacker, target);
-
-                // 阶段2：攻击（突进+判定）
-                yield return AttackPhase(attacker, target);
-
-                // 电影化招式：攻击命中时触发慢动作
-                if (Cinematic)
-                {
-                    TriggerCinematicHit(attacker, target);
-                }
-
-                // 阶段3：后摇（收招）
-                yield return RecoveryPhase(attacker, target, originalPos, originalScale);
+                TriggerCinematicStart(attacker, target);
             }
-            catch (System.Exception e)
+
+            // 阶段1：前摇（蓄力）
+            yield return WindupPhase(attacker, target);
+
+            // 阶段2：攻击（突进+判定）
+            yield return AttackPhase(attacker, target);
+
+            // 电影化招式：攻击命中时触发慢动作
+            if (Cinematic)
             {
-                Debug.LogWarning($"[超神机械师] 招式{MoveId}执行异常: {e.Message}");
-                // 异常时恢复原始状态
-                RestoreTransform(attacker, originalPos, originalScale);
+                TriggerCinematicHit(attacker, target);
             }
+
+            // 阶段3：后摇（收招）
+            yield return RecoveryPhase(attacker, target, originalPos, originalScale);
         }
 
         /// <summary>前摇阶段：蓄力、缩放、特效</summary>

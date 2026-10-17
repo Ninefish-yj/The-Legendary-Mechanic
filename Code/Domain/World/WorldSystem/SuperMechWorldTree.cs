@@ -272,7 +272,7 @@ namespace SuperMech.Code
                 if (k == null || k.cities == null) continue;
                 foreach (var c in k.cities)
                 {
-                    if (c != null && c.data != null && !c.data.isDestroyed) allCities.Add(c);
+                    if (c != null && c.data != null && !c.isReadyForRemoval()) allCities.Add(c);
                 }
             }
 
@@ -282,7 +282,7 @@ namespace SuperMech.Code
                 int idx = Random.Range(0, allCities.Count);
                 var city = allCities[idx];
                 allCities.RemoveAt(idx);
-                try { city.destroy(); destroyed++; }
+                try { city.destroyCity(); destroyed++; }
                 catch (System.Exception) { }
             }
             return destroyed;
@@ -310,7 +310,7 @@ namespace SuperMech.Code
                 int idx = Random.Range(0, targets.Count);
                 var a = targets[idx];
                 targets.RemoveAt(idx);
-                try { a.die(AttackType.none, null); killed++; }
+                try { a.die(AttackType.None, null); killed++; }
                 catch (System.Exception) { }
             }
             return killed;

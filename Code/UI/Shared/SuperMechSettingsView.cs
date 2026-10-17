@@ -173,7 +173,7 @@ namespace SuperMech.Code
             labelGo.transform.SetParent(go.transform, false);
             var lt = labelGo.GetComponent<Text>();
             lt.text = text;
-            lt.font = SuperMechUiSkin.GetFont();
+            lt.font = SuperMechUiSkin.DefaultFont;
             lt.fontSize = 13;
             lt.fontStyle = FontStyle.Bold;
             lt.color = SuperMechUiSkin.SciCyan;
@@ -201,7 +201,7 @@ namespace SuperMech.Code
             nameGo.transform.SetParent(go.transform, false);
             var nt = nameGo.GetComponent<Text>();
             nt.text = name;
-            nt.font = SuperMechUiSkin.GetFont();
+            nt.font = SuperMechUiSkin.DefaultFont;
             nt.fontSize = 14;
             nt.fontStyle = FontStyle.Bold;
             nt.color = Color.white;
@@ -214,7 +214,7 @@ namespace SuperMech.Code
             descGo.transform.SetParent(go.transform, false);
             var dt = descGo.GetComponent<Text>();
             dt.text = desc;
-            dt.font = SuperMechUiSkin.GetFont();
+            dt.font = SuperMechUiSkin.DefaultFont;
             dt.fontSize = 11;
             dt.color = SuperMechUiSkin.SciMuted;
             dt.alignment = TextAnchor.MiddleLeft;
@@ -242,7 +242,7 @@ namespace SuperMech.Code
             nameGo.transform.SetParent(go.transform, false);
             var nt = nameGo.GetComponent<Text>();
             nt.text = name;
-            nt.font = SuperMechUiSkin.GetFont();
+            nt.font = SuperMechUiSkin.DefaultFont;
             nt.fontSize = 13;
             nt.color = Color.white;
             nt.alignment = TextAnchor.MiddleLeft;
@@ -254,7 +254,7 @@ namespace SuperMech.Code
             descGo.transform.SetParent(go.transform, false);
             var dt = descGo.GetComponent<Text>();
             dt.text = desc;
-            dt.font = SuperMechUiSkin.GetFont();
+            dt.font = SuperMechUiSkin.DefaultFont;
             dt.fontSize = 10;
             dt.color = SuperMechUiSkin.SciMuted;
             dt.alignment = TextAnchor.MiddleLeft;

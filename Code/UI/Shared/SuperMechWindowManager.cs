@@ -238,6 +238,18 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechKingdomView>();
         }
 
+        internal static void DrawFactionContent(RectTransform content)
+        {
+            var go = new GameObject("FactionView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechFactionView>();
+        }
+
 
         internal static void DrawPlayerContent(RectTransform content)
         {
