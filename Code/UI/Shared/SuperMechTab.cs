@@ -68,15 +68,42 @@ namespace SuperMech.Code
                 }
 
                 // ═══ 内容区（右侧，左侧留110给标签栏）═══
-                var areaContentGo = new GameObject("ContentArea", typeof(RectTransform));
+                // v0.239.1 窗口统一为帝国盒子尺寸(480×380)：内容区包统一滚动，页签内容超高时滚动查看
+                var areaContentGo = new GameObject("ContentArea", typeof(RectTransform), typeof(Image), typeof(ScrollRect));
                 areaContentGo.transform.SetParent(content, false);
                 var acr = areaContentGo.GetComponent<RectTransform>();
                 acr.anchorMin = Vector2.zero; acr.anchorMax = Vector2.one;
                 acr.pivot = new Vector2(0.5f, 0.5f);
                 acr.offsetMin = new Vector2(116, 6);   // 左侧留116给标签栏(110+6)
-                acr.offsetMax = new Vector2(-6, -6);   // v0.225 顶部不再留状态栏
+                acr.offsetMax = new Vector2(-6, -6);
+                var acImg = areaContentGo.GetComponent<Image>();
+                acImg.color = new Color(0, 0, 0, 0f);
+                var ascroll = areaContentGo.GetComponent<ScrollRect>();
+                ascroll.horizontal = false;
+                ascroll.vertical = true;
+                ascroll.movementType = ScrollRect.MovementType.Clamped;
+                ascroll.scrollSensitivity = 30f;
 
-                DrawCurrent(acr);
+                var vpGo = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D), typeof(Image));
+                vpGo.transform.SetParent(areaContentGo.transform, false);
+                var vpRt = vpGo.GetComponent<RectTransform>();
+                vpRt.anchorMin = Vector2.zero; vpRt.anchorMax = Vector2.one;
+                vpRt.offsetMin = Vector2.zero; vpRt.offsetMax = Vector2.zero;
+                var vpImg = vpGo.GetComponent<Image>();
+                vpImg.color = new Color(0, 0, 0, 0f);
+
+                var innerGo = new GameObject("TabContent", typeof(RectTransform));
+                innerGo.transform.SetParent(vpGo.transform, false);
+                var inner = innerGo.GetComponent<RectTransform>();
+                inner.anchorMin = new Vector2(0, 1);
+                inner.anchorMax = new Vector2(1, 1);
+                inner.pivot = new Vector2(0.5f, 1);
+                inner.anchoredPosition = Vector2.zero;
+                inner.sizeDelta = new Vector2(0, TabContentHeight());
+                ascroll.viewport = vpRt;
+                ascroll.content = inner;
+
+                DrawCurrent(inner);
             }
             catch (System.Exception e)
             {
@@ -84,9 +111,19 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.208 页签切换：所有标签均为内嵌概览面板，直接重建工作台</summary>
-        private static void SelectTab(int idx)
+        /// <summary>v0.239.1 滚动内容高度：按当前页签内容估算（窗口统一480×380，装不下滚动查看）</summary>
+        private static float TabContentHeight()
         {
+            var tabs = SuperMechWindowManager.OverviewTabs;
+            if (_tabIndex < 0 || _tabIndex >= tabs.Length) return 460f;
+            var draw = tabs[_tabIndex].draw;
+            if (draw == SuperMechWindowManager.DrawUniverseContent) return 1000f; // 世界之外520+世界树480
+            if (draw == SuperMechWindowManager.DrawRankContent) return 560f;      // 排行榜三栏
+            return 460f; // 文明/组织/设置
+        }
+
+        /// <summary>v0.208 页签切换：所有标签均为内嵌概览面板，直接重建工作台</summary>
+        private static void SelectTab(int idx)        {
             if (_rootContent == null) return;
             var tabs = SuperMechWindowManager.OverviewTabs;
             if (idx < 0 || idx >= tabs.Length) return;

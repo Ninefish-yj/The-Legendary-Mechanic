@@ -53,12 +53,12 @@ namespace SuperMech.Code
         {
             ToggleWindow("settings", "sm_ui_settings_title", 442, 544, DrawSettingsContent);
         }
-        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 595, 510, SuperMechTab.DrawOverviewContent); }
+        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 480, 380, SuperMechTab.DrawOverviewContent); }
         /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
         public static void OpenOverview(Kingdom kingdom)
         {
             if (kingdom != null) SelectedKingdomId = kingdom.getID();
-            ToggleWindow("overview", "sm_tab_panel_title", 612, 578, SuperMechTab.DrawOverviewContent);
+            ToggleWindow("overview", "sm_tab_panel_title", 480, 380, SuperMechTab.DrawOverviewContent);
         }
 
         /// <summary>v0.230 星海总览重构：标签重命名+合并冗余
@@ -76,42 +76,10 @@ namespace SuperMech.Code
         /// <summary>v0.230 宇宙标签：合并世界之外+世界树</summary>
         internal static void DrawUniverseContent(RectTransform content)
         {
-            // v0.239.0 修复"长宽高不对"：原上下各半窗口，内容互相溢出形成细高条（宇宙页签内容880px>窗口510px）。
-            // 改为内容区整体滚动：世界之外(消息/监测)在上、世界树在下，超出窗口高度时滚动查看
-            var scrollGo = new GameObject("UniverseScroll", typeof(RectTransform), typeof(Image), typeof(ScrollRect));
-            scrollGo.transform.SetParent(content, false);
-            var sRt = scrollGo.GetComponent<RectTransform>();
-            sRt.anchorMin = Vector2.zero; sRt.anchorMax = Vector2.one;
-            sRt.offsetMin = Vector2.zero; sRt.offsetMax = Vector2.zero;
-            var sImg = scrollGo.GetComponent<Image>();
-            sImg.color = new Color(0, 0, 0, 0f);
-            var scroll = scrollGo.GetComponent<ScrollRect>();
-            scroll.horizontal = false;
-            scroll.vertical = true;
-            scroll.movementType = ScrollRect.MovementType.Clamped;
-            scroll.scrollSensitivity = 30f;
-
-            var vpGo = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D), typeof(Image));
-            vpGo.transform.SetParent(scrollGo.transform, false);
-            var vpRt = vpGo.GetComponent<RectTransform>();
-            vpRt.anchorMin = Vector2.zero; vpRt.anchorMax = Vector2.one;
-            vpRt.offsetMin = Vector2.zero; vpRt.offsetMax = Vector2.zero;
-            var vpImg = vpGo.GetComponent<Image>();
-            vpImg.color = new Color(0, 0, 0, 0f);
-
-            var innerGo = new GameObject("UniverseContent", typeof(RectTransform));
-            innerGo.transform.SetParent(vpGo.transform, false);
-            var inner = innerGo.GetComponent<RectTransform>();
-            inner.anchorMin = new Vector2(0, 1);
-            inner.anchorMax = new Vector2(1, 1);
-            inner.pivot = new Vector2(0.5f, 1);
-            inner.sizeDelta = new Vector2(0, 1000f); // 世界之外520 + 世界树480
-            inner.anchoredPosition = Vector2.zero;
-            scroll.content = inner;
-
-            // 上半：世界之外（高维存在）——顶部对齐，高520
+            // v0.239.1 窗口统一为帝国盒子尺寸(480×380)：外层(TabContent)统一滚动承载内容，
+            // 这里直接铺内容：上=世界之外(高520)、下=世界树(高480)，总高1000由外层滚动查看
             var upperGo = new GameObject("WorldBeyond");
-            upperGo.transform.SetParent(inner, false);
+            upperGo.transform.SetParent(content, false);
             var upperRect = upperGo.AddComponent<RectTransform>();
             upperRect.anchorMin = new Vector2(0, 1);
             upperRect.anchorMax = new Vector2(1, 1);
@@ -120,9 +88,8 @@ namespace SuperMech.Code
             upperRect.anchoredPosition = Vector2.zero;
             SuperMechWorldBeyondView.Draw(upperRect);
 
-            // 下半：世界树（入侵事件）——底部对齐，高480
             var lowerGo = new GameObject("WorldTree");
-            lowerGo.transform.SetParent(inner, false);
+            lowerGo.transform.SetParent(content, false);
             var lowerRect = lowerGo.AddComponent<RectTransform>();
             lowerRect.anchorMin = new Vector2(0, 0);
             lowerRect.anchorMax = new Vector2(1, 0);
