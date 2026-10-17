@@ -164,7 +164,27 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 设置按钮失败: {e.Message}"); }
             }
 
-            // 5. 召唤降临者（玩家化身，需要点击地图）
+            // 5. 世界之外（暗面宇宙聊天群，v0.210从设置移出为独立入口）
+            if (PowerButton.get("sm_worldbeyond_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconEye")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_worldbeyond_open", () =>
+                    {
+                        SuperMechWindowManager.OpenWorldBeyond();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_worldbeyond_title", "sm_worldbeyond_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 世界之外按钮失败: {e.Message}"); }
+            }
+
+            // 6. 召唤降临者（玩家化身，需要点击地图）
             if (PowerButton.get(SummonDescendant) == null && AssetManager.powers.get(SummonDescendant) != null)
             {
                 try
@@ -177,7 +197,7 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
             }
 
-            // 6. 异化灾害（灾害玩法，需要点击地图）
+            // 7. 异化灾害（灾害玩法，需要点击地图）
             if (PowerButton.get(DisasterAlien) == null && AssetManager.powers.get(DisasterAlien) != null)
             {
                 try
