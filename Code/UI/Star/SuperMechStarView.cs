@@ -98,9 +98,17 @@ namespace SuperMech.Code
             Destroy(gameObject);
         }
 
-        /// <summary>每帧更新：处理滚轮缩放、航行单位位置刷新、星星闪烁</summary>
+        /// <summary>每帧更新：处理滚轮缩放、航行单位位置刷新、星星闪烁、手机返回键</summary>
         private void Update()
         {
+            // 手机返回键退出全屏星图
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Debug.Log("[超神机械师] 手机返回键关闭星图");
+                Close();
+                return;
+            }
+
             // v0.204 2.5D视差滚动：根据地图内容偏移量移动各层星空
             if (_starfieldResult != null && _mapContent != null)
             {

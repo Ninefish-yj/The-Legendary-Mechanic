@@ -206,10 +206,9 @@ namespace SuperMech.Code
         /// <summary>最后激活的窗口（用于返回键关闭最上层）</summary>
         private static SuperMechUguiWindow _lastActiveWindow;
 
-        /// <summary>手机返回键退出：关闭最后激活的窗口</summary>
+        /// <summary>返回键退出：关闭最后激活的窗口（全平台支持ESC/手机返回键）</summary>
         private void Update()
         {
-            if (!IsMobile) return;
             if (!IsOpen) return;
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
 
@@ -222,7 +221,7 @@ namespace SuperMech.Code
             // 只让最后激活的窗口响应返回键
             if (_lastActiveWindow != this) return;
 
-            Debug.Log("[超神机械师] 手机返回键关闭窗口: " + WindowId);
+            Debug.Log("[超神机械师] 返回键关闭窗口: " + WindowId);
             Close();
         }
 
