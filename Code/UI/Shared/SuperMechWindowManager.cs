@@ -61,24 +61,18 @@ namespace SuperMech.Code
         }
 
         /// <summary>v0.206 UI重设计：星海总览12标签页分3组
-        /// v0.208 星海总览定位=世界状态概览仪表盘，只放概览类标签
-        /// A组·文明管理(4): 王国 / 经济 / 科技 / 建筑
-        /// B组·强者势力(2): 阶位排行 / 势力
-        /// C组·世界系统(2): 世界树 / 世界超越
-        /// 设置/圣所从总览移出，改为神权栏独立入口</summary>
+        /// <summary>v0.209 星海总览定位=纯全局概览，单王国操作全部从原版王国面板进入
+        /// 5个标签：王国(全球对比表) / 阶位排行 / 势力 / 世界树 / 世界超越
+        /// 经济/科技/建筑从总览移除，改为原版王国面板底部按钮打开独立窗口
+        /// 设置/圣所从总览移除，改为神权栏独立入口</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
-            // === A组·文明管理 ===
-            ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（列表+快速跳转）
-            ("sm_ui_economy_title", DrawEconomyContent),             // 经济
-            ("sm_ui_tech", DrawTechContent),                         // 科技
-            ("sm_ui_building_title", DrawBuildingContent),           // 建筑
-            // === B组·强者势力 ===
-            ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行
-            ("sm_ui_faction_window_title", DrawFactionContent),      // 势力
-            // === C组·世界系统 ===
-            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树
-            ("sm_ui_world_beyond_title", DrawWorldBeyondContent),    // 世界超越
+            // === 全局概览 ===
+            ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（全球对比表）
+            ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行（全球强者）
+            ("sm_ui_faction_window_title", DrawFactionContent),      // 势力（全球组织格局）
+            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树（全球世界状态）
+            ("sm_ui_world_beyond_title", DrawWorldBeyondContent),    // 世界超越（全球世界状态）
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)

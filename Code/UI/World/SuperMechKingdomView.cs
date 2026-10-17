@@ -5,15 +5,15 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.206 王国总览面板：展示所有原版文明王国，点击选中后联动经济/科技/建筑等面板
-    /// 替代原FactionView（模组独立势力系统收进王国详情子区域）
+    /// v0.209 王国总览=全球对比表：所有王国关键指标横向对比
+    /// 点击行打开原版KingdomWindow查看详情和操作
+    /// 定位差异：原版面板=单王国详情+操作入口；总览=全球对比速览
     /// </summary>
     public class SuperMechKingdomView : MonoBehaviour
     {
         private RectTransform _listContent;
         private Text _countText;
         private Text _emptyText;
-        private Text _detailText;
         private ScrollRect _scroll;
 
         void Awake() { try { BuildLayout(); } catch (System.Exception e) { Debug.LogError("[超神机械师] KingdomView初始化失败: " + e); } }
@@ -33,39 +33,15 @@ namespace SuperMech.Code
             countRect.anchorMin = Vector2.zero;
             countRect.anchorMax = Vector2.one;
             countRect.offsetMin = new Vector2(8, 0);
-            countRect.offsetMax = new Vector2(-80, 0);
+            countRect.offsetMax = new Vector2(-8, 0);
 
-            // 外交按钮
-            var diplBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_diplomacy"), 10, () => SuperMechDiplomacyView.Toggle());
-            var diplRect = diplBtn.GetComponent<RectTransform>();
-            diplRect.anchorMin = new Vector2(1, 0.5f);
-            diplRect.anchorMax = new Vector2(1, 0.5f);
-            diplRect.sizeDelta = new Vector2(48, 22);
-            diplRect.anchoredPosition = new Vector2(-176, 0);
-
-            // 战报按钮
-            var reportBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_battle_report"), 10, () => SuperMechBattleReportView.Toggle());
-            var reportRect = reportBtn.GetComponent<RectTransform>();
-            reportRect.anchorMin = new Vector2(1, 0.5f);
-            reportRect.anchorMax = new Vector2(1, 0.5f);
-            reportRect.sizeDelta = new Vector2(48, 22);
-            reportRect.anchoredPosition = new Vector2(-124, 0);
-
-            // 阶位排行按钮
-            var rankBtn = SuperMechUiSkin.MakeButton(topBar.transform, LocalizedTextManager.getText("sm_ui_supera_ranking"), 10, () => SuperMechWindowManager.OpenRank());
-            var rankRect = rankBtn.GetComponent<RectTransform>();
-            rankRect.anchorMin = new Vector2(1, 0.5f);
-            rankRect.anchorMax = new Vector2(1, 0.5f);
-            rankRect.sizeDelta = new Vector2(56, 22);
-            rankRect.anchoredPosition = new Vector2(-64, 0);
-
-            // 滚动列表
+            // v0.209 滚动列表全高度（移除底部详情，详情在原版王国面板查看）
             var scrollGo = new GameObject("KingdomScroll");
             scrollGo.transform.SetParent(transform, false);
             var scrollRect = scrollGo.AddComponent<RectTransform>();
-            scrollRect.anchorMin = new Vector2(0, 0.35f);
-            scrollRect.anchorMax = new Vector2(1, 1);
-            scrollRect.pivot = new Vector2(0.5f, 1);
+            scrollRect.anchorMin = Vector2.zero;
+            scrollRect.anchorMax = Vector2.one;
+            scrollRect.pivot = new Vector2(0.5f, 0.5f);
             scrollRect.offsetMin = new Vector2(4, 4);
             scrollRect.offsetMax = new Vector2(-4, -32);
             _scroll = scrollGo.AddComponent<ScrollRect>();
@@ -94,23 +70,6 @@ namespace SuperMech.Code
             emptyRect.anchorMin = new Vector2(0, 0.5f);
             emptyRect.anchorMax = new Vector2(1, 0.5f);
             emptyRect.sizeDelta = new Vector2(0, 30);
-
-            // 底部王国详情
-            var detailPanel = SuperMechUiBuilder.CreatePanel(transform, "DetailPanel", new Color(0, 0, 0, 0.15f), 4, 4, 0, 0);
-            var dRect = detailPanel.GetComponent<RectTransform>();
-            dRect.anchorMin = Vector2.zero;
-            dRect.anchorMax = new Vector2(1, 0.35f);
-            dRect.pivot = new Vector2(0.5f, 0);
-            dRect.offsetMin = new Vector2(4, 4);
-            dRect.offsetMax = new Vector2(-4, 0);
-            _detailText = SuperMechUiBuilder.AddText(detailPanel, LocalizedTextManager.getText("sm_ui_kingdom_click"), 11, TextAnchor.UpperLeft);
-            var dtRect = _detailText.GetComponent<RectTransform>();
-            dtRect.anchorMin = Vector2.zero;
-            dtRect.anchorMax = Vector2.one;
-            dtRect.offsetMin = new Vector2(8, 8);
-            dtRect.offsetMax = new Vector2(-8, -8);
-            _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            _detailText.verticalOverflow = VerticalWrapMode.Truncate;
         }
 
         private void RefreshList()
@@ -143,19 +102,6 @@ namespace SuperMech.Code
                 CreateKingdomRow(k, ref y);
             }
             _listContent.sizeDelta = new Vector2(0, Mathf.Max(y, 100f));
-
-            // 如果有选中的王国，显示详情
-            if (SuperMechWindowManager.SelectedKingdomId >= 0)
-            {
-                foreach (var k in kingdoms)
-                {
-                    if (k.getID() == SuperMechWindowManager.SelectedKingdomId)
-                    {
-                        ShowDetail(k);
-                        break;
-                    }
-                }
-            }
         }
 
         private void CreateKingdomRow(Kingdom k, ref float y)
@@ -166,23 +112,27 @@ namespace SuperMech.Code
             rect.anchorMin = new Vector2(0, 1);
             rect.anchorMax = new Vector2(1, 1);
             rect.pivot = new Vector2(0.5f, 1);
-            rect.sizeDelta = new Vector2(0, 40);
+            rect.sizeDelta = new Vector2(0, 52);
             rect.anchoredPosition = new Vector2(0, -y);
-            y += 42f;
+            y += 54f;
 
             bool selected = k.getID() == SuperMechWindowManager.SelectedKingdomId;
             var bg = row.AddComponent<Image>();
             bg.color = selected ? new Color(0.3f, 0.5f, 0.8f, 0.3f) : new Color(1, 1, 1, 0.05f);
 
-            // 王国名+国王+文明等级+科技等级+超能者数
+            // v0.209 全球对比表：关键指标横向排列
             string kingName = k.king != null ? k.king.name : "—";
             var civLevel = SuperMechCivilization.GetCivLevelFromKingdom(k);
             int techLevel = SuperMechCivilization.GetTechLevelFromKingdom(k);
             int superCount = CountSuperUnits(k);
+            int population = k.getPopulationTotal();
+            int cityCount = k.countCities();
+            int warriors = k.countTotalWarriors();
+            int buildingCount = k.countBuildings();
 
             var label = SuperMechUiBuilder.AddText(row,
-                $"<b>{k.data.name}</b>  王:{kingName}\n" +
-                $"文明:{SuperMechCivilization.GetLevelName(civLevel)}  科技:Lv{techLevel}  超能者:{superCount}",
+                $"<b>{k.data.name}</b>  王:{kingName}  {SuperMechCivilization.GetLevelName(civLevel)}\n" +
+                $"人口:{population}  城市:{cityCount}  军力:{warriors}  科技:Lv{techLevel}  建筑:{buildingCount}  超能者:{superCount}",
                 11, TextAnchor.MiddleLeft);
             var labelRect = label.GetComponent<RectTransform>();
             labelRect.anchorMin = Vector2.zero;
@@ -213,48 +163,6 @@ namespace SuperMech.Code
                 if (SuperMechAdvancement.GetExactRankIndex(a) >= 8) count++;
             }
             return count;
-        }
-
-        private void ShowDetail(Kingdom k)
-        {
-            if (_detailText == null) return;
-
-            var civLevel = SuperMechCivilization.GetCivLevelFromKingdom(k);
-            int techLevel = SuperMechCivilization.GetTechLevelFromKingdom(k);
-            float techPoints = SuperMechCivilization.GetTechPointsFromKingdom(k);
-            int superCount = CountSuperUnits(k);
-            long kid = k.getID();
-            float culturePower = SuperMechCultureAI.GetCulturePower(kid);
-            string strategy = SuperMechCivStrategyAI.GetStrategyName(kid);
-
-            // 殖民地数量
-            int colonyCount = 0;
-            foreach (var p in SuperMechStarSystem.GetAllPlanets())
-            {
-                if (p != null && p.colonyLevel > 0 && p.id != SuperMechStarSystem.MAIN_PLANET
-                    && p.ownerKingdom == k.data.name) colonyCount++;
-            }
-
-            // 该王国的模组势力
-            var factions = SuperMechFaction.GetAllFactions();
-            int factionCount = 0;
-            foreach (var f in factions)
-            {
-                var leader = World.world.units?.Get(f.leaderId);
-                if (leader != null && leader.kingdom == k) factionCount++;
-            }
-
-            _detailText.text =
-                $"【{k.data.name}】详细信息\n" +
-                $"━━━━━━━━━━━━━━━━\n" +
-                $"文明等级: {SuperMechCivilization.GetLevelName(civLevel)}\n" +
-                $"科技等级: Lv{techLevel} (科技点:{techPoints:F0})\n" +
-                $"超能者: {superCount}人 (A阶及以上)\n" +
-                $"星际殖民地: {colonyCount}个\n" +
-                $"文化力: {(culturePower > 0 ? culturePower.ToString("F1") : "—")}\n" +
-                $"战略: {(string.IsNullOrEmpty(strategy) || strategy == "None" ? "—" : strategy)}\n" +
-                $"境内势力: {factionCount}个\n" +
-                $"\n→ 切换到「经济」「科技」「建筑」标签页查看该王国详情";
         }
     }
 }
