@@ -69,6 +69,16 @@ namespace SuperMech.Code
             Destroy(gameObject);
         }
 
+        void Update()
+        {
+            // ESC/返回键关闭窗口
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Debug.Log("[超神机械师] 返回键关闭圣所");
+                Close();
+            }
+        }
+
         private void Build()
         {
             _rootRect = GetComponent<RectTransform>();
@@ -141,6 +151,30 @@ namespace SuperMech.Code
             backTextRect.offsetMin = Vector2.zero;
             backTextRect.offsetMax = Vector2.zero;
             backBtn.onClick.AddListener(Close);
+
+            // 右上角X关闭按钮
+            var closeGo = new GameObject("CloseBtn");
+            closeGo.transform.SetParent(topGo.transform, false);
+            var closeRect = closeGo.AddComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(1, 0.5f);
+            closeRect.anchorMax = new Vector2(1, 0.5f);
+            closeRect.pivot = new Vector2(1, 0.5f);
+            closeRect.sizeDelta = new Vector2(34, 34);
+            closeRect.anchoredPosition = new Vector2(-8, 0);
+            var closeImg = closeGo.AddComponent<Image>();
+            closeImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            closeImg.type = Image.Type.Simple;
+            closeImg.color = SuperMechUiSkin.CloseRed;
+            var closeBtn = closeGo.AddComponent<Button>();
+            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", 20, TextAnchor.MiddleCenter);
+            closeText.color = Color.white;
+            closeText.fontStyle = FontStyle.Bold;
+            var closeTextRect = closeText.GetComponent<RectTransform>();
+            closeTextRect.anchorMin = Vector2.zero;
+            closeTextRect.anchorMax = Vector2.one;
+            closeTextRect.offsetMin = Vector2.zero;
+            closeTextRect.offsetMax = Vector2.zero;
+            closeBtn.onClick.AddListener(Close);
 
             var titleText = SuperMechUiSkin.MakeText(topGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_space_title"), 18, TextAnchor.MiddleCenter);
