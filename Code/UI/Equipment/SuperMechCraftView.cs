@@ -67,8 +67,8 @@ namespace SuperMech.Code
             Actor maker = Maker;
             if (maker == null || !maker.hasTrait(SuperMechTraits.ClassMech))
             {
+                // v0.237.4 修复重复显示：空状态只在头部提示一次，列表不再重复创建文本
                 _headText.text = LocalizedTextManager.getText("sm_ui_craft_none");
-                SuperMechUiSkin.MakeText(_listContent, LocalizedTextManager.getText("sm_ui_craft_none"), 14, TextAnchor.UpperLeft);
                 return;
             }
 

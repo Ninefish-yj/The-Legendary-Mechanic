@@ -14,7 +14,8 @@ namespace SuperMech.Code
         private const string BarName = "bar_qi";
         private static StatBar _qiBar;
         private static bool _initialized = false;
-        private static readonly Color QiBarColor = new Color(0.95f, 0.78f, 0.25f, 1f); // 金色，代表气力/超能能量
+        // v0.237.4 气力条统一为模组主题青色（用户要求；原来金色）
+        private static readonly Color QiBarColor = new Color(0.40f, 0.80f, 0.90f, 1f); // 青色 #66C9E6
 
         public static void Init()
         {

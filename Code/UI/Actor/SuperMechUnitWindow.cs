@@ -182,17 +182,17 @@ namespace SuperMech.Code
                 var qiBarGo = UnityEngine.Object.Instantiate(template.gameObject, barsElement.transform);
                 qiBarGo.name = "SM_QiBar";
 
-                // v0.237.3 与单位面板气力条统一：金色+自定义气力图标（原来用青色+原版模板图标，两处不一致）
+                // v0.237.4 与单位面板气力条统一：青色+自定义气力图标（模组主题色）
                 var barImg = qiBarGo.transform.Find("bar")?.GetComponent<Image>();
                 if (barImg != null)
                 {
-                    barImg.color = new Color(0.95f, 0.78f, 0.25f, 1f); // QiBarColor金色
+                    barImg.color = new Color(0.40f, 0.80f, 0.90f, 1f); // CyanColor青色
                 }
 
-                // 文本颜色也统一为金色（原版模板是白色/蓝色）
+                // 文本颜色也统一为青色（原版模板是白色/蓝色）
                 var statBarTmp = qiBarGo.GetComponent<StatBar>();
                 if (statBarTmp != null && statBarTmp.textField != null)
-                    statBarTmp.textField.color = new Color(0.95f, 0.78f, 0.25f, 1f);
+                    statBarTmp.textField.color = new Color(0.40f, 0.80f, 0.90f, 1f);
 
                 // 替换图标为自定义气力图标
                 try
@@ -545,7 +545,7 @@ namespace SuperMech.Code
                 bgImg.color = new Color(0.15f, 0.18f, 0.25f, 0.9f);
                 bgImg.raycastTarget = false;
 
-                // 进度条填充（v0.237.3 统一为气力金色，与单位面板/单位窗口Bars区一致）
+                // 进度条填充（v0.237.4 统一为青色，与单位面板/单位窗口Bars区一致）
                 var fillGo = new GameObject("QiBarFill");
                 fillGo.transform.SetParent(bgGo.transform, false);
                 var fillRect = fillGo.AddComponent<RectTransform>();
@@ -555,7 +555,7 @@ namespace SuperMech.Code
                 fillRect.sizeDelta = Vector2.zero;
                 fillRect.anchoredPosition = Vector2.zero;
                 var fillImg = fillGo.AddComponent<Image>();
-                fillImg.color = new Color(0.95f, 0.78f, 0.25f, 0.9f);
+                fillImg.color = new Color(0.40f, 0.80f, 0.90f, 0.9f);
                 fillImg.raycastTarget = false;
 
                 // 顶部高光（增加质感）

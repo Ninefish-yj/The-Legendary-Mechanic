@@ -51,7 +51,7 @@ namespace SuperMech.Code
             bgRect.offsetMin = Vector2.zero;
             bgRect.offsetMax = Vector2.zero;
             var bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0, 0, 0, 0.6f);
+            bgImg.color = new Color(0, 0, 0, 0.35f); // v0.237.4 遮罩调淡(0.6→0.35)，避免盖住画面看不清
             bgImg.raycastTarget = true;
 
             // 主面板
