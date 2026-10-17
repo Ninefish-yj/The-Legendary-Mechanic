@@ -68,7 +68,7 @@ namespace SuperMech.Code
         {
             int exact = SuperMechAdvancement.GetExactRankIndex(a);
             if (exact < 0 || exact >= All.Count) return "";
-            double onar = SuperMechEnergyLevel.GetOnar(a);
+            double onar = SuperMechEnergyLevel.Calculate(a);
             double floor = All[exact].onarFloor;
             double nextFloor = exact + 1 < All.Count ? All[exact + 1].onarFloor : floor * 1.5;
             double range = nextFloor - floor;
