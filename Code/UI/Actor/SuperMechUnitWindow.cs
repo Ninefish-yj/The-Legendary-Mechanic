@@ -9,6 +9,9 @@ namespace SuperMech.Code
     [HarmonyPatch(typeof(UnitWindow), "showStatsRows")]
     public static class SuperMechUnitWindow
     {
+        // v0.218 防重复注入：记录当前正在注入的窗口，防止RebuildPanel触发多次showStatsRows导致集合枚举冲突
+        private static UnitWindow _injectingWindow;
+
         [HarmonyPostfix]
         public static void Postfix(UnitWindow __instance)
         {
@@ -17,6 +20,10 @@ namespace SuperMech.Code
                 if (__instance == null) return;
                 Actor actor = __instance.actor;
                 if (actor == null || actor.isRekt() || actor.data == null) return;
+
+                // v0.218 防止同一窗口重复启动注入协程（点击折叠按钮时RebuildPanel会触发多次showStatsRows）
+                if (_injectingWindow == __instance) return;
+                _injectingWindow = __instance;
 
                 // 延迟一帧执行：避免同帧添加的子物体被原生布局覆盖（手机版折叠功能修复）
                 __instance.StartCoroutine(InjectNextFrame(__instance, actor));
@@ -29,12 +36,12 @@ namespace SuperMech.Code
 
         private static System.Collections.IEnumerator InjectNextFrame(UnitWindow window, Actor actor)
         {
-            // v0.213.2 修复Collection was modified：等待原版showRows协程完成后再注入
+            // v0.218 修复Collection was modified：等待原版showRows协程完全完成后再注入
             // showRows()每帧激活一行，行多时需多帧，期间修改stats_rows会触发异常
             var container = window.GetComponentInChildren<StatsRowsContainer>();
             if (container != null)
             {
-                int timeout = 40; // 最多等40帧，防止死等
+                int timeout = 60; // 最多等60帧，防止死等
                 while (timeout-- > 0)
                 {
                     bool allActive = true;
@@ -45,6 +52,9 @@ namespace SuperMech.Code
                     if (allActive) break;
                     yield return null;
                 }
+                // v0.218 额外等待2帧：确保showRows协程的MoveNext完全执行完毕，枚举器已释放
+                yield return null;
+                yield return null;
             }
             else
             {
@@ -54,7 +64,19 @@ namespace SuperMech.Code
                 yield return null;
             }
 
-            if (window == null || actor == null || !actor.isAlive()) yield break;
+            // v0.218 注入前二次校验：窗口可能已关闭或切换了单位
+            if (window == null || actor == null || !actor.isAlive())
+            {
+                _injectingWindow = null;
+                yield break;
+            }
+            if (window.actor != actor)
+            {
+                // 窗口已切换到其他单位，本次注入作废
+                _injectingWindow = null;
+                yield break;
+            }
+
             try
             {
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, SuperMechUiSkin.CyanColor);
@@ -64,6 +86,10 @@ namespace SuperMech.Code
             {
                 Debug.LogError("[超神机械师] 单位面板延迟注入异常: " + e);
             }
+            finally
+            {
+                _injectingWindow = null;
+            }
         }
 
         private static readonly Color InfoColor = SuperMechUiSkin.CyanColor;
@@ -71,6 +97,10 @@ namespace SuperMech.Code
         private static void ShowMainInfo(UnitWindow window, Actor a)
         {
             bool hasTalent = SuperMechTalent.HasTalent(a);
+
+            // v0.218 所有单位都显示气力条（模仿原版消耗条），没天赋的显示"未觉醒"
+            ShowQiBar(window, a);
+
             if (!hasTalent)
             {
                 if (SuperMechConfig.ShowRankInPanel)
@@ -92,6 +122,31 @@ namespace SuperMech.Code
             if (SuperMechCollapsibleSection.IsExpanded(actorId, "entry"))
             {
                 ShowQuickButtons(window, a);
+            }
+        }
+
+        /// <summary>v0.218 气力条独立显示：所有单位都能看到，模仿原版消耗条样式</summary>
+        private static void ShowQiBar(UnitWindow window, Actor a)
+        {
+            float qi = SuperMechQi.GetQi(a);
+            float qiMax = SuperMechQi.GetQiMax(a);
+            int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
+            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
+            string qiName = GetQiDisplayName(a);
+            string qiFmt = "F" + SuperMechConfig.QiDisplayDecimals;
+            string qiBar = qiMax > 0 ? qi.ToString(qiFmt) + "/" + qiMax.ToString(qiFmt) : qi.ToString(qiFmt);
+            var qiRow = ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
+            if (qiRow != null)
+            {
+                if (qiRow.icon != null && SuperMechUiSkin.QiIcon != null)
+                {
+                    qiRow.icon.sprite = SuperMechUiSkin.QiIcon;
+                    qiRow.icon.gameObject.SetActive(true);
+                }
+                if (qiMax > 0)
+                {
+                    AddQiProgressBar(qiRow.gameObject, qi, qiMax);
+                }
             }
         }
 
@@ -183,28 +238,7 @@ namespace SuperMech.Code
             // 3. 能级（欧纳）—— 战力指标，核心属性
             ShowRow(window, LocalizedTextManager.getText("sm_ui_onar"), SuperMechEnergyLevel.GetShortText(a), null, InfoColor);
 
-            // 4. 气力 —— 核心资源（带可视化进度条）
-            float qi = SuperMechQi.GetQi(a);
-            float qiMax = SuperMechQi.GetQiMax(a);
-            int qiLv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-            string qiLvText = qiLv > 0 ? SuperMechQi.LevelNames[qiLv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
-            string qiName = GetQiDisplayName(a);
-            string qiFmt = "F" + SuperMechConfig.QiDisplayDecimals;
-            string qiBar = qiMax > 0 ? qi.ToString(qiFmt) + "/" + qiMax.ToString(qiFmt) : qi.ToString(qiFmt);
-            var qiRow = ShowRow(window, qiName, $"{qiBar}（{qiLvText}）", null, InfoColor);
-            // v0.203 气力可视化进度条+自定义气力图标（蓝色能量球+闪电，原著机械系设定）
-            if (qiRow != null)
-            {
-                if (qiRow.icon != null && SuperMechUiSkin.QiIcon != null)
-                {
-                    qiRow.icon.sprite = SuperMechUiSkin.QiIcon;
-                    qiRow.icon.gameObject.SetActive(true);
-                }
-                if (qiMax > 0)
-                {
-                    AddQiProgressBar(qiRow.gameObject, qi, qiMax);
-                }
-            }
+            // 4. 气力已移到ShowQiBar（所有单位都显示，v0.218）
 
             // 5. 天赋倾向
             string talentText = GetTalentText(a);
@@ -342,22 +376,23 @@ namespace SuperMech.Code
                 if (rowGo == null || max <= 0) return;
                 float ratio = Mathf.Clamp01(current / max);
 
-                // 进度条背景
+                // v0.218 气力条重做：模仿原版消耗条样式——更高的进度条+圆角背景+渐变填充
+                // 进度条背景（整行宽度，在文字下方）
                 var bgGo = new GameObject("QiBarBg");
                 bgGo.transform.SetParent(rowGo.transform, false);
                 var bgRect = bgGo.AddComponent<RectTransform>();
                 bgRect.anchorMin = new Vector2(0, 0);
                 bgRect.anchorMax = new Vector2(1, 0);
                 bgRect.pivot = new Vector2(0.5f, 0);
-                bgRect.sizeDelta = new Vector2(-16, 4);
-                bgRect.anchoredPosition = new Vector2(0, 2);
+                bgRect.sizeDelta = new Vector2(-20, 8);
+                bgRect.anchoredPosition = new Vector2(0, 3);
                 var bgImg = bgGo.AddComponent<Image>();
                 bgImg.sprite = SuperMechUiSkin.ProgressBg;
                 bgImg.type = Image.Type.Sliced;
-                bgImg.color = Color.white;
+                bgImg.color = new Color(0.2f, 0.25f, 0.35f, 0.8f);
                 bgImg.raycastTarget = false;
 
-                // 进度条填充
+                // 进度条填充（青色渐变，从左到右）
                 var fillGo = new GameObject("QiBarFill");
                 fillGo.transform.SetParent(bgGo.transform, false);
                 var fillRect = fillGo.AddComponent<RectTransform>();
@@ -371,6 +406,17 @@ namespace SuperMech.Code
                 fillImg.type = Image.Type.Sliced;
                 fillImg.color = SuperMechUiSkin.CyanColor;
                 fillImg.raycastTarget = false;
+
+                // 进度条高光（顶部细条，增加质感）
+                var highlightGo = new GameObject("QiBarHighlight");
+                highlightGo.transform.SetParent(fillGo.transform, false);
+                var hlRect = highlightGo.AddComponent<RectTransform>();
+                hlRect.anchorMin = new Vector2(0, 0.6f);
+                hlRect.anchorMax = new Vector2(1, 1);
+                hlRect.sizeDelta = Vector2.zero;
+                var hlImg = highlightGo.AddComponent<Image>();
+                hlImg.color = new Color(1, 1, 1, 0.25f);
+                hlImg.raycastTarget = false;
             }
             catch (Exception e)
             {
