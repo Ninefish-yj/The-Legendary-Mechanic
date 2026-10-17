@@ -1363,7 +1363,7 @@
   "sm_branch_538": "职业分支",
   "sm_branch_gunner": "职业分支",
   "sm_branch_martial": "职业分支",
-  "sm_branch_mech": "职业分支",
+  "sm_branch_mech": "机械工程",
   "sm_branch_psi_kinesis": "职业分支",
   "sm_branch_psi_mind": "职业分支",
   "sm_branch_psi_potential": "职业分支",
@@ -4026,10 +4026,6 @@
   "sm_era_bronze": "青铜时代",
   "sm_era_iron": "铁器时代",
   "sm_era_medieval": "中古时代",
-  "sm_era_industrial": "工业时代",
-  "sm_era_information": "信息时代",
-  "sm_era_interstellar": "星际时代",
-  "sm_era_cosmic": "宇宙时代",
   "sm_era_super": "超能时代",
   "sm_tech_title": "科技树",
   "sm_tech_no_data": "暂无科技数据",
@@ -4061,8 +4057,8 @@
   "sm_tech_already_done": "已完成研究",
   "sm_tech_locked_hint": "前置条件未满足",
   "sm_branch_base": "基础生存",
-  "sm_branch_mech": "机械工程",
   "sm_branch_power": "超能觉醒",
   "sm_branch_space": "星际航行",
-  "sm_branch_info": "信息生命"
+  "sm_branch_info": "信息生命",
+  "sm_ui_tree_next_unit": "秒"
 }

@@ -77,8 +77,9 @@ namespace SuperMech.Code
             }
             else
             {
+                // v0.237.11 补单位（原版显示"距下次入侵 388"无单位，用户易困惑）
                 sb.Append(LocalizedTextManager.getText("sm_ui_tree_next")).Append(" ")
-                  .Append(d.nextSpawnInTicks).Append("\n");
+                  .Append(d.nextSpawnInTicks).Append(LocalizedTextManager.getText("sm_ui_tree_next_unit")).Append("\n");
                 sb.Append(LocalizedTextManager.getText("sm_ui_tree_union_off")).Append("\n");
             }
             sb.Append(LocalizedTextManager.getText("sm_ui_tree_desc")).Append("\n");
