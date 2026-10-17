@@ -227,12 +227,23 @@ namespace SuperMech.Code
             }
             if (SuperMechAwakened.IsAwakened(a))
                 AddInfoRow(LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"));
+
+            // === 个人经济 ===
             int inal = SuperMechInal.GetInal(a);
-            if (inal > 0 || SuperMechSupermA.IsSuperA(a))
+            bool isSuperA = SuperMechSupermA.IsSuperA(a);
+            if (inal > 0 || isSuperA)
+            {
+                AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_economy"));
                 AddInfoRow(LocalizedTextManager.getText("sm_inal_balance"), inal.ToString("N0"));
-            var company = SuperMechCompany.GetCompanyByActor(a);
-            if (company != null)
-                AddInfoRow(LocalizedTextManager.getText("sm_company_title"), SuperMechCompany.GetDisplayText(company));
+                if (isSuperA && a.kingdom != null)
+                {
+                    int salary = SuperMechInal.CalcSalary(a, a.kingdom);
+                    AddInfoRow(LocalizedTextManager.getText("sm_inal_salary"), $"{salary:N0} / 32tick");
+                }
+                var company = SuperMechCompany.GetCompanyByActor(a);
+                if (company != null)
+                    AddInfoRow(LocalizedTextManager.getText("sm_company_title"), SuperMechCompany.GetDisplayText(company));
+            }
 
             // === 特殊信息 ===
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_special"));
