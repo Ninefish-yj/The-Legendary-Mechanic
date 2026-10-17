@@ -592,4 +592,16 @@ namespace SuperMech.Code
             }
         }
     }
+
+    /// <summary>v0.239.8 隐藏内部标记特质（sm_internal组）：代码状态开关，不应显示在玩家特质面板</summary>
+    [HarmonyPatch(typeof(TraitsContainer<ActorTrait, ActorTraitButton>), "loadActiveTrait")]
+    public static class SuperMechHideInternalMarkersPatch
+    {
+        static bool Prefix(ActorTrait pTraitAsset)
+        {
+            // group_id=sm_internal 的特质是代码内部状态标记（狂暴/召唤物/虚空龙等），跳过不创建按钮
+            if (pTraitAsset != null && pTraitAsset.group_id == "sm_internal") return false;
+            return true;
+        }
+    }
 }

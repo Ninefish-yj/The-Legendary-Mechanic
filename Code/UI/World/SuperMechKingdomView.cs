@@ -110,8 +110,8 @@ namespace SuperMech.Code
             _emptyText.color = new Color(0.85f, 0.75f, 0.55f);
             _emptyText.alignment = TextAnchor.MiddleCenter;
             _emptyText.text = LocalizedTextManager.getText("sm_ui_kingdom_none");
-            var emptyRect = _emptyText.GetComponent<RectTransform>();
-            emptyRect.sizeDelta = new Vector2(0, 28); // v0.239.6 固定高度，防VG布局计算异常
+            var emptyTextRect = _emptyText.GetComponent<RectTransform>();
+            emptyTextRect.sizeDelta = new Vector2(0, 28); // v0.239.6 固定高度，防VG布局计算异常
 
             _emptyHintText = new GameObject("EmptyHint").AddComponent<Text>();
             _emptyHintText.transform.SetParent(emptyGo.transform, false);
