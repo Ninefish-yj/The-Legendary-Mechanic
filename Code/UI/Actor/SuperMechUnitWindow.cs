@@ -79,6 +79,9 @@ namespace SuperMech.Code
 
             try
             {
+                // v0.232 注入前清除旧模组行，防止折叠切换后信息重复
+                ClearOldModRows(window);
+
                 // v0.232 超能者信息整体可折叠：点击标题行切换展开/收起
                 long actorId = actor.data.id;
                 bool expanded = SuperMechCollapsibleSection.IsExpanded(actorId, "super_info");
@@ -441,6 +444,28 @@ namespace SuperMech.Code
             return string.Join(" ", parts);
         }
 
+        /// <summary>v0.232 注入前清除旧模组行，防止折叠切换/重复注入导致信息重复</summary>
+        private static void ClearOldModRows(UnitWindow window)
+        {
+            try
+            {
+                var container = window.GetComponentInChildren<StatsRowsContainer>();
+                if (container == null) return;
+                var toDestroy = new System.Collections.Generic.List<GameObject>();
+                foreach (Transform child in container.transform)
+                {
+                    if (child != null && child.name != null && child.name.StartsWith("SM_"))
+                        toDestroy.Add(child.gameObject);
+                }
+                foreach (var go in toDestroy)
+                    if (go != null) UnityEngine.Object.Destroy(go);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 清除旧模组行失败: " + e.Message);
+            }
+        }
+
         private static KeyValueField ShowRow(UnitWindow window, string label, object value, string iconPath = null, Color? color = null)
         {
             try
@@ -448,8 +473,12 @@ namespace SuperMech.Code
                 Color c = color ?? Color.white;
                 string colorHex = "#" + ColorUtility.ToHtmlStringRGB(c);
                 var row = window.showStatRow(label, value, colorHex, MetaType.None, -1L, pColorText: false, iconPath, null, null, pLocalize: false);
-                // v0.194 修复：延迟一帧添加的行错过了showRows()协程的激活，需手动激活
-                if (row != null) row.gameObject.SetActive(true);
+                // v0.232 给模组行加name前缀，便于注入前清除旧行防止重复
+                if (row != null)
+                {
+                    row.gameObject.name = "SM_Row";
+                    row.gameObject.SetActive(true);
+                }
                 return row;
             }
             catch (Exception e)

@@ -109,8 +109,12 @@ namespace SuperMech.Code
                 var row = window.showStatRow(title, valueText, "#ffd700", MetaType.None, -1L,
                     pColorText: false, pIconPath: null, pTooltipId: null, pTooltipData: null, pLocalize: false);
 
-                // v0.194 修复：延迟添加的行错过了showRows()协程的激活，需手动激活
-                if (row != null) row.gameObject.SetActive(true);
+                // v0.232 给折叠头行加name前缀，便于注入前清除旧行防止重复
+                if (row != null)
+                {
+                    row.gameObject.name = "SM_Header";
+                    row.gameObject.SetActive(true);
+                }
 
                 if (row != null)
                 {
