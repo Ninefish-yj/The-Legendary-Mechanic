@@ -79,8 +79,32 @@ namespace SuperMech.Code
 
             try
             {
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, SuperMechUiSkin.CyanColor);
-                ShowMainInfo(window, actor);
+                // v0.232 超能者信息整体可折叠：点击标题行切换展开/收起
+                long actorId = actor.data.id;
+                bool expanded = SuperMechCollapsibleSection.IsExpanded(actorId, "super_info");
+                string arrow = expanded ? "▼" : "▶";
+                string title = $"{arrow} {LocalizedTextManager.getText("sm_ui_super_info")}";
+                string valueText = expanded ? LocalizedTextManager.getText("sm_ui_collapse") : LocalizedTextManager.getText("sm_ui_expand");
+
+                var headerRow = ShowRow(window, title, valueText, null, SuperMechUiSkin.CyanColor);
+                if (headerRow != null)
+                {
+                    UnityEngine.Events.UnityAction toggleAction = () =>
+                    {
+                        SuperMechCollapsibleSection.Toggle(actorId, "super_info");
+                        window.showStatsRows();
+                    };
+                    headerRow.on_click_value = toggleAction;
+                    headerRow.on_hover_value = () =>
+                    {
+                        if (!InputHelpers.mouseSupported) toggleAction();
+                    };
+                }
+
+                if (expanded)
+                {
+                    ShowMainInfo(window, actor);
+                }
             }
             catch (System.Exception e)
             {
