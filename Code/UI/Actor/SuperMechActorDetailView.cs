@@ -25,7 +25,9 @@ namespace SuperMech.Code
         public static void Open(Actor actor)
         {
             if (_instance != null || actor == null) return;
+            var canvas = SuperMechUguiWindow.GetCanvas();
             var go = new GameObject("SMActorDetailView");
+            go.transform.SetParent(canvas.transform, false);
             _instance = go.AddComponent<SuperMechActorDetailView>();
             _instance._actor = actor;
             _instance.Build();
