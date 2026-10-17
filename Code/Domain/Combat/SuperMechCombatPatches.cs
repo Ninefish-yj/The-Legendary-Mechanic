@@ -475,11 +475,14 @@ namespace SuperMech.Code
             catch (System.Exception) { }
 
             // v0.201.10 血量下限保护：避免直接扣血导致负数显示和不死bug
+            // v0.213.1 增加上限保护：减伤/护盾加血可能超过上限
             // 原版getHit在扣血前检查!hasHealth()，若血量已<=0会直接return，不触发死亡
             // 所以下限设为1，让原版changeHealth正常扣血后hasHealth()返回false，加入死亡队列
-            if (target.data != null && target.data.health < 1)
+            if (target.data != null)
             {
-                target.data.health = 1;
+                int maxHp = target.getMaxHealth();
+                if (target.data.health < 1) target.data.health = 1;
+                else if (target.data.health > maxHp) target.data.health = maxHp;
             }
 
             return true;
@@ -498,7 +501,17 @@ namespace SuperMech.Code
             bool pCheckDamageReduction = true)
         {
             Actor target = __instance;
-            if (target?.data == null || target.isAlive()) return;
+            if (target?.data == null) return;
+
+            // v0.213.1 血量负数修复：Prefix额外伤害+原版扣血可能导致血量负数但单位未死亡
+            // 若血量<=0且单位仍存活，强制触发死亡（降临者会进入复活队列）
+            if (target.data.health <= 0 && target.isAlive())
+            {
+                try { target.dieAndDestroy(pAttackType); } catch (System.Exception) { }
+                return;
+            }
+
+            if (target.isAlive()) return;
 
             try
             {
