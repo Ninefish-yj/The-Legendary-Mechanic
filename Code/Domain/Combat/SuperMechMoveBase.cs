@@ -23,6 +23,10 @@ namespace SuperMech.Code
         protected virtual float DashDistance => 1.5f;   // 突进距离
         protected virtual float ScalePulse => 1.3f;     // 攻击时缩放脉冲
         protected virtual bool TriggerHitStop => true;  // 是否触发命中停顿
+        protected virtual bool DashToTarget => true;    // 是否突进目标
+        protected virtual bool Cinematic => false;      // 是否触发电影化效果（超A必杀）
+        protected virtual float SlowMotionScale => 0.3f; // 电影化慢动作时间缩放
+        protected virtual float SlowMotionDuration => 0.4f; // 慢动作持续时间
 
         /// <summary>检查招式是否可用（冷却、状态等）</summary>
         public virtual bool CanExecute(Actor attacker, Actor target)
@@ -43,11 +47,23 @@ namespace SuperMech.Code
 
             try
             {
+                // 电影化招式：前摇开始时触发镜头聚焦
+                if (Cinematic)
+                {
+                    TriggerCinematicStart(attacker, target);
+                }
+
                 // 阶段1：前摇（蓄力）
                 yield return WindupPhase(attacker, target);
 
                 // 阶段2：攻击（突进+判定）
                 yield return AttackPhase(attacker, target);
+
+                // 电影化招式：攻击命中时触发慢动作
+                if (Cinematic)
+                {
+                    TriggerCinematicHit(attacker, target);
+                }
 
                 // 阶段3：后摇（收招）
                 yield return RecoveryPhase(attacker, target, originalPos, originalScale);
@@ -144,6 +160,69 @@ namespace SuperMech.Code
         protected virtual void OnAttackConnect(Actor attacker, Actor target)
         {
             // 基类不做额外处理，子类添加特效
+        }
+
+        /// <summary>电影化开始：镜头聚焦+屏幕暗角</summary>
+        protected virtual void TriggerCinematicStart(Actor attacker, Actor target)
+        {
+            if (!SuperMechConfig.CombatFeelEnabled) return;
+            try
+            {
+                // 镜头聚焦：相机向战斗中心移动
+                if (Camera.main != null && attacker != null && target != null)
+                {
+                    Vector3 battleCenter = (attacker.cur_transform_position + target.cur_transform_position) * 0.5f;
+                    battleCenter.z = Camera.main.transform.position.z;
+                    // 平滑移动相机（通过协程）
+                    SuperMechChoreographer.StartCoroutine(CinematicCameraMove(battleCenter, 0.3f));
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 电影化镜头开始异常: " + e.Message);
+            }
+        }
+
+        /// <summary>电影化命中：慢动作+强屏幕震动</summary>
+        protected virtual void TriggerCinematicHit(Actor attacker, Actor target)
+        {
+            if (!SuperMechConfig.CombatFeelEnabled) return;
+            try
+            {
+                // 慢动作
+                Time.timeScale = SlowMotionScale;
+                SuperMechChoreographer.StartCoroutine(RestoreTimeScale(SlowMotionDuration));
+
+                // 强屏幕震动
+                SuperMechCombatVisuals.TriggerScreenShake(0.6f, 0.5f);
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning("[超神机械师] 电影化命中异常: " + e.Message);
+            }
+        }
+
+        /// <summary>相机平滑移动协程</summary>
+        private static IEnumerator CinematicCameraMove(Vector3 targetPos, float duration)
+        {
+            if (Camera.main == null) yield break;
+            Vector3 startPos = Camera.main.transform.position;
+            float elapsed = 0f;
+            while (elapsed < duration)
+            {
+                elapsed += Time.unscaledDeltaTime;
+                float t = elapsed / duration;
+                float ease = t * t * (3f - 2f * t);
+                Camera.main.transform.position = Vector3.Lerp(startPos, targetPos, ease * 0.3f); // 只移动30%，不完全接管
+                yield return null;
+            }
+        }
+
+        /// <summary>恢复时间缩放协程</summary>
+        private static IEnumerator RestoreTimeScale(float delay)
+        {
+            yield return new WaitForSecondsRealtime(delay);
+            Time.timeScale = 1f;
         }
 
         /// <summary>安全设置单位位置</summary>
