@@ -60,7 +60,33 @@ namespace SuperMech.Code
             var handler = handleGo.AddComponent<SuperMechResizeHandle>();
             handler.TargetRect = bgRect;
             handler._img = img;
+            // 创建窗口时先把关闭按钮钉到右上角（原版空窗口预制体的关闭按钮是固定位置，窗口一宽就不在角上）
+            FixCloseButton(bgRect);
             return handler;
+        }
+
+        /// <summary>静态入口：把窗口 Background 下的关闭按钮锚定到右上角（幂等，可随时调用）</summary>
+        public static void FixCloseButton(RectTransform bgRect)
+        {
+            if (bgRect == null) return;
+            foreach (Transform child in bgRect)
+            {
+                if (child == null || child.GetComponent<Button>() == null) continue;
+                string n = child.name ?? "";
+                bool nameIsClose = n.ToLower().Contains("close") || n.ToLower().Contains("closer") || n == "X";
+                RectTransform r = child as RectTransform;
+                if (r == null) continue;
+                // 位置特征：当前锚点/本地坐标在右上区域（标题栏内偏右的元素）
+                bool atTopRight = r.anchorMin.x > 0.5f && r.anchorMin.y > 0.5f
+                                  || (r.anchorMin.x == 1f && r.anchorMin.y == 1f)
+                                  || (r.localPosition.x > 0f && r.localPosition.y > 0f);
+                if (!nameIsClose && !atTopRight) continue;
+                // 锚定到右上角，按钮中心距右上角约半宽+边距
+                r.anchorMin = new Vector2(1f, 1f);
+                r.anchorMax = new Vector2(1f, 1f);
+                r.pivot = new Vector2(0.5f, 0.5f);
+                r.anchoredPosition = new Vector2(-(r.sizeDelta.x * 0.5f + 6f), -(r.sizeDelta.y * 0.5f + 6f));
+            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
@@ -82,31 +108,13 @@ namespace SuperMech.Code
         }
 
         /// <summary>
-        /// 原版关闭按钮是窗口 Background 的子物体。正常情况下它锚定在右上角、会随缩放自动跟随；
-        /// 这里做幂等保障：若发现右上角有带Button的关闭按钮（名字含close，或位于右上区域），
-        /// 强制把它锚定到右上角，确保窗口放大/缩小后关闭按钮始终在角上。
+        /// 拖拽缩放后把原版关闭按钮钉回右上角（防跑位）。
+        /// 原版关闭按钮是窗口 Background 的子物体，但空窗口预制体里它的锚点不是右上角，
+        /// 窗口尺寸一变它就不在角上，所以每次缩放后重新锚定。
         /// </summary>
         private void FixCloseButton()
         {
-            if (TargetRect == null) return;
-            foreach (Transform child in TargetRect)
-            {
-                if (child == null || child.GetComponent<Button>() == null) continue;
-                string n = child.name ?? "";
-                bool nameIsClose = n.ToLower().Contains("close") || n.ToLower().Contains("closer") || n == "X";
-                RectTransform r = child as RectTransform;
-                if (r == null) continue;
-                // 位置特征：当前锚点/本地坐标在右上区域
-                bool atTopRight = r.anchorMin.x > 0.5f && r.anchorMin.y > 0.5f
-                                  || (r.anchorMin.x == 1f && r.anchorMin.y == 1f)
-                                  || (r.localPosition.x > 0f && r.localPosition.y > 0f);
-                if (!nameIsClose && !atTopRight) continue;
-                // 锚定到右上角，保持原偏移量（按钮中心距右上角约半宽+边距）
-                r.anchorMin = new Vector2(1f, 1f);
-                r.anchorMax = new Vector2(1f, 1f);
-                r.pivot = new Vector2(0.5f, 0.5f);
-                r.anchoredPosition = new Vector2(-(r.sizeDelta.x * 0.5f + 6f), -(r.sizeDelta.y * 0.5f + 6f));
-            }
+            FixCloseButton(TargetRect);
         }
 
         public void OnPointerEnter(PointerEventData eventData)

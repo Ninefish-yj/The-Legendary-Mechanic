@@ -120,6 +120,10 @@ namespace SuperMech.Code
             if (!Application.isMobilePlatform)
                 SuperMechResizeHandle.Add(bgRect);
 
+            // v0.237.9 所有平台：窗口创建后立即把关闭按钮钉到右上角
+            // （原版空窗口预制体的关闭按钮锚点不在右上角，窗口一宽它就漂在标题栏中间——用户截图确认）
+            SuperMechResizeHandle.FixCloseButton(bgRect);
+
             // 标准化：新创建的窗口默认active，先关闭再用showWindow走原版开启动画
             if (swGo.activeSelf) swGo.SetActive(false);
             ScrollWindow.showWindow(id);
