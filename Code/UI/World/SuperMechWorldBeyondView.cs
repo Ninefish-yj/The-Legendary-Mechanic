@@ -166,10 +166,10 @@ namespace SuperMech.Code
             bgRect.anchorMin = Vector2.zero; bgRect.anchorMax = Vector2.one;
             bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
             var bgImg = bg.GetComponent<Image>();
-            // v0.237.12 弹窗主面板统一暖棕：烘焙深蓝的Panel sprite改为纯色暖棕（对齐帝国盒子原版棕纸）
+            // v0.239.0 透出原版窗口纹理：不再自绘整块背景（帝国盒子原版风格）
             bgImg.sprite = null;
             bgImg.type = Image.Type.Simple;
-            bgImg.color = SuperMechUiSkin.PanelVanilla;
+            bgImg.color = new Color(0, 0, 0, 0f);
 
             // 顶部标题
             var title = SuperMechUiSkin.MakeText(content, LocalizedTextManager.getText("sm_ui_worldbeyond_title"), 18, TextAnchor.MiddleCenter);

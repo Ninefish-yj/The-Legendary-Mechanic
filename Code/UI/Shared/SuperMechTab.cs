@@ -29,7 +29,7 @@ namespace SuperMech.Code
                 var bgRect = bg.GetComponent<RectTransform>();
                 bgRect.anchorMin = Vector2.zero; bgRect.anchorMax = Vector2.one;
                 bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
-                bg.GetComponent<Image>().color = new Color(0.22f, 0.19f, 0.15f, 0.95f); // 原版深棕面板
+                bg.GetComponent<Image>().color = new Color(0, 0, 0, 0f); // v0.239.0 透出原版窗口纹理（帝国盒子风格），不再自绘整块背景
 
                 // ═══ 左侧竖向标签栏（原版风格：更深的棕色侧栏）═══
                 var tabBarGo = new GameObject("TabBar", typeof(RectTransform), typeof(Image));

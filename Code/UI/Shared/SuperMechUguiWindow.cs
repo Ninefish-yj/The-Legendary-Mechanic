@@ -73,6 +73,9 @@ namespace SuperMech.Code
                 // 重新设置大小（以防调用方改了尺寸）
                 if (existing.Rect != null)
                     existing.Rect.sizeDelta = new Vector2(width, height);
+                // v0.239.0 缓存复用窗口也执行红叉归位（旧版创建的窗口红叉停在标题栏中间，复用时不重建不会重跑Create里的FixCloseButton）
+                if (existing.Rect != null)
+                    SuperMechResizeHandle.FixCloseButton(existing.Rect);
                 existing.IsOpen = true;
                 ScrollWindow.showWindow(id);
                 return existing;

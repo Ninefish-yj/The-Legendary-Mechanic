@@ -76,24 +76,59 @@ namespace SuperMech.Code
         /// <summary>v0.230 宇宙标签：合并世界之外+世界树</summary>
         internal static void DrawUniverseContent(RectTransform content)
         {
-            // 上半部分：世界之外（高维存在）
+            // v0.239.0 修复"长宽高不对"：原上下各半窗口，内容互相溢出形成细高条（宇宙页签内容880px>窗口510px）。
+            // 改为内容区整体滚动：世界之外(消息/监测)在上、世界树在下，超出窗口高度时滚动查看
+            var scrollGo = new GameObject("UniverseScroll", typeof(RectTransform), typeof(Image), typeof(ScrollRect));
+            scrollGo.transform.SetParent(content, false);
+            var sRt = scrollGo.GetComponent<RectTransform>();
+            sRt.anchorMin = Vector2.zero; sRt.anchorMax = Vector2.one;
+            sRt.offsetMin = Vector2.zero; sRt.offsetMax = Vector2.zero;
+            var sImg = scrollGo.GetComponent<Image>();
+            sImg.color = new Color(0, 0, 0, 0f);
+            var scroll = scrollGo.GetComponent<ScrollRect>();
+            scroll.horizontal = false;
+            scroll.vertical = true;
+            scroll.movementType = ScrollRect.MovementType.Clamped;
+            scroll.scrollSensitivity = 30f;
+
+            var vpGo = new GameObject("Viewport", typeof(RectTransform), typeof(RectMask2D), typeof(Image));
+            vpGo.transform.SetParent(scrollGo.transform, false);
+            var vpRt = vpGo.GetComponent<RectTransform>();
+            vpRt.anchorMin = Vector2.zero; vpRt.anchorMax = Vector2.one;
+            vpRt.offsetMin = Vector2.zero; vpRt.offsetMax = Vector2.zero;
+            var vpImg = vpGo.GetComponent<Image>();
+            vpImg.color = new Color(0, 0, 0, 0f);
+
+            var innerGo = new GameObject("UniverseContent", typeof(RectTransform));
+            innerGo.transform.SetParent(vpGo.transform, false);
+            var inner = innerGo.GetComponent<RectTransform>();
+            inner.anchorMin = new Vector2(0, 1);
+            inner.anchorMax = new Vector2(1, 1);
+            inner.pivot = new Vector2(0.5f, 1);
+            inner.sizeDelta = new Vector2(0, 1000f); // 世界之外520 + 世界树480
+            inner.anchoredPosition = Vector2.zero;
+            scroll.content = inner;
+
+            // 上半：世界之外（高维存在）——顶部对齐，高520
             var upperGo = new GameObject("WorldBeyond");
-            upperGo.transform.SetParent(content, false);
+            upperGo.transform.SetParent(inner, false);
             var upperRect = upperGo.AddComponent<RectTransform>();
-            upperRect.anchorMin = new Vector2(0, 0.5f);
-            upperRect.anchorMax = Vector2.one;
-            upperRect.offsetMin = Vector2.zero;
-            upperRect.offsetMax = new Vector2(0, -2);
+            upperRect.anchorMin = new Vector2(0, 1);
+            upperRect.anchorMax = new Vector2(1, 1);
+            upperRect.pivot = new Vector2(0.5f, 1);
+            upperRect.sizeDelta = new Vector2(0, -520f);
+            upperRect.anchoredPosition = Vector2.zero;
             SuperMechWorldBeyondView.Draw(upperRect);
 
-            // 下半部分：世界树（入侵事件）
+            // 下半：世界树（入侵事件）——底部对齐，高480
             var lowerGo = new GameObject("WorldTree");
-            lowerGo.transform.SetParent(content, false);
+            lowerGo.transform.SetParent(inner, false);
             var lowerRect = lowerGo.AddComponent<RectTransform>();
-            lowerRect.anchorMin = Vector2.zero;
-            lowerRect.anchorMax = new Vector2(1, 0.5f);
-            lowerRect.offsetMin = Vector2.zero;
-            lowerRect.offsetMax = new Vector2(0, 2);
+            lowerRect.anchorMin = new Vector2(0, 0);
+            lowerRect.anchorMax = new Vector2(1, 0);
+            lowerRect.pivot = new Vector2(0.5f, 0);
+            lowerRect.sizeDelta = new Vector2(0, 480f);
+            lowerRect.anchoredPosition = Vector2.zero;
             var treeGo = new GameObject("WorldTreeView");
             treeGo.transform.SetParent(lowerRect, false);
             var treeRect = treeGo.AddComponent<RectTransform>();

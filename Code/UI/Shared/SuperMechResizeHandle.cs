@@ -80,7 +80,10 @@ namespace SuperMech.Code
                 bool atTopRight = r.anchorMin.x > 0.5f && r.anchorMin.y > 0.5f
                                   || (r.anchorMin.x == 1f && r.anchorMin.y == 1f)
                                   || (r.localPosition.x > 0f && r.localPosition.y > 0f);
-                if (!nameIsClose && !atTopRight) continue;
+                // v0.239.0 扩大匹配：原版空窗口(CreateEmptyWindow)的关闭键停在标题栏中间（x≈0.5、y在上半），
+                // 名字/右上特征都不满足导致漏修——凡"标题栏区域内的小按钮"一律归位右上角
+                bool inTitleBar = r.anchorMin.y > 0.5f && r.anchorMax.y >= 0.5f && r.sizeDelta.sqrMagnitude < 10000f;
+                if (!nameIsClose && !atTopRight && !inTitleBar) continue;
                 // 锚定到右上角，按钮中心距右上角约半宽+边距
                 r.anchorMin = new Vector2(1f, 1f);
                 r.anchorMax = new Vector2(1f, 1f);
