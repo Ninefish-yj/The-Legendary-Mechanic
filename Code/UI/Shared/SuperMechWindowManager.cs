@@ -53,7 +53,7 @@ namespace SuperMech.Code
         {
             ToggleWindow("settings", "sm_ui_settings_title", 520, 640, DrawSettingsContent);
         }
-        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent); }
+        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 700, 600, SuperMechTab.DrawOverviewContent); }
         /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
         public static void OpenOverview(Kingdom kingdom)
         {

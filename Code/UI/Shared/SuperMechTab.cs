@@ -29,9 +29,9 @@ namespace SuperMech.Code
                 var bgRect = bg.GetComponent<RectTransform>();
                 bgRect.anchorMin = Vector2.zero; bgRect.anchorMax = Vector2.one;
                 bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
-                bg.GetComponent<Image>().color = SuperMechUiSkin.SciBg;
+                bg.GetComponent<Image>().color = new Color(0.22f, 0.19f, 0.15f, 0.95f); // 原版深棕面板
 
-                // ═══ 左侧竖向标签栏（v0.222：从顶部横向改为左侧竖向；v0.225移除顶部王国状态栏）═══
+                // ═══ 左侧竖向标签栏（原版风格：更深的棕色侧栏）═══
                 var tabBarGo = new GameObject("TabBar", typeof(RectTransform), typeof(Image));
                 tabBarGo.transform.SetParent(content, false);
                 var tbr = tabBarGo.GetComponent<RectTransform>();
@@ -40,7 +40,7 @@ namespace SuperMech.Code
                 tbr.anchoredPosition = Vector2.zero;
                 tbr.sizeDelta = new Vector2(110, 0);  // 宽度110，全高
                 var tImg = tabBarGo.GetComponent<Image>();
-                tImg.color = new Color(0.04f, 0.06f, 0.10f, 0.9f);
+                tImg.color = new Color(0.16f, 0.13f, 0.10f, 0.95f); // 原版深棕侧栏
                 tImg.raycastTarget = true;
 
                 var tabs = SuperMechWindowManager.OverviewTabs;
@@ -114,25 +114,25 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.230 竖向标签按钮：未选中=透明底+灰字；选中=青色半透明底+白字+左侧青色条</summary>
+        /// <summary>v0.233 原版风格竖向标签按钮：未选中=透明底+棕灰字；选中=金色半透明底+白字+左侧金色条</summary>
         private static GameObject MakeTabButton(Transform parent, string text, bool active)
         {
             var go = new GameObject("TabBtn", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
             var img = go.GetComponent<Image>();
-            img.color = active ? new Color(0.35f, 0.75f, 0.85f, 0.2f) : new Color(0, 0, 0, 0);
+            img.color = active ? new Color(0.75f, 0.60f, 0.35f, 0.25f) : new Color(0, 0, 0, 0);
             var btn = go.GetComponent<Button>();
             btn.transition = Selectable.Transition.ColorTint;
             var colors = btn.colors;
-            colors.normalColor = active ? new Color(0.35f, 0.75f, 0.85f, 0.2f) : new Color(0, 0, 0, 0);
-            colors.highlightedColor = new Color(0.35f, 0.75f, 0.85f, 0.1f);
-            colors.pressedColor = new Color(0.35f, 0.75f, 0.85f, 0.3f);
-            colors.selectedColor = new Color(0.35f, 0.75f, 0.85f, 0.2f);
+            colors.normalColor = active ? new Color(0.75f, 0.60f, 0.35f, 0.25f) : new Color(0, 0, 0, 0);
+            colors.highlightedColor = new Color(0.75f, 0.60f, 0.35f, 0.15f);
+            colors.pressedColor = new Color(0.75f, 0.60f, 0.35f, 0.35f);
+            colors.selectedColor = new Color(0.75f, 0.60f, 0.35f, 0.25f);
             colors.fadeDuration = 0.08f;
             btn.colors = colors;
 
             var label = SuperMechUiSkin.MakeText(go.transform, text, 13, TextAnchor.MiddleCenter);
-            label.color = active ? new Color(0.95f, 0.98f, 1f) : new Color(0.55f, 0.62f, 0.75f);
+            label.color = active ? new Color(0.95f, 0.90f, 0.75f) : new Color(0.65f, 0.58f, 0.45f);
             var lr = label.GetComponent<RectTransform>();
             lr.offsetMin = new Vector2(6, 0);
             lr.offsetMax = new Vector2(-6, 0);
@@ -142,7 +142,7 @@ namespace SuperMech.Code
                 var barGo = new GameObject("ActiveBar", typeof(RectTransform), typeof(Image));
                 barGo.transform.SetParent(go.transform, false);
                 var bar = barGo.GetComponent<Image>();
-                bar.color = SuperMechUiSkin.SciCyan;
+                bar.color = new Color(0.85f, 0.70f, 0.40f, 1f); // 原版金色
                 var barRect = barGo.GetComponent<RectTransform>();
                 barRect.anchorMin = new Vector2(0, 0.2f); barRect.anchorMax = new Vector2(0, 0.8f);
                 barRect.pivot = new Vector2(0, 0.5f);

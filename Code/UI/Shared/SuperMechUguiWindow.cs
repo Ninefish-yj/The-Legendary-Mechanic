@@ -102,20 +102,18 @@ namespace SuperMech.Code
             int closeBtnSize = IsMobile ? MobileCloseBtnSize : CloseBtnSize;
             int closeBtnMargin = IsMobile ? 10 : CloseBtnMargin;
 
-            // 面板外阴影（柔和，提升立体感）
-            SuperMechUiSkin.AddPanelShadow(gameObject.GetComponent<RectTransform>(), 8f);
-
-            // 背景：柔和深灰蓝
+            // v0.233 原版风格：暖棕石质面板，去掉柔和阴影
+            // 背景：深棕灰（WorldBox原版石质面板感）
             _bgImage = gameObject.AddComponent<Image>();
-            _bgImage.color = SuperMechUiSkin.BgColor;
+            _bgImage.color = new Color(0.25f, 0.22f, 0.18f, 0.96f);
             _bgImage.raycastTarget = true;
 
-            // 现代简洁风格：去掉花哨的金色装饰角标
-
-            AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, BorderWidth), new Vector2(0, 0));
-            AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, BorderWidth), new Vector2(0, 0));
-            AddBorder("LeftBorder", new Vector2(0, 0), new Vector2(0, 1), new Vector2(0, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0));
-            AddBorder("RightBorder", new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0));
+            // 边框：浅棕金色（原版描边风格）
+            Color borderColor = new Color(0.50f, 0.42f, 0.28f, 0.85f);
+            AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, BorderWidth), new Vector2(0, 0), borderColor);
+            AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, BorderWidth), new Vector2(0, 0), borderColor);
+            AddBorder("LeftBorder", new Vector2(0, 0), new Vector2(0, 1), new Vector2(0, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0), borderColor);
+            AddBorder("RightBorder", new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0), borderColor);
 
             var titleBarGo = new GameObject("TitleBar");
             titleBarGo.transform.SetParent(transform, false);
@@ -126,21 +124,20 @@ namespace SuperMech.Code
             titleBarRect.sizeDelta = new Vector2(0, titleBarHeight);
             titleBarRect.anchoredPosition = new Vector2(0, -BorderWidth);
             var titleBarImg = titleBarGo.AddComponent<Image>();
-            titleBarImg.sprite = SuperMechUiSkin.Section;
-            titleBarImg.type = Image.Type.Sliced;
-            titleBarImg.color = Color.white;
+            titleBarImg.color = new Color(0.18f, 0.15f, 0.12f, 0.98f); // 原版深棕标题栏
             var titleDrag = titleBarGo.AddComponent<SuperMechDragHandler>();
             titleDrag.Target = this;
 
             _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), IsMobile ? 20 : 17, TextAnchor.MiddleCenter);
             _titleText.fontStyle = FontStyle.Bold;
-            _titleText.color = SuperMechUiSkin.CyanColor;
+            _titleText.color = new Color(0.92f, 0.78f, 0.45f, 1f); // 原版金黄色标题
             var titleRect = _titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = Vector2.zero;
             titleRect.anchorMax = Vector2.one;
             titleRect.offsetMin = new Vector2(closeBtnSize + closeBtnMargin * 2, 0);
             titleRect.offsetMax = new Vector2(-(closeBtnSize + closeBtnMargin * 2), 0);
 
+            // 关闭按钮：原版风格暗红色方块，右上角
             var closeGo = new GameObject("CloseBtn");
             closeGo.transform.SetParent(titleBarGo.transform, false);
             var closeRect = closeGo.AddComponent<RectTransform>();
@@ -150,15 +147,16 @@ namespace SuperMech.Code
             closeRect.sizeDelta = new Vector2(closeBtnSize, closeBtnSize);
             closeRect.anchoredPosition = new Vector2(-closeBtnMargin, -5);
             var closeImg = closeGo.AddComponent<Image>();
-            closeImg.color = SuperMechUiSkin.CloseRed;
+            closeImg.color = new Color(0.65f, 0.22f, 0.18f, 0.95f); // 原版暗红
             _closeBtn = closeGo.AddComponent<Button>();
             var closeColors = _closeBtn.colors;
             closeColors.normalColor = Color.white;
-            closeColors.highlightedColor = new Color(1f, 0.4f, 0.4f, 1f);
-            closeColors.pressedColor = new Color(0.6f, 0.15f, 0.15f, 1f);
+            closeColors.highlightedColor = new Color(1f, 0.5f, 0.4f, 1f);
+            closeColors.pressedColor = new Color(0.5f, 0.15f, 0.12f, 1f);
             _closeBtn.colors = closeColors;
-            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", IsMobile ? 26 : 18, TextAnchor.MiddleCenter);
+            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", IsMobile ? 26 : 20, TextAnchor.MiddleCenter);
             closeText.color = Color.white;
+            closeText.fontStyle = FontStyle.Bold;
             var closeTextRect = closeText.GetComponent<RectTransform>();
             closeTextRect.anchorMin = Vector2.zero;
             closeTextRect.anchorMax = Vector2.one;
@@ -242,7 +240,7 @@ namespace SuperMech.Code
             }
         }
 
-        private void AddBorder(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPos)
+        private void AddBorder(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPos, Color? color = null)
         {
             var go = new GameObject(name);
             go.transform.SetParent(transform, false);
@@ -253,7 +251,7 @@ namespace SuperMech.Code
             rect.sizeDelta = sizeDelta;
             rect.anchoredPosition = anchoredPos;
             var img = go.AddComponent<Image>();
-            img.color = SuperMechUiSkin.BorderColor;
+            img.color = color ?? SuperMechUiSkin.BorderColor;
         }
 
         public void Close()
