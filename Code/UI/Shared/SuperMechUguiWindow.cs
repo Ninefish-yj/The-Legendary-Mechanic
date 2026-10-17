@@ -102,16 +102,15 @@ namespace SuperMech.Code
             int closeBtnSize = IsMobile ? MobileCloseBtnSize : CloseBtnSize;
             int closeBtnMargin = IsMobile ? 10 : CloseBtnMargin;
 
-            // 面板外阴影（放在背景后面，提升立体感）
-            SuperMechUiSkin.AddPanelShadow(gameObject.GetComponent<RectTransform>(), 10f);
+            // 面板外阴影（柔和，提升立体感）
+            SuperMechUiSkin.AddPanelShadow(gameObject.GetComponent<RectTransform>(), 8f);
 
-            // 背景：纯色半透明深灰蓝
+            // 背景：柔和深灰蓝
             _bgImage = gameObject.AddComponent<Image>();
             _bgImage.color = SuperMechUiSkin.BgColor;
             _bgImage.raycastTarget = true;
 
-            // 四个金色装饰角标（参考暗黑破坏神UI风格）
-            SuperMechUiSkin.AddCornerDecorations(gameObject.GetComponent<RectTransform>(), 14f, 3f);
+            // 现代简洁风格：去掉花哨的金色装饰角标
 
             AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, BorderWidth), new Vector2(0, 0));
             AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, BorderWidth), new Vector2(0, 0));
@@ -133,9 +132,9 @@ namespace SuperMech.Code
             var titleDrag = titleBarGo.AddComponent<SuperMechDragHandler>();
             titleDrag.Target = this;
 
-            _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), IsMobile ? 20 : 16, TextAnchor.MiddleCenter);
+            _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), IsMobile ? 20 : 17, TextAnchor.MiddleCenter);
             _titleText.fontStyle = FontStyle.Bold;
-            _titleText.color = SuperMechUiSkin.AccentColor;
+            _titleText.color = SuperMechUiSkin.CyanColor;
             var titleRect = _titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = Vector2.zero;
             titleRect.anchorMax = Vector2.one;
