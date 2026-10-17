@@ -61,7 +61,8 @@ namespace SuperMech.Code
         public static readonly Color VanillaCard = new Color(0.16f, 0.12f, 0.07f, 0.42f);    // 信息行卡片
         public static readonly Color VanillaSection = new Color(0.13f, 0.10f, 0.06f, 0.55f); // 分区标题条
         // v0.237.12 弹窗主面板暖棕（替代烘焙深蓝的Panel sprite，对齐帝国盒子原版棕纸窗口）
-        public static readonly Color PanelVanilla = new Color(0.15f, 0.11f, 0.065f, 0.58f); // 弹窗面板底
+        // v0.238.4 暖棕实色化：alpha 0.58→0.95、提亮至棕纸色，确保真机一眼可见（此前半透明叠深蓝底看不出）
+        public static readonly Color PanelVanilla = new Color(0.32f, 0.23f, 0.14f, 0.95f); // 弹窗面板底
         public static readonly Color SectionBg = new Color(0.18f, 0.22f, 0.32f, 0.96f);     // 分区底 #2E3752
         public static readonly Color CloseRed = new Color(0.85f, 0.35f, 0.32f, 0.95f);      // 关闭按钮红
         public static readonly Color SuccessGreen = new Color(0.40f, 0.78f, 0.50f, 1f);     // 成功绿
