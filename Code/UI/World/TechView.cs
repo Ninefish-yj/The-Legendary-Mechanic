@@ -111,10 +111,18 @@ namespace SuperMech.Code
             AddText(content, stats, 11, TextAnchor.UpperCenter, 8f, y, -8f, y - 18f);
             y -= 24f;
 
-            // 研究点储备
-            string bankText = LocalizedTextManager.getText("sm_tech_bank")
-                .Replace("{0}", state.ResearchPoints.ToString("0.0"))
-                .Replace("{1}", state.LastYearOutput.ToString("0.0"));
+            // 研究点储备→国库金币
+            int kingdomGold = 0;
+            if (World.world?.kingdoms?.list != null)
+            {
+                foreach (var k in World.world.kingdoms.list)
+                {
+                    if (k != null && k.getID() == _currentKingdomId) { kingdomGold = TechSystem.GetKingdomGold(k); break; }
+                }
+            }
+            string bankText = LocalizedTextManager.getText("sm_tech_gold")
+                .Replace("{0}", kingdomGold.ToString())
+                .Replace("{1}", state.LastYearGoldInvested.ToString("0.0"));
             AddText(content, bankText, 11, TextAnchor.UpperCenter, 8f, y, -8f, y - 18f);
             y -= 24f;
 
@@ -138,8 +146,8 @@ namespace SuperMech.Code
                         new Color(0.4f, 0.84f, 0.77f));
                     y -= 16f;
 
-                    string eta = state.LastYearOutput > 0.01f
-                        ? Mathf.CeilToInt(Mathf.Max(0f, cost - state.ResearchProgress) / state.LastYearOutput).ToString()
+                    string eta = state.LastYearGoldInvested > 0.01f
+                        ? Mathf.CeilToInt(Mathf.Max(0f, cost - state.ResearchProgress) / state.LastYearGoldInvested).ToString()
                         : "?";
                     string progressText = $"{state.ResearchProgress:0}/{cost:0}  ({LocalizedTextManager.getText("sm_tech_eta")}: {eta})";
                     AddText(content, progressText, 10, TextAnchor.UpperCenter, 8f, y, -8f, y - 16f);

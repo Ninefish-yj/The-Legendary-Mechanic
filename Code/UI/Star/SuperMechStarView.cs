@@ -273,6 +273,29 @@ namespace SuperMech.Code
             backText.alignment = TextAnchor.MiddleCenter;
             backText.text = LocalizedTextManager.getText("sm_ui_back");
 
+            // v0.235 全局经济按钮（伊纳尔经济总览）
+            var econBtnGo = new GameObject("EconomyBtn");
+            econBtnGo.transform.SetParent(topGo.transform, false);
+            var econRect = econBtnGo.AddComponent<RectTransform>();
+            econRect.anchorMin = new Vector2(1, 0.5f);
+            econRect.anchorMax = new Vector2(1, 0.5f);
+            econRect.pivot = new Vector2(1, 0.5f);
+            econRect.sizeDelta = new Vector2(80, 34);
+            econRect.anchoredPosition = new Vector2(-224, 0);
+            var econImg = econBtnGo.AddComponent<Image>();
+            econImg.color = new Color(0.3f, 0.5f, 0.35f, 0.9f);
+            var econBtn = econBtnGo.AddComponent<Button>();
+            econBtn.onClick.AddListener(() => SuperMechWindowManager.OpenEconomy());
+            var econTextGo = new GameObject("Text");
+            econTextGo.transform.SetParent(econBtnGo.transform, false);
+            var econTextRect = econTextGo.AddComponent<RectTransform>();
+            econTextRect.anchorMin = Vector2.zero; econTextRect.anchorMax = Vector2.one;
+            var econText = econTextGo.AddComponent<Text>();
+            econText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            econText.fontSize = 12; econText.color = Color.white;
+            econText.alignment = TextAnchor.MiddleCenter;
+            econText.text = LocalizedTextManager.getText("sm_ui_action_economy");
+
             // v0.223 顶部右侧工具按钮：殖民地总览、全局自动运输
             // 殖民地总览按钮
             var colonyBtnGo = new GameObject("ColonyBtn");

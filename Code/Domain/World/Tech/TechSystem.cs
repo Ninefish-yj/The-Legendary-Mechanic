@@ -19,9 +19,8 @@ namespace SuperMech.Code
             public HashSet<string> Researched = new HashSet<string>();
             public HashSet<string> DiscoveredMaterials = new HashSet<string>();
             public string CurrentResearch = "";
-            public float ResearchProgress = 0f;
-            public float ResearchPoints = 0f;
-            public float LastYearOutput = 0f;
+            public float ResearchProgress = 0f;      // 已投入金币
+            public float LastYearGoldInvested = 0f;  // 去年实际投入金币
             public int CurrentEra = 1;
         }
 
@@ -111,7 +110,7 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>每年Tick：产出研究点、推进研究、材料发现、AI研究（内部做时间节流）</summary>
+        /// <summary>每年Tick：消耗金币推进研究、材料发现、AI研究（内部做时间节流）</summary>
         public static void YearlyTick()
         {
             if (World.world == null || World.world.kingdoms == null) return;
@@ -127,20 +126,26 @@ namespace SuperMech.Code
                 long kid = kingdom.getID();
                 var state = GetState(kid);
 
-                // 1. 计算研究点产出
-                float output = CalculateResearchOutput(kingdom, state);
-                state.LastYearOutput = output;
-                state.ResearchPoints += output;
+                // 1. 计算每年可投入金币预算（基于学者建筑加成）
+                float budget = CalculateAnnualGoldBudget(kingdom);
+                state.LastYearGoldInvested = 0f;
 
-                // 2. 推进当前研究
+                // 2. 推进当前研究（扣金币）
                 if (!string.IsNullOrEmpty(state.CurrentResearch))
                 {
                     var tech = TechDataLoader.GetTech(state.CurrentResearch);
                     if (tech != null)
                     {
-                        float cost = tech.cost * (TechDataLoader.Data?.research?.cost_multiplier ?? 12f);
-                        state.ResearchProgress += output;
-                        if (state.ResearchProgress >= cost)
+                        float totalCost = tech.cost * (TechDataLoader.Data?.research?.cost_multiplier ?? 12f);
+                        float remaining = totalCost - state.ResearchProgress;
+                        float invest = Mathf.Min(budget, remaining);
+
+                        // 从王国城市扣金币
+                        float actualSpent = SpendKingdomGold(kingdom, invest);
+                        state.ResearchProgress += actualSpent;
+                        state.LastYearGoldInvested = actualSpent;
+
+                        if (state.ResearchProgress >= totalCost)
                         {
                             CompleteResearch(kid, state, tech);
                         }
@@ -166,22 +171,53 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>计算研究点年产出</summary>
-        private static float CalculateResearchOutput(Kingdom kingdom, KingdomTechState state)
+        /// <summary>获取王国总金币（遍历所有城市）</summary>
+        public static int GetKingdomGold(Kingdom kingdom)
+        {
+            if (kingdom?.cities == null) return 0;
+            int total = 0;
+            foreach (var city in kingdom.cities)
+            {
+                if (city == null) continue;
+                total += city.getResourcesAmount("gold");
+            }
+            return total;
+        }
+
+        /// <summary>从王国城市扣除金币（从最富的城市开始扣），返回实际扣除量</summary>
+        private static float SpendKingdomGold(Kingdom kingdom, float amount)
+        {
+            if (kingdom?.cities == null || amount <= 0) return 0f;
+            float remaining = amount;
+            // 按金币量降序排列城市
+            var cities = kingdom.cities
+                .Where(c => c != null)
+                .OrderByDescending(c => c.getResourcesAmount("gold"))
+                .ToList();
+            foreach (var city in cities)
+            {
+                if (remaining <= 0) break;
+                int have = city.getResourcesAmount("gold");
+                if (have <= 0) continue;
+                int take = (int)Mathf.Min(have, remaining);
+                city.takeResource("gold", take);
+                remaining -= take;
+            }
+            return amount - remaining;
+        }
+
+        /// <summary>计算每年科研金币预算（基础投入×学者建筑加成，战争惩罚）</summary>
+        private static float CalculateAnnualGoldBudget(Kingdom kingdom)
         {
             var cfg = TechDataLoader.Data?.research;
             if (cfg == null) return 0f;
 
-            float output = 0f;
-
-            // 城市基础产出
+            // 基础预算：每城市固定投入
             int cityCount = kingdom.cities?.Count ?? 0;
-            output += cfg.base_per_city * cityCount;
+            float budget = cfg.base_per_city * 10f; // 转为金币单位
 
-            // 人口产出
-            output += cfg.per_population * (kingdom.getPopulationTotal() / 1000f);
-
-            // 建筑产出（遍历城市建筑）
+            // 学者建筑加成（提升研究效率=同样金币产出更多进度）
+            float scholarBonus = 1f;
             if (kingdom.cities != null)
             {
                 foreach (var city in kingdom.cities)
@@ -191,24 +227,22 @@ namespace SuperMech.Code
                     {
                         if (building?.asset == null) continue;
                         string type = building.asset.type ?? "";
-                        if (type.Contains("library")) output += cfg.per_library;
-                        else if (type.Contains("temple")) output += cfg.per_temple;
-                        else if (type.Contains("university")) output += cfg.per_university;
-                        else if (type.Contains("factory") || type.Contains("mill")) output += cfg.per_factory;
+                        if (type.Contains("library")) scholarBonus += 0.1f;
+                        else if (type.Contains("temple")) scholarBonus += 0.05f;
+                        else if (type.Contains("university")) scholarBonus += 0.25f;
                     }
                 }
             }
 
-            // 圣所加成（模组特色）
-            // TODO: 接入圣所建筑检测
+            budget *= scholarBonus;
 
-            // 战争惩罚（遍历世界战争列表）
+            // 战争惩罚
             if (IsKingdomAtWar(kingdom))
             {
-                output *= (1f - cfg.war_penalty);
+                budget *= (1f - cfg.war_penalty);
             }
 
-            return Mathf.Max(0f, output);
+            return Mathf.Max(0f, budget);
         }
 
         /// <summary>判断王国是否处于战争中（遍历世界战争列表）</summary>
@@ -233,7 +267,6 @@ namespace SuperMech.Code
             state.Researched.Add(tech.id);
             state.CurrentResearch = "";
             state.ResearchProgress = 0f;
-            state.ResearchPoints = 0f;
 
             Debug.Log($"[超神机械师] 王国{kingdomId}研究完成: {tech.id} (tier{tech.tier})");
 
