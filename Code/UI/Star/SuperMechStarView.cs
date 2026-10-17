@@ -1799,8 +1799,8 @@ namespace SuperMech.Code
             bool isMain = p.id == SuperMechStarSystem.MAIN_PLANET;
             bool isStar = p.type == PlanetType.Star;
             float btnY = 0f;
-            const float btnHeight = 30f;
-            const float btnGap = 5f;
+            const float btnHeight = 44f; // v0.238.7 30→44：手机触控最小点击目标（原30px缩放后约10-17px，手指点不准=不灵敏）
+            const float btnGap = 6f;
 
             // 恒星：只能查看信息，不能操作
             if (isStar)
