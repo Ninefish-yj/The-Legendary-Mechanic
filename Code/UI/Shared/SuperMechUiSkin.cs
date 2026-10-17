@@ -126,42 +126,27 @@ namespace SuperMech.Code
             {
                 // v0.215 现代简洁风格：大圆角(10px) + 柔和边框 + 青色主色
                 _panelSprite = MakeRoundedGlowSprite(BgColor, BorderColor, null, 64, 10, 1, "SM_Panel");
-                // 按钮：扁平风格，青色边框，柔和渐变
-                _buttonNormal = MakeButtonSprite(
-                    new Color(0.20f, 0.25f, 0.36f, 1f),
-                    new Color(0.14f, 0.18f, 0.26f, 1f),
-                    new Color(0.35f, 0.55f, 0.70f, 0.8f),
-                    new Color(0.45f, 0.65f, 0.80f, 0.6f),
-                    null,
-                    32, 2, "SM_BtnNormal");
-                _buttonHover = MakeButtonSprite(
-                    new Color(0.28f, 0.36f, 0.50f, 1f),
-                    new Color(0.20f, 0.26f, 0.38f, 1f),
-                    AccentColor,
-                    new Color(0.55f, 0.75f, 0.90f, 0.8f),
-                    null,
-                    32, 2, "SM_BtnHover");
-                _buttonActive = MakeButtonSprite(
-                    new Color(0.12f, 0.16f, 0.24f, 1f),
-                    new Color(0.08f, 0.11f, 0.17f, 1f),
+                // 按钮：扁平化圆角，无边框/高光/阴影，纯色背景
+                _buttonNormal = MakeRoundedGlowSprite(
+                    new Color(0.18f, 0.22f, 0.32f, 0.95f),
+                    new Color(0.30f, 0.38f, 0.52f, 0.4f),
+                    null, 32, 8, 0, "SM_BtnNormal");
+                _buttonHover = MakeRoundedGlowSprite(
+                    new Color(0.24f, 0.32f, 0.46f, 0.95f),
                     CyanColor,
-                    null,
-                    null,
-                    32, 2, "SM_BtnActive");
-                _buttonSelected = MakeButtonSprite(
-                    new Color(0.25f, 0.45f, 0.60f, 1f),
-                    new Color(0.15f, 0.30f, 0.42f, 1f),
+                    null, 32, 8, 0, "SM_BtnHover");
+                _buttonActive = MakeRoundedGlowSprite(
+                    new Color(0.12f, 0.16f, 0.24f, 0.95f),
+                    CyanDim,
+                    null, 32, 8, 0, "SM_BtnActive");
+                _buttonSelected = MakeRoundedGlowSprite(
+                    new Color(0.20f, 0.40f, 0.55f, 0.95f),
                     CyanColor,
-                    new Color(0.60f, 0.85f, 0.95f, 0.8f),
-                    null,
-                    32, 2, "SM_BtnSelected");
-                _buttonDisabled = MakeButtonSprite(
-                    new Color(0.12f, 0.14f, 0.18f, 1f),
-                    new Color(0.08f, 0.09f, 0.12f, 1f),
-                    new Color(0.25f, 0.28f, 0.32f, 1f),
-                    null,
-                    null,
-                    32, 2, "SM_BtnDisabled");
+                    null, 32, 8, 0, "SM_BtnSelected");
+                _buttonDisabled = MakeRoundedGlowSprite(
+                    new Color(0.10f, 0.12f, 0.16f, 0.8f),
+                    new Color(0.20f, 0.22f, 0.28f, 0.4f),
+                    null, 32, 8, 0, "SM_BtnDisabled");
                 // 标题栏：青色系，不是金色
                 _titleBarSprite = MakeRoundedGlowSprite(new Color(0.12f, 0.18f, 0.28f, 0.98f), CyanDim, null, 32, 8, 1, "SM_TitleBar");
                 _scrollbarSprite = MakeSolidSprite(new Color(0.35f, 0.60f, 0.75f, 0.6f), "SM_Scrollbar");
@@ -622,7 +607,7 @@ namespace SuperMech.Code
             go.transform.SetParent(parent, false);
             var img = go.AddComponent<Image>();
             img.sprite = ButtonNormalSprite;
-            img.type = Image.Type.Sliced;
+            img.type = Image.Type.Simple;
             var btn = go.AddComponent<Button>();
             btn.transition = Selectable.Transition.SpriteSwap;
             var spriteState = btn.spriteState;
