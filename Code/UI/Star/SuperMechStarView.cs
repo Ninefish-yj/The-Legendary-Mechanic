@@ -568,8 +568,9 @@ namespace SuperMech.Code
                 var actBtnGo = new GameObject($"ActionBtn_{a}");
                 actBtnGo.transform.SetParent(actionBarGo.transform, false);
                 var actBtnRect = actBtnGo.AddComponent<RectTransform>();
-                actBtnRect.anchorMin = new Vector2(a * 0.34f + 0.01f, 0.15f);
-                actBtnRect.anchorMax = new Vector2((a + 1) * 0.34f - 0.01f, 0.85f);
+                float btnWidth = 1f / 3f;
+                actBtnRect.anchorMin = new Vector2(a * btnWidth + 0.005f, 0.15f);
+                actBtnRect.anchorMax = new Vector2((a + 1) * btnWidth - 0.005f, 0.85f);
                 actBtnRect.offsetMin = Vector2.zero;
                 actBtnRect.offsetMax = Vector2.zero;
                 var actBtnImg = actBtnGo.AddComponent<Image>();

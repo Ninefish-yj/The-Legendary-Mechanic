@@ -165,7 +165,7 @@ namespace SuperMech.Code
             clearBtnRect.anchorMin = new Vector2(0, 0.5f);
             clearBtnRect.anchorMax = new Vector2(0, 0.5f);
             clearBtnRect.pivot = new Vector2(0, 0.5f);
-            clearBtnRect.sizeDelta = new Vector2(60, 40);
+            clearBtnRect.sizeDelta = new Vector2(60, 20);
             clearBtnRect.anchoredPosition = new Vector2(162, 0);
             var clearBtnImg = clearBtn.GetComponent<Image>();
             // v0.202 清除按钮使用皮肤按钮三态，无需手动设色

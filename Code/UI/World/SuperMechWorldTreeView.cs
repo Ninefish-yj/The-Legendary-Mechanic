@@ -34,17 +34,19 @@ namespace SuperMech.Code
 
             var bodyPanel = SuperMechUiBuilder.CreatePanel(transform, "Body", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var bRect = bodyPanel.GetComponent<RectTransform>();
-            bRect.anchorMin = new Vector2(0, 1);
-            bRect.anchorMax = new Vector2(1, 1);
-            bRect.pivot = new Vector2(0.5f, 1);
-            bRect.offsetMin = new Vector2(0, -24);
-            bRect.offsetMax = new Vector2(0, -4);
+            bRect.anchorMin = Vector2.zero;
+            bRect.anchorMax = Vector2.one;
+            bRect.pivot = new Vector2(0.5f, 0.5f);
+            bRect.offsetMin = new Vector2(4, 4);
+            bRect.offsetMax = new Vector2(-4, -32);
             _detailText = SuperMechUiBuilder.AddText(bodyPanel, "", 12, TextAnchor.UpperLeft);
             var dRect = _detailText.GetComponent<RectTransform>();
             dRect.anchorMin = Vector2.zero;
             dRect.anchorMax = Vector2.one;
-            dRect.offsetMin = new Vector2(8, 4);
-            dRect.offsetMax = new Vector2(-8, -4);
+            dRect.offsetMin = new Vector2(8, 8);
+            dRect.offsetMax = new Vector2(-8, -8);
+            _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
+            _detailText.verticalOverflow = VerticalWrapMode.Truncate;
         }
 
         private void RefreshAll()

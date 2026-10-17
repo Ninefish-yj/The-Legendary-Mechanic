@@ -83,15 +83,21 @@ namespace SuperMech.Code
                 if (child.name != "EmptyText") Destroy(child.gameObject);
             }
 
-            // 获取所有文明王国（排除野生）
+            // 获取所有王国（排除野生）
             var kingdoms = new List<Kingdom>();
+            int totalKingdoms = 0;
+            int wildCount = 0;
             if (World.world != null && World.world.kingdoms != null)
             {
                 foreach (var k in World.world.kingdoms.list)
                 {
-                    if (k != null && !k.wild && k.isCiv()) kingdoms.Add(k);
+                    if (k == null) continue;
+                    totalKingdoms++;
+                    if (k.wild) { wildCount++; continue; }
+                    kingdoms.Add(k);
                 }
             }
+            Debug.Log($"[超神机械师] 王国总览: 总数={totalKingdoms}, 野生={wildCount}, 文明={kingdoms.Count}");
 
             _countText.text = $"{LocalizedTextManager.getText("sm_ui_kingdom_total")}: {kingdoms.Count}";
             _emptyText.gameObject.SetActive(kingdoms.Count == 0);
