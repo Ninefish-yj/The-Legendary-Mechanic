@@ -40,7 +40,7 @@ namespace SuperMech.Code
                 tbr.anchoredPosition = Vector2.zero;
                 tbr.sizeDelta = new Vector2(110, 0);  // 宽度110，全高
                 var tImg = tabBarGo.GetComponent<Image>();
-                tImg.color = new Color(0.16f, 0.13f, 0.10f, 0.95f); // 原版深棕侧栏
+                tImg.color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：侧栏不再画深棕大色块，透出原版窗口纹理
                 tImg.raycastTarget = true;
 
                 var tabs = SuperMechWindowManager.OverviewTabs;

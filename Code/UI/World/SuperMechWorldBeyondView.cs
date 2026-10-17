@@ -505,7 +505,7 @@ namespace SuperMech.Code
             var sr = scrollGo.GetComponent<RectTransform>();
             sr.anchorMin = Vector2.zero; sr.anchorMax = Vector2.one;
             sr.offsetMin = Vector2.zero; sr.offsetMax = Vector2.zero;
-            scrollGo.GetComponent<Image>().color = new Color(0.05f, 0.07f, 0.12f, 0.6f);
+            scrollGo.GetComponent<Image>().color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：监测列表容器透明
 
             var contentGo = new GameObject("MonContent", typeof(RectTransform));
             contentGo.transform.SetParent(scrollGo.transform, false);

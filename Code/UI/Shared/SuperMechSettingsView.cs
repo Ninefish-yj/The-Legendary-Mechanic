@@ -26,7 +26,7 @@ namespace SuperMech.Code
             vpRect.offsetMin = Vector2.zero;
             vpRect.offsetMax = Vector2.zero;
             var vpImg = viewportGo.AddComponent<Image>();
-            vpImg.color = SuperMechUiSkin.PanelVanilla;  // v0.237.12 弹窗面板统一暖棕（对齐帝国盒子）
+            vpImg.color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：设置视口不再整块暖棕，透出原版窗口纹理
             viewportGo.AddComponent<Mask>().showMaskGraphic = true;
 
             var contentGo = new GameObject("SettingsContent");
@@ -230,7 +230,7 @@ namespace SuperMech.Code
             var go = new GameObject("Toggle_" + name, typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.color = SuperMechUiSkin.VanillaCard;  // v0.237.12 行背景暖棕
+            img.color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：设置行背景透明
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);

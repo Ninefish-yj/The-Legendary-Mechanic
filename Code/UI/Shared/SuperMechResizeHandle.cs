@@ -65,34 +65,47 @@ namespace SuperMech.Code
             return handler;
         }
 
-        /// <summary>静态入口：把窗口 Background 下的关闭按钮锚定到右上角（幂等，可随时调用）</summary>
+        /// <summary>
+        /// 静态入口：把原版关闭按钮锚定到窗口右上角（幂等，可随时调用）。
+        /// v0.239.6 改用原版 ScrollWindow.close_background 引用定位（public字段，预制体序列化），
+        /// 不再靠名字/锚点特征猜按钮——原版empty预制体的关闭键在标题栏中间偏右，旧匹配全落空。
+        /// </summary>
         public static void FixCloseButton(RectTransform bgRect)
         {
             if (bgRect == null) return;
-            foreach (Transform child in bgRect)
+            // 从 Background 反查所属 ScrollWindow（Background 是窗口根的第一个子物体）
+            ScrollWindow sw = bgRect.GetComponentInParent<ScrollWindow>();
+            if (sw != null && sw.close_background != null)
             {
-                if (child == null || child.GetComponent<Button>() == null) continue;
-                string n = child.name ?? "";
+                AnchorCloseToTopRight(sw.close_background.GetComponent<RectTransform>());
+                return;
+            }
+            // 兜底：递归遍历 Background 下所有层级，按名称/特征匹配关闭按钮
+            foreach (RectTransform r in bgRect.GetComponentsInChildren<RectTransform>(true))
+            {
+                if (r == null || r == bgRect) continue;
+                string n = r.name ?? "";
                 bool nameIsClose = n.ToLower().Contains("close") || n.ToLower().Contains("closer") || n == "X";
-                RectTransform r = child as RectTransform;
-                if (r == null) continue;
-                // 位置特征：当前锚点/本地坐标在右上区域（标题栏内偏右的元素）
                 bool atTopRight = r.anchorMin.x > 0.5f && r.anchorMin.y > 0.5f
                                   || (r.anchorMin.x == 1f && r.anchorMin.y == 1f)
                                   || (r.localPosition.x > 0f && r.localPosition.y > 0f);
-                // v0.239.0 扩大匹配：原版空窗口(CreateEmptyWindow)的关闭键停在标题栏中间（x≈0.5、y在上半），
-                // 名字/右上特征都不满足导致漏修——凡"标题栏区域内的小按钮"一律归位右上角
                 bool inTitleBar = r.anchorMin.y > 0.5f && r.anchorMax.y >= 0.5f && r.sizeDelta.sqrMagnitude < 10000f;
                 if (!nameIsClose && !atTopRight && !inTitleBar) continue;
-                // 锚定到右上角，按钮中心距右上角约半宽+边距
-                r.anchorMin = new Vector2(1f, 1f);
-                r.anchorMax = new Vector2(1f, 1f);
-                r.pivot = new Vector2(0.5f, 0.5f);
-                r.anchoredPosition = new Vector2(-(r.sizeDelta.x * 0.5f + 6f), -(r.sizeDelta.y * 0.5f + 6f));
-                // v0.238.2 置顶：Content 里的内容（统计面板/引言文字）会渲染在关闭按钮上层，
-                // SetAsLastSibling 让关闭按钮成为 Background 最后子物体，始终可见可点
-                r.SetAsLastSibling();
+                AnchorCloseToTopRight(r);
+                return;
             }
+        }
+
+        /// <summary>把关闭按钮锚定到右上角，按钮中心距右上角约半宽+边距，并置顶</summary>
+        private static void AnchorCloseToTopRight(RectTransform r)
+        {
+            if (r == null) return;
+            r.anchorMin = new Vector2(1f, 1f);
+            r.anchorMax = new Vector2(1f, 1f);
+            r.pivot = new Vector2(0.5f, 0.5f);
+            r.anchoredPosition = new Vector2(-(r.sizeDelta.x * 0.5f + 6f), -(r.sizeDelta.y * 0.5f + 6f));
+            // SetAsLastSibling 让关闭按钮成为父物体最后子物体，始终可见可点
+            r.SetAsLastSibling();
         }
 
         public void OnBeginDrag(PointerEventData eventData)

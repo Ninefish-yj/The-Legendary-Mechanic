@@ -31,7 +31,7 @@ namespace SuperMech.Code
             topRect.pivot = new Vector2(0.5f, 1);
             topRect.sizeDelta = new Vector2(0, 32);
             var topBg = topBar.AddComponent<Image>();
-            topBg.color = new Color(0.08f, 0.10f, 0.16f, 0.6f);
+            topBg.color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：顶栏透明
 
             _countText = new GameObject("Count").AddComponent<Text>();
             _countText.transform.SetParent(topBar.transform, false);
@@ -89,7 +89,7 @@ namespace SuperMech.Code
             // v0.237.6 暖棕半透明（透出原版窗口纹理）
             emptyBg.sprite = null;
             emptyBg.type = Image.Type.Simple;
-            emptyBg.color = SuperMechUiSkin.VanillaCard;
+            emptyBg.color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：空状态不再画暖棕卡片，文字直接铺在原版窗口上
             emptyBg.raycastTarget = false;
 
             var emptyVlg = emptyGo.AddComponent<VerticalLayoutGroup>();
@@ -97,7 +97,7 @@ namespace SuperMech.Code
             emptyVlg.spacing = 8;
             emptyVlg.childAlignment = TextAnchor.MiddleCenter;
             emptyVlg.childControlWidth = true;
-            emptyVlg.childControlHeight = false;
+            emptyVlg.childControlHeight = true; // v0.239.6 接管子项高度：Text用preferred高度，居中才生效
             emptyVlg.childForceExpandWidth = true;
             emptyVlg.childForceExpandHeight = false;
 
@@ -110,6 +110,8 @@ namespace SuperMech.Code
             _emptyText.color = new Color(0.85f, 0.75f, 0.55f);
             _emptyText.alignment = TextAnchor.MiddleCenter;
             _emptyText.text = LocalizedTextManager.getText("sm_ui_kingdom_none");
+            var emptyRect = _emptyText.GetComponent<RectTransform>();
+            emptyRect.sizeDelta = new Vector2(0, 28); // v0.239.6 固定高度，防VG布局计算异常
 
             _emptyHintText = new GameObject("EmptyHint").AddComponent<Text>();
             _emptyHintText.transform.SetParent(emptyGo.transform, false);
@@ -170,8 +172,8 @@ namespace SuperMech.Code
             bool selected = k.getID() == SuperMechWindowManager.SelectedKingdomId;
             var bg = row.AddComponent<Image>();
             bg.color = selected ?
-                new Color(0.25f, 0.45f, 0.7f, 0.35f) :
-                new Color(0.06f, 0.08f, 0.14f, 0.6f);
+                new Color(0.25f, 0.45f, 0.7f, 0.35f) : // 选中行淡蓝高亮（非大色块，保留）
+                new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：行背景透明
 
             // 左侧：文明名称+国王+等级
             var civLevel = SuperMechCivilization.GetCivLevelFromKingdom(k);

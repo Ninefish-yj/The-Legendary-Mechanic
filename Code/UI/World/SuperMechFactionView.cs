@@ -30,7 +30,7 @@ namespace SuperMech.Code
             topRect.pivot = new Vector2(0.5f, 1);
             topRect.sizeDelta = new Vector2(0, 32);
             var topBg = topBar.AddComponent<Image>();
-            topBg.color = new Color(0.08f, 0.10f, 0.16f, 0.6f);
+            topBg.color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：顶栏透明
 
             _countText = new GameObject("Count").AddComponent<Text>();
             _countText.transform.SetParent(topBar.transform, false);
@@ -98,7 +98,7 @@ namespace SuperMech.Code
             dRect.offsetMin = new Vector2(6, 6);
             dRect.offsetMax = new Vector2(-6, -6);
             var dImg = detailPanel.AddComponent<Image>();
-            dImg.color = new Color(0.06f, 0.08f, 0.14f, 0.7f);
+            dImg.color = new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：详情面板透明
 
             var detailTitle = new GameObject("DetailTitle").AddComponent<Text>();
             detailTitle.transform.SetParent(detailPanel.transform, false);
@@ -165,8 +165,8 @@ namespace SuperMech.Code
 
             var bg = row.AddComponent<Image>();
             bg.color = f.id == _selectedFactionId ?
-                new Color(0.25f, 0.45f, 0.7f, 0.35f) :
-                new Color(1, 1, 1, 0.04f);
+                new Color(0.25f, 0.45f, 0.7f, 0.35f) : // 选中行淡蓝高亮（非大色块，保留）
+                new Color(0, 0, 0, 0f); // v0.239.6 去自定义块：行背景透明
 
             // 等级标签
             var levelText = new GameObject("Level").AddComponent<Text>();
