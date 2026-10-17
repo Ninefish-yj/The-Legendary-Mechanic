@@ -79,6 +79,10 @@ namespace SuperMech.Code
 
             try
             {
+                // v0.227 调试：打印UnitWindow的transform层级，找到生命条容器位置
+                Debug.Log("[超神机械师] === UnitWindow Transform层级 ===");
+                DumpTransform(window.transform, 0, 4);
+
                 ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, SuperMechUiSkin.CyanColor);
                 ShowMainInfo(window, actor);
             }
@@ -418,6 +422,25 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning("[超神机械师] 气力进度条创建失败: " + e.Message);
+            }
+        }
+
+        /// <summary>v0.227 调试：递归打印Transform层级，找到生命条容器位置</summary>
+        private static void DumpTransform(Transform t, int depth, int maxDepth)
+        {
+            if (depth > maxDepth || t == null) return;
+            string indent = new string(' ', depth * 2);
+            string info = $"{indent}{t.name}";
+            var img = t.GetComponent<Image>();
+            if (img != null) info += $" [Image color={img.color.r:F2},{img.color.g:F2},{img.color.b:F2} a={img.color.a:F2}]";
+            var txt = t.GetComponent<Text>();
+            if (txt != null) info += $" [Text='{txt.text}']";
+            var rt = t.GetComponent<RectTransform>();
+            if (rt != null) info += $" [size={rt.sizeDelta.x:F0}x{rt.sizeDelta.y:F0}]";
+            Debug.Log(info);
+            for (int i = 0; i < t.childCount; i++)
+            {
+                DumpTransform(t.GetChild(i), depth + 1, maxDepth);
             }
         }
     }
