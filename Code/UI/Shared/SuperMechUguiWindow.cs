@@ -91,6 +91,7 @@ namespace SuperMech.Code
                 return null;
             }
             window.IsOpen = true;
+            _lastActiveWindow = window;
             return window;
         }
 
@@ -197,33 +198,27 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>手机返回键退出：只关闭最上层窗口</summary>
+        /// <summary>最后激活的窗口（用于返回键关闭最上层）</summary>
+        private static SuperMechUguiWindow _lastActiveWindow;
+
+        /// <summary>手机返回键退出：关闭最后激活的窗口</summary>
         private void Update()
         {
             if (!IsMobile) return;
             if (!IsOpen) return;
             if (!Input.GetKeyDown(KeyCode.Escape)) return;
 
-            // 只让最上层（siblingIndex最大）的窗口响应返回键
-            int myIndex = transform.GetSiblingIndex();
-            bool isTop = true;
-            var parent = transform.parent;
-            if (parent != null)
+            // 如果最后激活的窗口已被销毁，把当前窗口设为激活窗口
+            if (_lastActiveWindow == null || !_lastActiveWindow.IsOpen)
             {
-                for (int i = 0; i < parent.childCount; i++)
-                {
-                    var child = parent.GetChild(i);
-                    if (child != transform && child.GetComponent<SuperMechUguiWindow>() != null && child.GetSiblingIndex() > myIndex)
-                    {
-                        isTop = false;
-                        break;
-                    }
-                }
+                _lastActiveWindow = this;
             }
-            if (isTop)
-            {
-                Close();
-            }
+
+            // 只让最后激活的窗口响应返回键
+            if (_lastActiveWindow != this) return;
+
+            Debug.Log("[超神机械师] 手机返回键关闭窗口: " + WindowId);
+            Close();
         }
 
         public void OnPointerDown(PointerEventData e)
@@ -231,6 +226,7 @@ namespace SuperMech.Code
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 Rect, e.position, e.pressEventCamera, out _dragOffset);
             transform.SetAsLastSibling();
+            _lastActiveWindow = this;
         }
 
         public void OnDrag(PointerEventData e)
