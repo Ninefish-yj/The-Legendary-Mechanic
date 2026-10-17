@@ -133,6 +133,16 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>显示窗口（用原版showWindow toggle显示）</summary>
+        public void Show()
+        {
+            if (_scrollWindow != null && !string.IsNullOrEmpty(WindowId))
+            {
+                ScrollWindow.showWindow(WindowId);
+                IsOpen = true;
+            }
+        }
+
         /// <summary>调整窗口大小</summary>
         public void Resize(Vector2 delta)
         {

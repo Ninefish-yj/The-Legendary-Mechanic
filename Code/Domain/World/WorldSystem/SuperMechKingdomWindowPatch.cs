@@ -115,9 +115,9 @@ namespace SuperMech.Code
                 }
 
                 // === 模组功能按钮区（和单位面板操作逻辑一致：点按钮开对应窗口）===
-                // 科技树
+                // 科技树（v0.235 新科技树UI）
                 AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_civ_tech_tree"),
-                    () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenTech(); });
+                    () => { TechView.Open(kid); });
 
                 // 经济管理
                 AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_economy_title"),
