@@ -71,19 +71,19 @@ namespace SuperMech.Code
             titleTextRect.offsetMin = new Vector2(50, 0);
             titleTextRect.offsetMax = new Vector2(-50, 0);
 
-            // 关闭按钮
-            var closeBtn = CreateButton(titleBar.transform, "X", new Vector2(0, 0), new Vector2(36, 36),
+            // 关闭按钮（v0.238.9 36→44 触控达标）
+            var closeBtn = CreateButton(titleBar.transform, "X", new Vector2(0, 0), new Vector2(44, 44),
                 new Vector2(1, 0.5f), new Vector2(1, 0.5f), () => _panel.SetActive(false));
             var closeRect = closeBtn.GetComponent<RectTransform>();
             closeRect.anchoredPosition = new Vector2(-20, 0);
 
-            // 标签栏（4个标签）
+            // 标签栏（4个标签）（v0.238.9 高32→44 触控达标，独立布局不受行高限制）
             string[] tabNames = { "sm_ui_tab_exploration", "sm_ui_tab_trade", "sm_ui_tab_station", "sm_ui_tab_tech" };
             for (int i = 0; i < 4; i++)
             {
                 int idx = i;
                 var tab = CreateButton(_panel.transform, LocalizedTextManager.getText(tabNames[i]),
-                    new Vector2(10 + i * 165, -46), new Vector2(155, 32),
+                    new Vector2(10 + i * 165, -46), new Vector2(155, 44),
                     new Vector2(0, 1), new Vector2(0, 1),
                     () => { _currentTab = idx; RefreshContent(); });
             }
@@ -143,9 +143,9 @@ namespace SuperMech.Code
             AddInfoRow(LocalizedTextManager.getText("sm_ui_explore_count"), data.explorationCount.ToString(), ref y);
             y += 10f;
 
-            // 探索按钮
+            // 探索按钮（v0.238.9 高40→44 触控达标）
             var exploreBtn = CreateButton(_content, LocalizedTextManager.getText("sm_ui_explore_planet_v2"),
-                new Vector2(0, -y - 30), new Vector2(200, 40),
+                new Vector2(0, -y - 30), new Vector2(200, 44),
                 new Vector2(0.5f, 1), new Vector2(0.5f, 1),
                 () =>
                 {
