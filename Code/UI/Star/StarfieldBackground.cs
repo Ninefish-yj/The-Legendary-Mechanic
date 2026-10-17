@@ -41,9 +41,10 @@ namespace SuperMech.Code
             var bgRect = bgGo.AddComponent<RectTransform>();
             bgRect.anchorMin = Vector2.zero; bgRect.anchorMax = Vector2.one;
             bgRect.offsetMin = Vector2.zero; bgRect.offsetMax = Vector2.zero;
+            // v0.224 深空背景：蓝紫色调，更符合大众认知的宇宙
             var bgImg = bgGo.AddComponent<Image>();
             bgImg.raycastTarget = false;
-            bgImg.color = new Color(0.01f, 0.015f, 0.04f, 1f);
+            bgImg.color = new Color(0.008f, 0.012f, 0.035f, 1f);
 
             // v0.204 创建5层视差容器（从远到近，后创建的在上层）
             result.NebulaLayer = CreateLayer(starfieldGo.transform, "NebulaLayer");
@@ -87,21 +88,22 @@ namespace SuperMech.Code
             GenerateStars(result.MidLayer, rng, mapSize, 500, 0.45f,
                 1.8f, 3.0f, 0.35f, 0.5f, true, "MidStar", result);
 
-            // 第四层：近景亮星（150颗，大亮星带十字光芒，全部闪烁）
-            GenerateNearStars(result.NearLayer, rng, mapSize, 150, 0.55f, result);
+            // v0.224 近景亮星（60颗，少量大亮星带十字光芒，全部闪烁）
+            GenerateNearStars(result.NearLayer, rng, mapSize, 60, 0.55f, result);
 
-            // 星云（25团，放在星云层）
+            // v0.224 星云（40团，更鲜艳更明显，参考哈勃望远镜照片）
             var nebulaSprite = PlanetSpriteGenerator.GetNebulaSprite();
             Color[] nebulaColors = {
-                new Color(0.4f, 0.15f, 0.6f, 0.22f),
-                new Color(0.15f, 0.25f, 0.6f, 0.22f),
-                new Color(0.1f, 0.45f, 0.45f, 0.18f),
-                new Color(0.5f, 0.2f, 0.4f, 0.18f),
-                new Color(0.6f, 0.3f, 0.15f, 0.15f),
-                new Color(0.2f, 0.4f, 0.2f, 0.12f),
-                new Color(0.5f, 0.15f, 0.3f, 0.15f),
+                new Color(0.5f, 0.2f, 0.7f, 0.35f),   // 紫红星云（猎户座）
+                new Color(0.2f, 0.35f, 0.7f, 0.35f),  // 蓝色星云
+                new Color(0.15f, 0.55f, 0.5f, 0.3f),  // 青绿星云（鹰星云）
+                new Color(0.6f, 0.25f, 0.45f, 0.3f),  // 粉红星云
+                new Color(0.7f, 0.35f, 0.2f, 0.25f),  // 橙色星云
+                new Color(0.25f, 0.45f, 0.25f, 0.2f), // 绿色星云
+                new Color(0.55f, 0.2f, 0.35f, 0.3f),  // 玫红星云
+                new Color(0.3f, 0.3f, 0.6f, 0.3f),    // 靛蓝星云
             };
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 40; i++)
             {
                 var nebulaGo = new GameObject($"Nebula_{i}");
                 nebulaGo.transform.SetParent(result.NebulaLayer, false);
@@ -122,25 +124,25 @@ namespace SuperMech.Code
                 nebulaImg.color = nebulaColors[rng.Next(nebulaColors.Length)];
             }
 
-            // 银河带（8条，放在星云层）
-            for (int i = 0; i < 8; i++)
+            // v0.224 银河带（10条，更明显的淡蓝白色）
+            for (int i = 0; i < 10; i++)
             {
                 var bandGo = new GameObject($"GalaxyBand_{i}");
-                bandGo.transform.SetParent(result.NebulaLayer, false);
+                bandGo.transform.SetParent(result.NebulaLayer.transform, false);
                 var bandRect = bandGo.AddComponent<RectTransform>();
                 bandRect.anchorMin = new Vector2(0.5f, 0.5f);
                 bandRect.anchorMax = new Vector2(0.5f, 0.5f);
                 bandRect.pivot = new Vector2(0.5f, 0.5f);
-                bandRect.sizeDelta = new Vector2(mapSize * 1.8f, 100 + rng.Next(150));
+                bandRect.sizeDelta = new Vector2(mapSize * 1.8f, 80 + rng.Next(120));
                 bandRect.anchoredPosition = new Vector2(
-                    (float)(rng.NextDouble() - 0.5) * 500,
-                    (float)(rng.NextDouble() - 0.5) * 500
+                    (float)(rng.NextDouble() - 0.5) * 400,
+                    (float)(rng.NextDouble() - 0.5) * 400
                 );
-                bandRect.localRotation = Quaternion.Euler(0, 0, (float)(rng.NextDouble() * 25 - 12.5));
+                bandRect.localRotation = Quaternion.Euler(0, 0, (float)(rng.NextDouble() * 20 - 10));
                 var bandImg = bandGo.AddComponent<Image>();
                 bandImg.sprite = nebulaSprite;
                 bandImg.raycastTarget = false;
-                bandImg.color = new Color(0.25f, 0.3f, 0.45f, 0.08f);
+                bandImg.color = new Color(0.35f, 0.4f, 0.55f, 0.12f);
             }
 
             return result;
@@ -234,7 +236,8 @@ namespace SuperMech.Code
                 else starColor = new Color(1f, 0.6f, 0.5f, (float)(0.5 + rng.NextDouble() * 0.3));
                 starImg.color = starColor;
 
-                if (size > 5f && rng.NextDouble() < 0.5f)
+                // v0.224 十字光芒：只有最大最亮的星才有，更小更淡
+                if (size > 6f && rng.NextDouble() < 0.15f)
                 {
                     var hFlareGo = new GameObject("HFlare");
                     hFlareGo.transform.SetParent(starGo.transform, false);
@@ -242,10 +245,10 @@ namespace SuperMech.Code
                     hFlareRect.anchorMin = new Vector2(0.5f, 0.5f);
                     hFlareRect.anchorMax = new Vector2(0.5f, 0.5f);
                     hFlareRect.pivot = new Vector2(0.5f, 0.5f);
-                    hFlareRect.sizeDelta = new Vector2(size * 6, 1.5f);
+                    hFlareRect.sizeDelta = new Vector2(size * 3.5f, 1f);
                     var hFlareImg = hFlareGo.AddComponent<Image>();
                     hFlareImg.raycastTarget = false;
-                    hFlareImg.color = new Color(starColor.r, starColor.g, starColor.b, 0.3f);
+                    hFlareImg.color = new Color(starColor.r, starColor.g, starColor.b, 0.2f);
 
                     var vFlareGo = new GameObject("VFlare");
                     vFlareGo.transform.SetParent(starGo.transform, false);
@@ -253,10 +256,10 @@ namespace SuperMech.Code
                     vFlareRect.anchorMin = new Vector2(0.5f, 0.5f);
                     vFlareRect.anchorMax = new Vector2(0.5f, 0.5f);
                     vFlareRect.pivot = new Vector2(0.5f, 0.5f);
-                    vFlareRect.sizeDelta = new Vector2(1.5f, size * 6);
+                    vFlareRect.sizeDelta = new Vector2(1f, size * 3.5f);
                     var vFlareImg = vFlareGo.AddComponent<Image>();
                     vFlareImg.raycastTarget = false;
-                    vFlareImg.color = new Color(starColor.r, starColor.g, starColor.b, 0.3f);
+                    vFlareImg.color = new Color(starColor.r, starColor.g, starColor.b, 0.2f);
                 }
 
                 result.TwinkleStars.Add(starImg);

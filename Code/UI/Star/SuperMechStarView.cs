@@ -1124,8 +1124,8 @@ namespace SuperMech.Code
                 }
                 else
                 {
-                    planetColor = new Color(planetColor.r * 0.75f, planetColor.g * 0.75f, planetColor.b * 0.75f, 0.9f);
-                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.2f);
+                    // v0.224 未殖民地行星保持原色，不再×0.75变暗
+                    glowImg.color = new Color(planetColor.r, planetColor.g, planetColor.b, 0.25f);
                 }
                 if (isMain)
                 {
