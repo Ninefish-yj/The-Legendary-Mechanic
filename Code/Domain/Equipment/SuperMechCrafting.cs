@@ -46,7 +46,7 @@ namespace SuperMech.Code
                 id = "sm_craft_sentry", name = "sm_crafting_681", desc = "sm_crafting_682",
                 creatureId = "civ_crystal_golem", minStage = 3, requiredKnowledge = "sm_know_mech_1_0_0",
                 qiBase = 12f, expBase = 25f,
-                traits = new[] { "tough", "regeneration" }, // v0.239.3 去immortal锁血
+                traits = new[] { "tough", "immortal" }, // v0.239.4 恢复immortal：仅不老不死，战斗可死
                 cost = new Dictionary<string, int> { {"common_metals", 15}, {"stone", 10} }
             },
             new CraftRecipe {
@@ -74,7 +74,7 @@ namespace SuperMech.Code
                 id = "sm_craft_virtual", name = "sm_crafting_689", desc = "sm_crafting_690",
                 creatureId = "human", minStage = 7, requiredKnowledge = "sm_know_mech_3_0_0",
                 qiBase = 80f, expBase = 150f,
-                traits = new[] { "tough", "genius", "fast" }, // v0.239.3 去immortal锁血
+                traits = new[] { "immortal", "genius", "fast" }, // v0.239.4 恢复immortal
                 cost = new Dictionary<string, int> { {"gold", 20}, {"gems", 15} }
             },
             new CraftRecipe {
@@ -88,7 +88,7 @@ namespace SuperMech.Code
                 id = "sm_craft_apostle", name = "sm_crafting_693", desc = "sm_crafting_694",
                 creatureId = "crabzilla", minStage = 10, requiredKnowledge = "sm_know_mech_4_0_0",
                 qiBase = 200f, expBase = 500f,
-                traits = new[] { "strong", "tough", "regeneration" }, // v0.239.3 去immortal锁血
+                traits = new[] { "strong", "tough", "immortal", "regeneration" }, // v0.239.4 恢复immortal
                 cost = new Dictionary<string, int> { {"adamantine", 30}, {"gold", 30}, {"gems", 20} }
             },
         };

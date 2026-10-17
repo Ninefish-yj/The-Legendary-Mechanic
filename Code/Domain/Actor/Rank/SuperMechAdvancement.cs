@@ -327,12 +327,12 @@ namespace SuperMech.Code
         {
             if (a == null || rankIdx < 0) return;
 
-            // v0.239.3 X阶（索引8）不再自动加immortal锁血特质（死了就是死了），
-            // 改为寿命绵长（不会老死）但战斗受伤仍会死亡；不死不灭由"概念永生"专长以复活形式体现
+            // v0.239.4 恢复X阶immortal特质：查证原版immortal仅防自然老死（checkNaturalDeath短路）+生育不衰减，
+            // 完全不干预战斗死亡（die()无immortal判断）——寿命层面"不死不灭"，战斗仍可被杀死；
+            // 真正的锁血（死亡拦截/濒死保护）仍保持移除
             if (rankIdx >= 8)
             {
-                if (a.stats != null)
-                    a.stats["lifespan"] = Mathf.Max(a.stats.TryGetValue("lifespan", out float cur) ? cur : 100f, 99999f);
+                if (!a.hasTrait("immortal")) a.addTrait("immortal");
                 _appliedLifespanRank[a.id] = rankIdx;
                 return;
             }
