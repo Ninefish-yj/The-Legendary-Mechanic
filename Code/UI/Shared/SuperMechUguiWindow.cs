@@ -26,8 +26,16 @@ namespace SuperMech.Code
         private const int BorderWidth = 2;
         private const int ResizeHandleSize = 16;
 
+        // 手机端适配参数
+        private const int MobileTitleBarHeight = 48;
+        private const int MobileCloseBtnSize = 40;
+        private const float MobileScreenRatio = 0.92f; // 窗口占屏幕比例
+
         public Vector2 MinSize = new Vector2(400, 300);
         public Vector2 MaxSize = new Vector2(1200, 800);
+
+        /// <summary>是否为手机平台</summary>
+        private static bool IsMobile => Application.isMobilePlatform;
 
         public static Canvas GetCanvas()
         {
@@ -54,6 +62,16 @@ namespace SuperMech.Code
             var go = new GameObject($"SM_Window_{id}");
             go.transform.SetParent(canvas.transform, false);
             var rect = go.AddComponent<RectTransform>();
+
+            // 手机端适配：窗口尺寸不超过屏幕的92%
+            if (IsMobile)
+            {
+                float maxW = Screen.width * MobileScreenRatio;
+                float maxH = Screen.height * MobileScreenRatio;
+                width = Mathf.Min(width, maxW);
+                height = Mathf.Min(height, maxH);
+            }
+
             rect.sizeDelta = new Vector2(width, height);
             rect.anchoredPosition = new Vector2(
                 (Screen.width - width) / 2f,
@@ -78,6 +96,11 @@ namespace SuperMech.Code
 
         private void BuildUI(string titleKey)
         {
+            // 手机端使用更大的标题栏和关闭按钮
+            int titleBarHeight = IsMobile ? MobileTitleBarHeight : TitleBarHeight;
+            int closeBtnSize = IsMobile ? MobileCloseBtnSize : CloseBtnSize;
+            int closeBtnMargin = IsMobile ? 10 : CloseBtnMargin;
+
             // 背景：纯色半透明深灰蓝
             _bgImage = gameObject.AddComponent<Image>();
             _bgImage.color = SuperMechUiSkin.BgColor;
@@ -94,7 +117,7 @@ namespace SuperMech.Code
             titleBarRect.anchorMin = new Vector2(0, 1);
             titleBarRect.anchorMax = new Vector2(1, 1);
             titleBarRect.pivot = new Vector2(0.5f, 1);
-            titleBarRect.sizeDelta = new Vector2(0, TitleBarHeight);
+            titleBarRect.sizeDelta = new Vector2(0, titleBarHeight);
             titleBarRect.anchoredPosition = new Vector2(0, -BorderWidth);
             var titleBarImg = titleBarGo.AddComponent<Image>();
             titleBarImg.sprite = SuperMechUiSkin.Section;
@@ -103,14 +126,14 @@ namespace SuperMech.Code
             var titleDrag = titleBarGo.AddComponent<SuperMechDragHandler>();
             titleDrag.Target = this;
 
-            _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), 16, TextAnchor.MiddleCenter);
+            _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), IsMobile ? 20 : 16, TextAnchor.MiddleCenter);
             _titleText.fontStyle = FontStyle.Bold;
             _titleText.color = SuperMechUiSkin.AccentColor;
             var titleRect = _titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = Vector2.zero;
             titleRect.anchorMax = Vector2.one;
-            titleRect.offsetMin = new Vector2(CloseBtnSize + CloseBtnMargin * 2, 0);
-            titleRect.offsetMax = new Vector2(-(CloseBtnSize + CloseBtnMargin * 2), 0);
+            titleRect.offsetMin = new Vector2(closeBtnSize + closeBtnMargin * 2, 0);
+            titleRect.offsetMax = new Vector2(-(closeBtnSize + closeBtnMargin * 2), 0);
 
             var closeGo = new GameObject("CloseBtn");
             closeGo.transform.SetParent(titleBarGo.transform, false);
@@ -118,8 +141,8 @@ namespace SuperMech.Code
             closeRect.anchorMin = new Vector2(1, 1);
             closeRect.anchorMax = new Vector2(1, 1);
             closeRect.pivot = new Vector2(1, 1);
-            closeRect.sizeDelta = new Vector2(CloseBtnSize, CloseBtnSize);
-            closeRect.anchoredPosition = new Vector2(-CloseBtnMargin, -5);
+            closeRect.sizeDelta = new Vector2(closeBtnSize, closeBtnSize);
+            closeRect.anchoredPosition = new Vector2(-closeBtnMargin, -5);
             var closeImg = closeGo.AddComponent<Image>();
             closeImg.color = SuperMechUiSkin.CloseRed;
             _closeBtn = closeGo.AddComponent<Button>();
@@ -128,7 +151,7 @@ namespace SuperMech.Code
             closeColors.highlightedColor = new Color(1f, 0.4f, 0.4f, 1f);
             closeColors.pressedColor = new Color(0.6f, 0.15f, 0.15f, 1f);
             _closeBtn.colors = closeColors;
-            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", 18, TextAnchor.MiddleCenter);
+            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", IsMobile ? 26 : 18, TextAnchor.MiddleCenter);
             closeText.color = Color.white;
             var closeTextRect = closeText.GetComponent<RectTransform>();
             closeTextRect.anchorMin = Vector2.zero;
@@ -144,7 +167,7 @@ namespace SuperMech.Code
             Content.anchorMax = Vector2.one;
             Content.pivot = new Vector2(0.5f, 0.5f);
             Content.offsetMin = new Vector2(ContentMargin + BorderWidth, ContentMargin + BorderWidth);
-            Content.offsetMax = new Vector2(-(ContentMargin + BorderWidth), -(TitleBarHeight + ContentMargin + BorderWidth));
+            Content.offsetMax = new Vector2(-(ContentMargin + BorderWidth), -(titleBarHeight + ContentMargin + BorderWidth));
 
             var resizeGo = new GameObject("ResizeHandle");
             resizeGo.transform.SetParent(transform, false);
@@ -166,6 +189,41 @@ namespace SuperMech.Code
             resizeTextRect.anchorMax = Vector2.one;
             resizeTextRect.offsetMin = Vector2.zero;
             resizeTextRect.offsetMax = Vector2.zero;
+
+            // 手机端隐藏缩放手柄（触屏不好拖拽）
+            if (IsMobile)
+            {
+                resizeGo.SetActive(false);
+            }
+        }
+
+        /// <summary>手机返回键退出：只关闭最上层窗口</summary>
+        private void Update()
+        {
+            if (!IsMobile) return;
+            if (!IsOpen) return;
+            if (!Input.GetKeyDown(KeyCode.Escape)) return;
+
+            // 只让最上层（siblingIndex最大）的窗口响应返回键
+            int myIndex = transform.GetSiblingIndex();
+            bool isTop = true;
+            var parent = transform.parent;
+            if (parent != null)
+            {
+                for (int i = 0; i < parent.childCount; i++)
+                {
+                    var child = parent.GetChild(i);
+                    if (child != transform && child.GetComponent<SuperMechUguiWindow>() != null && child.GetSiblingIndex() > myIndex)
+                    {
+                        isTop = false;
+                        break;
+                    }
+                }
+            }
+            if (isTop)
+            {
+                Close();
+            }
         }
 
         public void OnPointerDown(PointerEventData e)
