@@ -42,6 +42,7 @@ namespace SuperMech.Code
         public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 620, 500, DrawFactionContent); }
         public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 520, DrawPlayerContent); }
         public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 520, DrawWorldTreeContent); }
+        public static void OpenWorldBeyond() { ToggleWindow("worldbeyond", "sm_ui_worldbeyond_title", 680, 560, DrawWorldBeyondContent); }
         public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 680, 520, DrawEconomyContent); }
         public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 680, 520, DrawTechContent); }
         public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
@@ -61,18 +62,16 @@ namespace SuperMech.Code
         }
 
         /// <summary>v0.206 UI重设计：星海总览12标签页分3组
-        /// <summary>v0.209 星海总览定位=纯全局概览，单王国操作全部从原版王国面板进入
-        /// 5个标签：王国(全球对比表) / 阶位排行 / 势力 / 世界树 / 世界超越
-        /// 经济/科技/建筑从总览移除，改为原版王国面板底部按钮打开独立窗口
-        /// 设置/圣所从总览移除，改为神权栏独立入口</summary>
+        /// <summary>v0.210 星海总览=纯全局概览，只留3个标签
+        /// 王国(全球对比表) / 阶位排行(全球强者) / 势力(全球组织格局)
+        /// 世界树/世界超越从总览移出，收进设置面板"其他功能"区
+        /// 经济/科技/建筑从总览移出，改为原版王国面板底部按钮
+        /// 设置/圣所从总览移出，改为神权栏独立入口</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
-            // === 全局概览 ===
             ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 王国（全球对比表）
             ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行（全球强者）
             ("sm_ui_faction_window_title", DrawFactionContent),      // 势力（全球组织格局）
-            ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树（全球世界状态）
-            ("sm_ui_world_beyond_title", DrawWorldBeyondContent),    // 世界超越（全球世界状态）
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)

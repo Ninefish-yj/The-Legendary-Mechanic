@@ -120,6 +120,17 @@ namespace SuperMech.Code
                 LocalizedTextManager.getText("sm_ui_battle_report_desc"),
                 () => SuperMechBattleReportView.Toggle(),
                 new Color(0.2f, 0.35f, 0.55f, 0.9f));
+            _curY -= 48f;
+            // v0.210 世界树/世界超越从星海总览移出，收进设置
+            AddButton(LocalizedTextManager.getText("sm_ui_tree_title"),
+                LocalizedTextManager.getText("sm_ui_tree_desc"),
+                () => SuperMechWindowManager.OpenWorldTree(),
+                new Color(0.2f, 0.45f, 0.3f, 0.9f));
+            _curY -= 48f;
+            AddButton(LocalizedTextManager.getText("sm_ui_worldbeyond_title"),
+                LocalizedTextManager.getText("sm_ui_worldbeyond_desc"),
+                () => SuperMechWindowManager.OpenWorldBeyond(),
+                new Color(0.35f, 0.2f, 0.45f, 0.9f));
             _curY -= 52f;
 
             // === 帮助 ===
