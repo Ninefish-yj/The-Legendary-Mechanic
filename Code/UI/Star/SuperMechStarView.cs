@@ -327,6 +327,33 @@ namespace SuperMech.Code
             autoText.alignment = TextAnchor.MiddleCenter;
             autoText.text = LocalizedTextManager.getText("sm_ui_action_auto_all");
 
+            // v0.229 银河地图按钮（进入多星系视图）
+            var galaxyBtnGo = new GameObject("GalaxyBtn");
+            galaxyBtnGo.transform.SetParent(topGo.transform, false);
+            var galaxyRect = galaxyBtnGo.AddComponent<RectTransform>();
+            galaxyRect.anchorMin = new Vector2(1, 0.5f);
+            galaxyRect.anchorMax = new Vector2(1, 0.5f);
+            galaxyRect.pivot = new Vector2(1, 0.5f);
+            galaxyRect.sizeDelta = new Vector2(100, 34);
+            galaxyRect.anchoredPosition = new Vector2(-120, 0);
+            var galaxyImg = galaxyBtnGo.AddComponent<Image>();
+            galaxyImg.color = new Color(0.4f, 0.3f, 0.6f, 0.9f);
+            var galaxyBtn = galaxyBtnGo.AddComponent<Button>();
+            galaxyBtn.onClick.AddListener(() =>
+            {
+                Close();
+                SuperMechGalaxyView.Open();
+            });
+            var galaxyTextGo = new GameObject("Text");
+            galaxyTextGo.transform.SetParent(galaxyBtnGo.transform, false);
+            var galaxyTextRect = galaxyTextGo.AddComponent<RectTransform>();
+            galaxyTextRect.anchorMin = Vector2.zero; galaxyTextRect.anchorMax = Vector2.one;
+            var galaxyText = galaxyTextGo.AddComponent<Text>();
+            galaxyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            galaxyText.fontSize = 12; galaxyText.color = Color.white;
+            galaxyText.alignment = TextAnchor.MiddleCenter;
+            galaxyText.text = LocalizedTextManager.getText("sm_galaxy_view");
+
             // 标题
             var titleGo = new GameObject("Title");
             titleGo.transform.SetParent(topGo.transform, false);
