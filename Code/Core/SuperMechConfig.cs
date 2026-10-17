@@ -43,6 +43,8 @@ namespace SuperMech.Code
         public static bool CombatAIEnabled = true;
         /// <summary>v0.201 打击感增强开关（命中停顿/冲击闪光/冲击波/拖影残像）</summary>
         public static bool CombatFeelEnabled = true;
+        /// <summary>v0.213 战斗动作编排开关（招式系统/突进斩击/机械臂冲击/无人机齐射）</summary>
+        public static bool CombatChoreoEnabled = true;
         /// <summary>掉落钥匙材料的最低阶位（0=F~13=X），默认10=S阶</summary>
         public static int KeyDropMinRank = 10;
         /// <summary>多少块钥匙材料合成1把圣所钥匙（默认3）</summary>

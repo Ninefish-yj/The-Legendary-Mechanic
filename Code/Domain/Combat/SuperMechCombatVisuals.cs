@@ -117,7 +117,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>弹道特效（能量弹飞行 - 发光+拖尾+旋转）</summary>
-        private static void SpawnProjectile(Vector3 from, Vector3 to, Color color, float duration)
+        public static void SpawnProjectile(Vector3 from, Vector3 to, Color color, float duration)
         {
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             go.name = "EnergyBolt";
@@ -145,7 +145,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>挥砍弧线特效</summary>
-        private static void SpawnSlashArc(Vector3 attackerPos, Vector3 targetPos, Color color)
+        public static void SpawnSlashArc(Vector3 attackerPos, Vector3 targetPos, Color color)
         {
             var go = new GameObject("SlashArc", typeof(LineRenderer));
             go.transform.position = attackerPos;
@@ -256,7 +256,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>命中特效（扩散圆环）</summary>
-        private static void SpawnHitEffect(Vector3 position, Color color)
+        public static void SpawnHitEffect(Vector3 position, Color color)
         {
             EnsureEffectRoot();
             var go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -273,7 +273,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>超A大范围能量特效</summary>
-        private static void SpawnSuperAEffect(Vector3 position, Color color)
+        public static void SpawnSuperAEffect(Vector3 position, Color color)
         {
             EnsureEffectRoot();
             var go = GameObject.CreatePrimitive(PrimitiveType.Plane);
@@ -291,7 +291,7 @@ namespace SuperMech.Code
         }
 
         /// <summary>机械师召唤特效</summary>
-        private static void SpawnMechSummonEffect(Vector3 position)
+        public static void SpawnMechSummonEffect(Vector3 position)
         {
             EnsureEffectRoot();
             var go = GameObject.CreatePrimitive(PrimitiveType.Cube);

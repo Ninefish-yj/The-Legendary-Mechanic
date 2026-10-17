@@ -9,6 +9,7 @@ namespace SuperMech.Code
     {
         private static bool _warnedSkill; // 一次性异常警告
         private static bool _warnedSpell; // 法术释放一次性异常警告
+        private static bool _warnedChoreo; // 招式触发一次性异常警告
         private static bool _prefixErrorLogged;
         private static bool _postfixErrorLogged;
         private static readonly HashSet<AttackType> PhysicalAttacks = new HashSet<AttackType>
@@ -52,6 +53,13 @@ namespace SuperMech.Code
                 if (attacker != null && attacker.isAlive() && Random.value < 0.3f)
                 {
                     try { SuperMechSkillRuntime.TryCastSkill(attacker, target); } catch (System.Exception e) { if (!_warnedSkill) { _warnedSkill = true; Debug.LogWarning($"[超神机械师] 技能释放异常(仅首次): {e.Message}"); } }
+                }
+
+                // v0.213 战斗动作编排：攻击者有概率触发自定义招式（突进斩击/机械臂冲击/无人机齐射等）
+                if (attacker != null && attacker.isAlive())
+                {
+                    try { SuperMechChoreographer.TryTriggerMove(attacker, target); }
+                    catch (System.Exception e) { if (!_warnedChoreo) { _warnedChoreo = true; Debug.LogWarning($"[超神机械师] 招式触发异常(仅首次): {e.Message}"); } }
                 }
 
                 // v0.197 战斗特效：攻击命中时显示职业施法特效
