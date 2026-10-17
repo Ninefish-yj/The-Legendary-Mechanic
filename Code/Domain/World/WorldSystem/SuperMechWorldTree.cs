@@ -126,6 +126,7 @@ namespace SuperMech.Code
             }
 
             Debug.Log($"[超神机械师] 【世界树入侵】{_data.kingName}率领世界树舰队降临！星际联合军成立，全文明进入战争状态");
+            SuperMechEventLogger.LogWorldTreeInvasion(_data.invasionCount, _data.kingName);
         }
 
         private static void SpawnTreeUnit(string eliteTrait, string name, int count)
@@ -172,6 +173,7 @@ namespace SuperMech.Code
             {
                 Debug.Log($"[超神机械师] 【世界树入侵】入侵持续结束，世界树舰队撤退（未完全击退）");
             }
+            SuperMechEventLogger.LogWorldTreeRepelled(_data.invasionCount, _data.kingName, repelled);
         }
 
         /// <summary>战斗挂接：击杀世界树单位（原著：与树王/使者的战斗）</summary>

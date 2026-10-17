@@ -49,8 +49,10 @@ namespace SuperMech.Code
             RegisterLogAsset("sm_log_competition", "sm_log_competition_text", new Color(1f, 0.6f, 0.3f), "ui/Icons/actor_traits/iconBloodlust");
             RegisterLogAsset("sm_log_key", "sm_log_key_text", new Color(0.4f, 0.7f, 1f), "ui/Icons/actor_traits/iconAmbitious");
             RegisterLogAsset("sm_log_faction_war", "sm_log_faction_war_text", new Color(1f, 0.4f, 0.4f), "ui/Icons/iconCityConquered");
+            RegisterLogAsset("sm_log_worldtree_invasion", "sm_log_worldtree_invasion_text", new Color(0.3f, 0.9f, 0.4f), "ui/Icons/iconCityConquered");
+            RegisterLogAsset("sm_log_worldtree_repelled", "sm_log_worldtree_repelled_text", new Color(0.9f, 0.7f, 0.2f), "ui/Icons/iconCityConquered");
 
-            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册10类日志资产+1历史分类");
+            Debug.Log("[超神机械师] 事件日志系统初始化完成，注册12类日志资产+1历史分类");
         }
 
         /// <summary>注册历史分类Asset</summary>
@@ -418,6 +420,45 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 推送势力战争日志失败: {e.Message}");
+            }
+        }
+
+        /// <summary>推送世界树入侵开始事件日志</summary>
+        public static void LogWorldTreeInvasion(int invasionCount, string kingName)
+        {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            TryInit();
+            if (!_initialized) return;
+            var asset = GetAsset("sm_log_worldtree_invasion");
+            if (asset == null) return;
+
+            try
+            {
+                new WorldLogMessage(asset, invasionCount.ToString(), SafeStr(kingName)).add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送世界树入侵日志失败: {e.Message}");
+            }
+        }
+
+        /// <summary>推送世界树入侵被击退事件日志</summary>
+        public static void LogWorldTreeRepelled(int invasionCount, string kingName, bool repelled)
+        {
+            if (!SuperMechConfig.EventLogEnabled) return;
+            TryInit();
+            if (!_initialized) return;
+            var asset = GetAsset("sm_log_worldtree_repelled");
+            if (asset == null) return;
+
+            try
+            {
+                string result = repelled ? "击退" : "撤退";
+                new WorldLogMessage(asset, invasionCount.ToString(), SafeStr(kingName), result).add();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 推送世界树击退日志失败: {e.Message}");
             }
         }
 

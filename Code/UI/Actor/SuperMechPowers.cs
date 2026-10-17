@@ -184,7 +184,27 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 世界之外按钮失败: {e.Message}"); }
             }
 
-            // 6. 召唤降临者（玩家化身，需要点击地图）
+            // 6. 世界树（入侵事件系统，v0.211从设置移出为独立入口）
+            if (PowerButton.get("sm_worldtree_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconCityConquered")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_worldtree_open", () =>
+                    {
+                        SuperMechWindowManager.OpenWorldTree();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_tree_title", "sm_worldtree_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 世界树按钮失败: {e.Message}"); }
+            }
+
+            // 7. 召唤降临者（玩家化身，需要点击地图）
             if (PowerButton.get(SummonDescendant) == null && AssetManager.powers.get(SummonDescendant) != null)
             {
                 try
@@ -197,7 +217,7 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
             }
 
-            // 7. 异化灾害（灾害玩法，需要点击地图）
+            // 8. 异化灾害（灾害玩法，需要点击地图）
             if (PowerButton.get(DisasterAlien) == null && AssetManager.powers.get(DisasterAlien) != null)
             {
                 try
