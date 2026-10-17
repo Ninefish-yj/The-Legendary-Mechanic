@@ -279,19 +279,33 @@ namespace SuperMech.Code
             if (tplText != null)
                 AddInfoRow(LocalizedTextManager.getText("sm_ui_templates"), tplText);
 
-            // === 功能按钮 ===
+            // === 功能按钮（按类型分组）===
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_functions"));
-            AddFunctionButton(LocalizedTextManager.getText("sm_ui_cr_entry"), new Color(0.95f, 0.75f, 0.3f), () => SuperMechWindowManager.OpenCosmicRelic(a));
-            AddFunctionButton(LocalizedTextManager.getText("sm_ui_dim_entry"), new Color(0.75f, 0.55f, 0.95f), () => SuperMechWindowManager.OpenDimension(a));
-            if (SuperMechVirtualGenesis.HasGenesis(a))
-                AddFunctionButton(LocalizedTextManager.getText("sm_ui_virtual_genesis"), new Color(0.5f, 0.9f, 0.8f), () => SuperMechWindowManager.OpenVirtualGenesis(a));
+
+            // 成长类
+            bool hasGrowth = SuperMechVirtualGenesis.HasGenesis(a) || SuperMechSpeciesEvolution.GetEvolvableSpecies(a.data.id).Count > 0;
+            if (hasGrowth)
+            {
+                AddGroupLabel(LocalizedTextManager.getText("sm_ui_group_growth"));
+                if (SuperMechVirtualGenesis.HasGenesis(a))
+                    AddFunctionButton(LocalizedTextManager.getText("sm_ui_virtual_genesis"), new Color(0.5f, 0.9f, 0.8f), () => SuperMechWindowManager.OpenVirtualGenesis(a));
+                var evolvable = SuperMechSpeciesEvolution.GetEvolvableSpecies(a.data.id);
+                if (evolvable.Count > 0)
+                    AddFunctionButton(LocalizedTextManager.getText("sm_ui_species_evolve"), new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
+            }
+
+            // 战斗类
+            AddGroupLabel(LocalizedTextManager.getText("sm_ui_group_combat"));
             if (SuperMechBranch.HasBranch(a, SuperMechBranch.BranchMech))
                 AddFunctionButton(LocalizedTextManager.getText("sm_ui_mech_legion"), new Color(0.7f, 0.8f, 1.0f), () => SuperMechWindowManager.OpenMechLegion(a));
-            var evolvable = SuperMechSpeciesEvolution.GetEvolvableSpecies(a.data.id);
-            if (evolvable.Count > 0)
-                AddFunctionButton(LocalizedTextManager.getText("sm_ui_species_evolve"), new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
-            AddFunctionButton(LocalizedTextManager.getText("sm_econ_service_panel"), new Color(0.4f, 0.8f, 0.6f), () => SuperMechWindowManager.OpenEconomy());
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_combat_stats"), new Color(0.9f, 0.5f, 0.4f), () => SuperMechCombatStatsView.Toggle(a));
+
+            // 特殊类
+            AddGroupLabel(LocalizedTextManager.getText("sm_ui_group_special"));
+            AddFunctionButton(LocalizedTextManager.getText("sm_ui_cr_entry"), new Color(0.95f, 0.75f, 0.3f), () => SuperMechWindowManager.OpenCosmicRelic(a));
+            AddFunctionButton(LocalizedTextManager.getText("sm_ui_dim_entry"), new Color(0.75f, 0.55f, 0.95f), () => SuperMechWindowManager.OpenDimension(a));
+
+            // 任务
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_quests"), new Color(0.7f, 0.6f, 0.3f), () => SuperMechQuestView.Toggle(a));
         }
 
@@ -374,12 +388,29 @@ namespace SuperMech.Code
                 try { onClick?.Invoke(); }
                 catch (Exception e) { Debug.LogError("[超神机械师] 详情面板按钮异常: " + e.Message); }
             });
-            // v0.202 功能按钮使用皮肤按钮三态，语义色应用到文字
             var btnText = btn.GetComponentInChildren<Text>();
             if (btnText != null) btnText.color = color;
             var layoutElem = btn.AddComponent<LayoutElement>();
             layoutElem.minHeight = 40;
             layoutElem.preferredHeight = 40;
+        }
+
+        private void AddGroupLabel(string text)
+        {
+            var go = new GameObject("GroupLabel");
+            go.transform.SetParent(_content.transform, false);
+            var rect = go.AddComponent<RectTransform>();
+            var txt = go.AddComponent<Text>();
+            txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            txt.fontSize = 10;
+            txt.fontStyle = FontStyle.Bold;
+            txt.color = SuperMechUiSkin.TextDim;
+            txt.alignment = TextAnchor.MiddleLeft;
+            txt.text = "  " + text;
+            txt.raycastTarget = false;
+            var layoutElem = go.AddComponent<LayoutElement>();
+            layoutElem.minHeight = 20;
+            layoutElem.preferredHeight = 20;
         }
 
         private static string GetSanctuaryInfo(Actor a)
