@@ -14,6 +14,7 @@ namespace SuperMech.Code
         private Text _infoText;
         private Text _coordText;
         private RectTransform _buttonArea; // 交互按钮区域
+        private GameObject _infoPanel; // v0.223 右侧详情面板（选中星球后才显示）
         private string _selectedPlanet;
         private GameObject _tooltip; // 悬停提示
         private Text _tooltipText;
@@ -304,12 +305,12 @@ namespace SuperMech.Code
             // 顶部标题栏
             BuildTopBar();
 
-            // 星图区域（左侧70%，从顶部栏下方开始）
+            // v0.223 星图区域（全屏，参考Stellaris/群星：地图优先，详情面板选中后弹出）
             var mapGo = new GameObject("MapArea");
             mapGo.transform.SetParent(transform, false);
             var mapRect = mapGo.AddComponent<RectTransform>();
             mapRect.anchorMin = Vector2.zero;
-            mapRect.anchorMax = new Vector2(0.7f, 1);
+            mapRect.anchorMax = Vector2.one;
             mapRect.offsetMin = Vector2.zero;
             mapRect.offsetMax = new Vector2(0, -TopBarHeight);
             var mapImg = mapGo.AddComponent<Image>();
@@ -345,6 +346,17 @@ namespace SuperMech.Code
             var contentHit = contentGo.AddComponent<Image>();
             contentHit.color = new Color(0f, 0f, 0f, 0f);
             contentHit.raycastTarget = true;
+            // v0.223 点击地图空白处关闭详情面板
+            var contentBtn = contentGo.AddComponent<Button>();
+            contentBtn.transition = Selectable.Transition.None;
+            contentBtn.onClick.AddListener(() =>
+            {
+                if (_infoPanel != null && _infoPanel.activeSelf)
+                {
+                    _infoPanel.SetActive(false);
+                    _selectedPlanet = null;
+                }
+            });
             scrollRect.content = _mapContent;
             scrollRect.viewport = vpRt;
             scrollRect.vertical = true;
@@ -433,19 +445,42 @@ namespace SuperMech.Code
             zoText.fontSize = 16; zoText.color = Color.white;
             zoText.alignment = TextAnchor.MiddleCenter; zoText.text = "-";
 
-            // 右侧信息面板（从顶部栏下方开始）
+            // v0.223 右侧详情面板（默认隐藏，选中星球后滑出；参考Stellaris/群星/无尽空间）
             var infoGo = new GameObject("InfoPanel");
             infoGo.transform.SetParent(transform, false);
             var infoRect = infoGo.AddComponent<RectTransform>();
-            infoRect.anchorMin = new Vector2(0.7f, 0);
-            infoRect.anchorMax = Vector2.one;
-            infoRect.offsetMin = Vector2.zero;
-            infoRect.offsetMax = new Vector2(0, -TopBarHeight);
+            infoRect.anchorMin = new Vector2(1, 0);
+            infoRect.anchorMax = new Vector2(1, 1);
+            infoRect.pivot = new Vector2(1, 0.5f);
+            infoRect.sizeDelta = new Vector2(320, -TopBarHeight);
+            infoRect.anchoredPosition = new Vector2(0, -TopBarHeight / 2f);
             var infoImg = infoGo.AddComponent<Image>();
-            infoImg.sprite = SuperMechUiSkin.Card;
-            infoImg.type = Image.Type.Sliced;
-            infoImg.color = Color.white;
-            infoImg.raycastTarget = true; // 拦截鼠标，防止穿透到游戏
+            infoImg.color = new Color(0.06f, 0.09f, 0.14f, 0.97f);
+            infoImg.raycastTarget = true;
+            _infoPanel = infoGo;
+            infoGo.SetActive(false);  // 默认隐藏
+
+            // 详情面板关闭按钮（右上角）
+            var closeGo = new GameObject("CloseBtn");
+            closeGo.transform.SetParent(infoGo.transform, false);
+            var closeRect = closeGo.AddComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(1, 1);
+            closeRect.anchorMax = new Vector2(1, 1);
+            closeRect.pivot = new Vector2(1, 1);
+            closeRect.sizeDelta = new Vector2(28, 28);
+            closeRect.anchoredPosition = new Vector2(-6, -6);
+            var closeImg = closeGo.AddComponent<Image>();
+            closeImg.color = new Color(0.7f, 0.2f, 0.2f, 0.9f);
+            var closeBtn = closeGo.AddComponent<Button>();
+            closeBtn.onClick.AddListener(() => { _infoPanel.SetActive(false); _selectedPlanet = null; });
+            var closeTextGo = new GameObject("Text");
+            closeTextGo.transform.SetParent(closeGo.transform, false);
+            var closeTextRect = closeTextGo.AddComponent<RectTransform>();
+            closeTextRect.anchorMin = Vector2.zero; closeTextRect.anchorMax = Vector2.one;
+            var closeText = closeTextGo.AddComponent<Text>();
+            closeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            closeText.fontSize = 16; closeText.color = Color.white;
+            closeText.alignment = TextAnchor.MiddleCenter; closeText.text = "×";
 
             // === Stellaris式分页标签栏 ===
             var tabBarGo = new GameObject("TabBar");
@@ -1597,6 +1632,8 @@ namespace SuperMech.Code
         private void SelectPlanet(string id)
         {
             _selectedPlanet = id;
+            // v0.223 选中星球时显示右侧详情面板
+            if (_infoPanel != null) _infoPanel.SetActive(true);
             var p = SuperMechStarSystem.GetPlanet(id);
             if (p == null || _infoText == null) return;
 
