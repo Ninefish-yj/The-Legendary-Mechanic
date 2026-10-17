@@ -76,20 +76,20 @@ namespace SuperMech.Code
                     Debug.LogWarning("[超神机械师] 创建Tab失败，稍后重试");
                     return;
                 }
-                _modTab.SetLayout(new System.Collections.Generic.List<string> { "tools" });
+                _modTab.SetLayout(new System.Collections.Generic.List<string> { "ui", "powers" });
                 _modTab.UpdateLayout();
                 Debug.Log("[超神机械师] 独立Tab创建成功");
             }
 
             int created = 0;
 
-            // v0.208 UI重设计：神权栏6个核心入口（总览/星图/圣所/设置 + 2个GodPower）
+            // v0.215 UI重设计：神权栏6个核心入口（图标全部使用游戏内存在的资源）
             // 1. 星海总览（世界状态概览仪表盘）
             if (PowerButton.get("sm_overview_open") == null)
             {
                 try
                 {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconFavoriteStar")
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateSimpleButton("sm_overview_open", () =>
                     {
@@ -98,7 +98,7 @@ namespace SuperMech.Code
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_overview_open", "sm_overview_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
+                        _modTab.AddPowerButton("ui", pb); created++;
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星海总览按钮失败: {e.Message}"); }
@@ -109,7 +109,7 @@ namespace SuperMech.Code
             {
                 try
                 {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconPlanet")
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconAlien")
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateSimpleButton("sm_star_open", () =>
                     {
@@ -118,18 +118,18 @@ namespace SuperMech.Code
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_star_open", "sm_star_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
+                        _modTab.AddPowerButton("ui", pb); created++;
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星际星图按钮失败: {e.Message}"); }
             }
 
-            // 3. 圣所（独立空间，v0.208从星海总览移出）
+            // 3. 圣所（独立空间）
             if (PowerButton.get("sm_sanctuary_open") == null)
             {
                 try
                 {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconHolyLight")
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconDivineLight")
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateSimpleButton("sm_sanctuary_open", () =>
                     {
@@ -138,18 +138,18 @@ namespace SuperMech.Code
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_ui_sanctuary_title", "sm_sanctuary_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
+                        _modTab.AddPowerButton("ui", pb); created++;
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 圣所按钮失败: {e.Message}"); }
             }
 
-            // 4. 设置（配置面板，v0.208从星海总览移出）
+            // 4. 设置（配置面板）
             if (PowerButton.get("sm_settings_open") == null)
             {
                 try
                 {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconConfig")
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconBooks")
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateSimpleButton("sm_settings_open", () =>
                     {
@@ -158,13 +158,13 @@ namespace SuperMech.Code
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_ui_settings_title", "sm_settings_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
+                        _modTab.AddPowerButton("ui", pb); created++;
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 设置按钮失败: {e.Message}"); }
             }
 
-            // 5. 世界之外（暗面宇宙聊天群，v0.210从设置移出为独立入口）
+            // 5. 世界之外（暗面宇宙聊天群）
             if (PowerButton.get("sm_worldbeyond_open") == null)
             {
                 try
@@ -178,18 +178,18 @@ namespace SuperMech.Code
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_ui_worldbeyond_title", "sm_worldbeyond_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
+                        _modTab.AddPowerButton("ui", pb); created++;
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 世界之外按钮失败: {e.Message}"); }
             }
 
-            // 6. 世界树（入侵事件系统，v0.211从设置移出为独立入口）
+            // 6. 世界树（入侵事件系统）
             if (PowerButton.get("sm_worldtree_open") == null)
             {
                 try
                 {
-                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconCityConquered")
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconSeedMaple")
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateSimpleButton("sm_worldtree_open", () =>
                     {
@@ -198,7 +198,7 @@ namespace SuperMech.Code
                     if (pb != null)
                     {
                         SetupTooltip(pb, "sm_ui_tree_title", "sm_worldtree_open_desc");
-                        _modTab.AddPowerButton("tools", pb); created++;
+                        _modTab.AddPowerButton("ui", pb); created++;
                     }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 世界树按钮失败: {e.Message}"); }
@@ -212,7 +212,7 @@ namespace SuperMech.Code
                     Sprite icon = AssetManager.powers.get(SummonDescendant).getIconSprite()
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateGodPowerButton(SummonDescendant, icon);
-                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
+                    if (pb != null) { _modTab.AddPowerButton("powers", pb); created++; }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
             }
@@ -225,7 +225,7 @@ namespace SuperMech.Code
                     Sprite icon = AssetManager.powers.get(DisasterAlien).getIconSprite()
                         ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
                     var pb = PowerButtonCreator.CreateGodPowerButton(DisasterAlien, icon);
-                    if (pb != null) { _modTab.AddPowerButton("tools", pb); created++; }
+                    if (pb != null) { _modTab.AddPowerButton("powers", pb); created++; }
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异化按钮失败: {e.Message}"); }
             }
