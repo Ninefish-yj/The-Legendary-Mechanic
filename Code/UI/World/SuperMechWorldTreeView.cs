@@ -58,11 +58,13 @@ namespace SuperMech.Code
 
             _countText.text = LocalizedTextManager.getText("sm_ui_tree_title") + " | "
                 + LocalizedTextManager.getText("sm_ui_tree_state") + state
-                + " | " + LocalizedTextManager.getText("sm_ui_tree_invasion_count") + " " + d.invasionCount;
+                + " | " + LocalizedTextManager.getText("sm_ui_tree_invasion_count") + " " + d.invasionCount
+                + " | " + LocalizedTextManager.getText("sm_ui_tree_level") + " Lv" + d.worldTreeLevel;
 
             var sb = new System.Text.StringBuilder();
             sb.Append(LocalizedTextManager.getText("sm_ui_tree_king")).Append(": ")
               .Append(d.kingName != null && d.kingName.Length > 0 ? d.kingName : LocalizedTextManager.getText("sm_ui_no_invasion")).Append("\n");
+            sb.Append(LocalizedTextManager.getText("sm_ui_tree_success_count")).Append(": ").Append(d.successfulInvasions).Append("\n");
             if (d.state == SuperMechWorldTree.EventState.Invading)
             {
                 sb.Append(LocalizedTextManager.getText("sm_ui_tree_remaining")).Append(" ").Append(d.ticksLeft).Append("\n");

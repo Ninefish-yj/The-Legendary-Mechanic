@@ -3861,6 +3861,8 @@
   "sm_ui_worldbeyond_desc": "高维存在观测与暗面迭代系统",
   "sm_worldbeyond_open_desc": "打开世界之外（暗面宇宙）聊天群",
   "sm_log_worldtree_invasion_text": "第{0}次世界树入侵：{1}率领舰队降临，星际联合军成立",
-  "sm_log_worldtree_repelled_text": "第{0}次世界树入侵结束：{1}舰队{2}，全文明获得战后奖励",
-  "sm_worldtree_open_desc": "打开世界树入侵事件面板"
+  "sm_log_worldtree_repelled_text": "第{0}次世界树入侵结束：{1}舰队{2}，母树成长等级提升",
+  "sm_worldtree_open_desc": "打开世界树入侵事件面板",
+  "sm_ui_tree_level": "母树成长等级",
+  "sm_ui_tree_success_count": "成功入侵次数"
 }

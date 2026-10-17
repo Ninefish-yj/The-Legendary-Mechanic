@@ -28,6 +28,8 @@ namespace SuperMech.Code
             public int killedTrees;            // 已击杀世界树单位
             public int killedKings;            // 已击杀树王
             public string kingName;            // 当前树王名
+            public int worldTreeLevel;         // 世界树成长等级（入侵成功后母树吞噬成长，下次入侵更强）
+            public int successfulInvasions;    // 成功入侵次数（原著：世界树吞噬宇宙后母树进化）
         }
 
         private static readonly WorldTreeSaveData _data = new WorldTreeSaveData();
@@ -39,14 +41,26 @@ namespace SuperMech.Code
         private static readonly string[] ExecutiveNames = { "圣树使者·青", "圣树使者·赤", "圣树使者·金", "圣树使者·墨" };
 
         // 数值
-        private const int InvasionDurationTicks = 3600;   // 入侵持续（tick）
-        private const float KingDamageMult = 1.6f;        // 树王伤害倍率
-        private const float ExecDamageMult = 1.3f;        // 叶执行官伤害倍率
-        private const float TreeDamageMult = 1.15f;       // 普通树兵伤害倍率（原著：好战文明）
+        private const int BaseInvasionDurationTicks = 3600;   // 基础入侵持续（tick）
+        private const float BaseKingDamageMult = 1.6f;        // 基础树王伤害倍率
+        private const float BaseExecDamageMult = 1.3f;        // 基础叶执行官伤害倍率
+        private const float BaseTreeDamageMult = 1.15f;       // 基础普通树兵伤害倍率（原著：好战文明）
         private const float UnionDamageBonus = 0.05f;     // 星际联合军：全文明伤害+5%（原著：统合已探索宇宙力量）
         private const float UnionDefenseBonus = 0.10f;    // 星际联合军：全文明减伤+10%
         private const int TechRewardPerInvasion = 60;     // 击退入侵：最强文明科技+60
         private const int PotentialReward = 3;            // 击退入侵：全体觉醒单位潜能+3
+
+        // 原著：世界树吞噬宇宙后母树成长，每次成功入侵树王伤害+15%、持续时间+10%
+        private const float GrowthDamagePerLevel = 0.15f;
+        private const float GrowthDurationPerLevel = 0.10f;
+
+        /// <summary>当前入侵持续时间（随世界树成长等级增加）</summary>
+        private static int CurrentInvasionDuration => (int)(BaseInvasionDurationTicks * (1f + _data.worldTreeLevel * GrowthDurationPerLevel));
+
+        /// <summary>当前树王伤害倍率（随世界树成长等级增加）</summary>
+        private static float CurrentKingDamageMult => BaseKingDamageMult * (1f + _data.worldTreeLevel * GrowthDamagePerLevel);
+        private static float CurrentExecDamageMult => BaseExecDamageMult * (1f + _data.worldTreeLevel * GrowthDamagePerLevel * 0.5f);
+        private static float CurrentTreeDamageMult => BaseTreeDamageMult * (1f + _data.worldTreeLevel * GrowthDamagePerLevel * 0.3f);
 
         // ============ 状态查询 ============
 
@@ -70,14 +84,14 @@ namespace SuperMech.Code
             return 1f - UnionDefenseBonus;
         }
 
-        /// <summary>世界树单位伤害倍率</summary>
+        /// <summary>世界树单位伤害倍率（随母树成长等级增加）</summary>
         public static float GetTreeDamageMult(Actor a)
         {
             if (a == null || !a.hasTrait(TreeTrait)) return 1f;
-            if (a.hasTrait(TreeKingTrait)) return KingDamageMult;
-            if (a.hasTrait(TreeExecutiveTrait)) return ExecDamageMult;
-            if (a.hasTrait(TreeEnvoyTrait)) return ExecDamageMult;
-            return TreeDamageMult;
+            if (a.hasTrait(TreeKingTrait)) return CurrentKingDamageMult;
+            if (a.hasTrait(TreeExecutiveTrait)) return CurrentExecDamageMult;
+            if (a.hasTrait(TreeEnvoyTrait)) return CurrentExecDamageMult;
+            return CurrentTreeDamageMult;
         }
 
         // ============ 主循环 ============
@@ -104,7 +118,7 @@ namespace SuperMech.Code
         private static void StartInvasion()
         {
             _data.state = EventState.Invading;
-            _data.ticksLeft = InvasionDurationTicks;
+            _data.ticksLeft = CurrentInvasionDuration;
             _data.invasionCount++;
             _data.killedKings = 0;
             _data.kingName = TreeKingNames[Random.Range(0, TreeKingNames.Length)];
@@ -171,9 +185,93 @@ namespace SuperMech.Code
             }
             else
             {
-                Debug.Log($"[超神机械师] 【世界树入侵】入侵持续结束，世界树舰队撤退（未完全击退）");
+                // 原著：世界树入侵成功=舰队扎根吞噬，摧毁文明、掠夺科技、母树成长
+                _data.successfulInvasions++;
+                _data.worldTreeLevel++;
+
+                int citiesDestroyed = DestroyCities();
+                int unitsKilled = SlaughterUnits();
+                int techStolen = StealTech();
+
+                Debug.Log($"[超神机械师] 【世界树入侵成功】{_data.kingName}舰队扎根吞噬！摧毁城市:{citiesDestroyed} 屠杀单位:{unitsKilled} 掠夺科技:{techStolen} 母树成长至Lv{_data.worldTreeLevel}");
             }
             SuperMechEventLogger.LogWorldTreeRepelled(_data.invasionCount, _data.kingName, repelled);
+        }
+
+        /// <summary>原著：世界树舰队摧毁城市（入侵成功后随机摧毁2-4个城市）</summary>
+        private static int DestroyCities()
+        {
+            if (World.world.kingdoms == null || World.world.kingdoms.list == null) return 0;
+            int destroyed = 0;
+            int targetCount = Random.Range(2, 5);
+
+            var allCities = new List<City>();
+            foreach (var k in World.world.kingdoms.list)
+            {
+                if (k == null || k.cities == null) continue;
+                foreach (var c in k.cities)
+                {
+                    if (c != null && c.data != null && !c.data.isDestroyed) allCities.Add(c);
+                }
+            }
+
+            // 随机打乱，摧毁前N个
+            for (int i = 0; i < targetCount && allCities.Count > 0; i++)
+            {
+                int idx = Random.Range(0, allCities.Count);
+                var city = allCities[idx];
+                allCities.RemoveAt(idx);
+                try { city.destroy(); destroyed++; }
+                catch (System.Exception) { }
+            }
+            return destroyed;
+        }
+
+        /// <summary>原著：世界树入侵屠杀（入侵成功后杀死15-25%非世界树单位）</summary>
+        private static int SlaughterUnits()
+        {
+            if (World.world.units == null) return 0;
+            var units = World.world.units.units_only_alive;
+            if (units == null) return 0;
+
+            var targets = new List<Actor>();
+            foreach (var a in units)
+            {
+                if (a == null || !a.isAlive()) continue;
+                if (a.hasTrait(TreeTrait)) continue; // 不杀自己人
+                targets.Add(a);
+            }
+
+            int killCount = (int)(targets.Count * Random.Range(0.15f, 0.25f));
+            int killed = 0;
+            for (int i = 0; i < killCount && targets.Count > 0; i++)
+            {
+                int idx = Random.Range(0, targets.Count);
+                var a = targets[idx];
+                targets.RemoveAt(idx);
+                try { a.die(AttackType.none, null); killed++; }
+                catch (System.Exception) { }
+            }
+            return killed;
+        }
+
+        /// <summary>原著：世界树掠夺文明科技（入侵成功后所有文明科技点-30%）</summary>
+        private static int StealTech()
+        {
+            if (World.world.kingdoms == null || World.world.kingdoms.list == null) return 0;
+            int stolen = 0;
+            foreach (var k in World.world.kingdoms.list)
+            {
+                if (k == null) continue;
+                float current = SuperMechCivilization.GetTechPointsFromKingdom(k);
+                int steal = (int)(current * 0.3f);
+                if (steal > 0)
+                {
+                    SuperMechCivilization.AddTechPoints(k, -steal);
+                    stolen += steal;
+                }
+            }
+            return stolen;
         }
 
         /// <summary>战斗挂接：击杀世界树单位（原著：与树王/使者的战斗）</summary>
