@@ -34,6 +34,7 @@ namespace SuperMech.Code
 
         private static readonly WorldTreeSaveData _data = new WorldTreeSaveData();
         public static WorldTreeSaveData Data => _data;
+        private static int _aiTickCounter; // AI驱动节流计数器
 
         // 五大树王完整编制（祖#1335/秘#1362魔法系/镇·武道系/定·机械系/心#1362封印时空琥珀）
         // 定树王=机械系/心树王=被主宰分身封印于时空琥珀[1362]；树王冠位由母树授予、可被祖树王回收[1437]）
@@ -112,6 +113,66 @@ namespace SuperMech.Code
                 if (_data.ticksLeft <= 0) EndInvasion(false);
                 // 树王死亡即击退（原著#1362：心树王被封印于时空琥珀，世界树撤退）
                 else if (_data.killedKings >= 1) EndInvasion(true);
+
+                // AI驱动：世界树单位主动攻击文明（每60tick一次，避免性能问题）
+                _aiTickCounter++;
+                if (_aiTickCounter >= 60)
+                {
+                    _aiTickCounter = 0;
+                    DriveTreeUnitsAI();
+                }
+            }
+        }
+
+        /// <summary>原著：世界树舰队主动进攻文明（寻敌+移动+攻击）</summary>
+        private static void DriveTreeUnitsAI()
+        {
+            if (World.world.units == null) return;
+            var allUnits = World.world.units.units_only_alive;
+            if (allUnits == null) return;
+
+            // 收集世界树单位和文明单位
+            var treeUnits = new List<Actor>();
+            var civUnits = new List<Actor>();
+            foreach (var a in allUnits)
+            {
+                if (a == null || !a.isAlive()) continue;
+                if (a.hasTrait(TreeTrait)) treeUnits.Add(a);
+                else civUnits.Add(a);
+            }
+
+            if (treeUnits.Count == 0 || civUnits.Count == 0) return;
+
+            // 每个世界树单位寻找最近的文明单位
+            foreach (var tree in treeUnits)
+            {
+                if (tree == null || !tree.isAlive()) continue;
+
+                Actor nearest = null;
+                float nearestDist = float.MaxValue;
+                foreach (var civ in civUnits)
+                {
+                    if (civ == null || !civ.isAlive()) continue;
+                    float dist = Vector2.Distance(tree.current_position, civ.current_position);
+                    if (dist < nearestDist)
+                    {
+                        nearestDist = dist;
+                        nearest = civ;
+                    }
+                }
+
+                if (nearest == null) continue;
+
+                // 距离<3格：设置攻击目标（单位会自动攻击）
+                if (nearestDist < 3f)
+                {
+                    tree.setAttackTarget(nearest);
+                }
+                // 距离>=3格：移动向目标
+                else
+                {
+                    tree.moveTo(nearest.current_tile);
+                }
             }
         }
 
