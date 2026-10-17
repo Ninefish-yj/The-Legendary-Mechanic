@@ -65,7 +65,6 @@ namespace SuperMech.Code
             panelImg.type = Image.Type.Sliced;
             panelImg.color = Color.white;
             // v0.202 装饰角标
-            SuperMechUiSkin.AddCornerDecorations(panelRect, 16f, 2f);
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -79,7 +78,7 @@ namespace SuperMech.Code
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 18;
             titleText.alignment = TextAnchor.MiddleCenter;
-            titleText.color = SuperMechUiSkin.AccentColor;
+            titleText.color = SuperMechUiSkin.CyanColor;
             titleText.text = "任务 / 成就 / 声望";
 
             // 关闭按钮

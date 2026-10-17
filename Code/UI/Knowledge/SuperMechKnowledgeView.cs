@@ -338,7 +338,7 @@ namespace SuperMech.Code
                         var knImg = knGo.AddComponent<Image>();
                         bool unlocked = SelectedActor != null && SuperMechKnowledge.IsUnlocked(SelectedActor, kn.id);
                         bool selected = _selectedId == kn.id;
-                        knImg.color = selected ? SuperMechUiSkin.AccentDim :
+                        knImg.color = selected ? SuperMechUiSkin.CyanDim :
                                       (unlocked ? SuperMechUiSkin.RowEven : SuperMechUiSkin.RowOdd);
                         var textGo = new GameObject("Text");
                         textGo.transform.SetParent(knGo.transform, false);

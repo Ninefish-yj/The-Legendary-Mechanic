@@ -82,7 +82,7 @@ namespace SuperMech.Code
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
             titleText.fontStyle = FontStyle.Bold;
-            titleText.color = SuperMechUiSkin.AccentColor;
+            titleText.color = SuperMechUiSkin.CyanColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.text = LocalizedTextManager.getText("sm_ui_actor_detail");
             titleText.raycastTarget = false;
@@ -296,7 +296,7 @@ namespace SuperMech.Code
             txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             txt.fontSize = 13;
             txt.fontStyle = FontStyle.Bold;
-            txt.color = SuperMechUiSkin.AccentColor;
+            txt.color = SuperMechUiSkin.CyanColor;
             txt.alignment = TextAnchor.MiddleLeft;
             txt.text = "  " + text;
             txt.raycastTarget = false;

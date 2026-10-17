@@ -303,7 +303,7 @@ namespace SuperMech.Code
             interiorBg.raycastTarget = true;
 
             _interiorTitle = SuperMechUiSkin.MakeText(_interiorLayer.transform, "", 16, TextAnchor.UpperCenter);
-            _interiorTitle.color = SuperMechUiSkin.SciGold;  // 金色标题
+            _interiorTitle.color = SuperMechUiSkin.CyanColor;  // 金色标题
             _interiorTitle.fontStyle = FontStyle.Bold;
             var titleRect = _interiorTitle.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0, 1);
@@ -658,7 +658,7 @@ namespace SuperMech.Code
 
             var titleText = SuperMechUiSkin.MakeText(panel.transform,
                 LocalizedTextManager.getText("sm_ui_san_msg_board_title"), 18, TextAnchor.UpperCenter);
-            titleText.color = SuperMechUiSkin.SciGold;  // 金色标题
+            titleText.color = SuperMechUiSkin.CyanColor;  // 金色标题
             titleText.fontStyle = FontStyle.Bold;
             var titleRect = titleText.GetComponent<RectTransform>();
             titleRect.anchorMin = new Vector2(0, 1);

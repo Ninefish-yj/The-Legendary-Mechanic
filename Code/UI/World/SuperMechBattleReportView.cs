@@ -70,7 +70,7 @@ namespace SuperMech.Code
             var titleTxt = titleGo.AddComponent<Text>();
             titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleTxt.fontSize = 18;
-            titleTxt.color = SuperMechUiSkin.AccentColor;
+            titleTxt.color = SuperMechUiSkin.CyanColor;
             titleTxt.alignment = TextAnchor.MiddleCenter;
             titleTxt.text = LocalizedTextManager.getText("sm_ui_battle_report_title");
 

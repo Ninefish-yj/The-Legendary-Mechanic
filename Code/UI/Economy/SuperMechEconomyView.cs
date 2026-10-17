@@ -189,7 +189,7 @@ namespace SuperMech.Code
                     img.type = Image.Type.Sliced;
                     img.color = Color.white;
                 }
-                if (txt != null) txt.color = active ? SuperMechUiSkin.AccentColor : SuperMechUiSkin.TextDim;
+                if (txt != null) txt.color = active ? SuperMechUiSkin.CyanColor : SuperMechUiSkin.TextDim;
             }
             if (idx == 1) RefreshMarket();
         }

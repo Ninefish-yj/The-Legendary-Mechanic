@@ -61,7 +61,7 @@ namespace SuperMech.Code
             divRt.pivot = new Vector2(0.5f, 0);
             divRt.sizeDelta = new Vector2(0, 1);
             divRt.anchoredPosition = Vector2.zero;
-            dividerGo.GetComponent<Image>().color = SuperMechUiSkin.BorderGold;
+            dividerGo.GetComponent<Image>().color = SuperMechUiSkin.CyanDim;
 
             var drag = titleBar.AddComponent<SuperMechWindowDrag>();
             drag.WindowRect = frame.RootRt;
@@ -80,7 +80,7 @@ namespace SuperMech.Code
             tt.fontSize = 20;
             tt.fontStyle = FontStyle.Bold;
             tt.alignment = TextAnchor.MiddleLeft;
-            tt.color = SuperMechUiSkin.AccentColor;
+            tt.color = SuperMechUiSkin.CyanColor;
             tt.text = title;
             tt.horizontalOverflow = HorizontalWrapMode.Wrap;
             tt.verticalOverflow = VerticalWrapMode.Truncate;
@@ -131,7 +131,6 @@ namespace SuperMech.Code
             frame.ContentParent.offsetMax = new Vector2(-10f, -54f);
 
             // v0.202 四个金色装饰角标（参考暗黑破坏神UI）
-            SuperMechUiSkin.AddCornerDecorations(frame.RootRt, 18f, 3f);
 
             root.SetActive(false);
             return frame;

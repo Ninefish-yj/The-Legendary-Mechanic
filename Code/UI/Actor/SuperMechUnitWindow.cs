@@ -57,7 +57,7 @@ namespace SuperMech.Code
             if (window == null || actor == null || !actor.isAlive()) yield break;
             try
             {
-                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, SuperMechUiSkin.AccentColor);
+                ShowRow(window, LocalizedTextManager.getText("sm_ui_super_info"), "", null, SuperMechUiSkin.CyanColor);
                 ShowMainInfo(window, actor);
             }
             catch (System.Exception e)
@@ -66,7 +66,7 @@ namespace SuperMech.Code
             }
         }
 
-        private static readonly Color InfoColor = SuperMechUiSkin.AccentColor;
+        private static readonly Color InfoColor = SuperMechUiSkin.CyanColor;
 
         private static void ShowMainInfo(UnitWindow window, Actor a)
         {
@@ -103,7 +103,7 @@ namespace SuperMech.Code
                 SuperMechUiSkin.SciPurple, () => SuperMechWindowManager.OpenKnowledge(a));
             // 2. 背包（固定）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_bag"), "iconBox",
-                SuperMechUiSkin.AccentColor, () => SuperMechWindowManager.OpenBag(a));
+                SuperMechUiSkin.CyanColor, () => SuperMechWindowManager.OpenBag(a));
             // 3. 超能详情（固定：合并职业/法术/气力/天赋/专精）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_actor_detail"), "iconChosenOne",
                 SuperMechUiSkin.CyanColor, () => SuperMechActorDetailView.Toggle(a));

@@ -512,7 +512,7 @@ namespace SuperMech.Code
                 bool isSelected = kv.Key == id;
                 bool r = kid > 0 && SuperMechTech.IsResearched(kid, kv.Key);
                 bool cr = kid > 0 && SuperMechTech.CanResearch(kid, kv.Key);
-                kv.Value.color = isSelected ? SuperMechUiSkin.AccentDim :
+                kv.Value.color = isSelected ? SuperMechUiSkin.CyanDim :
                                  r ? new Color(0.12f, 0.3f, 0.18f, 0.95f) :
                                  cr ? new Color(0.25f, 0.2f, 0.08f, 0.95f) :
                                  new Color(0.15f, 0.15f, 0.18f, 0.95f);

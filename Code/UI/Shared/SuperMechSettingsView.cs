@@ -148,7 +148,7 @@ namespace SuperMech.Code
             t.font = SuperMechUiSkin.DefaultFont;
             t.fontSize = 18;
             t.fontStyle = FontStyle.Bold;
-            t.color = SuperMechUiSkin.SciGold;
+            t.color = SuperMechUiSkin.CyanColor;
             t.alignment = TextAnchor.UpperLeft;
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);

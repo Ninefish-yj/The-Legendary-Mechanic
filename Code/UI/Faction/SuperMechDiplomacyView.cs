@@ -63,7 +63,6 @@ namespace SuperMech.Code
             panelImg.type = Image.Type.Sliced;
             panelImg.color = Color.white;
             // v0.202 装饰角标
-            SuperMechUiSkin.AddCornerDecorations(panelRect, 16f, 2f);
 
             // 标题
             var titleGo = new GameObject("Title");
@@ -77,7 +76,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
-            titleText.color = SuperMechUiSkin.AccentColor;
+            titleText.color = SuperMechUiSkin.CyanColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.fontStyle = FontStyle.Bold;
             titleText.text = LocalizedTextManager.getText("sm_faction_diplomacy");

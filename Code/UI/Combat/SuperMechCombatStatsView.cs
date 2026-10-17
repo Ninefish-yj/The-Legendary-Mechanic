@@ -79,7 +79,7 @@ namespace SuperMech.Code
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 16;
-            titleText.color = SuperMechUiSkin.AccentColor;
+            titleText.color = SuperMechUiSkin.CyanColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.fontStyle = FontStyle.Bold;
             titleText.text = _actor.data.name + " - 战斗统计";

@@ -235,7 +235,7 @@ namespace SuperMech.Code
                         var rImg = rGo.AddComponent<Image>();
                         bool canFuse = SelectedActor != null && SuperMechKnowledgeRecipe.CanFuse(SelectedActor, recipe);
                         bool selected = _selectedId == recipe.id;
-                        rImg.color = selected ? SuperMechUiSkin.AccentDim :
+                        rImg.color = selected ? SuperMechUiSkin.CyanDim :
                                       (canFuse ? SuperMechUiSkin.RowEven : SuperMechUiSkin.RowOdd);
                         var textGo = new GameObject("Text");
                         textGo.transform.SetParent(rGo.transform, false);

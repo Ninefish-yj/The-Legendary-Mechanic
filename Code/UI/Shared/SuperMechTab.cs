@@ -179,7 +179,7 @@ namespace SuperMech.Code
             btn.colors = colors;
 
             var label = SuperMechUiSkin.MakeText(go.transform, text, 13, TextAnchor.MiddleCenter);
-            label.color = active ? SuperMechUiSkin.SciGold : SuperMechUiSkin.SciMuted;
+            label.color = active ? SuperMechUiSkin.CyanColor : SuperMechUiSkin.SciMuted;
             var lr = label.GetComponent<RectTransform>();
             lr.offsetMin = new Vector2(4, 0);
             lr.offsetMax = new Vector2(-4, 0);
