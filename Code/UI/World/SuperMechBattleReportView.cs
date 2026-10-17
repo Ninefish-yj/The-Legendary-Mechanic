@@ -180,7 +180,7 @@ namespace SuperMech.Code
             tr.pivot = new Vector2(0.5f, 1);
             tr.anchoredPosition = new Vector2(8, -6);
             tr.sizeDelta = new Vector2(-16, 22);
-            string resultColor = r.result == "A胜" ? "#81c784" : r.result == "B胜" ? "#e57373" : "#ffd54f";
+            string resultColor = r.result == LocalizedTextManager.getText("sm_ui_battle_a_win") ? "#81c784" : r.result == LocalizedTextManager.getText("sm_ui_battle_b_win") ? "#e57373" : "#ffd54f";
             string title = $"<b>{r.factionA}</b>  <color=#93A4BC>VS</color>  <b>{r.factionB}</b>  <color={resultColor}>[{r.result}]</color>";
             if (isCurrent) title += "  <color=#ffd700>(" + LocalizedTextManager.getText("sm_ui_battle_report_ongoing") + ")</color>";
             var titleTxt = SuperMechUiSkin.MakeText(titleGo.transform, title, 13, TextAnchor.MiddleLeft);

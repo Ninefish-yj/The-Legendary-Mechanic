@@ -82,7 +82,7 @@ namespace SuperMech.Code
             titleText.color = SuperMechUiSkin.CyanColor;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.fontStyle = FontStyle.Bold;
-            titleText.text = _actor.data.name + " - 战斗统计";
+            titleText.text = _actor.data.name + LocalizedTextManager.getText("sm_ui_combat_title");
             titleText.raycastTarget = false;
 
             // 评级（大字显示）
@@ -106,11 +106,11 @@ namespace SuperMech.Code
             // 数据列表
             var data = new (string label, string value, Color color)[]
             {
-                ("总击杀", stats.totalKills.ToString(), new Color(1f, 0.8f, 0.4f)),
-                ("当前连杀", stats.killStreak.ToString(), new Color(1f, 0.5f, 0.5f)),
-                ("最高连杀", stats.maxKillStreak.ToString(), new Color(1f, 0.7f, 0.3f)),
-                ("造成伤害", stats.totalDamageDealt.ToString("F0"), new Color(0.8f, 0.4f, 0.4f)),
-                ("承受伤害", stats.totalDamageTaken.ToString("F0"), new Color(0.4f, 0.6f, 0.9f)),
+                (LocalizedTextManager.getText("sm_ui_combat_total_kills"), stats.totalKills.ToString(), new Color(1f, 0.8f, 0.4f)),
+                (LocalizedTextManager.getText("sm_ui_combat_current_streak"), stats.killStreak.ToString(), new Color(1f, 0.5f, 0.5f)),
+                (LocalizedTextManager.getText("sm_ui_combat_best_streak"), stats.maxKillStreak.ToString(), new Color(1f, 0.7f, 0.3f)),
+                (LocalizedTextManager.getText("sm_ui_combat_damage_dealt"), stats.totalDamageDealt.ToString("F0"), new Color(0.8f, 0.4f, 0.4f)),
+                (LocalizedTextManager.getText("sm_ui_combat_damage_taken"), stats.totalDamageTaken.ToString("F0"), new Color(0.4f, 0.6f, 0.9f)),
                 ("KDA", SuperMechCombatStats.GetKDA(_actor), new Color(0.7f, 0.7f, 1f)),
             };
 
@@ -136,7 +136,7 @@ namespace SuperMech.Code
                 killsTitleText.fontSize = 11;
                 killsTitleText.color = SuperMechUiSkin.TextDim;
                 killsTitleText.alignment = TextAnchor.UpperLeft;
-                killsTitleText.text = "最近击杀:";
+                killsTitleText.text = LocalizedTextManager.getText("sm_ui_combat_recent_kill");
                 killsTitleText.raycastTarget = false;
                 y += 22f;
 

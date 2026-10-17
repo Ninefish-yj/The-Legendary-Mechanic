@@ -2201,7 +2201,7 @@ namespace SuperMech.Code
 
                 // 四个任务按钮：空闲/采矿/研究/防御
                 string[] tasks = { "idle", "mining", "research", "defense" };
-                string[] taskLabels = { "闲", "矿", "研", "防" };
+                string[] taskLabels = { LocalizedTextManager.getText("sm_ui_star_idle"), LocalizedTextManager.getText("sm_ui_star_mining"), LocalizedTextManager.getText("sm_ui_star_research"), LocalizedTextManager.getText("sm_ui_star_defense") };
                 Color[] taskColors = {
                     new Color(0.4f, 0.4f, 0.4f, 0.9f),
                     new Color(0.8f, 0.6f, 0.2f, 0.9f),

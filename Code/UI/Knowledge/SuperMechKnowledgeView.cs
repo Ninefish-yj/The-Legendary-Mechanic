@@ -396,7 +396,7 @@ namespace SuperMech.Code
                     int potential = SuperMechPotential.GetPotential(SelectedActor);
                     bool canUpgrade = potential >= SuperMechKnowledge.PotentialCostPerLevel;
                     _learnBtn.interactable = canUpgrade;
-                    _learnBtnText.text = canUpgrade ? $"升级({SuperMechKnowledge.PotentialCostPerLevel}潜能)" : "潜能不足";
+                    _learnBtnText.text = canUpgrade ? $"升级({SuperMechKnowledge.PotentialCostPerLevel}潜能)" : LocalizedTextManager.getText("sm_ui_knowledge_potential_low");
                     var img = _learnBtn.GetComponent<Image>();
                     if (img != null)
                     {

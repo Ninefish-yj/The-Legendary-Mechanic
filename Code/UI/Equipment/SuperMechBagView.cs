@@ -269,18 +269,18 @@ namespace SuperMech.Code
             int lv = SuperMechEquipAffix.GetEnhanceLevel(SelectedActor);
             if (lv >= SuperMechEquipAffix.MaxEnhanceLevel)
             {
-                _detailText.text = "已达最高强化等级";
+                _detailText.text = LocalizedTextManager.getText("sm_ui_bag_max_enhance");
                 return;
             }
             int cost = SuperMechEquipAffix.GetEnhanceCost(SelectedActor);
             float rate = SuperMechEquipAffix.GetEnhanceSuccessRate(SelectedActor);
             if (SuperMechEquipAffix.EnhanceEquip(SelectedActor))
             {
-                _detailText.text = $"强化成功！当前+{SuperMechEquipAffix.GetEnhanceLevel(SelectedActor)}";
+                _detailText.text = string.Format(LocalizedTextManager.getText("sm_ui_bag_enhance_success"), SuperMechEquipAffix.GetEnhanceLevel(SelectedActor));
             }
             else
             {
-                _detailText.text = $"强化失败（成功率{rate:F0%}，消耗{cost}₡）";
+                _detailText.text = string.Format(LocalizedTextManager.getText("sm_ui_bag_enhance_fail"), rate.ToString("F0%"), cost);
             }
             UpdateButtonStates();
         }

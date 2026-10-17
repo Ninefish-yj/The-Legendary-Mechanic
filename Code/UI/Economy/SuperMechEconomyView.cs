@@ -314,7 +314,7 @@ namespace SuperMech.Code
                     string color = c.isGodCompany ? "#ffd700" : (c.id == SuperMechCompany.BlackStarCorp ? "#4fc3f7" : "#81c784");
                     string tag = c.isGodCompany ? "[" + LocalizedTextManager.getText("sm_ui_economy_god_tag") + "]" : "";
                     string sym = string.IsNullOrEmpty(c.currencySymbol) ? "₡" : c.currencySymbol;
-                    string cname = string.IsNullOrEmpty(c.currencyName) ? "伊纳尔" : c.currencyName;
+                    string cname = string.IsNullOrEmpty(c.currencyName) ? LocalizedTextManager.getText("sm_ui_economy_inar") : c.currencyName;
                     sb.Append("<color=").Append(color).Append(">").Append(c.GetDisplayName()).Append(" ").Append(tag).Append("</color>\n");
                     sb.Append("  <color=#93A4BC>").Append(cname).Append("(").Append(sym).Append(")</color>\n");
                     sb.Append("  ").Append(LocalizedTextManager.getText("sm_ui_economy_treasury")).Append(" ").Append(sym).Append(c.treasury.ToString("N0")).Append("\n");

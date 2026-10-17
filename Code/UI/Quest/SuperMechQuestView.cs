@@ -79,7 +79,7 @@ namespace SuperMech.Code
             titleText.fontSize = 18;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.color = SuperMechUiSkin.CyanColor;
-            titleText.text = "任务 / 成就 / 声望";
+            titleText.text = LocalizedTextManager.getText("sm_ui_quest_title");
 
             // 关闭按钮
             var closeBtn = SuperMechUiSkin.MakeButton(_panel.transform, "X", 14, () => Close());
@@ -90,7 +90,7 @@ namespace SuperMech.Code
             closeRect.anchoredPosition = new Vector2(-15, -20);
 
             // 页签按钮
-            string[] tabs = { "任务", "成就", "声望" };
+            string[] tabs = { LocalizedTextManager.getText("sm_ui_quest_tab_quest"), LocalizedTextManager.getText("sm_ui_quest_tab_achievement"), LocalizedTextManager.getText("sm_ui_quest_tab_reputation") };
             for (int i = 0; i < tabs.Length; i++)
             {
                 int tabIdx = i;
@@ -144,14 +144,14 @@ namespace SuperMech.Code
             fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
 
             // v0.185 底部操作按钮：一键接取/交付
-            var acceptBtn = SuperMechUiSkin.MakeButton(_panel.transform, "一键接取", 12, () => AcceptAllQuests());
+            var acceptBtn = SuperMechUiSkin.MakeButton(_panel.transform, LocalizedTextManager.getText("sm_ui_quest_accept_all"), 12, () => AcceptAllQuests());
             var acceptRect = acceptBtn.GetComponent<RectTransform>();
             acceptRect.anchorMin = new Vector2(0, 0);
             acceptRect.anchorMax = new Vector2(0, 0);
             acceptRect.sizeDelta = new Vector2(120, 35);
             acceptRect.anchoredPosition = new Vector2(80, 20);
 
-            var turnInBtn = SuperMechUiSkin.MakeButton(_panel.transform, "一键交付", 12, () => TurnInAllQuests());
+            var turnInBtn = SuperMechUiSkin.MakeButton(_panel.transform, LocalizedTextManager.getText("sm_ui_quest_complete_all"), 12, () => TurnInAllQuests());
             var turnInRect = turnInBtn.GetComponent<RectTransform>();
             turnInRect.anchorMin = new Vector2(1, 0);
             turnInRect.anchorMax = new Vector2(1, 0);
@@ -166,7 +166,7 @@ namespace SuperMech.Code
             if (_contentText == null) return;
             if (_selectedActor == null)
             {
-                _contentText.text = "请先选择一个单位";
+                _contentText.text = LocalizedTextManager.getText("sm_ui_quest_select_unit");
                 return;
             }
 
@@ -179,14 +179,14 @@ namespace SuperMech.Code
         {
             var sb = new System.Text.StringBuilder();
             var available = SuperMechQuestSystem.GetAvailableQuests(_selectedActor);
-            sb.AppendLine($"<color=#E8C36A><b>可接取任务 ({available.Count})</b></color>");
+            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_quest_available"), available.Count));
             foreach (var q in available)
             {
                 string qname = LocalizedTextManager.getText(q.nameKey);
                 string qdesc = LocalizedTextManager.getText(q.descKey);
                 sb.AppendLine($"  • {qname}");
                 sb.AppendLine($"    <color=#93A4BC>{qdesc}</color>");
-                sb.AppendLine($"    奖励: {q.inalReward}₡ 经验:{q.xpReward}");
+                sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_quest_reward"), q.inalReward, q.xpReward));
             }
 
             // 进行中任务
@@ -196,7 +196,7 @@ namespace SuperMech.Code
             {
                 if (p.status == SuperMechQuestSystem.QuestStatus.Active) activeCount++;
             }
-            sb.AppendLine($"\n<color=#66ff99><b>进行中 ({activeCount})</b></color>");
+            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_quest_active"), activeCount));
             foreach (var p in progress.Values)
             {
                 if (p.status != SuperMechQuestSystem.QuestStatus.Active) continue;
@@ -210,13 +210,13 @@ namespace SuperMech.Code
             int completedCount = 0;
             foreach (var p in progress.Values)
                 if (p.status == SuperMechQuestSystem.QuestStatus.Completed) completedCount++;
-            sb.AppendLine($"\n<color=#FFD700>待交付: {completedCount}</color>");
+            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_quest_completed"), completedCount));
 
             // 已完成
             int doneCount = 0;
             foreach (var p in progress.Values)
                 if (p.status == SuperMechQuestSystem.QuestStatus.TurnedIn) doneCount++;
-            sb.AppendLine($"<color=#93A4BC>已交付: {doneCount}</color>");
+            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_quest_done"), doneCount));
 
             _contentText.text = sb.ToString();
         }
@@ -226,7 +226,7 @@ namespace SuperMech.Code
             var sb = new System.Text.StringBuilder();
             int unlocked = SuperMechQuestSystem.GetUnlockedCount(_selectedActor);
             int total = SuperMechQuestSystem.TotalAchievements;
-            sb.AppendLine($"<color=#E8C36A><b>成就进度: {unlocked}/{total}</b></color>\n");
+            sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_quest_achievement_progress"), unlocked, total));
 
             var allAch = SuperMechQuestSystem.GetAllAchievements();
             foreach (var ach in allAch)
@@ -238,7 +238,7 @@ namespace SuperMech.Code
                 string status = isUnlocked ? "✓" : "✗";
                 sb.AppendLine($"<color={color}>{status} {aname}</color>");
                 sb.AppendLine($"  <color=#93A4BC>{adesc}</color>");
-                sb.AppendLine($"  奖励: {ach.inalReward}₡");
+                sb.AppendLine(string.Format(LocalizedTextManager.getText("sm_ui_quest_achievement_reward"), ach.inalReward));
             }
             _contentText.text = sb.ToString();
         }
@@ -246,7 +246,7 @@ namespace SuperMech.Code
         private void RefreshReputation()
         {
             var sb = new System.Text.StringBuilder();
-            sb.AppendLine("<color=#E8C36A><b>势力声望</b></color>\n");
+            sb.AppendLine(LocalizedTextManager.getText("sm_ui_quest_reputation_title"));
 
             var factions = SuperMechFaction.GetAllFactions();
             foreach (var f in factions)

@@ -453,7 +453,7 @@ namespace SuperMech.Code
 
             try
             {
-                string result = repelled ? "击退" : "撤退";
+                string result = repelled ? LocalizedTextManager.getText("sm_ui_event_repelled") : LocalizedTextManager.getText("sm_ui_event_retreated");
                 new WorldLogMessage(asset, invasionCount.ToString(), SafeStr(kingName), result).add();
             }
             catch (System.Exception e)
