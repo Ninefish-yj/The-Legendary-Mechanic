@@ -24,50 +24,50 @@ namespace SuperMech.Code
             _initialized = true;
         }
 
-        public static void OpenKnowledge() { SuperMechKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
-        public static void OpenKnowledge(Actor a) { SuperMechKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
-        public static void OpenBag() { SuperMechBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
-        public static void OpenBag(Actor a) { SuperMechBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 680, 500, DrawBagContent); }
-        public static void OpenFusion() { SuperMechKnowledgeView.OverrideActor = null; SuperMechFusionView.OverrideActor = null; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
-        public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 500, DrawKnowledgeContent); }
-        public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
-        public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 500, DrawSpellContent); }
-        public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
-        public static void OpenCosmicRelic(Actor a) { SuperMechCosmicRelicView.OverrideActor = a; ToggleWindow("relic", "sm_ui_cr_title", 460, 420, DrawCosmicRelicContent); }
-        public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 480, 400, DrawDimensionContent); }
-        public static void OpenVirtualGenesis(Actor a) { SuperMechVirtualGenesisView.OverrideActor = a; ToggleWindow("virtualgenesis", "sm_ui_vg_title", 420, 380, DrawVirtualGenesisContent); }
-        public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 480, 520, DrawMechLegionContent); }
-        public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 520, 480, DrawBuildingContent); }
-        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 620, 460, DrawRankContent); }
-        public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 620, 500, DrawFactionContent); }
-        public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 520, DrawPlayerContent); }
-        public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 520, DrawWorldTreeContent); }
-        public static void OpenWorldBeyond() { ToggleWindow("worldbeyond", "sm_ui_worldbeyond_title", 680, 560, DrawWorldBeyondContent); }
-        public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 680, 520, DrawEconomyContent); }
-        public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 680, 520, DrawTechContent); }
-        public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
+        public static void OpenKnowledge() { SuperMechKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
+        public static void OpenKnowledge(Actor a) { SuperMechKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
+        public static void OpenBag() { SuperMechBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 578, 425, DrawBagContent); }
+        public static void OpenBag(Actor a) { SuperMechBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 578, 425, DrawBagContent); }
+        public static void OpenFusion() { SuperMechKnowledgeView.OverrideActor = null; SuperMechFusionView.OverrideActor = null; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
+        public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
+        public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 578, 425, DrawSpellContent); }
+        public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 578, 425, DrawSpellContent); }
+        public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 544, 408, DrawCraftContent); }
+        public static void OpenCosmicRelic(Actor a) { SuperMechCosmicRelicView.OverrideActor = a; ToggleWindow("relic", "sm_ui_cr_title", 391, 357, DrawCosmicRelicContent); }
+        public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 408, 340, DrawDimensionContent); }
+        public static void OpenVirtualGenesis(Actor a) { SuperMechVirtualGenesisView.OverrideActor = a; ToggleWindow("virtualgenesis", "sm_ui_vg_title", 357, 323, DrawVirtualGenesisContent); }
+        public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 408, 442, DrawMechLegionContent); }
+        public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 442, 408, DrawBuildingContent); }
+        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 527, 391, DrawRankContent); }
+        public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 527, 425, DrawFactionContent); }
+        public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 544, 442, DrawPlayerContent); }
+        public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 544, 442, DrawWorldTreeContent); }
+        public static void OpenWorldBeyond() { ToggleWindow("worldbeyond", "sm_ui_worldbeyond_title", 578, 476, DrawWorldBeyondContent); }
+        public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 578, 442, DrawEconomyContent); }
+        public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 578, 442, DrawTechContent); }
+        public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 612, 476, DrawStarContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
         /// <summary>v0.208 设置从星海总览移出，改为独立窗口</summary>
         public static void OpenSettings()
         {
-            ToggleWindow("settings", "sm_ui_settings_title", 520, 640, DrawSettingsContent);
+            ToggleWindow("settings", "sm_ui_settings_title", 442, 544, DrawSettingsContent);
         }
-        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 700, 600, SuperMechTab.DrawOverviewContent); }
+        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 595, 510, SuperMechTab.DrawOverviewContent); }
         /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
         public static void OpenOverview(Kingdom kingdom)
         {
             if (kingdom != null) SelectedKingdomId = kingdom.getID();
-            ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent);
+            ToggleWindow("overview", "sm_tab_panel_title", 612, 578, SuperMechTab.DrawOverviewContent);
         }
 
         /// <summary>v0.230 星海总览重构：标签重命名+合并冗余
-        /// 文明(全球对比) / 强者榜(全球超能者) / 组织(全球势力) / 宇宙(星际+高维) / 设置
+        /// 文明(全球对比) / 超能者排行榜(全球超能者) / 组织(全球势力) / 宇宙(星际+高维) / 设置
         /// 移除世界树独立标签，合并进宇宙标签</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
             ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 文明（全球对比表）
-            ("sm_ui_rank_window_title", DrawRankContent),            // 强者榜（全球超能者）
+            ("sm_ui_rank_window_title", DrawRankContent),            // 超能者排行榜（全球超能者）
             ("sm_ui_faction_window_title", DrawFactionContent),      // 组织（全球势力）
             ("sm_ui_worldbeyond_title", DrawUniverseContent),        // 宇宙（星际+高维存在）
             ("sm_ui_settings_title", DrawSettingsContent),           // 设置

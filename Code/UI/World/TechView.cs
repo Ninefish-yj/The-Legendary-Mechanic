@@ -14,8 +14,8 @@ namespace SuperMech.Code
     public static class TechView
     {
         private const string WindowId = "sm_tech_window";
-        private const float WindowWidth = 520f;
-        private const float WindowHeight = 420f;
+        private const float WindowWidth = 442f;
+        private const float WindowHeight = 357f;
         private const float NodeWidth = 80f;
         private const float NodeHeight = 28f;
         private const float NodeHPadding = 6f;
