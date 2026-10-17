@@ -613,7 +613,7 @@ namespace SuperMech.Code
             return text;
         }
 
-        /// <summary>创建按钮（三态SpriteSwap + 立体描边，默认正文14号字）</summary>
+        /// <summary>创建按钮（三态SpriteSwap + hover文字变金 + 立体描边，默认正文14号字）</summary>
         public static Button MakeButton(Transform parent, string text, int fontSize = 14, System.Action onClick = null)
         {
             var go = new GameObject("Button");
@@ -629,8 +629,104 @@ namespace SuperMech.Code
             btn.spriteState = spriteState;
             var btnText = MakeText(go.transform, text, fontSize, TextAnchor.MiddleCenter);
             btnText.color = TextColor;
+            // hover时文字变金色，增强交互反馈
+            var trigger = go.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+            var enterEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
+            enterEntry.callback.AddListener(_ => btnText.color = AccentColor);
+            trigger.triggers.Add(enterEntry);
+            var exitEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
+            exitEntry.callback.AddListener(_ => btnText.color = TextColor);
+            trigger.triggers.Add(exitEntry);
             if (onClick != null) btn.onClick.AddListener(() => onClick());
             return btn;
+        }
+
+        /// <summary>创建列表项（支持hover高亮 + 选中态左侧金色条）</summary>
+        public static (GameObject go, Image bgImg, Image selectBar, Text labelText) MakeListItem(Transform parent, string text, int fontSize = 13, float height = 40f)
+        {
+            var go = new GameObject("ListItem");
+            go.transform.SetParent(parent, false);
+            var rt = go.AddComponent<RectTransform>();
+            rt.sizeDelta = new Vector2(0, height);
+
+            // 背景（hover时变亮）
+            var bgImg = go.AddComponent<Image>();
+            bgImg.sprite = Card;
+            bgImg.type = Image.Type.Sliced;
+            bgImg.color = new Color(1, 1, 1, 0.6f);
+
+            // 选中态左侧金色条（默认隐藏）
+            var barGo = new GameObject("SelectBar");
+            barGo.transform.SetParent(go.transform, false);
+            var barRt = barGo.AddComponent<RectTransform>();
+            barRt.anchorMin = new Vector2(0, 0.5f);
+            barRt.anchorMax = new Vector2(0, 0.5f);
+            barRt.pivot = new Vector2(0, 0.5f);
+            barRt.sizeDelta = new Vector2(3f, height - 8f);
+            barRt.anchoredPosition = new Vector2(2f, 0);
+            var barImg = barGo.AddComponent<Image>();
+            barImg.color = AccentColor;
+            barGo.SetActive(false);
+
+            // 文字
+            var labelText = MakeText(go.transform, text, fontSize, TextAnchor.MiddleLeft);
+            var labelRt = labelText.GetComponent<RectTransform>();
+            labelRt.offsetMin = new Vector2(12f, 0);
+            labelRt.offsetMax = new Vector2(-8f, 0);
+
+            // hover效果
+            var trigger = go.AddComponent<UnityEngine.EventSystems.EventTrigger>();
+            var enterEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerEnter };
+            enterEntry.callback.AddListener(_ => bgImg.color = new Color(1, 1, 1, 1f));
+            trigger.triggers.Add(enterEntry);
+            var exitEntry = new UnityEngine.EventSystems.EventTrigger.Entry { eventID = UnityEngine.EventSystems.EventTriggerType.PointerExit };
+            exitEntry.callback.AddListener(_ => bgImg.color = new Color(1, 1, 1, 0.6f));
+            trigger.triggers.Add(exitEntry);
+
+            return (go, bgImg, barImg, labelText);
+        }
+
+        /// <summary>给面板添加外阴影（四向渐变阴影，提升立体感）</summary>
+        public static void AddPanelShadow(RectTransform target, float size = 8f)
+        {
+            // 底部阴影
+            var shadowGo = new GameObject("PanelShadow");
+            shadowGo.transform.SetParent(target, false);
+            shadowGo.transform.SetAsFirstSibling(); // 放在面板后面
+            var shadowRt = shadowGo.AddComponent<RectTransform>();
+            shadowRt.anchorMin = Vector2.zero;
+            shadowRt.anchorMax = Vector2.one;
+            shadowRt.offsetMin = new Vector2(-size, -size);
+            shadowRt.offsetMax = new Vector2(size, size);
+            var shadowImg = shadowGo.AddComponent<Image>();
+            shadowImg.sprite = MakeShadowSprite(size);
+            shadowImg.type = Image.Type.Sliced;
+            shadowImg.color = new Color(0, 0, 0, 0.5f);
+            shadowImg.raycastTarget = false;
+        }
+
+        private static Sprite _shadowSprite;
+        private static Sprite MakeShadowSprite(float size)
+        {
+            if (_shadowSprite != null) return _shadowSprite;
+            int s = 32;
+            var tex = new Texture2D(s, s, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var pixels = new Color[s * s];
+            for (int y = 0; y < s; y++)
+            {
+                for (int x = 0; x < s; x++)
+                {
+                    float edgeDist = Mathf.Min(x, y, s - 1 - x, s - 1 - y);
+                    float alpha = Mathf.Clamp01(edgeDist / 6f) * 0.6f;
+                    pixels[y * s + x] = new Color(0, 0, 0, alpha);
+                }
+            }
+            tex.SetPixels(pixels);
+            tex.Apply();
+            _shadowSprite = Sprite.Create(tex, new Rect(0, 0, s, s), new Vector2(0.5f, 0.5f), 100f, 0u, SpriteMeshType.FullRect, new Vector4(8, 8, 8, 8));
+            _shadowSprite.name = "SM_Shadow";
+            return _shadowSprite;
         }
 
         /// <summary>添加立体描边（顶高光+底阴影）</summary>

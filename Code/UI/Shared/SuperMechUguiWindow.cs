@@ -102,10 +102,16 @@ namespace SuperMech.Code
             int closeBtnSize = IsMobile ? MobileCloseBtnSize : CloseBtnSize;
             int closeBtnMargin = IsMobile ? 10 : CloseBtnMargin;
 
+            // 面板外阴影（放在背景后面，提升立体感）
+            SuperMechUiSkin.AddPanelShadow(gameObject.GetComponent<RectTransform>(), 10f);
+
             // 背景：纯色半透明深灰蓝
             _bgImage = gameObject.AddComponent<Image>();
             _bgImage.color = SuperMechUiSkin.BgColor;
             _bgImage.raycastTarget = true;
+
+            // 四个金色装饰角标（参考暗黑破坏神UI风格）
+            SuperMechUiSkin.AddCornerDecorations(gameObject.GetComponent<RectTransform>(), 14f, 3f);
 
             AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, BorderWidth), new Vector2(0, 0));
             AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, BorderWidth), new Vector2(0, 0));
