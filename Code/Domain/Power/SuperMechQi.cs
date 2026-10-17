@@ -202,8 +202,8 @@ namespace SuperMech.Code
         public static float GetQi(Actor a)
         {
             if (a == null) return 0;
-            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
-            if (ctx != null && ctx.qiCurrent > 0f) return ctx.qiCurrent;
+            // v0.237.2 修复：_qiMap是唯一权威源（AddQi/SpendQi/SetQi/AddQiMax都写它）。
+            // 之前ctx缓存优先导致UI读到过期气力（单位窗口/单位面板数值分裂）。
             float v;
             _qiMap.TryGetValue(a.id, out v);
             return v;
@@ -212,8 +212,7 @@ namespace SuperMech.Code
         public static float GetQiMax(Actor a)
         {
             if (a == null) return 0;
-            var ctx = SuperMechActorContextRegistry.TryGet(a.id);
-            if (ctx != null && ctx.qiMax > 0f) return ctx.qiMax;
+            // v0.237.2 同上：_qiMaxMap为唯一权威源，ctx仅作存档镜像
             float v;
             _qiMaxMap.TryGetValue(a.id, out v);
             return v;
@@ -240,6 +239,7 @@ namespace SuperMech.Code
             float max = GetQiMax(a);
             if (max <= 0) max = cur + amount;
             _qiMap[a.id] = Mathf.Min(cur + amount, max);
+            SyncQiContext(a);
         }
 
         public static void AddQiMax(Actor a, float amount)
@@ -309,7 +309,18 @@ namespace SuperMech.Code
                     spent += (stamina / 3f);
                 }
             }
+            SyncQiContext(a);
             return spent;
+        }
+
+        /// <summary>v0.237.2 把_qiMap最新值同步到ActorContext（ctx仅作存档/镜像，不再作读取源）</summary>
+        private static void SyncQiContext(Actor a)
+        {
+            if (a == null || a.id == null) return;
+            float v;
+            _qiMap.TryGetValue(a.id, out v);
+            var ctx = SuperMechActorContextRegistry.Get(a);
+            if (ctx != null) ctx.qiCurrent = v;
         }
 
         /// <summary>检查单位是否有任何阶位特质（F~X）</summary>
@@ -425,6 +436,7 @@ namespace SuperMech.Code
                     float newCur = Mathf.Min(qi + recovery, max);
                     _qiMap[a.id] = newCur;
                     qi = newCur;
+                    SyncQiContext(a);
 
                     int curLv = GetLevel(max);
                     float growthDecay = GetGrowthDecay(curLv);
