@@ -74,7 +74,6 @@ namespace SuperMech.Code
                 SafeRun("技能自动学习", () => SuperMechSkills.TickAutoLearnAll());
                 SafeRun("技能运行时", () => SuperMechSkillRuntime.Tick());
                 SafeRun("法术Buff过期", () => SuperMechBuffSystem.Tick());
-                SafeRun("降临者濒死保护", () => SuperMechConceptImmortal.TickGracePeriod());
                 SafeRun("超能者竞争", () => SuperMechAI.TickCompetition());
                 SafeRun("NPC自动修炼", () => SuperMechAI.TickNpcKnowledge());
                 SafeRun("自动访问圣所", () => SuperMechAI.TickVisitSanctuary());

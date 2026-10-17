@@ -19,9 +19,6 @@ namespace SuperMech.Code
         // 降临者重生频率限制：60秒内最多3次
         private static readonly System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<float>> _respawnTimestamps
             = new System.Collections.Generic.Dictionary<long, System.Collections.Generic.List<float>>();
-        // 濒死保护中的单位：ID -> 保护结束时间
-        private static readonly System.Collections.Generic.Dictionary<long, float> _gracePeriodUnits
-            = new System.Collections.Generic.Dictionary<long, float>();
         private const float RespawnWindow = 60f; // 时间窗口（秒）
         private const int MaxRespawnPerWindow = 3; // 窗口内最大重生次数
 
@@ -54,50 +51,6 @@ namespace SuperMech.Code
                 _respawnTimestamps[actorId] = timestamps;
             }
             timestamps.Add(UnityEngine.Time.time);
-        }
-
-        /// <summary>
-        /// 濒死保护：超过重生次数后，恢复10%生命值，冻结行动+无敌，等待窗口刷新
-        /// </summary>
-        internal static void EnterGracePeriod(Actor a)
-        {
-            try
-            {
-                a.data.health = Mathf.Max(1, (int)(a.getMaxHealth() * 0.1f));
-                a.data.stamina = (int)a.getMaxStamina();
-                a.is_ai_frozen = true; // 冻结AI，不能行动
-                a.addStatusEffect("invincible", RespawnWindow); // 无敌，其他单位不能攻击
-                _gracePeriodUnits[a.data.id] = UnityEngine.Time.time + RespawnWindow;
-                Debug.Log($"[超神机械师] 降临者 {a.name} 重生次数已达上限，进入濒死保护（冻结+无敌，60秒后恢复）");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogWarning($"[超神机械师] 濒死保护异常: {e.Message}");
-            }
-        }
-
-        /// <summary>
-        /// 检查并恢复濒死保护结束的单位（在UnifiedTick中调用）
-        /// </summary>
-        public static void TickGracePeriod()
-        {
-            if (_gracePeriodUnits.Count == 0) return;
-            float now = UnityEngine.Time.time;
-            var toRemove = new System.Collections.Generic.List<long>();
-            foreach (var kv in _gracePeriodUnits)
-            {
-                if (now >= kv.Value)
-                {
-                    toRemove.Add(kv.Key);
-                    var a = World.world.units.get(kv.Key);
-                    if (a != null && a.isAlive())
-                    {
-                        a.is_ai_frozen = false;
-                        Debug.Log($"[超神机械师] 降临者 {a.name} 濒死保护结束，恢复行动");
-                    }
-                }
-            }
-            foreach (var id in toRemove) _gracePeriodUnits.Remove(id);
         }
 
         /// <summary>信息态抹杀标记：被标记的单位死亡时不会触发概念重塑（真正死亡）</summary>
@@ -208,18 +161,18 @@ namespace SuperMech.Code
 
             try
             {
-                // 降临者（玩家）重生：死亡后立即复活，60秒内最多3次，超过则进入濒死保护等待刷新
+                // 降临者（玩家）重生：死亡后立即复活，60秒内最多3次，超过次数则真正死亡（死了就是死了，无锁血无敌）
                 if (__instance.hasTrait(SuperMechTraits.Descendant))
                 {
                     if (SuperMechConceptImmortal.CanRespawn(__instance.id))
                     {
                         RespawnDescendant(__instance);
                         SuperMechConceptImmortal.RecordRespawn(__instance.id);
-                        return false; // 阻止真正死亡
+                        return false; // 复活成功，阻止本次死亡
                     }
-                    // 超过次数：进入濒死保护，等窗口刷新后恢复正常重生
-                    SuperMechConceptImmortal.EnterGracePeriod(__instance);
-                    return false; // 阻止真正死亡
+                    // 超过窗口内重生上限：放行真正死亡
+                    Debug.Log($"[超神机械师] 降临者 {__instance.name} 60秒内重生已达上限，真正死亡");
+                    return true;
                 }
 
                 // 超神级资讯唯一·概念永生：普通死亡触发信息态扰动重塑

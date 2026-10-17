@@ -327,10 +327,12 @@ namespace SuperMech.Code
         {
             if (a == null || rankIdx < 0) return;
 
-            // v0.221 X阶（索引8）才是真正的不死不灭
+            // v0.239.3 X阶（索引8）不再自动加immortal锁血特质（死了就是死了），
+            // 改为寿命绵长（不会老死）但战斗受伤仍会死亡；不死不灭由"概念永生"专长以复活形式体现
             if (rankIdx >= 8)
             {
-                if (!a.hasTrait("immortal")) a.addTrait("immortal");
+                if (a.stats != null)
+                    a.stats["lifespan"] = Mathf.Max(a.stats.TryGetValue("lifespan", out float cur) ? cur : 100f, 99999f);
                 _appliedLifespanRank[a.id] = rankIdx;
                 return;
             }
@@ -358,7 +360,7 @@ namespace SuperMech.Code
             // v0.221 9阶位寿命加成调整
             return rankIdx switch
             {
-                >= 8 => 10000f,  // X级：+1万岁（实际immortal特质不死不灭）
+                >= 8 => 10000f,  // X级：+1万岁（寿命层面不死不灭，战斗仍可被杀死；v0.239.3 不再加immortal锁血）
                 >= 7 => 7000f,   // 巅峰超A级：+7000岁
                 >= 6 => 5000f,   // 超A级：+5000岁（原著：最少数百上千年，普通超A约数千年）
                 >= 5 => 2000f,   // A级（天灾级）：+2000岁（原著"最少的也能活个数百上千年"）

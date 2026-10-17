@@ -147,7 +147,7 @@ namespace SuperMech.Code
                 hpMult = 6.0f,
                 dmgMult = 3.5f,
                 spdMult = 1.0f,
-                traits = new[] { "aggressive", "strong", "tough", "giant", "immortal" },
+                traits = new[] { "aggressive", "strong", "tough", "giant", "regeneration" }, // v0.239.3 去掉immortal锁血，改再生
                 cost = 5000,
                 icon = "ui/Icons/iconShield"
             },
