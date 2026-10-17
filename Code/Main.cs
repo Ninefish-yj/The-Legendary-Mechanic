@@ -50,6 +50,12 @@ namespace SuperMech
             SuperMechChoreographer.Init(); // v0.213 战斗动作编排器
             _ = SuperMechUpdateDriver.Instance; // 初始化全局Update驱动
 
+            // v0.231 宇宙深化系统初始化
+            PlanetExplorationManager.Init();
+            TradeManager.Init();
+            StationManager.Init();
+            TechTreeManager.Init();
+
             Debug.Log("[超神机械师] Phase 1 系统注册完成");
         }
 
@@ -134,6 +140,12 @@ namespace SuperMech
                 }
                 _lastTickGameTime += tickCount * SuperMechConfig.TickInterval;
             }
+
+            // v0.231 宇宙深化系统实时tick（不依赖游戏倍速）
+            float dt = Time.deltaTime;
+            try { PlanetExplorationManager.MarketTick(dt); } catch { }
+            try { StationManager.ProductionTick(dt); } catch { }
+            try { TechTreeManager.ResearchTick(dt); } catch { }
         }
 
         /// <summary>

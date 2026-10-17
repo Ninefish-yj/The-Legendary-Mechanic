@@ -674,6 +674,12 @@ namespace SuperMech.Code
 
             // 科幻风格外框装饰（最上层）
             AddSciFiFrame();
+
+            // v0.231 宇宙深化UI面板（探索/贸易/太空站/科技树）
+            var expansionGo = new GameObject("SpaceExpansionUI");
+            expansionGo.transform.SetParent(transform, false);
+            expansionGo.transform.SetAsLastSibling();
+            expansionGo.AddComponent<SuperMechSpaceExpansionUI>();
         }
 
         /// <summary>殖民地总览弹窗</summary>
@@ -1944,6 +1950,13 @@ namespace SuperMech.Code
                     }, ref btnY, btnHeight, btnGap);
                 }
             }
+
+            // v0.231 宇宙深化入口（所有星球都显示）
+            CreateActionButton(LocalizedTextManager.getText("sm_ui_space_expansion"), new Color(0.15f, 0.6f, 0.7f, 0.9f), () =>
+            {
+                if (SuperMechSpaceExpansionUI.Instance != null)
+                    SuperMechSpaceExpansionUI.Instance.Open(p.id);
+            }, ref btnY, btnHeight, btnGap);
 
             // 主世界：显示驻留单位数量和资源
             if (isMain)
