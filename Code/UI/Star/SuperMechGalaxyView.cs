@@ -244,7 +244,9 @@ namespace SuperMech.Code
             glowRect.pivot = new Vector2(0.5f, 0.5f);
             glowRect.sizeDelta = new Vector2(600, 600);
             var glowImg = glowGo.AddComponent<Image>();
+            glowImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
             glowImg.color = new Color(0.3f, 0.4f, 0.6f, 0.15f);
+            glowImg.raycastTarget = false;
 
             // 随机星点
             var rng = new System.Random(GalaxyManager.Galaxy?.seed ?? 12345);
@@ -284,13 +286,14 @@ namespace SuperMech.Code
                 // 坐标映射：银河坐标(-500~500) → 地图坐标(-1000~1000)
                 nodeRect.anchoredPosition = new Vector2(sys.x * 2, sys.y * 2);
 
-                // 星系图标（恒星）
+                // 星系图标（恒星）- 用圆形光晕sprite，不用默认方块
                 var iconGo = new GameObject("Icon");
                 iconGo.transform.SetParent(nodeGo.transform, false);
                 var iconRect = iconGo.AddComponent<RectTransform>();
                 iconRect.anchorMin = Vector2.zero;
                 iconRect.anchorMax = Vector2.one;
                 var iconImg = iconGo.AddComponent<Image>();
+                iconImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
                 Color nodeColor = sys.discovered ?
                     new Color(1f, 0.9f, 0.6f, 1f) :
                     new Color(0.4f, 0.4f, 0.5f, 0.6f);
@@ -301,7 +304,7 @@ namespace SuperMech.Code
                     nodeColor = new Color(0.4f, 0.8f, 1f, 1f);
                 iconImg.color = nodeColor;
 
-                // 光晕
+                // 光晕 - 圆形
                 var glowGo = new GameObject("Glow");
                 glowGo.transform.SetParent(nodeGo.transform, false);
                 var glowRect = glowGo.AddComponent<RectTransform>();
@@ -310,7 +313,9 @@ namespace SuperMech.Code
                 glowRect.pivot = new Vector2(0.5f, 0.5f);
                 glowRect.sizeDelta = new Vector2(NODE_SIZE * 2, NODE_SIZE * 2);
                 var glowImg = glowGo.AddComponent<Image>();
+                glowImg.sprite = PlanetSpriteGenerator.GetGlowSprite();
                 glowImg.color = new Color(nodeColor.r, nodeColor.g, nodeColor.b, 0.3f);
+                glowImg.raycastTarget = false;
 
                 // 名称标签
                 var nameGo = new GameObject("Name");
