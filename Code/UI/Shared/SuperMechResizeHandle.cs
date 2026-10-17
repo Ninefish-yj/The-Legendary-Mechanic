@@ -77,6 +77,36 @@ namespace SuperMech.Code
             float newW = Mathf.Max(MinWidth, _startSize.x + delta.x);
             float newH = Mathf.Max(MinHeight, _startSize.y + delta.y);
             TargetRect.sizeDelta = new Vector2(newW, newH);
+            // v0.237.8 缩放后把原版关闭按钮钉回右上角（防跑位）
+            FixCloseButton();
+        }
+
+        /// <summary>
+        /// 原版关闭按钮是窗口 Background 的子物体。正常情况下它锚定在右上角、会随缩放自动跟随；
+        /// 这里做幂等保障：若发现右上角有带Button的关闭按钮（名字含close，或位于右上区域），
+        /// 强制把它锚定到右上角，确保窗口放大/缩小后关闭按钮始终在角上。
+        /// </summary>
+        private void FixCloseButton()
+        {
+            if (TargetRect == null) return;
+            foreach (Transform child in TargetRect)
+            {
+                if (child == null || child.GetComponent<Button>() == null) continue;
+                string n = child.name ?? "";
+                bool nameIsClose = n.ToLower().Contains("close") || n.ToLower().Contains("closer") || n == "X";
+                RectTransform r = child as RectTransform;
+                if (r == null) continue;
+                // 位置特征：当前锚点/本地坐标在右上区域
+                bool atTopRight = r.anchorMin.x > 0.5f && r.anchorMin.y > 0.5f
+                                  || (r.anchorMin.x == 1f && r.anchorMin.y == 1f)
+                                  || (r.localPosition.x > 0f && r.localPosition.y > 0f);
+                if (!nameIsClose && !atTopRight) continue;
+                // 锚定到右上角，保持原偏移量（按钮中心距右上角约半宽+边距）
+                r.anchorMin = new Vector2(1f, 1f);
+                r.anchorMax = new Vector2(1f, 1f);
+                r.pivot = new Vector2(0.5f, 0.5f);
+                r.anchoredPosition = new Vector2(-(r.sizeDelta.x * 0.5f + 6f), -(r.sizeDelta.y * 0.5f + 6f));
+            }
         }
 
         public void OnPointerEnter(PointerEventData eventData)
