@@ -34,6 +34,8 @@ namespace SuperMech.Code
             public string civilizationTechData = "";  // 文明科技点+科技等级（JSON序列化）
             // === v0.185 任务/成就/声望存档 ===
             public string questData = "";  // 任务进度+成就+声望（JSON序列化）
+            // === v0.234 新科技系统存档 ===
+            public string techSystemData = "";  // 新科技系统（研究进度+已研究+材料发现，JSON序列化）
         }
 
         [Serializable]

@@ -196,6 +196,8 @@ namespace SuperMech.Code
                 data.civilizationTechData = SuperMechCivilization.SerializeForSave();
                 // 保存任务/成就/声望数据（v0.185）
                 data.questData = JsonConvert.SerializeObject(SuperMechQuestSystem.Save());
+                // 保存新科技系统数据（v0.234）
+                data.techSystemData = TechSystem.Save();
                 string json = JsonConvert.SerializeObject(data, Formatting.Indented);
                 File.WriteAllText(GetSavePath(), json);
                 Debug.Log($"[超神机械师] 存档保存：{data.actors.Count}个单位数据");
@@ -284,6 +286,12 @@ namespace SuperMech.Code
                         if (questSave != null) SuperMechQuestSystem.Load(questSave);
                     }
                     catch (Exception e) { Debug.LogWarning($"[超神机械师] 任务数据加载失败: {e.Message}"); }
+                }
+                // 加载新科技系统数据（v0.234）
+                if (!string.IsNullOrEmpty(data.techSystemData))
+                {
+                    try { TechSystem.Load(data.techSystemData); }
+                    catch (Exception e) { Debug.LogWarning($"[超神机械师] 新科技系统加载失败: {e.Message}"); }
                 }
                 _pendingLoad = data;
                 _loadPending = true;

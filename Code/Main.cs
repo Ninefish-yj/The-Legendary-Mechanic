@@ -56,6 +56,9 @@ namespace SuperMech
             StationManager.Init();
             TechTreeManager.Init();
 
+            // v0.234 新科技系统初始化
+            TechSystem.Init();
+
             Debug.Log("[超神机械师] Phase 1 系统注册完成");
         }
 

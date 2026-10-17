@@ -88,6 +88,8 @@ namespace SuperMech.Code
                 SafeRun("星际战争AI", () => SuperMechStarWarAI.Tick());
                 SafeRun("公司AI", () => SuperMechCompanyAI.Tick());
                 SafeRun("文明战略AI", () => SuperMechCivStrategyAI.Tick());
+                // v0.234 新科技系统：每年研究点产出+研究推进+材料发现+AI选研究
+                SafeRun("新科技系统", () => TechSystem.YearlyTick());
                 SafeRun("外交AI", () => SuperMechDiplomacyAI.Tick());
                 SafeRun("文化AI", () => SuperMechCultureAI.Tick());
                 SafeRun("人口AI", () => SuperMechPopulationAI.Tick());
@@ -265,6 +267,7 @@ namespace SuperMech.Code
             try { SuperMechSupermA.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechSupermA"); }
             try { SuperMechInal.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechInal"); }
             try { SuperMechTech.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechTech"); }
+            try { TechSystem.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: TechSystem"); }
             try { SuperMechStarSystem.ClearAll(); } catch { Debug.LogWarning("[超神机械师] 清理数据失败: SuperMechStarSystem"); }
             try { SuperMechEventBus.Clear(); } catch { Debug.LogWarning("[超神机械师] 清理事件总线失败"); }
         }

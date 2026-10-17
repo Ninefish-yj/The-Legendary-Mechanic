@@ -4003,5 +4003,14 @@
   "sm_ui_idle": "（空闲）",
   "sm_ui_researched_count": "已研究",
   "sm_ui_research_btn": "研究",
-  "sm_ui_can_research": "可研究"
+  "sm_ui_can_research": "可研究",
+  "sm_era_stone": "石器时代",
+  "sm_era_bronze": "青铜时代",
+  "sm_era_iron": "铁器时代",
+  "sm_era_medieval": "中古时代",
+  "sm_era_industrial": "工业时代",
+  "sm_era_information": "信息时代",
+  "sm_era_interstellar": "星际时代",
+  "sm_era_cosmic": "宇宙时代",
+  "sm_era_super": "超能时代"
 }
