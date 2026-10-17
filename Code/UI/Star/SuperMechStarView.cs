@@ -1262,6 +1262,20 @@ namespace SuperMech.Code
                 _planetMoons[p.id] = moons;
             }
 
+            // v0.232 点击交互：透明Image作为点击区域+Button绑定选中事件
+            var hitGo = new GameObject("HitArea");
+            hitGo.transform.SetParent(nodeGo.transform, false);
+            var hitRect = hitGo.AddComponent<RectTransform>();
+            hitRect.anchorMin = Vector2.zero; hitRect.anchorMax = Vector2.one;
+            hitRect.offsetMin = new Vector2(-10, -10); // 点击区域比视觉大10px，更容易点中
+            hitRect.offsetMax = new Vector2(10, 10);
+            var hitImg = hitGo.AddComponent<Image>();
+            hitImg.color = new Color(0, 0, 0, 0); // 完全透明
+            hitImg.raycastTarget = true;
+            var hitBtn = hitGo.AddComponent<Button>();
+            string planetId = p.id;
+            hitBtn.onClick.AddListener(() => SelectPlanet(planetId));
+
             _planetNodes[p.id] = nodeGo;
         }
 
