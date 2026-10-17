@@ -48,10 +48,10 @@ namespace SuperMech.Code
                 int techLevel = SuperMechCivilization.GetTechLevelFromKingdom(kingdom);
                 float techPoints = SuperMechCivilization.GetTechPointsFromKingdom(kingdom);
 
-                AddRow(__instance, LocalizedTextManager.getText("sm_ui_civ_level"),
+                AddRow(__instance, "sm_ui_civ_level",
                     SuperMechCivilization.GetLevelName(civLevel), "iconKingdom");
 
-                AddRow(__instance, LocalizedTextManager.getText("sm_ui_tech_level"),
+                AddRow(__instance, "sm_ui_tech_level",
                     $"Lv{techLevel} ({techPoints:F0})", "iconAge");
 
                 // === 超能者统计 ===
@@ -74,11 +74,11 @@ namespace SuperMech.Code
                 }
 
                 string superCount = $"A:{countA} S:{countS} SS:{countSS} X:{countX}";
-                AddRow(__instance, LocalizedTextManager.getText("sm_ui_super_count"), superCount, "iconSword");
+                AddRow(__instance, "sm_ui_super_count", superCount, "iconSword");
 
                 if (guardian != null)
                 {
-                    AddRow(__instance, LocalizedTextManager.getText("sm_ui_civ_guardian"),
+                    AddRow(__instance, "sm_ui_civ_guardian",
                         guardian.data.name, "iconKings");
                 }
 
@@ -94,7 +94,7 @@ namespace SuperMech.Code
                 }
                 if (colonyCount > 0)
                 {
-                    AddRow(__instance, LocalizedTextManager.getText("sm_ui_colony_count"),
+                    AddRow(__instance, "sm_ui_colony_count",
                         colonyCount.ToString(), "iconCamp");
                 }
 
@@ -103,32 +103,32 @@ namespace SuperMech.Code
                 float culturePower = SuperMechCultureAI.GetCulturePower(kid);
                 if (culturePower > 0)
                 {
-                    AddRow(__instance, LocalizedTextManager.getText("sm_ui_culture_power"),
+                    AddRow(__instance, "sm_ui_culture_power",
                         culturePower.ToString("F1"), "iconBook");
                 }
 
                 string strategy = SuperMechCivStrategyAI.GetStrategyName(kid);
                 if (!string.IsNullOrEmpty(strategy) && strategy != "None")
                 {
-                    AddRow(__instance, LocalizedTextManager.getText("sm_ui_civ_strategy"),
+                    AddRow(__instance, "sm_ui_civ_strategy",
                         strategy, "iconEye");
                 }
 
                 // === 模组功能按钮区（和单位面板操作逻辑一致：点按钮开对应窗口）===
                 // 科技树（v0.235 新科技树UI）
-                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_civ_tech_tree"),
+                AddFuncButton(__instance, "sm_ui_civ_tech_tree",
                     () => { TechView.Open(kid); });
 
                 // 经济管理
-                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_economy_title"),
+                AddFuncButton(__instance, "sm_ui_economy_title",
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenEconomy(); });
 
                 // 建筑管理
-                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_building_title"),
+                AddFuncButton(__instance, "sm_ui_building_title",
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenBuilding(); });
 
                 // 势力外交
-                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_faction_window_title"),
+                AddFuncButton(__instance, "sm_ui_faction_window_title",
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenFaction(); });
 
                 // 注：星海总览是全局面板，不在单个王国面板中提供入口（神权栏已有入口）

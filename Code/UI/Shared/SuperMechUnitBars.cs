@@ -124,21 +124,28 @@ namespace SuperMech.Code
                     Sprite qiSprite = SuperMechUiSkin.QiIcon;
                     if (qiSprite != null)
                     {
-                        Transform iconTransform = bar.transform.Find("icon") ?? bar.transform.Find("Icon");
-                        if (iconTransform != null)
+                        // v0.240.1 强制替换所有子物体图标：复制mana条时可能有多个Image子物体
+                        int replaced = 0;
+                        foreach (Image img in bar.GetComponentsInChildren<Image>(true))
                         {
-                            Image iconImage = iconTransform.GetComponent<Image>();
-                            if (iconImage != null) iconImage.sprite = qiSprite;
-                        }
-                        else
-                        {
-                            foreach (Image img in bar.GetComponentsInChildren<Image>())
+                            if (img == barImage) continue;
+                            if (img.gameObject == bar.gameObject) continue;
+                            // 跳过背景框（通常是bar的父级或mask），只替换小图标
+                            RectTransform ir = img.GetComponent<RectTransform>();
+                            if (ir != null && ir.rect.width > 0 && ir.rect.width < 40f)
                             {
-                                if (img != barImage && img.gameObject != bar.gameObject)
-                                {
-                                    img.sprite = qiSprite;
-                                    break;
-                                }
+                                img.sprite = qiSprite;
+                                replaced++;
+                            }
+                        }
+                        if (replaced == 0)
+                        {
+                            // 兜底：按名字找icon
+                            Transform iconTransform = bar.transform.Find("icon") ?? bar.transform.Find("Icon");
+                            if (iconTransform != null)
+                            {
+                                Image iconImage = iconTransform.GetComponent<Image>();
+                                if (iconImage != null) iconImage.sprite = qiSprite;
                             }
                         }
                     }
@@ -146,6 +153,25 @@ namespace SuperMech.Code
                 catch (System.Exception)
                 {
                     // 图标替换失败不影响功能
+                }
+
+                // v0.240.1 清理复制过来的法力tooltip：遍历所有子物体移除Tooltip组件
+                try
+                {
+                    var tooltips = bar.GetComponentsInChildren<MonoBehaviour>(true);
+                    foreach (var mb in tooltips)
+                    {
+                        if (mb == null) continue;
+                        string typeName = mb.GetType().Name;
+                        if (typeName.Contains("Tooltip") || typeName.Contains("Tip"))
+                        {
+                            Object.Destroy(mb);
+                        }
+                    }
+                }
+                catch (System.Exception)
+                {
+                    // tooltip清理失败不影响功能
                 }
 
                 // 重建布局（关键：让Layout Group重新计算所有子对象位置）
