@@ -96,6 +96,13 @@ namespace SuperMech.Code
             RectTransform bgRect = background.GetComponent<RectTransform>();
             bgRect.sizeDelta = new Vector2(width, height);
 
+            // v0.238.8 修复：原版CreateEmptyWindow默认位置偏左，会盖住游戏左侧导航（组织/宇宙/设置点不了）
+            // 创建后强制居中锚定；窗口仍可拖拽（原版拖拽组件在Background上）
+            bgRect.anchorMin = new Vector2(0.5f, 0.5f);
+            bgRect.anchorMax = new Vector2(0.5f, 0.5f);
+            bgRect.pivot = new Vector2(0.5f, 0.5f);
+            bgRect.anchoredPosition = Vector2.zero;
+
             // 创建内容区（在Background下，标题栏下方，四周留边距）
             GameObject contentGo = new GameObject("Content");
             contentGo.transform.SetParent(background, false);
