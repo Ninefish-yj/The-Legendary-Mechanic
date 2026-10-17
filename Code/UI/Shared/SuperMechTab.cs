@@ -131,8 +131,9 @@ namespace SuperMech.Code
             colors.fadeDuration = 0.08f;
             btn.colors = colors;
 
-            var label = SuperMechUiSkin.MakeText(go.transform, text, 13, TextAnchor.MiddleCenter);
-            label.color = active ? new Color(0.95f, 0.90f, 0.75f) : new Color(0.65f, 0.58f, 0.45f);
+            var label = SuperMechUiSkin.MakeText(go.transform, text, 14, TextAnchor.MiddleCenter);
+            label.color = active ? new Color(0.98f, 0.93f, 0.78f) : new Color(0.78f, 0.70f, 0.55f);
+            label.fontStyle = FontStyle.Bold;
             var lr = label.GetComponent<RectTransform>();
             lr.offsetMin = new Vector2(6, 0);
             lr.offsetMax = new Vector2(-6, 0);

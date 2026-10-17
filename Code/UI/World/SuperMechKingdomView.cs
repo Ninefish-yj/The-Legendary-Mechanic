@@ -13,6 +13,8 @@ namespace SuperMech.Code
         private RectTransform _listContent;
         private Text _countText;
         private Text _emptyText;
+        private Text _emptyHintText;
+        private GameObject _emptyStateGo;
         private ScrollRect _scroll;
 
         void Awake() { try { BuildLayout(); } catch (System.Exception e) { Debug.LogError("[超神机械师] KingdomView初始化失败: " + e); } }
@@ -75,26 +77,57 @@ namespace SuperMech.Code
             _scroll.vertical = true;
             _scroll.horizontal = false;
 
+            // 空状态：挂在滚动区上，居中显示（v0.237.2 修复：原来挂在Content里导致文字跑位）
+            var emptyGo = new GameObject("EmptyState");
+            emptyGo.transform.SetParent(scrollGo.transform, false);
+            var emptyRect = emptyGo.AddComponent<RectTransform>();
+            emptyRect.anchorMin = Vector2.zero;
+            emptyRect.anchorMax = Vector2.one;
+            emptyRect.offsetMin = new Vector2(40, 40);
+            emptyRect.offsetMax = new Vector2(-40, -40);
+            var emptyBg = emptyGo.AddComponent<Image>();
+            emptyBg.sprite = SuperMechUiSkin.Card;
+            emptyBg.type = Image.Type.Sliced;
+            emptyBg.color = new Color(0.06f, 0.08f, 0.14f, 0.72f);
+            emptyBg.raycastTarget = false;
+
+            var emptyVlg = emptyGo.AddComponent<VerticalLayoutGroup>();
+            emptyVlg.padding = new RectOffset(16, 16, 14, 14);
+            emptyVlg.spacing = 8;
+            emptyVlg.childAlignment = TextAnchor.MiddleCenter;
+            emptyVlg.childControlWidth = true;
+            emptyVlg.childControlHeight = false;
+            emptyVlg.childForceExpandWidth = true;
+            emptyVlg.childForceExpandHeight = false;
+
+            _emptyStateGo = emptyGo;
             _emptyText = new GameObject("Empty").AddComponent<Text>();
-            _emptyText.transform.SetParent(content.transform, false);
+            _emptyText.transform.SetParent(emptyGo.transform, false);
             _emptyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            _emptyText.fontSize = 12;
-            _emptyText.color = new Color(0.6f, 0.65f, 0.75f);
+            _emptyText.fontSize = 14;
+            _emptyText.fontStyle = FontStyle.Bold;
+            _emptyText.color = new Color(0.85f, 0.75f, 0.55f);
             _emptyText.alignment = TextAnchor.MiddleCenter;
             _emptyText.text = LocalizedTextManager.getText("sm_ui_kingdom_none");
-            var emptyRect = _emptyText.GetComponent<RectTransform>();
-            emptyRect.anchorMin = new Vector2(0, 0.5f);
-            emptyRect.anchorMax = new Vector2(1, 0.5f);
-            emptyRect.sizeDelta = new Vector2(0, 30);
+
+            _emptyHintText = new GameObject("EmptyHint").AddComponent<Text>();
+            _emptyHintText.transform.SetParent(emptyGo.transform, false);
+            _emptyHintText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _emptyHintText.fontSize = 11;
+            _emptyHintText.color = new Color(0.55f, 0.6f, 0.7f);
+            _emptyHintText.alignment = TextAnchor.MiddleCenter;
+            _emptyHintText.text = LocalizedTextManager.getText("sm_ui_kingdom_empty_hint");
+            var hintRect = _emptyHintText.GetComponent<RectTransform>();
+            hintRect.sizeDelta = new Vector2(0, 20);
         }
 
         private void RefreshList()
         {
             if (_listContent == null || _countText == null || _emptyText == null) return;
+            // v0.237.2 空态已挂在滚动区上，Content里不再有Empty子对象，直接全清
             for (int i = _listContent.childCount - 1; i >= 0; i--)
             {
-                var child = _listContent.GetChild(i);
-                if (child.name != "Empty") Destroy(child.gameObject);
+                Destroy(_listContent.GetChild(i).gameObject);
             }
 
             var kingdoms = new List<Kingdom>();
@@ -108,7 +141,7 @@ namespace SuperMech.Code
             }
 
             _countText.text = $"{LocalizedTextManager.getText("sm_ui_kingdom_total")}: {kingdoms.Count}";
-            _emptyText.gameObject.SetActive(kingdoms.Count == 0);
+            if (_emptyStateGo != null) _emptyStateGo.SetActive(kingdoms.Count == 0);
 
             // 按人口排序
             kingdoms.Sort((a, b) => b.getPopulationTotal().CompareTo(a.getPopulationTotal()));
@@ -149,7 +182,7 @@ namespace SuperMech.Code
             nameText.fontSize = 14;
             nameText.color = SuperMechUiSkin.CyanColor;
             nameText.alignment = TextAnchor.UpperLeft;
-            nameText.text = $"<b>{k.data.name}</b>  <size=10><color=#99A8C2>王:{kingName}</color></size>";
+            nameText.text = $"<b>{k.data.name}</b>  <size=10><color=#99A8C2>{LocalizedTextManager.getText("sm_ui_king")}:{kingName}</color></size>";
             var nameRect = nameText.GetComponent<RectTransform>();
             nameRect.anchorMin = new Vector2(0, 0);
             nameRect.anchorMax = new Vector2(0.45f, 1);
@@ -179,8 +212,8 @@ namespace SuperMech.Code
             int techLevel = SuperMechCivilization.GetTechLevelFromKingdom(k);
             int superCount = CountSuperUnits(k);
 
-            string stats = $"人口 {population}    城市 {cityCount}    军力 {warriors}\n" +
-                           $"科技 Lv{techLevel}    超能者 {superCount}";
+            string stats = $"{LocalizedTextManager.getText("sm_ui_population")} {population}    {LocalizedTextManager.getText("sm_ui_city")} {cityCount}    {LocalizedTextManager.getText("sm_ui_military")} {warriors}\n" +
+                           $"{LocalizedTextManager.getText("sm_ui_tech_lv")} Lv{techLevel}    {LocalizedTextManager.getText("sm_ui_supera")} {superCount}";
             var statsText = new GameObject("Stats").AddComponent<Text>();
             statsText.transform.SetParent(row.transform, false);
             statsText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
