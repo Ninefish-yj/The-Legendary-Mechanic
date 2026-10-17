@@ -26,8 +26,8 @@ namespace SuperMech.Code
             vpRect.offsetMin = Vector2.zero;
             vpRect.offsetMax = Vector2.zero;
             var vpImg = viewportGo.AddComponent<Image>();
-            vpImg.color = new Color(0, 0, 0, 0);
-            viewportGo.AddComponent<Mask>().showMaskGraphic = false;
+            vpImg.color = new Color(0.08f, 0.10f, 0.16f, 0.95f);  // v0.222 明显背景色，避免和总览背景混为一体
+            viewportGo.AddComponent<Mask>().showMaskGraphic = true;
 
             var contentGo = new GameObject("SettingsContent");
             contentGo.transform.SetParent(viewportGo.transform, false);
@@ -162,9 +162,7 @@ namespace SuperMech.Code
             var go = new GameObject("Section", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.sprite = SuperMechUiSkin.Section;
-            img.type = Image.Type.Simple;
-            img.color = Color.white;
+            img.color = new Color(0.20f, 0.25f, 0.36f, 0.95f);  // v0.222 纯色，不依赖运行时Sprite
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);
@@ -190,9 +188,7 @@ namespace SuperMech.Code
             var go = new GameObject("Btn_" + name, typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.sprite = SuperMechUiSkin.Card;
-            img.type = Image.Type.Simple;
-            img.color = Color.white;
+            img.color = bgColor;  // v0.222 纯色，不依赖运行时Sprite
             var btn = go.GetComponent<Button>();
             btn.onClick.AddListener(() => onClick?.Invoke());
             var r = go.GetComponent<RectTransform>();
@@ -234,9 +230,7 @@ namespace SuperMech.Code
             var go = new GameObject("Toggle_" + name, typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.sprite = SuperMechUiSkin.Card;
-            img.type = Image.Type.Simple;
-            img.color = Color.white;
+            img.color = new Color(0.14f, 0.18f, 0.28f, 0.95f);  // v0.222 纯色，不依赖运行时Sprite
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);
