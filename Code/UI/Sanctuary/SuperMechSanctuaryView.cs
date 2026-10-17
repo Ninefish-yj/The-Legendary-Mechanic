@@ -138,7 +138,7 @@ namespace SuperMech.Code
             backRect.anchoredPosition = new Vector2(12, 0);
             var backImg = backGo.AddComponent<Image>();
             backImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            backImg.type = Image.Type.Sliced;
+            backImg.type = Image.Type.Simple;
             backImg.color = Color.white;
             var backBtn = backGo.AddComponent<Button>();
             var backText = SuperMechUiSkin.MakeText(backGo.transform,
@@ -152,7 +152,7 @@ namespace SuperMech.Code
             backTextRect.offsetMax = Vector2.zero;
             backBtn.onClick.AddListener(Close);
 
-            // 右上角X关闭按钮
+            // 右上角X关闭按钮（最右边）
             var closeGo = new GameObject("CloseBtn");
             closeGo.transform.SetParent(topGo.transform, false);
             var closeRect = closeGo.AddComponent<RectTransform>();
@@ -184,9 +184,9 @@ namespace SuperMech.Code
             titleRect.anchorMin = Vector2.zero;
             titleRect.anchorMax = Vector2.one;
             titleRect.offsetMin = new Vector2(140, 0);
-            titleRect.offsetMax = new Vector2(-140, 0);
+            titleRect.offsetMax = new Vector2(-180, 0);
 
-            // 信息态库按钮
+            // 信息态库按钮（关闭按钮左边）
             var infoGo = new GameObject("InfoStateBtn");
             infoGo.transform.SetParent(topGo.transform, false);
             var infoRect = infoGo.AddComponent<RectTransform>();
@@ -194,7 +194,7 @@ namespace SuperMech.Code
             infoRect.anchorMax = new Vector2(1, 0.5f);
             infoRect.pivot = new Vector2(1, 0.5f);
             infoRect.sizeDelta = new Vector2(120, 34);
-            infoRect.anchoredPosition = new Vector2(-12, 0);
+            infoRect.anchoredPosition = new Vector2(-50, 0);
             var infoImg = infoGo.AddComponent<Image>();
             infoImg.sprite = SuperMechUiSkin.Card;
             infoImg.type = Image.Type.Sliced;
@@ -575,7 +575,8 @@ namespace SuperMech.Code
             backRect.sizeDelta = new Vector2(100, 30);
             backRect.anchoredPosition = new Vector2(12, -8);
             var backImg = backGo.AddComponent<Image>();
-            backImg.color = new Color(0.2f, 0.15f, 0.3f, 0.9f);
+            backImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            backImg.type = Image.Type.Simple;
             var backBtn = backGo.AddComponent<Button>();
             var backText = SuperMechUiSkin.MakeText(backGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_back"), 12, TextAnchor.MiddleCenter);
@@ -586,6 +587,30 @@ namespace SuperMech.Code
             backTextRect.offsetMin = Vector2.zero;
             backTextRect.offsetMax = Vector2.zero;
             backBtn.onClick.AddListener(ShowSelectLayer);
+
+            // 右上角关闭按钮
+            var closeGo = new GameObject("CloseBtn");
+            closeGo.transform.SetParent(_resurrectionLayer.transform, false);
+            var closeRect = closeGo.AddComponent<RectTransform>();
+            closeRect.anchorMin = new Vector2(1, 1);
+            closeRect.anchorMax = new Vector2(1, 1);
+            closeRect.pivot = new Vector2(1, 1);
+            closeRect.sizeDelta = new Vector2(30, 30);
+            closeRect.anchoredPosition = new Vector2(-12, -8);
+            var closeImg = closeGo.AddComponent<Image>();
+            closeImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+            closeImg.type = Image.Type.Simple;
+            closeImg.color = SuperMechUiSkin.CloseRed;
+            var closeBtn = closeGo.AddComponent<Button>();
+            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", 18, TextAnchor.MiddleCenter);
+            closeText.color = Color.white;
+            closeText.fontStyle = FontStyle.Bold;
+            var closeTextRect = closeText.GetComponent<RectTransform>();
+            closeTextRect.anchorMin = Vector2.zero;
+            closeTextRect.anchorMax = Vector2.one;
+            closeTextRect.offsetMin = Vector2.zero;
+            closeTextRect.offsetMax = Vector2.zero;
+            closeBtn.onClick.AddListener(ShowSelectLayer);
 
             // 内嵌复活列表
             var listGo = new GameObject("ResurrectionList");
