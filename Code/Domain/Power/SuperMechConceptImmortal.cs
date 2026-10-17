@@ -142,7 +142,7 @@ namespace SuperMech.Code
         {
             if (a == null) return false;
             // 必须是X阶（超神级）
-            if (SuperMechAdvancement.GetExactRankIndex(a) < 13) return false;
+            if (SuperMechAdvancement.GetExactRankIndex(a) < 8) return false;
             // 必须有资讯唯一·概念永生特质
             if (!a.hasTrait(SuperMechRankTrait.ConceptImmortal)) return false;
             // 被信息态抹杀则无法重塑（真正死亡）

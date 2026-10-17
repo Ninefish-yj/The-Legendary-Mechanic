@@ -656,7 +656,7 @@ namespace SuperMech.Code
 
             // 击杀敌对文明势力成员，所属文明获得科技值
             int victimRank = SuperMechAdvancement.GetExactRankIndex(victim);
-            float techReward = victimRank >= 13 ? 20f : victimRank >= 12 ? 10f : victimRank >= 10 ? 5f : 2f;
+            float techReward = victimRank >= 8 ? 20f : victimRank >= 7 ? 10f : victimRank >= 6 ? 5f : 2f;
             SuperMechCivilization.AddTechPoints(civK, techReward);
             Debug.Log($"[超神机械师] 代理战争：{killer.name}({fk.name})击杀{victim.name}({fv.name})，{civK.name}获得{techReward}科技值");
 

@@ -194,7 +194,7 @@ namespace SuperMech.Code
         {
             if (a == null) return;
 
-            if (rankIndex >= 13)
+            if (rankIndex >= 8)
             {
                 if (!a.hasTrait(TraitDivineRace))
                 {
@@ -216,7 +216,7 @@ namespace SuperMech.Code
                 return;
             }
 
-            if (rankIndex >= 10 && !a.hasTrait(TraitSuperARace))
+            if (rankIndex >= 6 && !a.hasTrait(TraitSuperARace))
             {
                 a.addTrait(TraitSuperARace);
                 string title = GetTitle(a);

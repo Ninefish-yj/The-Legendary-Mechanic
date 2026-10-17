@@ -63,10 +63,10 @@ namespace SuperMech.Code
                     {
                         if (a == null || !a.isAlive() || a.kingdom != kingdom) continue;
                         int rank = SuperMechAdvancement.GetExactRankIndex(a);
-                        if (rank >= 13) countX++;
-                        else if (rank >= 12) countSS++;
-                        else if (rank >= 10) countS++;
-                        else if (rank >= 8) countA++;
+                        if (rank >= 8) countX++;
+                        else if (rank >= 7) countSS++;
+                        else if (rank >= 6) countS++;
+                        else if (rank >= 5) countA++;
                         if (rank >= 8 && rank > bestRank) { bestRank = rank; guardian = a; }
                     }
                 }

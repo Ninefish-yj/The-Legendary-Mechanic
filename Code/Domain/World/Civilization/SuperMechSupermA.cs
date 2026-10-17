@@ -90,7 +90,7 @@ namespace SuperMech.Code
         /// 普通人即使战力堆高也不属超A级语境——不进威胁池、不被清算波及）</summary>
         public static bool IsSuperA(Actor a)
         {
-            return a != null && SuperMechAwakened.IsAwakened(a) && SuperMechAdvancement.GetExactRankIndex(a) >= 10;
+            return a != null && SuperMechAwakened.IsAwakened(a) && SuperMechAdvancement.GetExactRankIndex(a) >= 6;
         }
 
         /// <summary>当前存活超A级个体数（含异神）</summary>

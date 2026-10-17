@@ -50,7 +50,7 @@ namespace SuperMech.Code
             if (state == null) return false;
             // 1. 必须超A级（S阶）及以上，但X阶（超神级）除外——超神级靠概念不朽，不走圣所通道
             if (state.rankIndex < MinRankForResurrect) return false;
-            if (state.rankIndex >= 13) return false;
+            if (state.rankIndex >= 8) return false;
             // 2. 信息完整度必须高于下限
             float integrity = CalculateInformationIntegrity(state);
             if (integrity < MinInformationIntegrity) return false;
@@ -282,21 +282,18 @@ namespace SuperMech.Code
         /// <summary>获取该阶位的巅峰年龄（圣所重塑肉身恢复到巅峰状态，不是18岁）</summary>
         private static int GetPeakAgeForRank(int rankIdx)
         {
+            // v0.221 9阶位复活费用
             return rankIdx switch
             {
-                >= 13 => 2000,   // Ss巅峰超A：巅峰约2000岁
-                >= 12 => 1200,   // S+
-                >= 11 => 800,    // S阶超A级
-                >= 10 => 500,    // A+
-                >= 9 => 300,     // A阶天灾级
-                >= 8 => 200,     // B+
-                >= 7 => 150,     // B阶
-                >= 6 => 100,     // C+
-                >= 5 => 80,      // C阶
-                >= 4 => 60,      // D+
-                >= 3 => 50,      // D阶
-                >= 1 => 30,      // E阶觉醒
-                _ => 25          // F
+                >= 8 => 2000,   // X级
+                >= 7 => 1200,   // 巅峰超A级
+                >= 6 => 800,    // 超A级
+                >= 5 => 300,    // A级（天灾级）
+                >= 4 => 150,    // B级
+                >= 3 => 80,     // C级
+                >= 2 => 50,     // D级
+                >= 1 => 30,     // E级
+                _ => 25         // F级
             };
         }
 

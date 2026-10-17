@@ -285,7 +285,8 @@ namespace SuperMech.Code
 
         public static string GetRank(Actor a)
         {
-            return SuperMechRanks.GetRankName(a);
+            // v0.221 显示带细分的阶位名，如"F级（初期）"
+            return SuperMechRanks.GetRankNameWithSub(a);
         }
 
         public static string GetQiDisplayName(Actor a)

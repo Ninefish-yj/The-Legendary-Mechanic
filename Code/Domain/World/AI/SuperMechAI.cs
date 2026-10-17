@@ -132,7 +132,7 @@ namespace SuperMech.Code
                 // 高阶竞争（S+及以上）有陨落风险：原著超A级竞争也会真正死亡
                 bool fatal = false;
                 string result = LocalizedTextManager.getText("sm_ai_compete_win");
-                if (rankL >= 11 && Random.value < 0.03f)
+                if (rankL >= 6 && Random.value < 0.03f)
                 {
                     fatal = true;
                     result = LocalizedTextManager.getText("sm_ai_compete_fatal");

@@ -53,7 +53,7 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null) continue;
-                if (SuperMechActorContextRegistry.GetRank(a) < 12) continue;
+                if (SuperMechActorContextRegistry.GetRank(a) < 7) continue;
                 if (!SuperMechDivinity.IsDivineAwakened(a)) continue;
                 if (IsAdvancementTaskDone(a)) continue;
                 if (IsTranscended(a)) continue;
@@ -124,7 +124,7 @@ namespace SuperMech.Code
         {
             if (deadActor == null) return;
             int rank = SuperMechActorContextRegistry.GetRank(deadActor);
-            if (rank < 12) return; // 只有SS级以上冲击超神级失败才产生遗力
+            if (rank < 7) return; // 只有SS级以上冲击超神级失败才产生遗力
 
             // 如果死因未指定，随机一个恶性变异类型
             if (string.IsNullOrEmpty(deathType) || deathType == "transcendence_failed" || deathType == "legacy_backlash")
@@ -193,7 +193,7 @@ namespace SuperMech.Code
             foreach (Actor a in units)
             {
                 if (a == null || !a.isAlive()) continue;
-                if (SuperMechActorContextRegistry.GetRank(a) < 12) continue;
+                if (SuperMechActorContextRegistry.GetRank(a) < 7) continue;
                 if (!SuperMechDivinity.IsDivineAwakened(a)) continue;
                 if (!IsAdvancementTaskDone(a)) continue;
                 if (IsTranscended(a)) continue;
@@ -326,7 +326,7 @@ namespace SuperMech.Code
             if (a == null) return false;
             if (IsTranscended(a)) return false;
             int rank = SuperMechActorContextRegistry.GetRank(a);
-            if (rank < 12) return false;
+            if (rank < 7) return false;
             if (!SuperMechDivinity.IsDivineAwakened(a)) return false;
             if (!IsAdvancementTaskDone(a)) return false;
             float cd;
@@ -452,7 +452,7 @@ namespace SuperMech.Code
                     t.doUnits(u =>
                     {
                         if (u == null || u == a) return;
-                        if (SuperMechActorContextRegistry.GetRank(u) < 10) return;
+                        if (SuperMechActorContextRegistry.GetRank(u) < 6) return;
                         string cls = SuperMechBranch.GetClass(u);
                         if (!string.IsNullOrEmpty(cls) && cls != myClass)
                             classes.Add(cls);
@@ -467,7 +467,7 @@ namespace SuperMech.Code
             if (a == null) return "";
             if (IsTranscended(a)) return "sm_transcendence_1237";
             int rank = SuperMechActorContextRegistry.GetRank(a);
-            if (rank < 12) return $"{LocalizedTextManager.getText("sm_transcendence_need_ss")}（{LocalizedTextManager.getText("sm_transcendence_current")}{SuperMechRanks.GetRankName(a)}）";
+            if (rank < 7) return $"{LocalizedTextManager.getText("sm_transcendence_need_ss")}（{LocalizedTextManager.getText("sm_transcendence_current")}{SuperMechRanks.GetRankName(a)}）";
             if (!SuperMechDivinity.IsDivineAwakened(a)) return "sm_transcendence_1238";
 
             if (!IsAdvancementTaskDone(a))

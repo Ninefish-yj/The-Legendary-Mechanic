@@ -127,12 +127,13 @@ namespace SuperMech.Code
             if (ctx != null) ctx.SetCustom("death_mark_stacks", 0);
         }
 
-        // === 槽位（S=1 / SS=2 / X=3） ===
+        // === 槽位（超A=1 / 巅峰超A=2 / X=3） ===
         public static int SlotCount(int rankIndex)
         {
-            if (rankIndex >= 13) return 3;
-            if (rankIndex >= 12) return 2;
-            if (rankIndex >= 10) return 1;
+            // v0.221 9阶位索引调整
+            if (rankIndex >= 8) return 3;   // X级
+            if (rankIndex >= 7) return 2;   // 巅峰超A级
+            if (rankIndex >= 6) return 1;   // 超A级
             return 0;
         }
 

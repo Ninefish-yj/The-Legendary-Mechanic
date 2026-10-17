@@ -1249,7 +1249,7 @@ namespace SuperMech.Code
                     shipRect.sizeDelta = new Vector2(16 * depthScale, 16 * depthScale);
                     shipRect.anchoredPosition = shipPos;
                     var shipImg = shipGo.AddComponent<Image>();
-                    bool bodyFlight = v.snapshot != null && v.snapshot.rank >= 10;
+                    bool bodyFlight = v.snapshot != null && v.snapshot.rank >= 6;
                     shipImg.color = bodyFlight ? new Color(1f, 0.8f, 0.3f, 0.9f) : new Color(0.5f, 0.8f, 1f, 0.9f);
                     shipImg.raycastTarget = false;
                     if (v.snapshot != null)
@@ -2027,7 +2027,7 @@ namespace SuperMech.Code
                 int rank = SuperMechAdvancement.GetExactRankIndex(unit);
                 string rankName = rank >= 0 && rank < SuperMechRanks.All.Count
                     ? LocalizedTextManager.getText(SuperMechRanks.All[rank].name) : "?";
-                bool canBodyFlight = rank >= 10;
+                bool canBodyFlight = rank >= 6;
 
                 var itemGo = new GameObject("UnitItem");
                 itemGo.transform.SetParent(contentGo.transform, false);

@@ -45,7 +45,7 @@ namespace SuperMech.Code
             int rankIdx = 0;
             foreach (var r in SuperMechRanks.All)
             {
-                if (SuperMechRanks.IsPlusRank(rankIdx)) { rankIdx++; continue; }
+                // v0.221 9阶位后无PlusRank，不再跳过
                 var t = new ActorTrait
                 {
                     id = r.id,
@@ -59,14 +59,16 @@ namespace SuperMech.Code
                 if (r.aoe > 0f) t.base_stats["area_of_effect"] = r.aoe;
                 if (r.targets > 0f) t.base_stats["targets"] = r.targets;
                 if (r.range > 0f) t.base_stats["range"] = r.range;
-                t.rarity = rankIdx <= 3 ? Rarity.R0_Normal
-                          : rankIdx <= 8 ? Rarity.R1_Rare
-                          : rankIdx <= 11 ? Rarity.R2_Epic : Rarity.R3_Legendary;
-                if (rankIdx >= 4) t.addCombatAction("combat_dodge");
-                if (rankIdx >= 6) t.addCombatAction("combat_block");
-                if (rankIdx >= 8) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); }
-                if (rankIdx >= 10) { t.addCombatAction("combat_instincts"); t.addCombatAction("combat_deflect_projectile"); }
-                if (rankIdx >= 12) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); }
+                // v0.221 9阶位稀有度阈值调整：F/E/D=普通, C/B/A=稀有, 超A/巅峰超A=史诗, X=传说
+                t.rarity = rankIdx <= 2 ? Rarity.R0_Normal
+                          : rankIdx <= 5 ? Rarity.R1_Rare
+                          : rankIdx <= 7 ? Rarity.R2_Epic : Rarity.R3_Legendary;
+                // v0.221 9阶位战斗动作阈值调整
+                if (rankIdx >= 3) t.addCombatAction("combat_dodge");           // C级
+                if (rankIdx >= 4) t.addCombatAction("combat_block");           // B级
+                if (rankIdx >= 5) { t.addCombatAction("combat_dash"); t.addCombatAction("combat_backstep"); } // A级
+                if (rankIdx >= 6) { t.addCombatAction("combat_instincts"); t.addCombatAction("combat_deflect_projectile"); } // 超A级
+                if (rankIdx >= 7) { t.addCombatAction("combat_attack_range"); t.addCombatAction("combat_cast_spell"); } // 巅峰超A级
                 rankIdx++;
                 LocalizedTextManager.add("trait_" + r.id, LocalizedTextManager.getText(r.name), pReplace: true);
                 LocalizedTextManager.add("trait_" + r.id + "_info", GetRankDesc(rankIdx - 1), pReplace: true);

@@ -288,16 +288,17 @@ namespace SuperMech.Code
                 }
 
                 int targetRank = SuperMechAdvancement.GetExactRankIndex(target);
-                if (targetRank >= 13 && attacker != null && attacker.isAlive())
+                // v0.221 X级（索引8）概念永生保护
+                if (targetRank >= 8 && attacker != null && attacker.isAlive())
                 {
                     int atkRank = SuperMechAdvancement.GetExactRankIndex(attacker);
-                    if (atkRank < 13 && Random.value < 0.3f)
+                    if (atkRank < 8 && Random.value < 0.3f)
                     {
                         return false;
                     }
                     // 原著：超神级之间战斗可触发信息态抹杀（第1450章）
                     // 被信息态抹杀的超神级无法概念重塑，真正死亡
-                    if (atkRank >= 13 && Random.value < 0.05f)
+                    if (atkRank >= 8 && Random.value < 0.05f)
                     {
                         SuperMechConceptImmortal.MarkInformationErased(target);
                         SuperMechCombatFeedback.OnInfoErase(target);

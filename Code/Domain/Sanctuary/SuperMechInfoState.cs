@@ -119,7 +119,7 @@ namespace SuperMech.Code
                 int lv = GetLevel(a);
                 if (lv <= 0) continue;
 
-                if (lv >= 3 && SuperMechAdvancement.GetExactRankIndex(a) >= 12)
+                if (lv >= 3 && SuperMechAdvancement.GetExactRankIndex(a) >= 7)
                 {
                     if (SuperMechDivinity.IsDivineAwakened(a) &&
                         SuperMechTranscendence.IsAdvancementTaskDone(a) &&

@@ -169,10 +169,10 @@ namespace SuperMech.Code
             int rank = SuperMechAdvancement.GetExactRankIndex(target);
             float dodgeChance = 0f;
 
-            // 阶位基础闪避：S阶5%，SS阶10%，X阶15%
-            if (rank >= 12) dodgeChance = 0.15f;
-            else if (rank >= 11) dodgeChance = 0.10f;
-            else if (rank >= 10) dodgeChance = 0.05f;
+            // v0.221 9阶位基础闪避：A级5%，超A级10%，巅峰超A级15%
+            if (rank >= 7) dodgeChance = 0.15f;
+            else if (rank >= 6) dodgeChance = 0.10f;
+            else if (rank >= 5) dodgeChance = 0.05f;
 
             // 武道系额外闪避+5%
             if (target.hasTrait(SuperMechTraits.ClassMartial)) dodgeChance += 0.05f;

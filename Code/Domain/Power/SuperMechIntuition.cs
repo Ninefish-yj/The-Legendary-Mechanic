@@ -70,7 +70,7 @@ namespace SuperMech.Code
                 if (!SuperMechActorContextRegistry.IsSuperMech(a)) continue;
 
                 int rankIdx = SuperMechActorContextRegistry.GetRank(a);
-                if (rankIdx < 10) continue;
+                if (rankIdx < 6) continue;
 
                 if (!_destinies.ContainsKey(a.id))
                 {

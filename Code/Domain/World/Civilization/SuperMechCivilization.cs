@@ -70,10 +70,10 @@ namespace SuperMech.Code
                     {
                         if (a == null || !a.isAlive() || a.kingdom != k) continue;
                         int rank = SuperMechAdvancement.GetExactRankIndex(a);
-                        if (rank >= 13) techGain += 10f;        // X阶
-                        else if (rank >= 12) techGain += 5f;    // SS阶
-                        else if (rank >= 10) techGain += 3f;    // S阶
-                        else if (rank >= 8) techGain += 1f;     // A阶
+                        if (rank >= 8) techGain += 10f;        // X级
+                        else if (rank >= 7) techGain += 5f;    // 巅峰超A级
+                        else if (rank >= 6) techGain += 3f;    // 超A级
+                        else if (rank >= 5) techGain += 1f;    // A级（天灾级）
                     }
                 }
                 _kingdomTechPoints[kid] += techGain;
@@ -102,9 +102,9 @@ namespace SuperMech.Code
                 if (a == null || !a.isAlive()) continue;
                 if (a.kingdom != kingdom) continue;
                 int rank = SuperMechAdvancement.GetExactRankIndex(a);
-                if (rank >= 13) countX++;
-                else if (rank >= 12) countSS++;
-                else if (rank >= 10) countS++;
+                if (rank >= 8) countX++;
+                else if (rank >= 7) countSS++;
+                else if (rank >= 6) countS++;
                 else if (rank >= 8) countA++;
             }
 

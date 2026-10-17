@@ -36,8 +36,8 @@ namespace SuperMech.Code
 
             // 按阶位计算放出概率：X阶100%（原著超神级可随意放出内空间），SS=50%
             float chance = 0.5f;
-            if (rank >= 13) chance = 1.0f;
-            else if (rank >= 12) chance = 0.5f;
+            if (rank >= 8) chance = 1.0f;
+            else if (rank >= 7) chance = 0.5f;
 
             if (Random.value > chance) return;
 
@@ -128,8 +128,8 @@ namespace SuperMech.Code
         private static float GetDomainDamageBonus(int rank)
         {
             float baseVal = SuperMechConfig.InnerSpaceDamageBonus;
-            if (rank >= 13) return baseVal * 2f;   // X阶：双倍
-            if (rank >= 12) return baseVal * 1.5f; // SS阶：1.5倍
+            if (rank >= 8) return baseVal * 2f;   // X阶：双倍
+            if (rank >= 7) return baseVal * 1.5f; // SS阶：1.5倍
             return baseVal;
         }
 
@@ -137,8 +137,8 @@ namespace SuperMech.Code
         private static float GetDomainDamagePenalty(int rank)
         {
             float baseVal = SuperMechConfig.InnerSpaceEnemyPenalty;
-            if (rank >= 13) return Mathf.Min(baseVal * 2f, 0.5f);
-            if (rank >= 12) return baseVal * 1.5f;
+            if (rank >= 8) return Mathf.Min(baseVal * 2f, 0.5f);
+            if (rank >= 7) return baseVal * 1.5f;
             return baseVal;
         }
 
@@ -146,8 +146,8 @@ namespace SuperMech.Code
         private static float GetDomainDamageReduction(int rank)
         {
             float baseVal = SuperMechConfig.InnerSpaceDamageReduction;
-            if (rank >= 13) return Mathf.Min(baseVal * 2f, 0.5f);
-            if (rank >= 12) return baseVal * 1.5f;
+            if (rank >= 8) return Mathf.Min(baseVal * 2f, 0.5f);
+            if (rank >= 7) return baseVal * 1.5f;
             return baseVal;
         }
 
@@ -203,8 +203,8 @@ namespace SuperMech.Code
                 if (maxHp <= 0f) continue;
 
                 float dmg = maxHp * SuperMechFormulas.InnerSpacePulseFraction;
-                if (kv.Value.rank >= 13) dmg *= 1.5f;
-                else if (kv.Value.rank >= 12) dmg *= 1.2f;
+                if (kv.Value.rank >= 8) dmg *= 1.5f;
+                else if (kv.Value.rank >= 7) dmg *= 1.2f;
                 if (dmg <= 0f) continue;
 
                 foreach (var enemy in allUnits)

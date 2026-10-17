@@ -80,8 +80,8 @@ namespace SuperMech.Code
         public static void OnRankUp(Actor a, int newRankIndex)
         {
             if (a == null) return;
-            // S阶（超A级）选择两项阶位专长
-            if (newRankIndex >= 10 && !_rankSpecGranted.Contains(a.data.id))
+            // v0.221 超A级（索引6）选择两项阶位专长
+            if (newRankIndex >= 6 && !_rankSpecGranted.Contains(a.data.id))
             {
                 // 威能加成（无上威能）必选
                 if (!a.hasTrait(BoundlessPower)) a.addTrait(BoundlessPower);
@@ -94,11 +94,11 @@ namespace SuperMech.Code
                 _rankSpecGranted.Add(a.data.id);
                 Debug.Log($"[超神机械师] {a.data.name} 进阶超A，选择阶位专长：无上威能 + {LocalizedTextManager.getText("trait_" + second)}");
             }
-            // X阶获得概念永生
-            if (newRankIndex >= 13 && !a.hasTrait(ConceptImmortal))
+            // v0.221 X级（索引8）获得概念永生
+            if (newRankIndex >= 8 && !a.hasTrait(ConceptImmortal))
                 a.addTrait(ConceptImmortal);
-            // X阶按专精解锁对应超神级技能
-            if (newRankIndex >= 13 && a.hasTrait(SuperMechTraits.ClassMech))
+            // v0.221 X级按专精解锁对应超神级技能
+            if (newRankIndex >= 8 && a.hasTrait(SuperMechTraits.ClassMech))
             {
                 string spec = SuperMechSpecialty.GetSpecialty(a);
                 if (spec == SuperMechSpecialty.SpecMechArmed)

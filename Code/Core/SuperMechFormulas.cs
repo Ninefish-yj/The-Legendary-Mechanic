@@ -50,17 +50,17 @@ namespace SuperMech.Code
 
         // === 阶位公式 ===
 
-        /// <summary>阶位是否为加号阶（D+, C+, B+, A+, S+）</summary>
+        /// <summary>v0.221 9阶位后无PlusRank，保留方法兼容旧代码，永远返回false</summary>
         public static bool IsPlusRank(int rankIndex)
         {
-            return rankIndex == 3 || rankIndex == 5 || rankIndex == 7 || rankIndex == 9 || rankIndex == 11;
+            return false;
         }
 
-        /// <summary>阶位基础能级倍率（非线性增长）</summary>
+        /// <summary>阶位基础能级倍率（非线性增长，9阶位）</summary>
         public static float RankPowerMultiplier(int rankIndex)
         {
-            // F=1, E=2, D=4, D+=6, C=10, C+=15, B=25, B+=40, A=70, A+=110, S=180, S+=280, SS=450, X=800
-            float[] mult = { 1, 2, 4, 6, 10, 15, 25, 40, 70, 110, 180, 280, 450, 800 };
+            // F=1, E=3, D=6, C=12, B=25, A=70, 超A=120, 巅峰超A=200, X=400
+            float[] mult = { 1, 3, 6, 12, 25, 70, 120, 200, 400 };
             if (rankIndex < 0 || rankIndex >= mult.Length) return 1f;
             return mult[rankIndex];
         }

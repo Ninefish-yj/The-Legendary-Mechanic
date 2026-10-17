@@ -22,7 +22,7 @@ namespace SuperMech.Code
         public static float PromotionSpeed = 1.0f;
         public static float OnaMultiplier = 1.0f;
         public static bool AutoPromotion = true;
-        public static int AutoPromotionMaxRank = 12;
+        public static int AutoPromotionMaxRank = 8;
         public static bool ShowRankInPanel = true;
 
         public static bool AutoFavoriteEnabled = true;
@@ -73,7 +73,7 @@ namespace SuperMech.Code
         /// <summary>势力/组织系统总开关（v0.48.0）</summary>
         public static bool FactionEnabled = true;
         /// <summary>放出内空间最低阶位（默认13=X阶/超神级）</summary>
-        public static int InnerSpaceMinRank = 13;
+        public static int InnerSpaceMinRank = 8;
         /// <summary>内空间持续时间（秒）</summary>
         public static float InnerSpaceDuration = 8f;
         /// <summary>内空间内主人伤害加成（默认0.15=15%）</summary>
@@ -292,11 +292,11 @@ namespace SuperMech.Code
         public static void SetPromotionSpeed(float val) { PromotionSpeed = Mathf.Max(0.1f, val); }
         public static void SetOnaMultiplier(float val) { OnaMultiplier = Mathf.Max(0.1f, val); }
         public static void SetAutoPromotion(bool val) { AutoPromotion = val; }
-        public static void SetAutoPromotionMaxRank(int val) { AutoPromotionMaxRank = Mathf.Clamp(val, 0, 12); }
+        public static void SetAutoPromotionMaxRank(int val) { AutoPromotionMaxRank = Mathf.Clamp(val, 0, 8); }
         public static void SetShowRankInPanel(bool val) { ShowRankInPanel = val; }
 
         public static void SetAutoFavoriteEnabled(bool val) { AutoFavoriteEnabled = val; }
-        public static void SetAutoFavoriteMinRank(int val) { AutoFavoriteMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetAutoFavoriteMinRank(int val) { AutoFavoriteMinRank = Mathf.Clamp(val, 0, 8); }
 
         public static bool ShouldFavoriteRank(int rankIdx)
         {
@@ -307,7 +307,7 @@ namespace SuperMech.Code
         public static void SetAutoVisitSanctuary(bool val) { AutoVisitSanctuary = val; }
         public static void SetAutoEnterSanctuary(bool val) { AutoEnterSanctuary = val; }
         public static void SetSanctuaryKeyDropEnabled(bool val) { SanctuaryKeyDropEnabled = val; }
-        public static void SetKeyDropMinRank(int val) { KeyDropMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetKeyDropMinRank(int val) { KeyDropMinRank = Mathf.Clamp(val, 0, 8); }
         public static void SetKeyMaterialsPerKey(int val) { KeyMaterialsPerKey = Mathf.Clamp(val, 1, 10); }
         public static void SetPsionicKeyMaterialBonus(int val) { PsionicKeyMaterialBonus = Mathf.Clamp(val, 0, 10); }
         public static void SetSanctuaryKeyCostEnter(int val) { SanctuaryKeyCostEnter = Mathf.Clamp(val, 1, 10); }
@@ -319,7 +319,7 @@ namespace SuperMech.Code
 
         public static void SetSuperAEnabled(bool val) { SuperAEnabled = val; }
         public static void SetInnerSpaceEnabled(bool val) { InnerSpaceEnabled = val; }
-        public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetInnerSpaceMinRank(int val) { InnerSpaceMinRank = Mathf.Clamp(val, 0, 8); }
         public static void SetInnerSpaceDuration(float val) { InnerSpaceDuration = Mathf.Clamp(val, 1f, 30f); }
         public static void SetInnerSpaceDamageBonus(float val) { InnerSpaceDamageBonus = Mathf.Clamp01(val); }
         public static void SetInnerSpaceEnemyPenalty(float val) { InnerSpaceEnemyPenalty = Mathf.Clamp01(val); }
@@ -333,7 +333,7 @@ namespace SuperMech.Code
         public static void SetMaxSummonedUnits(int val) { MaxSummonedUnits = Mathf.Clamp(val, 0, 500); }
 
         public static void SetAutoCompetition(bool val) { AutoCompetition = val; }
-        public static void SetCompetitionMinRank(int val) { CompetitionMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetCompetitionMinRank(int val) { CompetitionMinRank = Mathf.Clamp(val, 0, 8); }
         public static void SetCompetitionInterval(int val) { CompetitionInterval = Mathf.Clamp(val, 1, 50); }
         public static void SetNpcAutoKnowledge(bool val) { NpcAutoKnowledge = val; }
         public static void SetNpcKnowledgeInterval(int val) { NpcKnowledgeInterval = Mathf.Clamp(val, 1, 50); }
@@ -380,7 +380,7 @@ namespace SuperMech.Code
 
         public static void SetEventLogEnabled(bool val) { EventLogEnabled = val; }
         public static void SetEventLogAwakenMinTalent(int val) { EventLogAwakenMinTalent = Mathf.Clamp(val, 0, 6); }
-        public static void SetEventLogPromotionMinRank(int val) { EventLogPromotionMinRank = Mathf.Clamp(val, 0, 13); }
+        public static void SetEventLogPromotionMinRank(int val) { EventLogPromotionMinRank = Mathf.Clamp(val, 0, 8); }
         public static void SetEventLogFusionEnabled(bool val) { EventLogFusionEnabled = val; }
         public static void SetEventLogSpellEnabled(bool val) { EventLogSpellEnabled = val; }
         public static void SetEventLogSanctuaryEnabled(bool val) { EventLogSanctuaryEnabled = val; }

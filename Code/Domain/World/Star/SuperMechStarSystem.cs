@@ -637,7 +637,7 @@ namespace SuperMech.Code
             }
 
             // 超A级（rank>=10）可肉身横渡宇宙，不需要飞船和科技
-            canBodyFlight = unitRank >= 10;
+            canBodyFlight = unitRank >= 6;
 
             // 非肉身横渡需要航天科技space_t3（亚光速飞船）
             if (!canBodyFlight && fromPlanet != toPlanet && toPlanet != MAIN_PLANET)

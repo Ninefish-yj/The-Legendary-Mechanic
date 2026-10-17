@@ -774,8 +774,8 @@ namespace SuperMech.Code
 
                 // 按阶位掉落材料：S=1, S+=1, SS=2, X=3
                 int amount = 1;
-                if (rank >= 13) amount = 3;
-                else if (rank >= 12) amount = 2;
+                if (rank >= 8) amount = 3;
+                else if (rank >= 7) amount = 2;
                 else amount = 1;
 
                 string rankName = rank < SuperMechRanks.All.Count
