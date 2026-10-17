@@ -12,6 +12,7 @@ namespace SuperMech.Code
     {
         private RectTransform _listContent;
         private RectTransform _detailContent;
+        private Transform _detailContainer;
         private Text _detailText;
         private Button _learnBtn;
         private Text _learnBtnText;
@@ -210,14 +211,24 @@ namespace SuperMech.Code
             detailScrollRect.horizontal = false;
             detailScrollRect.movementType = ScrollRect.MovementType.Clamped;
 
-            var textGo = new GameObject("DetailText");
-            textGo.transform.SetParent(detailContentGo.transform, false);
-            var textRect = textGo.AddComponent<RectTransform>();
-            textRect.anchorMin = Vector2.zero;
-            textRect.anchorMax = Vector2.one;
-            textRect.offsetMin = Vector2.zero;
-            textRect.offsetMax = Vector2.zero;
-            _detailText = textGo.AddComponent<Text>();
+            // v0.237 统一规范：详情信息区（信息行容器，LearnBtn为兄弟节点）
+            var infoAreaGo = new GameObject("InfoArea");
+            infoAreaGo.transform.SetParent(detailContentGo.transform, false);
+            var infoAreaRect = infoAreaGo.AddComponent<RectTransform>();
+            infoAreaRect.anchorMin = Vector2.zero;
+            infoAreaRect.anchorMax = Vector2.one;
+            infoAreaRect.offsetMin = Vector2.zero;
+            infoAreaRect.offsetMax = Vector2.zero;
+            var infoVlg = infoAreaGo.AddComponent<VerticalLayoutGroup>();
+            infoVlg.spacing = 4;
+            infoVlg.padding = new RectOffset(0, 0, 0, 0);
+            infoVlg.childControlWidth = true;
+            infoVlg.childControlHeight = false;
+            infoVlg.childForceExpandWidth = true;
+            infoVlg.childForceExpandHeight = false;
+            _detailContainer = infoAreaGo.transform;
+
+            _detailText = infoAreaGo.AddComponent<Text>();
             _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             _detailText.fontSize = 13;
             _detailText.color = SuperMechUiSkin.TextColor;
@@ -225,6 +236,7 @@ namespace SuperMech.Code
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
             _detailText.verticalOverflow = VerticalWrapMode.Truncate;
             _detailText.text = LocalizedTextManager.getText("sm_ui_select_knowledge");
+            _detailText.raycastTarget = false;
 
             // 学习按钮（原著：超能者通过学习知识提升实力）
             var learnBtnGo = new GameObject("LearnBtn");
@@ -376,15 +388,22 @@ namespace SuperMech.Code
 
             // v0.184 知识等级显示
             string levelText = unlocked ? $"Lv{level}/{SuperMechKnowledge.MaxKnowledgeLevel}" : "-";
-            string levelColor = isMax ? "#FFD700" : (level >= 3 ? "#66ff99" : "#93A4BC");
+            Color levelColor = isMax ? new Color(1f, 0.84f, 0f) : (level >= 3 ? new Color(0.4f, 1f, 0.6f) : SuperMechUiSkin.TextDim);
 
-            _detailText.text = $"<b><size=16><color=#E8C36A>{kn.name}</color></size></b>\n\n" +
-                $"{kn.desc}\n\n" +
-                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_tier")}:</color> {kn.tier}\n" +
-                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_cost")}:</color> {kn.cost}\n" +
-                $"<color=#93A4BC>等级:</color> <color={levelColor}>{levelText}</color>\n" +
-                $"<color=#93A4BC>{LocalizedTextManager.getText("sm_ui_status")}:</color> " +
-                $"<color={(unlocked ? "#66ff99" : "#ff9966")}>{(unlocked ? LocalizedTextManager.getText("sm_ui_unlocked") : LocalizedTextManager.getText("sm_ui_locked"))}</color>";
+            // v0.237 统一规范：信息行结构重建
+            if (_detailContainer != null)
+            {
+                if (_detailText != null) _detailText.gameObject.SetActive(false);
+                SuperMechUiBuilder.ClearChildren(_detailContainer);
+                SuperMechUiBuilder.CreateSectionTitle(_detailContainer, kn.name);
+                SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_desc"), kn.desc, 60, SuperMechUiSkin.TextColor);
+                SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_tier"), kn.tier.ToString());
+                SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_cost"), kn.cost.ToString());
+                SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_level"), levelText, 100, levelColor);
+                SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_status"),
+                    unlocked ? LocalizedTextManager.getText("sm_ui_unlocked") : LocalizedTextManager.getText("sm_ui_locked"), 100,
+                    unlocked ? SuperMechUiSkin.SuccessGreen : SuperMechUiSkin.WarningOrange);
+            }
 
             // 更新学习/升级按钮
             if (_learnBtn != null && _learnBtn.gameObject != null)

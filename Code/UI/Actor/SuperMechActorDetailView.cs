@@ -311,74 +311,14 @@ namespace SuperMech.Code
 
         private void AddSectionTitle(string text)
         {
-            var go = new GameObject("SectionTitle");
-            go.transform.SetParent(_content.transform, false);
-            var rect = go.AddComponent<RectTransform>();
-            var img = go.AddComponent<Image>();
-            img.sprite = SuperMechUiSkin.Section;
-            img.type = Image.Type.Sliced;
-            img.color = Color.white;
-            img.raycastTarget = false;
-            var txt = go.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            txt.fontSize = 13;
-            txt.fontStyle = FontStyle.Bold;
-            txt.color = SuperMechUiSkin.CyanColor;
-            txt.alignment = TextAnchor.MiddleLeft;
-            txt.text = "  " + text;
-            txt.raycastTarget = false;
-            var layoutElem = go.AddComponent<LayoutElement>();
-            layoutElem.minHeight = 28;
-            layoutElem.preferredHeight = 28;
+            // v0.237 统一走共享规范组件
+            SuperMechUiBuilder.CreateSectionTitle(_content.transform, text);
         }
 
         private void AddInfoRow(string label, string value)
         {
-            var go = new GameObject("InfoRow");
-            go.transform.SetParent(_content.transform, false);
-            var rect = go.AddComponent<RectTransform>();
-            var img = go.AddComponent<Image>();
-            img.sprite = SuperMechUiSkin.Card;
-            img.type = Image.Type.Sliced;
-            img.color = Color.white;
-            img.raycastTarget = false;
-            var hLayout = go.AddComponent<HorizontalLayoutGroup>();
-            hLayout.padding = new RectOffset(10, 10, 4, 4);
-            hLayout.spacing = 8;
-            hLayout.childAlignment = TextAnchor.MiddleLeft;
-            hLayout.childControlWidth = false;
-            hLayout.childControlHeight = true;
-            hLayout.childForceExpandWidth = false;
-            hLayout.childForceExpandHeight = false;
-
-            var labelGo = new GameObject("Label");
-            labelGo.transform.SetParent(go.transform, false);
-            var labelTxt = labelGo.AddComponent<Text>();
-            labelTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            labelTxt.fontSize = 12;
-            labelTxt.color = SuperMechUiSkin.TextDim;
-            labelTxt.alignment = TextAnchor.MiddleLeft;
-            labelTxt.text = label;
-            labelTxt.raycastTarget = false;
-            var labelRect = labelTxt.GetComponent<RectTransform>();
-            labelRect.sizeDelta = new Vector2(100, 24);
-
-            var valueGo = new GameObject("Value");
-            valueGo.transform.SetParent(go.transform, false);
-            var valueTxt = valueGo.AddComponent<Text>();
-            valueTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-            valueTxt.fontSize = 12;
-            valueTxt.color = new Color(1f, 0.9f, 0.6f);
-            valueTxt.alignment = TextAnchor.MiddleLeft;
-            valueTxt.text = value;
-            valueTxt.horizontalOverflow = HorizontalWrapMode.Wrap;
-            valueTxt.verticalOverflow = VerticalWrapMode.Truncate;
-            valueTxt.raycastTarget = false;
-            var valueLayout = valueGo.AddComponent<LayoutElement>();
-            valueLayout.flexibleWidth = 1;
-
-            var layoutElem = go.AddComponent<LayoutElement>();
-            layoutElem.minHeight = 28;
+            // v0.237 统一走共享规范组件（金色值）
+            SuperMechUiBuilder.CreateInfoRow(_content.transform, label, value);
         }
 
         private void AddFunctionButton(string text, Color color, Action onClick)

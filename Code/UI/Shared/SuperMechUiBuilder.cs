@@ -226,6 +226,151 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
             return go;
         }
 
+        // ================= v0.237 UI统一规范：共享组件 =================
+
+        /// <summary>v0.237 标准分区标题（Section底纹+青色粗体，28px高）</summary>
+        public static GameObject CreateSectionTitle(Transform parent, string text)
+        {
+            var go = CreateObject("SectionTitle", parent, typeof(RectTransform), typeof(Image));
+            var img = go.GetComponent<Image>();
+            img.sprite = SuperMechUiSkin.Section;
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
+            img.raycastTarget = false;
+            var txt = AddText(go, "  " + text, 13, TextAnchor.MiddleLeft, SuperMechUiSkin.CyanColor);
+            txt.fontStyle = FontStyle.Bold;
+            txt.raycastTarget = false;
+            var layoutElem = go.AddComponent<LayoutElement>();
+            layoutElem.minHeight = 28;
+            layoutElem.preferredHeight = 28;
+            return go;
+        }
+
+        /// <summary>v0.237 标准信息行（Card背景+灰色标签+值，28px高，值支持RichText）</summary>
+        public static GameObject CreateInfoRow(Transform parent, string label, string value, float labelWidth = 100, Color? valueColor = null)
+        {
+            var go = CreateObject("InfoRow", parent, typeof(RectTransform), typeof(Image));
+            var img = go.GetComponent<Image>();
+            img.sprite = SuperMechUiSkin.Card;
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
+            img.raycastTarget = false;
+
+            var hLayout = go.AddComponent<HorizontalLayoutGroup>();
+            hLayout.padding = new RectOffset(10, 10, 4, 4);
+            hLayout.spacing = 8;
+            hLayout.childAlignment = TextAnchor.MiddleLeft;
+            hLayout.childControlWidth = false;
+            hLayout.childControlHeight = true;
+            hLayout.childForceExpandWidth = false;
+            hLayout.childForceExpandHeight = false;
+
+            var labelGo = CreateObject("Label", go.transform, typeof(RectTransform));
+            var labelTxt = AddText(labelGo, label, 12, TextAnchor.MiddleLeft, SuperMechUiSkin.TextDim);
+            labelTxt.raycastTarget = false;
+            var labelRect = AddRectTransform(labelGo);
+            labelRect.sizeDelta = new Vector2(labelWidth, 24);
+
+            var valueGo = CreateObject("Value", go.transform, typeof(RectTransform));
+            var valueTxt = AddText(valueGo, value, 12, TextAnchor.MiddleLeft, valueColor ?? new Color(1f, 0.9f, 0.6f));
+            valueTxt.horizontalOverflow = HorizontalWrapMode.Wrap;
+            valueTxt.verticalOverflow = VerticalWrapMode.Truncate;
+            valueTxt.raycastTarget = false;
+            var valueLayout = valueGo.AddComponent<LayoutElement>();
+            valueLayout.flexibleWidth = 1;
+
+            var layoutElem = go.AddComponent<LayoutElement>();
+            layoutElem.minHeight = 28;
+            return go;
+        }
+
+        /// <summary>v0.237 创建详情内容容器（VerticalLayoutGroup，供动态刷新的详情区复用）</summary>
+        public static GameObject CreateInfoContainer(Transform parent, string name = "DetailContent")
+        {
+            var go = CreateObject(name, parent, typeof(RectTransform));
+            var rt = AddRectTransform(go);
+            rt.anchorMin = Vector2.zero;
+            rt.anchorMax = Vector2.one;
+            rt.offsetMin = Vector2.zero;
+            rt.offsetMax = Vector2.zero;
+            var vlg = go.AddComponent<VerticalLayoutGroup>();
+            vlg.padding = new RectOffset(8, 8, 6, 6);
+            vlg.spacing = 4;
+            vlg.childAlignment = TextAnchor.UpperLeft;
+            vlg.childControlWidth = true;
+            vlg.childControlHeight = false;
+            vlg.childForceExpandWidth = true;
+            vlg.childForceExpandHeight = false;
+            return go;
+        }
+
+        /// <summary>v0.237 清空容器所有子对象（详情区刷新前调用）</summary>
+        public static void ClearChildren(Transform parent)
+        {
+            if (parent == null) return;
+            for (int i = parent.childCount - 1; i >= 0; i--)
+            {
+                var child = parent.GetChild(i);
+                if (child != null) UnityEngine.Object.Destroy(child.gameObject);
+            }
+        }
+
+        /// <summary>v0.237 标准详情页签内容：分区标题+多行信息（label/value对）</summary>
+        public static void FillInfoRows(RectTransform container, (string label, string value, Color? color)[] rows, params string[] sectionTitles)
+        {
+            int titleIdx = 0;
+            foreach (var row in rows)
+            {
+                if (titleIdx < sectionTitles.Length && !string.IsNullOrEmpty(sectionTitles[titleIdx]))
+                {
+                    CreateSectionTitle(container, sectionTitles[titleIdx]);
+                    titleIdx++;
+                }
+                CreateInfoRow(container, row.label, row.value, 100, row.color);
+            }
+        }
+
+        /// <summary>v0.237 创建带滚动的内容区（ScrollRect+Content，供长内容面板复用）</summary>
+        public static RectTransform CreateScrollContent(RectTransform parent, out ScrollRect scrollRect, string name = "ScrollContent")
+        {
+            var scrollGo = CreateObject(name, parent, typeof(RectTransform), typeof(Image), typeof(Mask), typeof(ScrollRect));
+            var scrollRt = AddRectTransform(scrollGo);
+            scrollRt.anchorMin = Vector2.zero;
+            scrollRt.anchorMax = Vector2.one;
+            scrollRt.offsetMin = Vector2.zero;
+            scrollRt.offsetMax = Vector2.zero;
+            var scrollImg = scrollGo.GetComponent<Image>();
+            scrollImg.color = new Color(0f, 0f, 0f, 0.01f);
+            scrollImg.raycastTarget = false;
+            scrollGo.GetComponent<Mask>().showMaskGraphic = true;
+            scrollRect = scrollGo.GetComponent<ScrollRect>();
+            scrollRect.horizontal = false;
+            scrollRect.vertical = true;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
+            scrollRect.scrollSensitivity = 30f;
+
+            var viewportGo = CreateObject("Viewport", scrollGo.transform, typeof(RectTransform));
+            var viewportRt = AddRectTransform(viewportGo);
+            viewportRt.anchorMin = Vector2.zero;
+            viewportRt.anchorMax = Vector2.one;
+            viewportRt.offsetMin = Vector2.zero;
+            viewportRt.offsetMax = Vector2.zero;
+
+            var contentGo = CreateObject("Content", viewportGo.transform, typeof(RectTransform));
+            var contentRt = AddRectTransform(contentGo);
+            contentRt.anchorMin = new Vector2(0, 1);
+            contentRt.anchorMax = new Vector2(1, 1);
+            contentRt.pivot = new Vector2(0.5f, 1);
+            contentRt.sizeDelta = Vector2.zero;
+            var contentFitter = contentGo.AddComponent<ContentSizeFitter>();
+            contentFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            contentFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
+
+            scrollRect.viewport = viewportRt;
+            scrollRect.content = contentRt;
+            return contentRt;
+        }
+
         /// <summary>v0.195 创建带页签的面板，返回内容区RectTransform（页签切换时自动重绘）</summary>
         public static RectTransform CreateTabbedPanel(RectTransform parent, string[] tabLabels, int defaultTab, Action<int, RectTransform> onDrawTab)
         {

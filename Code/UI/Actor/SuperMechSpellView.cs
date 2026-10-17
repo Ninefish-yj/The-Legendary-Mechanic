@@ -12,6 +12,7 @@ namespace SuperMech.Code
     {
         private RectTransform _listContent;
         private RectTransform _detailContent;
+        private Transform _detailContainer;
         private Text _detailText;
         private Button _learnBtn;
         private Text _learnBtnText;
@@ -59,12 +60,15 @@ namespace SuperMech.Code
             var (dScroll, dContent) = SuperMechUiSkin.CreateScrollArea(detailGo.transform, "DetailScroll");
             _detailContent = dContent;
 
-            _detailText = SuperMechUiSkin.MakeText(dContent, "", 14, TextAnchor.UpperLeft);
+            // v0.237 统一规范：详情区使用信息行容器
+            var container = SuperMechUiBuilder.CreateInfoContainer(dContent, "DetailContainer");
+            _detailContainer = container.transform;
+            _detailText = SuperMechUiSkin.MakeText(container.transform, "", 14, TextAnchor.UpperLeft);
             var dtRect = _detailText.rectTransform;
             dtRect.anchorMin = Vector2.zero;
             dtRect.anchorMax = Vector2.one;
-            dtRect.offsetMin = new Vector2(10, 60);
-            dtRect.offsetMax = new Vector2(-10, -10);
+            dtRect.offsetMin = Vector2.zero;
+            dtRect.offsetMax = Vector2.zero;
 
             // 学习按钮
             var btnGo = new GameObject("LearnBtn");
@@ -154,7 +158,11 @@ namespace SuperMech.Code
             var actor = SelectedActor;
             if (actor == null || string.IsNullOrEmpty(_selectedId))
             {
-                _detailText.text = "";
+                if (_detailContainer != null)
+                {
+                    SuperMechUiBuilder.ClearChildren(_detailContainer);
+                    SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_status"), LocalizedTextManager.getText("sm_ui_select_spell_hint"), 100, SuperMechUiSkin.TextDim);
+                }
                 _learnBtn.interactable = false;
                 return;
             }
@@ -173,34 +181,45 @@ namespace SuperMech.Code
             string status = learned ? LocalizedTextManager.getText("sm_ui_spell_learned") :
                            (phase > 0 ? $"{LocalizedTextManager.getText("sm_ui_spell_learning")} {phase}/{spell.totalPhases}" :
                             LocalizedTextManager.getText("sm_ui_spell_locked"));
+            Color statusColor = learned ? SuperMechUiSkin.SuccessGreen : (phase > 0 ? SuperMechUiSkin.WarningOrange : SuperMechUiSkin.TextDim);
 
-            string text = $"<b>{LocalizedTextManager.getText(spell.nameKey)}</b>\n";
-            text += $"{branchName} · T{spell.tier} · {status}\n\n";
-            text += $"{LocalizedTextManager.getText(spell.descKey)}\n\n";
-            text += $"{LocalizedTextManager.getText("sm_ui_spell_phase")}: {phase}/{spell.totalPhases}\n";
-            text += $"{LocalizedTextManager.getText("sm_ui_spell_success_rate")}: {rate:F0%}\n";
+            // v0.237 统一规范：信息行结构重建
+            if (_detailContainer != null) SuperMechUiBuilder.ClearChildren(_detailContainer);
+
+            SuperMechUiBuilder.CreateSectionTitle(_detailContainer, LocalizedTextManager.getText(spell.nameKey));
+            SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_spell_branch"), branchName);
+            SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_tier"), "T" + spell.tier);
+            SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_status"), status, 100, statusColor);
+            SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_spell_phase"), phase + "/" + spell.totalPhases);
+            SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_spell_success_rate"), rate.ToString("P0"));
+
+            // 描述
+            var descGo = SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_spell_desc"), LocalizedTextManager.getText(spell.descKey), 100, SuperMechUiSkin.TextColor);
+
             if (!learned)
             {
                 string tCurrent = LocalizedTextManager.getText("sm_ui_spell_current");
-                text += $"{LocalizedTextManager.getText("sm_ui_spell_xp_cost")}: {xpCost}（{tCurrent}{currentXp}）\n";
+                SuperMechUiBuilder.CreateInfoRow(_detailContainer, LocalizedTextManager.getText("sm_ui_spell_xp_cost"), $"{xpCost}（{tCurrent}{currentXp}）", 100,
+                    currentXp >= xpCost ? SuperMechUiSkin.SuccessGreen : SuperMechUiSkin.DangerRed);
             }
 
             if (spell.prerequisites.Length > 0)
             {
-                string tPrereq = LocalizedTextManager.getText("sm_ui_spell_prereq");
-                text += $"\n{tPrereq}:\n";
+                SuperMechUiBuilder.CreateSectionTitle(_detailContainer, LocalizedTextManager.getText("sm_ui_spell_prereq"));
                 foreach (var pre in spell.prerequisites)
                 {
                     var preSpell = SuperMechSpell.GetSpell(pre);
                     if (preSpell != null)
                     {
                         bool preLearned = SuperMechSpell.IsLearned(actor, pre);
-                        text += $"  {(preLearned ? "✓" : "✗")} {LocalizedTextManager.getText(preSpell.nameKey)}\n";
+                        SuperMechUiBuilder.CreateInfoRow(_detailContainer,
+                            preLearned ? "✓" : "✗",
+                            LocalizedTextManager.getText(preSpell.nameKey), 30,
+                            preLearned ? SuperMechUiSkin.SuccessGreen : SuperMechUiSkin.DangerRed);
                     }
                 }
             }
 
-            _detailText.text = text;
             _learnBtn.interactable = canLearn && currentXp >= xpCost;
             _learnBtnText.text = learned ? LocalizedTextManager.getText("sm_ui_spell_learned") :
                                (phase > 0 ? LocalizedTextManager.getText("sm_ui_spell_phase") + (phase + 1) : LocalizedTextManager.getText("sm_ui_spell_entry"));
