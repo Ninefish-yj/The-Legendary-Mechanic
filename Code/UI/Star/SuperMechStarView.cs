@@ -243,7 +243,7 @@ namespace SuperMech.Code
             topImg.color = Color.white;
             topImg.raycastTarget = true;
 
-            // 返回按钮
+            // 返回按钮（v0.223：关闭星图并返回主星球）
             var backGo = new GameObject("BackBtn");
             backGo.transform.SetParent(topGo.transform, false);
             var backRect = backGo.AddComponent<RectTransform>();
@@ -253,11 +253,13 @@ namespace SuperMech.Code
             backRect.sizeDelta = new Vector2(120, 34);
             backRect.anchoredPosition = new Vector2(12, 0);
             var backImg = backGo.AddComponent<Image>();
-            backImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            backImg.type = Image.Type.Sliced;
-            backImg.color = Color.white;
+            backImg.color = new Color(0.2f, 0.25f, 0.35f, 0.9f);
             var backBtn = backGo.AddComponent<Button>();
-            backBtn.onClick.AddListener(Close);
+            backBtn.onClick.AddListener(() =>
+            {
+                Close();
+                SuperMechMultiWorld.SwitchToPlanet(SuperMechStarSystem.MAIN_PLANET);
+            });
 
             var backTextGo = new GameObject("Text");
             backTextGo.transform.SetParent(backGo.transform, false);
@@ -271,12 +273,66 @@ namespace SuperMech.Code
             backText.alignment = TextAnchor.MiddleCenter;
             backText.text = LocalizedTextManager.getText("sm_ui_back");
 
+            // v0.223 顶部右侧工具按钮：殖民地总览、全局自动运输
+            // 殖民地总览按钮
+            var colonyBtnGo = new GameObject("ColonyBtn");
+            colonyBtnGo.transform.SetParent(topGo.transform, false);
+            var colonyRect = colonyBtnGo.AddComponent<RectTransform>();
+            colonyRect.anchorMin = new Vector2(1, 0.5f);
+            colonyRect.anchorMax = new Vector2(1, 0.5f);
+            colonyRect.pivot = new Vector2(1, 0.5f);
+            colonyRect.sizeDelta = new Vector2(100, 34);
+            colonyRect.anchoredPosition = new Vector2(-116, 0);
+            var colonyImg = colonyBtnGo.AddComponent<Image>();
+            colonyImg.color = new Color(0.2f, 0.3f, 0.5f, 0.9f);
+            var colonyBtn = colonyBtnGo.AddComponent<Button>();
+            colonyBtn.onClick.AddListener(ShowColonyOverview);
+            var colonyTextGo = new GameObject("Text");
+            colonyTextGo.transform.SetParent(colonyBtnGo.transform, false);
+            var colonyTextRect = colonyTextGo.AddComponent<RectTransform>();
+            colonyTextRect.anchorMin = Vector2.zero; colonyTextRect.anchorMax = Vector2.one;
+            var colonyText = colonyTextGo.AddComponent<Text>();
+            colonyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            colonyText.fontSize = 12; colonyText.color = Color.white;
+            colonyText.alignment = TextAnchor.MiddleCenter;
+            colonyText.text = LocalizedTextManager.getText("sm_ui_action_colony");
+
+            // 全局自动运输按钮
+            var autoBtnGo = new GameObject("AutoTransportBtn");
+            autoBtnGo.transform.SetParent(topGo.transform, false);
+            var autoRect = autoBtnGo.AddComponent<RectTransform>();
+            autoRect.anchorMin = new Vector2(1, 0.5f);
+            autoRect.anchorMax = new Vector2(1, 0.5f);
+            autoRect.pivot = new Vector2(1, 0.5f);
+            autoRect.sizeDelta = new Vector2(100, 34);
+            autoRect.anchoredPosition = new Vector2(-12, 0);
+            var autoImg = autoBtnGo.AddComponent<Image>();
+            autoImg.color = new Color(0.2f, 0.4f, 0.3f, 0.9f);
+            var autoBtn = autoBtnGo.AddComponent<Button>();
+            autoBtn.onClick.AddListener(() =>
+            {
+                foreach (var p in SuperMechStarSystem.GetAllPlanets())
+                {
+                    if (p != null && p.colonyLevel > 0) p.autoTransport = !p.autoTransport;
+                }
+                if (_selectedPlanet != null) SelectPlanet(_selectedPlanet);
+            });
+            var autoTextGo = new GameObject("Text");
+            autoTextGo.transform.SetParent(autoBtnGo.transform, false);
+            var autoTextRect = autoTextGo.AddComponent<RectTransform>();
+            autoTextRect.anchorMin = Vector2.zero; autoTextRect.anchorMax = Vector2.one;
+            var autoText = autoTextGo.AddComponent<Text>();
+            autoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            autoText.fontSize = 12; autoText.color = Color.white;
+            autoText.alignment = TextAnchor.MiddleCenter;
+            autoText.text = LocalizedTextManager.getText("sm_ui_action_auto_all");
+
             // 标题
             var titleGo = new GameObject("Title");
             titleGo.transform.SetParent(topGo.transform, false);
             var titleRect = titleGo.AddComponent<RectTransform>();
             titleRect.anchorMin = Vector2.zero; titleRect.anchorMax = Vector2.one;
-            titleRect.offsetMin = new Vector2(140, 0); titleRect.offsetMax = new Vector2(-140, 0);
+            titleRect.offsetMin = new Vector2(140, 0); titleRect.offsetMax = new Vector2(-230, 0);
             var titleText = titleGo.AddComponent<Text>();
             titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
             titleText.fontSize = 18;
@@ -586,75 +642,8 @@ namespace SuperMech.Code
             _tooltipText.verticalOverflow = VerticalWrapMode.Truncate;
             _tooltip.SetActive(false);
 
-            // === 文明6式底部行动栏 ===
-            var actionBarGo = new GameObject("ActionBar");
-            actionBarGo.transform.SetParent(transform, false);
-            actionBarGo.transform.SetAsLastSibling();
-            var actionBarRect = actionBarGo.AddComponent<RectTransform>();
-            actionBarRect.anchorMin = new Vector2(0, 0);
-            actionBarRect.anchorMax = new Vector2(1, 0);
-            actionBarRect.pivot = new Vector2(0.5f, 0);
-            actionBarRect.sizeDelta = new Vector2(0, 40);
-            actionBarRect.anchoredPosition = new Vector2(0, 4);
-            var actionBarImg = actionBarGo.AddComponent<Image>();
-            actionBarImg.color = new Color(0.02f, 0.03f, 0.06f, 0.85f);
-
-            // 行动栏按钮：返回主世界/殖民地总览/全局自动运输
-            string[] actionNames = { "sm_ui_action_main", "sm_ui_action_colony", "sm_ui_action_auto_all" };
-            Color[] actionColors = {
-                new Color(0.9f, 0.7f, 0.2f, 0.9f),
-                new Color(0.3f, 0.6f, 0.8f, 0.9f),
-                new Color(0.3f, 0.7f, 0.4f, 0.9f)
-            };
-            for (int a = 0; a < 3; a++)
-            {
-                var actBtnGo = new GameObject($"ActionBtn_{a}");
-                actBtnGo.transform.SetParent(actionBarGo.transform, false);
-                var actBtnRect = actBtnGo.AddComponent<RectTransform>();
-                float btnWidth = 1f / 3f;
-                actBtnRect.anchorMin = new Vector2(a * btnWidth + 0.005f, 0.15f);
-                actBtnRect.anchorMax = new Vector2((a + 1) * btnWidth - 0.005f, 0.85f);
-                actBtnRect.offsetMin = Vector2.zero;
-                actBtnRect.offsetMax = Vector2.zero;
-                var actBtnImg = actBtnGo.AddComponent<Image>();
-                actBtnImg.color = actionColors[a];
-                var actBtn = actBtnGo.AddComponent<Button>();
-                int actionIdx = a;
-                actBtn.onClick.AddListener(() =>
-                {
-                    if (actionIdx == 0) // 返回主世界
-                    {
-                        Close();
-                        SuperMechMultiWorld.SwitchToPlanet(SuperMechStarSystem.MAIN_PLANET);
-                    }
-                    else if (actionIdx == 1) // 殖民地总览
-                    {
-                        ShowColonyOverview();
-                    }
-                    else // 全局自动运输开关
-                    {
-                        foreach (var p in SuperMechStarSystem.GetAllPlanets())
-                        {
-                            if (p != null && p.colonyLevel > 0) p.autoTransport = !p.autoTransport;
-                        }
-                        if (_selectedPlanet != null) SelectPlanet(_selectedPlanet);
-                    }
-                });
-                var actTextGo = new GameObject("Text");
-                actTextGo.transform.SetParent(actBtnGo.transform, false);
-                var actTextRect = actTextGo.AddComponent<RectTransform>();
-                actTextRect.anchorMin = Vector2.zero;
-                actTextRect.anchorMax = Vector2.one;
-                actTextRect.offsetMin = Vector2.zero;
-                actTextRect.offsetMax = Vector2.zero;
-                var actText = actTextGo.AddComponent<Text>();
-                actText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
-                actText.fontSize = 11;
-                actText.color = Color.white;
-                actText.alignment = TextAnchor.MiddleCenter;
-                actText.text = LocalizedTextManager.getText(actionNames[a]);
-                actText.raycastTarget = false;
-            }
+            // v0.223 移除底部行动栏（三个大彩色按钮不符合主流星图布局）
+            // 功能整合：返回→顶部返回按钮，殖民地总览/自动运输→顶部右侧小按钮
 
             // 科幻风格外框装饰（最上层）
             AddSciFiFrame();
