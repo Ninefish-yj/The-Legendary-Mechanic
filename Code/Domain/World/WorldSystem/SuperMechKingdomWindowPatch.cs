@@ -23,13 +23,15 @@ namespace SuperMech.Code
             try
             {
                 Kingdom kingdom = __instance.meta_object;
+                Debug.Log($"[超神机械师] KingdomWindowPatch执行: kingdom={kingdom?.data.name}, wild={kingdom?.wild}, isCiv={kingdom?.isCiv()}");
                 if (kingdom == null || kingdom.wild || !kingdom.isCiv()) return;
 
-                // 反射缓存：showStatRow(string, object, MetaType, long, string)
+                // 反射缓存：showStatRow完整7参数签名（StatsWindow定义，KingdomWindow继承）
                 if (_showStatRow == null)
                 {
-                    _showStatRow = AccessTools.Method(typeof(KingdomWindow), "showStatRow",
-                        new[] { typeof(string), typeof(object), typeof(MetaType), typeof(long), typeof(string) });
+                    _showStatRow = AccessTools.Method(typeof(StatsWindow), "showStatRow",
+                        new[] { typeof(string), typeof(object), typeof(MetaType), typeof(long), typeof(string), typeof(string), typeof(TooltipDataGetter) });
+                    Debug.Log($"[超神机械师] showStatRow反射结果: {_showStatRow != null}");
                 }
                 if (_showStatRow == null) return;
 
@@ -147,7 +149,7 @@ namespace SuperMech.Code
         private static KeyValueField AddRow(KingdomWindow window, string label, object value, string icon)
         {
             var row = _showStatRow.Invoke(window, new object[] {
-                label, value, MetaType.None, -1L, icon
+                label, value, MetaType.None, -1L, icon, null, null
             }) as KeyValueField;
             if (row != null)
             {
