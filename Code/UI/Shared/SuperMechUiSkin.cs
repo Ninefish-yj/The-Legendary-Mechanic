@@ -35,32 +35,39 @@ namespace SuperMech.Code
         private static Sprite _tabActive;
         private static Sprite _qiIcon;
 
-        // ═════════════════════════ v0.194 统一科幻星际色板 ═════════════════════════
-        // 面板层级：背景最深 → 面板 → 卡片 → 交互元素逐层提亮
-        public static readonly Color BgColor = new Color(0.05f, 0.07f, 0.12f, 0.96f);       // 面板底 #0D1220
-        public static readonly Color BgLight = new Color(0.08f, 0.11f, 0.18f, 0.95f);       // 次级面板 #141C2E
-        public static readonly Color BorderColor = new Color(0.25f, 0.35f, 0.50f, 0.9f);    // 边框 #405980
-        public static readonly Color BorderDim = new Color(0.15f, 0.22f, 0.32f, 0.7f);      // 暗边框 #263852
-        public static readonly Color BorderGold = new Color(0.75f, 0.60f, 0.30f, 0.9f);     // 金色边框 #C0994D
-        public static readonly Color TextColor = new Color(0.90f, 0.92f, 0.96f, 1f);        // 正文 #E6EBF5
-        public static readonly Color TextDim = new Color(0.55f, 0.62f, 0.72f, 1f);          // 次要文字 #8C9EB8
-        public static readonly Color AccentColor = new Color(0.91f, 0.76f, 0.42f, 1f);      // 金色强调 #E8C36A（标题/重要数值）
-        public static readonly Color AccentDim = new Color(0.60f, 0.48f, 0.25f, 0.8f);      // 暗金
-        public static readonly Color CyanColor = new Color(0.30f, 0.78f, 0.85f, 1f);        // 青色高亮 #4DC7D9（数值/进度/选中）
-        public static readonly Color CyanDim = new Color(0.18f, 0.45f, 0.55f, 0.8f);        // 暗青
-        public static readonly Color ButtonNormal = new Color(0.10f, 0.15f, 0.24f, 0.92f);  // 按钮常态 #1A263D
-        public static readonly Color ButtonHover = new Color(0.16f, 0.24f, 0.38f, 0.96f);   // 按钮悬停 #293D61
-        public static readonly Color ButtonActive = new Color(0.07f, 0.10f, 0.16f, 0.98f);  // 按钮按下 #121A29
-        public static readonly Color EdgeLight = new Color(0.35f, 0.50f, 0.70f, 0.4f);      // 顶高光
-        public static readonly Color EdgeDark = new Color(0.03f, 0.05f, 0.08f, 0.6f);       // 底阴影
-        public static readonly Color RowEven = new Color(0.08f, 0.12f, 0.20f, 0.5f);        // 偶数行
-        public static readonly Color RowOdd = new Color(0.06f, 0.09f, 0.15f, 0.3f);         // 奇数行
-        public static readonly Color CardBg = new Color(0.09f, 0.13f, 0.21f, 0.92f);        // 卡片底 #172136
-        public static readonly Color SectionBg = new Color(0.12f, 0.17f, 0.27f, 0.95f);     // 分区底 #1F2B45
-        public static readonly Color CloseRed = new Color(0.70f, 0.25f, 0.22f, 0.95f);      // 关闭按钮红
-        public static readonly Color SuccessGreen = new Color(0.35f, 0.72f, 0.45f, 1f);     // 成功绿
-        public static readonly Color DangerRed = new Color(0.85f, 0.35f, 0.40f, 1f);        // 危险红
-        public static readonly Color WarningOrange = new Color(0.90f, 0.65f, 0.30f, 1f);    // 警告橙
+        // ═════════════════════════ v0.215 优化可读性：提高对比度+统一字号层级 ═════════════════════════
+        // 设计原则：高对比度(WCAG AA)、清晰字号层级、充足间距、一致圆角
+        public static readonly Color BgColor = new Color(0.08f, 0.11f, 0.18f, 0.97f);       // 面板底 #141C2E（提亮30%增强可读性）
+        public static readonly Color BgLight = new Color(0.12f, 0.16f, 0.25f, 0.96f);       // 次级面板 #1F2940
+        public static readonly Color BorderColor = new Color(0.35f, 0.48f, 0.68f, 0.9f);    // 边框 #597AAD（提亮增强边界感）
+        public static readonly Color BorderDim = new Color(0.20f, 0.28f, 0.40f, 0.7f);      // 暗边框 #334766
+        public static readonly Color BorderGold = new Color(0.85f, 0.68f, 0.35f, 0.95f);    // 金色边框 #D9AD59（提亮）
+        public static readonly Color TextColor = new Color(0.95f, 0.96f, 0.98f, 1f);        // 正文 #F2F5FA（提高对比度）
+        public static readonly Color TextDim = new Color(0.65f, 0.72f, 0.82f, 1f);          // 次要文字 #A6B8D1（从0.55提亮到0.65）
+        public static readonly Color AccentColor = new Color(0.95f, 0.80f, 0.45f, 1f);      // 金色强调 #F2CC73（标题/重要数值）
+        public static readonly Color AccentDim = new Color(0.65f, 0.52f, 0.28f, 0.85f);     // 暗金
+        public static readonly Color CyanColor = new Color(0.40f, 0.82f, 0.90f, 1f);        // 青色高亮 #66D1E6（数值/进度/选中）
+        public static readonly Color CyanDim = new Color(0.22f, 0.50f, 0.60f, 0.8f);        // 暗青
+        public static readonly Color ButtonNormal = new Color(0.14f, 0.20f, 0.32f, 0.95f);  // 按钮常态 #243352（提亮）
+        public static readonly Color ButtonHover = new Color(0.22f, 0.32f, 0.48f, 0.98f);   // 按钮悬停 #38527A（增大差异）
+        public static readonly Color ButtonActive = new Color(0.09f, 0.13f, 0.20f, 0.98f);  // 按钮按下 #172133
+        public static readonly Color EdgeLight = new Color(0.40f, 0.55f, 0.75f, 0.45f);     // 顶高光
+        public static readonly Color EdgeDark = new Color(0.04f, 0.06f, 0.10f, 0.6f);       // 底阴影
+        public static readonly Color RowEven = new Color(0.10f, 0.15f, 0.24f, 0.6f);        // 偶数行（提亮）
+        public static readonly Color RowOdd = new Color(0.07f, 0.11f, 0.18f, 0.4f);         // 奇数行
+        public static readonly Color CardBg = new Color(0.12f, 0.17f, 0.27f, 0.95f);        // 卡片底 #1F2B45
+        public static readonly Color SectionBg = new Color(0.16f, 0.22f, 0.34f, 0.96f);     // 分区底 #293857
+        public static readonly Color CloseRed = new Color(0.80f, 0.30f, 0.27f, 0.95f);      // 关闭按钮红（提亮）
+        public static readonly Color SuccessGreen = new Color(0.40f, 0.78f, 0.50f, 1f);     // 成功绿
+        public static readonly Color DangerRed = new Color(0.90f, 0.40f, 0.45f, 1f);        // 危险红
+        public static readonly Color WarningOrange = new Color(0.95f, 0.70f, 0.35f, 1f);    // 警告橙
+
+        // 字号层级规范（大众阅读习惯）
+        public const int FontSizeTitle = 18;    // 窗口标题
+        public const int FontSizeSection = 15;  // 分区标题
+        public const int FontSizeBody = 13;     // 正文
+        public const int FontSizeSmall = 11;    // 辅助文字/标签
+        public const int FontSizeMini = 10;     // 极小注释
 
         // 兼容旧代码的别名（星海总览等已用Sci前缀的地方继续可用）
         public static readonly Color SciBg = BgColor;
@@ -585,13 +592,13 @@ namespace SuperMech.Code
 
         // ═════════════════════════ UI工具方法 ═════════════════════════
 
-        /// <summary>创建Text组件</summary>
-        public static Text MakeText(Transform parent, string content, int fontSize = 14, TextAnchor anchor = TextAnchor.MiddleLeft)
+        /// <summary>创建Text组件（默认正文15号字，提高可读性）</summary>
+        public static Text MakeText(Transform parent, string content, int fontSize = 15, TextAnchor anchor = TextAnchor.MiddleLeft)
         {
             var go = new GameObject("Text");
             go.transform.SetParent(parent, false);
             var text = go.AddComponent<Text>();
-            var df = DefaultFont; if (df != null) text.font = df; // v0.75.11: 字体兜底，避免NRE白板
+            var df = DefaultFont; if (df != null) text.font = df;
             text.fontSize = fontSize;
             text.color = TextColor;
             text.alignment = anchor;
@@ -606,7 +613,7 @@ namespace SuperMech.Code
             return text;
         }
 
-        /// <summary>创建按钮（三态SpriteSwap + 立体描边）</summary>
+        /// <summary>创建按钮（三态SpriteSwap + 立体描边，默认正文14号字）</summary>
         public static Button MakeButton(Transform parent, string text, int fontSize = 14, System.Action onClick = null)
         {
             var go = new GameObject("Button");

@@ -118,9 +118,9 @@ namespace SuperMech.Code
             rect.anchorMin = new Vector2(0, 1);
             rect.anchorMax = new Vector2(1, 1);
             rect.pivot = new Vector2(0.5f, 1);
-            rect.sizeDelta = new Vector2(0, 52);
+            rect.sizeDelta = new Vector2(0, 58);
             rect.anchoredPosition = new Vector2(0, -y);
-            y += 54f;
+            y += 60f;
 
             bool selected = k.getID() == SuperMechWindowManager.SelectedKingdomId;
             var bg = row.AddComponent<Image>();

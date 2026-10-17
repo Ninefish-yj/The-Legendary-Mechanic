@@ -19,16 +19,16 @@ namespace SuperMech.Code
         private Text _titleText;
         private Vector2 _dragOffset;
 
-        private const int TitleBarHeight = 36;
-        private const int ContentMargin = 10;
-        private const int CloseBtnSize = 26;
-        private const int CloseBtnMargin = 6;
+        private const int TitleBarHeight = 40;
+        private const int ContentMargin = 14;
+        private const int CloseBtnSize = 28;
+        private const int CloseBtnMargin = 8;
         private const int BorderWidth = 2;
         private const int ResizeHandleSize = 16;
 
         // 手机端适配参数
-        private const int MobileTitleBarHeight = 48;
-        private const int MobileCloseBtnSize = 40;
+        private const int MobileTitleBarHeight = 52;
+        private const int MobileCloseBtnSize = 44;
         private const float MobileScreenRatio = 0.92f; // 窗口占屏幕比例
 
         public Vector2 MinSize = new Vector2(400, 300);
