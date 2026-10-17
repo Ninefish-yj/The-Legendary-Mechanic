@@ -90,7 +90,7 @@ namespace SuperMech.Code
             leftRect.anchorMin = Vector2.zero;
             leftRect.anchorMax = Vector2.one;
             leftRect.offsetMin = new Vector2(8, botY);
-            leftRect.offsetMax = new Vector2(-556, -topY);
+            leftRect.offsetMax = new Vector2(-548, -topY);
             var leftBg = leftGo.AddComponent<Image>();
             leftBg.color = new Color(0.15f, 0.11f, 0.065f, 0.35f);
 
@@ -251,15 +251,15 @@ namespace SuperMech.Code
         // ═══════════════ 中栏：下拉 + 卡片列表 ═══════════════
         private void BuildCenterPanel(float topY, float botY)
         {
-            // 顶栏：阶位下拉 + 排序下拉 + 计数
+            // 顶栏：阶位下拉 + 排序下拉 + 计数（贴中栏顶部，anchor 顶部拉伸）
             var topBar = new GameObject("TopBar");
             topBar.transform.SetParent(transform, false);
             var topRect = topBar.AddComponent<RectTransform>();
-            topRect.anchorMin = Vector2.zero;
-            topRect.anchorMax = Vector2.one;
-            topRect.offsetMin = new Vector2(166, 0);
-            topRect.offsetMax = new Vector2(-196, 26);
-            topRect.anchoredPosition = new Vector2(0, -topY + 8);
+            topRect.anchorMin = new Vector2(0, 1);
+            topRect.anchorMax = new Vector2(1, 1);
+            topRect.pivot = new Vector2(0.5f, 1);
+            topRect.offsetMin = new Vector2(166, -(topY + 26));
+            topRect.offsetMax = new Vector2(-196, -topY);
 
             _realmDropdown = SuperMechUiDropdown.Create("RealmDropdown", topBar.transform, new[] { LocalizedTextManager.getText("sm_ui_filter_all"), "F", "E", "D", "C", "B", "A", "S", "X" }, OnRealmChanged);
             var realmRect = _realmDropdown.GetComponent<RectTransform>();
@@ -286,14 +286,14 @@ namespace SuperMech.Code
             countRect.offsetMax = Vector2.zero;
             _countText.color = new Color(0.75f, 0.70f, 0.60f, 1f);
 
-            // 列表
+            // 列表（中栏，TopBar 与 BottomBar 之间，双向拉伸）
             var scrollGo = new GameObject("ScrollView");
             scrollGo.transform.SetParent(transform, false);
             _scrollViewRect = scrollGo.AddComponent<RectTransform>();
             _scrollViewRect.anchorMin = Vector2.zero;
             _scrollViewRect.anchorMax = Vector2.one;
-            _scrollViewRect.offsetMin = new Vector2(166, botY + 28);
-            _scrollViewRect.offsetMax = new Vector2(-196, -topY + 38);
+            _scrollViewRect.offsetMin = new Vector2(166, botY + 30);
+            _scrollViewRect.offsetMax = new Vector2(-196, -(topY + 30));
             var scrollImg = scrollGo.AddComponent<Image>();
             scrollImg.color = new Color(0, 0, 0, 0.15f);
             scrollGo.AddComponent<Mask>().showMaskGraphic = true;
@@ -321,15 +321,15 @@ namespace SuperMech.Code
             scroll.viewport = viewportRect;
             scroll.content = _listContent;
 
-            // 底部：到顶/到底
+            // 底部：到顶/到底（贴中栏底部，anchor 底部拉伸）
             var bottomBar = new GameObject("BottomBar");
             bottomBar.transform.SetParent(transform, false);
             var bottomRect = bottomBar.AddComponent<RectTransform>();
-            bottomRect.anchorMin = Vector2.zero;
-            bottomRect.anchorMax = Vector2.one;
-            bottomRect.offsetMin = new Vector2(166, 0);
-            bottomRect.offsetMax = new Vector2(-196, 26);
-            bottomRect.anchoredPosition = new Vector2(0, 6);
+            bottomRect.anchorMin = new Vector2(0, 0);
+            bottomRect.anchorMax = new Vector2(1, 0);
+            bottomRect.pivot = new Vector2(0.5f, 0);
+            bottomRect.offsetMin = new Vector2(166, botY);
+            bottomRect.offsetMax = new Vector2(-196, botY + 26);
 
             var bottomLayout = bottomBar.AddComponent<HorizontalLayoutGroup>();
             bottomLayout.padding = new RectOffset(8, 8, 2, 2);
@@ -363,8 +363,10 @@ namespace SuperMech.Code
             var rightGo = new GameObject("RightPanel");
             rightGo.transform.SetParent(transform, false);
             var rightRect = rightGo.AddComponent<RectTransform>();
-            rightRect.anchorMin = Vector2.zero;
-            rightRect.anchorMax = Vector2.one;
+            // 右栏：锚定右边，offset 用负数（相对右边缘向内）
+            rightRect.anchorMin = new Vector2(1, 0);
+            rightRect.anchorMax = new Vector2(1, 1);
+            rightRect.pivot = new Vector2(1, 0.5f);
             rightRect.offsetMin = new Vector2(-196, botY);
             rightRect.offsetMax = new Vector2(-8, -topY);
             var rightBg = rightGo.AddComponent<Image>();

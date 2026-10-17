@@ -86,6 +86,9 @@ namespace SuperMech.Code
                 r.anchorMax = new Vector2(1f, 1f);
                 r.pivot = new Vector2(0.5f, 0.5f);
                 r.anchoredPosition = new Vector2(-(r.sizeDelta.x * 0.5f + 6f), -(r.sizeDelta.y * 0.5f + 6f));
+                // v0.238.2 置顶：Content 里的内容（统计面板/引言文字）会渲染在关闭按钮上层，
+                // SetAsLastSibling 让关闭按钮成为 Background 最后子物体，始终可见可点
+                r.SetAsLastSibling();
             }
         }
 
