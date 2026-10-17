@@ -1,5 +1,4 @@
 using NeoModLoader.api;
-using NeoModLoader.services;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -116,10 +115,10 @@ namespace SuperMech.Code
                 // 修改文本颜色
                 if (bar.textField != null) bar.textField.color = QiBarColor;
 
-                // 替换图标为自定义气力图标
+                // 替换图标为自定义气力图标（统一使用动态生成的UiSkin.QiIcon）
                 try
                 {
-                    Sprite qiSprite = SpriteTextureLoader.getSprite("ui/Icons/iconQi");
+                    Sprite qiSprite = SuperMechUiSkin.QiIcon;
                     if (qiSprite != null)
                     {
                         Transform iconTransform = bar.transform.Find("icon") ?? bar.transform.Find("Icon");
