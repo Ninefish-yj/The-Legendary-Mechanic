@@ -108,7 +108,9 @@ namespace SuperMech
                 if (!SuperMechSaveData.IsRestoring) _worldInitPending = false;
             }
 
-            _promoTimer += Time.unscaledDeltaTime;
+            // v0.219 高倍速适配：用Time.deltaTime（受倍速影响），而非unscaledDeltaTime（真实时间）
+            // 高倍速下游戏逻辑加速，模组Tick也必须同步加速，否则气力恢复/修炼/AI等会比游戏慢
+            _promoTimer += Time.deltaTime;
             if (_promoTimer >= SuperMechConfig.TickInterval)
             {
                 _promoTimer = 0f;
