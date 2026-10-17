@@ -147,7 +147,7 @@ namespace SuperMech.Code
             mkSr.content = mkContentRt;
             mkContent.AddComponent<ContentSizeFitter>().verticalFit = ContentSizeFitter.FitMode.PreferredSize;
             _marketText = mkContent.AddComponent<Text>();
-            _marketText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _marketText.font = SuperMechUiSkin.DefaultFont;
             _marketText.fontSize = 11;
             _marketText.color = new Color(0.8f, 0.9f, 1f);
             _marketText.alignment = TextAnchor.UpperLeft;

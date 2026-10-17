@@ -229,7 +229,7 @@ namespace SuperMech.Code
             _detailContainer = infoAreaGo.transform;
 
             _detailText = infoAreaGo.AddComponent<Text>();
-            _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _detailText.font = SuperMechUiSkin.DefaultFont;
             _detailText.fontSize = 13;
             _detailText.color = SuperMechUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
@@ -254,7 +254,7 @@ namespace SuperMech.Code
             lss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
             _learnBtn.spriteState = lss;
             _learnBtnText = learnBtnGo.AddComponent<Text>();
-            _learnBtnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _learnBtnText.font = SuperMechUiSkin.DefaultFont;
             _learnBtnText.fontSize = 14;
             _learnBtnText.color = Color.white;
             _learnBtnText.alignment = TextAnchor.MiddleCenter;
@@ -332,7 +332,7 @@ namespace SuperMech.Code
                 catTextRect.offsetMin = new Vector2(8, 0);
                 catTextRect.offsetMax = Vector2.zero;
                 var catText = catTextGo.AddComponent<Text>();
-                catText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                catText.font = SuperMechUiSkin.DefaultFont;
                 catText.fontSize = 13;
                 catText.fontStyle = FontStyle.Bold;
                 catText.color = SuperMechUiSkin.TextColor;
@@ -358,7 +358,7 @@ namespace SuperMech.Code
                         tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
                         tr.offsetMin = new Vector2(20, 0); tr.offsetMax = Vector2.zero;
                         var kt = textGo.AddComponent<Text>();
-                        kt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                        kt.font = SuperMechUiSkin.DefaultFont;
                         kt.fontSize = 12;
                         kt.color = unlocked ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                         kt.alignment = TextAnchor.MiddleLeft;

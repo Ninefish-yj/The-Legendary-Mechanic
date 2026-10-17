@@ -74,7 +74,7 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 40);
             titleRect.anchoredPosition = new Vector2(0, -8);
             var titleText = titleGo.AddComponent<Text>();
-            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.font = SuperMechUiSkin.DefaultFont;
             titleText.fontSize = 16;
             titleText.color = SuperMechUiSkin.CyanColor;
             titleText.alignment = TextAnchor.MiddleCenter;
@@ -145,7 +145,7 @@ namespace SuperMech.Code
             closeTextRect.offsetMin = Vector2.zero;
             closeTextRect.offsetMax = Vector2.zero;
             var closeText = closeTextGo.AddComponent<Text>();
-            closeText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            closeText.font = SuperMechUiSkin.DefaultFont;
             closeText.fontSize = 12;
             closeText.color = Color.white;
             closeText.alignment = TextAnchor.MiddleCenter;
@@ -204,7 +204,7 @@ namespace SuperMech.Code
             nameRect.offsetMin = Vector2.zero;
             nameRect.offsetMax = Vector2.zero;
             var nameText = nameGo.AddComponent<Text>();
-            nameText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            nameText.font = SuperMechUiSkin.DefaultFont;
             nameText.fontSize = 13;
             nameText.color = Color.white;
             nameText.alignment = TextAnchor.LowerLeft;
@@ -221,7 +221,7 @@ namespace SuperMech.Code
             relRect.offsetMin = Vector2.zero;
             relRect.offsetMax = Vector2.zero;
             var relText = relGo.AddComponent<Text>();
-            relText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            relText.font = SuperMechUiSkin.DefaultFont;
             relText.fontSize = 11;
             relText.color = relationColor;
             relText.alignment = TextAnchor.UpperLeft;
@@ -314,7 +314,7 @@ namespace SuperMech.Code
             btnTextRect.offsetMin = Vector2.zero;
             btnTextRect.offsetMax = Vector2.zero;
             var btnText = btnTextGo.AddComponent<Text>();
-            btnText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            btnText.font = SuperMechUiSkin.DefaultFont;
             btnText.fontSize = 10;
             btnText.color = Color.white;
             btnText.alignment = TextAnchor.MiddleCenter;

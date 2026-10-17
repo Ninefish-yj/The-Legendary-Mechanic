@@ -81,7 +81,7 @@ namespace SuperMech.Code
             titleImg.sprite = SuperMechUiSkin.TitleBar;
             titleImg.type = Image.Type.Sliced;
             var titleText = titleGo.AddComponent<Text>();
-            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.font = SuperMechUiSkin.DefaultFont;
             titleText.fontSize = 16;
             titleText.fontStyle = FontStyle.Bold;
             titleText.color = SuperMechUiSkin.CyanColor;
@@ -341,7 +341,7 @@ namespace SuperMech.Code
             go.transform.SetParent(_content.transform, false);
             var rect = go.AddComponent<RectTransform>();
             var txt = go.AddComponent<Text>();
-            txt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            txt.font = SuperMechUiSkin.DefaultFont;
             txt.fontSize = 10;
             txt.fontStyle = FontStyle.Bold;
             txt.color = SuperMechUiSkin.TextDim;

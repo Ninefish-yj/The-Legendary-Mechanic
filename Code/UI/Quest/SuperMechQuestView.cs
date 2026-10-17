@@ -75,7 +75,7 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 40);
             titleRect.anchoredPosition = new Vector2(0, -20);
             var titleText = titleGo.AddComponent<Text>();
-            titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleText.font = SuperMechUiSkin.DefaultFont;
             titleText.fontSize = 18;
             titleText.alignment = TextAnchor.MiddleCenter;
             titleText.color = SuperMechUiSkin.CyanColor;
@@ -128,7 +128,7 @@ namespace SuperMech.Code
             sr.movementType = ScrollRect.MovementType.Clamped;
 
             _contentText = contentGo.AddComponent<Text>();
-            _contentText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _contentText.font = SuperMechUiSkin.DefaultFont;
             _contentText.fontSize = 13;
             _contentText.alignment = TextAnchor.UpperLeft;
             _contentText.color = SuperMechUiSkin.TextColor;

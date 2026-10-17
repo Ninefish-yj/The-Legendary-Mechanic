@@ -19,7 +19,7 @@ namespace SuperMech.Code
             rect.offsetMax = Vector2.zero;
             var txt = go.AddComponent<Text>();
             var f = LocalizedTextManager.current_font;
-            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (f == null) f = SuperMechUiSkin.DefaultFont;
             txt.font = f;
             txt.fontSize = fontSize;
             txt.alignment = alignment;

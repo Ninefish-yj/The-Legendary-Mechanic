@@ -27,7 +27,7 @@ namespace SuperMech.Code
         private const float NODE_SIZE = 24f;
 
         /// <summary>获取字体</summary>
-        private static Font GetFont() => Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+        private static Font GetFont() => SuperMechUiSkin.DefaultFont;
 
         /// <summary>获取Canvas变换</summary>
         private static Transform GetCanvasTransform()

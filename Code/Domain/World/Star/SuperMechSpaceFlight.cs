@@ -311,7 +311,7 @@ namespace SuperMech.Code
                 titleRt.anchorMax = new Vector2(0.5f, 0.85f);
                 titleRt.sizeDelta = new Vector2(600, 40);
                 _flightText = titleGo.AddComponent<Text>();
-                _flightText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                _flightText.font = SuperMechUiSkin.DefaultFont;
                 _flightText.fontSize = 24;
                 _flightText.color = new Color(0.5f, 0.8f, 1f);
                 _flightText.alignment = TextAnchor.MiddleCenter;
@@ -325,7 +325,7 @@ namespace SuperMech.Code
                 progRt.anchorMax = new Vector2(0.5f, 0.15f);
                 progRt.sizeDelta = new Vector2(400, 30);
                 _flightProgress = progGo.AddComponent<Text>();
-                _flightProgress.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                _flightProgress.font = SuperMechUiSkin.DefaultFont;
                 _flightProgress.fontSize = 16;
                 _flightProgress.color = new Color(0.7f, 0.7f, 0.7f);
                 _flightProgress.alignment = TextAnchor.MiddleCenter;

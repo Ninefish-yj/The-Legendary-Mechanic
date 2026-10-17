@@ -217,7 +217,7 @@ namespace SuperMech.Code
         private static Font SafeFont()
         {
             Font f = LocalizedTextManager.current_font;
-            if (f == null) f = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (f == null) f = SuperMechUiSkin.DefaultFont;
             return f;
         }
 

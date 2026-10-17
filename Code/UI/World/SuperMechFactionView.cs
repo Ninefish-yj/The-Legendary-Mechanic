@@ -34,7 +34,7 @@ namespace SuperMech.Code
 
             _countText = new GameObject("Count").AddComponent<Text>();
             _countText.transform.SetParent(topBar.transform, false);
-            _countText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _countText.font = SuperMechUiSkin.DefaultFont;
             _countText.fontSize = 13;
             _countText.color = new Color(0.85f, 0.9f, 1f);
             _countText.alignment = TextAnchor.MiddleLeft;
@@ -78,7 +78,7 @@ namespace SuperMech.Code
 
             _emptyText = new GameObject("Empty").AddComponent<Text>();
             _emptyText.transform.SetParent(content.transform, false);
-            _emptyText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _emptyText.font = SuperMechUiSkin.DefaultFont;
             _emptyText.fontSize = 12;
             _emptyText.color = new Color(0.6f, 0.65f, 0.75f);
             _emptyText.alignment = TextAnchor.MiddleCenter;
@@ -102,7 +102,7 @@ namespace SuperMech.Code
 
             var detailTitle = new GameObject("DetailTitle").AddComponent<Text>();
             detailTitle.transform.SetParent(detailPanel.transform, false);
-            detailTitle.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            detailTitle.font = SuperMechUiSkin.DefaultFont;
             detailTitle.fontSize = 12;
             detailTitle.color = SuperMechUiSkin.CyanColor;
             detailTitle.alignment = TextAnchor.UpperLeft;
@@ -116,7 +116,7 @@ namespace SuperMech.Code
 
             _detailText = new GameObject("DetailText").AddComponent<Text>();
             _detailText.transform.SetParent(detailPanel.transform, false);
-            _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _detailText.font = SuperMechUiSkin.DefaultFont;
             _detailText.fontSize = 11;
             _detailText.color = new Color(0.8f, 0.85f, 0.95f);
             _detailText.alignment = TextAnchor.UpperLeft;
@@ -171,7 +171,7 @@ namespace SuperMech.Code
             // 等级标签
             var levelText = new GameObject("Level").AddComponent<Text>();
             levelText.transform.SetParent(row.transform, false);
-            levelText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            levelText.font = SuperMechUiSkin.DefaultFont;
             levelText.fontSize = 14;
             levelText.color = SuperMechUiSkin.CyanColor;
             levelText.alignment = TextAnchor.MiddleCenter;
@@ -193,7 +193,7 @@ namespace SuperMech.Code
 
             var infoText = new GameObject("Info").AddComponent<Text>();
             infoText.transform.SetParent(row.transform, false);
-            infoText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            infoText.font = SuperMechUiSkin.DefaultFont;
             infoText.fontSize = 12;
             infoText.color = new Color(0.9f, 0.92f, 0.98f);
             infoText.alignment = TextAnchor.MiddleLeft;

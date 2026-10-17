@@ -57,6 +57,9 @@ namespace SuperMech.Code
         public static readonly Color RowEven = new Color(0.12f, 0.15f, 0.22f, 0.5f);        // 偶数行
         public static readonly Color RowOdd = new Color(0.09f, 0.12f, 0.17f, 0.3f);         // 奇数行
         public static readonly Color CardBg = new Color(0.14f, 0.17f, 0.25f, 0.95f);        // 卡片底 #242B40
+        // v0.237.6 弹窗内容区暖棕半透明：透出原版窗口棕纸纹理，视觉与原版协调（参考帝国盒子）
+        public static readonly Color VanillaCard = new Color(0.16f, 0.12f, 0.07f, 0.42f);    // 信息行卡片
+        public static readonly Color VanillaSection = new Color(0.13f, 0.10f, 0.06f, 0.55f); // 分区标题条
         public static readonly Color SectionBg = new Color(0.18f, 0.22f, 0.32f, 0.96f);     // 分区底 #2E3752
         public static readonly Color CloseRed = new Color(0.85f, 0.35f, 0.32f, 0.95f);      // 关闭按钮红
         public static readonly Color SuccessGreen = new Color(0.40f, 0.78f, 0.50f, 1f);     // 成功绿

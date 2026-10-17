@@ -60,7 +60,7 @@ namespace SuperMech.Code
 
             _titleText = new GameObject("Title").AddComponent<Text>();
             _titleText.transform.SetParent(titleBar.transform, false);
-            _titleText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _titleText.font = SuperMechUiSkin.DefaultFont;
             _titleText.fontSize = 16;
             _titleText.color = new Color(0.4f, 0.8f, 1f);
             _titleText.alignment = TextAnchor.MiddleCenter;
@@ -173,7 +173,7 @@ namespace SuperMech.Code
 
                 _eventTitle = new GameObject("Title").AddComponent<Text>();
                 _eventTitle.transform.SetParent(_eventPopup.transform, false);
-                _eventTitle.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                _eventTitle.font = SuperMechUiSkin.DefaultFont;
                 _eventTitle.fontSize = 18;
                 _eventTitle.color = new Color(1f, 0.85f, 0.4f);
                 _eventTitle.alignment = TextAnchor.MiddleCenter;
@@ -185,7 +185,7 @@ namespace SuperMech.Code
 
                 _eventDesc = new GameObject("Desc").AddComponent<Text>();
                 _eventDesc.transform.SetParent(_eventPopup.transform, false);
-                _eventDesc.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                _eventDesc.font = SuperMechUiSkin.DefaultFont;
                 _eventDesc.fontSize = 13;
                 _eventDesc.color = new Color(0.85f, 0.9f, 1f);
                 _eventDesc.alignment = TextAnchor.UpperCenter;
@@ -488,7 +488,7 @@ namespace SuperMech.Code
             var go = new GameObject("Text");
             go.transform.SetParent(parent, false);
             var t = go.AddComponent<Text>();
-            t.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            t.font = SuperMechUiSkin.DefaultFont;
             t.fontSize = size;
             t.color = Color.white;
             t.alignment = anchor;

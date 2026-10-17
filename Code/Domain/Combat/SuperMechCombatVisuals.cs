@@ -248,7 +248,7 @@ namespace SuperMech.Code
             tm.color = color;
             tm.anchor = TextAnchor.MiddleCenter;
             tm.alignment = TextAlignment.Center;
-            if (tm.font == null) tm.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            if (tm.font == null) tm.font = SuperMechUiSkin.DefaultFont;
 
             // 飘动动画
             var mover = go.AddComponent<DamageTextMover>();

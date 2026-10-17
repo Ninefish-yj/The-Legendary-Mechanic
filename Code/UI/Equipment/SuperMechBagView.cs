@@ -95,9 +95,9 @@ namespace SuperMech.Code
             detailRect.offsetMin = new Vector2(8, 4);
             detailRect.offsetMax = new Vector2(-8, -4);
             var detailImg = detailGo.AddComponent<Image>();
-            detailImg.sprite = SuperMechUiSkin.Section;
-            detailImg.type = Image.Type.Sliced;
-            detailImg.color = Color.white;
+            detailImg.sprite = null; // v0.237.6 纯色暖棕半透明
+            detailImg.type = Image.Type.Simple;
+            detailImg.color = SuperMechUiSkin.VanillaCard;
 
             // 详情文本（左侧70%）
             var textGo = new GameObject("DetailText");
@@ -106,7 +106,7 @@ namespace SuperMech.Code
             textRect.anchorMin = Vector2.zero; textRect.anchorMax = new Vector2(0.7f, 1);
             textRect.offsetMin = new Vector2(8, 4); textRect.offsetMax = new Vector2(-4, -4);
             _detailText = textGo.AddComponent<Text>();
-            _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _detailText.font = SuperMechUiSkin.DefaultFont;
             _detailText.fontSize = 12; _detailText.color = SuperMechUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
             _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
@@ -168,9 +168,9 @@ namespace SuperMech.Code
                 var slotGo = new GameObject($"Slot_{equipId}");
                 slotGo.transform.SetParent(content, false);
                 var slotImg = slotGo.AddComponent<Image>();
-                slotImg.sprite = SuperMechUiSkin.Card;
-                slotImg.type = Image.Type.Sliced;
-                slotImg.color = Color.white;
+                slotImg.sprite = null; // v0.237.6 纯色暖棕半透明
+                slotImg.type = Image.Type.Simple;
+                slotImg.color = SuperMechUiSkin.VanillaCard;
                 var slotBtn = slotGo.AddComponent<Button>();
 
                 var iconGo = new GameObject("Icon");

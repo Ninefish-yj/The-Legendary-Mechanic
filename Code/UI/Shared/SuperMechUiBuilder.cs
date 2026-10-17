@@ -14,7 +14,7 @@ namespace SuperMech.Code
             {
                 // v0.75.14: 参考诸天神座——NML官方字体(current_font)优先，中文支持且永不为null
                 _font = LocalizedTextManager.current_font;
-                if (_font == null) _font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                if (_font == null) _font = SuperMechUiSkin.DefaultFont;
                 if (_font == null) _font = Resources.GetBuiltinResource<Font>("Arial.ttf");
                 if (_font == null)
                 {
@@ -233,9 +233,10 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
         {
             var go = CreateObject("SectionTitle", parent, typeof(RectTransform), typeof(Image));
             var img = go.GetComponent<Image>();
-            img.sprite = SuperMechUiSkin.Section;
-            img.type = Image.Type.Sliced;
-            img.color = Color.white;
+            // v0.237.6 纯色暖棕半透明（透出原版窗口纹理），不再用深灰蓝烘焙sprite
+            img.sprite = null;
+            img.type = Image.Type.Simple;
+            img.color = SuperMechUiSkin.VanillaSection;
             img.raycastTarget = false;
             var txt = AddText(go, "  " + text, 13, TextAnchor.MiddleLeft, SuperMechUiSkin.CyanColor);
             txt.fontStyle = FontStyle.Bold;
@@ -251,9 +252,10 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
         {
             var go = CreateObject("InfoRow", parent, typeof(RectTransform), typeof(Image));
             var img = go.GetComponent<Image>();
-            img.sprite = SuperMechUiSkin.Card;
-            img.type = Image.Type.Sliced;
-            img.color = Color.white;
+            // v0.237.6 纯色暖棕半透明（透出原版窗口纹理）
+            img.sprite = null;
+            img.type = Image.Type.Simple;
+            img.color = SuperMechUiSkin.VanillaCard;
             img.raycastTarget = false;
 
             var hLayout = go.AddComponent<HorizontalLayoutGroup>();

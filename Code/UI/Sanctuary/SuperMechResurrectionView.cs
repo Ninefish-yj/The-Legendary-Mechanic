@@ -115,7 +115,7 @@ namespace SuperMech.Code
                 textRect.offsetMin = new Vector2(8, 0);
                 textRect.offsetMax = new Vector2(-100, 0);
                 var text = textGo.AddComponent<Text>();
-                text.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                text.font = SuperMechUiSkin.DefaultFont;
                 text.fontSize = 12;
                 text.color = canRes ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                 text.alignment = TextAnchor.MiddleLeft;

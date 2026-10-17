@@ -68,7 +68,7 @@ namespace SuperMech.Code
             titleRect.sizeDelta = new Vector2(0, 40);
             titleRect.anchoredPosition = new Vector2(0, -5);
             var titleTxt = titleGo.AddComponent<Text>();
-            titleTxt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            titleTxt.font = SuperMechUiSkin.DefaultFont;
             titleTxt.fontSize = 18;
             titleTxt.color = SuperMechUiSkin.CyanColor;
             titleTxt.alignment = TextAnchor.MiddleCenter;

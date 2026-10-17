@@ -67,7 +67,7 @@ namespace SuperMech.Code
             cardRect.offsetMin = new Vector2(4, 4);
             cardRect.offsetMax = new Vector2(-4, -4);
             var cardImg = cardGo.AddComponent<Image>();
-            cardImg.color = SuperMechUiSkin.CardBg;
+            cardImg.color = SuperMechUiSkin.VanillaCard; // v0.237.6 暖棕半透明
             _detailContent = cardRect;
 
             // 详情滚动区
@@ -124,7 +124,7 @@ namespace SuperMech.Code
             textRect.offsetMin = Vector2.zero;
             textRect.offsetMax = Vector2.zero;
             _detailText = textGo.AddComponent<Text>();
-            _detailText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+            _detailText.font = SuperMechUiSkin.DefaultFont;
             _detailText.fontSize = 13;
             _detailText.color = SuperMechUiSkin.TextColor;
             _detailText.alignment = TextAnchor.UpperLeft;
@@ -204,7 +204,7 @@ namespace SuperMech.Code
                 catGo.transform.SetParent(_listContent, false);
                 catGo.AddComponent<RectTransform>().sizeDelta = new Vector2(0, 28);
                 var catImg = catGo.AddComponent<Image>();
-                catImg.color = SuperMechUiSkin.SectionBg;
+                catImg.color = SuperMechUiSkin.VanillaSection; // v0.237.6 暖棕半透明
                 var catBtn = catGo.AddComponent<Button>();
                 string bk = bKey;
                 catBtn.onClick.AddListener(() => ToggleCategory(bk));
@@ -217,7 +217,7 @@ namespace SuperMech.Code
                 catTextRect.offsetMin = new Vector2(8, 0);
                 catTextRect.offsetMax = Vector2.zero;
                 var catText = catTextGo.AddComponent<Text>();
-                catText.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                catText.font = SuperMechUiSkin.DefaultFont;
                 catText.fontSize = 13;
                 catText.fontStyle = FontStyle.Bold;
                 catText.color = SuperMechUiSkin.TextColor;
@@ -243,7 +243,7 @@ namespace SuperMech.Code
                         tr.anchorMin = Vector2.zero; tr.anchorMax = Vector2.one;
                         tr.offsetMin = new Vector2(20, 0); tr.offsetMax = Vector2.zero;
                         var rt = textGo.AddComponent<Text>();
-                        rt.font = Resources.GetBuiltinResource<Font>("LegacyRuntime.ttf");
+                        rt.font = SuperMechUiSkin.DefaultFont;
                         rt.fontSize = 12;
                         rt.color = canFuse ? SuperMechUiSkin.TextColor : SuperMechUiSkin.TextDim;
                         rt.alignment = TextAnchor.MiddleLeft;
