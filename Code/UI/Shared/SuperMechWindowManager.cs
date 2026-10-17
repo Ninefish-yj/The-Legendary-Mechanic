@@ -46,6 +46,12 @@ namespace SuperMech.Code
         public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 680, 520, DrawTechContent); }
         public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
+
+        /// <summary>v0.208 设置从星海总览移出，改为独立窗口</summary>
+        public static void OpenSettings()
+        {
+            ToggleWindow("settings", "sm_ui_settings_title", 520, 640, DrawSettingsContent);
+        }
         public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 680, SuperMechTab.DrawOverviewContent); }
         /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
         public static void OpenOverview(Kingdom kingdom)
@@ -55,10 +61,11 @@ namespace SuperMech.Code
         }
 
         /// <summary>v0.206 UI重设计：星海总览12标签页分3组
+        /// v0.208 星海总览定位=世界状态概览仪表盘，只放概览类标签
         /// A组·文明管理(4): 王国 / 经济 / 科技 / 建筑
-        /// B组·强者势力(3): 阶位排行 / 圣所 / 势力
-        /// C组·世界系统(3): 世界树 / 世界超越 / 设置
-        /// 玩家/任务/战报收进设置面板，外交在原版王国面板</summary>
+        /// B组·强者势力(2): 阶位排行 / 势力
+        /// C组·世界系统(2): 世界树 / 世界超越
+        /// 设置/圣所从总览移出，改为神权栏独立入口</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
             // === A组·文明管理 ===
@@ -68,12 +75,10 @@ namespace SuperMech.Code
             ("sm_ui_building_title", DrawBuildingContent),           // 建筑
             // === B组·强者势力 ===
             ("sm_ui_rank_window_title", DrawRankContent),            // 阶位排行
-            ("sm_ui_sanctuary_title", null),                         // 圣所（独立窗口）
             ("sm_ui_faction_window_title", DrawFactionContent),      // 势力
             // === C组·世界系统 ===
             ("sm_ui_tree_title", DrawWorldTreeContent),              // 世界树
             ("sm_ui_world_beyond_title", DrawWorldBeyondContent),    // 世界超越
-            ("sm_ui_settings_title", DrawSettingsContent),           // 设置（含玩家/任务/战报入口）
         };
 
         internal static void DrawWorldBeyondContent(RectTransform content)

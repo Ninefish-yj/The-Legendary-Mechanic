@@ -83,8 +83,8 @@ namespace SuperMech.Code
 
             int created = 0;
 
-            // v0.205 UI重设计：神权栏只留4个核心入口
-            // 1. 星海总览（所有系统级功能入口）
+            // v0.208 UI重设计：神权栏6个核心入口（总览/星图/圣所/设置 + 2个GodPower）
+            // 1. 星海总览（世界状态概览仪表盘）
             if (PowerButton.get("sm_overview_open") == null)
             {
                 try
@@ -124,7 +124,47 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 星际星图按钮失败: {e.Message}"); }
             }
 
-            // 3. 召唤降临者（玩家化身，需要点击地图）
+            // 3. 圣所（独立空间，v0.208从星海总览移出）
+            if (PowerButton.get("sm_sanctuary_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconHolyLight")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_sanctuary_open", () =>
+                    {
+                        SuperMechWindowManager.OpenSanctuary();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_sanctuary_title", "sm_sanctuary_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 圣所按钮失败: {e.Message}"); }
+            }
+
+            // 4. 设置（配置面板，v0.208从星海总览移出）
+            if (PowerButton.get("sm_settings_open") == null)
+            {
+                try
+                {
+                    Sprite icon = SpriteTextureLoader.getSprite("ui/Icons/iconConfig")
+                        ?? SpriteTextureLoader.getSprite("ui/Icons/iconQuestion");
+                    var pb = PowerButtonCreator.CreateSimpleButton("sm_settings_open", () =>
+                    {
+                        SuperMechWindowManager.OpenSettings();
+                    }, icon);
+                    if (pb != null)
+                    {
+                        SetupTooltip(pb, "sm_ui_settings_title", "sm_settings_open_desc");
+                        _modTab.AddPowerButton("tools", pb); created++;
+                    }
+                }
+                catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 设置按钮失败: {e.Message}"); }
+            }
+
+            // 5. 召唤降临者（玩家化身，需要点击地图）
             if (PowerButton.get(SummonDescendant) == null && AssetManager.powers.get(SummonDescendant) != null)
             {
                 try
@@ -137,7 +177,7 @@ namespace SuperMech.Code
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 召唤按钮失败: {e.Message}"); }
             }
 
-            // 4. 异化灾害（灾害玩法，需要点击地图）
+            // 6. 异化灾害（灾害玩法，需要点击地图）
             if (PowerButton.get(DisasterAlien) == null && AssetManager.powers.get(DisasterAlien) != null)
             {
                 try
@@ -149,9 +189,6 @@ namespace SuperMech.Code
                 }
                 catch (System.Exception e) { Debug.LogWarning($"[超神机械师] 异化按钮失败: {e.Message}"); }
             }
-
-            // v0.205 已移除：超能者突破/职业/锻造/市场/圣所/宇宙迭代
-            // 这些功能收进星海总览标签页，避免神权栏重复
 
             if (created > 0)
             {

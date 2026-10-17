@@ -131,24 +131,12 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.205 页签切换：draw==null的标签页打开对应独立窗口（任务/战报/圣所），其余内嵌</summary>
+        /// <summary>v0.208 页签切换：所有标签均为内嵌概览面板，直接重建工作台</summary>
         private static void SelectTab(int idx)
         {
             if (_rootContent == null) return;
             var tabs = SuperMechWindowManager.OverviewTabs;
             if (idx < 0 || idx >= tabs.Length) return;
-            if (tabs[idx].draw == null)
-            {
-                // 根据标签页key打开对应独立窗口
-                string key = tabs[idx].key;
-                if (key == "sm_ui_sanctuary_title")
-                    SuperMechWindowManager.OpenSanctuary();
-                else if (key == "sm_ui_quest_title")
-                    SuperMechQuestView.Toggle();
-                else if (key == "sm_ui_battle_report_title")
-                    SuperMechBattleReportView.Toggle();
-                return;
-            }
             _tabIndex = idx;
             try
             {
