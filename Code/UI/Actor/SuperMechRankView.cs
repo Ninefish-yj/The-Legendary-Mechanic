@@ -160,12 +160,12 @@ namespace SuperMech.Code
             rankDropRect.anchoredPosition = new Vector2(98, 0);
 
             // 清除筛选按钮（左）
-            var clearBtn = SuperMechUiSkin.MakeButton(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 9, ClearAllFilters);
+            var clearBtn = SuperMechUiSkin.MakeButton(ctrlRow.transform, LocalizedTextManager.getText("sm_ui_rank_clear"), 11, ClearAllFilters);
             var clearBtnRect = clearBtn.GetComponent<RectTransform>();
             clearBtnRect.anchorMin = new Vector2(0, 0.5f);
             clearBtnRect.anchorMax = new Vector2(0, 0.5f);
             clearBtnRect.pivot = new Vector2(0, 0.5f);
-            clearBtnRect.sizeDelta = new Vector2(60, 20);
+            clearBtnRect.sizeDelta = new Vector2(70, 28);
             clearBtnRect.anchoredPosition = new Vector2(162, 0);
             var clearBtnImg = clearBtn.GetComponent<Image>();
             // v0.202 清除按钮使用皮肤按钮三态，无需手动设色
