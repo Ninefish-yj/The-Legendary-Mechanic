@@ -15,7 +15,8 @@ namespace SuperMech
     {
         public new static Main Instance { get; private set; }
         public static string ModPath { get; private set; }
-        private float _promoTimer;
+        // v0.220 极高倍速适配：用游戏时间差值追踪Tick，替代_promoTimer
+        private float _lastTickGameTime = -1f;
         private MapBox _lastWorld;
         private bool _worldInitPending;
 
@@ -96,6 +97,7 @@ namespace SuperMech
                     SuperMechUnifiedTick.ClearAll();
                     SuperMechSaveData.Load();
                     _worldInitPending = true;
+                    _lastTickGameTime = -1f; // 重置Tick时间追踪
                 }
             }
 
@@ -108,14 +110,29 @@ namespace SuperMech
                 if (!SuperMechSaveData.IsRestoring) _worldInitPending = false;
             }
 
-            // v0.219 高倍速适配：用Time.deltaTime（受倍速影响），而非unscaledDeltaTime（真实时间）
-            // 高倍速下游戏逻辑加速，模组Tick也必须同步加速，否则气力恢复/修炼/AI等会比游戏慢
-            _promoTimer += Time.deltaTime;
-            if (_promoTimer >= SuperMechConfig.TickInterval)
+            // v0.220 极高倍速适配：用游戏时间差值计算应执行的Tick次数，追赶模式
+            // Time.deltaTime受maximumDeltaTime限制（默认0.333秒），10000倍速下每帧deltaTime不会超过0.333秒
+            // 导致_promoTimer累加太慢，模组Tick严重跟不上游戏倍速
+            // 改用Time.time差值：直接计算自上次Tick以来经过了多少游戏时间，然后执行对应次数的Tick
+            if (_lastTickGameTime < 0f) _lastTickGameTime = Time.time;
+            float elapsedGame = Time.time - _lastTickGameTime;
+            if (elapsedGame >= SuperMechConfig.TickInterval)
             {
-                _promoTimer = 0f;
-                try { SuperMechUnifiedTick.Tick(); }
-                catch (System.Exception e) { Debug.LogError("[超神机械师] 统一tick异常: " + e.Message); }
+                int tickCount = Mathf.FloorToInt(elapsedGame / SuperMechConfig.TickInterval);
+                // 限制每帧最多执行30次Tick，防止极高倍速下一帧执行几千次导致卡死
+                // 超过部分累积到下一帧继续追赶
+                int maxPerFrame = 30;
+                if (tickCount > maxPerFrame)
+                {
+                    Debug.LogWarning($"[超神机械师] 极高倍速追赶：应执行{tickCount}次Tick，限制为{maxPerFrame}次/帧，剩余将在下一帧继续");
+                    tickCount = maxPerFrame;
+                }
+                for (int i = 0; i < tickCount; i++)
+                {
+                    try { SuperMechUnifiedTick.Tick(); }
+                    catch (System.Exception e) { Debug.LogError("[超神机械师] 统一tick异常: " + e.Message); }
+                }
+                _lastTickGameTime += tickCount * SuperMechConfig.TickInterval;
             }
         }
 
