@@ -26,7 +26,7 @@ namespace SuperMech.Code
             vpRect.offsetMin = Vector2.zero;
             vpRect.offsetMax = Vector2.zero;
             var vpImg = viewportGo.AddComponent<Image>();
-            vpImg.color = new Color(0.08f, 0.10f, 0.16f, 0.95f);  // v0.222 明显背景色，避免和总览背景混为一体
+            vpImg.color = SuperMechUiSkin.PanelVanilla;  // v0.237.12 弹窗面板统一暖棕（对齐帝国盒子）
             viewportGo.AddComponent<Mask>().showMaskGraphic = true;
 
             var contentGo = new GameObject("SettingsContent");
@@ -162,7 +162,7 @@ namespace SuperMech.Code
             var go = new GameObject("Section", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.color = new Color(0.20f, 0.25f, 0.36f, 0.95f);  // v0.222 纯色，不依赖运行时Sprite
+            img.color = SuperMechUiSkin.VanillaSection;  // v0.237.12 分区条暖棕
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);
@@ -230,7 +230,7 @@ namespace SuperMech.Code
             var go = new GameObject("Toggle_" + name, typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.color = new Color(0.14f, 0.18f, 0.28f, 0.95f);  // v0.222 纯色，不依赖运行时Sprite
+            img.color = SuperMechUiSkin.VanillaCard;  // v0.237.12 行背景暖棕
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);

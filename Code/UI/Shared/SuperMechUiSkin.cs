@@ -60,6 +60,8 @@ namespace SuperMech.Code
         // v0.237.6 弹窗内容区暖棕半透明：透出原版窗口棕纸纹理，视觉与原版协调（参考帝国盒子）
         public static readonly Color VanillaCard = new Color(0.16f, 0.12f, 0.07f, 0.42f);    // 信息行卡片
         public static readonly Color VanillaSection = new Color(0.13f, 0.10f, 0.06f, 0.55f); // 分区标题条
+        // v0.237.12 弹窗主面板暖棕（替代烘焙深蓝的Panel sprite，对齐帝国盒子原版棕纸窗口）
+        public static readonly Color PanelVanilla = new Color(0.15f, 0.11f, 0.065f, 0.58f); // 弹窗面板底
         public static readonly Color SectionBg = new Color(0.18f, 0.22f, 0.32f, 0.96f);     // 分区底 #2E3752
         public static readonly Color CloseRed = new Color(0.85f, 0.35f, 0.32f, 0.95f);      // 关闭按钮红
         public static readonly Color SuccessGreen = new Color(0.40f, 0.78f, 0.50f, 1f);     // 成功绿
@@ -696,6 +698,24 @@ namespace SuperMech.Code
         }
 
         private static Sprite _shadowSprite;
+        private static Sprite _whiteSprite;
+
+        /// <summary>v0.238.0 白色1×1 Sprite（下拉/遮罩等纯色Image用，Simple与Sliced通用）</summary>
+        public static Sprite GetWhiteSpriteSafe()
+        {
+            if (_whiteSprite != null) return _whiteSprite;
+            var tex = new Texture2D(4, 4, TextureFormat.RGBA32, false);
+            tex.filterMode = FilterMode.Bilinear;
+            var pixels = new Color[16];
+            for (int i = 0; i < 16; i++) pixels[i] = Color.white;
+            tex.SetPixels(pixels);
+            tex.Apply();
+            _whiteSprite = Sprite.Create(tex, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 100f, 0u,
+                SpriteMeshType.FullRect, new Vector4(1, 1, 1, 1));
+            _whiteSprite.name = "SM_White";
+            return _whiteSprite;
+        }
+
         private static Sprite MakeShadowSprite(float size)
         {
             if (_shadowSprite != null) return _shadowSprite;

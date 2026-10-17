@@ -4060,5 +4060,12 @@
   "sm_branch_power": "超能觉醒",
   "sm_branch_space": "星际航行",
   "sm_branch_info": "信息生命",
-  "sm_ui_tree_next_unit": "秒"
+  "sm_ui_tree_next_unit": "秒",
+  "sm_ui_rank_filter_title": "筛选",
+  "sm_ui_rank_rank_title": "阶位",
+  "sm_ui_rank_system_title": "体系",
+  "sm_ui_rank_stats_title": "统计",
+  "sm_ui_rank_stats_rank": "阶位分布",
+  "sm_ui_rank_stats_system": "体系分布",
+  "sm_ui_rank_stats_top": "前三强"
 }
