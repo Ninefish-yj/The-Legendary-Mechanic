@@ -127,13 +127,6 @@ namespace SuperMech.Code
             if (_rootContent == null) return;
             var tabs = SuperMechWindowManager.OverviewTabs;
             if (idx < 0 || idx >= tabs.Length) return;
-            // v0.239.2 排行榜对齐天人武道=独立宽窗口(610×420，三栏145/320/145)，
-            // 塞进480×380页签会挤压中栏列表——点页签改为直接打开独立窗口，不再内嵌
-            if (tabs[idx].draw == SuperMechWindowManager.DrawRankContent)
-            {
-                SuperMechWindowManager.OpenRank();
-                return;
-            }
             _tabIndex = idx;
             try
             {
