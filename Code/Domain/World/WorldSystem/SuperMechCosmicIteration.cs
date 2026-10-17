@@ -162,7 +162,7 @@ namespace SuperMech.Code
 
             foreach (var a in toKill)
             {
-                try { a.die(pDestroy: true, AttackType.None, pCountDeath: false); } catch (System.Exception e) { if (!_warnedClear) { _warnedClear = true; Debug.LogWarning($"[超神机械师] 大重启清场异常(仅首次): {e.Message}"); } }
+                try { a.dieAndDestroy(AttackType.None); } catch (System.Exception e) { if (!_warnedClear) { _warnedClear = true; Debug.LogWarning($"[超神机械师] 大重启清场异常(仅首次): {e.Message}"); } }
                 killed++;
             }
 

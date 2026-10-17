@@ -310,7 +310,7 @@ namespace SuperMech.Code
                 int idx = Random.Range(0, targets.Count);
                 var a = targets[idx];
                 targets.RemoveAt(idx);
-                try { a.die(AttackType.None, null); killed++; }
+                try { a.dieAndDestroy(AttackType.None); killed++; }
                 catch (System.Exception) { }
             }
             return killed;
