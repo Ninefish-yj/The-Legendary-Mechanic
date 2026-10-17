@@ -115,8 +115,6 @@ namespace SuperMech.Code
                 }
 
                 // === 模组功能按钮区（和单位面板操作逻辑一致：点按钮开对应窗口）===
-                Kingdom captured = kingdom;
-
                 // 科技树
                 AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_civ_tech_tree"),
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenTech(); });
@@ -133,9 +131,7 @@ namespace SuperMech.Code
                 AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_faction_window_title"),
                     () => { SuperMechWindowManager.SelectedKingdomId = kid; SuperMechWindowManager.OpenFaction(); });
 
-                // 星海总览（全局）
-                AddFuncButton(__instance, LocalizedTextManager.getText("sm_ui_kingdom_open_overview"),
-                    () => SuperMechWindowManager.OpenOverview(captured));
+                // 注：星海总览是全局面板，不在单个王国面板中提供入口（神权栏已有入口）
             }
             catch (System.Exception e)
             {
