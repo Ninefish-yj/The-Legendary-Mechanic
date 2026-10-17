@@ -190,7 +190,7 @@ namespace SuperMech.Code
                     break;
             }
             LocalizedTextManager.add("trait_" + id, LocalizedTextManager.getText(name), pReplace: true);
-            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(name) + LocalizedTextManager.getText("sm_ui_talent"), pReplace: true);
+            LocalizedTextManager.add("trait_" + id + "_info", LocalizedTextManager.getText(name + "_desc"), pReplace: true); // v0.239.7 职业描述补具体加成，不再笼统"XX系天赋"
             AssetManager.traits.add(t);
         }
 
