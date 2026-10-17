@@ -1,45 +1,35 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using NeoModLoader.General;
 
 namespace SuperMech.Code
 {
-    public class SuperMechUguiWindow : MonoBehaviour, IDragHandler, IPointerDownHandler
+    /// <summary>
+    /// v0.233.1 改用原版 WindowCreator 创建窗口，自带原版石质背景、标题栏、关闭按钮、拖拽和窗口层级管理。
+    /// 公共接口（WindowId/Rect/Content/IsOpen/Create/Close）保持不变，外部调用无需修改。
+    /// </summary>
+    public class SuperMechUguiWindow : MonoBehaviour
     {
         public string WindowId { get; private set; }
         public RectTransform Rect { get; private set; }
         public RectTransform Content { get; private set; }
         public bool IsOpen { get; private set; }
 
-        private static Canvas _canvas;
+        private ScrollWindow _scrollWindow;
 
-        private Image _bgImage;
-        private Button _closeBtn;
-        private Text _titleText;
-        private Vector2 _dragOffset;
-
-        private const int TitleBarHeight = 40;
-        private const int ContentMargin = 14;
-        private const int CloseBtnSize = 28;
-        private const int CloseBtnMargin = 8;
-        private const int BorderWidth = 2;
-        private const int ResizeHandleSize = 16;
-
-        // 手机端适配参数
-        private const int MobileTitleBarHeight = 52;
-        private const int MobileCloseBtnSize = 44;
-        private const float MobileScreenRatio = 0.92f; // 窗口占屏幕比例
-
-        public Vector2 MinSize = new Vector2(400, 300);
-        public Vector2 MaxSize = new Vector2(1200, 800);
-
-        /// <summary>是否为手机平台</summary>
+        private const float MobileScreenRatio = 0.92f;
         private static bool IsMobile => Application.isMobilePlatform;
 
+        private static Canvas _canvas;
+
+        /// <summary>
+        /// 供全屏UI（星图/银河地图/圣所/战报等）使用的高层级Canvas。
+        /// 弹窗窗口不再使用此Canvas，改用原版 WindowCreator.CreateEmptyWindow。
+        /// </summary>
         public static Canvas GetCanvas()
         {
-            // v0.75.12: Unity销毁对象时==null重载返回true，若缓存canvas已随场景失效则重建
             if (_canvas != null) return _canvas;
             var go = new GameObject("SM_Canvas");
             _canvas = go.AddComponent<Canvas>();
@@ -56,13 +46,11 @@ namespace SuperMech.Code
             return _canvas;
         }
 
+        /// <summary>已创建窗口的缓存（原版窗口设计为创建一次、show/hide复用，不反复销毁）</summary>
+        private static readonly Dictionary<string, SuperMechUguiWindow> _windowCache = new Dictionary<string, SuperMechUguiWindow>();
+
         public static SuperMechUguiWindow Create(string id, string titleKey, float width, float height)
         {
-            var canvas = GetCanvas();
-            var go = new GameObject($"SM_Window_{id}");
-            go.transform.SetParent(canvas.transform, false);
-            var rect = go.AddComponent<RectTransform>();
-
             // 手机端适配：窗口尺寸不超过屏幕的92%
             if (IsMobile)
             {
@@ -72,242 +60,95 @@ namespace SuperMech.Code
                 height = Mathf.Min(height, maxH);
             }
 
-            rect.sizeDelta = new Vector2(width, height);
-            rect.anchoredPosition = new Vector2(
-                (Screen.width - width) / 2f,
-                (Screen.height - height) / 2f);
-
-            var window = go.AddComponent<SuperMechUguiWindow>();
-            window.WindowId = id;
-            window.Rect = rect;
-            try
+            // 复用已创建的窗口
+            if (_windowCache.TryGetValue(id, out var existing) && existing != null && existing._scrollWindow != null)
             {
-                window.BuildUI(titleKey);
+                // 清除旧内容
+                if (existing.Content != null)
+                {
+                    foreach (Transform child in existing.Content)
+                        Destroy(child.gameObject);
+                }
+                // 重新设置大小（以防调用方改了尺寸）
+                if (existing.Rect != null)
+                    existing.Rect.sizeDelta = new Vector2(width, height);
+                existing.IsOpen = true;
+                ScrollWindow.showWindow(id);
+                return existing;
             }
-            catch (System.Exception e)
+
+            // 用原版窗口创建器（自带原版背景纹理、标题栏、关闭按钮、拖拽）
+            ScrollWindow sw = WindowCreator.CreateEmptyWindow(id, titleKey, "");
+            if (sw == null)
             {
-                Debug.LogError("[超神机械师] 窗口构建失败(" + id + "): " + e);
-                UnityEngine.Object.Destroy(go);
+                Debug.LogError("[超神机械师] 原版窗口创建失败: " + id);
                 return null;
             }
-            window.IsOpen = true;
-            _lastActiveWindow = window;
-            return window;
-        }
 
-        private void BuildUI(string titleKey)
-        {
-            // 手机端使用更大的标题栏和关闭按钮
-            int titleBarHeight = IsMobile ? MobileTitleBarHeight : TitleBarHeight;
-            int closeBtnSize = IsMobile ? MobileCloseBtnSize : CloseBtnSize;
-            int closeBtnMargin = IsMobile ? 10 : CloseBtnMargin;
-
-            // v0.233 原版风格：暖棕石质面板，去掉柔和阴影
-            // 背景：深棕灰（WorldBox原版石质面板感）
-            _bgImage = gameObject.AddComponent<Image>();
-            _bgImage.color = new Color(0.25f, 0.22f, 0.18f, 0.96f);
-            _bgImage.raycastTarget = true;
-
-            // 边框：浅棕金色（原版描边风格）
-            Color borderColor = new Color(0.50f, 0.42f, 0.28f, 0.85f);
-            AddBorder("TopBorder", new Vector2(0, 1), new Vector2(1, 1), new Vector2(0.5f, 1), new Vector2(0, BorderWidth), new Vector2(0, 0), borderColor);
-            AddBorder("BottomBorder", new Vector2(0, 0), new Vector2(1, 0), new Vector2(0.5f, 0), new Vector2(0, BorderWidth), new Vector2(0, 0), borderColor);
-            AddBorder("LeftBorder", new Vector2(0, 0), new Vector2(0, 1), new Vector2(0, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0), borderColor);
-            AddBorder("RightBorder", new Vector2(1, 0), new Vector2(1, 1), new Vector2(1, 0.5f), new Vector2(BorderWidth, 0), new Vector2(0, 0), borderColor);
-
-            var titleBarGo = new GameObject("TitleBar");
-            titleBarGo.transform.SetParent(transform, false);
-            var titleBarRect = titleBarGo.AddComponent<RectTransform>();
-            titleBarRect.anchorMin = new Vector2(0, 1);
-            titleBarRect.anchorMax = new Vector2(1, 1);
-            titleBarRect.pivot = new Vector2(0.5f, 1);
-            titleBarRect.sizeDelta = new Vector2(0, titleBarHeight);
-            titleBarRect.anchoredPosition = new Vector2(0, -BorderWidth);
-            var titleBarImg = titleBarGo.AddComponent<Image>();
-            titleBarImg.color = new Color(0.18f, 0.15f, 0.12f, 0.98f); // 原版深棕标题栏
-            var titleDrag = titleBarGo.AddComponent<SuperMechDragHandler>();
-            titleDrag.Target = this;
-
-            _titleText = SuperMechUiSkin.MakeText(titleBarGo.transform, LocalizedTextManager.getText(titleKey), IsMobile ? 20 : 17, TextAnchor.MiddleCenter);
-            _titleText.fontStyle = FontStyle.Bold;
-            _titleText.color = new Color(0.92f, 0.78f, 0.45f, 1f); // 原版金黄色标题
-            var titleRect = _titleText.GetComponent<RectTransform>();
-            titleRect.anchorMin = Vector2.zero;
-            titleRect.anchorMax = Vector2.one;
-            titleRect.offsetMin = new Vector2(closeBtnSize + closeBtnMargin * 2, 0);
-            titleRect.offsetMax = new Vector2(-(closeBtnSize + closeBtnMargin * 2), 0);
-
-            // 关闭按钮：原版风格暗红色方块，右上角
-            var closeGo = new GameObject("CloseBtn");
-            closeGo.transform.SetParent(titleBarGo.transform, false);
-            var closeRect = closeGo.AddComponent<RectTransform>();
-            closeRect.anchorMin = new Vector2(1, 1);
-            closeRect.anchorMax = new Vector2(1, 1);
-            closeRect.pivot = new Vector2(1, 1);
-            closeRect.sizeDelta = new Vector2(closeBtnSize, closeBtnSize);
-            closeRect.anchoredPosition = new Vector2(-closeBtnMargin, -5);
-            var closeImg = closeGo.AddComponent<Image>();
-            closeImg.color = new Color(0.65f, 0.22f, 0.18f, 0.95f); // 原版暗红
-            _closeBtn = closeGo.AddComponent<Button>();
-            var closeColors = _closeBtn.colors;
-            closeColors.normalColor = Color.white;
-            closeColors.highlightedColor = new Color(1f, 0.5f, 0.4f, 1f);
-            closeColors.pressedColor = new Color(0.5f, 0.15f, 0.12f, 1f);
-            _closeBtn.colors = closeColors;
-            var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", IsMobile ? 26 : 20, TextAnchor.MiddleCenter);
-            closeText.color = Color.white;
-            closeText.fontStyle = FontStyle.Bold;
-            var closeTextRect = closeText.GetComponent<RectTransform>();
-            closeTextRect.anchorMin = Vector2.zero;
-            closeTextRect.anchorMax = Vector2.one;
-            closeTextRect.offsetMin = Vector2.zero;
-            closeTextRect.offsetMax = Vector2.zero;
-            _closeBtn.onClick.AddListener(Close);
-
-            var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(transform, false);
-            Content = contentGo.AddComponent<RectTransform>();
-            Content.anchorMin = Vector2.zero;
-            Content.anchorMax = Vector2.one;
-            Content.pivot = new Vector2(0.5f, 0.5f);
-            Content.offsetMin = new Vector2(ContentMargin + BorderWidth, ContentMargin + BorderWidth);
-            Content.offsetMax = new Vector2(-(ContentMargin + BorderWidth), -(titleBarHeight + ContentMargin + BorderWidth));
-
-            var resizeGo = new GameObject("ResizeHandle");
-            resizeGo.transform.SetParent(transform, false);
-            var resizeRect = resizeGo.AddComponent<RectTransform>();
-            resizeRect.anchorMin = new Vector2(1, 0);
-            resizeRect.anchorMax = new Vector2(1, 0);
-            resizeRect.pivot = new Vector2(1, 0);
-            resizeRect.sizeDelta = new Vector2(ResizeHandleSize, ResizeHandleSize);
-            resizeRect.anchoredPosition = Vector2.zero;
-            var resizeImg = resizeGo.AddComponent<Image>();
-            resizeImg.color = new Color(SuperMechUiSkin.AccentColor.r, SuperMechUiSkin.AccentColor.g, SuperMechUiSkin.AccentColor.b, 0.3f);
-            var resizeHandler = resizeGo.AddComponent<SuperMechResizeHandler>();
-            resizeHandler.Target = this;
-            // 伸缩手柄上的斜线纹理（用三条线表示）
-            var resizeText = SuperMechUiSkin.MakeText(resizeGo.transform, "⤡", 12, TextAnchor.MiddleCenter);
-            resizeText.color = SuperMechUiSkin.TextDim;
-            var resizeTextRect = resizeText.GetComponent<RectTransform>();
-            resizeTextRect.anchorMin = Vector2.zero;
-            resizeTextRect.anchorMax = Vector2.one;
-            resizeTextRect.offsetMin = Vector2.zero;
-            resizeTextRect.offsetMax = Vector2.zero;
-
-            // 手机端隐藏缩放手柄（触屏不好拖拽）
-            if (IsMobile)
+            Transform background = ((Component)sw).transform.Find("Background");
+            if (background == null)
             {
-                resizeGo.SetActive(false);
-            }
-        }
-
-        /// <summary>最后激活的窗口（用于返回键关闭最上层）</summary>
-        private static SuperMechUguiWindow _lastActiveWindow;
-
-        /// <summary>返回键退出：关闭最后激活的窗口（全平台支持ESC/手机返回键）</summary>
-        private void Update()
-        {
-            if (!IsOpen) return;
-            if (!Input.GetKeyDown(KeyCode.Escape)) return;
-
-            // 如果最后激活的窗口已被销毁，把当前窗口设为激活窗口
-            if (_lastActiveWindow == null || !_lastActiveWindow.IsOpen)
-            {
-                _lastActiveWindow = this;
+                Debug.LogError("[超神机械师] 原版窗口缺少Background子物体: " + id);
+                return null;
             }
 
-            // 只让最后激活的窗口响应返回键
-            if (_lastActiveWindow != this) return;
+            RectTransform bgRect = background.GetComponent<RectTransform>();
+            bgRect.sizeDelta = new Vector2(width, height);
 
-            Debug.Log("[超神机械师] 返回键关闭窗口: " + WindowId);
-            Close();
+            // 创建内容区（在Background下，标题栏下方，四周留边距）
+            GameObject contentGo = new GameObject("Content");
+            contentGo.transform.SetParent(background, false);
+            RectTransform contentRect = contentGo.AddComponent<RectTransform>();
+            contentRect.anchorMin = Vector2.zero;
+            contentRect.anchorMax = Vector2.one;
+            contentRect.offsetMin = new Vector2(8f, 8f);
+            contentRect.offsetMax = new Vector2(-8f, -36f); // 顶部留出原版标题栏
+
+            // 把包装组件挂在原版窗口上，Close时Destroy会一起销毁
+            GameObject swGo = ((Component)sw).gameObject;
+            SuperMechUguiWindow wrapper = swGo.AddComponent<SuperMechUguiWindow>();
+            wrapper.WindowId = id;
+            wrapper.Rect = bgRect;
+            wrapper.Content = contentRect;
+            wrapper._scrollWindow = sw;
+            wrapper.IsOpen = true;
+
+            _windowCache[id] = wrapper;
+
+            // 标准化：新创建的窗口默认active，先关闭再用showWindow走原版开启动画
+            if (swGo.activeSelf) swGo.SetActive(false);
+            ScrollWindow.showWindow(id);
+
+            return wrapper;
         }
 
-        public void OnPointerDown(PointerEventData e)
-        {
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                Rect, e.position, e.pressEventCamera, out _dragOffset);
-            transform.SetAsLastSibling();
-            _lastActiveWindow = this;
-        }
-
-        public void OnDrag(PointerEventData e)
-        {
-            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                Rect.parent as RectTransform, e.position, e.pressEventCamera, out var localPos))
-            {
-                Rect.anchoredPosition = localPos - _dragOffset;
-            }
-        }
-
-        private void AddBorder(string name, Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot, Vector2 sizeDelta, Vector2 anchoredPos, Color? color = null)
-        {
-            var go = new GameObject(name);
-            go.transform.SetParent(transform, false);
-            var rect = go.AddComponent<RectTransform>();
-            rect.anchorMin = anchorMin;
-            rect.anchorMax = anchorMax;
-            rect.pivot = pivot;
-            rect.sizeDelta = sizeDelta;
-            rect.anchoredPosition = anchoredPos;
-            var img = go.AddComponent<Image>();
-            img.color = color ?? SuperMechUiSkin.BorderColor;
-        }
-
+        /// <summary>关闭窗口（用原版showWindow toggle隐藏，不销毁，下次打开复用）</summary>
         public void Close()
         {
             IsOpen = false;
-            Destroy(gameObject);
+            if (_scrollWindow != null && !string.IsNullOrEmpty(WindowId))
+            {
+                ScrollWindow.showWindow(WindowId);
+            }
         }
 
+        /// <summary>调整窗口大小</summary>
         public void Resize(Vector2 delta)
         {
             if (Rect == null) return;
-            Vector2 newSize = Rect.sizeDelta + delta;
-            newSize.x = Mathf.Clamp(newSize.x, MinSize.x, MaxSize.x);
-            newSize.y = Mathf.Clamp(newSize.y, MinSize.y, MaxSize.y);
-            Rect.sizeDelta = newSize;
+            Rect.sizeDelta += delta;
         }
 
+        /// <summary>运行时改标题（原版窗口标题由本地化key驱动，一般不需要调用）</summary>
         public void SetTitle(string text)
         {
-            if (_titleText != null) _titleText.text = text;
-        }
-    }
-
-    public class SuperMechDragHandler : MonoBehaviour, IDragHandler, IPointerDownHandler
-    {
-        public SuperMechUguiWindow Target;
-
-        public void OnPointerDown(PointerEventData e)
-        {
-            if (Target != null) Target.OnPointerDown(e);
-        }
-
-        public void OnDrag(PointerEventData e)
-        {
-            if (Target != null) Target.OnDrag(e);
-        }
-    }
-
-    public class SuperMechResizeHandler : MonoBehaviour, IDragHandler, IPointerDownHandler
-    {
-        public SuperMechUguiWindow Target;
-        private Vector2 _lastMousePos;
-
-        public void OnPointerDown(PointerEventData e)
-        {
-            _lastMousePos = e.position;
-            if (Target != null) Target.transform.SetAsLastSibling();
-        }
-
-        public void OnDrag(PointerEventData e)
-        {
-            if (Target == null) return;
-            Vector2 delta = e.position - _lastMousePos;
-            _lastMousePos = e.position;
-            // 只在右下角拖拽时生效，x增加、y减少（屏幕坐标y向下为正）
-            Target.Resize(new Vector2(delta.x, -delta.y));
+            if (_scrollWindow == null) return;
+            Transform titleTf = ((Component)_scrollWindow).transform.Find("Background/Title");
+            if (titleTf != null)
+            {
+                Text t = titleTf.GetComponent<Text>();
+                if (t != null) t.text = text;
+            }
         }
     }
 }
