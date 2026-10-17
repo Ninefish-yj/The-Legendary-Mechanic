@@ -27,14 +27,14 @@ namespace SuperMech.Code
 
         private static readonly Dictionary<long, KingdomTechState> _states = new Dictionary<long, KingdomTechState>();
         private static bool _initialized;
-        private static int _lastTickYear = -1;
+        private static double _lastTickTime = -1f;
 
         /// <summary>初始化</summary>
         public static void Init()
         {
             if (_initialized) return;
             _initialized = true;
-            _lastTickYear = -1;
+            _lastTickTime = -1f;
             TechDataLoader.Load();
             Debug.Log("[超神机械师] 科技系统初始化完成");
         }
@@ -111,15 +111,15 @@ namespace SuperMech.Code
             return true;
         }
 
-        /// <summary>每年Tick：产出研究点、推进研究、材料发现、AI研究（内部做年份节流，每年只执行一次）</summary>
+        /// <summary>每年Tick：产出研究点、推进研究、材料发现、AI研究（内部做时间节流）</summary>
         public static void YearlyTick()
         {
             if (World.world == null || World.world.kingdoms == null) return;
 
-            // 年份节流：每年只执行一次
-            int currentYear = World.world.getYear();
-            if (currentYear == _lastTickYear) return;
-            _lastTickYear = currentYear;
+            // 时间节流：用游戏时间差控制执行频率（约每1.0游戏时间单位执行一次）
+            double now = World.world.getCurWorldTime();
+            if (_lastTickTime > 0 && now - _lastTickTime < 1.0) return;
+            _lastTickTime = now;
 
             foreach (var kingdom in World.world.kingdoms.list)
             {
@@ -179,15 +179,15 @@ namespace SuperMech.Code
             output += cfg.base_per_city * cityCount;
 
             // 人口产出
-            output += cfg.per_population * (kingdom.getPopulation() / 1000f);
+            output += cfg.per_population * (kingdom.getPopulationTotal() / 1000f);
 
             // 建筑产出（遍历城市建筑）
             if (kingdom.cities != null)
             {
                 foreach (var city in kingdom.cities)
                 {
-                    if (city?.city_buildings == null) continue;
-                    foreach (var building in city.city_buildings)
+                    if (city?.buildings == null) continue;
+                    foreach (var building in city.buildings)
                     {
                         if (building?.asset == null) continue;
                         string type = building.asset.type ?? "";
@@ -202,13 +202,29 @@ namespace SuperMech.Code
             // 圣所加成（模组特色）
             // TODO: 接入圣所建筑检测
 
-            // 战争惩罚
-            if (kingdom.isAtWar())
+            // 战争惩罚（遍历世界战争列表）
+            if (IsKingdomAtWar(kingdom))
             {
                 output *= (1f - cfg.war_penalty);
             }
 
             return Mathf.Max(0f, output);
+        }
+
+        /// <summary>判断王国是否处于战争中（遍历世界战争列表）</summary>
+        private static bool IsKingdomAtWar(Kingdom kingdom)
+        {
+            if (World.world?.wars == null || World.world?.kingdoms == null || kingdom == null) return false;
+            foreach (var war in World.world.wars)
+            {
+                if (war == null || war.isRekt()) continue;
+                foreach (var other in World.world.kingdoms.list)
+                {
+                    if (other == null || other == kingdom) continue;
+                    if (war.isInWarWith(kingdom, other)) return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>完成研究</summary>
@@ -241,13 +257,8 @@ namespace SuperMech.Code
         {
             if (kingdom.cities == null) return;
 
-            // 收集王国所有城市仓库的资源
-            var resources = new HashSet<string>();
-            foreach (var city in kingdom.cities)
-            {
-                if (city?.city_resource_buildings == null) continue;
-                // TODO: 检查仓库资源，需要确认WorldBox的资源存储API
-            }
+            // TODO: 检查仓库资源，需要确认WorldBox的资源存储API
+            // 当前简化：tier<=3基础材料自动发现
 
             // 检查每种材料是否满足发现条件
             foreach (var mat in TechDataLoader.AllMaterials)
