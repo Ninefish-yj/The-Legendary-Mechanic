@@ -87,12 +87,10 @@ namespace SuperMech.Code
                 tImg.raycastTarget = true;
 
                 var tabs = SuperMechWindowManager.OverviewTabs;
-                int perRow = 4;  // 每排4个，12个页签三排放下
-                float tabW = 168f;  // 每个标签宽度
+                int perRow = 4;  // 每排4个
                 float tabH = 36f;
                 float gapX = 6f;    // 横向间距
                 float gapY = 4f;    // 纵向间距
-                float startX = 8f;  // 左边距
                 float startY = -6f; // 顶部边距
 
                 for (int i = 0; i < tabs.Length; i++)
@@ -102,14 +100,16 @@ namespace SuperMech.Code
                     bool active = idx == _tabIndex;
                     var b = MakeTabButton(tabBarGo.transform, label, active);
                     var br = b.GetComponent<RectTransform>();
-                    br.anchorMin = new Vector2(0, 1); br.anchorMax = new Vector2(0, 1);
-                    br.pivot = new Vector2(0, 1);
                     int row = i / perRow;
                     int col = i % perRow;
-                    float x = startX + col * (tabW + gapX);
-                    float y = startY - row * (tabH + gapY);
-                    br.anchoredPosition = new Vector2(x, y);
-                    br.sizeDelta = new Vector2(tabW, tabH);
+
+                    // v0.207 响应式：x轴用anchor定位，宽度自动适应窗口
+                    br.anchorMin = new Vector2((float)col / perRow, 1f);
+                    br.anchorMax = new Vector2((float)(col + 1) / perRow, 1f);
+                    br.pivot = new Vector2(0.5f, 1f);
+                    br.offsetMin = new Vector2(gapX, -startY - (row + 1) * tabH - row * gapY);
+                    br.offsetMax = new Vector2(-gapX, -startY - row * (tabH + gapY));
+
                     var btn = b.GetComponent<Button>();
                     btn.onClick.AddListener(() => SelectTab(idx));
                 }

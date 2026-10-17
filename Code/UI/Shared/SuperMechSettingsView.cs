@@ -14,9 +14,40 @@ namespace SuperMech.Code
 
         void Start()
         {
-            _content = GetComponent<RectTransform>();
-            if (_content == null) return;
+            var selfRect = GetComponent<RectTransform>();
+            if (selfRect == null) return;
+
+            // v0.207 ScrollRect：窗口缩放时内容可滚动
+            var viewportGo = new GameObject("Viewport");
+            viewportGo.transform.SetParent(transform, false);
+            var vpRect = viewportGo.AddComponent<RectTransform>();
+            vpRect.anchorMin = Vector2.zero;
+            vpRect.anchorMax = Vector2.one;
+            vpRect.offsetMin = Vector2.zero;
+            vpRect.offsetMax = Vector2.zero;
+            var vpImg = viewportGo.AddComponent<Image>();
+            vpImg.color = new Color(0, 0, 0, 0);
+            viewportGo.AddComponent<Mask>().showMaskGraphic = false;
+
+            var contentGo = new GameObject("SettingsContent");
+            contentGo.transform.SetParent(viewportGo.transform, false);
+            _content = contentGo.AddComponent<RectTransform>();
+            _content.anchorMin = new Vector2(0, 1);
+            _content.anchorMax = new Vector2(1, 1);
+            _content.pivot = new Vector2(0.5f, 1);
+            _content.sizeDelta = new Vector2(0, 600);
+
+            var scroll = viewportGo.AddComponent<ScrollRect>();
+            scroll.viewport = vpRect;
+            scroll.content = _content;
+            scroll.vertical = true;
+            scroll.horizontal = false;
+            scroll.scrollSensitivity = 20f;
+
             BuildPanel();
+
+            // 动态设置内容高度
+            _content.sizeDelta = new Vector2(0, Mathf.Max(Mathf.Abs(_curY) + 20f, 200f));
         }
 
         private void BuildPanel()

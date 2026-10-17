@@ -10,6 +10,7 @@ namespace SuperMech.Code
     {
         private RectTransform _content;
         private Text _headText;
+        private ScrollRect _scroll;
 
         void Awake()
         {
@@ -29,13 +30,32 @@ namespace SuperMech.Code
             hr.offsetMin = new Vector2(12, -32);
             hr.offsetMax = new Vector2(-12, -8);
 
+            // v0.207 ScrollRect：窗口缩放时内容可滚动
+            var viewportGo = new GameObject("Viewport");
+            viewportGo.transform.SetParent(transform, false);
+            var vpRect = viewportGo.AddComponent<RectTransform>();
+            vpRect.anchorMin = Vector2.zero;
+            vpRect.anchorMax = Vector2.one;
+            vpRect.offsetMin = new Vector2(12, 12);
+            vpRect.offsetMax = new Vector2(-12, -48);
+            var vpImg = viewportGo.AddComponent<Image>();
+            vpImg.color = new Color(0, 0, 0, 0);
+            viewportGo.AddComponent<Mask>().showMaskGraphic = false;
+
             var contentGo = new GameObject("BuildingContent");
-            contentGo.transform.SetParent(transform, false);
+            contentGo.transform.SetParent(viewportGo.transform, false);
             _content = contentGo.AddComponent<RectTransform>();
-            _content.anchorMin = new Vector2(0, 0);
+            _content.anchorMin = new Vector2(0, 1);
             _content.anchorMax = new Vector2(1, 1);
-            _content.offsetMin = new Vector2(12, 12);
-            _content.offsetMax = new Vector2(-12, -48);
+            _content.pivot = new Vector2(0.5f, 1);
+            _content.sizeDelta = new Vector2(0, 200);
+
+            _scroll = viewportGo.AddComponent<ScrollRect>();
+            _scroll.viewport = vpRect;
+            _scroll.content = _content;
+            _scroll.vertical = true;
+            _scroll.horizontal = false;
+            _scroll.scrollSensitivity = 20f;
 
             RefreshAll();
         }
@@ -121,6 +141,13 @@ namespace SuperMech.Code
                 tr.anchorMax = new Vector2(1, 1);
                 tr.offsetMin = new Vector2(4, -20);
                 tr.offsetMax = new Vector2(-4, -60);
+                y -= 60f;
+            }
+
+            // 动态设置内容高度
+            if (_content != null)
+            {
+                _content.sizeDelta = new Vector2(0, Mathf.Max(Mathf.Abs(y) + 20f, 100f));
             }
         }
     }
