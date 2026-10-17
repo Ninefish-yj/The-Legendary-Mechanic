@@ -2004,8 +2004,9 @@ namespace SuperMech.Code
                 hintRect.anchorMin = new Vector2(0, 1);
                 hintRect.anchorMax = new Vector2(1, 1);
                 hintRect.pivot = new Vector2(0.5f, 1);
-                hintRect.sizeDelta = new Vector2(0, 50);
-                hintRect.anchoredPosition = new Vector2(0, -4);
+                hintRect.sizeDelta = new Vector2(0, 56);
+                // v0.238.6 修复重叠：anchoredPosition 从固定 -4 改为跟随按钮流 btnY，三行提示不再压住按钮
+                hintRect.anchoredPosition = new Vector2(0, -btnY);
                 var hintText = hintGo.AddComponent<Text>();
                 hintText.font = SuperMechUiSkin.DefaultFont;
                 hintText.fontSize = 11;
@@ -2013,6 +2014,7 @@ namespace SuperMech.Code
                 hintText.alignment = TextAnchor.UpperCenter;
                 hintText.text = string.Format(LocalizedTextManager.getText("sm_ui_main_planet_info"), p.resource);
                 hintText.raycastTarget = false;
+                btnY += 56 + btnGap; // 纳入布局流，避免与按钮重叠
             }
         }
 
