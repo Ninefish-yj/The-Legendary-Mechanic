@@ -205,12 +205,14 @@ namespace SuperMech.Code
             bool awakened = SuperMechAwakened.IsAwakened(actor);
 
             // v0.242.9 直接写入tooltip显示数据，不再存actor引用（避免引用失效导致0/0）
+            // v0.242.19 改用原版Tooltip系统，需要临时存actor用于Tooltip.show传参
             var qiTooltip = bar.GetComponent<SuperMechQiBarTooltip>();
             if (qiTooltip != null)
             {
                 qiTooltip.qi = qi;
                 qiTooltip.qiMax = qiMax;
                 qiTooltip.awakened = awakened;
+                qiTooltip.actor = actor;
                 if (qiMax > 0)
                 {
                     int lv = SuperMechQi.GetLevel(qiMax);

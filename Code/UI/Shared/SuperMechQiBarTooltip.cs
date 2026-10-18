@@ -1,117 +1,91 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.242.5 气力条悬停tooltip：显示当前气力/最大气力/等级
+    /// v0.242.19 改用原版Tooltip系统：注册TooltipAsset到AssetManager.tooltips，
+    ///   悬停时调用Tooltip.show(actor, "sm_qi_bar", data)，由原版Tooltip框架
+    ///   自动处理位置、样式、层级和动画。
     /// v0.242.9 重构：不存Actor引用，直接存气力值（qi/qiMax/levelName），
-    ///   由UpdateQiBarValue在更新条时写入，悬停时直接显示，彻底消除actor引用失效导致的0/0问题
-    /// 不依赖原版Tooltip asset系统，自绘轻量文本框
+    ///   由UpdateQiBarValue在更新条时写入，悬停时直接显示。
     /// </summary>
     public class SuperMechQiBarTooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
-        private static GameObject _tooltipObj;
-        private static Text _tooltipText;
-        private static Image _tooltipBg;
+        public const string TooltipId = "sm_qi_bar";
+        private static bool _registered;
 
         // v0.242.9 直接存储显示数据，由UpdateQiBarValue写入
         public float qi;
         public float qiMax;
         public string levelName = "";
         public bool awakened = false;
+        // v0.242.19 临时存储Actor引用，仅用于Tooltip.show传参（悬停时有效）
+        public Actor actor;
+
+        /// <summary>v0.242.19 注册气力条TooltipAsset到原版系统（只需调用一次）</summary>
+        public static void RegisterTooltipAsset()
+        {
+            if (_registered) return;
+            _registered = true;
+
+            var asset = new TooltipAsset
+            {
+                id = TooltipId,
+                prefab_id = "tooltips/tooltip_normal",
+                callback = ShowQiBarTooltip
+            };
+            AssetManager.tooltips.add(asset);
+            Debug.Log("[超神机械师] 气力条Tooltip已注册到原版系统: " + TooltipId);
+        }
+
+        /// <summary>v0.242.19 原版Tooltip回调：填充气力数据到tooltip的两列布局</summary>
+        private static void ShowQiBarTooltip(Tooltip pTooltip, string pType, TooltipData pData)
+        {
+            if (pTooltip == null || pData == null || pData.actor == null) return;
+
+            Actor a = pData.actor;
+            float curQi = SuperMechQi.GetQi(a);
+            float maxQi = SuperMechQi.GetQiMax(a);
+            bool isAwakened = SuperMechAwakened.IsAwakened(a);
+
+            pTooltip.setTitle(LocalizedTextManager.getText("sm_ui_qi_tooltip_title"));
+
+            if (!isAwakened || maxQi <= 0)
+            {
+                pTooltip.stats_description.text = LocalizedTextManager.getText("sm_ui_qi_tooltip_not_awakened");
+                pTooltip.stats_values.text = "";
+            }
+            else
+            {
+                int lv = SuperMechQi.GetLevel(maxQi);
+                string lvlName = lv > 0 ? SuperMechQi.LevelNames[lv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
+                pTooltip.stats_description.text =
+                    LocalizedTextManager.getText("sm_ui_qi_tooltip_current") + "\n" +
+                    LocalizedTextManager.getText("sm_ui_qi_tooltip_level");
+                pTooltip.stats_values.text =
+                    ((int)curQi) + " / " + ((int)maxQi) + "\n" +
+                    lvlName;
+            }
+            pTooltip.stats_container.SetActive(true);
+        }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            Show();
+            if (actor == null) return;
+            RegisterTooltipAsset();
+            var data = new TooltipData { actor = actor };
+            Tooltip.show(actor, TooltipId, data);
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            Hide();
+            Tooltip.hideTooltip();
         }
 
         private void OnDisable()
         {
-            Hide();
-        }
-
-        private static void EnsureTooltip()
-        {
-            if (_tooltipObj != null) return;
-
-            _tooltipObj = new GameObject("SM_QiTooltip", typeof(RectTransform), typeof(Image));
-            _tooltipObj.transform.SetParent(GameObject.Find("Canvas")?.transform, false);
-            if (_tooltipObj.transform.parent == null)
-            {
-                Canvas canvas = Object.FindObjectOfType<Canvas>();
-                if (canvas != null) _tooltipObj.transform.SetParent(canvas.transform, false);
-            }
-            _tooltipObj.SetActive(false);
-
-            _tooltipBg = _tooltipObj.GetComponent<Image>();
-            _tooltipBg.sprite = SuperMechUiSkin.Panel;
-            _tooltipBg.type = Image.Type.Sliced;
-            _tooltipBg.color = new Color(0.12f, 0.1f, 0.08f, 0.95f);
-            _tooltipBg.raycastTarget = false;
-
-            var rt = _tooltipObj.GetComponent<RectTransform>();
-            rt.anchorMin = Vector2.zero;
-            rt.anchorMax = Vector2.zero;
-            rt.pivot = new Vector2(0, 1);
-            rt.sizeDelta = new Vector2(200, 80);
-
-            _tooltipText = SuperMechUiSkin.MakeText(_tooltipObj.transform, "", 11, TextAnchor.UpperLeft);
-            var tr = _tooltipText.GetComponent<RectTransform>();
-            tr.anchorMin = Vector2.zero;
-            tr.anchorMax = Vector2.one;
-            tr.offsetMin = new Vector2(8, 6);
-            tr.offsetMax = new Vector2(-8, -6);
-            _tooltipText.color = new Color(0.92f, 0.88f, 0.78f, 1f);
-            _tooltipText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            _tooltipText.verticalOverflow = VerticalWrapMode.Overflow;
-        }
-
-        /// <summary>
-        /// v0.242.9 直接用存储的数据显示，不再查询SuperMechQi
-        /// </summary>
-        private void Show()
-        {
-            EnsureTooltip();
-            if (_tooltipObj == null) return;
-
-            string text;
-            if (!awakened || qiMax <= 0)
-            {
-                text = LocalizedTextManager.getText("sm_ui_qi_tooltip_title") + "\n"
-                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_not_awakened");
-            }
-            else
-            {
-                text = LocalizedTextManager.getText("sm_ui_qi_tooltip_title") + "\n"
-                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_current") + ": " + (int)qi + " / " + (int)qiMax + "\n"
-                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_level") + ": " + levelName;
-            }
-
-            _tooltipText.text = text;
-            _tooltipObj.SetActive(true);
-
-            // 位置：鼠标右上角
-            Vector3 mousePos = Input.mousePosition;
-            var rt = _tooltipObj.GetComponent<RectTransform>();
-            float x = Mathf.Min(mousePos.x + 12, Screen.width - 210);
-            float y = Mathf.Max(mousePos.y - 12, 90);
-            rt.position = new Vector3(x, y, 0);
-
-            // 自适应高度
-            float preferredHeight = _tooltipText.preferredHeight + 12;
-            rt.sizeDelta = new Vector2(200, Mathf.Max(60, preferredHeight));
-        }
-
-        private static void Hide()
-        {
-            if (_tooltipObj != null) _tooltipObj.SetActive(false);
+            Tooltip.hideTooltip();
         }
     }
 }
