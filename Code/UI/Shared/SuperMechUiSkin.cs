@@ -130,55 +130,34 @@ namespace SuperMech.Code
             if (_initialized) return true;
             try
             {
-                // v0.240.6 帝国盒子暖色调：圆角 + 金色边框 + 深棕底
-                _panelSprite = MakeRoundedGlowSprite(BgColor, BorderColor, null, 64, 10, 1, "SM_Panel");
-                // 按钮：扁平化圆角，深棕底 + 淡金边框
-                _buttonNormal = MakeRoundedGlowSprite(
-                    new Color(0.22f, 0.16f, 0.09f, 0.95f),
-                    new Color(0.45f, 0.35f, 0.20f, 0.4f),
-                    null, 32, 8, 0, "SM_BtnNormal");
-                _buttonHover = MakeRoundedGlowSprite(
-                    new Color(0.30f, 0.22f, 0.13f, 0.95f),
-                    AccentColor,
-                    null, 32, 8, 0, "SM_BtnHover");
-                _buttonActive = MakeRoundedGlowSprite(
-                    new Color(0.16f, 0.12f, 0.07f, 0.95f),
-                    CyanDim,
-                    null, 32, 8, 0, "SM_BtnActive");
-                _buttonSelected = MakeRoundedGlowSprite(
-                    new Color(0.40f, 0.30f, 0.15f, 0.95f),
-                    CyanColor,
-                    null, 32, 8, 0, "SM_BtnSelected");
-                _buttonDisabled = MakeRoundedGlowSprite(
-                    new Color(0.10f, 0.08f, 0.05f, 0.8f),
-                    new Color(0.25f, 0.20f, 0.12f, 0.4f),
-                    null, 32, 8, 0, "SM_BtnDisabled");
-                // 标题栏：金色系
-                _titleBarSprite = MakeRoundedGlowSprite(new Color(0.20f, 0.15f, 0.09f, 0.98f), CyanDim, null, 32, 8, 1, "SM_TitleBar");
+                // v0.240.8 用原版Sprite纹理（参考天人武道）：ui/special/backgroundKingdomElement + darkInputFieldEmpty
+                // 所有面板/按钮/卡片用原版9-slice纹理，Image.Type.Sliced拉伸，视觉与帝国盒子完全一致
+                Sprite vanillaPanel = LoadVanillaSprite("ui/special/backgroundKingdomElement");
+                Sprite vanillaField = LoadVanillaSprite("ui/special/darkInputFieldEmpty");
+
+                _panelSprite = vanillaPanel ?? MakeRoundedGlowSprite(BgColor, BorderColor, null, 64, 10, 1, "SM_Panel");
+                // 按钮统一用原版面板纹理，靠Image.color和ColorTint区分状态
+                _buttonNormal = vanillaPanel ?? MakeRoundedGlowSprite(ButtonNormal, BorderDim, null, 32, 8, 0, "SM_BtnNormal");
+                _buttonHover = vanillaPanel ?? MakeRoundedGlowSprite(ButtonHover, AccentColor, null, 32, 8, 0, "SM_BtnHover");
+                _buttonActive = vanillaPanel ?? MakeRoundedGlowSprite(ButtonActive, CyanDim, null, 32, 8, 0, "SM_BtnActive");
+                _buttonSelected = vanillaPanel ?? MakeRoundedGlowSprite(new Color(0.40f, 0.30f, 0.15f, 0.95f), CyanColor, null, 32, 8, 0, "SM_BtnSelected");
+                _buttonDisabled = vanillaPanel ?? MakeRoundedGlowSprite(new Color(0.10f, 0.08f, 0.05f, 0.8f), BorderDim, null, 32, 8, 0, "SM_BtnDisabled");
+                _titleBarSprite = vanillaPanel ?? MakeRoundedGlowSprite(new Color(0.20f, 0.15f, 0.09f, 0.98f), CyanDim, null, 32, 8, 1, "SM_TitleBar");
                 _scrollbarSprite = MakeSolidSprite(new Color(0.70f, 0.55f, 0.30f, 0.6f), "SM_Scrollbar");
                 _rowEven = MakeSolidSprite(RowEven, "SM_RowEven");
                 _rowOdd = MakeSolidSprite(RowOdd, "SM_RowOdd");
-                _cardSprite = MakeRoundedGlowSprite(CardBg, BorderDim, null, 32, 8, 1, "SM_Card");
-                _cardHover = MakeRoundedGlowSprite(new Color(0.25f, 0.19f, 0.11f, 0.98f), BorderColor, null, 32, 8, 1, "SM_CardHover");
-                _sectionSprite = MakeRoundedGlowSprite(SectionBg, BorderDim, null, 32, 8, 1, "SM_Section");
+                _cardSprite = vanillaPanel ?? MakeRoundedGlowSprite(CardBg, BorderDim, null, 32, 8, 1, "SM_Card");
+                _cardHover = vanillaPanel ?? MakeRoundedGlowSprite(new Color(0.25f, 0.19f, 0.11f, 0.98f), BorderColor, null, 32, 8, 1, "SM_CardHover");
+                _sectionSprite = vanillaField ?? MakeRoundedGlowSprite(SectionBg, BorderDim, null, 32, 8, 1, "SM_Section");
                 _dividerSprite = MakeSolidSprite(new Color(0.45f, 0.35f, 0.20f, 0.5f), "SM_Divider");
                 _glowSprite = MakeGlowSprite(CyanColor, "SM_Glow");
                 _iconCircle = MakeCircleSprite(new Color(0.12f, 0.10f, 0.07f, 0.95f), BorderColor, 32, 2, "SM_IconCircle");
                 _iconHex = MakeHexSprite(new Color(0.12f, 0.10f, 0.07f, 0.95f), AccentColor, 32, 2, "SM_IconHex");
-                _progressBg = MakeRoundedGlowSprite(new Color(0.08f, 0.06f, 0.04f, 0.9f), BorderDim, null, 16, 3, 0, "SM_ProgressBg");
+                _progressBg = vanillaField ?? MakeRoundedGlowSprite(new Color(0.08f, 0.06f, 0.04f, 0.9f), BorderDim, null, 16, 3, 0, "SM_ProgressBg");
                 _progressFill = MakeRoundedGlowSprite(new Color(0.75f, 0.60f, 0.30f, 1f), CyanColor, null, 16, 3, 0, "SM_ProgressFill");
                 _cornerDecor = MakeCornerDecorSprite(BorderGold, "SM_Corner");
-                _tabNormal = MakeButtonSprite(
-                    new Color(0.14f, 0.11f, 0.07f, 0.9f),
-                    new Color(0.09f, 0.07f, 0.05f, 0.9f),
-                    BorderDim,
-                    null, null, 24, 2, "SM_TabNormal");
-                _tabActive = MakeButtonSprite(
-                    new Color(0.30f, 0.22f, 0.12f, 1f),
-                    new Color(0.18f, 0.14f, 0.08f, 1f),
-                    AccentColor,
-                    new Color(0.75f, 0.60f, 0.35f, 0.8f),
-                    null, 24, 2, "SM_TabActive");
+                _tabNormal = vanillaPanel ?? MakeButtonSprite(new Color(0.14f, 0.11f, 0.07f, 0.9f), new Color(0.09f, 0.07f, 0.05f, 0.9f), BorderDim, null, null, 24, 2, "SM_TabNormal");
+                _tabActive = vanillaPanel ?? MakeButtonSprite(new Color(0.30f, 0.22f, 0.12f, 1f), new Color(0.18f, 0.14f, 0.08f, 1f), AccentColor, new Color(0.75f, 0.60f, 0.35f, 0.8f), null, 24, 2, "SM_TabActive");
                 // v0.203 气力图标：蓝色能量球+青色电光边框（原著机械系气力设定）
                 _qiIcon = MakeQiIconSprite();
                 _initialized = true;
@@ -189,6 +168,13 @@ namespace SuperMech.Code
                 Debug.LogError("[超神机械师] SMUiSkin初始化失败: " + e);
                 return false;
             }
+        }
+
+        /// <summary>加载原版Sprite纹理，失败返回null（调用方fallback到自绘Sprite）</summary>
+        private static Sprite LoadVanillaSprite(string path)
+        {
+            try { return SpriteTextureLoader.getSprite(path); }
+            catch { return null; }
         }
 
         /// <summary>生成9-slice Sprite（pixelsPerUnit=100，NML环境关键参数）</summary>
