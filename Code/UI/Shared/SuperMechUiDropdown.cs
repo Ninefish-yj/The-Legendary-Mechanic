@@ -154,6 +154,12 @@ namespace SuperMech.Code
             dropdown.onValueChanged.AddListener(idx => { if (onChange != null) onChange(idx); });
             dropdown.value = 0;
             dropdown.RefreshShownValue();
+
+            // v0.242.4 关键修复：动态创建的Dropdown其Template默认是active的，
+            // 不会像编辑器里拖的预制体那样自动隐藏，导致展开列表一直显示为黑色大块
+            if (dropdown.template != null)
+                dropdown.template.gameObject.SetActive(false);
+
             return dropdown;
         }
 
