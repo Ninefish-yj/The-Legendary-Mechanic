@@ -140,6 +140,16 @@ namespace SuperMech.Code
             bgRect.sizeDelta = new Vector2(width, height);
             bgRect.anchoredPosition = Vector2.zero;
 
+            // v0.242.18 修复窗口全屏：ScrollWindow根物体可能自带全屏Image组件
+            // （如scrollingGradient），即使Background设为固定尺寸，根物体的全屏
+            // 背景还在显示，导致视觉上窗口仍是全屏。禁用根物体上的Image。
+            GameObject swGo = ((Component)sw).gameObject;
+            Image rootImg = swGo.GetComponent<Image>();
+            if (rootImg != null) rootImg.enabled = false;
+
+            // v0.242.18 调试：确认尺寸设置生效
+            Debug.Log($"[超神机械师] 窗口创建: id={id}, 目标尺寸={width}x{height}, 实际sizeDelta={bgRect.sizeDelta}, 根物体Image={(rootImg != null ? "已禁用" : "无")}");
+
             // 创建内容区（在Background下，标题栏下方，四周留边距）
             GameObject contentGo = new GameObject("Content");
             contentGo.transform.SetParent(background, false);
@@ -150,7 +160,6 @@ namespace SuperMech.Code
             contentRect.offsetMax = new Vector2(-8f, -36f); // 顶部留出原版标题栏
 
             // 把包装组件挂在原版窗口上，Close时Destroy会一起销毁
-            GameObject swGo = ((Component)sw).gameObject;
             SuperMechUguiWindow wrapper = swGo.AddComponent<SuperMechUguiWindow>();
             wrapper.WindowId = id;
             wrapper.Rect = bgRect;
