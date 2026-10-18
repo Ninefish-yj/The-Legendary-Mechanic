@@ -88,9 +88,9 @@ namespace SuperMech.Code
                             titleRect.anchorMin = new Vector2(0f, 1f);
                             titleRect.anchorMax = new Vector2(1f, 1f);
                             titleRect.pivot = new Vector2(0.5f, 1f);
-                            titleRect.anchoredPosition = new Vector2(0f, -4f);
-                            titleRect.offsetMin = new Vector2(40f, titleRect.offsetMin.y);
-                            titleRect.offsetMax = new Vector2(-40f, titleRect.offsetMax.y);
+                            titleRect.anchoredPosition = Vector2.zero;
+                            titleRect.offsetMin = new Vector2(40f, -32f);
+                            titleRect.offsetMax = new Vector2(-40f, -4f);
                         }
                         Text titleText = titleTf.GetComponent<Text>();
                         if (titleText != null) titleText.alignment = TextAnchor.MiddleCenter;
@@ -165,13 +165,13 @@ namespace SuperMech.Code
                     RectTransform titleRect = titleTf.GetComponent<RectTransform>();
                     if (titleRect != null)
                     {
-                        // 顶部横向拉伸，居中对齐
+                        // 顶部横向拉伸，居中对齐；y范围放进标题栏专门区域（顶部4~32px）
                         titleRect.anchorMin = new Vector2(0f, 1f);
                         titleRect.anchorMax = new Vector2(1f, 1f);
                         titleRect.pivot = new Vector2(0.5f, 1f);
-                        titleRect.anchoredPosition = new Vector2(0f, -4f);
-                        titleRect.offsetMin = new Vector2(40f, titleRect.offsetMin.y);  // 左边避开关闭按钮
-                        titleRect.offsetMax = new Vector2(-40f, titleRect.offsetMax.y); // 右边对称留空
+                        titleRect.anchoredPosition = Vector2.zero;
+                        titleRect.offsetMin = new Vector2(40f, -32f);  // 底部=顶部下方32px
+                        titleRect.offsetMax = new Vector2(-40f, -4f);  // 顶部=顶部下方4px
                     }
                     Text titleText = titleTf.GetComponent<Text>();
                     if (titleText != null)
