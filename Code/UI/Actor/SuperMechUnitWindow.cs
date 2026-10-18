@@ -156,7 +156,7 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>v0.228 尝试把气力条插入到原版UnitBarsElement区域（和饥饿/体力/魔力条排在一起）</summary>
+        /// <summary>v0.242.3 气力条插入Bars区域：统一调用SuperMechUnitBars公共方法，确保与单位面板完全一致</summary>
         private static bool TryInjectQiBarToBarsArea(UnitWindow window, Actor a)
         {
             try
@@ -166,8 +166,6 @@ namespace SuperMech.Code
                 if (barsElement == null) return false;
 
                 // 找到一个现有的StatBar作为模板：优先魔力条（消耗条样式，与单位面板气力条统一）
-                // v0.239.5 修复：原来取existingBars[0]（层级第一个条=幸福度/饥饿条，含HappinessBarIcon），
-                // 导致气力条错用幸福度条样式——改为按名称找mana，其次stamina，最后兜底[0]
                 var existingBars = barsElement.GetComponentsInChildren<StatBar>(true);
                 if (existingBars == null || existingBars.Length == 0) return false;
 
@@ -185,88 +183,18 @@ namespace SuperMech.Code
                 }
                 if (template == null) template = existingBars[0];
 
-                // 检查是否已经插入过气力条（防止重复）
-                var existingQi = barsElement.transform.Find("SM_QiBar");
-                if (existingQi != null)
-                {
-                    UpdateQiBar(existingQi.GetComponent<StatBar>(), a);
-                    return true;
-                }
+                // v0.242.3 统一调用公共创建方法：颜色/图标/Tooltip清理全部在SuperMechUnitBars里处理
+                StatBar qiBar = SuperMechUnitBars.CreateQiBarFromTemplate(template, barsElement.transform, "SM_QiBar");
+                if (qiBar == null) return false;
 
-                // 复制模板StatBar
-                var qiBarGo = UnityEngine.Object.Instantiate(template.gameObject, barsElement.transform);
-                qiBarGo.name = "SM_QiBar";
-
-                // v0.239.5 防御：若模板仍含幸福度图标组件（兜底[0]分支可能取到），移除，避免幸福度图标残留
-                var happinessIcon = qiBarGo.GetComponentInChildren<HappinessBarIcon>(true);
-                if (happinessIcon != null) UnityEngine.Object.DestroyImmediate(happinessIcon.gameObject);
-
-                // v0.237.4 与单位面板气力条统一：青色+自定义气力图标（模组主题色）
-                var barImg = qiBarGo.transform.Find("bar")?.GetComponent<Image>();
-                if (barImg != null)
-                {
-                    barImg.color = SuperMechUiSkin.CyanColor; // CyanColor青色
-                }
-
-                // 文本颜色也统一为青色（原版模板是白色/蓝色）
-                var statBarTmp = qiBarGo.GetComponent<StatBar>();
-                if (statBarTmp != null && statBarTmp.textField != null)
-                    statBarTmp.textField.color = SuperMechUiSkin.CyanColor;
-
-                // 替换图标为自定义气力图标
-                try
-                {
-                    Sprite qiSprite = SuperMechUiSkin.QiIcon;
-                    if (qiSprite != null)
-                    {
-                        Transform iconTransform = qiBarGo.transform.Find("icon") ?? qiBarGo.transform.Find("Icon");
-                        if (iconTransform != null)
-                        {
-                            Image iconImage = iconTransform.GetComponent<Image>();
-                            if (iconImage != null) iconImage.sprite = qiSprite;
-                        }
-                        else
-                        {
-                            foreach (Image img in qiBarGo.GetComponentsInChildren<Image>(true))
-                            {
-                                if (img != barImg && img.gameObject != qiBarGo)
-                                {
-                                    img.sprite = qiSprite;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                catch (System.Exception) { /* 图标替换失败不影响功能 */ }
-
-                // 设置气力值
-                var statBar = qiBarGo.GetComponent<StatBar>();
-                UpdateQiBar(statBar, a);
-
+                // 统一更新数值
+                SuperMechUnitBars.UpdateQiBarValue(qiBar, a);
                 return true;
             }
             catch (System.Exception e)
             {
                 Debug.LogWarning("[超神机械师] 气力条插入Bars区域失败: " + e.Message);
                 return false;
-            }
-        }
-
-        /// <summary>v0.228 更新气力条数值；v0.239.5 文本统一为"/max"（与单位面板SuperMechUnitBars一致）</summary>
-        private static void UpdateQiBar(StatBar bar, Actor a)
-        {
-            if (bar == null) return;
-            float qi = SuperMechQi.GetQi(a);
-            float qiMax = SuperMechQi.GetQiMax(a);
-
-            if (qiMax > 0)
-            {
-                bar.setBar(qi, qiMax, "/" + ((int)qiMax).ToString(), pReset: false, pFloat: false, pUpdateText: true, 0.25f);
-            }
-            else
-            {
-                bar.setBar(0, 1, LocalizedTextManager.getText("sm_ui_qi_none"), pReset: false, pFloat: false, pUpdateText: true, 0.25f);
             }
         }
 
