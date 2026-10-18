@@ -88,8 +88,8 @@ namespace SuperMech.Code
             rpRect.anchorMin = new Vector2(0, 0);
             rpRect.anchorMax = new Vector2(0.4f, 1);
             rpRect.pivot = new Vector2(0, 1);
-            rpRect.offsetMin = new Vector2(0, -34);
-            rpRect.offsetMax = new Vector2(0, -4);
+            rpRect.offsetMin = new Vector2(0, 4);     // v0.242.28 修复：底部留4px
+            rpRect.offsetMax = new Vector2(0, -34);   // 顶部留34px给StatsBar
             _rankText = SuperMechUiBuilder.AddText(rankPanel, "", 10, TextAnchor.UpperLeft);
             var rtRect = _rankText.GetComponent<RectTransform>();
             rtRect.anchorMin = Vector2.zero; rtRect.anchorMax = Vector2.one;
@@ -101,8 +101,8 @@ namespace SuperMech.Code
             mpRect.anchorMin = new Vector2(0.4f, 0);
             mpRect.anchorMax = new Vector2(0.7f, 1);
             mpRect.pivot = new Vector2(0, 1);
-            mpRect.offsetMin = new Vector2(0, -34);
-            mpRect.offsetMax = new Vector2(0, -4);
+            mpRect.offsetMin = new Vector2(0, 4);
+            mpRect.offsetMax = new Vector2(0, -34);
             _macroText = SuperMechUiBuilder.AddText(macroPanel, "", 10, TextAnchor.UpperLeft);
             var mtRect = _macroText.GetComponent<RectTransform>();
             mtRect.anchorMin = Vector2.zero; mtRect.anchorMax = Vector2.one;
@@ -114,8 +114,8 @@ namespace SuperMech.Code
             cpRect.anchorMin = new Vector2(0.7f, 0);
             cpRect.anchorMax = new Vector2(1, 1);
             cpRect.pivot = new Vector2(1, 1);
-            cpRect.offsetMin = new Vector2(0, -34);
-            cpRect.offsetMax = new Vector2(0, -4);
+            cpRect.offsetMin = new Vector2(0, 4);
+            cpRect.offsetMax = new Vector2(0, -34);
             _companyText = SuperMechUiBuilder.AddText(companyPanel, "", 10, TextAnchor.UpperLeft);
             var ctRect = _companyText.GetComponent<RectTransform>();
             ctRect.anchorMin = Vector2.zero; ctRect.anchorMax = Vector2.one;

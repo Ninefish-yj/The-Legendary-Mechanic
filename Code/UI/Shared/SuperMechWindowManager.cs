@@ -39,13 +39,13 @@ namespace SuperMech.Code
         public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 510, 425, DrawDimensionContent); }
         public static void OpenVirtualGenesis(Actor a) { SuperMechVirtualGenesisView.OverrideActor = a; ToggleWindow("virtualgenesis", "sm_ui_vg_title", 460, 420, DrawVirtualGenesisContent); }
         public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 540, 500, DrawMechLegionContent); }
-        public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 540, 500, DrawBuildingContent); }
+        public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 540, 380, DrawBuildingContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 720, 460, DrawRankContent); }
         public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 640, 460, DrawFactionContent); }
         public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 460, DrawPlayerContent); }
         public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 460, DrawWorldTreeContent); }
         public static void OpenWorldBeyond() { ToggleWindow("worldbeyond", "sm_ui_worldbeyond_title", 680, 480, DrawWorldBeyondContent); }
-        public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 680, 460, DrawEconomyContent); }
+        public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 680, 380, DrawEconomyContent); }
         public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 680, 520, DrawTechContent); }
         public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
