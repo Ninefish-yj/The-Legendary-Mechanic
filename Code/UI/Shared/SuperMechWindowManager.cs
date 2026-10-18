@@ -55,12 +55,12 @@ namespace SuperMech.Code
         {
             ToggleWindow("settings", "sm_ui_settings_title", 580, 560, DrawSettingsContent);
         }
-        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 460, SuperMechTab.DrawOverviewContent); }
+        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 380, SuperMechTab.DrawOverviewContent); }
         /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
         public static void OpenOverview(Kingdom kingdom)
         {
             if (kingdom != null) SelectedKingdomId = kingdom.getID();
-            ToggleWindow("overview", "sm_tab_panel_title", 720, 460, SuperMechTab.DrawOverviewContent);
+            ToggleWindow("overview", "sm_tab_panel_title", 720, 380, SuperMechTab.DrawOverviewContent);
         }
 
         /// <summary>v0.242.16 移除宇宙页签（子页签无法切换，用户要求删除）
@@ -71,7 +71,7 @@ namespace SuperMech.Code
             ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 文明（全球对比表）
             ("sm_ui_rank_window_title", DrawRankContent),            // 超能者排行榜（全球超能者）
             ("sm_ui_faction_window_title", DrawFactionContent),      // 组织（全球势力）
-            ("sm_ui_player_title", DrawPlayerContent),               // 降临者（第四天灾玩家）
+            ("sm_ui_overview_player_tab", DrawPlayerContent),       // 降临者（第四天灾玩家）
             ("sm_ui_settings_title", DrawSettingsContent),           // 设置
         };
 

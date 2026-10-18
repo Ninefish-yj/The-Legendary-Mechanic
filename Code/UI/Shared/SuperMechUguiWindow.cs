@@ -110,6 +110,14 @@ namespace SuperMech.Code
                 }
                 existing.IsOpen = true;
                 ScrollWindow.showWindow(id);
+                // v0.242.24 showWindow后再强制重设一次尺寸（防止动画/布局重置sizeDelta）
+                if (existing.Rect != null)
+                {
+                    existing.Rect.anchorMin = new Vector2(0.5f, 0.5f);
+                    existing.Rect.anchorMax = new Vector2(0.5f, 0.5f);
+                    existing.Rect.pivot = new Vector2(0.5f, 0.5f);
+                    existing.Rect.sizeDelta = new Vector2(width, height);
+                }
                 return existing;
             }
 
@@ -210,6 +218,17 @@ namespace SuperMech.Code
             // 标准化：新创建的窗口默认active，先关闭再用showWindow走原版开启动画
             if (swGo.activeSelf) swGo.SetActive(false);
             ScrollWindow.showWindow(id);
+
+            // v0.242.24 关键修复：showWindow走原版动画时可能重置Background的sizeDelta
+            // （动画用DOTween改localPosition，但某些版本会连带重算布局）。
+            // 动画启动后立即再强制设一次尺寸，确保最终渲染大小=我们指定的width×height。
+            if (bgRect != null)
+            {
+                bgRect.anchorMin = new Vector2(0.5f, 0.5f);
+                bgRect.anchorMax = new Vector2(0.5f, 0.5f);
+                bgRect.pivot = new Vector2(0.5f, 0.5f);
+                bgRect.sizeDelta = new Vector2(width, height);
+            }
 
             return wrapper;
         }
