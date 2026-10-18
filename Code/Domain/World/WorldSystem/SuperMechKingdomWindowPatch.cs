@@ -157,14 +157,17 @@ namespace SuperMech.Code
         /// <summary>
         /// 添加功能按钮行（标签=功能名，值=▸，点击执行action）
         /// v0.240.2 新增icon参数：每个按钮用不同原版图标
+        /// v0.242.10 修复：on_click_value字段类型是UnityAction，不是System.Action，
+        ///   直接SetValue会抛ArgumentException被外层catch吞掉，导致按钮按不了
         /// </summary>
         private static void AddFuncButton(KingdomWindow window, string label, string icon, System.Action action)
         {
             var row = AddRow(window, label, "▸", icon);
             if (row != null)
             {
-                _onClickField?.SetValue(row, action);
-                _onHoverField?.SetValue(row, action);
+                UnityEngine.Events.UnityAction unityAction = new UnityEngine.Events.UnityAction(action);
+                _onClickField?.SetValue(row, unityAction);
+                _onHoverField?.SetValue(row, unityAction);
             }
         }
     }
