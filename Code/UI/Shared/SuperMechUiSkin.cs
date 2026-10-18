@@ -754,7 +754,8 @@ namespace SuperMech.Code
         public static (ScrollRect scroll, RectTransform content) CreateScrollArea(Transform parent, string name)
         {
             // ScrollRect + Mask 容器
-            var scrollGo = new GameObject(name);
+            // v0.242.8 显式添加RectTransform：不依赖ScrollRect的[RequireComponent]运行时自动添加
+            var scrollGo = new GameObject(name, typeof(RectTransform));
             scrollGo.transform.SetParent(parent, false);
             var scrollRect = scrollGo.AddComponent<ScrollRect>();
             var sr = scrollGo.GetComponent<RectTransform>();

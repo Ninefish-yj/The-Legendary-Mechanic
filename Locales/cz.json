@@ -382,6 +382,7 @@
   "sm_ui_qi_tooltip_title": "气力",
   "sm_ui_qi_tooltip_current": "当前",
   "sm_ui_qi_tooltip_level": "境界",
+  "sm_ui_qi_tooltip_not_awakened": "未觉醒超能，无力气",
   "sm_ui_rank": "阶位",
   "sm_ui_status": "状态",
   "sm_ui_talent_tendency": "天赋倾向",

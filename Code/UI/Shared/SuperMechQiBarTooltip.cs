@@ -75,12 +75,23 @@ namespace SuperMech.Code
 
             float qi = SuperMechQi.GetQi(a);
             float qiMax = SuperMechQi.GetQiMax(a);
-            int lv = SuperMechQi.GetLevel(qiMax > 0 ? qiMax : qi);
-            string lvName = lv > 0 ? SuperMechQi.LevelNames[lv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
 
-            string text = LocalizedTextManager.getText("sm_ui_qi_tooltip_title") + "\n"
-                + LocalizedTextManager.getText("sm_ui_qi_tooltip_current") + ": " + (int)qi + " / " + (int)qiMax + "\n"
-                + LocalizedTextManager.getText("sm_ui_qi_tooltip_level") + ": " + lvName;
+            // v0.242.8 未觉醒单位（qiMax=0）显示友好提示，而非"0/0 未入流"
+            string text;
+            if (qiMax <= 0)
+            {
+                text = LocalizedTextManager.getText("sm_ui_qi_tooltip_title") + "\n"
+                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_not_awakened");
+            }
+            else
+            {
+                int lv = SuperMechQi.GetLevel(qiMax);
+                string lvName = lv > 0 ? SuperMechQi.LevelNames[lv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
+
+                text = LocalizedTextManager.getText("sm_ui_qi_tooltip_title") + "\n"
+                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_current") + ": " + (int)qi + " / " + (int)qiMax + "\n"
+                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_level") + ": " + lvName;
+            }
 
             _tooltipText.text = text;
             _tooltipObj.SetActive(true);

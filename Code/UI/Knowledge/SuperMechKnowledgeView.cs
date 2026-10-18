@@ -166,7 +166,9 @@ namespace SuperMech.Code
             _detailContent = cardRect;
 
             // 详情滚动区
-            var detailScrollGo = new GameObject("DetailScroll");
+            // v0.242.8 显式添加RectTransform：不依赖ScrollRect的[RequireComponent]运行时自动添加，
+            // 某些Unity版本运行时AddComponent不会自动添加依赖组件，导致GetComponent<RectTransform>()返回null
+            var detailScrollGo = new GameObject("DetailScroll", typeof(RectTransform));
             detailScrollGo.transform.SetParent(cardGo.transform, false);
             var detailScrollRect = detailScrollGo.AddComponent<ScrollRect>();
             var dsr = detailScrollGo.GetComponent<RectTransform>();
