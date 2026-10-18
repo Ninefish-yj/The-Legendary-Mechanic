@@ -222,16 +222,18 @@ namespace SuperMech.Code
             go.AddComponent<SuperMechRankView>();
         }
 
-        /// <summary>v0.242.21 降临者页签：第四天灾玩家列表+击杀榜+任务详情</summary>
+        /// <summary>v0.242.21 降临者页签：第四天灾玩家列表+击杀榜+任务详情
+        /// v0.242.34 固定高度460，顶部锚定，不依赖父物体拉伸（避免负高度翻转）</summary>
         internal static void DrawPlayerContent(RectTransform content)
         {
             var go = new GameObject("PlayerView");
             go.transform.SetParent(content, false);
             var rect = go.AddComponent<RectTransform>();
-            rect.anchorMin = Vector2.zero;
-            rect.anchorMax = Vector2.one;
-            rect.offsetMin = Vector2.zero;
-            rect.offsetMax = Vector2.zero;
+            rect.anchorMin = new Vector2(0, 1);
+            rect.anchorMax = new Vector2(1, 1);
+            rect.pivot = new Vector2(0.5f, 1);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(0, 460);
             go.AddComponent<SuperMechPlayerView>();
         }
 

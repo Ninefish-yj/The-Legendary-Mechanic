@@ -22,12 +22,17 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // 顶部统计
+            // v0.242.34 全部改用顶部锚定+固定高度的绝对定位，
+            // 避免拉伸模式offsetMin.y/offsetMax.y在父物体高度不足时产生负高度翻转。
+            // 布局基于460px标准高度：TopBar(28) + 间距(4) + 中间面板(376) + 间距(4) + BottomBar(48)
+
+            // 顶部统计栏
             var topBar = SuperMechUiBuilder.CreatePanel(transform, "TopBar", new Color(0, 0, 0, 0.2f), 4, 4, 0, 0);
             var topRect = topBar.GetComponent<RectTransform>();
             topRect.anchorMin = new Vector2(0, 1);
             topRect.anchorMax = new Vector2(1, 1);
             topRect.pivot = new Vector2(0.5f, 1);
+            topRect.anchoredPosition = Vector2.zero;
             topRect.sizeDelta = new Vector2(0, 28);
             _countText = SuperMechUiBuilder.AddText(topBar, "", 13, TextAnchor.MiddleLeft);
             var countRect = _countText.GetComponent<RectTransform>();
@@ -36,14 +41,14 @@ namespace SuperMech.Code
             countRect.offsetMin = new Vector2(8, 0);
             countRect.offsetMax = new Vector2(-8, 0);
 
-            // 左：面板统计（降临者击杀榜）
+            // 左：面板统计（降临者击杀榜）—— 顶部锚定，固定高度376
             var panelPanel = SuperMechUiBuilder.CreatePanel(transform, "PanelList", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var ppRect = panelPanel.GetComponent<RectTransform>();
-            ppRect.anchorMin = new Vector2(0, 0);
+            ppRect.anchorMin = new Vector2(0, 1);
             ppRect.anchorMax = new Vector2(0.5f, 1);
             ppRect.pivot = new Vector2(0, 1);
-            ppRect.offsetMin = new Vector2(0, 52);   // 底部避开BottomBar(48)+间距
-            ppRect.offsetMax = new Vector2(0, -32);  // 顶部避开TopBar(28)+间距
+            ppRect.anchoredPosition = new Vector2(0, -32);  // 顶部避开TopBar(28)+间距4
+            ppRect.sizeDelta = new Vector2(0, 376);         // 固定高度：460-32-52
             _panelText = SuperMechUiBuilder.AddText(panelPanel, "", 12, TextAnchor.UpperLeft);
             var ptRect = _panelText.GetComponent<RectTransform>();
             ptRect.anchorMin = Vector2.zero;
@@ -51,14 +56,14 @@ namespace SuperMech.Code
             ptRect.offsetMin = new Vector2(8, 4);
             ptRect.offsetMax = new Vector2(-8, -4);
 
-            // 右：任务详情（奖池任务）
+            // 右：任务详情（奖池任务）—— 顶部锚定，固定高度376
             var taskPanel = SuperMechUiBuilder.CreatePanel(transform, "TaskPanel", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var tpRect = taskPanel.GetComponent<RectTransform>();
-            tpRect.anchorMin = new Vector2(0.5f, 0);
+            tpRect.anchorMin = new Vector2(0.5f, 1);
             tpRect.anchorMax = new Vector2(1, 1);
             tpRect.pivot = new Vector2(1, 1);
-            tpRect.offsetMin = new Vector2(0, 52);
-            tpRect.offsetMax = new Vector2(0, -32);
+            tpRect.anchoredPosition = new Vector2(0, -32);
+            tpRect.sizeDelta = new Vector2(0, 376);
             _taskText = SuperMechUiBuilder.AddText(taskPanel, "", 12, TextAnchor.UpperLeft);
             var ttRect = _taskText.GetComponent<RectTransform>();
             ttRect.anchorMin = Vector2.zero;
@@ -66,11 +71,13 @@ namespace SuperMech.Code
             ttRect.offsetMin = new Vector2(8, 4);
             ttRect.offsetMax = new Vector2(-8, -4);
 
+            // 底部详情栏 —— 底部锚定，固定高度48
             var bottomBar = SuperMechUiBuilder.CreatePanel(transform, "BottomBar", new Color(0, 0, 0, 0.2f), 4, 4, 0, 0);
             var bRect = bottomBar.GetComponent<RectTransform>();
             bRect.anchorMin = new Vector2(0, 0);
             bRect.anchorMax = new Vector2(1, 0);
             bRect.pivot = new Vector2(0.5f, 0);
+            bRect.anchoredPosition = Vector2.zero;
             bRect.sizeDelta = new Vector2(0, 48);
             _detailText = SuperMechUiBuilder.AddText(bottomBar, "", 11, TextAnchor.UpperLeft);
             var dRect = _detailText.GetComponent<RectTransform>();
