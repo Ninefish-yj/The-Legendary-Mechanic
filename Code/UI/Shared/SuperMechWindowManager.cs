@@ -223,9 +223,13 @@ namespace SuperMech.Code
         }
 
         /// <summary>v0.242.21 降临者页签：第四天灾玩家列表+击杀榜+任务详情
-        /// v0.242.34 固定高度460，顶部锚定，不依赖父物体拉伸（避免负高度翻转）</summary>
+        /// v0.242.34 固定高度，顶部锚定，不依赖父物体拉伸（避免负高度翻转）
+        /// v0.242.35 高度460→320，适配窗口可见区域（380高窗口内容区约320），避免底部被裁剪</summary>
         internal static void DrawPlayerContent(RectTransform content)
         {
+            // 降临者页签内容不多，把ScrollContent高度降到320，不需要滚动
+            content.sizeDelta = new Vector2(0, 320);
+
             var go = new GameObject("PlayerView");
             go.transform.SetParent(content, false);
             var rect = go.AddComponent<RectTransform>();
@@ -233,7 +237,7 @@ namespace SuperMech.Code
             rect.anchorMax = new Vector2(1, 1);
             rect.pivot = new Vector2(0.5f, 1);
             rect.anchoredPosition = Vector2.zero;
-            rect.sizeDelta = new Vector2(0, 460);
+            rect.sizeDelta = new Vector2(0, 320);
             go.AddComponent<SuperMechPlayerView>();
         }
 
