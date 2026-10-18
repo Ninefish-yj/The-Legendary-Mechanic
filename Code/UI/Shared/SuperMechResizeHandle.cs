@@ -100,11 +100,18 @@ namespace SuperMech.Code
         private static void AnchorCloseToTopRight(RectTransform r)
         {
             if (r == null) return;
+            // v0.242.0 关闭按钮原父物体是Title，锚定(1,1)只到Title右上角；
+            // 先移到Background下，才能锚定到整个窗口的右上角外部
+            Transform bgTf = r.GetComponentInParent<ScrollWindow>()?.transform.Find("Background");
+            if (bgTf != null && r.parent != bgTf)
+            {
+                r.SetParent(bgTf, false);
+            }
             r.anchorMin = new Vector2(1f, 1f);
             r.anchorMax = new Vector2(1f, 1f);
             // pivot=左下角：按钮左下角对齐窗口右上角点，按钮整体在外部右上方
             r.pivot = new Vector2(0f, 0f);
-            r.anchoredPosition = new Vector2(-2f, -2f); // 轻微内移2px与边框重叠
+            r.anchoredPosition = new Vector2(2f, -2f); // v0.242.0 往右移4px，更贴帝国盒子位置
             // SetAsLastSibling 让关闭按钮成为父物体最后子物体，始终可见可点
             r.SetAsLastSibling();
         }

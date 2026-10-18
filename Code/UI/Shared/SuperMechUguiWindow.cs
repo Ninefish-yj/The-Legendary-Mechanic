@@ -89,8 +89,8 @@ namespace SuperMech.Code
                             titleRect.anchorMax = new Vector2(1f, 1f);
                             titleRect.pivot = new Vector2(0.5f, 1f);
                             titleRect.anchoredPosition = Vector2.zero;
-                            titleRect.offsetMin = new Vector2(40f, -32f);
-                            titleRect.offsetMax = new Vector2(-40f, -4f);
+                            titleRect.offsetMin = new Vector2(40f, -26f);  // v0.242.0 标题往上移
+                            titleRect.offsetMax = new Vector2(-40f, -2f);
                         }
                         Text titleText = titleTf.GetComponent<Text>();
                         if (titleText != null) titleText.alignment = TextAnchor.MiddleCenter;
@@ -165,13 +165,13 @@ namespace SuperMech.Code
                     RectTransform titleRect = titleTf.GetComponent<RectTransform>();
                     if (titleRect != null)
                     {
-                        // 顶部横向拉伸，居中对齐；y范围放进标题栏专门区域（顶部4~32px）
+                        // v0.242.0 标题往上移进入标题栏专门区域（顶部2~26px），对齐帝国盒子
                         titleRect.anchorMin = new Vector2(0f, 1f);
                         titleRect.anchorMax = new Vector2(1f, 1f);
                         titleRect.pivot = new Vector2(0.5f, 1f);
                         titleRect.anchoredPosition = Vector2.zero;
-                        titleRect.offsetMin = new Vector2(40f, -32f);  // 底部=顶部下方32px
-                        titleRect.offsetMax = new Vector2(-40f, -4f);  // 顶部=顶部下方4px
+                        titleRect.offsetMin = new Vector2(40f, -26f);
+                        titleRect.offsetMax = new Vector2(-40f, -2f);
                     }
                     Text titleText = titleTf.GetComponent<Text>();
                     if (titleText != null)
