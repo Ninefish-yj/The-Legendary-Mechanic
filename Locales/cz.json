@@ -4157,5 +4157,11 @@
   "sm_mat_uranium": "铀",
   "sm_mat_adamantine": "精金",
   "sm_mat_alloy_super": "超级合金",
-  "sm_mat_dark_matter": "暗物质"
+  "sm_mat_dark_matter": "暗物质",
+  "sm_ui_super_mech_divider": "超能",
+  "sm_ui_profession": "职业",
+  "sm_ui_awakened_level": "觉醒等级",
+  "sm_ui_knowledge_count": "已学知识",
+  "sm_ui_equipment_count": "拥有装备",
+  "sm_ui_spell_count": "已学法术"
 }
