@@ -154,6 +154,7 @@ namespace SuperMech.Code
             var mkTextRt = _marketText.GetComponent<RectTransform>();
             mkTextRt.anchorMin = Vector2.zero; mkTextRt.anchorMax = Vector2.one;
             mkTextRt.offsetMin = new Vector2(8, 8); mkTextRt.offsetMax = new Vector2(-8, -8);
+        }
 
         private void SwitchTab(int idx)
         {
