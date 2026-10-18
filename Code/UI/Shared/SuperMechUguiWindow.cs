@@ -76,6 +76,27 @@ namespace SuperMech.Code
                 // v0.239.0 缓存复用窗口也执行红叉归位（旧版创建的窗口红叉停在标题栏中间，复用时不重建不会重跑Create里的FixCloseButton）
                 if (existing.Rect != null)
                     SuperMechResizeHandle.FixCloseButton(existing.Rect);
+                // v0.240.3 缓存复用也执行标题居中（旧版窗口标题偏右）
+                try
+                {
+                    Transform titleTf = ((Component)existing._scrollWindow).transform.Find("Background/Title");
+                    if (titleTf != null)
+                    {
+                        RectTransform titleRect = titleTf.GetComponent<RectTransform>();
+                        if (titleRect != null)
+                        {
+                            titleRect.anchorMin = new Vector2(0f, 1f);
+                            titleRect.anchorMax = new Vector2(1f, 1f);
+                            titleRect.pivot = new Vector2(0.5f, 1f);
+                            titleRect.anchoredPosition = new Vector2(0f, -4f);
+                            titleRect.offsetMin = new Vector2(40f, titleRect.offsetMin.y);
+                            titleRect.offsetMax = new Vector2(-40f, titleRect.offsetMax.y);
+                        }
+                        Text titleText = titleTf.GetComponent<Text>();
+                        if (titleText != null) titleText.alignment = TextAnchor.MiddleCenter;
+                    }
+                }
+                catch (System.Exception) { }
                 existing.IsOpen = true;
                 ScrollWindow.showWindow(id);
                 return existing;
@@ -133,6 +154,36 @@ namespace SuperMech.Code
             // v0.237.9 所有平台：窗口创建后立即把关闭按钮钉到右上角
             // （原版空窗口预制体的关闭按钮锚点不在右上角，窗口一宽它就漂在标题栏中间——用户截图确认）
             SuperMechResizeHandle.FixCloseButton(bgRect);
+
+            // v0.240.3 标题居中对齐帝国盒子：原版空窗口标题默认偏右（紧挨关闭按钮），
+            // 帝国盒子标题是顶部居中。找到Background/Title强制居中。
+            try
+            {
+                Transform titleTf = ((Component)sw).transform.Find("Background/Title");
+                if (titleTf != null)
+                {
+                    RectTransform titleRect = titleTf.GetComponent<RectTransform>();
+                    if (titleRect != null)
+                    {
+                        // 顶部横向拉伸，居中对齐
+                        titleRect.anchorMin = new Vector2(0f, 1f);
+                        titleRect.anchorMax = new Vector2(1f, 1f);
+                        titleRect.pivot = new Vector2(0.5f, 1f);
+                        titleRect.anchoredPosition = new Vector2(0f, -4f);
+                        titleRect.offsetMin = new Vector2(40f, titleRect.offsetMin.y);  // 左边避开关闭按钮
+                        titleRect.offsetMax = new Vector2(-40f, titleRect.offsetMax.y); // 右边对称留空
+                    }
+                    Text titleText = titleTf.GetComponent<Text>();
+                    if (titleText != null)
+                    {
+                        titleText.alignment = TextAnchor.MiddleCenter;
+                    }
+                }
+            }
+            catch (System.Exception)
+            {
+                // 标题调整失败不影响窗口功能
+            }
 
             // 标准化：新创建的窗口默认active，先关闭再用showWindow走原版开启动画
             if (swGo.activeSelf) swGo.SetActive(false);
