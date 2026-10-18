@@ -104,7 +104,10 @@ namespace SuperMech.Code
                         if (titleText != null) titleText.alignment = TextAnchor.MiddleCenter;
                     }
                 }
-                catch (System.Exception) { }
+                catch (System.Exception)
+                {
+                    // 缓存复用窗口时标题栏调整失败不影响功能，静默忽略
+                }
                 existing.IsOpen = true;
                 ScrollWindow.showWindow(id);
                 return existing;
