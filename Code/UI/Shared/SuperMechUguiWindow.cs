@@ -70,9 +70,17 @@ namespace SuperMech.Code
                     foreach (Transform child in existing.Content)
                         Destroy(child.gameObject);
                 }
-                // 重新设置大小（以防调用方改了尺寸）
+                // v0.242.14 修复：复用窗口时必须重设anchor/pivot再设sizeDelta。
+                // 旧版本缓存的窗口anchor可能是拉伸模式(0,0)-(1,1)，此时sizeDelta只改偏移量
+                // 不改实际大小，导致窗口保持全屏。和新建窗口逻辑一致：先anchor居中，再sizeDelta。
                 if (existing.Rect != null)
+                {
+                    existing.Rect.anchorMin = new Vector2(0.5f, 0.5f);
+                    existing.Rect.anchorMax = new Vector2(0.5f, 0.5f);
+                    existing.Rect.pivot = new Vector2(0.5f, 0.5f);
                     existing.Rect.sizeDelta = new Vector2(width, height);
+                    existing.Rect.anchoredPosition = Vector2.zero;
+                }
                 // v0.239.0 缓存复用窗口也执行红叉归位（旧版创建的窗口红叉停在标题栏中间，复用时不重建不会重跑Create里的FixCloseButton）
                 if (existing.Rect != null)
                     SuperMechResizeHandle.FixCloseButton(existing.Rect);
