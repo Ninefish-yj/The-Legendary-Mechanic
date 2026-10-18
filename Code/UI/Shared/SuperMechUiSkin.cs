@@ -35,35 +35,35 @@ namespace SuperMech.Code
         private static Sprite _tabActive;
         private static Sprite _qiIcon;
 
-        // ═════════════════════════ v0.215 现代简洁风格（大众审美） ═════════════════════════
-        // 设计原则：柔和深色背景 + 青色主色 + 大圆角 + 柔和阴影 + 充足留白
-        // 参考：现代APP深色模式（iOS/Android Material You）
-        public static readonly Color BgColor = new Color(0.10f, 0.12f, 0.18f, 0.97f);       // 面板底 #1A1F2E（柔和深灰蓝）
-        public static readonly Color BgLight = new Color(0.14f, 0.17f, 0.24f, 0.96f);       // 次级面板 #242B3D
-        public static readonly Color BorderColor = new Color(0.28f, 0.33f, 0.45f, 0.6f);    // 边框 #475473（极淡，若有若无）
-        public static readonly Color BorderDim = new Color(0.18f, 0.22f, 0.30f, 0.5f);      // 暗边框
-        public static readonly Color BorderGold = new Color(0.85f, 0.68f, 0.35f, 0.7f);     // 金色边框（仅标题栏用）
-        public static readonly Color TextColor = new Color(0.95f, 0.96f, 0.98f, 1f);        // 正文 #F2F5FA
-        public static readonly Color TextDim = new Color(0.60f, 0.66f, 0.76f, 1f);          // 次要文字 #99A8C2
-        public static readonly Color AccentColor = new Color(0.35f, 0.75f, 0.85f, 1f);      // 主色青色 #59BFD9（按钮/链接/强调）
-        public static readonly Color AccentDim = new Color(0.25f, 0.55f, 0.65f, 0.8f);      // 暗青
-        public static readonly Color CyanColor = new Color(0.40f, 0.80f, 0.90f, 1f);        // 青色高亮 #66C9E6（数值/进度）
-        public static readonly Color CyanDim = new Color(0.20f, 0.45f, 0.55f, 0.8f);        // 暗青
-        public static readonly Color ButtonNormal = new Color(0.16f, 0.20f, 0.30f, 0.95f);  // 按钮常态 #29334D（柔和）
-        public static readonly Color ButtonHover = new Color(0.22f, 0.28f, 0.40f, 0.98f);   // 按钮悬停 #384766
-        public static readonly Color ButtonActive = new Color(0.12f, 0.15f, 0.22f, 0.98f);  // 按钮按下 #1F2638
-        public static readonly Color EdgeLight = new Color(0.35f, 0.45f, 0.60f, 0.3f);      // 顶高光（极淡）
-        public static readonly Color EdgeDark = new Color(0.05f, 0.07f, 0.10f, 0.5f);       // 底阴影
-        public static readonly Color RowEven = new Color(0.12f, 0.15f, 0.22f, 0.5f);        // 偶数行
-        public static readonly Color RowOdd = new Color(0.09f, 0.12f, 0.17f, 0.3f);         // 奇数行
-        public static readonly Color CardBg = new Color(0.14f, 0.17f, 0.25f, 0.95f);        // 卡片底 #242B40
+        // ═════════════════════════ v0.240.6 帝国盒子暖色调（对齐原版窗口纹理） ═════════════════════════
+        // 设计原则：深棕灰底 + 金色主色 + 米黄文字 + 红金按钮，与原版帝国盒子窗口视觉统一
+        // 参考：WorldBox 原版 ScrollWindow（棕纸纹理 + 金色边框 + 米黄文字）
+        public static readonly Color BgColor = new Color(0.12f, 0.10f, 0.07f, 0.97f);       // 面板底 深棕灰
+        public static readonly Color BgLight = new Color(0.16f, 0.13f, 0.09f, 0.96f);       // 次级面板 稍浅棕
+        public static readonly Color BorderColor = new Color(0.45f, 0.35f, 0.20f, 0.6f);    // 边框 淡金棕
+        public static readonly Color BorderDim = new Color(0.28f, 0.22f, 0.13f, 0.5f);      // 暗边框
+        public static readonly Color BorderGold = new Color(0.85f, 0.68f, 0.35f, 0.7f);     // 金色边框
+        public static readonly Color TextColor = new Color(0.92f, 0.85f, 0.65f, 1f);        // 正文 米黄
+        public static readonly Color TextDim = new Color(0.65f, 0.58f, 0.42f, 1f);          // 次要文字 暗金
+        public static readonly Color AccentColor = new Color(0.85f, 0.68f, 0.35f, 1f);      // 主色 金色（按钮/链接/强调）
+        public static readonly Color AccentDim = new Color(0.60f, 0.48f, 0.25f, 0.8f);      // 暗金
+        public static readonly Color CyanColor = new Color(0.95f, 0.80f, 0.45f, 1f);        // 高亮 亮金（数值/进度）
+        public static readonly Color CyanDim = new Color(0.50f, 0.40f, 0.20f, 0.8f);        // 暗金
+        public static readonly Color ButtonNormal = new Color(0.22f, 0.16f, 0.09f, 0.95f);  // 按钮常态 深棕
+        public static readonly Color ButtonHover = new Color(0.30f, 0.22f, 0.13f, 0.98f);   // 按钮悬停 稍浅棕
+        public static readonly Color ButtonActive = new Color(0.16f, 0.12f, 0.07f, 0.98f);  // 按钮按下 更深棕
+        public static readonly Color EdgeLight = new Color(0.55f, 0.42f, 0.25f, 0.3f);      // 顶高光 淡金
+        public static readonly Color EdgeDark = new Color(0.06f, 0.05f, 0.03f, 0.5f);       // 底阴影
+        public static readonly Color RowEven = new Color(0.15f, 0.12f, 0.08f, 0.5f);        // 偶数行 棕
+        public static readonly Color RowOdd = new Color(0.11f, 0.09f, 0.06f, 0.3f);         // 奇数行 深棕
+        public static readonly Color CardBg = new Color(0.16f, 0.13f, 0.08f, 0.95f);        // 卡片底 深棕
         // v0.237.6 弹窗内容区暖棕半透明：透出原版窗口棕纸纹理，视觉与原版协调（参考帝国盒子）
         public static readonly Color VanillaCard = new Color(0.16f, 0.12f, 0.07f, 0.42f);    // 信息行卡片
         public static readonly Color VanillaSection = new Color(0.13f, 0.10f, 0.06f, 0.55f); // 分区标题条
         // v0.237.12 弹窗主面板暖棕（替代烘焙深蓝的Panel sprite，对齐帝国盒子原版棕纸窗口）
         // v0.238.4 暖棕实色化：alpha 0.58→0.95、提亮至棕纸色，确保真机一眼可见（此前半透明叠深蓝底看不出）
         public static readonly Color PanelVanilla = new Color(0.32f, 0.23f, 0.14f, 0.95f); // 弹窗面板底
-        public static readonly Color SectionBg = new Color(0.18f, 0.22f, 0.32f, 0.96f);     // 分区底 #2E3752
+        public static readonly Color SectionBg = new Color(0.20f, 0.15f, 0.09f, 0.96f);     // 分区底 深棕
         public static readonly Color CloseRed = new Color(0.85f, 0.35f, 0.32f, 0.95f);      // 关闭按钮红
         public static readonly Color SuccessGreen = new Color(0.40f, 0.78f, 0.50f, 1f);     // 成功绿
         public static readonly Color DangerRed = new Color(0.90f, 0.40f, 0.45f, 1f);        // 危险红
@@ -130,54 +130,54 @@ namespace SuperMech.Code
             if (_initialized) return true;
             try
             {
-                // v0.215 现代简洁风格：大圆角(10px) + 柔和边框 + 青色主色
+                // v0.240.6 帝国盒子暖色调：圆角 + 金色边框 + 深棕底
                 _panelSprite = MakeRoundedGlowSprite(BgColor, BorderColor, null, 64, 10, 1, "SM_Panel");
-                // 按钮：扁平化圆角，无边框/高光/阴影，纯色背景
+                // 按钮：扁平化圆角，深棕底 + 淡金边框
                 _buttonNormal = MakeRoundedGlowSprite(
-                    new Color(0.18f, 0.22f, 0.32f, 0.95f),
-                    new Color(0.30f, 0.38f, 0.52f, 0.4f),
+                    new Color(0.22f, 0.16f, 0.09f, 0.95f),
+                    new Color(0.45f, 0.35f, 0.20f, 0.4f),
                     null, 32, 8, 0, "SM_BtnNormal");
                 _buttonHover = MakeRoundedGlowSprite(
-                    new Color(0.24f, 0.32f, 0.46f, 0.95f),
-                    CyanColor,
+                    new Color(0.30f, 0.22f, 0.13f, 0.95f),
+                    AccentColor,
                     null, 32, 8, 0, "SM_BtnHover");
                 _buttonActive = MakeRoundedGlowSprite(
-                    new Color(0.12f, 0.16f, 0.24f, 0.95f),
+                    new Color(0.16f, 0.12f, 0.07f, 0.95f),
                     CyanDim,
                     null, 32, 8, 0, "SM_BtnActive");
                 _buttonSelected = MakeRoundedGlowSprite(
-                    new Color(0.20f, 0.40f, 0.55f, 0.95f),
+                    new Color(0.40f, 0.30f, 0.15f, 0.95f),
                     CyanColor,
                     null, 32, 8, 0, "SM_BtnSelected");
                 _buttonDisabled = MakeRoundedGlowSprite(
-                    new Color(0.10f, 0.12f, 0.16f, 0.8f),
-                    new Color(0.20f, 0.22f, 0.28f, 0.4f),
+                    new Color(0.10f, 0.08f, 0.05f, 0.8f),
+                    new Color(0.25f, 0.20f, 0.12f, 0.4f),
                     null, 32, 8, 0, "SM_BtnDisabled");
-                // 标题栏：青色系，不是金色
-                _titleBarSprite = MakeRoundedGlowSprite(new Color(0.12f, 0.18f, 0.28f, 0.98f), CyanDim, null, 32, 8, 1, "SM_TitleBar");
-                _scrollbarSprite = MakeSolidSprite(new Color(0.35f, 0.60f, 0.75f, 0.6f), "SM_Scrollbar");
+                // 标题栏：金色系
+                _titleBarSprite = MakeRoundedGlowSprite(new Color(0.20f, 0.15f, 0.09f, 0.98f), CyanDim, null, 32, 8, 1, "SM_TitleBar");
+                _scrollbarSprite = MakeSolidSprite(new Color(0.70f, 0.55f, 0.30f, 0.6f), "SM_Scrollbar");
                 _rowEven = MakeSolidSprite(RowEven, "SM_RowEven");
                 _rowOdd = MakeSolidSprite(RowOdd, "SM_RowOdd");
                 _cardSprite = MakeRoundedGlowSprite(CardBg, BorderDim, null, 32, 8, 1, "SM_Card");
-                _cardHover = MakeRoundedGlowSprite(new Color(0.18f, 0.23f, 0.33f, 0.98f), BorderColor, null, 32, 8, 1, "SM_CardHover");
+                _cardHover = MakeRoundedGlowSprite(new Color(0.25f, 0.19f, 0.11f, 0.98f), BorderColor, null, 32, 8, 1, "SM_CardHover");
                 _sectionSprite = MakeRoundedGlowSprite(SectionBg, BorderDim, null, 32, 8, 1, "SM_Section");
-                _dividerSprite = MakeSolidSprite(new Color(0.30f, 0.42f, 0.60f, 0.5f), "SM_Divider");
+                _dividerSprite = MakeSolidSprite(new Color(0.45f, 0.35f, 0.20f, 0.5f), "SM_Divider");
                 _glowSprite = MakeGlowSprite(CyanColor, "SM_Glow");
-                _iconCircle = MakeCircleSprite(new Color(0.10f, 0.16f, 0.26f, 0.95f), BorderColor, 32, 2, "SM_IconCircle");
-                _iconHex = MakeHexSprite(new Color(0.10f, 0.16f, 0.26f, 0.95f), AccentColor, 32, 2, "SM_IconHex");
-                _progressBg = MakeRoundedGlowSprite(new Color(0.06f, 0.09f, 0.14f, 0.9f), BorderDim, null, 16, 3, 0, "SM_ProgressBg");
-                _progressFill = MakeRoundedGlowSprite(new Color(0.25f, 0.65f, 0.75f, 1f), CyanColor, null, 16, 3, 0, "SM_ProgressFill");
+                _iconCircle = MakeCircleSprite(new Color(0.12f, 0.10f, 0.07f, 0.95f), BorderColor, 32, 2, "SM_IconCircle");
+                _iconHex = MakeHexSprite(new Color(0.12f, 0.10f, 0.07f, 0.95f), AccentColor, 32, 2, "SM_IconHex");
+                _progressBg = MakeRoundedGlowSprite(new Color(0.08f, 0.06f, 0.04f, 0.9f), BorderDim, null, 16, 3, 0, "SM_ProgressBg");
+                _progressFill = MakeRoundedGlowSprite(new Color(0.75f, 0.60f, 0.30f, 1f), CyanColor, null, 16, 3, 0, "SM_ProgressFill");
                 _cornerDecor = MakeCornerDecorSprite(BorderGold, "SM_Corner");
                 _tabNormal = MakeButtonSprite(
-                    new Color(0.10f, 0.15f, 0.24f, 0.9f),
-                    new Color(0.06f, 0.09f, 0.15f, 0.9f),
+                    new Color(0.14f, 0.11f, 0.07f, 0.9f),
+                    new Color(0.09f, 0.07f, 0.05f, 0.9f),
                     BorderDim,
                     null, null, 24, 2, "SM_TabNormal");
                 _tabActive = MakeButtonSprite(
-                    new Color(0.18f, 0.28f, 0.44f, 1f),
-                    new Color(0.10f, 0.18f, 0.30f, 1f),
+                    new Color(0.30f, 0.22f, 0.12f, 1f),
+                    new Color(0.18f, 0.14f, 0.08f, 1f),
                     AccentColor,
-                    new Color(0.45f, 0.62f, 0.82f, 0.8f),
+                    new Color(0.75f, 0.60f, 0.35f, 0.8f),
                     null, 24, 2, "SM_TabActive");
                 // v0.203 气力图标：蓝色能量球+青色电光边框（原著机械系气力设定）
                 _qiIcon = MakeQiIconSprite();
