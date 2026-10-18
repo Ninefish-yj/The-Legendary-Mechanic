@@ -149,7 +149,8 @@ namespace SuperMech.Code
                     string eta = state.LastYearGoldInvested > 0.01f
                         ? Mathf.CeilToInt(Mathf.Max(0f, cost - state.ResearchProgress) / state.LastYearGoldInvested).ToString()
                         : "?";
-                    string progressText = $"{state.ResearchProgress:0}/{cost:0}  ({LocalizedTextManager.getText("sm_tech_eta")}: {eta})";
+                    string etaText = LocalizedTextManager.getText("sm_tech_eta").Replace("{0}", eta);
+                    string progressText = $"{state.ResearchProgress:0}/{cost:0}  ({etaText})";
                     AddText(content, progressText, 10, TextAnchor.UpperCenter, 8f, y, -8f, y - 16f);
                     y -= 20f;
                 }
@@ -195,6 +196,12 @@ namespace SuperMech.Code
             var scroll = SuperMechUiBuilder.AddScrollView(content.gameObject, out var scrollContent);
             scroll.GetComponent<RectTransform>().offsetMin = new Vector2(4, 4);
             scroll.GetComponent<RectTransform>().offsetMax = new Vector2(-4, -4);
+            // v0.242.31 修复：AddScrollView自动加的VerticalLayoutGroup和手动y坐标定位冲突，
+            // 导致材料页/科技树页布局崩溃。手动布局的页面必须移除自动布局组件。
+            var vlg = scrollContent.GetComponent<VerticalLayoutGroup>();
+            if (vlg != null) UnityEngine.Object.Destroy(vlg);
+            var csf = scrollContent.GetComponent<ContentSizeFitter>();
+            if (csf != null) UnityEngine.Object.Destroy(csf);
 
             float y = -8f;
             int perRow = 4;
@@ -235,6 +242,11 @@ namespace SuperMech.Code
             var scroll = SuperMechUiBuilder.AddScrollView(content.gameObject, out var scrollContent);
             scroll.GetComponent<RectTransform>().offsetMin = new Vector2(2, 2);
             scroll.GetComponent<RectTransform>().offsetMax = new Vector2(-2, -2);
+            // v0.242.31 修复：移除AddScrollView自动加的VerticalLayoutGroup，避免和手动定位冲突
+            var vlg2 = scrollContent.GetComponent<VerticalLayoutGroup>();
+            if (vlg2 != null) UnityEngine.Object.Destroy(vlg2);
+            var csf2 = scrollContent.GetComponent<ContentSizeFitter>();
+            if (csf2 != null) UnityEngine.Object.Destroy(csf2);
 
             // 按tier分组
             var byTier = new Dictionary<int, List<TechData.TechDef>>();
