@@ -196,7 +196,28 @@ namespace SuperMech.Code
             Actor a = _actor;
             if (a == null || !a.isAlive()) return;
 
-            // === 职业详情 ===
+            // v0.242.33 分段try-catch：某段失败不影响其他段，日志可定位具体崩点
+            try { FillClassSection(a); }
+            catch (Exception e) { Debug.LogError("[超神机械师] 详情页-职业详情异常: " + e); }
+
+            try { FillCombatSection(a); }
+            catch (Exception e) { Debug.LogError("[超神机械师] 详情页-战斗数值异常: " + e); }
+
+            try { FillSocialSection(a); }
+            catch (Exception e) { Debug.LogError("[超神机械师] 详情页-社会关系异常: " + e); }
+
+            try { FillEconomySection(a); }
+            catch (Exception e) { Debug.LogError("[超神机械师] 详情页-个人经济异常: " + e); }
+
+            try { FillSpecialSection(a); }
+            catch (Exception e) { Debug.LogError("[超神机械师] 详情页-特殊信息异常: " + e); }
+
+            try { FillFunctionButtons(a); }
+            catch (Exception e) { Debug.LogError("[超神机械师] 详情页-功能按钮异常: " + e); }
+        }
+
+        private void FillClassSection(Actor a)
+        {
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_class"));
             bool hasProfession = SuperMechProfession.HasProfession(a);
             if (hasProfession)
@@ -239,8 +260,10 @@ namespace SuperMech.Code
             {
                 AddInfoRow(LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"), "species");
             }
+        }
 
-            // === 战斗数值 ===
+        private void FillCombatSection(Actor a)
+        {
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_combat"));
             int qiLayer = SuperMechQiLayer.GetLayer(a);
             if (qiLayer > 0)
@@ -248,8 +271,10 @@ namespace SuperMech.Code
             int pot = SuperMechPotential.GetPotential(a);
             if (pot > 0)
                 AddInfoRow(LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), "evolution");
+        }
 
-            // === 社会关系 ===
+        private void FillSocialSection(Actor a)
+        {
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_social"));
             if (SuperMechConfig.FactionEnabled)
             {
@@ -265,8 +290,10 @@ namespace SuperMech.Code
             }
             if (SuperMechAwakened.IsAwakened(a))
                 AddInfoRow(LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), "creator");
+        }
 
-            // === 个人经济 ===
+        private void FillEconomySection(Actor a)
+        {
             int inal = SuperMechInal.GetInal(a);
             bool isSuperA = SuperMechSupermA.IsSuperA(a);
             if (inal > 0 || isSuperA)
@@ -282,8 +309,10 @@ namespace SuperMech.Code
                 if (company != null)
                     AddInfoRow(LocalizedTextManager.getText("sm_company_title"), SuperMechCompany.GetDisplayText(company), "alliance");
             }
+        }
 
-            // === 特殊信息 ===
+        private void FillSpecialSection(Actor a)
+        {
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_special"));
             int divLayers = SuperMechDivinity.GetTotalLayers(a);
             string sanctuaryInfo = GetSanctuaryInfo(a);
@@ -316,11 +345,12 @@ namespace SuperMech.Code
             string tplText = SuperMechExclusiveTrait.GetTemplateDisplay(a);
             if (tplText != null)
                 AddInfoRow(LocalizedTextManager.getText("sm_ui_templates"), tplText, "creator");
+        }
 
-            // === 功能按钮（按类型分组）===
+        private void FillFunctionButtons(Actor a)
+        {
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_functions"));
 
-            // 成长类
             bool hasGrowth = SuperMechVirtualGenesis.HasGenesis(a) || SuperMechSpeciesEvolution.GetEvolvableSpecies(a.data.id).Count > 0;
             if (hasGrowth)
             {
@@ -332,18 +362,15 @@ namespace SuperMech.Code
                     AddFunctionButton(LocalizedTextManager.getText("sm_ui_species_evolve"), new Color(0.8f, 0.9f, 0.6f), () => SuperMechSpeciesEvolution.AutoEvolve(a.data.id));
             }
 
-            // 战斗类
             AddGroupLabel(LocalizedTextManager.getText("sm_ui_group_combat"));
             if (SuperMechBranch.HasBranch(a, SuperMechBranch.BranchMech))
                 AddFunctionButton(LocalizedTextManager.getText("sm_ui_mech_legion"), new Color(0.7f, 0.8f, 1.0f), () => SuperMechWindowManager.OpenMechLegion(a));
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_combat_stats"), new Color(0.9f, 0.5f, 0.4f), () => SuperMechCombatStatsView.Toggle(a));
 
-            // 特殊类
             AddGroupLabel(LocalizedTextManager.getText("sm_ui_group_special"));
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_cr_entry"), new Color(0.95f, 0.75f, 0.3f), () => SuperMechWindowManager.OpenCosmicRelic(a));
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_dim_entry"), new Color(0.75f, 0.55f, 0.95f), () => SuperMechWindowManager.OpenDimension(a));
 
-            // 任务
             AddFunctionButton(LocalizedTextManager.getText("sm_ui_quests"), new Color(0.7f, 0.6f, 0.3f), () => SuperMechQuestView.Toggle(a));
         }
 
