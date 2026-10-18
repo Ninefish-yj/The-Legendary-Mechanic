@@ -102,7 +102,7 @@ namespace SuperMech.Code
             // 职业
             var prof = SuperMechProfession.GetProfession(actor);
             AddRow(contentRect.transform, "sm_ui_profession",
-                prof != ProfessionType.None ? SuperMechProfession.GetProfessionName(prof) : "-",
+                prof != SuperMechProfession.ProfessionType.None ? SuperMechProfession.GetProfessionName(prof) : "-",
                 "#FFD700");
 
             // 阶位

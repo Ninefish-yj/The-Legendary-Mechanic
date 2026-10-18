@@ -122,6 +122,11 @@ namespace SuperMech.Code
 
         private void BuildKnowledgePanel()
         {
+            // v0.242.39 修复：变量必须提到try块外声明，否则后续try块访问不到（CS0103）
+            GameObject listGo = null;
+            GameObject cardGo = null;
+            GameObject detailContentGo = null;
+
             try
             {
                 _knowledgePanel = new GameObject("KnowledgePanel");
@@ -134,7 +139,7 @@ namespace SuperMech.Code
                 panelRect.offsetMax = new Vector2(0, -34);
 
                 // 左侧列表面板
-                var listGo = new GameObject("ListPanel");
+                listGo = new GameObject("ListPanel");
                 listGo.transform.SetParent(_knowledgePanel.transform, false);
                 var listRect = listGo.AddComponent<RectTransform>();
                 listRect.anchorMin = new Vector2(0, 0);
@@ -164,7 +169,7 @@ namespace SuperMech.Code
                 detailRect.offsetMin = new Vector2(210, 0);
                 detailRect.offsetMax = Vector2.zero;
 
-                var cardGo = new GameObject("Card");
+                cardGo = new GameObject("Card");
                 cardGo.transform.SetParent(detailGo.transform, false);
                 var cardRect = cardGo.AddComponent<RectTransform>();
                 cardRect.anchorMin = Vector2.zero;
@@ -200,7 +205,7 @@ namespace SuperMech.Code
                 detailViewportRt.offsetMin = Vector2.zero;
                 detailViewportRt.offsetMax = Vector2.zero;
 
-                var detailContentGo = new GameObject("Content");
+                detailContentGo = new GameObject("Content");
                 detailContentGo.transform.SetParent(detailViewportGo.transform, false);
                 var detailContentRect = detailContentGo.AddComponent<RectTransform>();
                 detailContentRect.anchorMin = new Vector2(0, 1);
