@@ -47,12 +47,17 @@ namespace SuperMech.Code
         /// 它会禁用再启用StatsRowsContainer，触发OnDisable->OnEnable->showStatsRows()->协程激活行。
         /// 不能直接调用showStatsRows()，因为它只创建行但不激活行（SetActive(false)），
         /// 新行不会显示在面板上。
+        /// v0.242.5 修复：调用前先清理对象池里的null/已销毁元素，避免sortElements时NullReferenceException
         /// </summary>
         public static void RebuildPanel(StatsWindow window)
         {
             if (window == null) return;
             try
             {
+                // v0.242.5 关键修复：清理_stats_pool._elements_total里的null/已销毁元素
+                // 否则OnDisable->clear->sortElements时a.transform会抛NullReferenceException
+                CleanStatsPoolNulls(window);
+
                 // 方式1：反射调用 updateStatsRows() 方法
                 var method = window.GetType().GetMethod("updateStatsRows",
                     BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -86,6 +91,58 @@ namespace SuperMech.Code
             catch (System.Exception e)
             {
                 Debug.LogWarning($"[超神机械师] 重建面板异常: {e.Message}\n{e.StackTrace}");
+            }
+        }
+
+        /// <summary>
+        /// v0.242.5 清理StatsRowsContainer对象池里的null/已销毁元素。
+        /// 根因：ObjectPoolGenericMono.sortElements()遍历_elements_total时，
+        /// 若某个KeyValueField已被销毁但引用还在列表里，a.transform会抛NullReferenceException。
+        /// 模组折叠标题行在重建时可能被销毁但未从对象池移除，导致此问题。
+        /// </summary>
+        private static void CleanStatsPoolNulls(StatsWindow window)
+        {
+            try
+            {
+                // 获取 stats_rows_container 属性
+                var prop = window.GetType().GetProperty("stats_rows_container",
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (prop == null) return;
+                if (!(prop.GetValue(window) is StatsRowsContainer container)) return;
+
+                // 获取 _stats_pool 字段
+                var poolField = typeof(StatsRowsContainer).GetField("_stats_pool",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (poolField == null) return;
+                object pool = poolField.GetValue(container);
+                if (pool == null) return;
+
+                // 获取 _elements_total 字段（List<KeyValueField>）
+                var totalField = pool.GetType().GetField("_elements_total",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                if (totalField == null) return;
+                var totalList = totalField.GetValue(pool) as System.Collections.IList;
+                if (totalList == null) return;
+
+                // 移除 null 或已销毁的元素（Unity的Component被销毁后==null为true）
+                int removed = 0;
+                for (int i = totalList.Count - 1; i >= 0; i--)
+                {
+                    object item = totalList[i];
+                    if (item == null || (item is UnityEngine.Object uo && uo == null))
+                    {
+                        totalList.RemoveAt(i);
+                        removed++;
+                    }
+                }
+                if (removed > 0)
+                {
+                    Debug.Log($"[超神机械师] 清理Stats对象池null元素: {removed}个");
+                }
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogWarning($"[超神机械师] 清理Stats对象池异常: {e.Message}");
             }
         }
 

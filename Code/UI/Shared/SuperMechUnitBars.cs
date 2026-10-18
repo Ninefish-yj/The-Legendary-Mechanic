@@ -147,6 +147,9 @@ namespace SuperMech.Code
                 LayoutRebuilder.ForceRebuildLayoutImmediate(parentRect);
             }
 
+            // v0.242.5 挂载气力条悬停tooltip组件（actor在UpdateQiBarValue时设置）
+            bar.gameObject.AddComponent<SuperMechQiBarTooltip>();
+
             return bar;
         }
 
@@ -191,10 +194,16 @@ namespace SuperMech.Code
 
         /// <summary>
         /// v0.242.3 公共：统一更新气力条数值，单位面板和超能详情面板共用
+        /// v0.242.5 同时设置tooltip的actor引用
         /// </summary>
         public static void UpdateQiBarValue(StatBar bar, Actor actor)
         {
             if (bar == null || actor == null) return;
+
+            // v0.242.5 设置悬停tooltip的actor引用
+            var qiTooltip = bar.GetComponent<SuperMechQiBarTooltip>();
+            if (qiTooltip != null) qiTooltip.actor = actor;
+
             float qi = SuperMechQi.GetQi(actor);
             float qiMax = SuperMechQi.GetQiMax(actor);
             if (qiMax <= 0) qiMax = 1f;
