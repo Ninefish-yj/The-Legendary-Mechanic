@@ -26,9 +26,9 @@ namespace SuperMech.Code
             obj.AddComponent<RectTransform>();
 
             Image bg = obj.AddComponent<Image>();
-            bg.sprite = SuperMechUiSkin.GetWhiteSpriteSafe();
+            bg.sprite = SuperMechUiSkin.Panel;  // v0.240.9 用原版面板纹理（参考天人武道）
             bg.type = Image.Type.Sliced;
-            bg.color = new Color(0.13f, 0.10f, 0.06f, 0.85f); // 暖棕（对齐原版窗口）
+            bg.color = Color.white;  // 原版纹理自带颜色，不再叠加暖棕
             bg.raycastTarget = true;
 
             Dropdown dropdown = obj.AddComponent<Dropdown>();
@@ -66,9 +66,9 @@ namespace SuperMech.Code
             tRect.sizeDelta = new Vector2(0, templateHeight);
 
             Image templateBg = templateObj.AddComponent<Image>();
-            templateBg.sprite = SuperMechUiSkin.GetWhiteSpriteSafe();
+            templateBg.sprite = SuperMechUiSkin.Panel;  // v0.240.9 原版面板纹理
             templateBg.type = Image.Type.Sliced;
-            templateBg.color = new Color(0.10f, 0.08f, 0.05f, 0.98f);
+            templateBg.color = Color.white;
 
             GameObject viewportObj = new GameObject("Viewport");
             viewportObj.transform.SetParent(templateObj.transform, false);
