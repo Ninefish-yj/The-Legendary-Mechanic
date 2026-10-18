@@ -24,41 +24,43 @@ namespace SuperMech.Code
             _initialized = true;
         }
 
-        public static void OpenKnowledge() { SuperMechKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
-        public static void OpenKnowledge(Actor a) { SuperMechKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
-        public static void OpenBag() { SuperMechBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 578, 425, DrawBagContent); }
-        public static void OpenBag(Actor a) { SuperMechBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 578, 425, DrawBagContent); }
-        public static void OpenFusion() { SuperMechKnowledgeView.OverrideActor = null; SuperMechFusionView.OverrideActor = null; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
-        public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 578, 425, DrawKnowledgeContent); }
-        public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 578, 425, DrawSpellContent); }
-        public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 578, 425, DrawSpellContent); }
-        public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 544, 408, DrawCraftContent); }
-        public static void OpenCosmicRelic(Actor a) { SuperMechCosmicRelicView.OverrideActor = a; ToggleWindow("relic", "sm_ui_cr_title", 391, 357, DrawCosmicRelicContent); }
-        public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 408, 340, DrawDimensionContent); }
-        public static void OpenVirtualGenesis(Actor a) { SuperMechVirtualGenesisView.OverrideActor = a; ToggleWindow("virtualgenesis", "sm_ui_vg_title", 357, 323, DrawVirtualGenesisContent); }
-        public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 408, 442, DrawMechLegionContent); }
-        public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 442, 408, DrawBuildingContent); }
-        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 610, 420, DrawRankContent); }
-        public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 527, 425, DrawFactionContent); }
-        public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 544, 442, DrawPlayerContent); }
-        public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 544, 442, DrawWorldTreeContent); }
-        public static void OpenWorldBeyond() { ToggleWindow("worldbeyond", "sm_ui_worldbeyond_title", 578, 476, DrawWorldBeyondContent); }
-        public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 578, 442, DrawEconomyContent); }
-        public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 578, 442, DrawTechContent); }
-        public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 612, 476, DrawStarContent); }
+        // v0.242.12 统一调大窗口尺寸：原578x425在1080p只占30%宽，内容拥挤布局错乱。
+        // 统一参考帝国盒子比例，宽高各增约20%，内容区更舒展。
+        public static void OpenKnowledge() { SuperMechKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 510, DrawKnowledgeContent); }
+        public static void OpenKnowledge(Actor a) { SuperMechKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 510, DrawKnowledgeContent); }
+        public static void OpenBag() { SuperMechBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 680, 510, DrawBagContent); }
+        public static void OpenBag(Actor a) { SuperMechBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 680, 510, DrawBagContent); }
+        public static void OpenFusion() { SuperMechKnowledgeView.OverrideActor = null; SuperMechFusionView.OverrideActor = null; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 510, DrawKnowledgeContent); }
+        public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 510, DrawKnowledgeContent); }
+        public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 510, DrawSpellContent); }
+        public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 510, DrawSpellContent); }
+        public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
+        public static void OpenCosmicRelic(Actor a) { SuperMechCosmicRelicView.OverrideActor = a; ToggleWindow("relic", "sm_ui_cr_title", 480, 440, DrawCosmicRelicContent); }
+        public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 510, 425, DrawDimensionContent); }
+        public static void OpenVirtualGenesis(Actor a) { SuperMechVirtualGenesisView.OverrideActor = a; ToggleWindow("virtualgenesis", "sm_ui_vg_title", 460, 420, DrawVirtualGenesisContent); }
+        public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 510, 540, DrawMechLegionContent); }
+        public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 540, 500, DrawBuildingContent); }
+        public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 720, 500, DrawRankContent); }
+        public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 640, 510, DrawFactionContent); }
+        public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 520, DrawPlayerContent); }
+        public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 520, DrawWorldTreeContent); }
+        public static void OpenWorldBeyond() { ToggleWindow("worldbeyond", "sm_ui_worldbeyond_title", 680, 560, DrawWorldBeyondContent); }
+        public static void OpenEconomy() { ToggleWindow("economy", "sm_ui_economy_title", 680, 520, DrawEconomyContent); }
+        public static void OpenTech() { ToggleWindow("tech", "sm_ui_tech", 680, 520, DrawTechContent); }
+        public static void OpenStar() { ToggleWindow("star", "sm_ui_star", 720, 560, DrawStarContent); }
         public static void OpenSanctuary() { SuperMechSanctuaryView.Toggle(); }
 
         /// <summary>v0.208 设置从星海总览移出，改为独立窗口</summary>
         public static void OpenSettings()
         {
-            ToggleWindow("settings", "sm_ui_settings_title", 442, 544, DrawSettingsContent);
+            ToggleWindow("settings", "sm_ui_settings_title", 540, 640, DrawSettingsContent);
         }
-        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 480, 380, SuperMechTab.DrawOverviewContent); }
+        public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 520, SuperMechTab.DrawOverviewContent); }
         /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
         public static void OpenOverview(Kingdom kingdom)
         {
             if (kingdom != null) SelectedKingdomId = kingdom.getID();
-            ToggleWindow("overview", "sm_tab_panel_title", 480, 380, SuperMechTab.DrawOverviewContent);
+            ToggleWindow("overview", "sm_tab_panel_title", 720, 520, SuperMechTab.DrawOverviewContent);
         }
 
         /// <summary>v0.230 星海总览重构：标签重命名+合并冗余
