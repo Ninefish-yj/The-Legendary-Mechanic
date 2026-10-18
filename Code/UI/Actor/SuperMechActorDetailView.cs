@@ -61,7 +61,7 @@ namespace SuperMech.Code
             panelRect.anchorMin = new Vector2(0.5f, 0.5f);
             panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.sizeDelta = new Vector2(520, 640);
+            panelRect.sizeDelta = new Vector2(520, 600);
             panelRect.anchoredPosition = Vector2.zero;
             var panelImg = _panel.AddComponent<Image>();
             panelImg.sprite = SuperMechUiSkin.Panel;  // v0.240.9 原版面板纹理
