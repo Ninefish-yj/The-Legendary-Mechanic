@@ -247,7 +247,7 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
         }
 
         /// <summary>v0.237 标准信息行（Card背景+灰色标签+值，28px高，值支持RichText）</summary>
-        public static GameObject CreateInfoRow(Transform parent, string label, string value, float labelWidth = 100, Color? valueColor = null)
+        public static GameObject CreateInfoRow(Transform parent, string label, string value, float labelWidth = 100, Color? valueColor = null, string iconPath = null)
         {
             var go = CreateObject("InfoRow", parent, typeof(RectTransform), typeof(Image));
             var img = go.GetComponent<Image>();
@@ -264,6 +264,21 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
             hLayout.childControlHeight = true;
             hLayout.childForceExpandWidth = false;
             hLayout.childForceExpandHeight = false;
+
+            // v0.242.26 可选图标（在label左侧）
+            if (!string.IsNullOrEmpty(iconPath))
+            {
+                var iconGo = CreateObject("Icon", go.transform, typeof(RectTransform), typeof(Image));
+                var iconImg = iconGo.GetComponent<Image>();
+                iconImg.sprite = SpriteTextureLoader.getSprite("ui/Icons/" + iconPath);
+                iconImg.raycastTarget = false;
+                iconImg.preserveAspect = true;
+                var iconRect = AddRectTransform(iconGo);
+                iconRect.sizeDelta = new Vector2(20, 20);
+                var iconLayout = iconGo.AddComponent<LayoutElement>();
+                iconLayout.minWidth = 20;
+                iconLayout.preferredWidth = 20;
+            }
 
             var labelGo = CreateObject("Label", go.transform, typeof(RectTransform));
             var labelTxt = AddText(labelGo, label, 12, TextAnchor.MiddleLeft, SuperMechUiSkin.TextDim);

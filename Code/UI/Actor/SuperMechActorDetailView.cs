@@ -189,7 +189,7 @@ namespace SuperMech.Code
                 string cls = SuperMechProfession.GetClass(a);
                 string clsAspect = SuperMechUnitWindow.GetClassAspect(cls);
                 string clsText = cls + (string.IsNullOrEmpty(clsAspect) ? "" : $"（{clsAspect}）");
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_class"), clsText);
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_class"), clsText, "species");
 
                 if (SuperMechAwakened.IsAwakened(a))
                 {
@@ -198,7 +198,7 @@ namespace SuperMech.Code
                     {
                         string progress = SuperMechStage.GetStageProgressText(a);
                         string stageText = string.IsNullOrEmpty(progress) ? stage : $"{stage}（{progress}）";
-                        AddInfoRow(LocalizedTextManager.getText("sm_ui_class_stage"), stageText);
+                        AddInfoRow(LocalizedTextManager.getText("sm_ui_class_stage"), stageText, "evolution");
                     }
                 }
 
@@ -206,7 +206,7 @@ namespace SuperMech.Code
                 {
                     string specName = SuperMechSpecialty.GetSpecialtyName(a);
                     if (specName != LocalizedTextManager.getText("sm_spec_none"))
-                        AddInfoRow(LocalizedTextManager.getText("sm_ui_specialization"), specName);
+                        AddInfoRow(LocalizedTextManager.getText("sm_ui_specialization"), specName, "task");
                 }
 
                 if (a.hasTrait(SuperMechTraits.ClassMage))
@@ -216,23 +216,23 @@ namespace SuperMech.Code
                     {
                         string mageSpec = SuperMechMageType.GetSpecName(a);
                         string displayText = string.IsNullOrEmpty(mageSpec) ? mageType : $"{mageType}（{mageSpec}）";
-                        AddInfoRow(LocalizedTextManager.getText("sm_ui_mage_type"), displayText);
+                        AddInfoRow(LocalizedTextManager.getText("sm_ui_mage_type"), displayText, "deity");
                     }
                 }
             }
             else
             {
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"));
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_class"), LocalizedTextManager.getText("sm_ui_wild"), "species");
             }
 
             // === 战斗数值 ===
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_combat"));
             int qiLayer = SuperMechQiLayer.GetLayer(a);
             if (qiLayer > 0)
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_qi_layer"), SuperMechQiLayer.GetLayerText(a));
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_qi_layer"), SuperMechQiLayer.GetLayerText(a), "deity");
             int pot = SuperMechPotential.GetPotential(a);
             if (pot > 0)
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_potential"), pot.ToString());
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_potential"), pot.ToString(), "evolution");
 
             // === 社会关系 ===
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_social"));
@@ -245,11 +245,11 @@ namespace SuperMech.Code
                     string factionText = isLeader
                         ? string.Format(LocalizedTextManager.getText("sm_ui_faction_leader"), faction.name, faction.level)
                         : string.Format(LocalizedTextManager.getText("sm_ui_faction_member"), faction.name, faction.level);
-                    AddInfoRow(LocalizedTextManager.getText("sm_ui_faction_label"), factionText);
+                    AddInfoRow(LocalizedTextManager.getText("sm_ui_faction_label"), factionText, "clan");
                 }
             }
             if (SuperMechAwakened.IsAwakened(a))
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"));
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_identity"), LocalizedTextManager.getText("sm_ui_awakened"), "creator");
 
             // === 个人经济 ===
             int inal = SuperMechInal.GetInal(a);
@@ -257,15 +257,15 @@ namespace SuperMech.Code
             if (inal > 0 || isSuperA)
             {
                 AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_economy"));
-                AddInfoRow(LocalizedTextManager.getText("sm_inal_balance"), inal.ToString("N0"));
+                AddInfoRow(LocalizedTextManager.getText("sm_inal_balance"), inal.ToString("N0"), "money");
                 if (isSuperA && a.kingdom != null)
                 {
                     int salary = SuperMechInal.CalcSalary(a, a.kingdom);
-                    AddInfoRow(LocalizedTextManager.getText("sm_inal_salary"), $"{salary:N0} / 32tick");
+                    AddInfoRow(LocalizedTextManager.getText("sm_inal_salary"), $"{salary:N0} / 32tick", "tax");
                 }
                 var company = SuperMechCompany.GetCompanyByActor(a);
                 if (company != null)
-                    AddInfoRow(LocalizedTextManager.getText("sm_company_title"), SuperMechCompany.GetDisplayText(company));
+                    AddInfoRow(LocalizedTextManager.getText("sm_company_title"), SuperMechCompany.GetDisplayText(company), "alliance");
             }
 
             // === 特殊信息 ===
@@ -273,34 +273,34 @@ namespace SuperMech.Code
             int divLayers = SuperMechDivinity.GetTotalLayers(a);
             string sanctuaryInfo = GetSanctuaryInfo(a);
             if (divLayers > 0)
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}");
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_divinity"), $"{divLayers}{LocalizedTextManager.getText("sm_ui_divinity_layer")}", "deity");
             if (!string.IsNullOrEmpty(sanctuaryInfo))
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo);
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_sanctuary"), sanctuaryInfo, "religion");
             string speciesId = SuperMechSpeciesEvolution.GetSpeciesId(a.data.id);
             if (speciesId != "human")
             {
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_species"), SuperMechSpeciesEvolution.GetSpeciesName(a.data.id));
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_species"), SuperMechSpeciesEvolution.GetSpeciesName(a.data.id), "species");
                 string talent = SuperMechSpeciesEvolution.GetSpeciesTalent(a.data.id);
                 if (!string.IsNullOrEmpty(talent))
-                    AddInfoRow(LocalizedTextManager.getText("sm_ui_species_talent"), talent);
+                    AddInfoRow(LocalizedTextManager.getText("sm_ui_species_talent"), talent, "evolution");
             }
             string mechType = SuperMechMechLegion.GetUnitType(a);
             if (!string.IsNullOrEmpty(mechType))
             {
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_mech_type"), SuperMechMechLegion.GetUnitName(mechType));
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_mech_type"), SuperMechMechLegion.GetUnitName(mechType), "creator_species");
                 string summoner = SuperMechMechLegion.GetSummonerName(a);
                 if (!string.IsNullOrEmpty(summoner))
-                    AddInfoRow(LocalizedTextManager.getText("sm_ui_mech_summoner"), summoner);
+                    AddInfoRow(LocalizedTextManager.getText("sm_ui_mech_summoner"), summoner, "creator");
                 int lifeLeft = SuperMechMechLegion.GetLifeLeft(a);
                 if (lifeLeft > 0)
-                    AddInfoRow(LocalizedTextManager.getText("sm_ui_mech_life"), $"{lifeLeft}");
+                    AddInfoRow(LocalizedTextManager.getText("sm_ui_mech_life"), $"{lifeLeft}", "birthday");
             }
             string specText = SuperMechExclusiveTrait.GetDisplay(a);
             if (!string.IsNullOrEmpty(specText))
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_specialties"), specText);
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_specialties"), specText, "task");
             string tplText = SuperMechExclusiveTrait.GetTemplateDisplay(a);
             if (tplText != null)
-                AddInfoRow(LocalizedTextManager.getText("sm_ui_templates"), tplText);
+                AddInfoRow(LocalizedTextManager.getText("sm_ui_templates"), tplText, "creator");
 
             // === 功能按钮（按类型分组）===
             AddSectionTitle(LocalizedTextManager.getText("sm_ui_section_functions"));
@@ -338,10 +338,11 @@ namespace SuperMech.Code
             SuperMechUiBuilder.CreateSectionTitle(_content.transform, text);
         }
 
-        private void AddInfoRow(string label, string value)
+        private void AddInfoRow(string label, string value, string iconPath = null)
         {
             // v0.237 统一走共享规范组件（金色值）
-            SuperMechUiBuilder.CreateInfoRow(_content.transform, label, value);
+            // v0.242.26 支持可选图标（原版ui/Icons/下的图标名）
+            SuperMechUiBuilder.CreateInfoRow(_content.transform, label, value, 100, null, iconPath);
         }
 
         private void AddFunctionButton(string text, Color color, Action onClick)
