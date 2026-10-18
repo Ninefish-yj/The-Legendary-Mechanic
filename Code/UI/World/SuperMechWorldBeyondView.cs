@@ -425,16 +425,20 @@ namespace SuperMech.Code
                             btnR.anchoredPosition = new Vector2(48 + optIdx * (btnW + 4), replyY);
                             btnR.sizeDelta = new Vector2(btnW, 26);
                             var btnImg = btnGo.GetComponent<Image>();
-                            // v0.242.1 改用原版按钮纹理+9-slice，不再用深蓝色纯色块
+                            // v0.242.2 原版纹理+ColorTint，不再用SpriteSwap（三状态同纹理无视觉变化）
                             btnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
                             btnImg.type = Image.Type.Sliced;
-                            btnImg.color = Color.white;
+                            btnImg.color = new Color(0.9f, 0.85f, 0.75f, 1f);
                             var btn = btnGo.GetComponent<Button>();
-                            btn.transition = Selectable.Transition.SpriteSwap;
-                            var btnSs = btn.spriteState;
-                            btnSs.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
-                            btnSs.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
-                            btn.spriteState = btnSs;
+                            btn.transition = Selectable.Transition.ColorTint;
+                            var btnCb = btn.colors;
+                            btnCb.normalColor = new Color(0.9f, 0.85f, 0.75f, 1f);
+                            btnCb.highlightedColor = new Color(1f, 0.95f, 0.8f, 1f);
+                            btnCb.pressedColor = new Color(0.8f, 0.7f, 0.55f, 1f);
+                            btnCb.selectedColor = new Color(1f, 0.9f, 0.6f, 1f);
+                            btnCb.colorMultiplier = 1f;
+                            btnCb.fadeDuration = 0.05f;
+                            btn.colors = btnCb;
                             string replyText = opt.text;
                             int favor = opt.favorChange;
                             btn.onClick.AddListener(() =>
@@ -575,16 +579,20 @@ namespace SuperMech.Code
             var go = new GameObject("SubTab", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
             var img = go.GetComponent<Image>();
-            // v0.242.1 改用原版按钮纹理+9-slice，不再用深蓝色纯色块
-            img.sprite = active ? SuperMechUiSkin.ButtonActiveSprite : SuperMechUiSkin.ButtonNormalSprite;
+            // v0.242.2 原版纹理+ColorTint：三个状态共用同一张backgroundKingdomElement，用颜色区分
+            img.sprite = SuperMechUiSkin.ButtonNormalSprite;
             img.type = Image.Type.Sliced;
-            img.color = Color.white;
+            img.color = active ? new Color(1f, 0.9f, 0.6f, 1f) : new Color(0.9f, 0.85f, 0.75f, 1f);
             var btn = go.GetComponent<Button>();
-            btn.transition = Selectable.Transition.SpriteSwap;
-            var ss = btn.spriteState;
-            ss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
-            ss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
-            btn.spriteState = ss;
+            btn.transition = Selectable.Transition.ColorTint;
+            var cb = btn.colors;
+            cb.normalColor = active ? new Color(1f, 0.9f, 0.6f, 1f) : new Color(0.9f, 0.85f, 0.75f, 1f);
+            cb.highlightedColor = new Color(1f, 0.95f, 0.8f, 1f);
+            cb.pressedColor = new Color(0.8f, 0.7f, 0.55f, 1f);
+            cb.selectedColor = new Color(1f, 0.9f, 0.6f, 1f);
+            cb.colorMultiplier = 1f;
+            cb.fadeDuration = 0.05f;
+            btn.colors = cb;
 
             var label = SuperMechUiSkin.MakeText(go.transform, text, 12, TextAnchor.MiddleCenter);
             label.color = active ? SuperMechUiSkin.AccentColor : SuperMechUiSkin.TextColor;
