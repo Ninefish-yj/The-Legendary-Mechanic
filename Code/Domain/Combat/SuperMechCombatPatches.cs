@@ -223,6 +223,18 @@ namespace SuperMech.Code
                     {
                         target.data.health -= (int)(pDamage * (councilBonus - 1f));
                     }
+                    // v0.242.45 知识等级伤害加成（原著：知识就是力量，等级越高战力越强）
+                    float knowledgeBonus = SuperMechKnowledge.GetKnowledgeLevelBonus(attacker);
+                    if (knowledgeBonus > 0f)
+                    {
+                        target.data.health -= (int)(pDamage * knowledgeBonus);
+                    }
+                    // 知识满级专属：武道系暴击伤害
+                    var maxBonus = SuperMechKnowledge.GetMaxLevelSpecialBonus(attacker);
+                    if (maxBonus.critDamage > 0f && Random.value < 0.15f)
+                    {
+                        target.data.health -= (int)(pDamage * maxBonus.critDamage);
+                    }
                 }
 
                 // v0.76.0 集体伟力清算：清算期超A级个体受文明联合压制（受击伤害×1.3，原著巅峰之殇式清算）
@@ -251,6 +263,19 @@ namespace SuperMech.Code
                     // 虚拟分支：15%概率闪避（完全免伤）
                     else if (targetSpec == SuperMechSpecialty.SpecMechVirtual && Random.value < 0.15f)
                         return false;
+                }
+
+                // v0.242.45 防御方知识减伤（原著：知识丰富者更懂得防御，念力系满级+全抗性）
+                float defKnowledgeBonus = SuperMechKnowledge.GetKnowledgeLevelBonus(target);
+                if (defKnowledgeBonus > 0f)
+                {
+                    // 知识等级提供一半比例的减伤（攻击+100%时防御+50%）
+                    target.data.health += (int)(pDamage * defKnowledgeBonus * 0.5f);
+                }
+                var defMaxBonus = SuperMechKnowledge.GetMaxLevelSpecialBonus(target);
+                if (defMaxBonus.allResist > 0f)
+                {
+                    target.data.health += (int)(pDamage * defMaxBonus.allResist);
                 }
 
                 if (SuperMechInfoState.HasInfoState(target) && PhysicalAttacks.Contains(pAttackType))
