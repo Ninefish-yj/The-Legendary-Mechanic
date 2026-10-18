@@ -506,8 +506,11 @@ namespace SuperMech.Code
 
             // v0.213.1 血量负数修复：Prefix额外伤害+原版扣血可能导致血量负数但单位未死亡
             // 若血量<=0且单位仍存活，强制触发死亡（降临者会进入复活队列）
+            // v0.242.21 修复：dieAndDestroy后直接return会跳过下面的OnPlayerDeath，
+            //   导致降临者被模组额外伤害打死时不进入复活队列。先记录死亡再触发原版死亡。
             if (target.data.health <= 0 && target.isAlive())
             {
+                SuperMechPlayer.OnPlayerDeath(target);
                 try { target.dieAndDestroy(pAttackType); } catch (System.Exception) { }
                 return;
             }

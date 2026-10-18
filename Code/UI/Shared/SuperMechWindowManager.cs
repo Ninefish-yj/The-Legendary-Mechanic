@@ -64,12 +64,14 @@ namespace SuperMech.Code
         }
 
         /// <summary>v0.242.16 移除宇宙页签（子页签无法切换，用户要求删除）
-        /// 文明(全球对比) / 超能者排行榜(全球超能者) / 组织(全球势力) / 设置</summary>
+        /// v0.242.21 添加降临者页签（第四天灾玩家列表+任务详情）
+        /// 文明(全球对比) / 超能者排行榜 / 组织(全球势力) / 降临者(第四天灾) / 设置</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
             ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 文明（全球对比表）
             ("sm_ui_rank_window_title", DrawRankContent),            // 超能者排行榜（全球超能者）
             ("sm_ui_faction_window_title", DrawFactionContent),      // 组织（全球势力）
+            ("sm_ui_player_title", DrawPlayerContent),               // 降临者（第四天灾玩家）
             ("sm_ui_settings_title", DrawSettingsContent),           // 设置
         };
 
@@ -218,6 +220,19 @@ namespace SuperMech.Code
             rect.offsetMin = Vector2.zero;
             rect.offsetMax = Vector2.zero;
             go.AddComponent<SuperMechRankView>();
+        }
+
+        /// <summary>v0.242.21 降临者页签：第四天灾玩家列表+击杀榜+任务详情</summary>
+        internal static void DrawPlayerContent(RectTransform content)
+        {
+            var go = new GameObject("PlayerView");
+            go.transform.SetParent(content, false);
+            var rect = go.AddComponent<RectTransform>();
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+            go.AddComponent<SuperMechPlayerView>();
         }
 
         internal static void DrawKingdomContent(RectTransform content)
