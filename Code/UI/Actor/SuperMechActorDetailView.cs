@@ -41,6 +41,20 @@ namespace SuperMech.Code
             }
         }
 
+        /// <summary>v0.242.32 手机端适配：窗口尺寸不超过屏幕92%</summary>
+        private static Vector2 GetWindowSize()
+        {
+            float w = 480f, h = 420f;
+            if (Application.isMobilePlatform)
+            {
+                float maxW = Screen.width * 0.92f;
+                float maxH = Screen.height * 0.92f;
+                w = Mathf.Min(w, maxW);
+                h = Mathf.Min(h, maxH);
+            }
+            return new Vector2(w, h);
+        }
+
         public void Close()
         {
             if (_panel != null) Destroy(_panel);
@@ -84,7 +98,8 @@ namespace SuperMech.Code
             panelRect.anchorMin = new Vector2(0.5f, 0.5f);
             panelRect.anchorMax = new Vector2(0.5f, 0.5f);
             panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.sizeDelta = new Vector2(520, 600);
+            var winSize = GetWindowSize();
+            panelRect.sizeDelta = winSize;
             panelRect.anchoredPosition = Vector2.zero;
             var panelImg = _panel.AddComponent<Image>();
             panelImg.sprite = SuperMechUiSkin.Panel;  // v0.240.9 原版面板纹理
