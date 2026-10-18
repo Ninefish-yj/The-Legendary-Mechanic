@@ -114,11 +114,7 @@ namespace SuperMech.Code
         /// <summary>v0.239.2 滚动内容高度：按当前页签内容估算（窗口统一480×380，装不下滚动查看）</summary>
         private static float TabContentHeight()
         {
-            var tabs = SuperMechWindowManager.OverviewTabs;
-            if (_tabIndex < 0 || _tabIndex >= tabs.Length) return 460f;
-            var draw = tabs[_tabIndex].draw;
-            if (draw == SuperMechWindowManager.DrawUniverseContent) return 1000f; // 世界之外520+世界树480
-            return 460f; // 文明/组织/设置
+            return 460f; // 文明/排行榜/组织/设置统一高度
         }
 
         /// <summary>v0.208 页签切换：所有标签均为内嵌概览面板，直接重建工作台</summary>

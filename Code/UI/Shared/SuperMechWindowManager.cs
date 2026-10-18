@@ -63,50 +63,15 @@ namespace SuperMech.Code
             ToggleWindow("overview", "sm_tab_panel_title", 720, 520, SuperMechTab.DrawOverviewContent);
         }
 
-        /// <summary>v0.230 星海总览重构：标签重命名+合并冗余
-        /// 文明(全球对比) / 超能者排行榜(全球超能者) / 组织(全球势力) / 宇宙(星际+高维) / 设置
-        /// 移除世界树独立标签，合并进宇宙标签</summary>
+        /// <summary>v0.242.16 移除宇宙页签（子页签无法切换，用户要求删除）
+        /// 文明(全球对比) / 超能者排行榜(全球超能者) / 组织(全球势力) / 设置</summary>
         internal static readonly (string key, System.Action<RectTransform> draw)[] OverviewTabs = new (string, System.Action<RectTransform>)[]
         {
             ("sm_ui_kingdom_window_title", DrawKingdomContent),      // 文明（全球对比表）
             ("sm_ui_rank_window_title", DrawRankContent),            // 超能者排行榜（全球超能者）
             ("sm_ui_faction_window_title", DrawFactionContent),      // 组织（全球势力）
-            ("sm_ui_worldbeyond_title", DrawUniverseContent),        // 宇宙（星际+高维存在）
             ("sm_ui_settings_title", DrawSettingsContent),           // 设置
         };
-
-        /// <summary>v0.230 宇宙标签：合并世界之外+世界树</summary>
-        internal static void DrawUniverseContent(RectTransform content)
-        {
-            // v0.239.1 窗口统一为帝国盒子尺寸(480×380)：外层(TabContent)统一滚动承载内容，
-            // 这里直接铺内容：上=世界之外(高520)、下=世界树(高480)，总高1000由外层滚动查看
-            var upperGo = new GameObject("WorldBeyond");
-            upperGo.transform.SetParent(content, false);
-            var upperRect = upperGo.AddComponent<RectTransform>();
-            upperRect.anchorMin = new Vector2(0, 1);
-            upperRect.anchorMax = new Vector2(1, 1);
-            upperRect.pivot = new Vector2(0.5f, 1);
-            upperRect.sizeDelta = new Vector2(0, -520f);
-            upperRect.anchoredPosition = Vector2.zero;
-            SuperMechWorldBeyondView.Draw(upperRect);
-
-            var lowerGo = new GameObject("WorldTree");
-            lowerGo.transform.SetParent(content, false);
-            var lowerRect = lowerGo.AddComponent<RectTransform>();
-            lowerRect.anchorMin = new Vector2(0, 0);
-            lowerRect.anchorMax = new Vector2(1, 0);
-            lowerRect.pivot = new Vector2(0.5f, 0);
-            lowerRect.sizeDelta = new Vector2(0, 480f);
-            lowerRect.anchoredPosition = Vector2.zero;
-            var treeGo = new GameObject("WorldTreeView");
-            treeGo.transform.SetParent(lowerRect, false);
-            var treeRect = treeGo.AddComponent<RectTransform>();
-            treeRect.anchorMin = Vector2.zero;
-            treeRect.anchorMax = Vector2.one;
-            treeRect.offsetMin = Vector2.zero;
-            treeRect.offsetMax = Vector2.zero;
-            treeGo.AddComponent<SuperMechWorldTreeView>();
-        }
 
         /// <summary>v0.205 设置标签页：大重启+配置+帮助</summary>
         internal static void DrawSettingsContent(RectTransform content)
