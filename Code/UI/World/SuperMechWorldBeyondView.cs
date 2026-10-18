@@ -257,14 +257,27 @@ namespace SuperMech.Code
             scrollImg.type = Image.Type.Sliced;
             scrollImg.color = Color.white;
 
+            // v0.242.7 关键修复：ScrollRect必须有viewport+Mask才能裁剪内容，
+            // 否则消息气泡会溢出到顶部标题区域（用户截图确认）
+            var viewportGo = new GameObject("Viewport", typeof(RectTransform), typeof(Image), typeof(Mask));
+            viewportGo.transform.SetParent(scrollGo.transform, false);
+            var vpRect = viewportGo.GetComponent<RectTransform>();
+            vpRect.anchorMin = Vector2.zero; vpRect.anchorMax = Vector2.one;
+            vpRect.offsetMin = Vector2.zero; vpRect.offsetMax = Vector2.zero;
+            var vpImg = viewportGo.GetComponent<Image>();
+            vpImg.color = new Color(0, 0, 0, 0); // 透明，只做裁剪
+            var vpMask = viewportGo.GetComponent<Mask>();
+            vpMask.showMaskGraphic = false;
+
             var contentGo = new GameObject("MsgContent", typeof(RectTransform));
-            contentGo.transform.SetParent(scrollGo.transform, false);
+            contentGo.transform.SetParent(viewportGo.transform, false);
             var cr = contentGo.GetComponent<RectTransform>();
             cr.anchorMin = new Vector2(0, 1); cr.anchorMax = new Vector2(1, 1);
             cr.pivot = new Vector2(0.5f, 1);
             cr.sizeDelta = new Vector2(0, 600);
 
             var scroll = scrollGo.GetComponent<ScrollRect>();
+            scroll.viewport = vpRect;  // v0.242.7 必须设置viewport
             scroll.content = cr;
             scroll.horizontal = false;
             scroll.vertical = true;
@@ -309,7 +322,7 @@ namespace SuperMech.Code
                 ar.anchorMax = isHanXiao ? new Vector2(0, 1) : new Vector2(1, 1);
                 ar.pivot = isHanXiao ? new Vector2(0, 1) : new Vector2(1, 1);
                 ar.anchoredPosition = isHanXiao ? new Vector2(8, -4) : new Vector2(-8, -4);
-                ar.sizeDelta = new Vector2(32, 32);
+                ar.sizeDelta = new Vector2(36, 36);  // v0.242.7 32→36，避免两字头像显示不全
                 var avatarImg = avatarGo.GetComponent<Image>();
                 // v0.242.1 改用原版卡片纹理+9-slice，不再用纯色方块
                 avatarImg.sprite = SuperMechUiSkin.Card;
@@ -321,7 +334,7 @@ namespace SuperMech.Code
                     : isKesuye ? LocalizedTextManager.getText("sm_wb_avatar_kesuye")
                     : isSailaang ? LocalizedTextManager.getText("sm_wb_avatar_sailaang")
                     : isAisi ? LocalizedTextManager.getText("sm_wb_avatar_aisi")
-                    : LocalizedTextManager.getText("sm_wb_avatar_player"), 14, TextAnchor.MiddleCenter);
+                    : LocalizedTextManager.getText("sm_wb_avatar_player"), 12, TextAnchor.MiddleCenter);  // v0.242.7 14→12
                 avatarTxt.color = new Color(1, 1, 1, isCurrent ? 1f : 0.5f);
                 avatarTxt.fontStyle = FontStyle.Bold;
                 var atRect = avatarTxt.GetComponent<RectTransform>();
