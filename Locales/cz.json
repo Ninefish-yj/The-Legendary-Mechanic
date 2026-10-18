@@ -4163,5 +4163,8 @@
   "sm_ui_awakened_level": "觉醒等级",
   "sm_ui_knowledge_count": "已学知识",
   "sm_ui_equipment_count": "拥有装备",
-  "sm_ui_spell_count": "已学法术"
+  "sm_ui_spell_count": "已学法术",
+  "sm_ui_actor_detail_title": "超能详情",
+  "sm_ui_actor_name": "姓名",
+  "sm_ui_actor_species": "种族"
 }

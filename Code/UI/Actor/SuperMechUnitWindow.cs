@@ -235,7 +235,7 @@ namespace SuperMech.Code
                 SuperMechUiSkin.CyanColor, () => SuperMechWindowManager.OpenBag(a));
             // 3. 超能详情（固定：合并职业/法术/气力/天赋/专精）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_actor_detail"), "iconChosenOne",
-                SuperMechUiSkin.CyanColor, () => SuperMechActorDetailView.Toggle(a));
+                SuperMechUiSkin.CyanColor, () => SuperMechActorDetailWindow.Open(a));
             // 4. 装备改装（固定：合并锻造）
             ShowEntryButton(window, LocalizedTextManager.getText("sm_ui_craft_entry"), "iconBuildings",
                 SuperMechUiSkin.SuccessGreen, () => SuperMechWindowManager.OpenCraft(a));
