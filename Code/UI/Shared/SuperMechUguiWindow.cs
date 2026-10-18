@@ -118,13 +118,15 @@ namespace SuperMech.Code
             }
 
             RectTransform bgRect = background.GetComponent<RectTransform>();
-            bgRect.sizeDelta = new Vector2(width, height);
 
-            // v0.238.8 修复：原版CreateEmptyWindow默认位置偏左，会盖住游戏左侧导航（组织/宇宙/设置点不了）
-            // 创建后强制居中锚定；窗口仍可拖拽（原版拖拽组件在Background上）
+            // v0.242.6 关键修复：必须先设anchor/pivot，再设sizeDelta。
+            // 原版CreateEmptyWindow的Background默认是拉伸锚点(0,0)-(1,1)，
+            // 如果先设sizeDelta再改anchor为居中(0.5,0.5)，Unity会自动重算sizeDelta
+            // 保持视觉大小不变，导致我们设的578x425被覆盖成全屏大小。
             bgRect.anchorMin = new Vector2(0.5f, 0.5f);
             bgRect.anchorMax = new Vector2(0.5f, 0.5f);
             bgRect.pivot = new Vector2(0.5f, 0.5f);
+            bgRect.sizeDelta = new Vector2(width, height);
             bgRect.anchoredPosition = Vector2.zero;
 
             // 创建内容区（在Background下，标题栏下方，四周留边距）

@@ -77,7 +77,7 @@ namespace SuperMech.Code
             ScrollWindow sw = bgRect.GetComponentInParent<ScrollWindow>();
             if (sw != null && sw.close_background != null)
             {
-                AnchorCloseToTopRight(sw.close_background.GetComponent<RectTransform>());
+                AnchorCloseToTopRight(sw.close_background.GetComponent<RectTransform>(), bgRect);
                 return;
             }
             // 兜底：递归遍历 Background 下所有层级，按名称/特征匹配关闭按钮
@@ -91,27 +91,29 @@ namespace SuperMech.Code
                                   || (r.localPosition.x > 0f && r.localPosition.y > 0f);
                 bool inTitleBar = r.anchorMin.y > 0.5f && r.anchorMax.y >= 0.5f && r.sizeDelta.sqrMagnitude < 10000f;
                 if (!nameIsClose && !atTopRight && !inTitleBar) continue;
-                AnchorCloseToTopRight(r);
+                AnchorCloseToTopRight(r, bgRect);
                 return;
             }
         }
 
         /// <summary>把关闭按钮锚定到右上角外部（参考帝国盒子：红叉贴在窗口右上角边框外面）</summary>
-        private static void AnchorCloseToTopRight(RectTransform r)
+        /// <param name="r">关闭按钮的RectTransform</param>
+        /// <param name="bgRect">窗口Background的RectTransform（v0.242.6 直接传入，避免重新查找失败）</param>
+        private static void AnchorCloseToTopRight(RectTransform r, RectTransform bgRect)
         {
-            if (r == null) return;
-            // v0.242.0 关闭按钮原父物体是Title，锚定(1,1)只到Title右上角；
-            // 先移到Background下，才能锚定到整个窗口的右上角外部
-            Transform bgTf = r.GetComponentInParent<ScrollWindow>()?.transform.Find("Background");
-            if (bgTf != null && r.parent != bgTf)
+            if (r == null || bgRect == null) return;
+            // v0.242.6 直接用传入的bgRect作为父物体，不再通过GetComponentInParent重新查找
+            // 原逻辑r.GetComponentInParent<ScrollWindow>()?.transform.Find("Background")在某些
+            // 窗口结构下可能返回null，导致关闭按钮留在Title下、锚定(1,1)只到Title右上角
+            if (r.parent != bgRect)
             {
-                r.SetParent(bgTf, false);
+                r.SetParent(bgRect, false);
             }
             r.anchorMin = new Vector2(1f, 1f);
             r.anchorMax = new Vector2(1f, 1f);
             // pivot=左下角：按钮左下角对齐窗口右上角点，按钮整体在外部右上方
             r.pivot = new Vector2(0f, 0f);
-            r.anchoredPosition = new Vector2(2f, -2f); // v0.242.0 往右移4px，更贴帝国盒子位置
+            r.anchoredPosition = new Vector2(2f, -2f);
             // SetAsLastSibling 让关闭按钮成为父物体最后子物体，始终可见可点
             r.SetAsLastSibling();
         }
