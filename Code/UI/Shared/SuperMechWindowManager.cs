@@ -41,7 +41,7 @@ namespace SuperMech.Code
         public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 540, 400, DrawMechLegionContent); }
         public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 540, 380, DrawBuildingContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 720, 460, DrawRankContent); }
-        public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 640, 460, DrawFactionContent); }
+        public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 640, 380, DrawFactionContent); }
         public static void OpenPlayer() { ToggleWindow("player", "sm_ui_player_title", 640, 460, DrawPlayerContent); }
         public static void OpenWorldTree() { ToggleWindow("worldtree", "sm_ui_tree_title", 640, 460, DrawWorldTreeContent); }
         public static void OpenWorldBeyond() { ToggleWindow("worldbeyond", "sm_ui_worldbeyond_title", 680, 480, DrawWorldBeyondContent); }
