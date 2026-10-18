@@ -81,30 +81,30 @@ namespace SuperMech.Code
             // === 头像：原版 UiUnitAvatarElement（天人武道同款 ui/UnitAvatarElement，scale 0.6）===
             CreateAvatar(transform, actor);
 
-            // === 名字（上排，x=64 y=+7，白色 fontSize9）===
+            // === 名字（上排，x=66 y=+7，白色 fontSize8，v0.241.1 对齐天人武道fontSize7+原版边框留边）===
             var nameGo = new GameObject("Name");
             nameGo.transform.SetParent(transform, false);
             var nameRect = nameGo.AddComponent<RectTransform>();
             nameRect.anchorMin = new Vector2(0, 0.5f);
             nameRect.anchorMax = new Vector2(0, 0.5f);
             nameRect.pivot = new Vector2(0, 0.5f);
-            nameRect.anchoredPosition = new Vector2(64, 7);
+            nameRect.anchoredPosition = new Vector2(66, 7);
             nameRect.sizeDelta = new Vector2(130, 16);
             var nameText = nameGo.AddComponent<Text>();
             nameText.font = SuperMechUiSkin.DefaultFont;
-            nameText.fontSize = 9;
+            nameText.fontSize = 8;
             nameText.alignment = TextAnchor.MiddleLeft;
             nameText.text = displayName;
             nameText.color = Color.white;
 
-            // === 阶位+体系（下排，x=64 y=-7，富文本）===
+            // === 阶位+体系（下排，x=66 y=-7，富文本，v0.241.1 原版边框留边）===
             var subGo = new GameObject("Sub");
             subGo.transform.SetParent(transform, false);
             var subRect = subGo.AddComponent<RectTransform>();
             subRect.anchorMin = new Vector2(0, 0.5f);
             subRect.anchorMax = new Vector2(0, 0.5f);
             subRect.pivot = new Vector2(0, 0.5f);
-            subRect.anchoredPosition = new Vector2(64, -7);
+            subRect.anchoredPosition = new Vector2(66, -7);
             subRect.sizeDelta = new Vector2(150, 16);
             var subText = subGo.AddComponent<Text>();
             subText.font = SuperMechUiSkin.DefaultFont;
@@ -114,7 +114,7 @@ namespace SuperMech.Code
             subText.horizontalOverflow = HorizontalWrapMode.Overflow;
             subText.text = $"<color=#{ColorUtility.ToHtmlStringRGB(rankColor)}>{rankName}</color>  <color=#A6947A>{className}</color>";
 
-            // === 能级（右上，金色 fontSize10，对齐天人武道 detailText 金色）===
+            // === 能级（右上，金色 fontSize10，v0.241.1 右边多留4px避免贴原版边框）===
             var onarGo = new GameObject("Onar");
             onarGo.transform.SetParent(transform, false);
             var onarRect = onarGo.AddComponent<RectTransform>();
@@ -122,7 +122,7 @@ namespace SuperMech.Code
             onarRect.anchorMax = new Vector2(1, 0.5f);
             onarRect.pivot = new Vector2(1, 0.5f);
             onarRect.sizeDelta = new Vector2(60, 16);
-            onarRect.anchoredPosition = new Vector2(-6, 5);
+            onarRect.anchoredPosition = new Vector2(-10, 5);
             var onarText = onarGo.AddComponent<Text>();
             onarText.font = SuperMechUiSkin.DefaultFont;
             onarText.fontSize = 10;

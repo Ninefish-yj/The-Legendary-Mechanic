@@ -40,7 +40,7 @@ namespace SuperMech.Code
             var labelRect = label.GetComponent<RectTransform>();
             labelRect.anchorMin = Vector2.zero;
             labelRect.anchorMax = Vector2.one;
-            labelRect.offsetMin = new Vector2(6, 0);
+            labelRect.offsetMin = new Vector2(10, 0);  // v0.241.1 原版边框留边
             labelRect.offsetMax = new Vector2(-20, 0);
             label.color = new Color(0.92f, 0.88f, 0.78f, 1f);
             dropdown.captionText = label;
@@ -142,7 +142,7 @@ namespace SuperMech.Code
             var itRect = itemText.GetComponent<RectTransform>();
             itRect.anchorMin = Vector2.zero;
             itRect.anchorMax = Vector2.one;
-            itRect.offsetMin = new Vector2(8, 0);
+            itRect.offsetMin = new Vector2(12, 0);  // v0.241.1 原版边框留边
             itRect.offsetMax = Vector2.zero;
             itemText.color = new Color(0.95f, 0.92f, 0.85f, 1f);
 
