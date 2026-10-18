@@ -233,10 +233,9 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
         {
             var go = CreateObject("SectionTitle", parent, typeof(RectTransform), typeof(Image));
             var img = go.GetComponent<Image>();
-            // v0.237.6 纯色暖棕半透明（透出原版窗口纹理），不再用深灰蓝烘焙sprite
-            img.sprite = null;
-            img.type = Image.Type.Simple;
-            img.color = SuperMechUiSkin.VanillaSection;
+            img.sprite = SuperMechUiSkin.Section;  // v0.240.9 原版输入框纹理
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
             img.raycastTarget = false;
             var txt = AddText(go, "  " + text, 13, TextAnchor.MiddleLeft, SuperMechUiSkin.CyanColor);
             txt.fontStyle = FontStyle.Bold;
@@ -252,10 +251,9 @@ public static Button AddButton(GameObject go, Action onClick, Color? normalColor
         {
             var go = CreateObject("InfoRow", parent, typeof(RectTransform), typeof(Image));
             var img = go.GetComponent<Image>();
-            // v0.237.6 纯色暖棕半透明（透出原版窗口纹理）
-            img.sprite = null;
-            img.type = Image.Type.Simple;
-            img.color = SuperMechUiSkin.VanillaCard;
+            img.sprite = SuperMechUiSkin.Card;  // v0.240.9 原版面板纹理
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
             img.raycastTarget = false;
 
             var hLayout = go.AddComponent<HorizontalLayoutGroup>();

@@ -162,7 +162,9 @@ namespace SuperMech.Code
             var go = new GameObject("Section", typeof(RectTransform), typeof(Image));
             go.transform.SetParent(_content, false);
             var img = go.GetComponent<Image>();
-            img.color = SuperMechUiSkin.VanillaSection;  // v0.237.12 分区条暖棕
+            img.sprite = SuperMechUiSkin.Section;  // v0.240.9 原版输入框纹理
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
             var r = go.GetComponent<RectTransform>();
             r.anchorMin = new Vector2(0, 1); r.anchorMax = new Vector2(1, 1);
             r.pivot = new Vector2(0, 1);

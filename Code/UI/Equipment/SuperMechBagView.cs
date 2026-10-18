@@ -95,9 +95,9 @@ namespace SuperMech.Code
             detailRect.offsetMin = new Vector2(8, 4);
             detailRect.offsetMax = new Vector2(-8, -4);
             var detailImg = detailGo.AddComponent<Image>();
-            detailImg.sprite = null; // v0.237.6 纯色暖棕半透明
-            detailImg.type = Image.Type.Simple;
-            detailImg.color = SuperMechUiSkin.VanillaCard;
+            detailImg.sprite = SuperMechUiSkin.Card;  // v0.240.9 原版面板纹理
+            detailImg.type = Image.Type.Sliced;
+            detailImg.color = Color.white;
 
             // 详情文本（左侧70%）
             var textGo = new GameObject("DetailText");
@@ -168,9 +168,9 @@ namespace SuperMech.Code
                 var slotGo = new GameObject($"Slot_{equipId}");
                 slotGo.transform.SetParent(content, false);
                 var slotImg = slotGo.AddComponent<Image>();
-                slotImg.sprite = null; // v0.237.6 纯色暖棕半透明
-                slotImg.type = Image.Type.Simple;
-                slotImg.color = SuperMechUiSkin.VanillaCard;
+                slotImg.sprite = SuperMechUiSkin.Card;  // v0.240.9 原版面板纹理
+                slotImg.type = Image.Type.Sliced;
+                slotImg.color = Color.white;
                 var slotBtn = slotGo.AddComponent<Button>();
 
                 var iconGo = new GameObject("Icon");

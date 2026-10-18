@@ -277,8 +277,9 @@ namespace SuperMech.Code
             cardRect.anchorMin = Vector2.zero; cardRect.anchorMax = Vector2.one;
             cardRect.offsetMin = new Vector2(4, 4); cardRect.offsetMax = new Vector2(-4, -4);
             var cardImg = cardGo.AddComponent<Image>();
-            // v0.238.3 对齐暖棕规范：CardBg(深蓝) → PanelVanilla(暖棕)
-            cardImg.color = SuperMechUiSkin.PanelVanilla;
+            cardImg.sprite = SuperMechUiSkin.Card;  // v0.240.9 原版面板纹理
+            cardImg.type = Image.Type.Sliced;
+            cardImg.color = Color.white;
 
             var detailTextGo = new GameObject("DetailText");
             detailTextGo.transform.SetParent(cardGo.transform, false);

@@ -64,9 +64,9 @@ namespace SuperMech.Code
             panelRect.sizeDelta = new Vector2(420, 520);
             panelRect.anchoredPosition = Vector2.zero;
             var panelImg = _panel.AddComponent<Image>();
-            panelImg.sprite = null;  // v0.237.12 弹窗面板暖棕
-            panelImg.type = Image.Type.Simple;
-            panelImg.color = SuperMechUiSkin.PanelVanilla;
+            panelImg.sprite = SuperMechUiSkin.Panel;  // v0.240.9 原版面板纹理
+            panelImg.type = Image.Type.Sliced;
+            panelImg.color = Color.white;
 
             // 标题栏
             var titleGo = new GameObject("TitleBar");

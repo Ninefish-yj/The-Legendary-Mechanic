@@ -67,7 +67,9 @@ namespace SuperMech.Code
             cardRect.offsetMin = new Vector2(4, 4);
             cardRect.offsetMax = new Vector2(-4, -4);
             var cardImg = cardGo.AddComponent<Image>();
-            cardImg.color = SuperMechUiSkin.VanillaCard; // v0.237.6 暖棕半透明
+            cardImg.sprite = SuperMechUiSkin.Card;  // v0.240.9 原版面板纹理
+            cardImg.type = Image.Type.Sliced;
+            cardImg.color = Color.white;
             _detailContent = cardRect;
 
             // 详情滚动区
@@ -204,7 +206,9 @@ namespace SuperMech.Code
                 catGo.transform.SetParent(_listContent, false);
                 catGo.AddComponent<RectTransform>().sizeDelta = new Vector2(0, 28);
                 var catImg = catGo.AddComponent<Image>();
-                catImg.color = SuperMechUiSkin.VanillaSection; // v0.237.6 暖棕半透明
+                catImg.sprite = SuperMechUiSkin.Section;  // v0.240.9 原版输入框纹理
+                catImg.type = Image.Type.Sliced;
+                catImg.color = Color.white;
                 var catBtn = catGo.AddComponent<Button>();
                 string bk = bKey;
                 catBtn.onClick.AddListener(() => ToggleCategory(bk));

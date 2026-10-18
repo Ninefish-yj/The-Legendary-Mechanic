@@ -599,7 +599,7 @@ namespace SuperMech.Code
             go.transform.SetParent(parent, false);
             var img = go.AddComponent<Image>();
             img.sprite = ButtonNormalSprite;
-            img.type = Image.Type.Simple;
+            img.type = Image.Type.Sliced;  // v0.240.9 原版9-slice纹理必须Sliced
             var btn = go.AddComponent<Button>();
             btn.transition = Selectable.Transition.SpriteSwap;
             var spriteState = btn.spriteState;

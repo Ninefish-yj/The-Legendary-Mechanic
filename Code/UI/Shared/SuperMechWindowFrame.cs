@@ -34,9 +34,9 @@ namespace SuperMech.Code
 
             // v0.194 科幻风格：带边框面板背景
             Image bg = root.GetComponent<Image>();
-            bg.sprite = null;  // v0.237.12 弹窗面板暖棕
-            bg.type = Image.Type.Simple;
-            bg.color = SuperMechUiSkin.PanelVanilla;
+            bg.sprite = SuperMechUiSkin.Panel;  // v0.240.9 原版面板纹理
+            bg.type = Image.Type.Sliced;
+            bg.color = Color.white;
 
             // 标题栏
             var titleBar = new GameObject("TitleBar", typeof(RectTransform), typeof(Image));

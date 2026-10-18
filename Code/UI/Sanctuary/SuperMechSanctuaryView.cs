@@ -138,7 +138,7 @@ namespace SuperMech.Code
             backRect.anchoredPosition = new Vector2(12, 0);
             var backImg = backGo.AddComponent<Image>();
             backImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            backImg.type = Image.Type.Simple;
+            backImg.type = Image.Type.Sliced;
             backImg.color = Color.white;
             var backBtn = backGo.AddComponent<Button>();
             var backText = SuperMechUiSkin.MakeText(backGo.transform,
@@ -163,7 +163,7 @@ namespace SuperMech.Code
             closeRect.anchoredPosition = new Vector2(-8, 0);
             var closeImg = closeGo.AddComponent<Image>();
             closeImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            closeImg.type = Image.Type.Simple;
+            closeImg.type = Image.Type.Sliced;
             closeImg.color = SuperMechUiSkin.CloseRed;
             var closeBtn = closeGo.AddComponent<Button>();
             var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", 20, TextAnchor.MiddleCenter);
@@ -576,7 +576,7 @@ namespace SuperMech.Code
             backRect.anchoredPosition = new Vector2(12, -8);
             var backImg = backGo.AddComponent<Image>();
             backImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            backImg.type = Image.Type.Simple;
+            backImg.type = Image.Type.Sliced;
             var backBtn = backGo.AddComponent<Button>();
             var backText = SuperMechUiSkin.MakeText(backGo.transform,
                 LocalizedTextManager.getText("sm_ui_san_back"), 12, TextAnchor.MiddleCenter);
@@ -599,7 +599,7 @@ namespace SuperMech.Code
             closeRect.anchoredPosition = new Vector2(-12, -8);
             var closeImg = closeGo.AddComponent<Image>();
             closeImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            closeImg.type = Image.Type.Simple;
+            closeImg.type = Image.Type.Sliced;
             closeImg.color = SuperMechUiSkin.CloseRed;
             var closeBtn = closeGo.AddComponent<Button>();
             var closeText = SuperMechUiSkin.MakeText(closeGo.transform, "×", 18, TextAnchor.MiddleCenter);
