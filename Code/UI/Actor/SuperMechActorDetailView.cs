@@ -25,12 +25,20 @@ namespace SuperMech.Code
         public static void Open(Actor actor)
         {
             if (_instance != null || actor == null) return;
-            var canvas = SuperMechUguiWindow.GetCanvas();
-            var go = new GameObject("SMActorDetailView");
-            go.transform.SetParent(canvas.transform, false);
-            _instance = go.AddComponent<SuperMechActorDetailView>();
-            _instance._actor = actor;
-            _instance.Build();
+            try
+            {
+                var canvas = SuperMechUguiWindow.GetCanvas();
+                var go = new GameObject("SMActorDetailView");
+                go.transform.SetParent(canvas.transform, false);
+                _instance = go.AddComponent<SuperMechActorDetailView>();
+                _instance._actor = actor;
+                _instance.Build();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[超神机械师] SMActorDetailView.Open失败: " + e);
+                if (_instance != null) { Destroy(_instance.gameObject); _instance = null; }
+            }
         }
 
         public void Close()
@@ -42,7 +50,19 @@ namespace SuperMech.Code
 
         private void Build()
         {
-            // 半透明背景
+            try
+            {
+                BuildInternal();
+            }
+            catch (Exception e)
+            {
+                Debug.LogError("[超神机械师] SMActorDetailView.Build失败: " + e);
+            }
+        }
+
+        private void BuildInternal()
+        {
+            // 半透明背景（点击可关闭，兜底防止关闭按钮创建失败后无法关闭）
             var bgGo = new GameObject("Bg");
             bgGo.transform.SetParent(transform, false);
             var bgRect = bgGo.AddComponent<RectTransform>();
@@ -51,8 +71,11 @@ namespace SuperMech.Code
             bgRect.offsetMin = Vector2.zero;
             bgRect.offsetMax = Vector2.zero;
             var bgImg = bgGo.AddComponent<Image>();
-            bgImg.color = new Color(0, 0, 0, 0.35f); // v0.237.4 遮罩调淡(0.6→0.35)，避免盖住画面看不清
+            bgImg.color = new Color(0, 0, 0, 0.35f);
             bgImg.raycastTarget = true;
+            var bgBtn = bgGo.AddComponent<Button>();
+            bgBtn.transition = Selectable.Transition.None;
+            bgBtn.onClick.AddListener(() => Close());
 
             // 主面板
             _panel = new GameObject("Panel");
