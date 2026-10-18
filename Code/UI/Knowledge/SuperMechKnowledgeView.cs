@@ -122,149 +122,175 @@ namespace SuperMech.Code
 
         private void BuildKnowledgePanel()
         {
-            _knowledgePanel = new GameObject("KnowledgePanel");
-            _knowledgePanel.transform.SetParent(transform, false);
-            var panelRect = _knowledgePanel.AddComponent<RectTransform>();
-            panelRect.anchorMin = Vector2.zero;
-            panelRect.anchorMax = Vector2.one;
-            panelRect.pivot = new Vector2(0.5f, 0.5f);
-            panelRect.offsetMin = new Vector2(0, 0);
-            panelRect.offsetMax = new Vector2(0, -34);
+            try
+            {
+                _knowledgePanel = new GameObject("KnowledgePanel");
+                _knowledgePanel.transform.SetParent(transform, false);
+                var panelRect = _knowledgePanel.AddComponent<RectTransform>();
+                panelRect.anchorMin = Vector2.zero;
+                panelRect.anchorMax = Vector2.one;
+                panelRect.pivot = new Vector2(0.5f, 0.5f);
+                panelRect.offsetMin = new Vector2(0, 0);
+                panelRect.offsetMax = new Vector2(0, -34);
 
-            // 左侧列表面板
-            var listGo = new GameObject("ListPanel");
-            listGo.transform.SetParent(_knowledgePanel.transform, false);
-            var listRect = listGo.AddComponent<RectTransform>();
-            listRect.anchorMin = new Vector2(0, 0);
-            listRect.anchorMax = new Vector2(0, 1);
-            listRect.pivot = new Vector2(0, 0.5f);
-            listRect.sizeDelta = new Vector2(200, 0);
-            listRect.anchoredPosition = Vector2.zero;
+                // 左侧列表面板
+                var listGo = new GameObject("ListPanel");
+                listGo.transform.SetParent(_knowledgePanel.transform, false);
+                var listRect = listGo.AddComponent<RectTransform>();
+                listRect.anchorMin = new Vector2(0, 0);
+                listRect.anchorMax = new Vector2(0, 1);
+                listRect.pivot = new Vector2(0, 0.5f);
+                listRect.sizeDelta = new Vector2(200, 0);
+                listRect.anchoredPosition = Vector2.zero;
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] 知识面板-左侧容器创建失败: " + e); throw; }
 
-            var (scroll, content) = SuperMechUiSkin.CreateScrollArea(listGo.transform, "Scroll");
-            _listContent = content;
+            try
+            {
+                var (scroll, content) = SuperMechUiSkin.CreateScrollArea(listGo.transform, "Scroll");
+                _listContent = content;
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] 知识面板-滚动区创建失败: " + e); throw; }
 
-            // 右侧详情面板
-            var detailGo = new GameObject("DetailPanel");
-            detailGo.transform.SetParent(_knowledgePanel.transform, false);
-            var detailRect = detailGo.AddComponent<RectTransform>();
-            detailRect.anchorMin = Vector2.zero;
-            detailRect.anchorMax = Vector2.one;
-            detailRect.pivot = new Vector2(0.5f, 0.5f);
-            detailRect.offsetMin = new Vector2(210, 0);
-            detailRect.offsetMax = Vector2.zero;
+            try
+            {
+                // 右侧详情面板
+                var detailGo = new GameObject("DetailPanel");
+                detailGo.transform.SetParent(_knowledgePanel.transform, false);
+                var detailRect = detailGo.AddComponent<RectTransform>();
+                detailRect.anchorMin = Vector2.zero;
+                detailRect.anchorMax = Vector2.one;
+                detailRect.pivot = new Vector2(0.5f, 0.5f);
+                detailRect.offsetMin = new Vector2(210, 0);
+                detailRect.offsetMax = Vector2.zero;
 
-            var cardGo = new GameObject("Card");
-            cardGo.transform.SetParent(detailGo.transform, false);
-            var cardRect = cardGo.AddComponent<RectTransform>();
-            cardRect.anchorMin = Vector2.zero;
-            cardRect.anchorMax = Vector2.one;
-            cardRect.offsetMin = new Vector2(4, 4);
-            cardRect.offsetMax = new Vector2(-4, -4);
-            var cardImg = cardGo.AddComponent<Image>();
-            cardImg.color = SuperMechUiSkin.CardBg;
-            _detailContent = cardRect;
+                var cardGo = new GameObject("Card");
+                cardGo.transform.SetParent(detailGo.transform, false);
+                var cardRect = cardGo.AddComponent<RectTransform>();
+                cardRect.anchorMin = Vector2.zero;
+                cardRect.anchorMax = Vector2.one;
+                cardRect.offsetMin = new Vector2(4, 4);
+                cardRect.offsetMax = new Vector2(-4, -4);
+                var cardImg = cardGo.AddComponent<Image>();
+                cardImg.color = SuperMechUiSkin.CardBg;
+                _detailContent = cardRect;
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] 知识面板-详情容器创建失败: " + e); throw; }
 
-            // 详情滚动区
-            // v0.242.8 显式添加RectTransform：不依赖ScrollRect的[RequireComponent]运行时自动添加，
-            // 某些Unity版本运行时AddComponent不会自动添加依赖组件，导致GetComponent<RectTransform>()返回null
-            var detailScrollGo = new GameObject("DetailScroll", typeof(RectTransform));
-            detailScrollGo.transform.SetParent(cardGo.transform, false);
-            var detailScrollRect = detailScrollGo.AddComponent<ScrollRect>();
-            var dsr = detailScrollGo.GetComponent<RectTransform>();
-            dsr.anchorMin = Vector2.zero; dsr.anchorMax = Vector2.one;
-            dsr.offsetMin = new Vector2(8, 8); dsr.offsetMax = new Vector2(-8, -8);
-            var detailMaskImg = detailScrollGo.AddComponent<Image>();
-            detailMaskImg.color = new Color(0f, 0f, 0f, 0.01f);
-            detailMaskImg.raycastTarget = false;
-            var detailMask = detailScrollGo.AddComponent<Mask>();
-            detailMask.showMaskGraphic = true;
+            try
+            {
+                // 详情滚动区
+                var detailScrollGo = new GameObject("DetailScroll", typeof(RectTransform));
+                detailScrollGo.transform.SetParent(cardGo.transform, false);
+                var detailScrollRect = detailScrollGo.AddComponent<ScrollRect>();
+                var dsr = detailScrollGo.GetComponent<RectTransform>();
+                dsr.anchorMin = Vector2.zero; dsr.anchorMax = Vector2.one;
+                dsr.offsetMin = new Vector2(8, 8); dsr.offsetMax = new Vector2(-8, -8);
+                var detailMaskImg = detailScrollGo.AddComponent<Image>();
+                detailMaskImg.color = new Color(0f, 0f, 0f, 0.01f);
+                detailMaskImg.raycastTarget = false;
+                var detailMask = detailScrollGo.AddComponent<Mask>();
+                detailMask.showMaskGraphic = true;
 
-            var detailViewportGo = new GameObject("Viewport");
-            detailViewportGo.transform.SetParent(detailScrollGo.transform, false);
-            var detailViewportRt = detailViewportGo.AddComponent<RectTransform>();
-            detailViewportRt.anchorMin = Vector2.zero;
-            detailViewportRt.anchorMax = Vector2.one;
-            detailViewportRt.offsetMin = Vector2.zero;
-            detailViewportRt.offsetMax = Vector2.zero;
+                var detailViewportGo = new GameObject("Viewport");
+                detailViewportGo.transform.SetParent(detailScrollGo.transform, false);
+                var detailViewportRt = detailViewportGo.AddComponent<RectTransform>();
+                detailViewportRt.anchorMin = Vector2.zero;
+                detailViewportRt.anchorMax = Vector2.one;
+                detailViewportRt.offsetMin = Vector2.zero;
+                detailViewportRt.offsetMax = Vector2.zero;
 
-            var detailContentGo = new GameObject("Content");
-            detailContentGo.transform.SetParent(detailViewportGo.transform, false);
-            var detailContentRect = detailContentGo.AddComponent<RectTransform>();
-            detailContentRect.anchorMin = new Vector2(0, 1);
-            detailContentRect.anchorMax = new Vector2(1, 1);
-            detailContentRect.pivot = new Vector2(0, 1);
-            detailContentRect.sizeDelta = new Vector2(0, 0);
-            var detailContentHit = detailContentGo.AddComponent<Image>();
-            detailContentHit.color = new Color(0f, 0f, 0f, 0f);
-            detailContentHit.raycastTarget = true;
-            var detailVlg = detailContentGo.AddComponent<VerticalLayoutGroup>();
-            detailVlg.spacing = 4;
-            detailVlg.padding = new RectOffset(6, 6, 6, 6);
-            detailVlg.childControlHeight = true;
-            detailVlg.childControlWidth = true;
-            detailVlg.childForceExpandWidth = true;
-            detailVlg.childForceExpandHeight = false;
-            var detailFitter = detailContentGo.AddComponent<ContentSizeFitter>();
-            detailFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            detailScrollRect.content = detailContentRect;
-            detailScrollRect.viewport = detailViewportRt;
-            detailScrollRect.vertical = true;
-            detailScrollRect.horizontal = false;
-            detailScrollRect.movementType = ScrollRect.MovementType.Clamped;
+                var detailContentGo = new GameObject("Content");
+                detailContentGo.transform.SetParent(detailViewportGo.transform, false);
+                var detailContentRect = detailContentGo.AddComponent<RectTransform>();
+                detailContentRect.anchorMin = new Vector2(0, 1);
+                detailContentRect.anchorMax = new Vector2(1, 1);
+                detailContentRect.pivot = new Vector2(0, 1);
+                detailContentRect.sizeDelta = new Vector2(0, 0);
+                var detailContentHit = detailContentGo.AddComponent<Image>();
+                detailContentHit.color = new Color(0f, 0f, 0f, 0f);
+                detailContentHit.raycastTarget = true;
+                var detailVlg = detailContentGo.AddComponent<VerticalLayoutGroup>();
+                detailVlg.spacing = 4;
+                detailVlg.padding = new RectOffset(6, 6, 6, 6);
+                detailVlg.childControlHeight = true;
+                detailVlg.childControlWidth = true;
+                detailVlg.childForceExpandWidth = true;
+                detailVlg.childForceExpandHeight = false;
+                var detailFitter = detailContentGo.AddComponent<ContentSizeFitter>();
+                detailFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+                detailScrollRect.content = detailContentRect;
+                detailScrollRect.viewport = detailViewportRt;
+                detailScrollRect.vertical = true;
+                detailScrollRect.horizontal = false;
+                detailScrollRect.movementType = ScrollRect.MovementType.Clamped;
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] 知识面板-详情滚动区创建失败: " + e); throw; }
 
-            // v0.237 统一规范：详情信息区（信息行容器，LearnBtn为兄弟节点）
-            var infoAreaGo = new GameObject("InfoArea");
-            infoAreaGo.transform.SetParent(detailContentGo.transform, false);
-            var infoAreaRect = infoAreaGo.AddComponent<RectTransform>();
-            infoAreaRect.anchorMin = Vector2.zero;
-            infoAreaRect.anchorMax = Vector2.one;
-            infoAreaRect.offsetMin = Vector2.zero;
-            infoAreaRect.offsetMax = Vector2.zero;
-            var infoVlg = infoAreaGo.AddComponent<VerticalLayoutGroup>();
-            infoVlg.spacing = 4;
-            infoVlg.padding = new RectOffset(0, 0, 0, 0);
-            infoVlg.childControlWidth = true;
-            infoVlg.childControlHeight = false;
-            infoVlg.childForceExpandWidth = true;
-            infoVlg.childForceExpandHeight = false;
-            _detailContainer = infoAreaGo.transform;
+            try
+            {
+                // 详情信息区
+                var infoAreaGo = new GameObject("InfoArea");
+                infoAreaGo.transform.SetParent(detailContentGo.transform, false);
+                var infoAreaRect = infoAreaGo.AddComponent<RectTransform>();
+                infoAreaRect.anchorMin = Vector2.zero;
+                infoAreaRect.anchorMax = Vector2.one;
+                infoAreaRect.offsetMin = Vector2.zero;
+                infoAreaRect.offsetMax = Vector2.zero;
+                var infoVlg = infoAreaGo.AddComponent<VerticalLayoutGroup>();
+                infoVlg.spacing = 4;
+                infoVlg.padding = new RectOffset(0, 0, 0, 0);
+                infoVlg.childControlWidth = true;
+                infoVlg.childControlHeight = false;
+                infoVlg.childForceExpandWidth = true;
+                infoVlg.childForceExpandHeight = false;
+                _detailContainer = infoAreaGo.transform;
 
-            _detailText = infoAreaGo.AddComponent<Text>();
-            _detailText.font = SuperMechUiSkin.DefaultFont;
-            _detailText.fontSize = 13;
-            _detailText.color = SuperMechUiSkin.TextColor;
-            _detailText.alignment = TextAnchor.UpperLeft;
-            _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
-            _detailText.verticalOverflow = VerticalWrapMode.Truncate;
-            _detailText.text = LocalizedTextManager.getText("sm_ui_select_knowledge");
-            _detailText.raycastTarget = false;
+                _detailText = infoAreaGo.AddComponent<Text>();
+                _detailText.font = SuperMechUiSkin.DefaultFont;
+                _detailText.fontSize = 13;
+                _detailText.color = SuperMechUiSkin.TextColor;
+                _detailText.alignment = TextAnchor.UpperLeft;
+                _detailText.horizontalOverflow = HorizontalWrapMode.Wrap;
+                _detailText.verticalOverflow = VerticalWrapMode.Truncate;
+                _detailText.text = LocalizedTextManager.getText("sm_ui_select_knowledge");
+                _detailText.raycastTarget = false;
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] 知识面板-详情信息区创建失败: " + e); throw; }
 
-            // 学习按钮（原著：超能者通过学习知识提升实力）
-            var learnBtnGo = new GameObject("LearnBtn");
-            learnBtnGo.transform.SetParent(detailContentGo.transform, false);
-            var learnBtnRect = learnBtnGo.AddComponent<RectTransform>();
-            learnBtnRect.sizeDelta = new Vector2(0, 44);
-            _learnBtn = learnBtnGo.AddComponent<Button>();
-            var learnBtnImg = learnBtnGo.AddComponent<Image>();
-            learnBtnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
-            learnBtnImg.type = Image.Type.Sliced;
-            learnBtnImg.color = Color.white;
-            _learnBtn.transition = Selectable.Transition.SpriteSwap;
-            var lss = _learnBtn.spriteState;
-            lss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
-            lss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
-            _learnBtn.spriteState = lss;
-            _learnBtnText = learnBtnGo.AddComponent<Text>();
-            _learnBtnText.font = SuperMechUiSkin.DefaultFont;
-            _learnBtnText.fontSize = 14;
-            _learnBtnText.color = Color.white;
-            _learnBtnText.alignment = TextAnchor.MiddleCenter;
-            _learnBtnText.text = LocalizedTextManager.getText("sm_ui_learn");
-            _learnBtn.onClick.AddListener(OnLearnClicked);
-            learnBtnGo.SetActive(false);
+            try
+            {
+                // 学习按钮
+                var learnBtnGo = new GameObject("LearnBtn");
+                learnBtnGo.transform.SetParent(detailContentGo.transform, false);
+                var learnBtnRect = learnBtnGo.AddComponent<RectTransform>();
+                learnBtnRect.sizeDelta = new Vector2(0, 44);
+                _learnBtn = learnBtnGo.AddComponent<Button>();
+                var learnBtnImg = learnBtnGo.AddComponent<Image>();
+                learnBtnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+                learnBtnImg.type = Image.Type.Sliced;
+                learnBtnImg.color = Color.white;
+                _learnBtn.transition = Selectable.Transition.SpriteSwap;
+                var lss = _learnBtn.spriteState;
+                lss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+                lss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+                _learnBtn.spriteState = lss;
+                _learnBtnText = learnBtnGo.AddComponent<Text>();
+                _learnBtnText.font = SuperMechUiSkin.DefaultFont;
+                _learnBtnText.fontSize = 14;
+                _learnBtnText.color = Color.white;
+                _learnBtnText.alignment = TextAnchor.MiddleCenter;
+                _learnBtnText.text = LocalizedTextManager.getText("sm_ui_learn");
+                _learnBtn.onClick.AddListener(OnLearnClicked);
+                learnBtnGo.SetActive(false);
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] 知识面板-学习按钮创建失败: " + e); throw; }
 
-            RefreshList();
+            try
+            {
+                RefreshList();
+            }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] 知识面板-列表刷新失败: " + e); throw; }
         }
 
         private void BuildFusionPanel()

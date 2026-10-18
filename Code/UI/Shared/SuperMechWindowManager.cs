@@ -26,14 +26,14 @@ namespace SuperMech.Code
 
         // v0.242.12 统一调大窗口尺寸：原578x425在1080p只占30%宽，内容拥挤布局错乱。
         // 统一参考帝国盒子比例，宽高各增约20%，内容区更舒展。
-        public static void OpenKnowledge() { SuperMechKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 460, DrawKnowledgeContent); }
-        public static void OpenKnowledge(Actor a) { SuperMechKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 460, DrawKnowledgeContent); }
-        public static void OpenBag() { SuperMechBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 680, 460, DrawBagContent); }
-        public static void OpenBag(Actor a) { SuperMechBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 680, 460, DrawBagContent); }
-        public static void OpenFusion() { SuperMechKnowledgeView.OverrideActor = null; SuperMechFusionView.OverrideActor = null; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 460, DrawKnowledgeContent); }
-        public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 460, DrawKnowledgeContent); }
-        public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 460, DrawSpellContent); }
-        public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 460, DrawSpellContent); }
+        public static void OpenKnowledge() { SuperMechKnowledgeView.OverrideActor = null; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 380, DrawKnowledgeContent); }
+        public static void OpenKnowledge(Actor a) { SuperMechKnowledgeView.OverrideActor = a; ToggleWindow("knowledge", "sm_ui_knowledge", 680, 380, DrawKnowledgeContent); }
+        public static void OpenBag() { SuperMechBagView.OverrideActor = null; ToggleWindow("bag", "sm_ui_bag", 680, 380, DrawBagContent); }
+        public static void OpenBag(Actor a) { SuperMechBagView.OverrideActor = a; ToggleWindow("bag", "sm_ui_bag", 680, 380, DrawBagContent); }
+        public static void OpenFusion() { SuperMechKnowledgeView.OverrideActor = null; SuperMechFusionView.OverrideActor = null; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 380, DrawKnowledgeContent); }
+        public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 380, DrawKnowledgeContent); }
+        public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 380, DrawSpellContent); }
+        public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 380, DrawSpellContent); }
         public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 640, 400, DrawCraftContent); }
         public static void OpenCosmicRelic(Actor a) { SuperMechCosmicRelicView.OverrideActor = a; ToggleWindow("relic", "sm_ui_cr_title", 480, 440, DrawCosmicRelicContent); }
         public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 510, 425, DrawDimensionContent); }

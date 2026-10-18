@@ -28,74 +28,21 @@ namespace SuperMech.Code
 
         private void BuildLayout()
         {
-            // 上方网格区域（占82%高度）
-            var gridGo = new GameObject("GridPanel");
-            gridGo.transform.SetParent(transform, false);
-            _gridPanel = gridGo.AddComponent<RectTransform>();
-            _gridPanel.anchorMin = new Vector2(0, 0.18f);
-            _gridPanel.anchorMax = Vector2.one;
-            _gridPanel.offsetMin = new Vector2(8, 4);
-            _gridPanel.offsetMax = new Vector2(-8, -4);
+            // v0.242.36 改为固定高度绝对定位，避免百分比布局在窗口高度变化时错位
+            // 内容区高度约328（窗口380-标题栏36-边距16）
+            // DetailPanel固定148px（5个按钮），GridPanel占剩余空间
 
-            // 滚动区（带Mask裁剪）
-            var scrollGo = new GameObject("Scroll");
-            scrollGo.transform.SetParent(_gridPanel, false);
-            var scrollRect = scrollGo.AddComponent<ScrollRect>();
-            var sr = scrollGo.GetComponent<RectTransform>();
-            sr.anchorMin = Vector2.zero; sr.anchorMax = Vector2.one;
-            sr.offsetMin = Vector2.zero; sr.offsetMax = Vector2.zero;
-            // Mask的Image必须用极小非零alpha（0.01），alpha=0会导致Mask模板区域为空，内容被整体裁剪
-            var maskImg = scrollGo.AddComponent<Image>();
-            maskImg.color = new Color(0f, 0f, 0f, 0.01f);
-            maskImg.raycastTarget = false;
-            var mask = scrollGo.AddComponent<Mask>();
-            mask.showMaskGraphic = true;
-
-            // 独立Viewport
-            var viewportGo = new GameObject("Viewport");
-            viewportGo.transform.SetParent(scrollGo.transform, false);
-            var viewportRt = viewportGo.AddComponent<RectTransform>();
-            viewportRt.anchorMin = Vector2.zero;
-            viewportRt.anchorMax = Vector2.one;
-            viewportRt.offsetMin = Vector2.zero;
-            viewportRt.offsetMax = Vector2.zero;
-
-            // Content（GridLayoutGroup，左上角锚定）
-            var contentGo = new GameObject("Content");
-            contentGo.transform.SetParent(viewportGo.transform, false);
-            var contentRect = contentGo.AddComponent<RectTransform>();
-            contentRect.anchorMin = new Vector2(0, 1); contentRect.anchorMax = new Vector2(1, 1);
-            contentRect.pivot = new Vector2(0, 1); contentRect.sizeDelta = new Vector2(0, 0);
-            // Content透明命中兜底层
-            var contentHit = contentGo.AddComponent<Image>();
-            contentHit.color = new Color(0f, 0f, 0f, 0f);
-            contentHit.raycastTarget = true;
-            var grid = contentGo.AddComponent<GridLayoutGroup>();
-            grid.cellSize = new Vector2(56, 56);
-            grid.spacing = new Vector2(5, 5);
-            grid.padding = new RectOffset(6, 6, 6, 6);
-            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
-            grid.constraintCount = 9;
-            var fitter = contentGo.AddComponent<ContentSizeFitter>();
-            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
-            scrollRect.content = contentRect;
-            scrollRect.viewport = viewportRt;
-            scrollRect.vertical = true;
-            scrollRect.horizontal = false;
-            scrollRect.movementType = ScrollRect.MovementType.Clamped;
-            scrollRect.vertical = true;
-            scrollRect.horizontal = false;
-
-            // 下方详情区域（占18%高度）
+            // 下方详情区域（固定高度148，底部锚定）
             var detailGo = new GameObject("DetailPanel");
             detailGo.transform.SetParent(transform, false);
             var detailRect = detailGo.AddComponent<RectTransform>();
-            detailRect.anchorMin = Vector2.zero;
-            detailRect.anchorMax = new Vector2(1, 0.18f);
-            detailRect.offsetMin = new Vector2(8, 4);
-            detailRect.offsetMax = new Vector2(-8, -4);
+            detailRect.anchorMin = new Vector2(0, 0);
+            detailRect.anchorMax = new Vector2(1, 0);
+            detailRect.pivot = new Vector2(0.5f, 0);
+            detailRect.anchoredPosition = Vector2.zero;
+            detailRect.sizeDelta = new Vector2(0, 148);
             var detailImg = detailGo.AddComponent<Image>();
-            detailImg.sprite = SuperMechUiSkin.Card;  // v0.240.9 原版面板纹理
+            detailImg.sprite = SuperMechUiSkin.Card;
             detailImg.type = Image.Type.Sliced;
             detailImg.color = Color.white;
 
@@ -129,13 +76,67 @@ namespace SuperMech.Code
             _equipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_equip"), 11, OnEquipClick);
             _unequipBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_unequip"), 11, OnUnequipClick);
             _modifyBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_modify"), 11, OnModifyClick);
-            // v0.185 装备强化按钮
             var enhanceBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_enhance"), 11, OnEnhanceClick);
-            // v0.195 宇宙宝物入口
             var relicBtn = SuperMechUiSkin.MakeButton(btnGo.transform, LocalizedTextManager.getText("sm_ui_cr_entry"), 11, () => {
                 if (SelectedActor != null) SuperMechWindowManager.OpenCosmicRelic(SelectedActor);
             });
             UpdateButtonStates();
+
+            // 上方网格区域（顶部锚定，占剩余空间）
+            var gridGo = new GameObject("GridPanel");
+            gridGo.transform.SetParent(transform, false);
+            _gridPanel = gridGo.AddComponent<RectTransform>();
+            _gridPanel.anchorMin = new Vector2(0, 0);
+            _gridPanel.anchorMax = new Vector2(1, 1);
+            _gridPanel.pivot = new Vector2(0.5f, 1);
+            _gridPanel.anchoredPosition = new Vector2(0, 0);
+            _gridPanel.offsetMin = new Vector2(8, 156);  // 底部避开DetailPanel(148)+间距8
+            _gridPanel.offsetMax = new Vector2(-8, -4);  // 顶部留4px
+
+            // 滚动区（带Mask裁剪）
+            var scrollGo = new GameObject("Scroll");
+            scrollGo.transform.SetParent(_gridPanel, false);
+            var scrollRect = scrollGo.AddComponent<ScrollRect>();
+            var sr = scrollGo.GetComponent<RectTransform>();
+            sr.anchorMin = Vector2.zero; sr.anchorMax = Vector2.one;
+            sr.offsetMin = Vector2.zero; sr.offsetMax = Vector2.zero;
+            var maskImg = scrollGo.AddComponent<Image>();
+            maskImg.color = new Color(0f, 0f, 0f, 0.01f);
+            maskImg.raycastTarget = false;
+            var mask = scrollGo.AddComponent<Mask>();
+            mask.showMaskGraphic = true;
+
+            // 独立Viewport
+            var viewportGo = new GameObject("Viewport");
+            viewportGo.transform.SetParent(scrollGo.transform, false);
+            var viewportRt = viewportGo.AddComponent<RectTransform>();
+            viewportRt.anchorMin = Vector2.zero;
+            viewportRt.anchorMax = Vector2.one;
+            viewportRt.offsetMin = Vector2.zero;
+            viewportRt.offsetMax = Vector2.zero;
+
+            // Content（GridLayoutGroup，左上角锚定）
+            var contentGo = new GameObject("Content");
+            contentGo.transform.SetParent(viewportGo.transform, false);
+            var contentRect = contentGo.AddComponent<RectTransform>();
+            contentRect.anchorMin = new Vector2(0, 1); contentRect.anchorMax = new Vector2(1, 1);
+            contentRect.pivot = new Vector2(0, 1); contentRect.sizeDelta = new Vector2(0, 0);
+            var contentHit = contentGo.AddComponent<Image>();
+            contentHit.color = new Color(0f, 0f, 0f, 0f);
+            contentHit.raycastTarget = true;
+            var grid = contentGo.AddComponent<GridLayoutGroup>();
+            grid.cellSize = new Vector2(56, 56);
+            grid.spacing = new Vector2(5, 5);
+            grid.padding = new RectOffset(6, 6, 6, 6);
+            grid.constraint = GridLayoutGroup.Constraint.FixedColumnCount;
+            grid.constraintCount = 9;
+            var fitter = contentGo.AddComponent<ContentSizeFitter>();
+            fitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize;
+            scrollRect.content = contentRect;
+            scrollRect.viewport = viewportRt;
+            scrollRect.vertical = true;
+            scrollRect.horizontal = false;
+            scrollRect.movementType = ScrollRect.MovementType.Clamped;
         }
 
         private void RefreshGrid()
