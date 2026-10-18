@@ -28,8 +28,8 @@ namespace SuperMech.Code
 
         void Awake()
         {
-            _instance = this;
-            BuildPanel();
+            try { _instance = this; BuildPanel(); }
+            catch (System.Exception e) { Debug.LogError("[超神机械师] SpaceExpansionUI初始化失败: " + e); }
         }
 
         /// <summary>构建主面板</summary>
