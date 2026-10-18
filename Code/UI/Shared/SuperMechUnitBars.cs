@@ -200,12 +200,28 @@ namespace SuperMech.Code
         {
             if (bar == null || actor == null) return;
 
-            // v0.242.5 设置悬停tooltip的actor引用
-            var qiTooltip = bar.GetComponent<SuperMechQiBarTooltip>();
-            if (qiTooltip != null) qiTooltip.actor = actor;
-
             float qi = SuperMechQi.GetQi(actor);
             float qiMax = SuperMechQi.GetQiMax(actor);
+            bool awakened = SuperMechAwakened.IsAwakened(actor);
+
+            // v0.242.9 直接写入tooltip显示数据，不再存actor引用（避免引用失效导致0/0）
+            var qiTooltip = bar.GetComponent<SuperMechQiBarTooltip>();
+            if (qiTooltip != null)
+            {
+                qiTooltip.qi = qi;
+                qiTooltip.qiMax = qiMax;
+                qiTooltip.awakened = awakened;
+                if (qiMax > 0)
+                {
+                    int lv = SuperMechQi.GetLevel(qiMax);
+                    qiTooltip.levelName = lv > 0 ? SuperMechQi.LevelNames[lv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
+                }
+                else
+                {
+                    qiTooltip.levelName = LocalizedTextManager.getText("sm_ui_qi_none");
+                }
+            }
+
             if (qiMax <= 0) qiMax = 1f;
 
             if (SuperMechQi.GetQiMax(actor) > 0)

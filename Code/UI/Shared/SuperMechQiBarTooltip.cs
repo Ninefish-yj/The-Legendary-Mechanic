@@ -5,7 +5,9 @@ using UnityEngine.UI;
 namespace SuperMech.Code
 {
     /// <summary>
-    /// v0.242.5 气力条悬停tooltip：显示当前气力/最大气力/等级/恢复速率
+    /// v0.242.5 气力条悬停tooltip：显示当前气力/最大气力/等级
+    /// v0.242.9 重构：不存Actor引用，直接存气力值（qi/qiMax/levelName），
+    ///   由UpdateQiBarValue在更新条时写入，悬停时直接显示，彻底消除actor引用失效导致的0/0问题
     /// 不依赖原版Tooltip asset系统，自绘轻量文本框
     /// </summary>
     public class SuperMechQiBarTooltip : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
@@ -14,12 +16,15 @@ namespace SuperMech.Code
         private static Text _tooltipText;
         private static Image _tooltipBg;
 
-        public Actor actor;
+        // v0.242.9 直接存储显示数据，由UpdateQiBarValue写入
+        public float qi;
+        public float qiMax;
+        public string levelName = "";
+        public bool awakened = false;
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (actor == null) return;
-            Show(actor);
+            Show();
         }
 
         public void OnPointerExit(PointerEventData eventData)
@@ -68,29 +73,25 @@ namespace SuperMech.Code
             _tooltipText.verticalOverflow = VerticalWrapMode.Overflow;
         }
 
-        private static void Show(Actor a)
+        /// <summary>
+        /// v0.242.9 直接用存储的数据显示，不再查询SuperMechQi
+        /// </summary>
+        private void Show()
         {
             EnsureTooltip();
             if (_tooltipObj == null) return;
 
-            float qi = SuperMechQi.GetQi(a);
-            float qiMax = SuperMechQi.GetQiMax(a);
-
-            // v0.242.8 未觉醒单位（qiMax=0）显示友好提示，而非"0/0 未入流"
             string text;
-            if (qiMax <= 0)
+            if (!awakened || qiMax <= 0)
             {
                 text = LocalizedTextManager.getText("sm_ui_qi_tooltip_title") + "\n"
                     + LocalizedTextManager.getText("sm_ui_qi_tooltip_not_awakened");
             }
             else
             {
-                int lv = SuperMechQi.GetLevel(qiMax);
-                string lvName = lv > 0 ? SuperMechQi.LevelNames[lv - 1] : LocalizedTextManager.getText("sm_ui_qi_none");
-
                 text = LocalizedTextManager.getText("sm_ui_qi_tooltip_title") + "\n"
                     + LocalizedTextManager.getText("sm_ui_qi_tooltip_current") + ": " + (int)qi + " / " + (int)qiMax + "\n"
-                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_level") + ": " + lvName;
+                    + LocalizedTextManager.getText("sm_ui_qi_tooltip_level") + ": " + levelName;
             }
 
             _tooltipText.text = text;
