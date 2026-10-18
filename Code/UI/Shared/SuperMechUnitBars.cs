@@ -14,8 +14,8 @@ namespace SuperMech.Code
         private const string BarName = "bar_qi";
         private static StatBar _qiBar;
         private static bool _initialized = false;
-        // v0.237.4 气力条统一为模组主题青色（用户要求；原来金色）
-        private static readonly Color QiBarColor = new Color(0.40f, 0.80f, 0.90f, 1f); // 青色 #66C9E6
+        // v0.240.6 气力条统一为帝国盒子暖金色（对齐全局UI配色）
+        private static readonly Color QiBarColor = SuperMechUiSkin.CyanColor; // 金色
 
         public static void Init()
         {

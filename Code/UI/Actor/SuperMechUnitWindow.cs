@@ -205,13 +205,13 @@ namespace SuperMech.Code
                 var barImg = qiBarGo.transform.Find("bar")?.GetComponent<Image>();
                 if (barImg != null)
                 {
-                    barImg.color = new Color(0.40f, 0.80f, 0.90f, 1f); // CyanColor青色
+                    barImg.color = SuperMechUiSkin.CyanColor; // CyanColor青色
                 }
 
                 // 文本颜色也统一为青色（原版模板是白色/蓝色）
                 var statBarTmp = qiBarGo.GetComponent<StatBar>();
                 if (statBarTmp != null && statBarTmp.textField != null)
-                    statBarTmp.textField.color = new Color(0.40f, 0.80f, 0.90f, 1f);
+                    statBarTmp.textField.color = SuperMechUiSkin.CyanColor;
 
                 // 替换图标为自定义气力图标
                 try
@@ -572,7 +572,7 @@ namespace SuperMech.Code
                 fillRect.sizeDelta = Vector2.zero;
                 fillRect.anchoredPosition = Vector2.zero;
                 var fillImg = fillGo.AddComponent<Image>();
-                fillImg.color = new Color(0.40f, 0.80f, 0.90f, 0.9f);
+                fillImg.color = SuperMechUiSkin.CyanColor;
                 fillImg.raycastTarget = false;
 
                 // 顶部高光（增加质感）

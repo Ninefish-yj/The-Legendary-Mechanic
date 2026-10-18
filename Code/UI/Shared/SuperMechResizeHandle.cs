@@ -24,7 +24,7 @@ namespace SuperMech.Code
         private Vector2 _startPointer;
         private Image _img;
         private Color _normal = new Color(0.90f, 0.90f, 0.90f, 0.55f);
-        private Color _hover = new Color(0.40f, 0.80f, 0.90f, 0.90f);
+        private Color _hover = SuperMechUiSkin.CyanColor;
 
         public static SuperMechResizeHandle Add(RectTransform bgRect)
         {
