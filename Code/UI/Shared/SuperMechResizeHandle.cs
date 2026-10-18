@@ -96,14 +96,15 @@ namespace SuperMech.Code
             }
         }
 
-        /// <summary>把关闭按钮锚定到右上角，按钮中心距右上角约半宽+边距，并置顶</summary>
+        /// <summary>把关闭按钮锚定到右上角外部（参考帝国盒子：红叉贴在窗口右上角边框外面）</summary>
         private static void AnchorCloseToTopRight(RectTransform r)
         {
             if (r == null) return;
             r.anchorMin = new Vector2(1f, 1f);
             r.anchorMax = new Vector2(1f, 1f);
-            r.pivot = new Vector2(0.5f, 0.5f);
-            r.anchoredPosition = new Vector2(-(r.sizeDelta.x * 0.5f + 6f), -(r.sizeDelta.y * 0.5f + 6f));
+            // pivot=左下角：按钮左下角对齐窗口右上角点，按钮整体在外部右上方
+            r.pivot = new Vector2(0f, 0f);
+            r.anchoredPosition = new Vector2(-2f, -2f); // 轻微内移2px与边框重叠
             // SetAsLastSibling 让关闭按钮成为父物体最后子物体，始终可见可点
             r.SetAsLastSibling();
         }
