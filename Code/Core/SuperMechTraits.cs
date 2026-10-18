@@ -118,22 +118,35 @@ namespace SuperMech.Code
             LocalizedTextManager.add("trait_sm_player_hanxiao_info", LocalizedTextManager.getText("sm_player_hanxiao_desc"), pReplace: true);
             AssetManager.traits.add(hanxiao);
 
-            // 内部标记特质（不显示在面板，仅用于代码判断，不注册到可见分组）
-            string[] internalMarkers = { "sm_berserk", "sm_cosmic_relic_owner", "sm_summoned", "sm_talent", "sm_void_boost", "sm_supera_council", "sm_supera_purge", "sm_void_dragon_marker", "sm_star_beast_marker", "sm_disaster_infected" };
-            foreach (string mid in internalMarkers)
+            // v0.242.42 内部标记改为功能特质：有名称/描述/属性加成，分散到对应分组，不再隐藏
+            var markerDefs = new[]
+            {
+                new { id = "sm_berserk",            icon = "ui/Icons/actor_traits/iconGiant",    group = "sm_specialties", stats = new (string k, float v)[] { ("warfare", 8f), ("stamina", 3f) } },
+                new { id = "sm_cosmic_relic_owner", icon = "ui/Icons/actor_traits/iconBlessing", group = "sm_awakened",    stats = new (string k, float v)[] { ("intelligence", 5f), ("warfare", 5f), ("stamina", 5f) } },
+                new { id = "sm_summoned",           icon = "ui/Icons/actor_traits/iconGiant",    group = "sm_templates",   stats = new (string k, float v)[] { ("warfare", 5f), ("stamina", -10f) } },
+                new { id = "sm_talent",             icon = "ui/Icons/actor_traits/iconGenius",   group = "sm_awakened",    stats = new (string k, float v)[] { ("intelligence", 10f) } },
+                new { id = "sm_void_boost",         icon = "ui/Icons/actor_traits/iconBlessing", group = "sm_specialties", stats = new (string k, float v)[] { ("warfare", 10f), ("stamina", 10f), ("intelligence", 10f) } },
+                new { id = "sm_supera_council",     icon = "ui/Icons/actor_traits/iconBlessing", group = "sm_ranks",       stats = new (string k, float v)[] { ("warfare", 5f), ("intelligence", 5f), ("stamina", 5f) } },
+                new { id = "sm_supera_purge",       icon = "ui/Icons/actor_traits/iconGiant",    group = "sm_disaster",    stats = new (string k, float v)[] { ("warfare", -10f), ("stamina", -10f), ("intelligence", -5f) } },
+                new { id = "sm_void_dragon_marker", icon = "ui/Icons/actor_traits/iconGiant",    group = "sm_race",        stats = new (string k, float v)[] { ("warfare", 15f), ("stamina", 10f) } },
+                new { id = "sm_star_beast_marker",  icon = "ui/Icons/actor_traits/iconGiant",    group = "sm_race",        stats = new (string k, float v)[] { ("stamina", 15f), ("warfare", 10f) } },
+                new { id = "sm_disaster_infected",  icon = "ui/Icons/actor_traits/iconGiant",    group = "sm_disaster",    stats = new (string k, float v)[] { ("warfare", 10f), ("stamina", 10f), ("intelligence", -10f) } },
+            };
+            foreach (var def in markerDefs)
             {
                 var mt = new ActorTrait
                 {
-                    id = mid,
-                    path_icon = "actor_traits/iconUnknown",
-                    group_id = "sm_internal",
+                    id = def.id,
+                    path_icon = def.icon,
+                    group_id = def.group,
                     needs_to_be_explored = false,
                     can_be_given = false,
                     can_be_removed = false,
+                    rarity = Rarity.R0_Normal,
                     base_stats = new BaseStats()
                 };
-                LocalizedTextManager.add("trait_" + mid, mid, pReplace: true);
-                LocalizedTextManager.add("trait_" + mid + "_info", LocalizedTextManager.getText("sm_internal_marker"), pReplace: true);
+                foreach (var s in def.stats) mt.base_stats[s.k] = s.v;
+                // 名称和描述从cz.json读取（key: trait_<id> / trait_<id>_info）
                 AssetManager.traits.add(mt);
             }
         }

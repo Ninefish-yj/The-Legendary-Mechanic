@@ -521,41 +521,4 @@ namespace SuperMech.Code
             }
         }
     }
-
-    /// <summary>v0.242.19 隐藏内部标记特质（sm_internal组）：patch单位面板特质数据源，
-    /// 之前patch的TraitsContainer.loadActiveTrait是特质编辑器用的，不影响单位面板显示</summary>
-    [HarmonyPatch(typeof(ActorSelectedContainerTraits), "getTraits")]
-    public static class SuperMechHideInternalMarkersPatch
-    {
-        static void Postfix(ref IReadOnlyCollection<ActorTrait> __result)
-        {
-            if (__result == null || __result.Count == 0) return;
-            // group_id=sm_internal 的特质是代码内部状态标记（狂暴/召唤物/天赋标记等），不显示在玩家特质面板
-            var filtered = new List<ActorTrait>(__result.Count);
-            foreach (var t in __result)
-            {
-                if (t != null && t.group_id != "sm_internal") filtered.Add(t);
-            }
-            if (filtered.Count != __result.Count) __result = filtered;
-        }
-    }
-
-    /// <summary>v0.242.41 隐藏特质编辑器中的内部标记分类：
-    /// ActorTraitsEditor.all_augmentations_list返回AssetManager.traits.list（全量特质），
-    /// 内部标记特质被注册后会在编辑窗口显示"内部标记 0/10"空分类。
-    /// patch getter过滤sm_internal组，checkEnabledGroups会自动隐藏空分组。</summary>
-    [HarmonyPatch(typeof(ActorTraitsEditor), "get_all_augmentations_list")]
-    public static class SuperMechHideInternalMarkersFromEditorPatch
-    {
-        static void Postfix(ref List<ActorTrait> __result)
-        {
-            if (__result == null || __result.Count == 0) return;
-            var filtered = new List<ActorTrait>(__result.Count);
-            foreach (var t in __result)
-            {
-                if (t != null && t.group_id != "sm_internal") filtered.Add(t);
-            }
-            if (filtered.Count != __result.Count) __result = filtered;
-        }
-    }
 }
