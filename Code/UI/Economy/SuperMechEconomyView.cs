@@ -6,7 +6,7 @@ using System.Text;
 namespace SuperMech.Code
 {
     /// <summary>伊纳尔经济系统窗口（原著：主宇宙通用货币，超A俸禄/佣金/悬赏）
-    /// v0.195: 整合市场+付费服务为页签式面板</summary>
+    /// v0.242.20: 移除付费服务标签（功能未完成，普通单位无复活需求，降临者自动复活待实现）</summary>
     public class SuperMechEconomyView : MonoBehaviour
     {
         private Text _statsText;
@@ -16,8 +16,7 @@ namespace SuperMech.Code
         private Text _marketText;
         private GameObject _overviewPanel;
         private GameObject _marketPanel;
-        private GameObject _servicePanel;
-        private int _currentTab = 0; // 0=总览, 1=市场, 2=付费服务
+        private int _currentTab = 0; // 0=总览, 1=市场
         private float _nextRefreshTime;
 
         void Awake() { try { BuildLayout(); } catch (System.Exception e) { Debug.LogError("[超神机械师] EconomyView初始化失败: " + e); } }
@@ -41,11 +40,10 @@ namespace SuperMech.Code
 
             string[] tabLabels = {
                 LocalizedTextManager.getText("sm_ui_economy_overview"),
-                LocalizedTextManager.getText("sm_ui_market_title"),
-                LocalizedTextManager.getText("sm_econ_service_panel")
+                LocalizedTextManager.getText("sm_ui_market_title")
             };
-            float tabW = 1f / 3f;
-            for (int i = 0; i < 3; i++)
+            float tabW = 1f / 2f;
+            for (int i = 0; i < 2; i++)
             {
                 int idx = i;
                 var tabGo = SuperMechUiBuilder.CreateObject("Tab" + i, tabBar.transform, typeof(RectTransform), typeof(Image), typeof(Button));
@@ -157,26 +155,11 @@ namespace SuperMech.Code
             mkTextRt.anchorMin = Vector2.zero; mkTextRt.anchorMax = Vector2.one;
             mkTextRt.offsetMin = new Vector2(8, 8); mkTextRt.offsetMax = new Vector2(-8, -8);
 
-            // === 付费服务页签 ===
-            _servicePanel = SuperMechUiBuilder.CreateObject("Service", transform, typeof(RectTransform));
-            var svRect = SuperMechUiBuilder.AddRectTransform(_servicePanel);
-            svRect.anchorMin = Vector2.zero; svRect.anchorMax = Vector2.one;
-            svRect.offsetMin = new Vector2(4, 4); svRect.offsetMax = new Vector2(-4, -36);
-            _servicePanel.SetActive(false);
-
-            var svHint = SuperMechUiBuilder.AddText(_servicePanel,
-                LocalizedTextManager.getText("sm_ui_service_hint"), 12, TextAnchor.MiddleCenter, new Color(0.7f, 0.75f, 0.85f));
-            var svHintRt = svHint.GetComponent<RectTransform>();
-            svHintRt.anchorMin = Vector2.zero; svHintRt.anchorMax = Vector2.one;
-            svHintRt.offsetMin = new Vector2(20, 20); svHintRt.offsetMax = new Vector2(-20, -20);
-        }
-
         private void SwitchTab(int idx)
         {
             _currentTab = idx;
             _overviewPanel.SetActive(idx == 0);
             _marketPanel.SetActive(idx == 1);
-            _servicePanel.SetActive(idx == 2);
             // 更新页签按钮样式
             foreach (Transform t in transform.Find("TabBar"))
             {
