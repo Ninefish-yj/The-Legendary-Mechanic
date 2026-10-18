@@ -111,9 +111,11 @@ namespace SuperMech.Code
             }
             r.anchorMin = new Vector2(1f, 1f);
             r.anchorMax = new Vector2(1f, 1f);
-            // pivot=左下角：按钮左下角对齐窗口右上角点，按钮整体在外部右上方
-            r.pivot = new Vector2(0f, 0f);
-            r.anchoredPosition = new Vector2(2f, -2f);
+            // v0.242.11 修复：pivot从(0,0)改为(1,1)，按钮右上角对齐窗口右上角内缩2px，
+            // 按钮整体在窗口内部右上角，贴合帝国盒子风格。旧版pivot=(0,0)+anchoredPosition=(2,-2)
+            // 让按钮左下角对齐窗口右上角，按钮整体向外延伸，加上按钮尺寸看起来离窗口很远。
+            r.pivot = new Vector2(1f, 1f);
+            r.anchoredPosition = new Vector2(-2f, -2f);
             // SetAsLastSibling 让关闭按钮成为父物体最后子物体，始终可见可点
             r.SetAsLastSibling();
         }
