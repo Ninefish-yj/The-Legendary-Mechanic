@@ -34,11 +34,11 @@ namespace SuperMech.Code
         public static void OpenFusion(Actor a) { SuperMechKnowledgeView.OverrideActor = a; SuperMechFusionView.OverrideActor = a; SuperMechKnowledgeView.OpenFusionTab(); ToggleWindow("knowledge", "sm_ui_knowledge", 680, 460, DrawKnowledgeContent); }
         public static void OpenSpell() { SuperMechSpellView.OverrideActor = null; ToggleWindow("spell", "sm_ui_spell_entry", 680, 460, DrawSpellContent); }
         public static void OpenSpell(Actor a) { SuperMechSpellView.OverrideActor = a; ToggleWindow("spell", "sm_ui_spell_entry", 680, 460, DrawSpellContent); }
-        public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 640, 480, DrawCraftContent); }
+        public static void OpenCraft(Actor a) { SuperMechCraftView.OverrideActor = a; ToggleWindow("craft", "sm_ui_craft", 640, 400, DrawCraftContent); }
         public static void OpenCosmicRelic(Actor a) { SuperMechCosmicRelicView.OverrideActor = a; ToggleWindow("relic", "sm_ui_cr_title", 480, 440, DrawCosmicRelicContent); }
         public static void OpenDimension(Actor a) { SuperMechDimensionView.OverrideActor = a; ToggleWindow("dimension", "sm_ui_dim_title", 510, 425, DrawDimensionContent); }
         public static void OpenVirtualGenesis(Actor a) { SuperMechVirtualGenesisView.OverrideActor = a; ToggleWindow("virtualgenesis", "sm_ui_vg_title", 460, 420, DrawVirtualGenesisContent); }
-        public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 540, 500, DrawMechLegionContent); }
+        public static void OpenMechLegion(Actor a) { SuperMechMechLegionView.OverrideActor = a; ToggleWindow("mechlegion", "sm_ui_mech_legion_title", 540, 400, DrawMechLegionContent); }
         public static void OpenBuilding() { ToggleWindow("building", "sm_ui_building_title", 540, 380, DrawBuildingContent); }
         public static void OpenRank() { ToggleWindow("rank", "sm_ui_rank_window_title", 720, 460, DrawRankContent); }
         public static void OpenFaction() { ToggleWindow("faction", "sm_ui_faction_window_title", 640, 460, DrawFactionContent); }
@@ -53,7 +53,7 @@ namespace SuperMech.Code
         /// <summary>v0.208 设置从星海总览移出，改为独立窗口</summary>
         public static void OpenSettings()
         {
-            ToggleWindow("settings", "sm_ui_settings_title", 580, 560, DrawSettingsContent);
+            ToggleWindow("settings", "sm_ui_settings_title", 580, 420, DrawSettingsContent);
         }
         public static void OpenOverview() { ToggleWindow("overview", "sm_tab_panel_title", 720, 380, SuperMechTab.DrawOverviewContent); }
         /// <summary>v0.206 从王国面板打开总览，自动选中该王国</summary>
