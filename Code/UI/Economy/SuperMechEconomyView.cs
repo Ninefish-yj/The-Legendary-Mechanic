@@ -77,7 +77,7 @@ namespace SuperMech.Code
             sbRect.anchorMax = new Vector2(1, 1);
             sbRect.pivot = new Vector2(0.5f, 1);
             sbRect.sizeDelta = new Vector2(0, 30);
-            _statsText = SuperMechUiBuilder.AddText(statsBar, "", 11, TextAnchor.MiddleLeft);
+            _statsText = SuperMechUiBuilder.AddText(statsBar, "", 11, TextAnchor.MiddleCenter);
             var stRect = _statsText.GetComponent<RectTransform>();
             stRect.anchorMin = Vector2.zero; stRect.anchorMax = Vector2.one;
             stRect.offsetMin = new Vector2(8, 0); stRect.offsetMax = new Vector2(-8, 0);
@@ -90,10 +90,10 @@ namespace SuperMech.Code
             rpRect.pivot = new Vector2(0, 1);
             rpRect.offsetMin = new Vector2(0, 4);     // v0.242.28 修复：底部留4px
             rpRect.offsetMax = new Vector2(0, -34);   // 顶部留34px给StatsBar
-            _rankText = SuperMechUiBuilder.AddText(rankPanel, "", 10, TextAnchor.UpperLeft);
+            _rankText = SuperMechUiBuilder.AddText(rankPanel, "", 10, TextAnchor.MiddleLeft);
             var rtRect = _rankText.GetComponent<RectTransform>();
             rtRect.anchorMin = Vector2.zero; rtRect.anchorMax = Vector2.one;
-            rtRect.offsetMin = new Vector2(6, 4); rtRect.offsetMax = new Vector2(-6, -4);
+            rtRect.offsetMin = new Vector2(8, 4); rtRect.offsetMax = new Vector2(-8, -4);
 
             // 中间：宏观经济指标
             var macroPanel = SuperMechUiBuilder.CreatePanel(_overviewPanel.transform, "MacroPanel", new Color(0, 0, 0, 0.12f), 0, 0, 0, 0);
@@ -103,10 +103,10 @@ namespace SuperMech.Code
             mpRect.pivot = new Vector2(0, 1);
             mpRect.offsetMin = new Vector2(0, 4);
             mpRect.offsetMax = new Vector2(0, -34);
-            _macroText = SuperMechUiBuilder.AddText(macroPanel, "", 10, TextAnchor.UpperLeft);
+            _macroText = SuperMechUiBuilder.AddText(macroPanel, "", 10, TextAnchor.MiddleLeft);
             var mtRect = _macroText.GetComponent<RectTransform>();
             mtRect.anchorMin = Vector2.zero; mtRect.anchorMax = Vector2.one;
-            mtRect.offsetMin = new Vector2(6, 4); mtRect.offsetMax = new Vector2(-6, -4);
+            mtRect.offsetMin = new Vector2(8, 4); mtRect.offsetMax = new Vector2(-8, -4);
 
             // 右侧：公司金库
             var companyPanel = SuperMechUiBuilder.CreatePanel(_overviewPanel.transform, "CompanyPanel", new Color(0, 0, 0, 0.12f), 0, 0, 0, 0);
@@ -116,10 +116,10 @@ namespace SuperMech.Code
             cpRect.pivot = new Vector2(1, 1);
             cpRect.offsetMin = new Vector2(0, 4);
             cpRect.offsetMax = new Vector2(0, -34);
-            _companyText = SuperMechUiBuilder.AddText(companyPanel, "", 10, TextAnchor.UpperLeft);
+            _companyText = SuperMechUiBuilder.AddText(companyPanel, "", 10, TextAnchor.MiddleLeft);
             var ctRect = _companyText.GetComponent<RectTransform>();
             ctRect.anchorMin = Vector2.zero; ctRect.anchorMax = Vector2.one;
-            ctRect.offsetMin = new Vector2(6, 4); ctRect.offsetMax = new Vector2(-6, -4);
+            ctRect.offsetMin = new Vector2(8, 4); ctRect.offsetMax = new Vector2(-8, -4);
 
             // === 市场页签 ===
             _marketPanel = SuperMechUiBuilder.CreateObject("Market", transform, typeof(RectTransform));
