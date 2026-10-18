@@ -283,27 +283,13 @@ namespace SuperMech.Code
                 bool isAisi = msg.speaker == LocalizedTextManager.getText("sm_wb_speaker_aisi");
                 bool sameAsLast = lastSpeaker == msg.speaker;
 
-                // 角色颜色：韩萧蓝、麦尼逊橙、克苏耶紫、塞拉昂金、艾默丝绿、其他青
-                Color avatarColor = isHanXiao ? new Color(0.2f, 0.5f, 0.9f, isCurrent ? 0.9f : 0.4f)
-                    : isMannison ? new Color(0.9f, 0.6f, 0.2f, isCurrent ? 0.9f : 0.4f)
-                    : isKesuye ? new Color(0.7f, 0.4f, 0.9f, isCurrent ? 0.9f : 0.4f)
-                    : isSailaang ? new Color(0.9f, 0.8f, 0.3f, isCurrent ? 0.9f : 0.4f)
-                    : isAisi ? new Color(0.3f, 0.8f, 0.5f, isCurrent ? 0.9f : 0.4f)
-                    : new Color(0.3f, 0.7f, 0.8f, isCurrent ? 0.9f : 0.4f);
+                // v0.242.1 头像/气泡改用原版卡片纹理，不再按角色区分背景色；名字文字仍按角色着色
                 Color nameColor = isHanXiao ? new Color(0.5f, 0.75f, 1f, isCurrent ? 1f : 0.5f)
                     : isMannison ? new Color(1f, 0.75f, 0.4f, isCurrent ? 1f : 0.5f)
                     : isKesuye ? new Color(0.85f, 0.6f, 1f, isCurrent ? 1f : 0.5f)
                     : isSailaang ? new Color(1f, 0.9f, 0.5f, isCurrent ? 1f : 0.5f)
                     : isAisi ? new Color(0.5f, 0.95f, 0.65f, isCurrent ? 1f : 0.5f)
                     : new Color(0.5f, 0.85f, 0.9f, isCurrent ? 1f : 0.5f);
-                Color bubbleColor = isCurrent
-                    ? (isHanXiao ? new Color(0.15f, 0.25f, 0.45f, 0.95f)
-                        : isMannison ? new Color(0.35f, 0.25f, 0.1f, 0.95f)
-                        : isKesuye ? new Color(0.3f, 0.15f, 0.4f, 0.95f)
-                        : isSailaang ? new Color(0.35f, 0.3f, 0.1f, 0.95f)
-                        : isAisi ? new Color(0.15f, 0.35f, 0.2f, 0.95f)
-                        : new Color(0.15f, 0.3f, 0.35f, 0.95f))
-                    : new Color(0.08f, 0.1f, 0.15f, 0.35f);
 
                 float msgHeight = 60f;
                 var msgGo = new GameObject("MsgItem", typeof(RectTransform));
@@ -325,7 +311,10 @@ namespace SuperMech.Code
                 ar.anchoredPosition = isHanXiao ? new Vector2(8, -4) : new Vector2(-8, -4);
                 ar.sizeDelta = new Vector2(32, 32);
                 var avatarImg = avatarGo.GetComponent<Image>();
-                avatarImg.color = avatarColor;
+                // v0.242.1 改用原版卡片纹理+9-slice，不再用纯色方块
+                avatarImg.sprite = SuperMechUiSkin.Card;
+                avatarImg.type = Image.Type.Sliced;
+                avatarImg.color = Color.white;
                 var avatarTxt = SuperMechUiSkin.MakeText(avatarGo.transform, 
                     isHanXiao ? LocalizedTextManager.getText("sm_wb_avatar_hanxiao")
                     : isMannison ? LocalizedTextManager.getText("sm_wb_avatar_mannison")
@@ -362,7 +351,10 @@ namespace SuperMech.Code
                 br.anchoredPosition = isHanXiao ? new Vector2(48, 4) : new Vector2(-48, 4);
                 br.sizeDelta = new Vector2(area.rect.width - 80, 40);
                 var bubbleImg = bubbleGo.GetComponent<Image>();
-                bubbleImg.color = bubbleColor;
+                // v0.242.1 改用原版卡片纹理+9-slice，不再用深蓝色纯色气泡
+                bubbleImg.sprite = SuperMechUiSkin.Card;
+                bubbleImg.type = Image.Type.Sliced;
+                bubbleImg.color = Color.white;
 
                 var contentTxt = SuperMechUiSkin.MakeText(bubbleGo.transform, msg.content, 12, TextAnchor.MiddleLeft);
                 contentTxt.color = isCurrent ? new Color(0.95f, 0.95f, 1f) : new Color(0.5f, 0.55f, 0.6f, 0.6f);
@@ -398,7 +390,10 @@ namespace SuperMech.Code
                         pbr.anchoredPosition = new Vector2(-48, replyY);
                         pbr.sizeDelta = new Vector2(area.rect.width - 100, 28);
                         var pbImg = playerBubbleGo.GetComponent<Image>();
-                        pbImg.color = new Color(0.2f, 0.4f, 0.3f, 0.9f);
+                        // v0.242.1 改用原版卡片纹理+9-slice，不再用绿色纯色气泡
+                        pbImg.sprite = SuperMechUiSkin.Card;
+                        pbImg.type = Image.Type.Sliced;
+                        pbImg.color = Color.white;
                         // 找到玩家回复内容
                         string replyText = LocalizedTextManager.getText("sm_wb_reply_done");
                         foreach (var rec in _playerReplyHistory)
@@ -430,8 +425,16 @@ namespace SuperMech.Code
                             btnR.anchoredPosition = new Vector2(48 + optIdx * (btnW + 4), replyY);
                             btnR.sizeDelta = new Vector2(btnW, 26);
                             var btnImg = btnGo.GetComponent<Image>();
-                            btnImg.color = new Color(0.15f, 0.25f, 0.35f, 0.9f);
+                            // v0.242.1 改用原版按钮纹理+9-slice，不再用深蓝色纯色块
+                            btnImg.sprite = SuperMechUiSkin.ButtonNormalSprite;
+                            btnImg.type = Image.Type.Sliced;
+                            btnImg.color = Color.white;
                             var btn = btnGo.GetComponent<Button>();
+                            btn.transition = Selectable.Transition.SpriteSwap;
+                            var btnSs = btn.spriteState;
+                            btnSs.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+                            btnSs.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+                            btn.spriteState = btnSs;
                             string replyText = opt.text;
                             int favor = opt.favorChange;
                             btn.onClick.AddListener(() =>
@@ -572,12 +575,19 @@ namespace SuperMech.Code
             var go = new GameObject("SubTab", typeof(RectTransform), typeof(Image), typeof(Button));
             go.transform.SetParent(parent, false);
             var img = go.GetComponent<Image>();
-            img.color = active ? new Color(0.15f, 0.2f, 0.35f, 0.9f) : new Color(0.08f, 0.1f, 0.16f, 0.7f);
+            // v0.242.1 改用原版按钮纹理+9-slice，不再用深蓝色纯色块
+            img.sprite = active ? SuperMechUiSkin.ButtonActiveSprite : SuperMechUiSkin.ButtonNormalSprite;
+            img.type = Image.Type.Sliced;
+            img.color = Color.white;
             var btn = go.GetComponent<Button>();
-            btn.transition = Selectable.Transition.ColorTint;
+            btn.transition = Selectable.Transition.SpriteSwap;
+            var ss = btn.spriteState;
+            ss.highlightedSprite = SuperMechUiSkin.ButtonHoverSprite;
+            ss.pressedSprite = SuperMechUiSkin.ButtonActiveSprite;
+            btn.spriteState = ss;
 
             var label = SuperMechUiSkin.MakeText(go.transform, text, 12, TextAnchor.MiddleCenter);
-            label.color = active ? new Color(0.8f, 0.9f, 1f) : new Color(0.5f, 0.55f, 0.65f);
+            label.color = active ? SuperMechUiSkin.AccentColor : SuperMechUiSkin.TextColor;
             var lr = label.GetComponent<RectTransform>();
             lr.offsetMin = Vector2.zero; lr.offsetMax = Vector2.zero;
 
