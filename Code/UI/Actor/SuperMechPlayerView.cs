@@ -39,11 +39,11 @@ namespace SuperMech.Code
             // 左：面板统计（降临者击杀榜）
             var panelPanel = SuperMechUiBuilder.CreatePanel(transform, "PanelList", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var ppRect = panelPanel.GetComponent<RectTransform>();
-            ppRect.anchorMin = new Vector2(0, 1);
+            ppRect.anchorMin = new Vector2(0, 0);
             ppRect.anchorMax = new Vector2(0.5f, 1);
             ppRect.pivot = new Vector2(0, 1);
-            ppRect.offsetMin = new Vector2(0, -24);
-            ppRect.offsetMax = new Vector2(0, -4);
+            ppRect.offsetMin = new Vector2(0, 52);   // 底部避开BottomBar(48)+间距
+            ppRect.offsetMax = new Vector2(0, -32);  // 顶部避开TopBar(28)+间距
             _panelText = SuperMechUiBuilder.AddText(panelPanel, "", 12, TextAnchor.UpperLeft);
             var ptRect = _panelText.GetComponent<RectTransform>();
             ptRect.anchorMin = Vector2.zero;
@@ -54,11 +54,11 @@ namespace SuperMech.Code
             // 右：任务详情（奖池任务）
             var taskPanel = SuperMechUiBuilder.CreatePanel(transform, "TaskPanel", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var tpRect = taskPanel.GetComponent<RectTransform>();
-            tpRect.anchorMin = new Vector2(0.5f, 1);
+            tpRect.anchorMin = new Vector2(0.5f, 0);
             tpRect.anchorMax = new Vector2(1, 1);
             tpRect.pivot = new Vector2(1, 1);
-            tpRect.offsetMin = new Vector2(0, -24);
-            tpRect.offsetMax = new Vector2(0, -4);
+            tpRect.offsetMin = new Vector2(0, 52);
+            tpRect.offsetMax = new Vector2(0, -32);
             _taskText = SuperMechUiBuilder.AddText(taskPanel, "", 12, TextAnchor.UpperLeft);
             var ttRect = _taskText.GetComponent<RectTransform>();
             ttRect.anchorMin = Vector2.zero;
