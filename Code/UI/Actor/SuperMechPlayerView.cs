@@ -41,14 +41,14 @@ namespace SuperMech.Code
             countRect.offsetMin = new Vector2(8, 0);
             countRect.offsetMax = new Vector2(-8, 0);
 
-            // 左：面板统计（降临者击杀榜）—— 顶部锚定，固定高度236（320-28-4-4-48）
+            // 左：面板统计（降临者击杀榜）—— 顶部锚定，固定高度196（280-28-4-4-48）
             var panelPanel = SuperMechUiBuilder.CreatePanel(transform, "PanelList", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var ppRect = panelPanel.GetComponent<RectTransform>();
             ppRect.anchorMin = new Vector2(0, 1);
             ppRect.anchorMax = new Vector2(0.5f, 1);
             ppRect.pivot = new Vector2(0, 1);
             ppRect.anchoredPosition = new Vector2(0, -32);  // 顶部避开TopBar(28)+间距4
-            ppRect.sizeDelta = new Vector2(0, 236);         // 固定高度：320-32-48-4间距
+            ppRect.sizeDelta = new Vector2(0, 196);         // 固定高度：280-32-48-4间距
             _panelText = SuperMechUiBuilder.AddText(panelPanel, "", 12, TextAnchor.UpperLeft);
             var ptRect = _panelText.GetComponent<RectTransform>();
             ptRect.anchorMin = Vector2.zero;
@@ -56,14 +56,14 @@ namespace SuperMech.Code
             ptRect.offsetMin = new Vector2(8, 4);
             ptRect.offsetMax = new Vector2(-8, -4);
 
-            // 右：任务详情（奖池任务）—— 顶部锚定，固定高度236
+            // 右：任务详情（奖池任务）—— 顶部锚定，固定高度196
             var taskPanel = SuperMechUiBuilder.CreatePanel(transform, "TaskPanel", new Color(0, 0, 0, 0.12f), 4, 4, 0, 0);
             var tpRect = taskPanel.GetComponent<RectTransform>();
             tpRect.anchorMin = new Vector2(0.5f, 1);
             tpRect.anchorMax = new Vector2(1, 1);
             tpRect.pivot = new Vector2(1, 1);
             tpRect.anchoredPosition = new Vector2(0, -32);
-            tpRect.sizeDelta = new Vector2(0, 236);
+            tpRect.sizeDelta = new Vector2(0, 196);
             _taskText = SuperMechUiBuilder.AddText(taskPanel, "", 12, TextAnchor.UpperLeft);
             var ttRect = _taskText.GetComponent<RectTransform>();
             ttRect.anchorMin = Vector2.zero;
